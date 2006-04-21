@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         id="application"
+         name="Photon"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.marketcetera.photon.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.marketcetera.photon.EquityPerspectiveFactory"
+            icon="icons/bullet.gif"
+            id="org.marketcetera.photon.EquityPerspective"
+            name="Equity Perspective">
+      </perspective>
+      <perspective
+            class="org.marketcetera.photon.NullPerspectiveFactory"
+            icon="icons/debug_tree.gif"
+            id="org.marketcetera.photon.DebugPerspective"
+            name="Debug Perspective"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.marketcetera.photon.views.PortfolioView"
+            id="org.marketcetera.photon.views.PortfolioView"
+            name="Portfolio"/>
+      <view
+            class="org.marketcetera.photon.views.StockOrderTicket"
+            id="org.marketcetera.photon.views.StockOrderTicket"
+            name="Stock Order Ticket"/>
+      <view
+            class="org.marketcetera.photon.views.GoogleFinanceView"
+            id="org.marketcetera.photon.views.GoogleFinanceView"
+            name="Google Finance"/>
+  </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
+         <view
+               id="org.eclipse.ui.console.ConsoleView"
+               ratio="0.3"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               visible="true"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.marketcetera.photon.application"
+            name="Marketcetera Photon">
+         <property
+               name="preferenceCustomization"
+               value="preferences.ini"/>
+         <property
+               name="windowImages"
+               value="icons/icon_module.gif"/>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc.xml"
+            primary="true"/>
+      <toc file="tocconcepts.xml"/>
+      <toc file="tocgettingstarted.xml"/>
+      <toc file="tocreference.xml"/>
+      <toc file="toctasks.xml"/>
+   </extension>
+   <extension
+         id="Photon"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.marketcetera.photon.application"
+            name="Marketcetera Photon">
+         <property
+               name="windowImages"
+               value="icons/icon_module.gif"/>
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            description="Photon Commands"
+            id="org.marketcetera.photon.commands"
+            name="Marketcetera Photon"/>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            description="Focus the cursor on the command entry area"
+            id="org.marketcetera.photon.FocusCommand"
+            name="Focus Command Area"/>
+      <keyBinding
+            commandId="org.marketcetera.photon.FocusCommand"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            keySequence="M3+C"/>
+   </extension>
+
+</plugin>
