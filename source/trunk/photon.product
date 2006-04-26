@@ -3,14 +3,12 @@
 
 <product name="Marketcetera Photon" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.application" useFeatures="false">
 
-
    <configIni use="default"/>
 
    <launcherArgs>
    </launcherArgs>
 
-   <windowImages small="icons/icon_module.gif"/>
-
+   <windowImages small="/org.marketcetera.photon/icons/silk/transmit_blue.gif"/>
 
    <launcher name="photon.exe">
       <solaris/>
@@ -25,7 +23,10 @@
       <plugin id="org.apache.lucene"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.filebuffers"/>
+      <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.help.appserver"/>
       <plugin id="org.eclipse.help.base"/>
@@ -34,19 +35,25 @@
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.text"/>
       <plugin id="org.eclipse.osgi"/>
-      <plugin id="org.eclipse.platform.source"/>
-      <plugin id="org.eclipse.platform.source.win32.win32.x86"/>
       <plugin id="org.eclipse.rcp"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86"/>
+      <plugin id="org.eclipse.swt.gtk.linux.x86"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.tomcat"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.editors"/>
       <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.ide"/>
+      <plugin id="org.eclipse.ui.views"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
+      <plugin id="org.eclipse.update.configurator"/>
+      <plugin id="org.eclipse.update.core"/>
+      <plugin id="org.eclipse.update.core.win32"/>
+      <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.marketcetera.core"/>
+      <plugin id="org.marketcetera.photon"/>
       <plugin id="org.quickfixj"/>
       <plugin id="org.skife.kasparov.csv"/>
    </plugins>

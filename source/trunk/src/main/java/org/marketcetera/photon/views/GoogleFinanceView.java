@@ -51,6 +51,7 @@ public class GoogleFinanceView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		try {
 		browser = new Browser(parent, SWT.NONE);
 		browser.addProgressListener(new ProgressListener() {
 			public void completed(ProgressEvent event) {
@@ -66,6 +67,9 @@ public class GoogleFinanceView extends ViewPart {
 		if (location != null) {
 			browseTo(location);
 		}
+		} catch (Throwable th){
+			th.printStackTrace();
+		}
 	}
 
 	public String formatURL(String symbol) {
@@ -73,18 +77,21 @@ public class GoogleFinanceView extends ViewPart {
 	}
 
 	public void browseTo(String symbol) {
-		String theURL = formatURL(symbol);
-		browser.setUrl(theURL);
+		if (browser != null){
+			String theURL = formatURL(symbol);
+			browser.setUrl(theURL);
+		}
 	}
 
 	@Override
 	public void setFocus() {
-		browser.setFocus();
+		if (browser != null)
+			browser.setFocus();
 	}
 
 
 	public void goToSecurityHome() {
-		if (!browser.getUrl().equals(formatURL(location))) {
+		if (browser != null && !browser.getUrl().equals(formatURL(location))) {
 			browseTo(location);
 		}
 	}

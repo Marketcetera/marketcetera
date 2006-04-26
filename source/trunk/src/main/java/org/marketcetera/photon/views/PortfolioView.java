@@ -40,7 +40,7 @@ public class PortfolioView extends ViewPart {
 		treeViewer.setLabelProvider(new WorkbenchLabelProvider());
 		treeViewer.setContentProvider(new BaseWorkbenchContentProvider());
 		treeViewer.setInput(root);
-		root.addPositionListener(new IPortfolioListener() {
+		root.addPortfolioListener(new IPortfolioListener() {
 			public void positionsChanged(Portfolio portfolio, PositionProgress entry) {
 				treeViewer.refresh();
 			}

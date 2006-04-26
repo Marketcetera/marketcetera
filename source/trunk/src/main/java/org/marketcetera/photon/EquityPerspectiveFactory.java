@@ -3,13 +3,13 @@ package org.marketcetera.photon;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
-import org.eclipse.ui.console.ConsolePlugin;
-import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.console.IConsoleConstants;
-import org.eclipse.ui.texteditor.IncrementalFindAction;
+import org.marketcetera.photon.editors.OrderHistoryEditor;
+import org.marketcetera.photon.editors.OrderHistoryInput;
 import org.marketcetera.photon.views.GoogleFinanceView;
 import org.marketcetera.photon.views.PortfolioView;
-import org.marketcetera.photon.views.StockOrderTicket;
 
 public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
@@ -51,6 +51,8 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 //		rightFolder.addView(StockOrderTicket.ID);
 		rightFolder.addPlaceholder(GoogleFinanceView.ID + ":*");
 		rightFolder.addView(GoogleFinanceView.ID);
+		
+
 		
 	}
 

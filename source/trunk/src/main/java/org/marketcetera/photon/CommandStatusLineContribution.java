@@ -49,7 +49,6 @@ public class CommandStatusLineContribution extends ContributionItem {
 	public CommandStatusLineContribution(String id, int charWidth) {
 		super(id);
 		this.widthHint = charWidth;
-		setVisible(false); // no text to start with
 	}
 
 	public void fill(Composite parent) {
@@ -111,23 +110,23 @@ public class CommandStatusLineContribution extends ContributionItem {
 		if (textArea != null && !textArea.isDisposed())
 			textArea.setText(this.text);
 
-		if (this.text.length() == 0) {
-			if (isVisible()) {
-				setVisible(false);
-				IContributionManager contributionManager = getParent();
-
-				if (contributionManager != null)
-					contributionManager.update(true);
-			}
-		} else {
-			if (!isVisible()) {
-				setVisible(true);
-				IContributionManager contributionManager = getParent();
-
-				if (contributionManager != null)
-					contributionManager.update(true);
-			}
-		}
+//		if (this.text.length() == 0) {
+//			if (isVisible()) {
+//				setVisible(false);
+//				IContributionManager contributionManager = getParent();
+//
+//				if (contributionManager != null)
+//					contributionManager.update(true);
+//			}
+//		} else {
+//			if (!isVisible()) {
+//				setVisible(true);
+//				IContributionManager contributionManager = getParent();
+//
+//				if (contributionManager != null)
+//					contributionManager.update(true);
+//			}
+//		}
 	}
 
 	public void setTooltip(String tooltip) {

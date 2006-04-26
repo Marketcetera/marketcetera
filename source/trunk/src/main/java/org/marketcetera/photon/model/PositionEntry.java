@@ -12,7 +12,7 @@ import org.marketcetera.core.InternalID;
 public class PositionEntry extends PositionProgress {
 	private final String name;
 
-	private final Portfolio portfolio;
+	private Portfolio portfolio;
 
 
 	public String getName() {
@@ -21,6 +21,9 @@ public class PositionEntry extends PositionProgress {
 
 	public Portfolio getParent() {
 		return portfolio;
+	}
+	public void setParent(Portfolio newParent) {
+		portfolio = newParent;
 	}
 
 	/*
@@ -90,6 +93,7 @@ public class PositionEntry extends PositionProgress {
             Date timeReceived
             ) {
 		this.portfolio = portfolio;
+		if (this.portfolio != null) this.portfolio.addEntry(this);
 		this.name = name;
 
 		mInternalID = internal;

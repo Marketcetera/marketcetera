@@ -2,7 +2,6 @@ package org.marketcetera.photon;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.GroupMarker;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
@@ -17,11 +16,11 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.actions.ContributionItemFactory;
-import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.marketcetera.photon.actions.FocusCommandAction;
+import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ViewSecurityAction;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
@@ -93,8 +92,12 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction dynamicHelpAction;
 
 	private IWorkbenchAction aboutAction;
+	
+	private IWorkbenchAction orderHistoryAction;
 
 	private CommandStatusLineContribution commandStatusLineContribution;
+
+	private FeedStatusLineContribution feedStatusLineContribution;
 
 	private IWorkbenchAction focusCommandAction;
 
@@ -107,6 +110,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		commandStatusLineContribution = new CommandStatusLineContribution();
 		commandStatusLineContribution.addCommandListener(Application.getOrderManager().getCommandListener());
+		feedStatusLineContribution = new FeedStatusLineContribution("feedStatus", new String[] {"JMS"});
+		Application.getJMSConnector().addFeedComponentListener(feedStatusLineContribution);
 		
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
 		closeAction = ActionFactory.CLOSE.create(window);  register(closeAction);
@@ -145,6 +150,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
+		orderHistoryAction = new OrderHistoryAction(window);
 	}
 
 	protected void fillMenuBar(IMenuManager menuBar) {
@@ -257,6 +263,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolBar.add(viewSecurityCI);
 		ActionContributionItem focusCommandCI = new ActionContributionItem(focusCommandAction);
 		toolBar.add(focusCommandCI);
+		ActionContributionItem orderHistoryCI = new ActionContributionItem(orderHistoryAction);
+		toolBar.add(orderHistoryCI);
 	}
 
 	/*
@@ -267,7 +275,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
 		statusLine.add(commandStatusLineContribution);
-		commandStatusLineContribution.setText("This is text");
+		statusLine.add(feedStatusLineContribution);
+
+	//		commandStatusLineContribution.setText("TYPE COMMANDS HERE");
 	}
 
 
