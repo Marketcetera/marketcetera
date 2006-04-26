@@ -1,14 +1,22 @@
 package org.marketcetera.photon;
 
+import java.util.Date;
+
+import javax.jms.JMSException;
+
 import org.apache.log4j.SimpleLayout;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.marketcetera.photon.editors.OrderHistoryEditor;
+import org.marketcetera.photon.editors.OrderHistoryInput;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -53,7 +61,21 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			}
 		} 
 				
+		IWorkbenchPage page = this.getWindowConfigurer().getWindow().getActivePage();
+		OrderHistoryInput input = new OrderHistoryInput(Application.getFIXMessageHistory());
+		try {
+			page.openEditor(input, OrderHistoryEditor.ID, true);
+		} catch (PartInitException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			Application.initJMSConnector();
+		} catch (JMSException ex){
+		}
 
+		Application.getDebugConsoleLogger().info("Application initialized: "+new Date());
 	}
 
 	private void initStatusLine() {

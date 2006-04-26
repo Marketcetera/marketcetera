@@ -7,20 +7,22 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.photon.Application;
 import org.marketcetera.photon.parser.Token.NumberToken;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
 import quickfix.field.MsgType;
+import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
 import quickfix.field.TimeInForce;
-import quickfix.field.OrigClOrdID;
 
 
 @ClassVersion("$Id$")
@@ -81,41 +83,6 @@ public class Parser {
         }
     }
 
-    @SuppressWarnings("serial")
-    public static class ParserException extends Exception {
-        int position;
-
-        Enum[] completions;
-
-        public ParserException(String message, int position, Enum[] completions) {
-            super(message);
-            this.position = position;
-            this.completions = completions;
-        }
-
-        /*
-           * (non-Javadoc)
-           *
-           * @see java.lang.Throwable#getMessage()
-           */
-        @Override
-        public String getMessage() {
-            // TODO Auto-generated method stub
-            return super.getMessage() + " (Near character " + position + ")";
-        }
-
-        /**
-         * @return Returns the position.
-         */
-        public int getPosition() {
-            return position;
-        }
-
-        public Enum[] getCompletions() {
-            return completions;
-        }
-
-    }
 
     public class Command {
         public Command() {}
@@ -150,7 +117,8 @@ public class Parser {
     public Command command() throws ParserException, NoMoreIDsException {
         currentCommand = "Unknown command";
         parsePosition = 0;
-        System.out.println(lexer.mInput);
+        Logger log = Application.getDebugConsoleLogger();
+        log.debug(lexer.mInput);
 
         Token firstToken = lexer.peek();
         String image = firstToken.getImage();

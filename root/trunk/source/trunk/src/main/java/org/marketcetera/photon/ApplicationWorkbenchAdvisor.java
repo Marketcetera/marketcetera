@@ -30,4 +30,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 				new IConsole[] { new DebugConsole(), new MainConsole() });
 	}
 
+	
+	
+
 }

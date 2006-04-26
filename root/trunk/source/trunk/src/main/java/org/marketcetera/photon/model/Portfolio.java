@@ -21,7 +21,10 @@ public class Portfolio extends PositionProgress
 		return name;
 	}
 
-	/* (non-Javadoc)
+	/** 
+	 * Get the simple average of all the component entry progresses.
+	 * This is likely the wrong thing in almost every case.
+	 * 
 	 * @see org.marketcetera.photon.model.PositionProgress#getProgress()
 	 */
 	@Override
@@ -46,7 +49,7 @@ public class Portfolio extends PositionProgress
 
 	public void addEntry(PositionProgress entry) {
 		if (entries == null)
-			entries = new ArrayList(5);
+			entries = new ArrayList<PositionProgress>(5);
 		entries.add(entry);
 		firePositionChanged(entry);
 	}
@@ -54,8 +57,6 @@ public class Portfolio extends PositionProgress
 	public void removeEntry(PositionProgress entry) {
 		if (entries != null) {
 			entries.remove(entry);
-			if (entries.isEmpty())
-				entries = null;
 		}
 		firePositionChanged(entry);
 	}
@@ -70,9 +71,9 @@ public class Portfolio extends PositionProgress
 		return new PositionProgress[0];
 	}
 
-	public void addPositionListener(IPortfolioListener listener) {
+	public void addPortfolioListener(IPortfolioListener listener) {
 		if (parent != null)
-			parent.addPositionListener(listener);
+			parent.addPortfolioListener(listener);
 		else {
 			if (listeners == null)
 				listeners = new ListenerList();
@@ -80,9 +81,9 @@ public class Portfolio extends PositionProgress
 		}
 	}
 
-	public void removeContactsListener(IPortfolioListener listener) {
+	public void removePortfolioListener(IPortfolioListener listener) {
 		if (parent != null)
-			parent.removeContactsListener(listener);
+			parent.removePortfolioListener(listener);
 		else {
 			if (listeners != null) {
 				listeners.remove(listener);

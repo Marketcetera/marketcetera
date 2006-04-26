@@ -1,68 +1,118 @@
 package org.marketcetera.photon;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.lang.annotation.Annotation;
-
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.eclipse.jface.util.ListenerList;
+import org.marketcetera.core.FeedComponent;
+import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.jms.JMSAdapter;
 
-public class JMSConnector {
+public class JMSConnector implements FeedComponent {
 
-	
-	private static final String CONTEXT_FACTORY_NAME = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
-	private static final String PROVIDER_URL = "tcp://server01:61616";
-	private static final String CONNECTION_FACTORY_NAME = "ConnectionFactory";
+	private static final String JMS_CONNECTOR_ID = "JMS";
 
-	private static final String INCOMING_TOPIC_NAME = "oms-messages";
-	private static final String OUTGOING_QUEUE_NAME = "oms-commands";
-	
-	private static JMSConnector sInstance;
-	JMSAdapter adapter;
-	
-	private JMSConnector()
-	{
-		
+	private JMSAdapter adapter;
+
+	private String outgoingQueueName;
+
+	private String incomingTopicName;
+
+	private FeedStatus feedStatus = FeedStatus.UNKNOWN;
+
+	private ListenerList listeners = new ListenerList();
+
+	JMSConnector() {
 	}
 
-	public static void init() throws JMSException
-	{
-		sInstance = new JMSConnector();
-		sInstance.adapter = new JMSAdapter(
-				CONTEXT_FACTORY_NAME,
-				PROVIDER_URL,
-				CONNECTION_FACTORY_NAME);
-		sInstance.adapter.start();
-		sInstance.adapter.connectIncomingTopic(INCOMING_TOPIC_NAME, INCOMING_TOPIC_NAME, javax.jms.Session.AUTO_ACKNOWLEDGE);
-		sInstance.adapter.connectOutgoingQueue(OUTGOING_QUEUE_NAME, OUTGOING_QUEUE_NAME, javax.jms.Session.AUTO_ACKNOWLEDGE);
-	}
-	
-	public static JMSConnector getInstance()
-	{
-		return sInstance;
-	}
-	
-	public void sendToQueue(javax.jms.Message aMessage) throws JMSException {
-		adapter.getOutgoingQueueSender(OUTGOING_QUEUE_NAME).send(aMessage);
-	}
-	
-	public void sendToQueue(quickfix.Message aMessage) throws JMSException{
+	public void init(String incomingTopicName, String outgoingQueueName,
+			String contextFactoryName, String providerUrl,
+			String connectionFactoryName) throws JMSException {
 		try {
-			TextMessage textMessage = adapter.getOutgoingQueueSession(OUTGOING_QUEUE_NAME).createTextMessage();
-			textMessage.setText(aMessage.toString());
-			sendToQueue(textMessage);
-		} catch (Throwable e) {
-			e.printStackTrace();
+			adapter = new JMSAdapter(contextFactoryName, providerUrl,
+					connectionFactoryName);
+			adapter.start();
+			adapter.connectIncomingTopic(incomingTopicName, incomingTopicName,
+					javax.jms.Session.AUTO_ACKNOWLEDGE);
+			adapter.connectOutgoingQueue(outgoingQueueName, outgoingQueueName,
+					javax.jms.Session.AUTO_ACKNOWLEDGE);
+			this.outgoingQueueName = outgoingQueueName;
+			this.incomingTopicName = incomingTopicName;
+			setStatus(FeedStatus.AVAILABLE);
+		} catch (JMSException e) {
+			setStatus(FeedStatus.ERROR);
+			throw e;
 		}
 	}
 	
+	public void shutdown(){
+		try {
+			adapter.shutdown();
+		} finally {
+			adapter = null;
+		}
+	}
+
+	public void sendToQueue(javax.jms.Message aMessage) throws JMSException {
+		// TODO: check feed status before sending?
+		adapter.getOutgoingQueueSender(outgoingQueueName).send(aMessage);
+	}
+
+	public void sendToQueue(quickfix.Message aMessage) throws JMSException {
+		// TODO: check feed status before sending?
+		try {
+			TextMessage textMessage = adapter.getOutgoingQueueSession(
+					outgoingQueueName).createTextMessage();
+			textMessage.setText(aMessage.toString());
+			sendToQueue(textMessage);
+		} catch (JMSException e) {
+			setStatus(FeedStatus.ERROR);
+			throw e;
+		}
+	}
+
+	public void setTopicListener(MessageListener listener) throws JMSException {
+		try {
+			adapter.getIncomingTopicSubscriber(incomingTopicName)
+					.setMessageListener(listener);
+		} catch (JMSException e) {
+			setStatus(FeedStatus.ERROR);
+			throw e;
+		}
+	}
 	
-	public void setTopicListener(MessageListener listener) throws JMSException{
-		adapter.getIncomingTopicSubscriber(INCOMING_TOPIC_NAME).setMessageListener(listener);
+	private void setStatus(FeedStatus theStatus){
+		feedStatus = theStatus;
+		fireFeedComponentChanged();
+	}
+
+	public FeedType getFeedType() {
+		return FeedType.SIMULATED;
+	}
+
+	public FeedStatus getFeedStatus() {
+		return feedStatus;
+	}
+
+	public String getID() {
+		// TODO Auto-generated method stub
+		return JMS_CONNECTOR_ID;
+	}
+
+	public void addFeedComponentListener(IFeedComponentListener arg0) {
+		listeners.add(arg0);
+	}
+
+	public void removeFeedComponentListener(IFeedComponentListener arg0) {
+		listeners.remove(arg0);
+	}
+	
+	private void fireFeedComponentChanged()
+	{
+		for (Object aListenerObject : listeners.getListeners()) {
+			IFeedComponentListener aListener = (IFeedComponentListener) aListenerObject;
+			aListener.feedComponentChanged(this);
+		}
 	}
 }

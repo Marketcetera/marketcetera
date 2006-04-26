@@ -31,7 +31,7 @@ public class ViewSecurityAction extends Action implements ISelectionListener,
 		setText("Open &Finance Page");
 		setToolTipText("Google Finance page for selected security");
 		setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.NEW_DOCUMENT));
+				Application.PLUGIN_ID, IImageKeys.VIEW_SECURITY));
 		window.getSelectionService().addSelectionListener(this);
 	}
 

@@ -16,13 +16,13 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             class="org.marketcetera.photon.EquityPerspectiveFactory"
-            icon="icons/bullet.gif"
+            icon="icons/silk/medal_gold_2.png"
             id="org.marketcetera.photon.EquityPerspective"
             name="Equity Perspective">
       </perspective>
       <perspective
             class="org.marketcetera.photon.NullPerspectiveFactory"
-            icon="icons/debug_tree.gif"
+            icon="icons/silk/bug.png"
             id="org.marketcetera.photon.DebugPerspective"
             name="Debug Perspective"/>
    </extension>
@@ -63,7 +63,7 @@
                value="preferences.ini"/>
          <property
                name="windowImages"
-               value="icons/icon_module.gif"/>
+               value="icons/silk/transmit_blue.gif"/>
       </product>
    </extension>
    <extension
@@ -76,6 +76,13 @@
       <toc file="tocreference.xml"/>
       <toc file="toctasks.xml"/>
    </extension>
+      <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.marketcetera.photon.JMSPreferencePage"
+            id="org.marketcetera.photon.preferences.jms"
+            name="JMS Preferences"/>
+   </extension>
    <extension
          id="Photon"
          point="org.eclipse.core.runtime.products">
@@ -84,7 +91,7 @@
             name="Marketcetera Photon">
          <property
                name="windowImages"
-               value="icons/icon_module.gif"/>
+               value="icons/silk/transmit_blue.gif"/>
       </product>
    </extension>
    <extension
@@ -102,6 +109,16 @@
             commandId="org.marketcetera.photon.FocusCommand"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
             keySequence="M3+C"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.marketcetera.photon.editors.OrderHistoryEditor"
+            contributorClass="org.marketcetera.photon.editors.OrderHistoryEditorContributor"
+            extensions="log"
+            icon="icons/sample.gif"
+            id="org.marketcetera.photon.editors.OrderHistoryEditor"
+            name="Order History Editor"/>
    </extension>
 
 </plugin>

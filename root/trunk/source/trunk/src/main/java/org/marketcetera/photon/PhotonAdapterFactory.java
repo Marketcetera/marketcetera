@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
 
@@ -54,7 +55,41 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 			return new Object[0];
 		}
 	};
+	private IWorkbenchAdapter messageHistoryAdapter = new IWorkbenchAdapter() {
+		public Object getParent(Object o) {
+			return null;
+		}
 
+		public String getLabel(Object o) {
+			return null;
+		}
+
+		public ImageDescriptor getImageDescriptor(Object object) {
+			return null;
+		}
+
+		public Object[] getChildren(Object o) {
+			return ((FIXMessageHistory)o).getHistory();
+		}
+	};
+
+	private IWorkbenchAdapter messageAdapter = new IWorkbenchAdapter() {
+		public Object getParent(Object o) {
+			return null;
+		}
+
+		public String getLabel(Object o) {
+			return "Message";
+		}
+
+		public ImageDescriptor getImageDescriptor(Object object) {
+			return null;
+		}
+
+		public Object[] getChildren(Object o) {
+			return null;
+		}
+	};
 
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IWorkbenchAdapter.class
@@ -63,6 +98,12 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof PositionEntry)
 			return positionAdapter;
+		if (adapterType == IWorkbenchAdapter.class
+				&& adaptableObject instanceof FIXMessageHistory)
+			return messageHistoryAdapter;
+		if (adapterType == IWorkbenchAdapter.class
+				&& adaptableObject instanceof FIXMessageHistory.MessageHolder)
+			return messageAdapter;
 		return null;
 	}
 

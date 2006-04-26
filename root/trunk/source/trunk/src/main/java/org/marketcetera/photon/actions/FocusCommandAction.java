@@ -27,7 +27,7 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 		setText("Goto &command input area");
 		setToolTipText("Put the cursor in the command input area");
 		setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.BULLET_ARROW));
+				Application.PLUGIN_ID, IImageKeys.LIGHTNING));
 		this.commandInput = commandInput;
 	}
 
