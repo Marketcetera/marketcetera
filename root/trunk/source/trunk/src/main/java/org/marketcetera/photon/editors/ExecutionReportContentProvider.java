@@ -65,7 +65,11 @@ public class ExecutionReportContentProvider implements IStructuredContentProvide
      * Method declared on ITreeContentProvider.
      */
     public boolean hasChildren(Object element) {
-        return getChildren(element).length > 0;
+    	if (element instanceof FIXMessageHistory) {
+			FIXMessageHistory history = (FIXMessageHistory) element;
+			return history.size() > 0;
+    	}
+    	return false;
     }
 
     /* (non-Javadoc)

@@ -8,6 +8,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.marketcetera.photon.editors.OrderHistoryEditor;
 import org.marketcetera.photon.editors.OrderHistoryInput;
+import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.GoogleFinanceView;
 import org.marketcetera.photon.views.PortfolioView;
 
@@ -42,8 +43,8 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.3f,
 				editorArea);
-		leftFolder.addPlaceholder(PortfolioView.ID + ":*");
-		leftFolder.addView(PortfolioView.ID);
+		leftFolder.addPlaceholder(FiltersView.ID + ":*");
+		leftFolder.addView(FiltersView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
 				0.1f, editorArea);

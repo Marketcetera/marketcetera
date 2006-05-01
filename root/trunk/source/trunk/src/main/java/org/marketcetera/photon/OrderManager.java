@@ -24,6 +24,7 @@ import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.model.PositionProgress;
 import org.marketcetera.photon.parser.Parser;
+import org.marketcetera.quickfix.FIXField2StringConverter;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -74,8 +75,8 @@ public class OrderManager {
 	private Parser mCommandParser;
 
 	private MessageListener jmsListener;
-	
-    List<IOrderActionListener> mOrderActionListeners = new ArrayList<IOrderActionListener>();
+
+	List<IOrderActionListener> mOrderActionListeners = new ArrayList<IOrderActionListener>();
 
 	/** Creates a new instance of OrderManager */
 	public OrderManager(IDFactory idFactory) {
@@ -87,6 +88,12 @@ public class OrderManager {
 				handleCommandIssued(evt);
 			};
 		};
+
+		mCommandParser = new Parser();
+		mCommandParser.init(mIDFactory);
+	}
+
+	public void init() {
 		jmsListener = new MessageListener() {
 			public void onMessage(javax.jms.Message message) {
 				if (message instanceof TextMessage) {
@@ -107,8 +114,6 @@ public class OrderManager {
 		};
 
 		Application.setTopicListener(jmsListener);
-		mCommandParser = new Parser();
-		mCommandParser.init(mIDFactory);
 	}
 
 	public void handleEvents(Object[] messages) {
@@ -151,7 +156,8 @@ public class OrderManager {
 				handleCancelReject(aMessage);
 			}
 		} catch (Exception ex) {
-			Application.getDebugConsoleLogger().error("Error decoding incoming message", ex);
+			Application.getDebugConsoleLogger().error(
+					"Error decoding incoming message", ex);
 		}
 	}
 
@@ -171,7 +177,8 @@ public class OrderManager {
 				cancelOneOrder(aMessage);
 			}
 		} catch (Exception ex) {
-			Application.getDebugConsoleLogger().error("Error decoding incoming message", ex);
+			Application.getDebugConsoleLogger().error(
+					"Error decoding incoming message", ex);
 		}
 	}
 
@@ -225,13 +232,14 @@ public class OrderManager {
 			}
 			position.updateLast(lastQty, lastPx, lastMarket);
 
-			if (lastQty.compareTo(BigDecimalUtils.ZERO) > 0) {
-				String side = TextUtils.getSideName(aMessage
-						.getChar(Side.FIELD));
+			if (lastQty.compareTo(BigDecimal.ZERO) > 0) {
+				
+				String side = FIXField2StringConverter.getHumanFieldValue(Side.FIELD, aMessage
+						.getString(Side.FIELD));
 				String message = side + " " + lastQty + " "
 						+ aMessage.getString(Symbol.FIELD) + " " + lastPx;
-				Application.getDebugConsoleLogger().debug("OMSClient should display message "
-						+ message);
+				Application.getDebugConsoleLogger().debug(
+						"OMSClient should display message " + message);
 				mInternalDebugLogger.info(message);
 			}
 		} catch (FieldNotFound ex) { /* do nothing */
@@ -391,7 +399,8 @@ public class OrderManager {
 		try {
 			Application.sendToQueue(aMessage);
 		} catch (JMSException ex) {
-			Application.getDebugConsoleLogger().error("Error sending message to JMS", ex);
+			Application.getDebugConsoleLogger().error(
+					"Error sending message to JMS", ex);
 		}
 	}
 
@@ -409,7 +418,7 @@ public class OrderManager {
 			AccountID accountID, BasketID basketID) {
 		PositionEntry summary = new PositionEntry(null, "NEW ORDER", id,
 				OrdStatus.PENDING_NEW, side, quantity, symbol,
-				BigDecimalUtils.ZERO, true, accountID, new Date());
+				BigDecimal.ZERO, true, accountID, new Date());
 		rootPortfolio.addEntry(summary);
 	}
 
@@ -548,7 +557,5 @@ public class OrderManager {
 	public ICommandListener getCommandListener() {
 		return commandListener;
 	}
-
-
 
 }

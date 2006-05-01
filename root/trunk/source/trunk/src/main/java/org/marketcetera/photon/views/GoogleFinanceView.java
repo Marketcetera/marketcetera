@@ -17,7 +17,7 @@ public class GoogleFinanceView extends ViewPart {
 	public static String ID = "org.marketcetera.photon.views.GoogleFinanceView"; //$NON-NLS-1$
 
 	public static MessageFormat GOOGLE_URL_FORMAT = new MessageFormat(
-			"http://finance.google.com/finance?q={0}&client=Marketcetera+Photon+0.5"); //$NON-NLS-1$
+			"http://finance.google.com/finance?q={0}&client=Marketcetera+Photon"); //$NON-NLS-1$
 
 	private Browser browser;
 

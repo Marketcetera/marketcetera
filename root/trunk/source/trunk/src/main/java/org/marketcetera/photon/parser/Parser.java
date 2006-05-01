@@ -248,7 +248,7 @@ public class Parser {
         List<Message> messageList = new ArrayList<Message>(cancelCollection.size());
         for (InternalID id : cancelCollection){
             InternalID orderID = new InternalID(mIDFactory.getNext());
-            Message message = FIXMessageUtil.newCancel(orderID, id, (char)0, BigDecimalUtils.ZERO, "", "");
+            Message message = FIXMessageUtil.newCancel(orderID, id, (char)0, BigDecimal.ZERO, "", "");
             messageList.add(message);
         }
         return new Command(MsgType.ORDER_CANCEL_REQUEST, messageList);
@@ -259,7 +259,7 @@ public class Parser {
     {
         consumeToken("Expected cancel all command.", null);
         InternalID orderID = new InternalID(""+0);
-        Message message = FIXMessageUtil.newCancel(orderID, orderID, (char)0, BigDecimalUtils.ZERO, "", "");
+        Message message = FIXMessageUtil.newCancel(orderID, orderID, (char)0, BigDecimal.ZERO, "", "");
         message.removeField(OrigClOrdID.FIELD);
 
         List aList = new ArrayList();

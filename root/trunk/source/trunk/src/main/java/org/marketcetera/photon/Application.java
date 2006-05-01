@@ -1,5 +1,7 @@
 package org.marketcetera.photon;
 
+import java.net.URL;
+
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
@@ -14,6 +16,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.quickfix.ConnectionConstants;
+import org.marketcetera.quickfix.FIXField2StringConverter;
 
 import quickfix.Message;
 
@@ -43,6 +46,9 @@ public class Application implements IPlatformRunnable {
 	 * @see org.eclipse.core.runtime.IPlatformRunnable#run(java.lang.Object)
 	 */
 	public Object run(Object args) throws Exception {
+		
+		FIXField2StringConverter.loadDictionary(FIXField2StringConverter.FIX_4_2_BEGIN_STRING);
+		
 		fixMessageHistory = new FIXMessageHistory();
         jmsConnector = new JMSConnector();
 
@@ -86,6 +92,8 @@ public class Application implements IPlatformRunnable {
 						jmsURLString,
 						jmsConnectionFactoryString
 						);
+				orderManager.init();
+
 			return jmsConnector;
 		} catch (JMSException e) {
 			getDebugConsoleLogger().error("Could not connect to JMS server {"
@@ -97,7 +105,6 @@ public class Application implements IPlatformRunnable {
 					, e);
 			throw e;
 		}
-		
 		
 	}
 

@@ -1,10 +1,11 @@
-package org.marketcetera.photon.model;
+package org.marketcetera.photon.views;
 
 import org.eclipse.core.runtime.PlatformObject;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
-public class FilterItem<T> extends PlatformObject{
+public abstract class FilterItem<T> extends PlatformObject{
     T mItem;
     String mName;
     public FilterItem(T item, String name) {
@@ -23,6 +24,7 @@ public class FilterItem<T> extends PlatformObject{
     public void setName(String name) {
         mName = name;
     }
+	public abstract ViewerFilter getFilter();
 
 
 

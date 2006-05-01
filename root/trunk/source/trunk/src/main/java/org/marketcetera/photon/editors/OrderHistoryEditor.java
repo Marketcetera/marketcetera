@@ -4,7 +4,10 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -14,16 +17,22 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
-import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IFIXMessageListener;
+import org.marketcetera.photon.views.FilterGroup;
+import org.marketcetera.photon.views.FilterItem;
 
 import quickfix.Message;
+import quickfix.field.Symbol;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -35,9 +44,7 @@ import quickfix.Message;
  * </ul>
  */
 public class OrderHistoryEditor extends MultiPageEditorPart implements
-		IFIXMessageListener {
-
-	
+		IFIXMessageListener, ISelectionListener {
 
 	public enum AvgPriceColumns {
 		SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), LEAVESQTY(
@@ -55,11 +62,11 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	};
 
 	public enum MessageColumns {
-		DIRECTION("D"), MSGTYPE("MsgType"), CLORDID("ClOrdID"), STATUS("Status"), SIDE(
+		DIRECTION("D"), MSGTYPE("MsgType"), CLORDID("ClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
 				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
-				"AvgPx"), ACCOUNT("Account"), LAST_QUANTITY("LastShares"), LAST_PRICE(
-				"LastPx"), LAST_MARKET("LastMkt");
+				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
+				"LastPx"), LASTMKT("LastMkt");
 
 		private String mName;
 
@@ -73,12 +80,11 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	};
 
 	public enum FillColumns {
-		ORDER_ID("ID"), STATUS("Status"), SIDE("Side"), SYMBOL("Symbol"), TOTAL_QUANTITY(
-				"Quantity"), EXECUTED_QUANTITY("Executed"), LEAVES_QUANTITY(
-				"Leaves"), ORDER_PRICE("Order Price"), AVERAGE_PRICE(
-				"Avg Price"), STRATEGY("Strategy"), ACCOUNT("Account"), LAST_QUANTITY(
-				"Last Qty"), LAST_PRICE("Last Price"), LAST_MARKET(
-				"Last Market");
+		CLORDID("ClOrdID"), ORDSTATUS("OrdStatus"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY(
+				"OrderQty"), CUMQTY("CumQty"), LEAVESQTY("LeavesQty"), Price(
+				"Price"), AVGPX("AvgPx"), STRATEGY("Strategy"), ACCOUNT(
+				"Account"), LASTSHARES("LastShares"), LASTPX("LastPx"), LASTMKT(
+				"LastMkt");
 
 		private String mName;
 
@@ -90,7 +96,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 			return mName;
 		}
 	};
-	
+
 	public static final String ID = "org.marketcetera.photon.editors.OrderHistoryEditor";
 
 	private TableViewer averagePriceViewer;
@@ -102,6 +108,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 
 	private FIXMessageHistory input;
+
+	private IWorkbenchWindow window;
 
 	/**
 	 * Creates a multi-page editor example.
@@ -115,6 +123,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 				FIXMessageHistory.MessageHolder.class);
 		Platform.getAdapterManager().registerAdapters(adapterFactory,
 				quickfix.Message.class);
+
 	}
 
 	/**
@@ -126,31 +135,30 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		composite.setLayout(layout);
 		layout.numColumns = 1;
 
-		averagePriceViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
+		fillsViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
 				| SWT.WRAP | SWT.FULL_SELECTION);
-		averagePriceViewer.getControl().setLayoutData(
+		fillsViewer.getControl().setLayoutData(
 				new GridData(GridData.FILL, GridData.FILL, true, true));
 		// orderViewer.getControl().setEditable(false);
-		averagePriceViewer.getControl().setBackground(
-				averagePriceViewer.getControl().getDisplay().getSystemColor(
+		fillsViewer.getControl().setBackground(
+				fillsViewer.getControl().getDisplay().getSystemColor(
 						SWT.COLOR_INFO_BACKGROUND));
-		averagePriceViewer.getControl().setForeground(
-				averagePriceViewer.getControl().getDisplay().getSystemColor(
+		fillsViewer.getControl().setForeground(
+				fillsViewer.getControl().getDisplay().getSystemColor(
 						SWT.COLOR_INFO_FOREGROUND));
-		averagePriceViewer.getTable().setHeaderVisible(true);
+		fillsViewer.getTable().setHeaderVisible(true);
 
-		for (AvgPriceColumns aColumn : AvgPriceColumns.values()) {
-			TableColumn column = new TableColumn(averagePriceViewer.getTable(),
+		for (FillColumns aColumn : FillColumns.values()) {
+			TableColumn column = new TableColumn(fillsViewer.getTable(),
 					SWT.LEFT);
 			column.setText(aColumn.toString());
 			column.setWidth(50);
 		}
 		int index = addPage(composite);
-		setPageText(index, "Average Price");
-		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
-				averagePriceViewer.getTable().getColumns()));
-		averagePriceViewer
-				.setContentProvider(new ExecutionReportContentProvider());
+		setPageText(index, "Fills");
+		fillsViewer.setLabelProvider(new FIXMessageLabelProvider(fillsViewer
+				.getTable().getColumns()));
+		fillsViewer.setContentProvider(new FillContentProvider());
 	}
 
 	/**
@@ -198,29 +206,31 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		composite.setLayout(layout);
 		layout.numColumns = 1;
 
-		fillsViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
+		averagePriceViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
 				| SWT.WRAP | SWT.FULL_SELECTION);
-		fillsViewer.getControl().setLayoutData(
+		averagePriceViewer.getControl().setLayoutData(
 				new GridData(GridData.FILL, GridData.FILL, true, true));
 		// orderViewer.getControl().setEditable(false);
-		fillsViewer.getControl().setBackground(
-				fillsViewer.getControl().getDisplay().getSystemColor(
+		averagePriceViewer.getControl().setBackground(
+				averagePriceViewer.getControl().getDisplay().getSystemColor(
 						SWT.COLOR_INFO_BACKGROUND));
-		fillsViewer.getControl().setForeground(
-				fillsViewer.getControl().getDisplay().getSystemColor(
+		averagePriceViewer.getControl().setForeground(
+				averagePriceViewer.getControl().getDisplay().getSystemColor(
 						SWT.COLOR_INFO_FOREGROUND));
-		fillsViewer.getTable().setHeaderVisible(true);
+		averagePriceViewer.getTable().setHeaderVisible(true);
 
-		for (FillColumns aColumn : FillColumns.values()) {
-			TableColumn column = new TableColumn(fillsViewer.getTable(),
+		for (AvgPriceColumns aColumn : AvgPriceColumns.values()) {
+			TableColumn column = new TableColumn(averagePriceViewer.getTable(),
 					SWT.LEFT);
 			column.setText(aColumn.toString());
 			column.setWidth(50);
 		}
 		int index = addPage(composite);
-		setPageText(index, "Fills");
-		fillsViewer.setLabelProvider(new WorkbenchLabelProvider());
-		fillsViewer.setContentProvider(new ExecutionReportContentProvider());
+		setPageText(index, "Average Price");
+		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
+				averagePriceViewer.getTable().getColumns()));
+		averagePriceViewer
+				.setContentProvider(new ExecutionReportContentProvider());
 	}
 
 	/**
@@ -241,6 +251,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	public void dispose() {
 		// ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		super.dispose();
+		window.getSelectionService().removeSelectionListener(this);
 	}
 
 	/**
@@ -282,19 +293,22 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		} else {
 			input = ((OrderHistoryInput) editorInput).getHistory();
 		}
+		window = site.getWorkbenchWindow();
+		window.getSelectionService().addSelectionListener(this);
+
 		super.init(site, editorInput);
 	}
 
 	public void setFIXMessageHistory(FIXMessageHistory input) {
-		if (input != null){
+		if (input != null) {
 			if (messagesViewer != null) {
 				messagesViewer.setInput(input);
 			}
-			if (averagePriceViewer != null) {
-				averagePriceViewer.setInput(input);
+			if (fillsViewer != null) {
+				fillsViewer.setInput(input);
 			}
 			input.addFIXMessageListener(this);
-		} 
+		}
 	}
 
 	/*
@@ -304,23 +318,12 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		return true;
 	}
 
-
 	public void incomingMessage(Message message) {
-		asyncExec(new Runnable() {
-			public void run() {
-				messagesViewer.refresh();
-				averagePriceViewer.refresh();
-			}
-		});
+		asyncRefresh();
 	}
 
 	public void outgoingMessage(Message message) {
-		asyncExec(new Runnable() {
-			public void run() {
-				messagesViewer.refresh();
-				averagePriceViewer.refresh();
-			}
-		});
+		asyncRefresh();
 	};
 
 	public void asyncExec(Runnable runnable) {
@@ -332,4 +335,80 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 
 		display.asyncExec(runnable);
 	}
+	
+	protected void asyncRefresh()
+	{
+		asyncExec(new Runnable() {
+			public void run() {
+				messagesViewer.refresh();
+				fillsViewer.refresh();
+				averagePriceViewer.refresh();
+			}
+		});
+	}
+
+	public void selectionChanged(IWorkbenchPart part, ISelection incoming) {
+		if (incoming instanceof IStructuredSelection) {
+			IStructuredSelection selection = (IStructuredSelection) incoming;
+			if (selection.size() == 1) {
+				Object firstElement = selection.getFirstElement();
+				if (firstElement instanceof FilterItem) {
+					FilterItem filterItem = (FilterItem) firstElement;
+					setFilter(filterItem.getFilter());
+
+					Application.getDebugConsoleLogger().debug(
+							"Selected" + filterItem.getItem());
+				} else if (firstElement instanceof FilterGroup) {
+					resetFilters();
+					Application.getDebugConsoleLogger().debug("Unselected");
+				} else {
+					Application.getDebugConsoleLogger().debug(
+							"Structured selection with unknown item.");
+				}
+			}
+		} else {
+			// Other selections, for example containing text or of other kinds.
+			Application.getDebugConsoleLogger().debug("Other selection type");
+		}
+	}
+
+	public void setFilter(ViewerFilter filter){
+		resetFilters();
+		addFilter(filter);
+	}
+	
+	public void addFilter(ViewerFilter filter) {
+		fillsViewer.addFilter(filter);
+		messagesViewer.addFilter(filter);
+		averagePriceViewer.addFilter(filter);
+		asyncRefresh();
+		
+	}
+
+	public void removeFilter(ViewerFilter filter) {
+		fillsViewer.removeFilter(filter);
+		messagesViewer.removeFilter(filter);
+		averagePriceViewer.removeFilter(filter);
+		asyncRefresh();
+	}
+
+	public void resetFilters() {
+		boolean didReset = false;
+		if (fillsViewer.getFilters().length > 0){
+			fillsViewer.resetFilters();
+			didReset = true;
+		}
+		if (messagesViewer.getFilters().length > 0){
+			messagesViewer.resetFilters();
+			didReset = true;
+		}
+		if (averagePriceViewer.getFilters().length > 0){
+			averagePriceViewer.resetFilters();
+			didReset = true;
+		}
+		if (didReset){
+			asyncRefresh();
+		}
+	}
+
 }
