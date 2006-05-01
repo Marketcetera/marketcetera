@@ -7,9 +7,14 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.core.AccountID;
+import org.marketcetera.core.Security;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
+import org.marketcetera.photon.views.FilterGroup;
+import org.marketcetera.photon.views.FilterItem;
+import org.marketcetera.photon.views.FiltersView;
 
 public class PhotonAdapterFactory implements IAdapterFactory {
 
@@ -42,8 +47,9 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 			PositionEntry entry = ((PositionEntry) o);
 			BigDecimal progressBigDecimal = new BigDecimal(entry.getProgress());
 			progressBigDecimal.round(new MathContext(2));
-			progressBigDecimal = progressBigDecimal.multiply(new BigDecimal(100));
-			return entry.getName() + " (" +progressBigDecimal+  "%)";
+			progressBigDecimal = progressBigDecimal
+					.multiply(new BigDecimal(100));
+			return entry.getName() + " (" + progressBigDecimal + "%)";
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
@@ -55,6 +61,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 			return new Object[0];
 		}
 	};
+
 	private IWorkbenchAdapter messageHistoryAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
 			return null;
@@ -69,7 +76,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public Object[] getChildren(Object o) {
-			return ((FIXMessageHistory)o).getHistory();
+			return ((FIXMessageHistory) o).getHistory();
 		}
 	};
 
@@ -104,11 +111,111 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof FIXMessageHistory.MessageHolder)
 			return messageAdapter;
+		if (adapterType == IWorkbenchAdapter.class
+				&& adaptableObject instanceof FilterGroup)
+			return groupAdapter;
+		if (adapterType == IWorkbenchAdapter.class
+				&& adaptableObject instanceof AccountID)
+			return accountAdapter;
+		if (adapterType == IWorkbenchAdapter.class
+				&& adaptableObject instanceof FilterItem)
+			return filterAdapter;
+		if (adapterType == IWorkbenchAdapter.class
+				&& adaptableObject instanceof Security)
+			return securityAdapter;
+
 		return null;
 	}
 
 	public Class[] getAdapterList() {
 		return new Class[] { IWorkbenchAdapter.class };
 	}
+
+	// ///////////////////
+	// Filter stuff
+
+	private IWorkbenchAdapter accountAdapter = new IWorkbenchAdapter() {
+		public Object getParent(Object o) {
+			return FiltersView.getRoot().getChildren()[0];
+		}
+
+		public String getLabel(Object o) {
+			AccountID accountID = (AccountID) o;
+			String nick = accountID.getAccountNickname();
+			if (nick != null && !nick.equals("")) {
+				nick = " (" + nick + ")";
+			} else {
+				nick = "";
+			}
+			return accountID.toString() + nick;
+		}
+
+		public ImageDescriptor getImageDescriptor(Object object) {
+			return AbstractUIPlugin.imageDescriptorFromPlugin(
+					Application.PLUGIN_ID, IImageKeys.ACCOUNT);
+		}
+
+		public Object[] getChildren(Object o) {
+			return new Object[0];
+		}
+	};
+
+	private IWorkbenchAdapter securityAdapter = new IWorkbenchAdapter() {
+		public Object getParent(Object o) {
+			return FiltersView.getRoot().getChildren()[0];
+		}
+
+		public String getLabel(Object o) {
+			Security aSecurity = (Security) o;
+			return aSecurity.getSymbol();
+		}
+
+		public ImageDescriptor getImageDescriptor(Object object) {
+			return AbstractUIPlugin.imageDescriptorFromPlugin(
+					Application.PLUGIN_ID, IImageKeys.EQUITY);
+		}
+
+		public Object[] getChildren(Object o) {
+			return new Object[0];
+		}
+	};
+
+	private IWorkbenchAdapter filterAdapter = new IWorkbenchAdapter() {
+		public Object getParent(Object o) {
+			return FiltersView.getRoot().getChildren()[1];
+		}
+
+		public String getLabel(Object o) {
+			FilterItem item = (FilterItem) o;
+			return item.getName();
+		}
+
+		public ImageDescriptor getImageDescriptor(Object object) {
+			return null;
+		}
+
+		public Object[] getChildren(Object o) {
+			return new Object[0];
+		}
+	};
+
+    private IWorkbenchAdapter groupAdapter = new IWorkbenchAdapter() {
+        public Object getParent(Object o) {
+            return ((FilterGroup)o).getParent();
+        }
+
+        public String getLabel(Object o) {
+            return ((FilterGroup)o).getLabel();
+        }
+
+
+        public ImageDescriptor getImageDescriptor(Object object) {
+        	return ((FilterGroup)object).getImageDescriptor();
+        }
+
+        public Object[] getChildren(Object o) {
+            return ((FilterGroup)o).getChildren();
+        }
+    };
 
 }

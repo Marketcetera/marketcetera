@@ -1,19 +1,22 @@
 /**
  * 
  */
-package org.marketcetera.photon.model;
+package org.marketcetera.photon.views;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IFiltersListener;
+import org.marketcetera.photon.IImageKeys;
 
 
 @ClassVersion("$Id$")
-public class FilterGroup extends PlatformObject{
+public class FilterGroup extends PlatformObject {
     Object mParent;
 
     ArrayList<Object> mChildren = new ArrayList<Object>();
@@ -68,9 +71,9 @@ public class FilterGroup extends PlatformObject{
         return getLabel();
     }
 
-    public ImageDescriptor getImageDescriptor(Object object) {
-        // TODO Auto-generated method stub
-        return null;
+    public ImageDescriptor getImageDescriptor() {
+		return AbstractUIPlugin.imageDescriptorFromPlugin(
+				Application.PLUGIN_ID, IImageKeys.FILTER);
     }
 
 }

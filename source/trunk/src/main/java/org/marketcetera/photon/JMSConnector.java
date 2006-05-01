@@ -11,7 +11,7 @@ import org.marketcetera.jms.JMSAdapter;
 
 public class JMSConnector implements FeedComponent {
 
-	private static final String JMS_CONNECTOR_ID = "JMS";
+	public static final String JMS_CONNECTOR_ID = "Message Queue";
 
 	private JMSAdapter adapter;
 

@@ -33,8 +33,8 @@ public class PositionEntry extends PositionProgress {
 	 */
 	@Override
 	public double getProgress() {
-		BigDecimal result = BigDecimalUtils.ZERO;
-		if (mQuantity.compareTo(BigDecimalUtils.ZERO)> 0){
+		BigDecimal result = BigDecimal.ZERO;
+		if (mQuantity.compareTo(BigDecimal.ZERO)> 0){
 			result = mCumQty.divide(mQuantity);
 		}
 		result.round(new MathContext(2, RoundingMode.HALF_UP));
@@ -107,10 +107,10 @@ public class PositionEntry extends PositionProgress {
         mIsMarket = isMarket;
 
         mLeavesQty = qty;
-        mCumQty = BigDecimalUtils.ZERO;
-        mAvgPx = BigDecimalUtils.ZERO;
-        mLastQty = BigDecimalUtils.ZERO;
-        mLastPrice = BigDecimalUtils.ZERO;
+        mCumQty = BigDecimal.ZERO;
+        mAvgPx = BigDecimal.ZERO;
+        mLastQty = BigDecimal.ZERO;
+        mLastPrice = BigDecimal.ZERO;
     }
 
     public InternalID getInternalID() {

@@ -40,6 +40,10 @@
             class="org.marketcetera.photon.views.GoogleFinanceView"
             id="org.marketcetera.photon.views.GoogleFinanceView"
             name="Google Finance"/>
+      <view
+            class="org.marketcetera.photon.views.FiltersView"
+            id="org.marketcetera.photon.views.FiltersView"
+            name="Order Filters"/>
   </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

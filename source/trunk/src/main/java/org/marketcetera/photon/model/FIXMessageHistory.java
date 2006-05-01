@@ -13,6 +13,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
+import quickfix.field.LastQty;
 
 public class FIXMessageHistory extends PlatformObject {
 
@@ -84,7 +85,27 @@ public class FIXMessageHistory extends PlatformObject {
 		}
 		return messages;
 	}
-
+	
+	public Object [] getFills() {
+		ArrayList<Message> messages = new ArrayList<Message>();
+		for (MessageHolder holder : messageList) {
+			if (holder instanceof IncomingMessageHolder) {
+				IncomingMessageHolder inHolder = (IncomingMessageHolder) holder;
+				Message message = inHolder.getMessage();
+				try {
+					// NOTE: generally you should get this field as
+					// a BigDecimal, but because we're just comparing
+					// to zero, it's ok
+					if (message.getDouble(LastQty.FIELD) > 0){
+						messages.add(message);
+					}
+				} catch (FieldNotFound e) {
+					// do nothing
+				}
+			}
+		}
+		return messages.toArray();
+	}
 	public void addFIXMessageListener(IFIXMessageListener listener) {
 		if (listeners == null)
 			listeners = new ListenerList();
@@ -117,5 +138,9 @@ public class FIXMessageHistory extends PlatformObject {
 			IFIXMessageListener listener = (IFIXMessageListener) rls[i];
 			listener.incomingMessage(message);
 		}
+	}
+
+	public int size() {
+		return messageList.size();
 	}
 }
