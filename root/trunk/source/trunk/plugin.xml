@@ -118,11 +118,23 @@
          point="org.eclipse.ui.editors">
       <editor
             class="org.marketcetera.photon.editors.OrderHistoryEditor"
-            contributorClass="org.marketcetera.photon.editors.OrderHistoryEditorContributor"
             extensions="log"
             icon="icons/sample.gif"
             id="org.marketcetera.photon.editors.OrderHistoryEditor"
             name="Order History Editor"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         <objectContribution
+         	adaptable="false"
+         	id="org.marketcetera.hyperbola.objectContribution1"
+         	objectClass="org.marketcetera.photon.model.MessageHolder">
+         	<action
+         		class="org.marketcetera.photon.actions.CancelOrderAction"
+         		icon="icons/silk/cancel.png"
+         		id="org.marketcetera.photon.actions.action1"
+         		label="&amp;Cancel order"/>
+         </objectContribution>
    </extension>
 
 </plugin>

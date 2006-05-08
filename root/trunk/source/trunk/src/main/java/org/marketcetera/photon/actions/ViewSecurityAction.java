@@ -11,11 +11,15 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.views.GoogleFinanceView;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.Symbol;
 
 public class ViewSecurityAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
@@ -30,8 +34,7 @@ public class ViewSecurityAction extends Action implements ISelectionListener,
 		setId(ID);
 		setText("Open &Finance Page");
 		setToolTipText("Google Finance page for selected security");
-		setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.VIEW_SECURITY));
+		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.VIEW_SECURITY));
 		window.getSelectionService().addSelectionListener(this);
 	}
 
@@ -42,8 +45,11 @@ public class ViewSecurityAction extends Action implements ISelectionListener,
 	public void selectionChanged(IWorkbenchPart part, ISelection incoming) {
 		if (incoming instanceof IStructuredSelection) {
 			selection = (IStructuredSelection) incoming;
+			Object firstElement = selection.getFirstElement();
 			setEnabled(selection.size() == 1
-					&& selection.getFirstElement() instanceof PositionEntry);
+					&& (firstElement instanceof PositionEntry||
+					firstElement instanceof Message ||
+					firstElement instanceof MessageHolder));
 		} else {
 			// Other selections, for example containing text or of other kinds.
 			setEnabled(false);
@@ -51,17 +57,39 @@ public class ViewSecurityAction extends Action implements ISelectionListener,
 	}
 
 	public void run() {
+		if (selection == null){
+			return;
+		}
 		try {
 			Object firstElement = selection.getFirstElement();
+			String symbol = null;
+			
 			if (firstElement instanceof PositionEntry) {
 				PositionEntry pos = (PositionEntry) firstElement;
+				symbol = pos.getSymbol();
+			} else if (firstElement instanceof Message) {
+				Message message = (Message) firstElement;
+				try {
+					symbol = message.getString(Symbol.FIELD);
+				} catch (FieldNotFound e) {
+					// TODO Auto-generated catch block
+				}
+			} else if (firstElement instanceof MessageHolder) {
+				MessageHolder holder = (MessageHolder) firstElement;
+				try {
+					symbol = holder.getMessage().getString(Symbol.FIELD);
+				} catch (FieldNotFound e) {
+					// TODO Auto-generated catch block
+				}
+			}
+			if (symbol != null){
 				IWorkbenchPage page = window.getActivePage();
 				page.showView(GoogleFinanceView.ID);
 				IViewReference[] viewReferences = page.getViewReferences();
 				for (IViewReference reference : viewReferences) {
 					if (GoogleFinanceView.ID.equals(reference.getId())) {
 						IViewPart view = reference.getView(true);
-						((GoogleFinanceView) view).browseTo(pos.getSymbol());
+						((GoogleFinanceView) view).browseTo(symbol);
 					}
 				}
 			}

@@ -8,7 +8,11 @@ import junit.framework.TestCase;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.Message;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 
@@ -40,21 +44,22 @@ public class PortfolioTest extends TestCase {
 	public void testGetProgress() {
 		Portfolio port = new Portfolio(null, PORTFOLIO_NAME);
 		PositionEntry entry = new PositionEntry(port, "NAME", new InternalID(
-				"1234"), OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(
-				1000), "IBM", new BigDecimal("12.3"), false, new AccountID(
-				"ACCT"), new Date());
-		entry.setCumQty(new BigDecimal(500));
-
+				"1234"));
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
+		entry.addIncomingMessage(aMessage);
+		
 		assertEquals(.5, entry.getProgress(), .001);
 		assertEquals(.5, port.getProgress(), .001);
 
-		PositionEntry entry2 = new PositionEntry(port, "NAME", new InternalID(
-				"1234"), OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(
-				5000), "IBM", new BigDecimal("12.3"), false, new AccountID(
-				"ACCT"), new Date());
-		entry2.setCumQty(new BigDecimal(500));
-		assertEquals(.1, entry2.getProgress(), .001);
-		assertEquals(.3, port.getProgress(), .001);
+		Message aMessage2 = FIXMessageUtil.newExecutionReport(new InternalID("9876"), new InternalID("876"), "567", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
+		entry.addIncomingMessage(aMessage2);
+
+		assertEquals(.5, entry.getProgress(), .001);
+		assertEquals(.5, port.getProgress(), .001);
 	}
 
 	/*
@@ -64,10 +69,12 @@ public class PortfolioTest extends TestCase {
 	public void testAddEntry() {
 		Portfolio port = new Portfolio(null, PORTFOLIO_NAME);
 		PositionEntry entry = new PositionEntry(null, "NAME", new InternalID(
-				"1234"), OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(
-				1000), "IBM", new BigDecimal("12.3"), false, new AccountID(
-				"ACCT"), new Date());
-		entry.setCumQty(new BigDecimal(500));
+				"1234"));
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
+		entry.addIncomingMessage(aMessage);
+
 		port.addEntry(entry);
 		assertEquals(.5, port.getProgress(), .001);
 	}
@@ -79,10 +86,11 @@ public class PortfolioTest extends TestCase {
 	public void testRemoveEntry() {
 		Portfolio port = new Portfolio(null, PORTFOLIO_NAME);
 		PositionEntry entry = new PositionEntry(null, "NAME", new InternalID(
-				"1234"), OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(
-				1000), "IBM", new BigDecimal("12.3"), false, new AccountID(
-				"ACCT"), new Date());
-		entry.setCumQty(new BigDecimal(500));
+				"1234"));
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
+		entry.addIncomingMessage(aMessage);
 		port.addEntry(entry);
 		port.removeEntry(entry);
 		assertEquals(0.0, port.getProgress(), .001);
@@ -103,10 +111,12 @@ public class PortfolioTest extends TestCase {
 			IllegalAccessException {
 		Portfolio port = new Portfolio(null, PORTFOLIO_NAME);
 		PositionEntry entry = new PositionEntry(null, "NAME", new InternalID(
-				"1234"), OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(
-				1000), "IBM", new BigDecimal("12.3"), false, new AccountID(
-				"ACCT"), new Date());
-		entry.setCumQty(new BigDecimal(500));
+				"1234"));
+		
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
+		entry.addIncomingMessage(aMessage);
 
 		IPortfolioListener portfolioListener = new IPortfolioListener() {
 			public Portfolio changedPortfolio;
@@ -131,7 +141,6 @@ public class PortfolioTest extends TestCase {
 		assertEquals(port, violator.getField("changedPortfolio",
 				portfolioListener));
 
-		entry.setCumQty(new BigDecimal(800));
 		port.updateEntry(entry);
 
 		assertEquals(entry, violator.getField("changedProgress",
@@ -149,10 +158,11 @@ public class PortfolioTest extends TestCase {
 			IllegalAccessException {
 		Portfolio port = new Portfolio(null, PORTFOLIO_NAME);
 		PositionEntry entry = new PositionEntry(null, "NAME", new InternalID(
-				"1234"), OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(
-				1000), "IBM", new BigDecimal("12.3"), false, new AccountID(
-				"ACCT"), new Date());
-		entry.setCumQty(new BigDecimal(500));
+				"1234"));
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
+		entry.addIncomingMessage(aMessage);
 
 		IPortfolioListener portfolioListener = new IPortfolioListener() {
 			public Portfolio changedPortfolio;

@@ -7,11 +7,11 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 
 
-class DebugConsoleAppender extends AppenderSkeleton {
-	private DebugConsole console;
+class PhotonConsoleAppender extends AppenderSkeleton {
+	private MainConsole console;
 	private Display display;
 
-	DebugConsoleAppender(Display pDisplay, DebugConsole pConsole) {
+	PhotonConsoleAppender(Display pDisplay, MainConsole pConsole) {
     	console = pConsole;
     	display = pDisplay;
     }

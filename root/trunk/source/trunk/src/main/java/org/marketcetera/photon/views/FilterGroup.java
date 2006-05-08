@@ -13,6 +13,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IFiltersListener;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.PhotonPlugin;
 
 
 @ClassVersion("$Id$")
@@ -72,8 +73,7 @@ public class FilterGroup extends PlatformObject {
     }
 
     public ImageDescriptor getImageDescriptor() {
-		return AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.FILTER);
+		return PhotonPlugin.getImageDescriptor(IImageKeys.FILTER);
     }
 
 }

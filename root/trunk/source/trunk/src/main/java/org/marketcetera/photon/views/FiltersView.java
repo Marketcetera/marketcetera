@@ -15,12 +15,15 @@ import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.Security;
+import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IFiltersListener;
 import org.marketcetera.photon.IOrderActionListener;
 import org.marketcetera.photon.PhotonAdapterFactory;
-import org.marketcetera.quickfix.FIXField2StringConverter;
-import org.marketcetera.symbology.Exchange;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.Account;
 import quickfix.field.OrdStatus;
 import quickfix.field.Symbol;
 
@@ -64,6 +67,8 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
                         refresh();
                     };
                 });
+        Application.getOrderManager().addOrderActionListener(this);
+        
 
     }
 
@@ -71,25 +76,23 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     {
         mAccountFilterGroup = new FilterGroup(sRoot, "Accounts");
         mSecurityFilterGroup = new FilterGroup(sRoot, "Securities");
-        mSecurityFilterGroup.addChild(new FIXFilterItem<String>(Symbol.FIELD, "MSFT", "MSFT"));
-
 
         mStatusFilterGroup = new FilterGroup(sRoot, "Status");
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.NEW, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.NEW)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PARTIALLY_FILLED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PARTIALLY_FILLED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.FILLED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.FILLED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.DONE_FOR_DAY, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.DONE_FOR_DAY)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.CANCELED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.CANCELED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.REPLACED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.REPLACED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PENDING_CANCEL, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PENDING_CANCEL)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.STOPPED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.STOPPED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.REJECTED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.REJECTED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.SUSPENDED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.SUSPENDED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PENDING_NEW, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PENDING_NEW)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.CALCULATED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.CALCULATED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.EXPIRED, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.EXPIRED)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.ACCEPTED_FOR_BIDDING, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.ACCEPTED_FOR_BIDDING)));
-        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PENDING_REPLACE, FIXField2StringConverter.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PENDING_REPLACE)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.NEW, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.NEW)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PARTIALLY_FILLED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PARTIALLY_FILLED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.FILLED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.FILLED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.DONE_FOR_DAY, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.DONE_FOR_DAY)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.CANCELED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.CANCELED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.REPLACED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.REPLACED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PENDING_CANCEL, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PENDING_CANCEL)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.STOPPED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.STOPPED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.REJECTED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.REJECTED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.SUSPENDED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.SUSPENDED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PENDING_NEW, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PENDING_NEW)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.CALCULATED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.CALCULATED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.EXPIRED, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.EXPIRED)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.ACCEPTED_FOR_BIDDING, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.ACCEPTED_FOR_BIDDING)));
+        mStatusFilterGroup.addChild(new FIXFilterItem<Character>(OrdStatus.FIELD, OrdStatus.PENDING_REPLACE, FIXDataDictionaryManager.getHumanFieldValue(OrdStatus.FIELD, ""+OrdStatus.PENDING_REPLACE)));
 
         sRoot.addChild(mAccountFilterGroup);
         sRoot.addChild(mSecurityFilterGroup);
@@ -128,9 +131,19 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
         return sRoot;
     }
 
-    public void orderActionTaken(String symbol, Exchange exchange, String currency, AccountID id) {
-        if (symbol!= null) addSecurity(new Security(symbol, null));
-        if (id != null) addAccount(id);
+    public void orderActionTaken(Message message) {
+    	try {
+			String accountString = message.getString(Account.FIELD);
+			mAccountFilterGroup.addChild(new FIXFilterItem<String>(Account.FIELD, accountString, accountString));
+    	} catch (FieldNotFound e) {
+			// do nothing
+		}
+    	try {
+			String symbolString = message.getString(Symbol.FIELD);
+			mSecurityFilterGroup.addChild(new FIXFilterItem<String>(Symbol.FIELD, symbolString, symbolString));
+		} catch (FieldNotFound e) {
+			// do nothing
+		}
     }
 
 }

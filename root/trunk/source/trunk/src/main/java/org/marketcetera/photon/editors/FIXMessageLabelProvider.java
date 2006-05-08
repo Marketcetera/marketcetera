@@ -7,10 +7,11 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IImageKeys;
-import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.model.IncomingMessageHolder;
+import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.model.OutgoingMessageHolder;
 
 import quickfix.ConfigError;
 import quickfix.DataDictionary;
@@ -43,17 +44,15 @@ public class FIXMessageLabelProvider extends WorkbenchLabelProvider implements
 				fieldMap.put(dataDictionary.getFieldName(fieldNum), fieldNum);
 		}
 
-		ARROW_RIGHT = AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.ARROW_RIGHT).createImage();
-		ARROW_LEFT = AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.ARROW_LEFT).createImage();
+		ARROW_RIGHT = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_RIGHT).createImage();
+		ARROW_LEFT = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_LEFT).createImage();
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
 		if (columnIndex == 0) {
-			if (element instanceof FIXMessageHistory.IncomingMessageHolder) {
+			if (element instanceof IncomingMessageHolder) {
 				return ARROW_RIGHT;
-			} else if (element instanceof FIXMessageHistory.OutgoingMessageHolder) {
+			} else if (element instanceof OutgoingMessageHolder) {
 				return ARROW_LEFT;
 			}
 		}
@@ -62,8 +61,8 @@ public class FIXMessageLabelProvider extends WorkbenchLabelProvider implements
 
 	public String getColumnText(Object element, int columnIndex) {
 		Message fixMessage;
-		if (element instanceof FIXMessageHistory.MessageHolder) {
-			FIXMessageHistory.MessageHolder holder = (FIXMessageHistory.MessageHolder) element;
+		if (element instanceof MessageHolder) {
+			MessageHolder holder = (MessageHolder) element;
 			fixMessage = holder.getMessage();
 			if (columnIndex == 0) {
 				return null;

@@ -12,34 +12,14 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
 import quickfix.field.LastQty;
+import quickfix.field.OrderQty;
+import quickfix.field.Symbol;
+import quickfix.fix42.ExecutionReport;
 
 public class FIXMessageHistory extends PlatformObject {
-
-	public class MessageHolder {
-		Message message;
-
-		public MessageHolder(Message message) {
-			this.message = message;
-		}
-
-		public Message getMessage() {
-			return message;
-		}
-	}
-
-	public class IncomingMessageHolder extends MessageHolder {
-		public IncomingMessageHolder(Message message) {
-			super(message);
-		}
-	}
-
-	public class OutgoingMessageHolder extends MessageHolder {
-		public OutgoingMessageHolder(Message message) {
-			super(message);
-		}
-	}
 
 	List<MessageHolder> messageList;
 	private ListenerList listeners;
@@ -85,6 +65,8 @@ public class FIXMessageHistory extends PlatformObject {
 		}
 		return messages;
 	}
+	
+
 	
 	public Object [] getFills() {
 		ArrayList<Message> messages = new ArrayList<Message>();

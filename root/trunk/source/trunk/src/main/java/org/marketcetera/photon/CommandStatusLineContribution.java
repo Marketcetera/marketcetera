@@ -26,7 +26,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 
 	private Text textArea;
 
-	private Logger mInternalDebugLogger = Application.getDebugConsoleLogger();
+	private Logger mInternalDebugLogger = Application.getMainConsoleLogger();
 	
 	private String text = ""; //$NON-NLS-1$
 

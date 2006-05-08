@@ -10,6 +10,7 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.editors.OrderHistoryInput;
 import org.marketcetera.photon.editors.OrderHistoryEditor;
 
@@ -23,7 +24,7 @@ public class OrderHistoryAction extends Action implements IWorkbenchAction {
 		setId(ID);
 		setText("&Order History");
 		setToolTipText("Open the order history editor");
-		setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(Application.PLUGIN_ID, IImageKeys.ORDER_HISTORY));
+		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.ORDER_HISTORY));
 	}
 	public void dispose() {
 		// TODO Auto-generated method stub

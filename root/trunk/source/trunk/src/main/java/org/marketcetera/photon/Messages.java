@@ -27,8 +27,6 @@ public class Messages extends NLS {
 
 	public static String ApplicationActionBarAdvisor_HelpMenuName;
 
-	public static String DebugConsole_Name;
-
 	public static String MainConsole_Name;
 
 	public static String ApplicationActionBarAdvisor_OpenPerspectiveMenuName;

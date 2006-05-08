@@ -6,8 +6,21 @@ import java.math.RoundingMode;
 import java.util.Date;
 
 import org.marketcetera.core.AccountID;
-import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.InternalID;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LeavesQty;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrderQty;
+import quickfix.field.Side;
+import quickfix.field.TransactTime;
 
 public class PositionEntry extends PositionProgress {
 	private final String name;
@@ -34,38 +47,28 @@ public class PositionEntry extends PositionProgress {
 	@Override
 	public double getProgress() {
 		BigDecimal result = BigDecimal.ZERO;
-		if (mQuantity.compareTo(BigDecimal.ZERO)> 0){
-			result = mCumQty.divide(mQuantity);
+		BigDecimal targetQuantity = getTargetQuantity();
+		if (targetQuantity.compareTo(BigDecimal.ZERO) > 0){
+			result = getCumQty().divide(targetQuantity);
 		}
 		result.round(new MathContext(2, RoundingMode.HALF_UP));
 		return result.doubleValue();
 	}
 	
-    private final InternalID mInternalID;
-    private final String mSymbol;
-    private final char mSide;
-    private final BigDecimal mQuantity;
-    private char mOrdStatus;
-    private BigDecimal mLeavesQty;
-    private BigDecimal mCumQty;
-    private final BigDecimal mOrderPrice;
-    private BigDecimal mAvgPx;
-    private final Date mStartTime;
-    private Date mLastFillTime;
-    private final AccountID mAccountID;
-    private boolean mIsMarket;
-    private BigDecimal mLastQty;
-    private BigDecimal mLastPrice;
-    private String mLastMarket;
-    private String mCounterpartyID;
+    private final InternalID internalID;
+    private final String symbol;
+    private final char side;
+    private final Date startTime;
+    private final AccountID accountID;
+    
+    private FIXMessageHistory history;
 
 
     public PositionEntry(
-    		Portfolio portfolio, String name,
+    		Portfolio portfolio, String symbol,
             InternalID internal)
     {
-    	this(portfolio, name, internal,(char)0, (char)0, BigDecimal.ZERO, name, BigDecimal.ZERO,
-    			false, null, new Date());
+    	this(portfolio, symbol, internal, Side.UNDISCLOSED, symbol, null, new Date());
     }
 
 	/**
@@ -81,180 +84,226 @@ public class PositionEntry extends PositionProgress {
      * @param timeReceived
      */
     public PositionEntry(
-    		Portfolio portfolio, String name,
+    		Portfolio portfolio, 
+    		String name,
             InternalID internal,
-            char ordStatus,
             char side,
-            BigDecimal qty,
             String symbol,
-            BigDecimal price,
-            boolean isMarket,
             AccountID accountID,
-            Date timeReceived
+            Date startTime
             ) {
 		this.portfolio = portfolio;
-		if (this.portfolio != null) this.portfolio.addEntry(this);
 		this.name = name;
 
-		mInternalID = internal;
-        mOrdStatus = ordStatus;
-        mSymbol = symbol;
-        mSide = side;
-        mQuantity = qty;
-        mOrderPrice = price;
-        mAccountID = accountID;
-        mStartTime = timeReceived;
-        mIsMarket = isMarket;
-
-        mLeavesQty = qty;
-        mCumQty = BigDecimal.ZERO;
-        mAvgPx = BigDecimal.ZERO;
-        mLastQty = BigDecimal.ZERO;
-        mLastPrice = BigDecimal.ZERO;
+		this.internalID = internal;
+		this.symbol = symbol;
+        this.side = side;
+        this.accountID = accountID;
+        this.startTime = startTime;
+        
+        history = new FIXMessageHistory();
     }
 
     public InternalID getInternalID() {
-        return mInternalID;
+        return internalID;
     }
 
     public char getOrdStatus() {
-        return mOrdStatus;
+        try {
+			Message lastExecutionReport = getLastExecutionReport();
+			if (lastExecutionReport == null) {
+				return '\0';
+			} else {
+				return lastExecutionReport.getChar(OrdStatus.FIELD);
+			}
+		} catch (FieldNotFound e) {
+			return '\0';
+		}
+	}
+
+    private Message getLastExecutionReport() {
+		Object[] latestExecutionReports = history.getLatestExecutionReports();
+		if (latestExecutionReports.length > 0){
+			return (Message)latestExecutionReports[0];
+		} else {
+			return null;
+		}
+	}
+    
+    public Message getLastMessageForClOrdID(InternalID clOrdID)
+    {
+    	Object[] theHistory = history.getHistory();
+    	for (int i = theHistory.length -1; i >=0 ; i--)
+    	{
+    		MessageHolder aMessageHolder = (MessageHolder) theHistory[i];
+    		Message message = aMessageHolder.getMessage();
+			String clOrdIDString = clOrdID.toString();
+			try {
+				if (message.getString(ClOrdID.FIELD).equals(clOrdIDString)){
+					return message;
+				}
+			} catch (FieldNotFound e) {
+			}
+    	}
+    	return null;
     }
 
-    public void setOrdStatus(char ordStatus) {
-        this.mOrdStatus = ordStatus;
-    }
 
     public String getSymbol() {
-        return mSymbol;
+        return symbol;
     }
 
     public char getSide() {
-        return mSide;
+        return side;
     }
 
-    public BigDecimal getQuantity() {
-        return mQuantity;
+    public BigDecimal getTargetQuantity() {
+    	Object [] messages = history.getLatestExecutionReports();
+    	BigDecimal totalTarget = BigDecimal.ZERO;
+    	for (Object aMessageObj : messages) {
+    		Message aMessage = (Message) aMessageObj;
+    		try {
+	    		BigDecimal orderQty = new BigDecimal(aMessage.getString(OrderQty.FIELD));
+	    		totalTarget = totalTarget.add(orderQty);
+    		} catch (FieldNotFound e) {
+    		}
+    	}
+    	return totalTarget;
     }
 
     public BigDecimal getLeavesQty() {
-        return mLeavesQty;
-    }
-
-    public void setLeavesQty(BigDecimal leavesQty) {
-        this.mLeavesQty = leavesQty;
+    	Object [] messages = history.getLatestExecutionReports();
+    	BigDecimal totalLeaves = BigDecimal.ZERO;
+    	for (Object aMessageObj : messages) {
+    		Message aMessage = (Message) aMessageObj;
+    		try {
+	    		BigDecimal cumQty = new BigDecimal(aMessage.getString(LeavesQty.FIELD));
+	    		totalLeaves = totalLeaves.add(cumQty);
+    		} catch (FieldNotFound e) {
+    		}
+    	}
+    	return totalLeaves;
     }
 
     public BigDecimal getCumQty() {
-        return mCumQty;
-    }
-
-    public void setCumQty(BigDecimal cumQty) {
-        this.mCumQty = cumQty;
+    	Object [] messages = history.getLatestExecutionReports();
+    	BigDecimal totalShares = BigDecimal.ZERO;
+    	for (Object aMessageObj : messages) {
+    		Message aMessage = (Message) aMessageObj;
+    		try {
+	    		BigDecimal cumQty = new BigDecimal(aMessage.getString(CumQty.FIELD));
+	    		totalShares = totalShares.add(cumQty);
+    		} catch (FieldNotFound e) {
+    		}
+    	}
+    	return totalShares;
     }
 
     public BigDecimal getAvgPrice() {
-        return mAvgPx;
-    }
-
-    public void setAvgPrice(BigDecimal avgPx) {
-        this.mAvgPx = avgPx;
+    	Object [] messages = history.getLatestExecutionReports();
+    	BigDecimal totalShares = BigDecimal.ZERO;
+    	BigDecimal totalDollarVolume = BigDecimal.ZERO;
+    	for (Object aMessageObj : messages) {
+    		Message aMessage = (Message) aMessageObj;
+    		try {
+	    		BigDecimal cumQty = new BigDecimal(aMessage.getString(CumQty.FIELD));
+	    		BigDecimal avgPrice = new BigDecimal(aMessage.getString(AvgPx.FIELD));
+	    		totalShares = totalShares.add(cumQty);
+	    		totalDollarVolume = totalDollarVolume.add(cumQty.multiply(avgPrice));
+    		} catch (FieldNotFound e) {
+    		}
+    	}
+    	if (BigDecimal.ZERO.compareTo(totalShares) != 0)
+    	{
+    		return totalDollarVolume.divide(totalShares, MathContext.DECIMAL32);
+    	} else { 
+    		return BigDecimal.ZERO;
+    	}
     }
 
     public Date getStartTime() {
-        return mStartTime;
+        return startTime;
     }
 
     public Date getLastFillTime() {
-        return mLastFillTime;
+        try {
+			Message lastExecutionReport = getLastExecutionReport();
+			return lastExecutionReport == null ? null : lastExecutionReport.getUtcTimeStamp(TransactTime.FIELD);
+		} catch (FieldNotFound e) {
+			return null;
+		}
     }
 
-    public void setLastFillTime(Date lastFillTime) {
-        this.mLastFillTime = lastFillTime;
-    }
-
-
-    public void update(BigDecimal cumQty, BigDecimal avgPrice, BigDecimal leavesQty, char ordStatus, Date lastFillTime) {
-        setCumQty(cumQty);
-        setAvgPrice(avgPrice);
-        setLeavesQty(leavesQty);
-        setOrdStatus(ordStatus);
-        setLastFillTime(lastFillTime);
-    }
-
-    public void updateLast(BigDecimal lastQuantity, BigDecimal lastPrice, String lastMarket)
-    {
-        setLastQty(lastQuantity);
-        setLastPrice(lastPrice);
-        setLastMarket(lastMarket);
-    }
-
-    public final static double newAveragePriceFill(int existingQty, double existingAvgPrice,
-                                                   int newFillQty, double newFillPrice) {
-        long newTotal = existingQty + newFillQty;
-        double newAverage = ((existingQty * existingAvgPrice)
-                             + (newFillQty * newFillPrice) ) / newTotal;
-        return newAverage;
-    }
-
-    public final static double newAveragePriceBust(int existingQty, double existingAvgPrice,
-                                                   int newBustQty, double newBustPrice) {
-        long newTotal = existingQty - newBustQty;
-        double newAverage = ((existingQty*existingAvgPrice) - (newBustQty*newBustPrice)) / newTotal;
-        return newAverage;
-    }
 
     public AccountID getAccountID() {
-        return mAccountID;
-    }
-
-    public BigDecimal getOrderPrice() {
-        return mOrderPrice;
-    }
-
-    public boolean isMarket() {
-        return mIsMarket;
+        return accountID;
     }
 
     public BigDecimal getLastQty() {
-        return mLastQty;
-    }
-
-    public void setLastQty(BigDecimal lastQty) {
-        this.mLastQty = lastQty;
+        try {
+			return new BigDecimal(getLastExecutionReport().getString(LastQty.FIELD));
+		} catch (FieldNotFound e) {
+			return BigDecimal.ZERO;
+		}
     }
 
     public BigDecimal getLastPrice() {
-        return mLastPrice;
-    }
-
-    public void setLastPrice(BigDecimal lastPrice) {
-        this.mLastPrice = lastPrice;
+        try {
+			return new BigDecimal(getLastExecutionReport().getString(LastPx.FIELD));
+		} catch (FieldNotFound e) {
+			return BigDecimal.ZERO;
+		}
     }
 
     public String getLastMarket() {
-        return mLastMarket;
+        try {
+			return getLastExecutionReport().getString(LastMkt.FIELD);
+		} catch (FieldNotFound e) {
+			return "";
+		}
     }
 
-    public void setLastMarket(String lastMarket) {
-        this.mLastMarket = lastMarket;
-    }
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.model.FIXMessageHistory#addIncomingMessage(quickfix.Message)
+	 */
+	public void addIncomingMessage(Message fixMessage) {
+		history.addIncomingMessage(fixMessage);
+	}
 
-    public String getCounterpartyID() {
-        return mCounterpartyID;
-    }
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.model.FIXMessageHistory#addOutgoingMessage(quickfix.Message)
+	 */
+	public void addOutgoingMessage(Message fixMessage) {
+		history.addOutgoingMessage(fixMessage);
+	}
 
-    public void setCounterpartyID(String counterpartyID) {
-        this.mCounterpartyID = counterpartyID;
-    }
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object arg0) {
+		if (arg0 instanceof PositionEntry) {
+			PositionEntry other = (PositionEntry) arg0;
+			return safeEquals(this.symbol, other.symbol) && safeEquals(this.accountID, other.accountID) &&
+				safeEquals(this.side, other.side);
+		} else {
+			return false;
+		}
+	}
 
-    protected Object clone() throws CloneNotSupportedException {
+	private boolean safeEquals(Object ptr1, Object ptr2){
+		if (ptr1 == null){
+			return ptr2 == null;
+		} else {
+			return ptr1.equals(ptr2);
+		}
+	}
 
-        Object retValue;
-
-        retValue = super.clone();
-        return retValue;
-    }
-
+	/**
+	 * @return Returns the history.
+	 */
+	public FIXMessageHistory getHistory() {
+		return history;
+	}
 
 }
