@@ -4,37 +4,58 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
-import org.marketcetera.photon.parser.Parser;
+
 
 public class MainConsole extends MessageConsole {
 	
-	Parser commandParser = new Parser();
-	private MessageConsoleStream userMessageStream;
-	private MessageConsoleStream appMessageStream;
-	
+	private MessageConsoleStream errorMessageStream;
+	private MessageConsoleStream warnMessageStream;
+	private MessageConsoleStream infoMessageStream;
+	private MessageConsoleStream debugMessageStream;
+
 	public MainConsole() {
 		super(Messages.MainConsole_Name, null);
 		Display display = Display.getCurrent();
-		userMessageStream = newMessageStream();
-		userMessageStream.setColor(display.getSystemColor(SWT.COLOR_BLACK));
-		appMessageStream = newMessageStream();
-		appMessageStream.setColor(display.getSystemColor(SWT.COLOR_BLUE));
+		errorMessageStream = newMessageStream();
+		errorMessageStream.setColor(display.getSystemColor(SWT.COLOR_RED));
+		warnMessageStream = newMessageStream();
+		warnMessageStream.setColor(display.getSystemColor(SWT.COLOR_DARK_YELLOW));
+		infoMessageStream = newMessageStream();
+		infoMessageStream.setColor(display.getSystemColor(SWT.COLOR_BLACK));
+		debugMessageStream = newMessageStream();
+		debugMessageStream.setColor(display.getSystemColor(SWT.COLOR_DARK_GRAY));
 	}
 
-	public void userMessagePrintln(String userMessage)
+	protected void dispose()
 	{
-		userMessageStream.println(userMessage);
+		
 	}
-	public void appMessagePrintln(String appMessage)
-	{
-		userMessageStream.println(appMessage);
+
+	/**
+	 * @return Returns the debugMessageStream.
+	 */
+	public MessageConsoleStream getDebugMessageStream() {
+		return debugMessageStream;
 	}
-	public void userMessagePrint(String userMessage)
-	{
-		userMessageStream.print(userMessage);
+
+	/**
+	 * @return Returns the errorMessageStream.
+	 */
+	public MessageConsoleStream getErrorMessageStream() {
+		return errorMessageStream;
 	}
-	public void appMessagePrint(String appMessage)
-	{
-		userMessageStream.print(appMessage);
+
+	/**
+	 * @return Returns the infoMessageStream.
+	 */
+	public MessageConsoleStream getInfoMessageStream() {
+		return infoMessageStream;
 	}
+
+	public MessageConsoleStream getWarnMessageStream() {
+		return warnMessageStream;
+	}
+	
+	
+	
 }

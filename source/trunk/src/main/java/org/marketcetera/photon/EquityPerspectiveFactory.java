@@ -43,6 +43,8 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.3f,
 				editorArea);
+		leftFolder.addPlaceholder(PortfolioView.ID + ":*");
+		leftFolder.addView(PortfolioView.ID);
 		leftFolder.addPlaceholder(FiltersView.ID + ":*");
 		leftFolder.addView(FiltersView.ID);
 
@@ -52,7 +54,6 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 //		rightFolder.addView(StockOrderTicket.ID);
 		rightFolder.addPlaceholder(GoogleFinanceView.ID + ":*");
 		rightFolder.addView(GoogleFinanceView.ID);
-		
 
 		
 	}

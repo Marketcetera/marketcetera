@@ -18,5 +18,18 @@ public class FIXFilterItem<T> extends FilterItem<T> {
 	public ViewerFilter getFilter() {
 		return filter;
 	}
+	
+	public boolean equals(Object obj)
+	{
+		if (obj == null){
+			return false;
+		}
+		
+		if (obj instanceof FIXFilterItem) {
+			FIXFilterItem filt = (FIXFilterItem) obj;
+			return filt.fixField == this.fixField && this.getItem().equals(filt.getItem());
+		}
+		return false;
+	}
 
 }

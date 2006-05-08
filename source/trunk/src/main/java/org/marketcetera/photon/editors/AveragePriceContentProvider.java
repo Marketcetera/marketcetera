@@ -25,13 +25,19 @@ import org.marketcetera.photon.model.FIXMessageHistory;
  * @see IWorkbenchAdapter
  * @since 3.0
  */
-public class FillContentProvider extends AveragePriceContentProvider{
+public class AveragePriceContentProvider implements IStructuredContentProvider{
 
     /**
      * Creates a new workbench content provider.
      *
      */
-    public FillContentProvider() {
+    public AveragePriceContentProvider() {
+    }
+    /* (non-Javadoc)
+     * Method declared on IContentProvider.
+     */
+    public void dispose() {
+        // do nothing
     }
 
 
@@ -42,12 +48,36 @@ public class FillContentProvider extends AveragePriceContentProvider{
     public Object[] getChildren(Object element) {
     	if (element instanceof FIXMessageHistory) {
 			FIXMessageHistory history = (FIXMessageHistory) element;
-			return history.getFills();
+			return history.getLatestExecutionReports();
 		}
     	return new Object[0];
     }
 
+    /* (non-Javadoc)
+     * Method declared on IStructuredContentProvider.
+     */
+    public Object[] getElements(Object element) {
+        return getChildren(element);
+    }
 
+
+    /* (non-Javadoc)
+     * Method declared on ITreeContentProvider.
+     */
+    public boolean hasChildren(Object element) {
+    	if (element instanceof FIXMessageHistory) {
+			FIXMessageHistory history = (FIXMessageHistory) element;
+			return history.size() > 0;
+    	}
+    	return false;
+    }
+
+    /* (non-Javadoc)
+     * Method declared on IContentProvider.
+     */
+    public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+        // do nothing
+    }
 
     
 

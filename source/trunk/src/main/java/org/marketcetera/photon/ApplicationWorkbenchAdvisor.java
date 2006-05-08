@@ -27,7 +27,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	public void initialize(IWorkbenchConfigurer configurer) {
 		configurer.setSaveAndRestore(true);
 		ConsolePlugin.getDefault().getConsoleManager().addConsoles(
-				new IConsole[] { new DebugConsole(), new MainConsole() });
+				new IConsole[] { new MainConsole(), new MainConsole() });
 	}
 
 	

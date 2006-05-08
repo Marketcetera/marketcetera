@@ -6,10 +6,10 @@ import java.math.MathContext;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.Security;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.views.FilterGroup;
@@ -29,8 +29,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return AbstractUIPlugin.imageDescriptorFromPlugin(
-					Application.PLUGIN_ID, IImageKeys.PORTFOLIO);
+			return PhotonPlugin.getImageDescriptor(IImageKeys.PORTFOLIO);
 		}
 
 		public Object[] getChildren(Object o) {
@@ -53,8 +52,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return AbstractUIPlugin.imageDescriptorFromPlugin(
-					Application.PLUGIN_ID, IImageKeys.EQUITY);
+			return PhotonPlugin.getImageDescriptor(IImageKeys.EQUITY);
 		}
 
 		public Object[] getChildren(Object o) {
@@ -109,7 +107,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 				&& adaptableObject instanceof FIXMessageHistory)
 			return messageHistoryAdapter;
 		if (adapterType == IWorkbenchAdapter.class
-				&& adaptableObject instanceof FIXMessageHistory.MessageHolder)
+				&& adaptableObject instanceof MessageHolder)
 			return messageAdapter;
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof FilterGroup)
@@ -151,8 +149,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return AbstractUIPlugin.imageDescriptorFromPlugin(
-					Application.PLUGIN_ID, IImageKeys.ACCOUNT);
+			return PhotonPlugin.getImageDescriptor(IImageKeys.ACCOUNT);
 		}
 
 		public Object[] getChildren(Object o) {
@@ -171,8 +168,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
-			return AbstractUIPlugin.imageDescriptorFromPlugin(
-					Application.PLUGIN_ID, IImageKeys.EQUITY);
+			return PhotonPlugin.getImageDescriptor(IImageKeys.EQUITY);
 		}
 
 		public Object[] getChildren(Object o) {

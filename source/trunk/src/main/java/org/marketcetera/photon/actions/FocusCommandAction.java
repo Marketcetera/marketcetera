@@ -6,10 +6,9 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.CommandStatusLineContribution;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.PhotonPlugin;
 
 public class FocusCommandAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
@@ -26,8 +25,7 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 		setActionDefinitionId(ID);
 		setText("Goto &command input area");
 		setToolTipText("Put the cursor in the command input area");
-		setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
-				Application.PLUGIN_ID, IImageKeys.LIGHTNING));
+		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.LIGHTNING));
 		this.commandInput = commandInput;
 	}
 

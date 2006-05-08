@@ -4,6 +4,7 @@ import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -13,6 +14,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
@@ -24,15 +26,16 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.marketcetera.photon.Application;
+import org.eclipse.ui.part.MultiPageSelectionProvider;
 import org.marketcetera.photon.PhotonAdapterFactory;
+import org.marketcetera.photon.actions.ViewSecurityAction;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IFIXMessageListener;
+import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.views.FilterGroup;
 import org.marketcetera.photon.views.FilterItem;
 
 import quickfix.Message;
-import quickfix.field.Symbol;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -120,7 +123,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		Platform.getAdapterManager().registerAdapters(adapterFactory,
 				FIXMessageHistory.class);
 		Platform.getAdapterManager().registerAdapters(adapterFactory,
-				FIXMessageHistory.MessageHolder.class);
+				MessageHolder.class);
 		Platform.getAdapterManager().registerAdapters(adapterFactory,
 				quickfix.Message.class);
 
@@ -230,7 +233,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
 				averagePriceViewer.getTable().getColumns()));
 		averagePriceViewer
-				.setContentProvider(new ExecutionReportContentProvider());
+				.setContentProvider(new AveragePriceContentProvider());
 	}
 
 	/**
@@ -241,6 +244,19 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		createPage1();
 		createPage2();
 		setFIXMessageHistory(input);
+		makeActions();
+	}
+
+	private void makeActions() {
+		ViewSecurityAction action = new ViewSecurityAction(this.window);
+		MenuManager menuMgr = new MenuManager("orderHistoryPopup");
+		menuMgr.add(action);
+		Menu menu = menuMgr.createContextMenu(messagesViewer.getControl());
+		messagesViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, messagesViewer);
+		getSite().setSelectionProvider(new MultiPageSelectionProvider(this));
+
+	
 	}
 
 	/**
@@ -356,19 +372,19 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 					FilterItem filterItem = (FilterItem) firstElement;
 					setFilter(filterItem.getFilter());
 
-					Application.getDebugConsoleLogger().debug(
-							"Selected" + filterItem.getItem());
+					//Application.getMainConsoleLogger().debug(
+					//		"Selected" + filterItem.getItem());
 				} else if (firstElement instanceof FilterGroup) {
 					resetFilters();
-					Application.getDebugConsoleLogger().debug("Unselected");
+					//Application.getMainConsoleLogger().debug("Unselected");
 				} else {
-					Application.getDebugConsoleLogger().debug(
-							"Structured selection with unknown item.");
+					//Application.getMainConsoleLogger().debug(
+					//		"Structured selection with unknown item.");
 				}
 			}
 		} else {
 			// Other selections, for example containing text or of other kinds.
-			Application.getDebugConsoleLogger().debug("Other selection type");
+			//Application.getMainConsoleLogger().debug("Other selection type");
 		}
 	}
 

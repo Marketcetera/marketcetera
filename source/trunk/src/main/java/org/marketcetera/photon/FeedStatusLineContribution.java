@@ -49,19 +49,16 @@ public class FeedStatusLineContribution extends ContributionItem implements
 			ImageDescriptor descriptor;
 			switch (aStatus) {
 			case AVAILABLE:
-				descriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-						Application.PLUGIN_ID, IImageKeys.STATUS_AVAILABLE);
+				descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_AVAILABLE);
 				break;
 			case ERROR:
-				descriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-						Application.PLUGIN_ID, IImageKeys.STATUS_ERROR);
+				descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_ERROR);
 				break;
 
 			case OFFLINE:
 			case UNKNOWN:
 			default:
-				descriptor = AbstractUIPlugin.imageDescriptorFromPlugin(
-						Application.PLUGIN_ID, IImageKeys.STATUS_OFFLINE);
+				descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
 				break;
 			}
 

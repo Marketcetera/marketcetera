@@ -15,8 +15,9 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.quickfix.ConnectionConstants;
-import org.marketcetera.quickfix.FIXField2StringConverter;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import quickfix.Message;
 
@@ -32,11 +33,12 @@ public class Application implements IPlatformRunnable {
 	private static final String OUTGOING_QUEUE_NAME_DEFAULT = "oms-commands";
 
 
-	public static String DEBUG_CONSOLE_LOGGER_NAME = "debug.console.logger";
-    private static Logger debugConsoleLogger = Logger.getLogger(DEBUG_CONSOLE_LOGGER_NAME);
+	public static String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
+    private static Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
     private static IDFactory idFactory = new InMemoryIDFactory(777);
 	private static OrderManager orderManager;
 	private static JMSConnector jmsConnector;
+	private static Portfolio rootPortfolio;
 	
 	private static FIXMessageHistory fixMessageHistory;
 
@@ -47,12 +49,13 @@ public class Application implements IPlatformRunnable {
 	 */
 	public Object run(Object args) throws Exception {
 		
-		FIXField2StringConverter.loadDictionary(FIXField2StringConverter.FIX_4_2_BEGIN_STRING);
+		FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		
 		fixMessageHistory = new FIXMessageHistory();
         jmsConnector = new JMSConnector();
+        rootPortfolio = new Portfolio(null, "Main Portfolio");
 
-		orderManager = new OrderManager(idFactory);
+		orderManager = new OrderManager(idFactory, rootPortfolio);
 		Display display = PlatformUI.createDisplay();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
@@ -65,9 +68,9 @@ public class Application implements IPlatformRunnable {
 		}
 	}
 
-	public static Logger getDebugConsoleLogger()
+	public static Logger getMainConsoleLogger()
 	{
-		return debugConsoleLogger;
+		return mainConsoleLogger;
 	}
 	
 	public static OrderManager getOrderManager()
@@ -96,7 +99,7 @@ public class Application implements IPlatformRunnable {
 
 			return jmsConnector;
 		} catch (JMSException e) {
-			getDebugConsoleLogger().error("Could not connect to JMS server {"
+			getMainConsoleLogger().error("Could not connect to JMS server {"
 					+ incomingTopicNameString +", "
 					+ outgoingQueueNameString +", "
 					+ contextFactoryString +", "
@@ -122,7 +125,7 @@ public class Application implements IPlatformRunnable {
 			try {
 				jmsConnector.setTopicListener(pJMSListener);
 			} catch (JMSException e) {
-				getDebugConsoleLogger().error("Could not set topic listener");
+				getMainConsoleLogger().error("Could not set topic listener");
 			}
 		}
 		
@@ -142,5 +145,9 @@ public class Application implements IPlatformRunnable {
 
 	public static JMSConnector getJMSConnector() {
 		return jmsConnector;
+	}
+
+	public static Portfolio getRootPortfolio() {
+		return rootPortfolio;
 	}
 }

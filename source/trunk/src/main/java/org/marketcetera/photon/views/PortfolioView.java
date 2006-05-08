@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
@@ -16,12 +17,11 @@ import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.model.PositionProgress;
 
-public class PortfolioView extends ViewPart {
+public class PortfolioView extends ViewPart implements IPortfolioListener {
 
 	public static final String ID = "org.marketcetera.photon.views.PortfolioView";
 	
 	private TreeViewer treeViewer;
-	private Portfolio root;
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 	
 	public PortfolioView() {
@@ -32,33 +32,48 @@ public class PortfolioView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		Platform.getAdapterManager().registerAdapters(adapterFactory, PositionProgress.class);
-		initializePortfolio();
 		treeViewer = new TreeViewer(parent,
 				SWT.BORDER | SWT.MULTI | SWT.V_SCROLL);
 		
 		getSite().setSelectionProvider(treeViewer);
 		treeViewer.setLabelProvider(new WorkbenchLabelProvider());
 		treeViewer.setContentProvider(new BaseWorkbenchContentProvider());
-		treeViewer.setInput(root);
-		root.addPortfolioListener(new IPortfolioListener() {
-			public void positionsChanged(Portfolio portfolio, PositionProgress entry) {
+		treeViewer.refresh();
+		setInput(Application.getRootPortfolio());
+	}
+
+	public void setInput(Portfolio input){
+		Portfolio oldPortfolio = (Portfolio)treeViewer.getInput();
+		if (oldPortfolio != null){
+			oldPortfolio.removePortfolioListener(this);
+		}
+		treeViewer.setInput(input);
+		input.addPortfolioListener(this);
+	}
+
+	public void positionsChanged(Portfolio portfolio, PositionProgress entry) {
+		asyncRefresh();
+	}
+
+	public void asyncExec(Runnable runnable) {
+		Display display = this.getViewSite().getWorkbenchWindow().getShell().getDisplay();
+
+		// If the display is disposed, you can’t do anything with it!!!
+		if (display == null || display.isDisposed())
+			return;
+
+		display.asyncExec(runnable);
+	}
+	
+	protected void asyncRefresh()
+	{
+		asyncExec(new Runnable() {
+			public void run() {
 				treeViewer.refresh();
 			}
 		});
-		treeViewer.refresh();
 	}
-
-	private void initializePortfolio() {
-		root = Application.getOrderManager().getRootPortfolio();
-		Portfolio subPortfolio1 = new Portfolio(root, "My Portfolio 1");
-		root.addEntry(subPortfolio1);
-		subPortfolio1.addEntry(new PositionEntry(subPortfolio1, "IBM", new InternalID("1234")));
-		
-		Portfolio subPortfolio2 = new Portfolio(root, "My Portfolio 2");
-		root.addEntry(subPortfolio2);
-		subPortfolio2.addEntry(new PositionEntry(subPortfolio2, "MSFT", new InternalID("2345")));
-	}
-
+	
 	@Override
 	public void setFocus() {
 		// TODO Auto-generated method stub

@@ -2,7 +2,7 @@ package org.marketcetera.photon.editors;
 
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
-import org.marketcetera.photon.model.FIXMessageHistory.MessageHolder;
+import org.marketcetera.photon.model.MessageHolder;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

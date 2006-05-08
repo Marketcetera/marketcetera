@@ -31,7 +31,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction closeAllAction;
 
-	private ViewSecurityAction viewSecurityAction;
+	//private ViewSecurityAction viewSecurityAction;
 
 	private IWorkbenchAction closeAction;
 
@@ -148,7 +148,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
 		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
 
-		viewSecurityAction = new ViewSecurityAction(window);
+		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
 		orderHistoryAction = new OrderHistoryAction(window);
 	}
@@ -182,7 +182,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		// Window menu
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_WindowMenuName);
-		menu.add(viewSecurityAction);
+		//menu.add(viewSecurityAction);
 		menu.add(new Separator());
 		menu.add(openNewWindowAction);
 		menu.add(newEditorAction);
@@ -259,8 +259,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		IToolBarManager toolBar = new ToolBarManager(SWT.FLAT | SWT.TRAIL);
 		coolBar.add(new ToolBarContributionItem(toolBar, "standard"));
 
-		ActionContributionItem viewSecurityCI = new ActionContributionItem(viewSecurityAction);
-		toolBar.add(viewSecurityCI);
+		//ActionContributionItem viewSecurityCI = new ActionContributionItem(viewSecurityAction);
+		//toolBar.add(viewSecurityCI);
 		ActionContributionItem focusCommandCI = new ActionContributionItem(focusCommandAction);
 		toolBar.add(focusCommandCI);
 		ActionContributionItem orderHistoryCI = new ActionContributionItem(orderHistoryAction);
@@ -277,7 +277,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		statusLine.add(commandStatusLineContribution);
 		statusLine.add(feedStatusLineContribution);
 
-	//		commandStatusLineContribution.setText("TYPE COMMANDS HERE");
 	}
 
 

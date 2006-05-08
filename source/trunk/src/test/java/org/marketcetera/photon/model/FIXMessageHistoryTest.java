@@ -57,8 +57,8 @@ public class FIXMessageHistoryTest extends TestCase {
 			history.addIncomingMessage(message);
 			Object [] historyArray = history.getHistory();
 			assertEquals(1, historyArray.length);
-			assertEquals(FIXMessageHistory.IncomingMessageHolder.class, historyArray[0].getClass());
-			FIXMessageHistory.IncomingMessageHolder holder = (FIXMessageHistory.IncomingMessageHolder) historyArray[0];
+			assertEquals(IncomingMessageHolder.class, historyArray[0].getClass());
+			IncomingMessageHolder holder = (IncomingMessageHolder) historyArray[0];
 			Message historyMessage = holder.getMessage();
 			assertEquals(orderID1.toString(), historyMessage.getString(OrderID.FIELD));
 			assertEquals(clOrderID1.toString(), historyMessage.getString(ClOrdID.FIELD));
@@ -82,8 +82,8 @@ public class FIXMessageHistoryTest extends TestCase {
 			history.addIncomingMessage(message2);
 			Object [] historyArray = history.getHistory();
 			assertEquals(2, historyArray.length);
-			assertEquals(FIXMessageHistory.IncomingMessageHolder.class, historyArray[1].getClass());
-			FIXMessageHistory.IncomingMessageHolder holder = (FIXMessageHistory.IncomingMessageHolder) historyArray[1];
+			assertEquals(IncomingMessageHolder.class, historyArray[1].getClass());
+			IncomingMessageHolder holder = (IncomingMessageHolder) historyArray[1];
 			Message historyMessage = holder.getMessage();
 			assertEquals(orderID2.toString(), historyMessage.getString(OrderID.FIELD));
 			assertEquals(clOrderID2.toString(), historyMessage.getString(ClOrdID.FIELD));
@@ -117,8 +117,8 @@ public class FIXMessageHistoryTest extends TestCase {
 
 		Object [] historyArray = history.getHistory();
 		assertEquals(1, historyArray.length);
-		assertEquals(FIXMessageHistory.OutgoingMessageHolder.class, historyArray[0].getClass());
-		FIXMessageHistory.OutgoingMessageHolder holder = (FIXMessageHistory.OutgoingMessageHolder) historyArray[0];
+		assertEquals(OutgoingMessageHolder.class, historyArray[0].getClass());
+		OutgoingMessageHolder holder = (OutgoingMessageHolder) historyArray[0];
 		Message historyMessage = holder.getMessage();
 		assertEquals(orderID.toString(), historyMessage.getString(ClOrdID.FIELD));
 		assertEquals(""+side, historyMessage.getString(Side.FIELD));

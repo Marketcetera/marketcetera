@@ -117,7 +117,7 @@ public class Parser {
     public Command command() throws ParserException, NoMoreIDsException {
         currentCommand = "Unknown command";
         parsePosition = 0;
-        Logger log = Application.getDebugConsoleLogger();
+        Logger log = Application.getMainConsoleLogger();
         log.debug(lexer.mInput);
 
         Token firstToken = lexer.peek();

@@ -11,6 +11,7 @@ public interface IImageKeys {
 	public static final String FILTER = "icons/silk/drink_empty.png";
 	public static final String GROUP = "icons/silk/chart_organization.png";
 	public static final String ACCOUNT = "icons/silk/coins.png";
+	public static final String CANCEL = "icons/silk/cancel.png";
 	
 	
 	public static final String STATUS_OFFLINE = "icons/other/LedTransparent.gif";

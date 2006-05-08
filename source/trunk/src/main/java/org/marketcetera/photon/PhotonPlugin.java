@@ -49,6 +49,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.marketcetera.photon", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin(Application.PLUGIN_ID, path);
 	}
 }

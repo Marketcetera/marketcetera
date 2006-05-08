@@ -7,6 +7,7 @@ import javax.jms.JMSException;
 import org.apache.log4j.SimpleLayout;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.application.ActionBarAdvisor;
@@ -15,6 +16,7 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.views.IViewDescriptor;
 import org.marketcetera.photon.editors.OrderHistoryEditor;
 import org.marketcetera.photon.editors.OrderHistoryInput;
 
@@ -51,13 +53,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager()
 				.getConsoles();
 		for (IConsole console : consoles) {
-			if (console instanceof DebugConsole) {
-				DebugConsole debugConsole = (DebugConsole) console;
-				DebugConsoleAppender appender = new DebugConsoleAppender(
+			if (console instanceof MainConsole) {
+				MainConsole mainConsole = (MainConsole) console;
+				PhotonConsoleAppender appender = new PhotonConsoleAppender(
 						getWindowConfigurer().getWindow().getShell()
-								.getDisplay(), debugConsole);
+								.getDisplay(), mainConsole);
 				appender.setLayout(new SimpleLayout());
-				Application.getDebugConsoleLogger().addAppender(appender);
+				Application.getMainConsoleLogger().addAppender(appender);
 			}
 		} 
 				
@@ -69,13 +71,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		try {
 			Application.initJMSConnector();
-		} catch (JMSException ex){
+		} catch (JMSException ex) {
 		}
 
-		Application.getDebugConsoleLogger().info("Application initialized: "+new Date());
+		Application.getMainConsoleLogger().info(
+				"Application initialized: " + new Date());
+		
 	}
 
 	private void initStatusLine() {
