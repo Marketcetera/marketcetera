@@ -31,6 +31,9 @@ public class Portfolio extends PositionProgress
 	public double getProgress() {
 		double total = 0;
 		double progress = 0;
+		if (entries == null){
+			return 0;
+		}
 		for (PositionProgress anEntry : entries) {
 			total += 1;
 			progress += anEntry.getProgress();
