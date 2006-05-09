@@ -6,7 +6,7 @@
 -->
 <project basedir="." default="build" name="org.marketcetera.photon">
     &buildfile;
-    <property name="MAVEN_REPO" value="c:/Documents and Settings/gmiller/.m2/repository"/>
+    <property name="MAVEN_REPO" value="~/.m2/repository"/>
     <property name="DOWNLOADS_FOLDER" value="target/downloads"/>
     <property name="RCP_ZIP" value="eclipse-RCP-SDK-3.1.2-win32.zip"/>
 
