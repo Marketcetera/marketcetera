@@ -345,7 +345,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	public void asyncExec(Runnable runnable) {
 		Display display = this.getContainer().getDisplay();
 
-		// If the display is disposed, you can’t do anything with it!!!
+		// If the display is disposed, you can't do anything with it!!!
 		if (display == null || display.isDisposed())
 			return;
 
