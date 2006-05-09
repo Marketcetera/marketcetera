@@ -58,7 +58,7 @@ public class PortfolioView extends ViewPart implements IPortfolioListener {
 	public void asyncExec(Runnable runnable) {
 		Display display = this.getViewSite().getWorkbenchWindow().getShell().getDisplay();
 
-		// If the display is disposed, you can’t do anything with it!!!
+		// If the display is disposed, you can't do anything with it!!!
 		if (display == null || display.isDisposed())
 			return;
 
