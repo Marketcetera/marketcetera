@@ -43,6 +43,7 @@
         <mkdir dir="target/test-classes"/>
         <mkdir dir="target/test-output"/>
         <mkdir dir="${DOWNLOADS_FOLDER}"/>
+        <mkdir dir="target/rcp"/>
         <get src="http://repo.marketcetera.org/eclipse/sdks/${RCP_ZIP}"
             dest="${DOWNLOADS_FOLDER}/${RCP_ZIP}" usetimestamp="true"/>
         <get src="http://repo.marketcetera.org/eclipse/sdks/plugins/${CONSOLE_PLUGIN}" dest="${DOWNLOADS_FOLDER}/${CONSOLE_PLUGIN}" usetimestamp="true"/>
