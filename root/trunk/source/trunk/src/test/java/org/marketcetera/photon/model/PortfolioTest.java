@@ -45,6 +45,7 @@ public class PortfolioTest extends TestCase {
 		Portfolio port = new Portfolio(null, PORTFOLIO_NAME);
 		PositionEntry entry = new PositionEntry(port, "NAME", new InternalID(
 				"1234"));
+		port.addEntry(entry);
 		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
 				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
 				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), "IBM");
