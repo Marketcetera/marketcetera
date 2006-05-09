@@ -74,7 +74,7 @@
         </javac>
     </target>
     <target name="allTests" depends="init">
-        <junit fork="yes" printsummary="withOutAndErr" showoutput="true">
+        <junit fork="yes" printsummary="withOutAndErr" showoutput="true" failureproperty="junit.tests.failed">
             <formatter type="plain"/>
             <batchtest todir="target/test-output">
                 <fileset dir="src/test/java" casesensitive="yes">
@@ -87,6 +87,7 @@
                 <pathelement location="target/test-classes"/>
             </classpath>
         </junit>
+        <fail if="junit.tests.failed" message="One or more unit tests failed."/>
     </target>
     <target name="compile" depends="init">
         <javac classpathref="project.classpath"
