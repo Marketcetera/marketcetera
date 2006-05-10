@@ -2,6 +2,7 @@ package org.marketcetera.photon;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.math.RoundingMode;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -18,7 +19,7 @@ import org.marketcetera.photon.views.FiltersView;
 
 public class PhotonAdapterFactory implements IAdapterFactory {
 
-	private IWorkbenchAdapter portfolioAdapter = new IWorkbenchAdapter() {
+	protected IWorkbenchAdapter portfolioAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
 			return ((Portfolio) o).getParent();
 		}
@@ -37,7 +38,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 	};
 
-	private IWorkbenchAdapter positionAdapter = new IWorkbenchAdapter() {
+	protected IWorkbenchAdapter positionAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
 			return ((PositionEntry) o).getParent();
 		}
@@ -45,9 +46,8 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		public String getLabel(Object o) {
 			PositionEntry entry = ((PositionEntry) o);
 			BigDecimal progressBigDecimal = new BigDecimal(entry.getProgress());
-			progressBigDecimal.round(new MathContext(2));
-			progressBigDecimal = progressBigDecimal
-					.multiply(new BigDecimal(100));
+			progressBigDecimal = progressBigDecimal.multiply(new BigDecimal(100));
+			progressBigDecimal = progressBigDecimal.setScale(0,RoundingMode.HALF_UP);
 			return entry.getName() + " (" + progressBigDecimal + "%)";
 		}
 
@@ -60,7 +60,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 	};
 
-	private IWorkbenchAdapter messageHistoryAdapter = new IWorkbenchAdapter() {
+	protected IWorkbenchAdapter messageHistoryAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
 			return null;
 		}
@@ -78,7 +78,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 	};
 
-	private IWorkbenchAdapter messageAdapter = new IWorkbenchAdapter() {
+	protected IWorkbenchAdapter messageAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
 			return null;
 		}
@@ -92,7 +92,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public Object[] getChildren(Object o) {
-			return null;
+			return new Object[0];
 		}
 	};
 
@@ -134,7 +134,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 
 	private IWorkbenchAdapter accountAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
-			return FiltersView.getRoot().getChildren()[0];
+			return null;
 		}
 
 		public String getLabel(Object o) {
@@ -159,7 +159,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 
 	private IWorkbenchAdapter securityAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
-			return FiltersView.getRoot().getChildren()[0];
+			return null;
 		}
 
 		public String getLabel(Object o) {
@@ -178,7 +178,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 
 	private IWorkbenchAdapter filterAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
-			return FiltersView.getRoot().getChildren()[1];
+			return null;
 		}
 
 		public String getLabel(Object o) {

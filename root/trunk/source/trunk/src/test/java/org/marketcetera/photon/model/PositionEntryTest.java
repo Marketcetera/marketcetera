@@ -1,6 +1,7 @@
 package org.marketcetera.photon.model;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,38 +25,49 @@ public class PositionEntryTest extends TestCase {
 
 	
 	private static final String ROOT_PORTFOLIO_NAME = "Root portfolio";
-	private static Date THE_TRANSACT_TIME;
-	private static Portfolio parent = new Portfolio(null, ROOT_PORTFOLIO_NAME);
+	public static Date THE_TRANSACT_TIME;
+	public static Portfolio parent = new Portfolio(null, ROOT_PORTFOLIO_NAME);
 	private static Date THE_DATE;
 	private static String POSITION_NAME = "Testable position entry";
 	private static InternalID INTERNAL_ID = new InternalID("123");
 	private static char SIDE_BUY = Side.BUY;
-	private static String SYMBOL = "SYMB";
+	public static String SYMBOL = "SYMB";
 	private static AccountID ACCOUNT_ID = new AccountID("asdf");
-	private static InternalID CL_ORD_ID = new InternalID("CLORDID");
+	public static InternalID CL_ORD_ID = new InternalID("CLORDID");
+	
+	static {
+		try {
+			THE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("1974-12-24");
+			THE_TRANSACT_TIME = new SimpleDateFormat("yyyy-MM-dd").parse("2006-10-04");
+		} catch (ParseException e) {
+		}
+	}
 	
 	/* (non-Javadoc)
 	 * @see junit.framework.TestCase#setUp()
 	 */
 	@Override
 	protected void setUp() throws Exception {
-		 THE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("1974-12-24");
-		 THE_TRANSACT_TIME = new SimpleDateFormat("yyyy-MM-dd").parse("2006-10-04");
 	}
 
-	private PositionEntry getTestablePositionEntry()
+	public static PositionEntry getTestablePositionEntry()
 	{
 		return new PositionEntry(parent, POSITION_NAME, INTERNAL_ID, SIDE_BUY, SYMBOL, ACCOUNT_ID, THE_DATE);
 	}
 
-	private PositionEntry getTestablePositionEntryWithMessage() {
+	public static PositionEntry getTestablePositionEntryWithMessage() {
 		PositionEntry testablePositionEntry = getTestablePositionEntry();
+		Message aMessage = getTestableExecutionReport();
+		testablePositionEntry.addIncomingMessage(aMessage);
+		return testablePositionEntry;
+	}
+
+	public static Message getTestableExecutionReport() {
 		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), CL_ORD_ID, "987", ExecTransType.STATUS,
 				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
 				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL);
 		aMessage.setUtcTimeStamp(TransactTime.FIELD, THE_TRANSACT_TIME);
-		testablePositionEntry.addIncomingMessage(aMessage);
-		return testablePositionEntry;
+		return aMessage;
 	}
 
 	/*

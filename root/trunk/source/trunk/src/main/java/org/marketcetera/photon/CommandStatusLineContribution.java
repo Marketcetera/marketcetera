@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.ContributionItem;
-import org.eclipse.jface.action.IContributionManager;
 import org.eclipse.jface.action.StatusLineLayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
@@ -16,18 +15,25 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
-import org.marketcetera.photon.actions.OrderCommandEvent;
+import org.marketcetera.photon.parser.Parser;
+import org.marketcetera.photon.parser.ParserException;
+
+import quickfix.Message;
 
 public class CommandStatusLineContribution extends ContributionItem {
+
+	public static final String ID = "org.marketcetera.photon.CommandStatusLineContribution";
 
 	public final static int DEFAULT_CHAR_WIDTH = 40;
 
 	private Text textArea;
 
 	private Logger mInternalDebugLogger = Application.getMainConsoleLogger();
-	
+
 	private String text = ""; //$NON-NLS-1$
 
 	private int widthHint = -1;
@@ -38,9 +44,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 
 	private List<ICommandListener> commandListeners = new LinkedList<ICommandListener>();
 
-	public CommandStatusLineContribution() {
-		this(null);
-	}
+	private Parser commandParser;
 
 	public CommandStatusLineContribution(String id) {
 		this(id, DEFAULT_CHAR_WIDTH);
@@ -49,6 +53,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 	public CommandStatusLineContribution(String id, int charWidth) {
 		super(id);
 		this.widthHint = charWidth;
+		commandParser = new Parser();
 	}
 
 	public void fill(Composite parent) {
@@ -75,10 +80,11 @@ public class CommandStatusLineContribution extends ContributionItem {
 		textArea.setLayoutData(statusLineLayoutData);
 		textArea.setText(text);
 		textArea.addKeyListener(new KeyAdapter() {
-            public void keyReleased(KeyEvent e) {
-            	handleKeyReleased(e);
-            }
-        });		if (tooltip != null) {
+			public void keyReleased(KeyEvent e) {
+				handleKeyReleased(e);
+			}
+		});
+		if (tooltip != null) {
 			textArea.setToolTipText(tooltip);
 		}
 
@@ -88,14 +94,37 @@ public class CommandStatusLineContribution extends ContributionItem {
 	}
 
 	protected void handleKeyReleased(KeyEvent e) {
-        if ('\r' == e.character) {
-            Text theText = (Text) e.widget;
-            String theInputString = theText.getText();
-            theText.setText("");
-            fireCommandEvent(new OrderCommandEvent(theInputString));
-        }
+		try {
+			Text theText = (Text) e.widget;
+			String theInputString = theText.getText();
+			if ('\r' == e.character) {
+				theText.setText("");
+				parseAndFireCommandEvent(theInputString,
+						CommandEvent.Destination.BROKER);
+			} else if (e.keyCode == 't' && ((e.stateMask & SWT.CONTROL) != 0)) {
+				theText.setText("");
+				parseAndFireCommandEvent(theInputString,
+						CommandEvent.Destination.EDITOR);
+			}
+		} catch (NoMoreIDsException e1) {
+			e1.printStackTrace();
+		} catch (ParserException e1) {
+			e1.printStackTrace();
+		}
 	}
 
+	private void parseAndFireCommandEvent(String theInputString,
+			CommandEvent.Destination dest) throws NoMoreIDsException,
+			ParserException {
+		commandParser.setInput(theInputString);
+		Parser.Command aCommand;
+		aCommand = commandParser.command();
+
+		for (Object messageObj : aCommand.mResults) {
+			Message message = (Message) messageObj;
+			fireCommandEvent(message, dest);
+		}
+	}
 
 	public String getText() {
 		return text;
@@ -110,23 +139,23 @@ public class CommandStatusLineContribution extends ContributionItem {
 		if (textArea != null && !textArea.isDisposed())
 			textArea.setText(this.text);
 
-//		if (this.text.length() == 0) {
-//			if (isVisible()) {
-//				setVisible(false);
-//				IContributionManager contributionManager = getParent();
-//
-//				if (contributionManager != null)
-//					contributionManager.update(true);
-//			}
-//		} else {
-//			if (!isVisible()) {
-//				setVisible(true);
-//				IContributionManager contributionManager = getParent();
-//
-//				if (contributionManager != null)
-//					contributionManager.update(true);
-//			}
-//		}
+		// if (this.text.length() == 0) {
+		// if (isVisible()) {
+		// setVisible(false);
+		// IContributionManager contributionManager = getParent();
+		//
+		// if (contributionManager != null)
+		// contributionManager.update(true);
+		// }
+		// } else {
+		// if (!isVisible()) {
+		// setVisible(true);
+		// IContributionManager contributionManager = getParent();
+		//
+		// if (contributionManager != null)
+		// contributionManager.update(true);
+		// }
+		// }
 	}
 
 	public void setTooltip(String tooltip) {
@@ -171,11 +200,18 @@ public class CommandStatusLineContribution extends ContributionItem {
 		return commandListeners.remove(listener);
 	}
 
-	public void fireCommandEvent(CommandEvent event) {
-		mInternalDebugLogger.info("Command issued: "+event.getStringValue());
+	public void fireCommandEvent(Message aMessage, CommandEvent.Destination dest) {
 		for (ICommandListener listener : commandListeners) {
-			listener.commandIssued(event);
+			CommandEvent evt = new CommandEvent(aMessage, dest);
+			listener.commandIssued(evt);
 		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.parser.Parser#init(org.marketcetera.core.IDFactory)
+	 */
+	public void setIDFactory(IDFactory factory) {
+		commandParser.init(factory);
 	}
 
 }

@@ -1,6 +1,5 @@
 package org.marketcetera.photon;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,32 +17,30 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
+import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.model.PositionProgress;
-import org.marketcetera.photon.parser.Parser;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
+import quickfix.Group;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.Account;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
-import quickfix.field.ExecType;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
 import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
-import quickfix.field.TimeInForce;
 
 /**
  * $Id$
@@ -58,20 +55,20 @@ public class OrderManager {
 	
 	private Logger internalMainLogger = Application.getMainConsoleLogger();
 
-	public static final String ORDER_MANAGER_NAME = "OrderManager";
 
-	ICommandListener commandListener;
+	private ICommandListener commandListener;
 
-	private Parser commandParser;
+	private List<IOrderActionListener> orderActionListeners = new ArrayList<IOrderActionListener>();
 
-	private MessageListener jmsListener;
+	private FIXMessageHistory fixMessageHistory;
+	
 
-	List<IOrderActionListener> orderActionListeners = new ArrayList<IOrderActionListener>();
-
-	/** Creates a new instance of OrderManager */
-	public OrderManager(IDFactory idFactory, Portfolio rootPortfolio) {
+	/** Creates a new instance of OrderManager 
+	 * @param fixMessageHistory */
+	public OrderManager(IDFactory idFactory, Portfolio rootPortfolio, FIXMessageHistory fixMessageHistory) {
 		this.rootPortfolio = rootPortfolio;
 		this.idFactory = idFactory;
+		this.fixMessageHistory = fixMessageHistory;
 
 		commandListener = new ICommandListener() {
 			public void commandIssued(CommandEvent evt) {
@@ -79,12 +76,10 @@ public class OrderManager {
 			};
 		};
 
-		commandParser = new Parser();
-		commandParser.init(idFactory);
 	}
 
-	public void init() {
-		jmsListener = new MessageListener() {
+	public MessageListener getMessageListener() {
+		return new MessageListener() {
 			public void onMessage(javax.jms.Message message) {
 				if (message instanceof TextMessage) {
 					TextMessage textMessage = (TextMessage) message;
@@ -103,7 +98,6 @@ public class OrderManager {
 			}
 		};
 
-		Application.setTopicListener(jmsListener);
 	}
 
 
@@ -145,7 +139,7 @@ public class OrderManager {
 
 
 	public void handleCounterpartyMessage(Message aMessage) {
-		Application.getFIXMessageHistory().addIncomingMessage(aMessage);
+		fixMessageHistory.addIncomingMessage(aMessage);
 		try {
 			if (FIXMessageUtil.isExecutionReport(aMessage)) {
 				handleExecutionReport(aMessage);
@@ -153,7 +147,7 @@ public class OrderManager {
 				handleCancelReject(aMessage);
 			}
 		} catch (Exception ex) {
-			Application.getMainConsoleLogger().error(
+			internalMainLogger.error(
 					"Error decoding incoming message "+ex.getMessage(), ex);
 			ex.printStackTrace();
 		}
@@ -226,6 +220,7 @@ public class OrderManager {
 
 	public void handleInternalMessage(Message aMessage) throws FieldNotFound,
 			MarketceteraException, JMSException {
+		fixMessageHistory.addOutgoingMessage(aMessage);
 
 		if (FIXMessageUtil.isOrderSingle(aMessage)) {
 			addNewOrder(aMessage);
@@ -264,40 +259,16 @@ public class OrderManager {
 		this.rootPortfolio.addEntry(entry);
 		
 		try {
-			Application.sendToQueue(aMessage);
+			sendToApplicationQueue(aMessage);
 		} catch (JMSException ex) {
-			Application.getMainConsoleLogger().error(
+			internalMainLogger.error(
 					"Error sending message to JMS", ex);
 		}
 	}
 
 
-//	// TODO: cache the list of open orders in the OrderTableModel
-//	public void cancelAllOrders() throws NoMoreIDsException, JMSException {
-//		PositionProgress[] entries = rootPortfolio.getEntries();
-//		for (int i = 0; i < entries.length; i++) {
-//			PositionEntry aSummary = (PositionEntry) entries[i];
-//			if (aSummary.getOrdStatus() == OrdStatus.ACCEPTED_FOR_BIDDING
-//					|| aSummary.getOrdStatus() == OrdStatus.CALCULATED
-//					|| aSummary.getOrdStatus() == OrdStatus.NEW
-//					|| aSummary.getOrdStatus() == OrdStatus.PARTIALLY_FILLED
-//					|| aSummary.getOrdStatus() == OrdStatus.PENDING_CANCEL
-//					|| aSummary.getOrdStatus() == OrdStatus.PENDING_NEW
-//					|| aSummary.getOrdStatus() == OrdStatus.PENDING_REPLACE
-//					|| aSummary.getOrdStatus() == OrdStatus.REPLACED
-//					|| aSummary.getOrdStatus() == OrdStatus.SUSPENDED) {
-//				Message aMessage = FIXMessageUtil.newCancel(new InternalID(
-//						idFactory.getNext()), aSummary.getInternalID(),
-//						aSummary.getSide(), aSummary.getQuantity(), aSummary
-//								.getSymbol(), aSummary.getCounterpartyID());
-//				Application.sendToQueue(aMessage);
-//				aSummary.setOrdStatus(OrdStatus.PENDING_CANCEL);
-//				rootPortfolio.updateEntry(aSummary);
-//			}
-//		}
-//	}
 
-	public void cancelReplaceOneOrder(Message cancelMessage)
+	protected void cancelReplaceOneOrder(Message cancelMessage)
 			throws NoMoreIDsException, FieldNotFound, JMSException {
 		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
 		InternalID clOrdIDInternal = new InternalID(clOrdId);
@@ -306,13 +277,19 @@ public class OrderManager {
 			Message lastMessageForClOrdID = anEntry
 					.getLastMessageForClOrdID(clOrdIDInternal);
 			fillFieldsFromExistingMessage(cancelMessage, lastMessageForClOrdID);
+			try {
+				sendToApplicationQueue(cancelMessage);
+			} catch (JMSException ex) {
+				internalMainLogger.error(
+						"Error sending cancel message to JMS", ex);
+			}
 		} else {
 			internalMainLogger.error("Could not send cancel for order "
 					+ clOrdId);
 		}
 	}
 
-	public void cancelOneOrder(Message cancelMessage)
+	protected void cancelOneOrder(Message cancelMessage)
 			throws NoMoreIDsException, FieldNotFound, JMSException {
 		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
 		InternalID clOrdIDInternal = new InternalID(clOrdId);
@@ -320,6 +297,18 @@ public class OrderManager {
 		if (anEntry != null) {
 			Message lastMessageForClOrdID = anEntry.getLastMessageForClOrdID(clOrdIDInternal);
 			fillFieldsFromExistingMessage(cancelMessage, lastMessageForClOrdID);
+			try {
+				cancelMessage.setField(lastMessageForClOrdID.getField(new OrderID()));
+			} catch (FieldNotFound ex){
+				//do nothing
+			}
+			try {
+				sendToApplicationQueue(cancelMessage);
+			} catch (JMSException ex) {
+				internalMainLogger.error(
+						"Error sending cancel message to JMS", ex);
+			}
+
 		} else {
 			internalMainLogger.error("Could not send cancel for order "+ clOrdId);
 		}
@@ -341,7 +330,7 @@ public class OrderManager {
 		    }
 
 		} catch (FieldNotFound ex) {
-			Application.getMainConsoleLogger().error(
+			internalMainLogger.error(
 					"Outgoing message did not have valid MsgType ", ex);
 		}
 	}
@@ -356,10 +345,6 @@ public class OrderManager {
 		return rootPortfolio;
 	}
 
-	public String getName() {
-		return ORDER_MANAGER_NAME;
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -367,13 +352,8 @@ public class OrderManager {
 	 */
 	public void handleCommandIssued(CommandEvent evt) {
 		try {
-			commandParser.setInput(evt.getStringValue());
-			Parser.Command aCommand;
-			aCommand = commandParser.command();
-
-			for (Object messageObj : aCommand.mResults) {
-				Message message = (Message) messageObj;
-				handleInternalMessage(message);
+			if (evt.getDestination() == CommandEvent.Destination.BROKER){
+				handleInternalMessage(evt.getMessage());
 			}
 		} catch (Exception e) {
 			this.internalMainLogger.error("Error processing command", e);
@@ -412,25 +392,45 @@ public class OrderManager {
 	}
 
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
-		Object[] latestExecutionReports = Application.getFIXMessageHistory().getLatestExecutionReports();
-		for (Object object : latestExecutionReports) {
-			Message aMessage = (Message) object;
+		FieldMap fields = new Group();
+		fields.setString(ClOrdID.FIELD, clOrdID);
+		Message latestMessage = fixMessageHistory.getLatestMessageForFields(fields);
+		if (latestMessage != null){
+			Message cancelMessage = new quickfix.fix42.Message();
+			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
+			cancelMessage.setField(new OrigClOrdID(clOrdID));
+			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
+			fillFieldsFromExistingMessage(cancelMessage, latestMessage);
+
+			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			try {
-				String foundClOrdID = aMessage.getString(ClOrdID.FIELD);
-				if(foundClOrdID.equals(clOrdID)){
-					char side = aMessage.getChar(Side.FIELD);
-					BigDecimal quantity = new BigDecimal(aMessage.getString(OrderQty.FIELD));
-					String symbol = aMessage.getString(Symbol.FIELD);
-					String counterpartyID = aMessage.getString(OrderID.FIELD);
-					FIXMessageUtil.newCancel(new InternalID(this.idFactory.getNext()), new InternalID(clOrdID),
-							side, quantity, symbol, counterpartyID);
-					
-				}
-			} catch (FieldNotFound ex){
-				internalMainLogger.error("Could not send cancel request for order ID "+clOrdID, ex);
+				sendToApplicationQueue(cancelMessage);
+			} catch (JMSException e) {
+				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
 			}
+		} else {
+			internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
 		}
 		
+	}
+
+	protected void sendToApplicationQueue(Message message) throws JMSException
+	{
+		Application.sendToQueue(message);
+	}
+	
+	/**
+	 * @return Returns the mainConsoleLogger.
+	 */
+	public Logger getMainConsoleLogger() {
+		return internalMainLogger;
+	}
+
+	/**
+	 * @param mainConsoleLogger The mainConsoleLogger to set.
+	 */
+	public void setMainConsoleLogger(Logger mainConsoleLogger) {
+		this.internalMainLogger = mainConsoleLogger;
 	}
 
 }

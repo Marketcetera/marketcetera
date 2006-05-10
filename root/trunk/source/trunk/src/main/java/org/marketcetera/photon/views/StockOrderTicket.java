@@ -2,18 +2,27 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.forms.events.ExpansionAdapter;
-import org.eclipse.ui.forms.events.ExpansionEvent;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.ScrolledForm;
-import org.eclipse.ui.forms.widgets.TableWrapData;
-import org.eclipse.ui.forms.widgets.TableWrapLayout;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.photon.actions.CommandEvent;
+import org.marketcetera.photon.actions.ICommandListener;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+
+import quickfix.DataDictionary;
+import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.TimeInForce;
 
 public class StockOrderTicket extends ViewPart {
 
@@ -23,85 +32,128 @@ public class StockOrderTicket extends ViewPart {
 
 	private FormToolkit toolkit;
 
-	private Label label = null;
+	private Form form;
 
-	private ScrolledForm scrolledForm;
+	private FIXEnumeratedComposite buySellControl;
 
-	private Button buyButton;
+	private FIXStringComposite orderQtyControl;
 
-	private Button sellButton;
+	private FIXStringComposite symbolControl;
 
-	private Button sellShortButton;
+	private FIXStringComposite priceControl;
 
-	private Button sellExemptButton;
+	private FIXEnumeratedComposite timeInForceControl;
+
+	private FIXStringComposite accountControl;
+
+	private Button sendButton;
+
+	private Button cancelButton;
+
+	private ICommandListener commandListener;
 
 	public StockOrderTicket() {
 		super();
-		// TODO Auto-generated constructor stub
+		commandListener = new ICommandListener() {
+			public void commandIssued(CommandEvent evt) {
+				handleCommandIssued(evt);
+			};
+		};
 	}
 
-	@Override
-	public void createPartControl(Composite parent) {
-		toolkit = new FormToolkit(parent.getDisplay());
-
-		TableWrapLayout tableWrapLayout = new TableWrapLayout();
-		tableWrapLayout.numColumns = 3;
-		scrolledForm = (ScrolledForm) toolkit.createScrolledForm(parent);
-		top = scrolledForm.getBody();
-		scrolledForm.setText("Equity Order Ticket");
-
-		// BUY/SELL component
-		Composite buySellLabelComposite = toolkit.createComposite(top);
-		buySellLabelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
-		Label aLabel = toolkit.createLabel(buySellLabelComposite, "Side:");
-		Composite buySellComposite = toolkit.createComposite(buySellLabelComposite);
-		buySellComposite.setLayout(new RowLayout(SWT.VERTICAL));
-		buyButton = toolkit.createButton(buySellComposite, "&Buy",
-						SWT.RADIO);
-		sellButton = toolkit.createButton(buySellComposite, "&Sell",
-						SWT.RADIO);
-		sellShortButton = toolkit.createButton(buySellComposite,
-						"Sell Shor&t", SWT.RADIO);
-		sellExemptButton = toolkit.createButton(buySellComposite,
-						"Sell E&xempt", SWT.RADIO);
-		Label testlabel = toolkit.createLabel(top, "asdf");
-		
-		top.setLayout(tableWrapLayout);
-		
-		toolkit.paintBordersFor(top);
-
-		{
-			ExpandableComposite ec = toolkit.createExpandableComposite(
-					top, ExpandableComposite.TREE_NODE);
-			ec.setText("Expandable Composite title");
-			String ctext = "We will now create a somewhat long text so that "
-					+ "we can use it as content for the expandable composite. "
-					+ "Expandable composite is used to hide or show the text using the "
-					+ "toggle control";
-			Label client = toolkit.createLabel(ec, ctext, SWT.WRAP);
-			ec.setClient(client);
-			TableWrapData td = new TableWrapData();
-			td.colspan = 3;
-			ec.setLayoutData(td);
-			ec.addExpansionListener(new ExpansionAdapter() {
-				public void expansionStateChanged(ExpansionEvent e) {
-					scrolledForm.reflow(true);
-				}
-			});
+	protected void handleCommandIssued(CommandEvent evt) {
+		if (evt.getDestination() == CommandEvent.Destination.EDITOR) {
+			asyncPopulateFromMessage(evt.getMessage());
 		}
 	}
 
 	@Override
+	public void createPartControl(Composite parent) {
+
+		toolkit = new FormToolkit(parent.getDisplay());
+		form = toolkit.createForm(parent);
+		// form.setText("Stock Order Ticket");
+		GridLayout layout = new GridLayout();
+		form.getBody().setLayout(layout);
+
+		// FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+		DataDictionary dict = FIXDataDictionaryManager.getDictionary();
+		buySellControl = new FIXEnumeratedComposite(form.getBody(), SWT.NONE,
+				toolkit, Side.FIELD, dict, new String[] { "" + Side.BUY,
+						"" + Side.SELL, "" + Side.SELL_SHORT,
+						"" + Side.SELL_SHORT_EXEMPT });
+		orderQtyControl = new FIXStringComposite(form.getBody(), SWT.NONE,
+				toolkit, OrderQty.FIELD, dict);
+		toolkit.paintBordersFor(orderQtyControl);
+		symbolControl = new FIXStringComposite(form.getBody(), SWT.NONE,
+				toolkit, Symbol.FIELD, dict);
+		toolkit.paintBordersFor(symbolControl);
+		priceControl = new FIXStringComposite(form.getBody(), SWT.NONE,
+				toolkit, Price.FIELD, dict);
+		toolkit.paintBordersFor(priceControl);
+		timeInForceControl = new FIXEnumeratedComposite(form.getBody(),
+				SWT.NONE, toolkit, TimeInForce.FIELD, dict, new String[] {
+						"" + TimeInForce.DAY,
+						"" + TimeInForce.GOOD_TILL_CANCEL,
+						"" + TimeInForce.FILL_OR_KILL,
+						"" + TimeInForce.IMMEDIATE_OR_CANCEL });
+		timeInForceControl.setSelection("" + TimeInForce.DAY, true);
+		accountControl = new FIXStringComposite(form.getBody(), SWT.NONE,
+				toolkit, Account.FIELD, dict);
+		toolkit.paintBordersFor(accountControl);
+		Composite okCancelComposite = toolkit.createComposite(form.getBody());
+		okCancelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		okCancelComposite.setLayoutData(gd);
+		sendButton = toolkit.createButton(okCancelComposite, "Send", SWT.PUSH);
+		cancelButton = toolkit.createButton(okCancelComposite, "Cancel",
+				SWT.PUSH);
+	}
+
+	@Override
 	public void setFocus() {
-		buyButton.setFocus();
+		this.buySellControl.setFocus();
 	}
 
 	/**
 	 * Disposes the toolkit
 	 */
 	public void dispose() {
-		toolkit.dispose();
 		super.dispose();
 	}
 
+	public void populateFromMessage(Message aMessage) {
+		Control[] children = form.getBody().getChildren();
+		for (Control control : children) {
+			if (control instanceof FIXComposite) {
+				FIXComposite composite = (FIXComposite) control;
+				composite.populateFromMessage(aMessage);
+			}
+		}
+	}
+
+	public void asyncExec(Runnable runnable) {
+		Display display = this.getSite().getShell().getDisplay();
+
+		// If the display is disposed, you can't do anything with it!!!
+		if (display == null || display.isDisposed())
+			return;
+
+		display.asyncExec(runnable);
+	}
+
+	protected void asyncPopulateFromMessage(final Message aMessage) {
+		asyncExec(new Runnable() {
+			public void run() {
+				populateFromMessage(aMessage);
+			}
+		});
+	}
+
+	/**
+	 * @return Returns the commandListener.
+	 */
+	public ICommandListener getCommandListener() {
+		return commandListener;
+	}
 }

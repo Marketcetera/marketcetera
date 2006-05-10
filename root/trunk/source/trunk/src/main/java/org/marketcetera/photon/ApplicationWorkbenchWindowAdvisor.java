@@ -5,11 +5,13 @@ import java.util.Date;
 import javax.jms.JMSException;
 
 import org.apache.log4j.SimpleLayout;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -19,6 +21,7 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.views.IViewDescriptor;
 import org.marketcetera.photon.editors.OrderHistoryEditor;
 import org.marketcetera.photon.editors.OrderHistoryInput;
+import org.marketcetera.photon.views.StockOrderTicket;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
@@ -71,7 +74,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		IViewPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(StockOrderTicket.ID);		
+		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
+		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
+		if (part instanceof StockOrderTicket && item instanceof CommandStatusLineContribution) {
+			StockOrderTicket sot = (StockOrderTicket) part;
+			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
+			cslc.addCommandListener(sot.getCommandListener());
+			cslc.setIDFactory(Application.getIDFactory());
+		}
 		try {
 			Application.initJMSConnector();
 		} catch (JMSException ex) {

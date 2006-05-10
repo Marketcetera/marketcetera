@@ -1,6 +1,7 @@
 package org.marketcetera.photon.model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,18 +11,17 @@ import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.util.ListenerList;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.Field;
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
 import quickfix.field.LastQty;
-import quickfix.field.OrderQty;
-import quickfix.field.Symbol;
-import quickfix.fix42.ExecutionReport;
 
 public class FIXMessageHistory extends PlatformObject {
 
 	List<MessageHolder> messageList;
+
 	private ListenerList listeners;
 
 	public FIXMessageHistory() {
@@ -65,10 +65,35 @@ public class FIXMessageHistory extends PlatformObject {
 		}
 		return messages;
 	}
-	
 
-	
-	public Object [] getFills() {
+	public Message getLatestMessageForFields(FieldMap fields) {
+		for (int i = messageList.size() - 1; i >= 0; i--) {
+			MessageHolder holder = messageList.get(i);
+			Message message = holder.getMessage();
+			Iterator fieldMapIterator = fields.iterator();
+			boolean found = true;
+			while (fieldMapIterator.hasNext()) {
+				Field specifiedField = (Field) fieldMapIterator.next();
+				try {
+					String messageFieldValue = message.getString(specifiedField.getField());
+					if (!messageFieldValue.equals(
+							specifiedField.getObject().toString())) {
+						found = false;
+						break;
+					}
+				} catch (FieldNotFound e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			if (found){
+				return message;
+			}
+		}
+		return null;
+	}
+
+	public Object[] getFills() {
 		ArrayList<Message> messages = new ArrayList<Message>();
 		for (MessageHolder holder : messageList) {
 			if (holder instanceof IncomingMessageHolder) {
@@ -78,7 +103,7 @@ public class FIXMessageHistory extends PlatformObject {
 					// NOTE: generally you should get this field as
 					// a BigDecimal, but because we're just comparing
 					// to zero, it's ok
-					if (message.getDouble(LastQty.FIELD) > 0){
+					if (message.getDouble(LastQty.FIELD) > 0) {
 						messages.add(message);
 					}
 				} catch (FieldNotFound e) {
@@ -88,6 +113,7 @@ public class FIXMessageHistory extends PlatformObject {
 		}
 		return messages.toArray();
 	}
+
 	public void addFIXMessageListener(IFIXMessageListener listener) {
 		if (listeners == null)
 			listeners = new ListenerList();
