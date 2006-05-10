@@ -8,9 +8,7 @@ import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IFiltersListener;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;

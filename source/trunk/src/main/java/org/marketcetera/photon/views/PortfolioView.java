@@ -9,12 +9,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.IPortfolioListener;
 import org.marketcetera.photon.model.Portfolio;
-import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.model.PositionProgress;
 
 public class PortfolioView extends ViewPart implements IPortfolioListener {

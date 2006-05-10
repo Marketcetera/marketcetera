@@ -1,13 +1,11 @@
 package org.marketcetera.photon.actions;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
@@ -22,8 +20,6 @@ import quickfix.field.ClOrdID;
 
 public class CancelOrderAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
-	private final IWorkbenchWindow window;
-
 	public final static String ID = "org.marketcetera.photon.CancelOrder";
 
 	private IStructuredSelection selection;
@@ -33,7 +29,6 @@ public class CancelOrderAction extends Action implements ISelectionListener,
 	
 	public CancelOrderAction(
 			IWorkbenchWindow window, OrderManager manager) {
-		this.window = window;
 		this.manager = manager;
 		setId(ID);
 		setActionDefinitionId(ID);

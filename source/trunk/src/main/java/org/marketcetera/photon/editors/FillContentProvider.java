@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.marketcetera.photon.editors;
 
-import org.eclipse.jface.viewers.IStructuredContentProvider;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.photon.model.FIXMessageHistory;
 

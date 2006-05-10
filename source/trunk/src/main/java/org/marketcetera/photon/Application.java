@@ -1,7 +1,5 @@
 package org.marketcetera.photon;
 
-import java.net.URL;
-
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 

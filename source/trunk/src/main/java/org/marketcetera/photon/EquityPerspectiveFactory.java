@@ -5,9 +5,9 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.marketcetera.photon.views.FiltersView;
-import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.photon.views.PortfolioView;
 import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.WebBrowserView;
 
 public class EquityPerspectiveFactory implements IPerspectiveFactory {
 

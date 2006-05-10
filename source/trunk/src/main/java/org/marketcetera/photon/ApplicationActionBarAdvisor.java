@@ -21,7 +21,6 @@ import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
-import org.marketcetera.photon.actions.ViewSecurityAction;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
@@ -151,6 +150,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		orderHistoryAction = new OrderHistoryAction(window);
 	}
 
+	@SuppressWarnings("deprecation")
 	protected void fillMenuBar(IMenuManager menuBar) {
 		// File menu
 		MenuManager menu = new MenuManager(
