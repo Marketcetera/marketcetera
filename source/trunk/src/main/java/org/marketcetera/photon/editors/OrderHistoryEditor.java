@@ -65,7 +65,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	};
 
 	public enum MessageColumns {
-		DIRECTION("D"), MSGTYPE("MsgType"), CLORDID("ClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
+		DIRECTION("D"), TRANSACTTIME("TransactTime"), MSGTYPE("MsgType"), CLORDID("ClOrdID"),
+		ORDERID("OrderID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
 				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
 				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(

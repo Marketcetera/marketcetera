@@ -9,7 +9,9 @@ import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.AvgPx;
@@ -250,5 +252,22 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals(0,violator.getField("numIncomingMessages", fixMessageListener));
 		assertEquals(0,violator.getField("numOutgoingMessages", fixMessageListener));
 	}
+	
+	public void testGetLatestMessageForFields() throws Exception {
+		FIXMessageHistory history = new FIXMessageHistory();
+		
+		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), "ASDF", TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
+		history.addOutgoingMessage(order1);
+		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, "ASDF");
+		history.addIncomingMessage(executionReportForOrder1);
 
+		FieldMap fields = new Group();
+		fields.setString(ClOrdID.FIELD, "1");
+		fields.setChar(Side.FIELD, Side.SELL);
+		assertNull(history.getLatestMessageForFields(fields));
+		fields.setChar(Side.FIELD, Side.BUY);
+
+		assertNotNull(history.getLatestMessageForFields(fields));
+	
+	}
 }

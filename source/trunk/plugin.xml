@@ -37,9 +37,9 @@
             id="org.marketcetera.photon.views.StockOrderTicket"
             name="Stock Order Ticket"/>
       <view
-            class="org.marketcetera.photon.views.GoogleFinanceView"
-            id="org.marketcetera.photon.views.GoogleFinanceView"
-            name="Google Finance"/>
+            class="org.marketcetera.photon.views.WebBrowserView"
+            id="org.marketcetera.photon.views.WebBrowserView"
+            name="Browser"/>
       <view
             class="org.marketcetera.photon.views.FiltersView"
             id="org.marketcetera.photon.views.FiltersView"

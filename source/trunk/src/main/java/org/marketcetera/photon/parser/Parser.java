@@ -9,7 +9,6 @@ import java.util.Vector;
 
 import org.apache.log4j.Logger;
 import org.marketcetera.core.AccountID;
-import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InternalID;
@@ -19,6 +18,7 @@ import org.marketcetera.photon.parser.Token.NumberToken;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
+import quickfix.field.ClOrdID;
 import quickfix.field.MsgType;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
@@ -248,7 +248,12 @@ public class Parser {
         List<Message> messageList = new ArrayList<Message>(cancelCollection.size());
         for (InternalID id : cancelCollection){
             InternalID orderID = new InternalID(mIDFactory.getNext());
-            Message message = FIXMessageUtil.newCancel(orderID, id, (char)0, BigDecimal.ZERO, "", "");
+            Message message = new quickfix.fix42.Message();
+            message.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
+
+            message.setField(new OrigClOrdID(id.toString()));
+            message.setField(new ClOrdID(orderID.toString()));
+
             messageList.add(message);
         }
         return new Command(MsgType.ORDER_CANCEL_REQUEST, messageList);
@@ -259,8 +264,9 @@ public class Parser {
     {
         consumeToken("Expected cancel all command.", null);
         InternalID orderID = new InternalID(""+0);
-        Message message = FIXMessageUtil.newCancel(orderID, orderID, (char)0, BigDecimal.ZERO, "", "");
-        message.removeField(OrigClOrdID.FIELD);
+        Message message = new quickfix.fix42.Message();
+        message.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
+
 
         List aList = new ArrayList();
         aList.add(message);

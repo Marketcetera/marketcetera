@@ -38,17 +38,21 @@
     a simple equity transaction between a customer and a broker.  With each successive release of
     the protocol, more functionality was added, including options, futures and fixed income orders,
     third party transactions, and security description messages.  In practice, at the time of this writing
-    most equity brokers support 4.0, 4.1 or 4.2.  The versions are not--in general--backward compatible,
-    so the version of fix is important.  </p>
+    most equity brokers support 4.0, 4.1 or 4.2.  Note that the versions are not--in general--backward
+    compatible.</p>
 
     </div>
     <div>
     <h1>FIX and the Marketcetera Platform</h1>
         <p>
-        The Marketcetera platform uses the entire FIX protocol for communication with brokers and other
-        counterparties.  For internal communications, the platform uses the FIX application message
-        formats and semantics but does not necessarily implement the session level requirements
-        Currently the Marketcetera platform supports only version 4.2 of the FIX protocol.
+            The Marketcetera platform uses the entire FIX protocol for communication with brokers and other
+            counterparties.  For internal communications, the platform uses the FIX application message
+            formats and semantics but does not necessarily implement the session level requirements
+            Currently the Marketcetera platform supports only version 4.2 of the FIX protocol.
+        </p>
+        <p>
+            Marketcetera uses the QuickFIX/J Engine (part of the QuickFIX project, see Resources below)
+            to manage fix connections to counterparties.
         </p>
    </div>
     <div>

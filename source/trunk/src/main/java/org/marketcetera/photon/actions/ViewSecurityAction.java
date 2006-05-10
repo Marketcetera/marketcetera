@@ -15,7 +15,7 @@ import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.model.PositionEntry;
-import org.marketcetera.photon.views.GoogleFinanceView;
+import org.marketcetera.photon.views.WebBrowserView;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -84,12 +84,12 @@ public class ViewSecurityAction extends Action implements ISelectionListener,
 			}
 			if (symbol != null){
 				IWorkbenchPage page = window.getActivePage();
-				page.showView(GoogleFinanceView.ID);
+				page.showView(WebBrowserView.ID);
 				IViewReference[] viewReferences = page.getViewReferences();
 				for (IViewReference reference : viewReferences) {
-					if (GoogleFinanceView.ID.equals(reference.getId())) {
+					if (WebBrowserView.ID.equals(reference.getId())) {
 						IViewPart view = reference.getView(true);
-						((GoogleFinanceView) view).browseTo(symbol);
+						((WebBrowserView) view).browseToGoogleFinanceForSymbol(symbol);
 					}
 				}
 			}

@@ -1,19 +1,34 @@
 package org.marketcetera.photon.actions;
 
+import quickfix.Message;
+
 
 public class CommandEvent {
 
-	private String stringValue;
+	public enum Destination {
+		BROKER, EDITOR
+	}
 
-	public CommandEvent(String value) {
-		stringValue = value;
+	private Message messageValue;
+	private final Destination dest;
+
+	public CommandEvent(Message message, Destination dest) {
+		messageValue = message;
+		this.dest = dest;
 	}
 
 	/**
 	 * @return Returns the stringValue.
 	 */
-	public String getStringValue() {
-		return stringValue;
+	public Message getMessage() {
+		return messageValue;
+	}
+
+	/**
+	 * @return Returns the dest.
+	 */
+	public Destination getDestination() {
+		return dest;
 	}
 
 	

@@ -31,8 +31,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction closeAllAction;
 
-	//private ViewSecurityAction viewSecurityAction;
-
 	private IWorkbenchAction closeAction;
 
 	private IWorkbenchAction quitAction;
@@ -108,7 +106,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	protected void makeActions(IWorkbenchWindow window) {
 		this.window = window;
 
-		commandStatusLineContribution = new CommandStatusLineContribution();
+		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
 		commandStatusLineContribution.addCommandListener(Application.getOrderManager().getCommandListener());
 		feedStatusLineContribution = new FeedStatusLineContribution("feedStatus", new String[] {JMSConnector.JMS_CONNECTOR_ID});
 		Application.getJMSConnector().addFeedComponentListener(feedStatusLineContribution);

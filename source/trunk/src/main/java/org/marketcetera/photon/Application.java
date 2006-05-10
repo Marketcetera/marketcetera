@@ -55,7 +55,7 @@ public class Application implements IPlatformRunnable {
         jmsConnector = new JMSConnector();
         rootPortfolio = new Portfolio(null, "Main Portfolio");
 
-		orderManager = new OrderManager(idFactory, rootPortfolio);
+		orderManager = new OrderManager(idFactory, rootPortfolio, fixMessageHistory);
 		Display display = PlatformUI.createDisplay();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
@@ -95,7 +95,8 @@ public class Application implements IPlatformRunnable {
 						jmsURLString,
 						jmsConnectionFactoryString
 						);
-				orderManager.init();
+				setTopicListener(orderManager.getMessageListener());
+
 
 			return jmsConnector;
 		} catch (JMSException e) {
@@ -132,7 +133,6 @@ public class Application implements IPlatformRunnable {
 	}
 
 	public static void sendToQueue(Message message) throws JMSException {
-		fixMessageHistory.addOutgoingMessage(message);
 		jmsConnector.sendToQueue(message);
 	}
 
@@ -149,5 +149,9 @@ public class Application implements IPlatformRunnable {
 
 	public static Portfolio getRootPortfolio() {
 		return rootPortfolio;
+	}
+
+	public static IDFactory getIDFactory() {
+		return idFactory;
 	}
 }
