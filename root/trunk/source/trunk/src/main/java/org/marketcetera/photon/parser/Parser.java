@@ -263,7 +263,6 @@ public class Parser {
     public Command cancelAllCommand() throws ParserException
     {
         consumeToken("Expected cancel all command.", null);
-        InternalID orderID = new InternalID(""+0);
         Message message = new quickfix.fix42.Message();
         message.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
 

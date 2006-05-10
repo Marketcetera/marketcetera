@@ -3,7 +3,6 @@ package org.marketcetera.photon;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
 import org.eclipse.swt.SWT;
@@ -32,7 +31,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 
 	private Text textArea;
 
-	private Logger mInternalDebugLogger = Application.getMainConsoleLogger();
+//	private Logger mInternalDebugLogger = Application.getMainConsoleLogger();
 
 	private String text = ""; //$NON-NLS-1$
 

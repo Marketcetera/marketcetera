@@ -1,7 +1,6 @@
 package org.marketcetera.photon;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
 
 import org.eclipse.core.runtime.IAdapterFactory;
@@ -15,7 +14,6 @@ import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.views.FilterGroup;
 import org.marketcetera.photon.views.FilterItem;
-import org.marketcetera.photon.views.FiltersView;
 
 public class PhotonAdapterFactory implements IAdapterFactory {
 

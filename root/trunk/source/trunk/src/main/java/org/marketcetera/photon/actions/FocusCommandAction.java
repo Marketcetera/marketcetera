@@ -12,15 +12,11 @@ import org.marketcetera.photon.PhotonPlugin;
 
 public class FocusCommandAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
-	private final IWorkbenchWindow window;
-
 	public final static String ID = "org.marketcetera.photon.FocusCommand";
-
 
 	CommandStatusLineContribution commandInput;
 	
 	public FocusCommandAction(IWorkbenchWindow window, CommandStatusLineContribution commandInput) {
-		this.window = window;
 		setId(ID);
 		setActionDefinitionId(ID);
 		setText("Goto &command input area");
