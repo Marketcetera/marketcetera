@@ -2,15 +2,20 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonAdapterFactory;
+import org.marketcetera.photon.editors.OrderHistorySelectionProvider;
 import org.marketcetera.photon.model.IPortfolioListener;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.photon.model.PositionProgress;
@@ -38,7 +43,17 @@ public class PortfolioView extends ViewPart implements IPortfolioListener {
 		treeViewer.setContentProvider(new BaseWorkbenchContentProvider());
 		treeViewer.refresh();
 		setInput(Application.getRootPortfolio());
+		makeActions();
 	}
+	
+	private void makeActions() {
+		MenuManager menuMgr = new MenuManager("portfolioViewPopup");
+		Menu menu = menuMgr.createContextMenu(treeViewer.getControl());
+		menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+		treeViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, treeViewer);
+	}
+
 
 	public void setInput(Portfolio input){
 		Portfolio oldPortfolio = (Portfolio)treeViewer.getInput();

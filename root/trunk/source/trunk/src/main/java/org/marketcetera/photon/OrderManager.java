@@ -13,6 +13,7 @@ import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
@@ -209,7 +210,7 @@ public class OrderManager {
 	private PositionEntry handleUnknownExecutionReport(Message aMessage,
 			InternalID internalID) throws NoMoreIDsException, FieldNotFound {
 
-		String symbol = aMessage.getString(Symbol.FIELD);
+		MSymbol symbol = new MSymbol(aMessage.getString(Symbol.FIELD));
 		PositionEntry newPosition = new PositionEntry(null, symbol, new InternalID(idFactory.getNext()));
 		newPosition.addIncomingMessage(aMessage);
 
@@ -242,19 +243,19 @@ public class OrderManager {
 			MarketceteraException {
 		String id;
 		char side;
-		String symbol;
+		MSymbol symbol;
 		String account = null;
 
 		id = aMessage.getString(ClOrdID.FIELD).toString();
 		side = aMessage.getChar(Side.FIELD);
-		symbol = aMessage.getString(Symbol.FIELD).toString();
+		symbol = new MSymbol(aMessage.getString(Symbol.FIELD).toString());
 		try {
 			account = aMessage.getString(Account.FIELD);
 		} catch (FieldNotFound ex) { /* do nothing */
 		}
 		AccountID accountID = account == null ? null : new AccountID(account);
 
-		PositionEntry entry = new PositionEntry(rootPortfolio,symbol, new InternalID(id), side, symbol, accountID, new Date());
+		PositionEntry entry = new PositionEntry(rootPortfolio, symbol.getFullSymbol(), new InternalID(id), side, symbol, accountID, new Date());
 		entry.addOutgoingMessage(aMessage);
 		this.rootPortfolio.addEntry(entry);
 		

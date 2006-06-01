@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -31,7 +32,7 @@ public class PositionEntryTest extends TestCase {
 	private static String POSITION_NAME = "Testable position entry";
 	private static InternalID INTERNAL_ID = new InternalID("123");
 	private static char SIDE_BUY = Side.BUY;
-	public static String SYMBOL = "SYMB";
+	public static MSymbol SYMBOL = new MSymbol("SYMB");
 	private static AccountID ACCOUNT_ID = new AccountID("asdf");
 	public static InternalID CL_ORD_ID = new InternalID("CLORDID");
 	
@@ -117,7 +118,7 @@ public class PositionEntryTest extends TestCase {
 		
 		Message lastMessageForClOrdID = testablePositionEntry.getLastMessageForClOrdID(CL_ORD_ID);
 		assertEquals(MsgType.EXECUTION_REPORT, lastMessageForClOrdID.getHeader().getString(MsgType.FIELD));
-		assertEquals(SYMBOL, lastMessageForClOrdID.getString(Symbol.FIELD));
+		assertEquals(SYMBOL.getFullSymbol(), lastMessageForClOrdID.getString(Symbol.FIELD));
 	}
 
 

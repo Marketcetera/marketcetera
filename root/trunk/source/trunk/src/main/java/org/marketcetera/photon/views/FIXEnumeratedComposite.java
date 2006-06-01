@@ -61,6 +61,7 @@ public class FIXEnumeratedComposite extends FIXComposite {
 
 	@Override
 	public boolean populateFromMessage(Message aMessage) {
+		boolean found = false;
 		try {
 			String valueFromMessage;
 			valueFromMessage = aMessage.getString(fixFieldNumber);
@@ -68,13 +69,15 @@ public class FIXEnumeratedComposite extends FIXComposite {
 				StringField stringField = (StringField) aButton.getData();
 				if (valueFromMessage.equals(stringField.getValue())) {
 					aButton.setSelection(true);
-					return true;
+					found = true;
+				} else {
+					aButton.setSelection(false);
 				}
 			}
 		} catch (FieldNotFound e) {
 			return false;
 		}
-		return false;
+		return found;
 	}
 
 }

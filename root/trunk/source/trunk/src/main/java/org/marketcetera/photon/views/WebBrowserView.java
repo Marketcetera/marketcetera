@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.MSymbol;
 
 public class WebBrowserView extends ViewPart {
 
@@ -49,11 +50,11 @@ public class WebBrowserView extends ViewPart {
 		}
 	}
 
-	public String formatGoogleURL(String symbol) {
-		return GOOGLE_URL_FORMAT.format(new Object[] { symbol });
+	public String formatGoogleURL(MSymbol symbol) {
+		return GOOGLE_URL_FORMAT.format(new Object[] { symbol.getFullSymbol() });
 	}
 
-	public void browseToGoogleFinanceForSymbol(String symbol) {
+	public void browseToGoogleFinanceForSymbol(MSymbol symbol) {
 		if (browser != null){
 			location = formatGoogleURL(symbol);
 			browser.setUrl(location);

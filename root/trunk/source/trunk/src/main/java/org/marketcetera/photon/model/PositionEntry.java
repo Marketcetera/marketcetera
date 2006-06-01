@@ -7,6 +7,7 @@ import java.util.Date;
 
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -56,7 +57,7 @@ public class PositionEntry extends PositionProgress {
 	}
 	
     private final InternalID internalID;
-    private final String symbol;
+    private final MSymbol symbol;
     private final char side;
     private final Date startTime;
     private final AccountID accountID;
@@ -65,10 +66,10 @@ public class PositionEntry extends PositionProgress {
 
 
     public PositionEntry(
-    		Portfolio portfolio, String symbol,
+    		Portfolio portfolio, MSymbol symbol,
             InternalID internal)
     {
-    	this(portfolio, symbol, internal, Side.UNDISCLOSED, symbol, null, new Date());
+    	this(portfolio, symbol.getFullSymbol(), internal, Side.UNDISCLOSED, symbol, null, new Date());
     }
 
 	/**
@@ -88,7 +89,7 @@ public class PositionEntry extends PositionProgress {
     		String name,
             InternalID internal,
             char side,
-            String symbol,
+            MSymbol symbol,
             AccountID accountID,
             Date startTime
             ) {
@@ -149,7 +150,7 @@ public class PositionEntry extends PositionProgress {
     }
 
 
-    public String getSymbol() {
+    public MSymbol getSymbol() {
         return symbol;
     }
 

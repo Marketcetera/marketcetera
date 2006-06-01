@@ -12,6 +12,7 @@ import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.parser.Token.NumberToken;
@@ -151,7 +152,7 @@ public class Parser {
 
         char side = 0;
         int quantity = 0;
-        String symbol = "";
+        String symbolString = "";
         String priceString = "";
         boolean isMarket = false;
         String account = "";
@@ -177,7 +178,7 @@ public class Parser {
         quantity = intToken.intValue();
 
         token = consumeStringToken("Expecting symbol", null);
-        symbol = token.getImage();
+        symbolString = token.getImage();
 
         token = consumeToken("Expecting price.", PriceImage.values());
         if (token instanceof Token.StringToken) {
@@ -227,12 +228,12 @@ public class Parser {
 
         if (isMarket) {
             aMessage = FIXMessageUtil.newMarketOrder(orderID, side, new BigDecimal(quantity),
-                                                      symbol, timeInForce, accountID);
+                                                      new MSymbol(symbolString), timeInForce, accountID);
         } else {
         	aMessage = null;
         	try {
             aMessage = FIXMessageUtil.newLimitOrder(orderID, side, new BigDecimal(quantity),
-                                                     symbol, new BigDecimal(priceString), timeInForce, accountID);
+            		new MSymbol(symbolString), new BigDecimal(priceString), timeInForce, accountID);
         	} catch (Throwable th) {
         		th.printStackTrace();
         	}

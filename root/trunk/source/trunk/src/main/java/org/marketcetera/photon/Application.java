@@ -1,5 +1,7 @@
 package org.marketcetera.photon;
 
+import java.math.BigDecimal;
+
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
@@ -11,13 +13,20 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.FeedComponent.FeedStatus;
-import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.model.DBFIXMessageHistory;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.OrdStatus;
+import quickfix.field.Side;
 
 /**
  * This class controls all aspects of the application's execution
@@ -38,7 +47,7 @@ public class Application implements IPlatformRunnable {
 	private static JMSConnector jmsConnector;
 	private static Portfolio rootPortfolio;
 	
-	private static FIXMessageHistory fixMessageHistory;
+	private static DBFIXMessageHistory fixMessageHistory;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
 	
@@ -49,8 +58,13 @@ public class Application implements IPlatformRunnable {
 		
 		FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		
-		fixMessageHistory = new FIXMessageHistory();
-        jmsConnector = new JMSConnector();
+		fixMessageHistory = new DBFIXMessageHistory();
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
+				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
+				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), new MSymbol("IBM"));
+		fixMessageHistory.addIncomingMessage(aMessage);
+
+		jmsConnector = new JMSConnector();
         rootPortfolio = new Portfolio(null, "Main Portfolio");
 
 		orderManager = new OrderManager(idFactory, rootPortfolio, fixMessageHistory);
@@ -131,13 +145,17 @@ public class Application implements IPlatformRunnable {
 	}
 
 	public static void sendToQueue(Message message) throws JMSException {
-		jmsConnector.sendToQueue(message);
+		if (jmsConnector.getFeedStatus() == FeedStatus.AVAILABLE){
+			jmsConnector.sendToQueue(message);
+		} else {
+			Application.getMainConsoleLogger().error("Could not send message to queue ");
+		}
 	}
 
 	/**
 	 * @return Returns the fixMessageHistory.
 	 */
-	public static FIXMessageHistory getFIXMessageHistory() {
+	public static DBFIXMessageHistory getFIXMessageHistory() {
 		return fixMessageHistory;
 	}
 
