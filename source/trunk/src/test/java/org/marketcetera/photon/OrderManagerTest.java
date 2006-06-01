@@ -11,6 +11,7 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
@@ -94,8 +95,8 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testHandleInternalMessages() throws FieldNotFound {
 		Object[] messages = new Object[2];
-		messages[0] = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, "QWER", BigDecimal.TEN, TimeInForce.DAY, null);
-		messages[1] = FIXMessageUtil.newCancel(new InternalID("AQWE"), new InternalID("ASDF"), Side.BUY, BigDecimal.TEN, "SDF", "WERT");
+		messages[0] = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		messages[1] = FIXMessageUtil.newCancel(new InternalID("AQWE"), new InternalID("ASDF"), Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
 		orderManager.handleInternalMessages(messages);
 		Object[] historyArray = messageHistory.getHistory();
 		assertEquals(2, historyArray.length);
@@ -121,7 +122,7 @@ public class OrderManagerTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessage(Message)'
 	 */
 	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException, JMSException {
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, "QWER", BigDecimal.TEN, TimeInForce.DAY, null);
+		Message message = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
 		Object[] historyArray = messageHistory.getHistory();
 		assertEquals(1, historyArray.length);
@@ -135,7 +136,7 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testCancelReplaceOneOrder() throws FieldNotFound, JMSException, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, "QWER", BigDecimal.TEN, TimeInForce.DAY, null);
+		Message message = FIXMessageUtil.newLimitOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
 		Object[] history = messageHistory.getHistory();
 		assertEquals(1, history.length);
@@ -162,7 +163,7 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, JMSException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, "QWER", TimeInForce.DAY, null);
+		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
 		Object[] history = messageHistory.getHistory();
 		assertEquals(1, history.length);
@@ -202,7 +203,7 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testHandleCommandIssued() {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, "QWER", TimeInForce.DAY, null);
+		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		CommandEvent evt = new CommandEvent(message, CommandEvent.Destination.EDITOR);
 		orderManager.handleCommandIssued(evt);
 		
@@ -227,7 +228,7 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, JMSException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, "QWER", TimeInForce.DAY, null);
+		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
 		Object[] history = messageHistory.getHistory();
 		assertEquals(1, history.length);

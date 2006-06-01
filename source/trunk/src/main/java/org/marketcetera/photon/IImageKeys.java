@@ -2,7 +2,7 @@ package org.marketcetera.photon;
 
 public interface IImageKeys {
 	public static final String PORTFOLIO = "icons/silk/briefcase.png";
-	public static final String EQUITY = "icons/silk/medal_gold_2.png";
+	public static final String EQUITY = "icons/silk/medal_gold_1.png";
 	public static final String VIEW_SECURITY = "icons/silk/world_go.png";
 	public static final String LIGHTNING = "icons/silk/lightning.png";
 	public static final String ORDER_HISTORY = "icons/silk/clock_go.png";

@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldMap;
@@ -31,11 +32,16 @@ import quickfix.field.TimeInForce;
 
 public class FIXMessageHistoryTest extends TestCase {
 
+	
+	protected FIXMessageHistory getMessageHistory(){
+		return new FIXMessageHistory();
+	}
+
 	/*
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.addIncomingMessage(Message)'
 	 */
 	public void testAddIncomingMessage() throws FieldNotFound {
-		FIXMessageHistory history = new FIXMessageHistory();
+		FIXMessageHistory history = getMessageHistory();
 		InternalID orderID1 = new InternalID("1");
 		InternalID clOrderID1 = new InternalID("2");
 		String execID = "3";
@@ -50,7 +56,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		BigDecimal leavesQty = new BigDecimal(900);
 		BigDecimal cumQty = new BigDecimal(100);
 		BigDecimal avgPrice = new BigDecimal("12.3");
-		String symbol = "ASDF";
+		MSymbol symbol = new MSymbol("ASDF");
 		
 
 		Message message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol);
@@ -74,7 +80,7 @@ public class FIXMessageHistoryTest extends TestCase {
 			assertEquals(lastPrice, new BigDecimal(historyMessage.getString(LastPx.FIELD)));
 			assertEquals(cumQty, new BigDecimal(historyMessage.getString(CumQty.FIELD)));
 			assertEquals(avgPrice, new BigDecimal(historyMessage.getString(AvgPx.FIELD)));
-			assertEquals(symbol, historyMessage.getString(Symbol.FIELD));
+			assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		}		
 
 		{
@@ -99,7 +105,7 @@ public class FIXMessageHistoryTest extends TestCase {
 			assertEquals(lastPrice, new BigDecimal(historyMessage.getString(LastPx.FIELD)));
 			assertEquals(cumQty, new BigDecimal(historyMessage.getString(CumQty.FIELD)));
 			assertEquals(avgPrice, new BigDecimal(historyMessage.getString(AvgPx.FIELD)));
-			assertEquals(symbol, historyMessage.getString(Symbol.FIELD));
+			assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		}
 	}
 
@@ -107,11 +113,11 @@ public class FIXMessageHistoryTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.addOutgoingMessage(Message)'
 	 */
 	public void testAddOutgoingMessage() throws FieldNotFound {
-		FIXMessageHistory history = new FIXMessageHistory();
+		FIXMessageHistory history = getMessageHistory();
 		InternalID orderID = new InternalID("1");
 		char side = Side.SELL_SHORT_EXEMPT;
 		BigDecimal quantity = new BigDecimal("2000");
-		String symbol = "QWER";
+		MSymbol symbol = new MSymbol("QWER");
 		char timeInForce = TimeInForce.DAY;
 		AccountID account = new AccountID("ACCT");
 		Message message = FIXMessageUtil.newMarketOrder(orderID, side, quantity, symbol, timeInForce, account);
@@ -125,7 +131,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals(orderID.toString(), historyMessage.getString(ClOrdID.FIELD));
 		assertEquals(""+side, historyMessage.getString(Side.FIELD));
 		assertEquals(quantity, new BigDecimal(historyMessage.getString(OrderQty.FIELD)));
-		assertEquals(symbol, historyMessage.getString(Symbol.FIELD));
+		assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		assertEquals(""+timeInForce, historyMessage.getString(TimeInForce.FIELD));
 		assertEquals(account.toString(), historyMessage.getString(Account.FIELD));
 	}
@@ -135,12 +141,12 @@ public class FIXMessageHistoryTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.getLatestExecutionReports()'
 	 */
 	public void testGetLatestExecutionReports() throws FieldNotFound {
-		FIXMessageHistory history = new FIXMessageHistory();
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), "ASDF", TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, "ASDF");
-		Message order2 = FIXMessageUtil.newLimitOrder(new InternalID("3"), Side.SELL, new BigDecimal(2000), "QWER", new BigDecimal("12.3"), TimeInForce.DAY, new AccountID("ACCT"));
-		Message executionReportForOrder2 = FIXMessageUtil.newExecutionReport(new InternalID("1003"), new InternalID("3"), "2003", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, new BigDecimal(2000), BigDecimal.ZERO, BigDecimal.ZERO, "QWER");
-		Message secondExecutionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2004", ExecTransType.STATUS, ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(900), new BigDecimal(100), new BigDecimal("11.5"), "ASDF");
+		FIXMessageHistory history = getMessageHistory();
+		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
+		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"));
+		Message order2 = FIXMessageUtil.newLimitOrder(new InternalID("3"), Side.SELL, new BigDecimal(2000), new MSymbol("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, new AccountID("ACCT"));
+		Message executionReportForOrder2 = FIXMessageUtil.newExecutionReport(new InternalID("1003"), new InternalID("3"), "2003", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, new BigDecimal(2000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("QWER"));
+		Message secondExecutionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2004", ExecTransType.STATUS, ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(900), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"));
 
 		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
@@ -174,10 +180,10 @@ public class FIXMessageHistoryTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.addFIXMessageListener(IFIXMessageListener)'
 	 */
 	public void testAddFIXMessageListener() throws NoSuchFieldException, IllegalAccessException {
-		FIXMessageHistory history = new FIXMessageHistory();
+		FIXMessageHistory history = getMessageHistory();
 		
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), "ASDF", TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, "ASDF");
+		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
+		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"));
 
 		IFIXMessageListener fixMessageListener = new IFIXMessageListener() {
 			public int numIncomingMessages = 0;
@@ -215,10 +221,10 @@ public class FIXMessageHistoryTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.removePortfolioListener(IFIXMessageListener)'
 	 */
 	public void testRemovePortfolioListener() throws NoSuchFieldException, IllegalAccessException {
-		FIXMessageHistory history = new FIXMessageHistory();
+		FIXMessageHistory history = getMessageHistory();
 		
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), "ASDF", TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, "ASDF");
+		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
+		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"));
 
 		IFIXMessageListener fixMessageListener = new IFIXMessageListener() {
 			public int numIncomingMessages = 0;
@@ -254,11 +260,11 @@ public class FIXMessageHistoryTest extends TestCase {
 	}
 	
 	public void testGetLatestMessageForFields() throws Exception {
-		FIXMessageHistory history = new FIXMessageHistory();
+		FIXMessageHistory history = getMessageHistory();
 		
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), "ASDF", TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
+		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
 		history.addOutgoingMessage(order1);
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, "ASDF");
+		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"));
 		history.addIncomingMessage(executionReportForOrder1);
 
 		FieldMap fields = new Group();

@@ -3,12 +3,13 @@ package org.marketcetera.photon.editors;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IPersistableElement;
+import org.marketcetera.photon.model.DBFIXMessageHistory;
 import org.marketcetera.photon.model.FIXMessageHistory;
 
 public class OrderHistoryInput implements IEditorInput {
 
-	FIXMessageHistory history;
-	public OrderHistoryInput(FIXMessageHistory history){
+	DBFIXMessageHistory history;
+	public OrderHistoryInput(DBFIXMessageHistory history){
 		this.history = history;
 	}
 	
@@ -50,7 +51,7 @@ public class OrderHistoryInput implements IEditorInput {
 	/**
 	 * @return Returns the history.
 	 */
-	public FIXMessageHistory getHistory() {
+	public DBFIXMessageHistory getHistory() {
 		return history;
 	}
 }
