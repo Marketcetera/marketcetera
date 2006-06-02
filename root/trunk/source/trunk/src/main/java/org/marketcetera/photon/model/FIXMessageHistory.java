@@ -1,7 +1,10 @@
 package org.marketcetera.photon.model;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -9,14 +12,23 @@ import java.util.TreeMap;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.util.ListenerList;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Field;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.LastPx;
 import quickfix.field.LastQty;
+import quickfix.field.LeavesQty;
+import quickfix.field.OrderQty;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
 
 public class FIXMessageHistory extends PlatformObject {
 
@@ -25,7 +37,12 @@ public class FIXMessageHistory extends PlatformObject {
 	private ListenerList listeners;
 
 	public FIXMessageHistory() {
-		messageList = new ArrayList<MessageHolder>();
+		messageList = new LinkedList<MessageHolder>();
+	}
+	
+	public FIXMessageHistory(List<MessageHolder> messages){
+		this();
+		messageList.addAll(messages);
 	}
 
 	public void addIncomingMessage(quickfix.Message fixMessage) {
@@ -112,6 +129,62 @@ public class FIXMessageHistory extends PlatformObject {
 			}
 		}
 		return messages.toArray();
+	}
+	
+	public FIXMessageHistory getAveragePriceHistory()
+	{
+		ArrayList<MessageHolder> messages = new ArrayList<MessageHolder>();
+		Map<MSymbol, Message> tempMap = new HashMap<MSymbol, Message>();
+
+		for (MessageHolder holder : messageList) {
+			if (holder instanceof IncomingMessageHolder) {
+				IncomingMessageHolder inHolder = (IncomingMessageHolder) holder;
+				Message message = inHolder.getMessage();
+				try {
+					// NOTE: generally you should get this field as
+					// a BigDecimal, but because we're just comparing
+					// to zero, it's ok
+					if (message.getDouble(LastQty.FIELD) > 0) {
+						MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
+						tempMap.put(symbol, computeAveragePrice(tempMap.get(symbol), message));
+					}
+				} catch (FieldNotFound e) {
+					// do nothing
+				}
+			}
+		}
+		for (MSymbol aKey : tempMap.keySet()) {
+			messages.add(new IncomingMessageHolder(tempMap.get(aKey)));
+		}
+		return new FIXMessageHistory(messages);
+	}
+	
+	private Message computeAveragePrice(Message avgPriceMessage, Message fillMessage) throws FieldNotFound {
+		Message returnMessage = null;
+		if (avgPriceMessage == null){
+			returnMessage = new Message();
+			returnMessage.setField(fillMessage.getField(new Side()));
+			returnMessage.setField(fillMessage.getField(new Symbol()));
+			returnMessage.setField(fillMessage.getField(new OrderQty()));
+			returnMessage.setField(fillMessage.getField(new CumQty()));
+			returnMessage.setField(fillMessage.getField(new LeavesQty()));
+			returnMessage.setField(fillMessage.getField(new AvgPx()));
+			returnMessage.setField(fillMessage.getField(new Account()));
+		} else {
+			BigDecimal existingCumQty = new BigDecimal(avgPriceMessage.getString(CumQty.FIELD));
+			BigDecimal existingAvgPx = new BigDecimal(avgPriceMessage.getString(AvgPx.FIELD));
+			BigDecimal newLastQty = new BigDecimal(avgPriceMessage.getString(LastQty.FIELD));
+			BigDecimal newLastPx = new BigDecimal(avgPriceMessage.getString(LastPx.FIELD));
+			BigDecimal newTotal = existingCumQty.add(newLastQty);
+			if (newTotal.compareTo(BigDecimal.ZERO) != 0){
+				BigDecimal numerator = existingCumQty.multiply(existingAvgPx).add(newLastQty.multiply(newLastPx));
+				BigDecimal newAvgPx = numerator.divide(newTotal);
+				avgPriceMessage.setString(AvgPx.FIELD, newAvgPx.toPlainString());
+				avgPriceMessage.setString(CumQty.FIELD, newTotal.toPlainString());
+			}
+			returnMessage = avgPriceMessage;
+		}
+		return returnMessage;
 	}
 
 	public void addFIXMessageListener(IFIXMessageListener listener) {

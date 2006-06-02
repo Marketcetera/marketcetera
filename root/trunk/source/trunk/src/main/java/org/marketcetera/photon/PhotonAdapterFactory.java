@@ -7,7 +7,7 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
-import org.marketcetera.core.Security;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.model.Portfolio;
@@ -117,8 +117,8 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 				&& adaptableObject instanceof FilterItem)
 			return filterAdapter;
 		if (adapterType == IWorkbenchAdapter.class
-				&& adaptableObject instanceof Security)
-			return securityAdapter;
+				&& adaptableObject instanceof MSymbol)
+			return symbolAdapter;
 
 		return null;
 	}
@@ -155,14 +155,14 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 	};
 
-	private IWorkbenchAdapter securityAdapter = new IWorkbenchAdapter() {
+	private IWorkbenchAdapter symbolAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
 			return null;
 		}
 
 		public String getLabel(Object o) {
-			Security aSecurity = (Security) o;
-			return aSecurity.getSymbol();
+			MSymbol aSymbol = (MSymbol) o;
+			return aSymbol.toString();
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {

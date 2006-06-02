@@ -1,6 +1,5 @@
 package org.marketcetera.photon.editors;
 
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.eclipse.core.resources.IMarker;
@@ -15,9 +14,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -38,7 +34,6 @@ import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonAdapterFactory;
-import org.marketcetera.photon.model.DBFIXMessageHistory;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IFIXMessageListener;
 import org.marketcetera.photon.model.MessageHolder;
@@ -121,7 +116,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 
-	private DBFIXMessageHistory input;
+	private FIXMessageHistory input;
 
 	private IWorkbenchWindow window;
 	
@@ -236,13 +231,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		composite.setLayout(layout);
 		layout.numColumns = 1;
 
-		try {
-			averagePriceViewer = constructSQLViewer(composite, input.getAveragePriceMetaData());
-		} catch (SQLException e) {
-			Application.getMainConsoleLogger().error("Exception constructing TableViewer.",e);
-			averagePriceViewer = new TableViewer(composite,  SWT.BORDER | SWT.MULTI
-					| SWT.WRAP | SWT.FULL_SELECTION);
-		}
+		averagePriceViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
+				| SWT.WRAP | SWT.FULL_SELECTION);
 		averagePriceViewer.getControl().setLayoutData(
 				new GridData(GridData.FILL, GridData.FILL, true, true));
 		// orderViewer.getControl().setEditable(false);
@@ -254,18 +244,18 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 						SWT.COLOR_INFO_FOREGROUND));
 		averagePriceViewer.getTable().setHeaderVisible(true);
 
-//		for (AvgPriceColumns aColumn : AvgPriceColumns.values()) {
-//			TableColumn column = new TableColumn(averagePriceViewer.getTable(),
-//					SWT.LEFT);
-//			column.setText(aColumn.toString());
-//			column.setWidth(50);
-//		}
+		for (AvgPriceColumns aColumn : AvgPriceColumns.values()) {
+			TableColumn column = new TableColumn(averagePriceViewer.getTable(),
+					SWT.LEFT);
+			column.setText(aColumn.toString());
+			column.setWidth(50);
+		}
 		int index = addPage(composite);
 		setPageText(index, "Average Price");
-//		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
-//				averagePriceViewer.getTable().getColumns()));
-//		averagePriceViewer
-//				.setContentProvider(new SQLTableContentProvider());
+		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
+				averagePriceViewer.getTable().getColumns()));
+		averagePriceViewer
+				.setContentProvider(new BaseWorkbenchContentProvider());
 		packColumns(averagePriceViewer.getTable());
 
 	}
@@ -355,11 +345,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 				fillsViewer.setInput(input);
 			}
 			if (averagePriceViewer != null) {
-				try {
-					averagePriceViewer.setInput(((DBFIXMessageHistory)input).getAveragePriceResultSet());
-				} catch (SQLException e) {
-					Application.getMainConsoleLogger().error("Error getting average price history", e);
-				}
+				averagePriceViewer.setInput(input.getAveragePriceHistory());
 			}
 			input.addFIXMessageListener(this);
 		}
@@ -388,11 +374,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	}
 
 	public void incomingMessage(Message message) {
-		try {
-			averagePriceViewer.setInput(input.getAveragePriceResultSet());
-		} catch (SQLException e) {
-			Application.getMainConsoleLogger().error("Error getting average price data", e);
-		}
+		averagePriceViewer.setInput(input.getAveragePriceHistory());
 		asyncRefresh();
 	}
 
@@ -486,70 +468,70 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	}
 
 	
-	public static TableViewer constructSQLViewer(Composite parentComposite, ResultSetMetaData metaData) {
-		DBTableModel tableModel = null;
-		int count = 0;
-		TableViewer viewer = null;
-
-			viewer = new TableViewer(parentComposite, SWT.BORDER | SWT.MULTI
-					| SWT.WRAP | SWT.FULL_SELECTION);
-			try {
-				count = metaData.getColumnCount();
-			
-			// set up the SelectionAdapter
-			final Table table = viewer.getTable();
-			final SQLTableSorter sorter = new SQLTableSorter(count, metaData);
-			viewer.setSorter(sorter);
-			final String[] ss = new String[count];
-			final TableViewer tmpViewer = viewer;
-			SelectionListener headerListener = new SelectionAdapter() {
-
-				public void widgetSelected(SelectionEvent e) {
-					// column selected - need to sort
-					int column = table.indexOf((TableColumn) e.widget);
-					if (column == sorter.getTopPriority()) {
-						int k = sorter.reverseTopPriority();
-// if (k == SQLTableSorter.ASCENDING)
-// ((TableColumn) e.widget).setImage(imgAsc);
-// else
-// ((TableColumn) e.widget).setImage(imgDesc);
-					} else {
-						sorter.setTopPriority(column);
-// ((TableColumn) e.widget).setImage(imgAsc);
-					}
-					TableColumn[] tcArr = table.getColumns();
-					for (int i = 0; i < tcArr.length; i++) {
-						if (i != column) {
-							tcArr[i].setImage(null);
-						}
-					}
-					tmpViewer.refresh();
-
-				}
-			};
-
-			table.setLinesVisible(true);
-			table.setHeaderVisible(true);
-			SQLTableContentProvider slp = new SQLTableContentProvider();
-			viewer.setContentProvider(slp);
-			for (int i = 0; i < count; i++) {
-				TableColumn tc = new TableColumn(table, SWT.NULL);
-				String rawColumnLabel = metaData.getColumnLabel(i + 1);
-				tc.setText(rawColumnLabel);
-				ss[i] = new String(rawColumnLabel);
-				tc.addSelectionListener(headerListener);
-//				 if (i == 0)
-//				 tc.setImage(imgAsc);
-			}
-			viewer.setColumnProperties(ss);
-			viewer.setLabelProvider(slp);
-			for (int i = 0; i < count; i++) {
-				table.getColumn(i).pack();
-			}
-			table.layout();
-		} catch (SQLException ex){
-			ex.printStackTrace();
-		}
-		return viewer;
-	}
+//	public static TableViewer constructSQLViewer(Composite parentComposite, ResultSetMetaData metaData) {
+//		DBTableModel tableModel = null;
+//		int count = 0;
+//		TableViewer viewer = null;
+//
+//			viewer = new TableViewer(parentComposite, SWT.BORDER | SWT.MULTI
+//					| SWT.WRAP | SWT.FULL_SELECTION);
+//			try {
+//				count = metaData.getColumnCount();
+//			
+//			// set up the SelectionAdapter
+//			final Table table = viewer.getTable();
+//			final SQLTableSorter sorter = new SQLTableSorter(count, metaData);
+//			viewer.setSorter(sorter);
+//			final String[] ss = new String[count];
+//			final TableViewer tmpViewer = viewer;
+//			SelectionListener headerListener = new SelectionAdapter() {
+//
+//				public void widgetSelected(SelectionEvent e) {
+//					// column selected - need to sort
+//					int column = table.indexOf((TableColumn) e.widget);
+//					if (column == sorter.getTopPriority()) {
+//						int k = sorter.reverseTopPriority();
+//// if (k == SQLTableSorter.ASCENDING)
+//// ((TableColumn) e.widget).setImage(imgAsc);
+//// else
+//// ((TableColumn) e.widget).setImage(imgDesc);
+//					} else {
+//						sorter.setTopPriority(column);
+//// ((TableColumn) e.widget).setImage(imgAsc);
+//					}
+//					TableColumn[] tcArr = table.getColumns();
+//					for (int i = 0; i < tcArr.length; i++) {
+//						if (i != column) {
+//							tcArr[i].setImage(null);
+//						}
+//					}
+//					tmpViewer.refresh();
+//
+//				}
+//			};
+//
+//			table.setLinesVisible(true);
+//			table.setHeaderVisible(true);
+//			SQLTableContentProvider slp = new SQLTableContentProvider();
+//			viewer.setContentProvider(slp);
+//			for (int i = 0; i < count; i++) {
+//				TableColumn tc = new TableColumn(table, SWT.NULL);
+//				String rawColumnLabel = metaData.getColumnLabel(i + 1);
+//				tc.setText(rawColumnLabel);
+//				ss[i] = new String(rawColumnLabel);
+//				tc.addSelectionListener(headerListener);
+////				 if (i == 0)
+////				 tc.setImage(imgAsc);
+//			}
+//			viewer.setColumnProperties(ss);
+//			viewer.setLabelProvider(slp);
+//			for (int i = 0; i < count; i++) {
+//				table.getColumn(i).pack();
+//			}
+//			table.layout();
+//		} catch (SQLException ex){
+//			ex.printStackTrace();
+//		}
+//		return viewer;
+//	}
 }
