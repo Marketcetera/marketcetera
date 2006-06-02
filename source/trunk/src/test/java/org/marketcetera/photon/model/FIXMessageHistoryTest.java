@@ -23,6 +23,7 @@ import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
+import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
@@ -275,5 +276,53 @@ public class FIXMessageHistoryTest extends TestCase {
 
 		assertNotNull(history.getLatestMessageForFields(fields));
 	
+	}
+	
+	public void testAveragePriceList() throws Exception {
+		FIXMessageHistory messageHistory = getMessageHistory();
+		InternalID orderID1 = new InternalID("1");
+		InternalID clOrderID1 = new InternalID("2");
+		String execID = "3";
+		char execTransType = ExecTransType.STATUS;
+		char execType = ExecType.PARTIAL_FILL;
+		char ordStatus = OrdStatus.PARTIALLY_FILLED;
+		char side = Side.SELL_SHORT;
+		BigDecimal orderQty = new BigDecimal(1000);
+		BigDecimal orderPrice = new BigDecimal(789);
+		BigDecimal lastQty = new BigDecimal(100);
+		BigDecimal lastPrice = new BigDecimal("12.3");
+		BigDecimal leavesQty = new BigDecimal(900);
+		BigDecimal cumQty = new BigDecimal("100");
+		BigDecimal avgPrice = new BigDecimal("12.3");
+		MSymbol symbol = new MSymbol("ASDF");
+
+		Message message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol);
+		messageHistory.addIncomingMessage(message);
+		
+		orderID1 = new InternalID("3");
+		clOrderID1 = new InternalID("4");
+		lastQty = new BigDecimal(900);
+		lastPrice = new BigDecimal("12.4");
+		cumQty = new BigDecimal(900);
+		avgPrice = new BigDecimal("12.4");
+
+		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol);
+		messageHistory.addIncomingMessage(message);
+		
+		FIXMessageHistory averagePriceHistory = messageHistory.getAveragePriceHistory();
+
+		assertEquals(1, averagePriceHistory.size());
+		
+		Object[] historyArray = averagePriceHistory.getHistory();
+		assertEquals(1, historyArray.length);
+		IncomingMessageHolder holder = (IncomingMessageHolder) historyArray[0];
+		Message returnedMessage = holder.getMessage();
+		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
+
+		BigDecimal returnedAvgPrice = new BigDecimal(returnedMessage.getString(AvgPx.FIELD));
+		String string = returnedAvgPrice.toPlainString();
+		assertEquals( ((12.3*100)+(12.4*900))/1000, returnedAvgPrice.doubleValue(), .0001);
+		assertTrue( new BigDecimal("1000").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
+		
 	}
 }
