@@ -1,4 +1,4 @@
-package org.marketcetera.photon.editors;
+package org.marketcetera.photon.db;
 
 import java.sql.Date;
 import java.sql.ResultSetMetaData;

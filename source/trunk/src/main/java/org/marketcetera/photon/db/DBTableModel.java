@@ -1,4 +1,4 @@
-package org.marketcetera.photon.editors;
+package org.marketcetera.photon.db;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

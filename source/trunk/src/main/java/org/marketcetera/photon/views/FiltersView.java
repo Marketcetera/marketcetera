@@ -14,7 +14,7 @@ import org.eclipse.ui.model.WorkbenchLabelProvider;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.Security;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IFiltersListener;
 import org.marketcetera.photon.IOrderActionListener;
@@ -33,7 +33,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     public static final String ID = "org.marketcetera.photon.views.FiltersView";
 
     public Set<AccountID> mExistingAccounts = new HashSet<AccountID>();
-    public Set<Security> mExistingSymbols = new HashSet<Security>();
+    public Set<MSymbol> mExistingSymbols = new HashSet<MSymbol>();
 
     private TreeViewer mTreeViewer;
     private static FilterGroup sRoot = new FilterGroup(null, "root");
@@ -50,7 +50,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     public void createPartControl(Composite parent) {
 		Platform.getAdapterManager().registerAdapters(adapterFactory, FilterGroup.class);
 		Platform.getAdapterManager().registerAdapters(adapterFactory, FilterItem.class);
-		Platform.getAdapterManager().registerAdapters(adapterFactory, Security.class);
+		Platform.getAdapterManager().registerAdapters(adapterFactory, MSymbol.class);
 		Platform.getAdapterManager().registerAdapters(adapterFactory, AccountID.class);
 
     	
@@ -107,10 +107,10 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
         }
     }
 
-    public void addSecurity(Security sec){
-        if (!mExistingSymbols.contains(sec)){
-        mSecurityFilterGroup.addChild(sec);
-            mExistingSymbols.add(sec);
+    public void addSymbol(MSymbol symbol){
+        if (!mExistingSymbols.contains(symbol)){
+        mSecurityFilterGroup.addChild(symbol);
+            mExistingSymbols.add(symbol);
             refresh();
         }
     }

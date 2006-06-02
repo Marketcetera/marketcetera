@@ -16,7 +16,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.FeedComponent.FeedStatus;
-import org.marketcetera.photon.model.DBFIXMessageHistory;
+import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -47,7 +47,7 @@ public class Application implements IPlatformRunnable {
 	private static JMSConnector jmsConnector;
 	private static Portfolio rootPortfolio;
 	
-	private static DBFIXMessageHistory fixMessageHistory;
+	private static FIXMessageHistory fixMessageHistory;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
 	
@@ -58,7 +58,7 @@ public class Application implements IPlatformRunnable {
 		
 		FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		
-		fixMessageHistory = new DBFIXMessageHistory();
+		fixMessageHistory = new FIXMessageHistory();
 		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
 				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
 				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), new MSymbol("IBM"));
@@ -155,7 +155,7 @@ public class Application implements IPlatformRunnable {
 	/**
 	 * @return Returns the fixMessageHistory.
 	 */
-	public static DBFIXMessageHistory getFIXMessageHistory() {
+	public static FIXMessageHistory getFIXMessageHistory() {
 		return fixMessageHistory;
 	}
 

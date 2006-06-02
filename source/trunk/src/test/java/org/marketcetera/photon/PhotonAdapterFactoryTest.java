@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
-import org.marketcetera.core.Security;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IncomingMessageHolder;
 import org.marketcetera.photon.model.Portfolio;
@@ -17,7 +17,6 @@ import org.marketcetera.photon.views.FIXFilterItem;
 import org.marketcetera.photon.views.FilterGroup;
 import org.marketcetera.photon.views.FilterItem;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.symbology.Exchanges;
 
 import quickfix.Message;
 import quickfix.field.ExecTransType;
@@ -149,13 +148,13 @@ public class PhotonAdapterFactoryTest extends TestCase {
 		assertEquals(0, children.length);
 		
 	}
-	public void testSecurityAdapter() {
+	public void testSymbolAdapter() {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		Security security = new Security("Q", Exchanges.ARCA);
-		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(security, IWorkbenchAdapter.class);
-		assertEquals("Q", adapter.getLabel(security));
-		assertNull(adapter.getParent(security));
-		Object[] children = adapter.getChildren(security);
+		MSymbol symbol = new MSymbol("Q");
+		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(symbol, IWorkbenchAdapter.class);
+		assertEquals("Q", adapter.getLabel(symbol));
+		assertNull(adapter.getParent(symbol));
+		Object[] children = adapter.getChildren(symbol);
 		assertEquals(0, children.length);
 	}
 
