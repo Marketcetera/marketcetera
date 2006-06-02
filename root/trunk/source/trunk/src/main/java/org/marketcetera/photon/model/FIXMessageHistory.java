@@ -13,6 +13,7 @@ import java.util.TreeMap;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.jface.util.ListenerList;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.SymbolSide;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Field;
@@ -26,6 +27,7 @@ import quickfix.field.CumQty;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
@@ -134,7 +136,7 @@ public class FIXMessageHistory extends PlatformObject {
 	public FIXMessageHistory getAveragePriceHistory()
 	{
 		ArrayList<MessageHolder> messages = new ArrayList<MessageHolder>();
-		Map<MSymbol, Message> tempMap = new HashMap<MSymbol, Message>();
+		Map<SymbolSide, Message> tempMap = new HashMap<SymbolSide, Message>();
 
 		for (MessageHolder holder : messageList) {
 			if (holder instanceof IncomingMessageHolder) {
@@ -146,14 +148,16 @@ public class FIXMessageHistory extends PlatformObject {
 					// to zero, it's ok
 					if (message.getDouble(LastQty.FIELD) > 0) {
 						MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
-						tempMap.put(symbol, computeAveragePrice(tempMap.get(symbol), message));
+						String side = message.getString(Side.FIELD);
+						SymbolSide symbolSide = new SymbolSide(symbol, side);
+						tempMap.put(symbolSide, computeAveragePrice(tempMap.get(symbol), message));
 					}
 				} catch (FieldNotFound e) {
 					// do nothing
 				}
 			}
 		}
-		for (MSymbol aKey : tempMap.keySet()) {
+		for (SymbolSide aKey : tempMap.keySet()) {
 			messages.add(new IncomingMessageHolder(tempMap.get(aKey)));
 		}
 		return new FIXMessageHistory(messages);
@@ -169,15 +173,17 @@ public class FIXMessageHistory extends PlatformObject {
 			returnMessage.setField(fillMessage.getField(new CumQty()));
 			returnMessage.setField(fillMessage.getField(new LeavesQty()));
 			returnMessage.setField(fillMessage.getField(new AvgPx()));
-			returnMessage.setField(fillMessage.getField(new Account()));
+			try { returnMessage.setField(fillMessage.getField(new Account())); } catch (FieldNotFound ex) { /* do nothing */ }
+			returnMessage.getHeader().setField(new MsgType(MsgType.EXECUTION_REPORT));
 		} else {
 			BigDecimal existingCumQty = new BigDecimal(avgPriceMessage.getString(CumQty.FIELD));
 			BigDecimal existingAvgPx = new BigDecimal(avgPriceMessage.getString(AvgPx.FIELD));
-			BigDecimal newLastQty = new BigDecimal(avgPriceMessage.getString(LastQty.FIELD));
-			BigDecimal newLastPx = new BigDecimal(avgPriceMessage.getString(LastPx.FIELD));
+			BigDecimal newLastQty = new BigDecimal(fillMessage.getString(LastQty.FIELD));
+			BigDecimal newLastPx = new BigDecimal(fillMessage.getString(LastPx.FIELD));
 			BigDecimal newTotal = existingCumQty.add(newLastQty);
 			if (newTotal.compareTo(BigDecimal.ZERO) != 0){
 				BigDecimal numerator = existingCumQty.multiply(existingAvgPx).add(newLastQty.multiply(newLastPx));
+				numerator.setScale(10);
 				BigDecimal newAvgPx = numerator.divide(newTotal);
 				avgPriceMessage.setString(AvgPx.FIELD, newAvgPx.toPlainString());
 				avgPriceMessage.setString(CumQty.FIELD, newTotal.toPlainString());

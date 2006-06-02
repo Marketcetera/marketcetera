@@ -48,7 +48,7 @@ public class AveragePriceContentProvider implements IStructuredContentProvider{
     public Object[] getChildren(Object element) {
     	if (element instanceof FIXMessageHistory) {
 			FIXMessageHistory history = (FIXMessageHistory) element;
-			return history.getLatestExecutionReports();
+			return history.getHistory();
 		}
     	return new Object[0];
     }

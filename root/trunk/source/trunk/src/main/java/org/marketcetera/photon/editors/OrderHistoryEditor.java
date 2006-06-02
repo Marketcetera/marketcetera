@@ -55,8 +55,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		IFIXMessageListener, ISelectionListener {
 
 	public enum AvgPriceColumns {
-		SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), LEAVESQTY(
-				"LeavesQty"), AVGPX("AvgPx"), ACCOUNT("Account");
+		DIRECTION("D"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
+		AVGPX("AvgPx"), ACCOUNT("Account");
 
 		private String mName;
 
@@ -255,7 +255,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
 				averagePriceViewer.getTable().getColumns()));
 		averagePriceViewer
-				.setContentProvider(new BaseWorkbenchContentProvider());
+				.setContentProvider(new AveragePriceContentProvider());
 		packColumns(averagePriceViewer.getTable());
 
 	}
