@@ -147,7 +147,7 @@ public class OrderManager {
 			} else if (FIXMessageUtil.isCancelReject(aMessage)) {
 				handleCancelReject(aMessage);
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			internalMainLogger.error(
 					"Error decoding incoming message "+ex.getMessage(), ex);
 			ex.printStackTrace();

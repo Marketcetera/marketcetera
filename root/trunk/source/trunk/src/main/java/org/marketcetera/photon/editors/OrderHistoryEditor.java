@@ -374,8 +374,17 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	}
 
 	public void incomingMessage(Message message) {
-		averagePriceViewer.setInput(input.getAveragePriceHistory());
-		asyncRefresh();
+		final FIXMessageHistory avgPxHistory = input.getAveragePriceHistory();
+		asyncExec(new Runnable(){
+			public void run() {
+				try {
+					averagePriceViewer.setInput(avgPxHistory);
+					refresh();
+				} catch (Throwable ex){
+					ex.printStackTrace();
+				}
+			}
+		});
 	}
 
 	public void outgoingMessage(Message message) {
@@ -396,13 +405,11 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	{
 		asyncExec(new Runnable() {
 			public void run() {
-				messagesViewer.refresh();
-				fillsViewer.refresh();
-				averagePriceViewer.refresh();
+				refresh();
 			}
 		});
 	}
-
+	
 	public void selectionChanged(IWorkbenchPart part, ISelection incoming) {
 		if (incoming instanceof IStructuredSelection) {
 			IStructuredSelection selection = (IStructuredSelection) incoming;
@@ -465,6 +472,12 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		if (didReset){
 			asyncRefresh();
 		}
+	}
+
+	private void refresh() {
+		messagesViewer.refresh();
+		fillsViewer.refresh();
+		averagePriceViewer.refresh();
 	}
 
 	
