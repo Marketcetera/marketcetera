@@ -48,7 +48,10 @@ public class JMSConnector implements FeedComponent {
 	
 	public void shutdown(){
 		try {
-			adapter.shutdown();
+			if (adapter != null){
+				adapter.shutdown();
+				setStatus(FeedStatus.OFFLINE);
+			}
 		} finally {
 			adapter = null;
 		}

@@ -1,7 +1,6 @@
 package org.marketcetera.photon;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.jms.JMSException;
@@ -9,19 +8,13 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
-import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.InternalID;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.Portfolio;
-import org.marketcetera.photon.model.PositionEntry;
-import org.marketcetera.photon.model.PositionProgress;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -32,14 +25,11 @@ import quickfix.Group;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.Account;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
-import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
 
@@ -51,8 +41,6 @@ import quickfix.field.Text;
 @ClassVersion("$Id$")
 public class OrderManager {
 	private IDFactory idFactory;
-
-	private Portfolio rootPortfolio;
 	
 	private Logger internalMainLogger = Application.getMainConsoleLogger();
 
@@ -66,8 +54,7 @@ public class OrderManager {
 
 	/** Creates a new instance of OrderManager 
 	 * @param fixMessageHistory */
-	public OrderManager(IDFactory idFactory, Portfolio rootPortfolio, FIXMessageHistory fixMessageHistory) {
-		this.rootPortfolio = rootPortfolio;
+	public OrderManager(IDFactory idFactory, FIXMessageHistory fixMessageHistory) {
 		this.idFactory = idFactory;
 		this.fixMessageHistory = fixMessageHistory;
 
@@ -161,40 +148,13 @@ public class OrderManager {
 		orderID = clOrdID.getValue();
 		char ordStatus = aMessage.getChar(OrdStatus.FIELD);
 
-		InternalID internalID = new InternalID(orderID);
-		PositionEntry position = getPosition(rootPortfolio, internalID);
-
-		if (position == null) {
-			// it's a new order, start tracking it
-			position = handleUnknownExecutionReport(aMessage, internalID);
-		}
-
-		position.addIncomingMessage(aMessage);
-
 		if (ordStatus == OrdStatus.REJECTED) {
 			String rejectMsg = "Order rejected " + orderID + " "
 					+ aMessage.getString(Symbol.FIELD);
 			internalMainLogger.info(rejectMsg);
 		}
-		rootPortfolio.updateEntry(position);
 	}
 
-	private PositionEntry getPosition(Portfolio aPortfolio, InternalID internalID) {
-		PositionProgress[] entries = aPortfolio.getEntries();
-		for (PositionProgress progress : entries) {
-			if (progress instanceof PositionEntry) {
-				PositionEntry entry = (PositionEntry) progress;
-				if (entry.getLastMessageForClOrdID(internalID)!=null) {
-					return entry;
-				}
-			}
-			if (progress instanceof Portfolio) {
-				Portfolio subPortfolio = (Portfolio) progress;
-				return getPosition(subPortfolio, internalID);
-			}
-		}
-		return null;
-	}
 
 	private void handleCancelReject(Message aMessage) throws FieldNotFound {
 		String reason = aMessage.getString(CxlRejReason.FIELD);
@@ -207,21 +167,11 @@ public class OrderManager {
 	}
 
 
-	private PositionEntry handleUnknownExecutionReport(Message aMessage,
-			InternalID internalID) throws NoMoreIDsException, FieldNotFound {
 
-		MSymbol symbol = new MSymbol(aMessage.getString(Symbol.FIELD));
-		PositionEntry newPosition = new PositionEntry(null, symbol, new InternalID(idFactory.getNext()));
-		newPosition.addIncomingMessage(aMessage);
-
-		this.rootPortfolio.addEntry(newPosition);
-		return newPosition;
-	}
 
 
 	public void handleInternalMessage(Message aMessage) throws FieldNotFound,
 			MarketceteraException, JMSException {
-		fixMessageHistory.addOutgoingMessage(aMessage);
 
 		if (FIXMessageUtil.isOrderSingle(aMessage)) {
 			addNewOrder(aMessage);
@@ -241,25 +191,10 @@ public class OrderManager {
 
 	protected void addNewOrder(Message aMessage) throws FieldNotFound,
 			MarketceteraException {
-		String id;
-		char side;
-		MSymbol symbol;
-		String account = null;
-
-		id = aMessage.getString(ClOrdID.FIELD).toString();
-		side = aMessage.getChar(Side.FIELD);
-		symbol = new MSymbol(aMessage.getString(Symbol.FIELD).toString());
-		try {
-			account = aMessage.getString(Account.FIELD);
-		} catch (FieldNotFound ex) { /* do nothing */
-		}
-		AccountID accountID = account == null ? null : new AccountID(account);
-
-		PositionEntry entry = new PositionEntry(rootPortfolio, symbol.getFullSymbol(), new InternalID(id), side, symbol, accountID, new Date());
-		entry.addOutgoingMessage(aMessage);
-		this.rootPortfolio.addEntry(entry);
 		
 		try {
+			fixMessageHistory.addOutgoingMessage(aMessage);
+
 			sendToApplicationQueue(aMessage);
 		} catch (JMSException ex) {
 			internalMainLogger.error(
@@ -271,50 +206,56 @@ public class OrderManager {
 
 	protected void cancelReplaceOneOrder(Message cancelMessage)
 			throws NoMoreIDsException, FieldNotFound, JMSException {
+
 		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
-		InternalID clOrdIDInternal = new InternalID(clOrdId);
-		PositionEntry anEntry = getPosition(rootPortfolio, clOrdIDInternal);
-		if (anEntry != null) {
-			Message lastMessageForClOrdID = anEntry
-					.getLastMessageForClOrdID(clOrdIDInternal);
-			fillFieldsFromExistingMessage(cancelMessage, lastMessageForClOrdID);
+		FieldMap fields = new Group();
+		fields.setString(ClOrdID.FIELD, clOrdId);
+		Message latestMessage = fixMessageHistory.getLatestMessageForFields(fields);
+		if (latestMessage != null){
+			cancelMessage.setField(new OrigClOrdID(clOrdId));
+			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
+			fillFieldsFromExistingMessage(cancelMessage, latestMessage);
+
+			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			try {
 				sendToApplicationQueue(cancelMessage);
-			} catch (JMSException ex) {
-				internalMainLogger.error(
-						"Error sending cancel message to JMS", ex);
+			} catch (JMSException e) {
+				internalMainLogger.error("Error sending cancel/replace for order "+clOrdId, e);
 			}
 		} else {
-			internalMainLogger.error("Could not send cancel for order "
-					+ clOrdId);
+			internalMainLogger.error("Could not send cancel/replace request for order ID "+clOrdId);
 		}
 	}
 
 	protected void cancelOneOrder(Message cancelMessage)
 			throws NoMoreIDsException, FieldNotFound, JMSException {
 		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
-		InternalID clOrdIDInternal = new InternalID(clOrdId);
-		PositionEntry anEntry = getPosition(rootPortfolio, clOrdIDInternal);
-		if (anEntry != null) {
-			Message lastMessageForClOrdID = anEntry.getLastMessageForClOrdID(clOrdIDInternal);
-			fillFieldsFromExistingMessage(cancelMessage, lastMessageForClOrdID);
-			try {
-				cancelMessage.setField(lastMessageForClOrdID.getField(new OrderID()));
-			} catch (FieldNotFound ex){
-				//do nothing
-			}
-			try {
-				sendToApplicationQueue(cancelMessage);
-			} catch (JMSException ex) {
-				internalMainLogger.error(
-						"Error sending cancel message to JMS", ex);
-			}
-
-		} else {
-			internalMainLogger.error("Could not send cancel for order "+ clOrdId);
-		}
+		cancelOneOrderByClOrdID(clOrdId);
 	}
 	
+	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
+		FieldMap fields = new Group();
+		fields.setString(ClOrdID.FIELD, clOrdID);
+		Message latestMessage = fixMessageHistory.getLatestMessageForFields(fields);
+		if (latestMessage != null){
+			Message cancelMessage = new quickfix.fix42.Message();
+			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
+			cancelMessage.setField(new OrigClOrdID(clOrdID));
+			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
+			fillFieldsFromExistingMessage(cancelMessage, latestMessage);
+
+			fixMessageHistory.addOutgoingMessage(cancelMessage);
+			try {
+				sendToApplicationQueue(cancelMessage);
+			} catch (JMSException e) {
+				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
+			}
+		} else {
+			internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
+		}
+		
+	}
+
 	private void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage){
 		try {
 			String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
@@ -342,9 +283,6 @@ public class OrderManager {
 		return idFactory;
 	}
 
-	public Portfolio getRootPortfolio() {
-		return rootPortfolio;
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -392,28 +330,6 @@ public class OrderManager {
 		}
 	}
 
-	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
-		FieldMap fields = new Group();
-		fields.setString(ClOrdID.FIELD, clOrdID);
-		Message latestMessage = fixMessageHistory.getLatestMessageForFields(fields);
-		if (latestMessage != null){
-			Message cancelMessage = new quickfix.fix42.Message();
-			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
-			cancelMessage.setField(new OrigClOrdID(clOrdID));
-			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
-			fillFieldsFromExistingMessage(cancelMessage, latestMessage);
-
-			fixMessageHistory.addOutgoingMessage(cancelMessage);
-			try {
-				sendToApplicationQueue(cancelMessage);
-			} catch (JMSException e) {
-				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
-			}
-		} else {
-			internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
-		}
-		
-	}
 
 	protected void sendToApplicationQueue(Message message) throws JMSException
 	{

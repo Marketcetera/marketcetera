@@ -37,7 +37,12 @@ public class FIXEnumeratedComposite extends FIXComposite {
 
 	@Override
 	public boolean modifyOrder(Message arg0) throws MarketceteraException {
-		// TODO Auto-generated method stub
+		for (Button aButton : buttons) {
+			if (aButton.getSelection()) {
+				arg0.setField(new StringField(fixFieldNumber, ((StringField)aButton.getData()).getValue()));
+				return true;
+			}
+		}
 		return false;
 	}
 
@@ -80,4 +85,15 @@ public class FIXEnumeratedComposite extends FIXComposite {
 		return found;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.FIXComposite#clear()
+	 */
+	@Override
+	public void clear() {
+		for (Button aButton : buttons) {
+			aButton.setSelection(false);
+		}
+	}
+
+	
 }

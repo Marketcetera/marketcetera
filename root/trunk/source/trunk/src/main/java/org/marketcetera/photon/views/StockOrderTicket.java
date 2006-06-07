@@ -1,6 +1,11 @@
 package org.marketcetera.photon.views;
 
+
+import java.math.BigDecimal;
+
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -11,9 +16,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.InternalID;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.Application;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -108,6 +118,44 @@ public class StockOrderTicket extends ViewPart {
 		sendButton = toolkit.createButton(okCancelComposite, "Send", SWT.PUSH);
 		cancelButton = toolkit.createButton(okCancelComposite, "Cancel",
 				SWT.PUSH);
+		cancelButton.addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
+				handleCancel();
+			}
+		});
+		sendButton.addMouseListener(new MouseAdapter() {
+			public void mouseUp(MouseEvent e) {
+				handleSend();
+			}
+		});
+	}
+
+	protected void handleSend() {
+       try {
+			String orderID = Application.getIDFactory().getNext();
+	        Message aMessage = FIXMessageUtil.newLimitOrder(new InternalID(orderID), Side.BUY, BigDecimal.ZERO,
+	        		new MSymbol(""), BigDecimal.ZERO, TimeInForce.DAY, null);
+	        aMessage.removeField(Side.FIELD);
+	        aMessage.removeField(OrderQty.FIELD);
+	        aMessage.removeField(Symbol.FIELD);
+	        aMessage.removeField(Price.FIELD);
+	        aMessage.removeField(TimeInForce.FIELD);
+ 			populateMessageFromUI(aMessage);
+			Application.getOrderManager().handleInternalMessage(aMessage);
+		} catch (Exception e) {
+			Application.getMainConsoleLogger().error("Error sending order", e);
+		}
+	}
+	
+	protected void handleCancel()
+	{
+		Control[] children = form.getBody().getChildren();
+		for (Control control : children) {
+			if (control instanceof FIXComposite) {
+				FIXComposite composite = (FIXComposite) control;
+				composite.clear();
+			}
+		}
 	}
 
 	@Override
@@ -128,6 +176,16 @@ public class StockOrderTicket extends ViewPart {
 			if (control instanceof FIXComposite) {
 				FIXComposite composite = (FIXComposite) control;
 				composite.populateFromMessage(aMessage);
+			}
+		}
+	}
+	
+	private void populateMessageFromUI(Message aMessage) throws MarketceteraException{
+		Control[] children = form.getBody().getChildren();
+		for (Control control : children) {
+			if (control instanceof FIXComposite) {
+				FIXComposite composite = (FIXComposite) control;
+				composite.modifyOrder(aMessage);
 			}
 		}
 	}

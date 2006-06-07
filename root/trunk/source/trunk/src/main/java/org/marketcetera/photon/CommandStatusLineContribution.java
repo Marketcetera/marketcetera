@@ -93,9 +93,9 @@ public class CommandStatusLineContribution extends ContributionItem {
 	}
 
 	protected void handleKeyReleased(KeyEvent e) {
+		Text theText = (Text) e.widget;
+		String theInputString = theText.getText();
 		try {
-			Text theText = (Text) e.widget;
-			String theInputString = theText.getText();
 			if ('\r' == e.character) {
 				theText.setText("");
 				parseAndFireCommandEvent(theInputString,
@@ -106,9 +106,9 @@ public class CommandStatusLineContribution extends ContributionItem {
 						CommandEvent.Destination.EDITOR);
 			}
 		} catch (NoMoreIDsException e1) {
-			e1.printStackTrace();
+			Application.getMainConsoleLogger().error("Ran out of ID's parsing command '"+theInputString +"'");
 		} catch (ParserException e1) {
-			e1.printStackTrace();
+			Application.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
 		}
 	}
 

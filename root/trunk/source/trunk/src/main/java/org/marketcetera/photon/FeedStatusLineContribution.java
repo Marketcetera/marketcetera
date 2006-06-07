@@ -71,7 +71,7 @@ public class FeedStatusLineContribution extends ContributionItem implements
 		final Label theLabel = labelMap.get(feedName);
 		if (theLabel == null)
 			return;
-		Display.getCurrent().asyncExec(new Runnable() {
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				theLabel.setImage(getStatusImage(aStatus));
 				theLabel.setToolTipText(feedName + " " + aStatus.name());

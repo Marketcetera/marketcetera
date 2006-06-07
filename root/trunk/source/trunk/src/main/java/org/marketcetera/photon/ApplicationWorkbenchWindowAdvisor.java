@@ -82,10 +82,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			cslc.addCommandListener(sot.getCommandListener());
 			cslc.setIDFactory(Application.getIDFactory());
 		}
-		try {
-			Application.initJMSConnector();
-		} catch (JMSException ex) {
-		}
+		Application.initJMSConnector();
 
 		Application.getMainConsoleLogger().info(
 				"Application initialized: " + new Date());

@@ -1,7 +1,5 @@
 package org.marketcetera.photon.editors;
 
-import java.sql.SQLException;
-
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -32,7 +30,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IFIXMessageListener;
@@ -260,6 +257,89 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 
 	}
 
+//	/**
+//	 * Creates page 2 of the multi-page editor, which shows the sorted text.
+//	 */
+//	void createPage3() {
+//		Composite composite = new Composite(getContainer(), SWT.NONE);
+//		GridLayout layout = new GridLayout();
+//		composite.setLayout(layout);
+//		layout.numColumns = 1;
+//
+//		
+//		EventList<MessageHolder> messageListG = new BasicEventList<MessageHolder>();
+//		messageListG.add(new IncomingMessageHolder(
+//				FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), BigDecimal.TEN, BigDecimal.TEN, new BigDecimal(1000), BigDecimal.TEN, BigDecimal.TEN, new MSymbol("ASDF"))
+//				
+//				));
+//		FilterList<MessageHolder> fillListG = new FilterList<MessageHolder>(messageListG, 
+//				new Matcher<MessageHolder>() {
+//					public boolean matches(MessageHolder holder) {
+//						if (holder instanceof IncomingMessageHolder) {
+//							IncomingMessageHolder incomingHolder = (IncomingMessageHolder) holder;
+//							try {
+//								if (incomingHolder.getMessage().getDouble(LastShares.FIELD)>0){
+//									return true;
+//								}
+//							} catch (FieldNotFound e) {
+//								return false;
+//							}
+//						}
+//						return false;
+//					}
+//			
+//		});
+//
+//		// Create the Issues Table
+//        Table fillTableG = createFillTableG(composite);
+//    	EventTableViewer issuesTableViewer;
+//        try {
+//			issuesTableViewer = new EventTableViewer(fillListG, fillTableG, new EnumTableFormat(FillColumns.values()));
+//        } catch (java.lang.NoClassDefFoundError ex){
+//        	ex.printStackTrace();
+//        	throw ex;
+//        }
+//        fillTableG = formatFillTableG(fillTableG);
+//
+//        
+//        fillTableG.setBackground(
+//        		fillTableG.getDisplay().getSystemColor(
+//						SWT.COLOR_INFO_BACKGROUND));
+//        fillTableG.setForeground(
+//        		fillTableG.getDisplay().getSystemColor(
+//						SWT.COLOR_INFO_FOREGROUND));
+//
+//        fillTableG.setHeaderVisible(true);
+//
+//		int index = addPage(composite);
+//		setPageText(index, "GlazedList Fills");
+//
+//	}
+
+//    private Table createFillTableG(Composite parent) {
+//        Table issuesTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL);
+//        GridData issuesTableLayout = new GridData();
+//        issuesTableLayout.horizontalSpan = 2;
+//        issuesTableLayout.verticalSpan = 1;
+//        issuesTableLayout.horizontalAlignment = GridData.FILL;
+//        issuesTableLayout.verticalAlignment = GridData.FILL;
+//        issuesTableLayout.grabExcessHorizontalSpace = true;
+//        issuesTableLayout.grabExcessVerticalSpace = true;
+//        issuesTable.setLayoutData(issuesTableLayout);
+//        return issuesTable;
+//    }
+//
+//    private Table formatFillTableG(Table issuesTable) {
+//        issuesTable.getVerticalBar().setEnabled(true);
+//        issuesTable.getColumn(0).setWidth(30);
+//        issuesTable.getColumn(1).setWidth(50);
+//        issuesTable.getColumn(2).setWidth(46);
+//        issuesTable.getColumn(3).setWidth(50);
+//        issuesTable.getColumn(4).setWidth(60);
+//        issuesTable.getColumn(5).setWidth(250);
+//        return issuesTable;
+//    }
+
 	/**
 	 * Creates the pages of the multi-page editor.
 	 */
@@ -267,6 +347,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		createPage0();
 		createPage1();
 		createPage2();
+//		createPage3();
 		setFIXMessageHistory(input);
 		makeActions();
 	}

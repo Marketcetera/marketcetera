@@ -10,9 +10,6 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.Portfolio;
-import org.marketcetera.photon.model.PositionEntry;
-import org.marketcetera.photon.model.PositionEntryTest;
 import org.marketcetera.photon.views.FIXFilterItem;
 import org.marketcetera.photon.views.FilterGroup;
 import org.marketcetera.photon.views.FilterItem;
@@ -38,57 +35,18 @@ public class PhotonAdapterFactoryTest extends TestCase {
 		assertEquals(IWorkbenchAdapter.class, adapterList[0]);
 	}
 	
-	public void testPortfolioAdapter() {
-		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		PositionEntry testablePositionEntry = PositionEntryTest.getTestablePositionEntry();
-		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), PositionEntryTest.CL_ORD_ID, "987", ExecTransType.STATUS,
-				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
-				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), PositionEntryTest.SYMBOL);
-		aMessage.setUtcTimeStamp(TransactTime.FIELD, PositionEntryTest.THE_TRANSACT_TIME);
-		testablePositionEntry.addIncomingMessage(aMessage);
-		Portfolio parent = testablePositionEntry.getParent();
-		
-		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(parent, IWorkbenchAdapter.class);
-		String label = adapter.getLabel(parent);
-		assertEquals("Root portfolio", label);
-		
-		assertNull(adapter.getParent(parent));
 
-		Object[] children = adapter.getChildren(parent);
-		assertEquals(0, children.length);
-		
-		
-	}
-	public void testPositionAdapter() {
-		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		PositionEntry testablePositionEntry = PositionEntryTest.getTestablePositionEntry();
-		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), PositionEntryTest.CL_ORD_ID, "987", ExecTransType.STATUS,
-				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
-				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), PositionEntryTest.SYMBOL);
-		aMessage.setUtcTimeStamp(TransactTime.FIELD, PositionEntryTest.THE_TRANSACT_TIME);
-		testablePositionEntry.addIncomingMessage(aMessage);
-		
-		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(testablePositionEntry, IWorkbenchAdapter.class);
-		String label = adapter.getLabel(testablePositionEntry);
-		assertEquals("Testable position entry (10%)", label);
-		
-		Object parent = adapter.getParent(testablePositionEntry);
-		assertEquals(PositionEntryTest.parent, parent);
 
-		Object[] children = adapter.getChildren(testablePositionEntry);
-		assertEquals(0, children.length);
-	}
-	
 	public void testMessageHistoryAdapter() {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
 		FIXMessageHistory hist = new FIXMessageHistory();
 		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(hist, IWorkbenchAdapter.class);
 		String label = adapter.getLabel(hist);
 		assertNull(label);
-		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), PositionEntryTest.CL_ORD_ID, "987", ExecTransType.STATUS,
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), OrderManagerTest.CL_ORD_ID, "987", ExecTransType.STATUS,
 				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
-				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), PositionEntryTest.SYMBOL);
-		aMessage.setUtcTimeStamp(TransactTime.FIELD, PositionEntryTest.THE_TRANSACT_TIME);
+				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL);
+		aMessage.setUtcTimeStamp(TransactTime.FIELD, OrderManagerTest.THE_TRANSACT_TIME);
 		hist.addIncomingMessage(aMessage);
 		
 		Object[] children = adapter.getChildren(hist);
@@ -99,10 +57,10 @@ public class PhotonAdapterFactoryTest extends TestCase {
 	
 	public void testMessageAdapter() {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), PositionEntryTest.CL_ORD_ID, "987", ExecTransType.STATUS,
+		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), OrderManagerTest.CL_ORD_ID, "987", ExecTransType.STATUS,
 				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
-				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), PositionEntryTest.SYMBOL);
-		aMessage.setUtcTimeStamp(TransactTime.FIELD, PositionEntryTest.THE_TRANSACT_TIME);
+				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL);
+		aMessage.setUtcTimeStamp(TransactTime.FIELD, OrderManagerTest.THE_TRANSACT_TIME);
 		IncomingMessageHolder holder = new IncomingMessageHolder(aMessage);
 		
 		IWorkbenchAdapter adapter = (IWorkbenchAdapter)fact.getAdapter(holder, IWorkbenchAdapter.class);

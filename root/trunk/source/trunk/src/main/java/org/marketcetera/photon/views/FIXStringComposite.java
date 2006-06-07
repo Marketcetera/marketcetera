@@ -59,6 +59,14 @@ public class FIXStringComposite extends FIXComposite implements OrderModifier {
 			return false;
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.FIXComposite#clear()
+	 */
+	@Override
+	public void clear() {
+		textField.setText("");
+	}
 	
 	
 	

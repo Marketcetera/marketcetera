@@ -19,8 +19,10 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.eclipse.ui.internal.ReopenEditorMenu;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
+import org.marketcetera.photon.actions.ReconnectJMSAction;
 
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
@@ -91,6 +93,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	private IWorkbenchAction aboutAction;
 	
 	private IWorkbenchAction orderHistoryAction;
+	
+	private IWorkbenchAction reconnectJMSAction;
 
 	private CommandStatusLineContribution commandStatusLineContribution;
 
@@ -144,6 +148,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);  register(helpSearchAction);
 		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
 		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
+		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
 
 		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
@@ -155,6 +160,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		// File menu
 		MenuManager menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_FileMenuName);
+		menu.add(reconnectJMSAction);
+		menu.add(new Separator());
 		menu.add(closeAllAction);
 		menu.add(closeAction);
 		menu.add(new Separator());
@@ -263,6 +270,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolBar.add(focusCommandCI);
 		ActionContributionItem orderHistoryCI = new ActionContributionItem(orderHistoryAction);
 		toolBar.add(orderHistoryCI);
+		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
+		toolBar.add(reconnectJMSCI);
 	}
 
 	/*
