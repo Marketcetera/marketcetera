@@ -9,6 +9,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.IDFactory;
@@ -17,7 +19,6 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.Portfolio;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -45,8 +46,8 @@ public class Application implements IPlatformRunnable {
     private static IDFactory idFactory = new InMemoryIDFactory(777);
 	private static OrderManager orderManager;
 	private static JMSConnector jmsConnector;
-	private static Portfolio rootPortfolio;
 	
+
 	private static FIXMessageHistory fixMessageHistory;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
@@ -55,19 +56,13 @@ public class Application implements IPlatformRunnable {
 	 * @see org.eclipse.core.runtime.IPlatformRunnable#run(java.lang.Object)
 	 */
 	public Object run(Object args) throws Exception {
-		
 		FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		
 		fixMessageHistory = new FIXMessageHistory();
-		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("1234"), new InternalID("456"), "987", ExecTransType.STATUS,
-				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500), 
-				new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), new MSymbol("IBM"));
-		fixMessageHistory.addIncomingMessage(aMessage);
 
 		jmsConnector = new JMSConnector();
-        rootPortfolio = new Portfolio(null, "Main Portfolio");
 
-		orderManager = new OrderManager(idFactory, rootPortfolio, fixMessageHistory);
+		orderManager = new OrderManager(idFactory, fixMessageHistory);
 		Display display = PlatformUI.createDisplay();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
@@ -90,37 +85,48 @@ public class Application implements IPlatformRunnable {
 		return orderManager;
 	}
 	
-	public static JMSConnector initJMSConnector() throws JMSException 
+	public static JMSConnector initJMSConnector()
 	{
-        ScopedPreferenceStore preferences = new ScopedPreferenceStore(new ConfigurationScope(), Application.PLUGIN_ID);
+
+		ScopedPreferenceStore preferences = new ScopedPreferenceStore(new ConfigurationScope(), Application.PLUGIN_ID);
         EclipseConfigData config = new EclipseConfigData(preferences);
-		String incomingTopicNameString = config.get(ConnectionConstants.JMS_INCOMING_TOPIC_KEY, INCOMING_TOPIC_NAME_DEFAULT);
-		String outgoingQueueNameString = config.get(ConnectionConstants.JMS_OUTGOING_QUEUE_KEY, OUTGOING_QUEUE_NAME_DEFAULT);
-		String contextFactoryString = config.get(ConnectionConstants.JMS_CONTEXT_FACTORY_KEY, CONTEXT_FACTORY_NAME_DEFAULT);
-		String jmsURLString = config.get(ConnectionConstants.JMS_URL_KEY, "");
-		String jmsConnectionFactoryString = config.get(ConnectionConstants.JMS_CONNECTION_FACTORY_KEY, CONNECTION_FACTORY_NAME_DEFAULT);
-        try {
-				jmsConnector.init(
-						incomingTopicNameString,
-						outgoingQueueNameString,
-						contextFactoryString,
-						jmsURLString,
-						jmsConnectionFactoryString
-						);
-				setTopicListener(orderManager.getMessageListener());
-
-
+		final String incomingTopicNameString = config.get(ConnectionConstants.JMS_INCOMING_TOPIC_KEY, INCOMING_TOPIC_NAME_DEFAULT);
+		final String outgoingQueueNameString = config.get(ConnectionConstants.JMS_OUTGOING_QUEUE_KEY, OUTGOING_QUEUE_NAME_DEFAULT);
+		final String contextFactoryString = config.get(ConnectionConstants.JMS_CONTEXT_FACTORY_KEY, CONTEXT_FACTORY_NAME_DEFAULT);
+		final String jmsURLString = config.get(ConnectionConstants.JMS_URL_KEY, "");
+		final String jmsConnectionFactoryString = config.get(ConnectionConstants.JMS_CONNECTION_FACTORY_KEY, CONNECTION_FACTORY_NAME_DEFAULT);
+			Thread jmsConnectThread = new Thread(){
+				public void run() {
+					try {
+						jmsConnector.shutdown();
+			        	jmsConnector.init(
+							incomingTopicNameString,
+							outgoingQueueNameString,
+							contextFactoryString,
+							jmsURLString,
+							jmsConnectionFactoryString
+							);
+					} catch (JMSException e) {
+						getMainConsoleLogger().error("Could not connect to JMS server {"
+								+ incomingTopicNameString +", "
+								+ outgoingQueueNameString +", "
+								+ contextFactoryString +", "
+								+ jmsURLString +", "
+								+ jmsConnectionFactoryString +"}"
+								, e);
+					}
+		            try {
+						if (getJMSStatus().equals(FeedStatus.AVAILABLE)){
+								jmsConnector.setTopicListener(orderManager.getMessageListener());
+						}
+					} catch (JMSException e) {
+						getMainConsoleLogger().error("Could not set up JMS connection.", e);
+					}
+				}
+        	};
+        	jmsConnectThread.start();
+        	
 			return jmsConnector;
-		} catch (JMSException e) {
-			getMainConsoleLogger().error("Could not connect to JMS server {"
-					+ incomingTopicNameString +", "
-					+ outgoingQueueNameString +", "
-					+ contextFactoryString +", "
-					+ jmsURLString +", "
-					+ jmsConnectionFactoryString +"}"
-					, e);
-			throw e;
-		}
 		
 	}
 
@@ -134,13 +140,6 @@ public class Application implements IPlatformRunnable {
 
 
 	public static void setTopicListener(MessageListener pJMSListener) {
-		if (jmsConnector != null && getJMSStatus().equals(FeedStatus.AVAILABLE)){
-			try {
-				jmsConnector.setTopicListener(pJMSListener);
-			} catch (JMSException e) {
-				getMainConsoleLogger().error("Could not set topic listener");
-			}
-		}
 		
 	}
 
@@ -161,10 +160,6 @@ public class Application implements IPlatformRunnable {
 
 	public static JMSConnector getJMSConnector() {
 		return jmsConnector;
-	}
-
-	public static Portfolio getRootPortfolio() {
-		return rootPortfolio;
 	}
 
 	public static IDFactory getIDFactory() {

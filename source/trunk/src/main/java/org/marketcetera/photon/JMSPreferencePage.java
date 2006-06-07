@@ -26,7 +26,6 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
     }
 
     public void init(IWorkbench workbench) {
-        // TODO Auto-generated method stub
 
     }
 

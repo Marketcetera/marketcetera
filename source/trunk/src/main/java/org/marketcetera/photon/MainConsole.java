@@ -15,7 +15,7 @@ public class MainConsole extends MessageConsole {
 
 	public MainConsole() {
 		super(Messages.MainConsole_Name, null);
-		Display display = Display.getCurrent();
+		Display display = Display.getDefault();
 		errorMessageStream = newMessageStream();
 		errorMessageStream.setColor(display.getSystemColor(SWT.COLOR_RED));
 		warnMessageStream = newMessageStream();

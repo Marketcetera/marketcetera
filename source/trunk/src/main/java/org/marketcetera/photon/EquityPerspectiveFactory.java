@@ -5,7 +5,6 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.marketcetera.photon.views.FiltersView;
-import org.marketcetera.photon.views.PortfolioView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.WebBrowserView;
 
@@ -30,7 +29,6 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 		layout.setEditorAreaVisible(true);
 
 		layout.addPerspectiveShortcut("org.marketcetera.photon.DebugPerspective");
-		layout.addShowViewShortcut(PortfolioView.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
@@ -40,8 +38,6 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.3f,
 				editorArea);
-		leftFolder.addPlaceholder(PortfolioView.ID + ":*");
-		leftFolder.addView(PortfolioView.ID);
 		leftFolder.addPlaceholder(FiltersView.ID + ":*");
 		leftFolder.addView(FiltersView.ID);
 
@@ -52,7 +48,6 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 		rightFolder.addPlaceholder(WebBrowserView.ID + ":*");
 		rightFolder.addView(WebBrowserView.ID);
 
-		
 	}
 
 }

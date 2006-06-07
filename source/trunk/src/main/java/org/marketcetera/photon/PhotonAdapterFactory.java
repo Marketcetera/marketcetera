@@ -1,8 +1,5 @@
 package org.marketcetera.photon;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
@@ -10,53 +7,11 @@ import org.marketcetera.core.AccountID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.model.Portfolio;
-import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.views.FilterGroup;
 import org.marketcetera.photon.views.FilterItem;
 
 public class PhotonAdapterFactory implements IAdapterFactory {
 
-	protected IWorkbenchAdapter portfolioAdapter = new IWorkbenchAdapter() {
-		public Object getParent(Object o) {
-			return ((Portfolio) o).getParent();
-		}
-
-		public String getLabel(Object o) {
-			Portfolio portfolio = ((Portfolio) o);
-			return portfolio.getName();
-		}
-
-		public ImageDescriptor getImageDescriptor(Object object) {
-			return PhotonPlugin.getImageDescriptor(IImageKeys.PORTFOLIO);
-		}
-
-		public Object[] getChildren(Object o) {
-			return ((Portfolio) o).getEntries();
-		}
-	};
-
-	protected IWorkbenchAdapter positionAdapter = new IWorkbenchAdapter() {
-		public Object getParent(Object o) {
-			return ((PositionEntry) o).getParent();
-		}
-
-		public String getLabel(Object o) {
-			PositionEntry entry = ((PositionEntry) o);
-			BigDecimal progressBigDecimal = new BigDecimal(entry.getProgress());
-			progressBigDecimal = progressBigDecimal.multiply(new BigDecimal(100));
-			progressBigDecimal = progressBigDecimal.setScale(0,RoundingMode.HALF_UP);
-			return entry.getName() + " (" + progressBigDecimal + "%)";
-		}
-
-		public ImageDescriptor getImageDescriptor(Object object) {
-			return PhotonPlugin.getImageDescriptor(IImageKeys.EQUITY);
-		}
-
-		public Object[] getChildren(Object o) {
-			return new Object[0];
-		}
-	};
 
 	protected IWorkbenchAdapter messageHistoryAdapter = new IWorkbenchAdapter() {
 		public Object getParent(Object o) {
@@ -95,12 +50,6 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 	};
 
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
-		if (adapterType == IWorkbenchAdapter.class
-				&& adaptableObject instanceof Portfolio)
-			return portfolioAdapter;
-		if (adapterType == IWorkbenchAdapter.class
-				&& adaptableObject instanceof PositionEntry)
-			return positionAdapter;
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof FIXMessageHistory)
 			return messageHistoryAdapter;

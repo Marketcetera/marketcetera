@@ -74,7 +74,7 @@ public class Parser {
     }
 
     enum CancelReplaceTypeImage {
-        SHARES("S"),
+        QUANTITY("Q"),
         PRICE("P");
 
         public String image;
@@ -290,17 +290,17 @@ public class Parser {
     {
         consumeToken("Expected cancel replace command.", null);
         Token.IntToken orderIDToken = consumeIntToken("Expected order ID");
-        Token.StringToken replaceTypeToken = consumeStringToken("Expected S or P", CancelReplaceTypeImage.values());
+        Token.StringToken replaceTypeToken = consumeStringToken("Expected P or Q", CancelReplaceTypeImage.values());
 
         Message cxrMessage = null;
-        if (CancelReplaceTypeImage.SHARES.image.equalsIgnoreCase(replaceTypeToken.image))
+        if (CancelReplaceTypeImage.QUANTITY.image.equalsIgnoreCase(replaceTypeToken.image))
         {
             Token.IntToken quantityToken = consumeIntToken("Expected quantity");
             String quantityString = quantityToken.image;
             InternalID orderID = new InternalID(mIDFactory.getNext());
             cxrMessage = FIXMessageUtil.newCancelReplaceShares(orderID, new InternalID(orderIDToken.toString()), new BigDecimal(quantityString));
         } else if (CancelReplaceTypeImage.PRICE.image.equalsIgnoreCase(replaceTypeToken.image)) {
-            Token.FloatToken priceToken = consumeFloatToken("Expected quantity");
+            Token.NumberToken priceToken = consumeNumberToken("Expected price");
             String priceString = priceToken.image;
             InternalID orderID = new InternalID(mIDFactory.getNext());
             cxrMessage = FIXMessageUtil.newCancelReplacePrice(orderID, new InternalID(orderIDToken.toString()), new BigDecimal(priceString));
@@ -370,6 +370,21 @@ public class Parser {
         }
         return null;
     }
+
+    protected Token.NumberToken consumeNumberToken(String errorMessage)
+			throws ParserException {
+		try {
+			Token.NumberToken aToken = (Token.NumberToken) consumeToken(errorMessage,
+					null);
+			aToken.doubleValue();
+			return aToken;
+		} catch (ClassCastException cce) {
+			throwException(errorMessage, null);
+		} catch (NumberFormatException nfe) {
+			throwException(errorMessage, null);
+		}
+		return null;
+	}
 
     protected Token.IntToken consumeIntToken(String errorMessage)
             throws ParserException {

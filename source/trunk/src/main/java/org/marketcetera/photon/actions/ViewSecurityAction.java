@@ -12,7 +12,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.model.PositionEntry;
 import org.marketcetera.photon.views.WebBrowserView;
 
 import quickfix.FieldNotFound;
@@ -33,8 +32,7 @@ public class ViewSecurityAction implements IActionDelegate {
 			selection = (IStructuredSelection) incoming;
 			Object firstElement = selection.getFirstElement();
 			proxyAction.setEnabled(selection.size() == 1
-					&& (firstElement instanceof PositionEntry||
-					firstElement instanceof Message ||
+					&& (firstElement instanceof Message ||
 					firstElement instanceof MessageHolder));
 		} else {
 			// Other selections, for example containing text or of other kinds.
@@ -50,10 +48,7 @@ public class ViewSecurityAction implements IActionDelegate {
 			Object firstElement = selection.getFirstElement();
 			MSymbol symbol = null;
 			
-			if (firstElement instanceof PositionEntry) {
-				PositionEntry pos = (PositionEntry) firstElement;
-				symbol = pos.getSymbol();
-			} else if (firstElement instanceof Message) {
+			if (firstElement instanceof Message) {
 				Message message = (Message) firstElement;
 				try {
 					symbol = new MSymbol(message.getString(Symbol.FIELD));

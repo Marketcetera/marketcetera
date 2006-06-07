@@ -78,4 +78,7 @@ public abstract class FIXComposite extends Composite {
 	}
 	
 	public abstract boolean populateFromMessage(Message aMessage);
+	
+	public abstract void clear();
+	
 }
