@@ -101,8 +101,7 @@ public class FIXMessageHistory extends PlatformObject {
 						break;
 					}
 				} catch (FieldNotFound e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// DO NOTHING
 				}
 			}
 			if (found){
@@ -111,7 +110,7 @@ public class FIXMessageHistory extends PlatformObject {
 		}
 		return null;
 	}
-
+	
 	public Object[] getFills() {
 		ArrayList<Message> messages = new ArrayList<Message>();
 		for (MessageHolder holder : messageList) {
@@ -150,7 +149,7 @@ public class FIXMessageHistory extends PlatformObject {
 						MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
 						String side = message.getString(Side.FIELD);
 						SymbolSide symbolSide = new SymbolSide(symbol, side);
-						tempMap.put(symbolSide, computeAveragePrice(tempMap.get(symbol), message));
+						tempMap.put(symbolSide, computeAveragePrice(tempMap.get(symbolSide), message));
 					}
 				} catch (FieldNotFound e) {
 					// do nothing
