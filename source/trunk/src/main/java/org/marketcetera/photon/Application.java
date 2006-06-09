@@ -1,7 +1,5 @@
 package org.marketcetera.photon;
 
-import java.math.BigDecimal;
-
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
@@ -9,25 +7,19 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPreferenceConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.InternalID;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.OrdStatus;
-import quickfix.field.Side;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
 
 /**
  * This class controls all aspects of the application's execution

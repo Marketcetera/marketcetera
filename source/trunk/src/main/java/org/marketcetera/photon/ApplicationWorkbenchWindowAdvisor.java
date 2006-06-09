@@ -2,8 +2,6 @@ package org.marketcetera.photon;
 
 import java.util.Date;
 
-import javax.jms.JMSException;
-
 import org.apache.log4j.SimpleLayout;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -20,6 +18,7 @@ import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.marketcetera.photon.editors.OrderHistoryEditor;
 import org.marketcetera.photon.editors.OrderHistoryInput;
+import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
@@ -73,15 +72,19 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		IViewPart part = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(StockOrderTicket.ID);		
+		IViewPart stockOrderTicket = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(StockOrderTicket.ID);		
 		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
-		if (part instanceof StockOrderTicket && item instanceof CommandStatusLineContribution) {
-			StockOrderTicket sot = (StockOrderTicket) part;
+		if (stockOrderTicket instanceof StockOrderTicket && item instanceof CommandStatusLineContribution) {
+			StockOrderTicket sot = (StockOrderTicket) stockOrderTicket;
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
 			cslc.addCommandListener(sot.getCommandListener());
 			cslc.setIDFactory(Application.getIDFactory());
 		}
+
+		IViewPart filterView = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(FiltersView.ID);		
+		Application.getFIXMessageHistory().setMatcherEditor(((FiltersView)filterView).getMatcherEditor());
+		
 		Application.initJMSConnector();
 
 		Application.getMainConsoleLogger().info(

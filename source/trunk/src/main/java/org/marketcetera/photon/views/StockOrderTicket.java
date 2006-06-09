@@ -89,27 +89,27 @@ public class StockOrderTicket extends ViewPart {
 		// FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		DataDictionary dict = FIXDataDictionaryManager.getDictionary();
 		buySellControl = new FIXEnumeratedComposite(form.getBody(), SWT.NONE,
-				toolkit, Side.FIELD, dict, new String[] { "" + Side.BUY,
+				toolkit, Side.FIELD, new String[] { "" + Side.BUY,
 						"" + Side.SELL, "" + Side.SELL_SHORT,
 						"" + Side.SELL_SHORT_EXEMPT });
 		orderQtyControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, OrderQty.FIELD, dict);
+				toolkit, OrderQty.FIELD);
 		toolkit.paintBordersFor(orderQtyControl);
 		symbolControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, Symbol.FIELD, dict);
+				toolkit, Symbol.FIELD);
 		toolkit.paintBordersFor(symbolControl);
 		priceControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, Price.FIELD, dict);
+				toolkit, Price.FIELD);
 		toolkit.paintBordersFor(priceControl);
 		timeInForceControl = new FIXEnumeratedComposite(form.getBody(),
-				SWT.NONE, toolkit, TimeInForce.FIELD, dict, new String[] {
+				SWT.NONE, toolkit, TimeInForce.FIELD, new String[] {
 						"" + TimeInForce.DAY,
 						"" + TimeInForce.GOOD_TILL_CANCEL,
 						"" + TimeInForce.FILL_OR_KILL,
 						"" + TimeInForce.IMMEDIATE_OR_CANCEL });
 		timeInForceControl.setSelection("" + TimeInForce.DAY, true);
 		accountControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, Account.FIELD, dict);
+				toolkit, Account.FIELD);
 		toolkit.paintBordersFor(accountControl);
 		Composite okCancelComposite = toolkit.createComposite(form.getBody());
 		okCancelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));

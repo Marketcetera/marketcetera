@@ -6,8 +6,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
-import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
@@ -16,19 +16,19 @@ public class FIXEnumeratedComposite extends FIXComposite {
 	private Button[] buttons;
 
 	public FIXEnumeratedComposite(Composite parent, int style,
-			FormToolkit toolkit, int fixFieldNumber, DataDictionary dict,
+			FormToolkit toolkit, int fixFieldNumber, 
 			String[] valuesToDisplay) {
 		super(parent, style, toolkit, fixFieldNumber);
 
 		this.setLayout(new RowLayout(SWT.HORIZONTAL));
-		toolkit.createLabel(this, dict.getFieldName(fixFieldNumber)
+		toolkit.createLabel(this, FIXDataDictionaryManager.getHumanFieldName(fixFieldNumber)
 				+ ": ");
 		buttons = new Button[valuesToDisplay.length];
 		Composite buttonComposite = toolkit.createComposite(this);
 		buttonComposite.setLayout(new RowLayout(SWT.VERTICAL));
 		for (int i = 0; i < valuesToDisplay.length; i++) {
-			buttons[i] = toolkit.createButton(buttonComposite, dict
-					.getValueName(fixFieldNumber, valuesToDisplay[i]),
+			buttons[i] = toolkit.createButton(buttonComposite, FIXDataDictionaryManager
+					.getHumanFieldValue(fixFieldNumber, valuesToDisplay[i]),
 					SWT.RADIO);
 			buttons[i].setData(new StringField(fixFieldNumber,
 					valuesToDisplay[i]));

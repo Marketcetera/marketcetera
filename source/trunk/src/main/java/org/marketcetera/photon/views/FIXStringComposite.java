@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.OrderModifier;
 
 import quickfix.DataDictionary;
@@ -19,10 +20,10 @@ public class FIXStringComposite extends FIXComposite implements OrderModifier {
 
 	
 	private Text textField;
-	public FIXStringComposite(Composite parent, int style, FormToolkit toolkit, int fixFieldNumber, DataDictionary dict) {
+	public FIXStringComposite(Composite parent, int style, FormToolkit toolkit, int fixFieldNumber) {
 		super(parent, style, toolkit, fixFieldNumber);
 		this.setLayout(new RowLayout(SWT.HORIZONTAL));
-		toolkit.createLabel(this, dict.getFieldName(fixFieldNumber)+": ");
+		toolkit.createLabel(this, FIXDataDictionaryManager.getHumanFieldName(fixFieldNumber)+": ");
 		textField = toolkit.createText(this, "");
 	}
 

@@ -15,6 +15,9 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.model.IncomingMessageHolder;
+import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.model.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -32,6 +35,8 @@ import quickfix.field.OrdStatus;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 
 /**
  * $Id$
@@ -76,11 +81,9 @@ public class OrderManager {
 								.getText());
 						handleCounterpartyMessage(qfMessage);
 					} catch (InvalidMessage e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Application.getMainConsoleLogger().error("Exception processing incoming message", e);
 					} catch (JMSException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						Application.getMainConsoleLogger().error("Exception processing incoming message", e);
 					}
 				}
 			}
@@ -208,9 +211,7 @@ public class OrderManager {
 			throws NoMoreIDsException, FieldNotFound, JMSException {
 
 		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
-		FieldMap fields = new Group();
-		fields.setString(ClOrdID.FIELD, clOrdId);
-		Message latestMessage = fixMessageHistory.getLatestMessageForFields(fields);
+		Message latestMessage = fixMessageHistory.getLatestMessage(clOrdId);
 		if (latestMessage != null){
 			cancelMessage.setField(new OrigClOrdID(clOrdId));
 			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
@@ -234,9 +235,7 @@ public class OrderManager {
 	}
 	
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
-		FieldMap fields = new Group();
-		fields.setString(ClOrdID.FIELD, clOrdID);
-		Message latestMessage = fixMessageHistory.getLatestMessageForFields(fields);
+		Message latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
 		if (latestMessage != null){
 			Message cancelMessage = new quickfix.fix42.Message();
 			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);

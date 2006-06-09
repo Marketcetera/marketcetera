@@ -26,5 +26,6 @@ Require-Bundle: org.apache.activemq,
  org.quickfixj,
  org.skife.kasparov.csv,
  org.marketcetera.core,
- org.eclipse.ui.console
+ org.eclipse.ui.console,
+ com.publicobject.glazedlists
 Eclipse-AutoStart: true
