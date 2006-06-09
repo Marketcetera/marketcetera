@@ -14,6 +14,7 @@
     <property name="RESOURCES_PLUGIN" value="org.eclipse.core.resources_3.1.2.jar"/>
     <property name="IDE_PLUGIN" value="org.eclipse.ui.ide_3.1.1.jar"/>
     <property name="FORMS_PLUGIN" value="org.eclipse.ui.forms_3.1.0.jar"/>
+    <property name="GLAZEDLISTS_PLUGIN" value="com.publicobject.glazedlists_1.6.0.jar"/>
 
     <path id="project.classpath">
         <pathelement location="src/main/resources"/>
@@ -26,10 +27,11 @@
         <pathelement location="${MAVEN_REPO}/org/skife/kasparov/csv/1.0/csv-1.0.jar"/>
         <pathelement location="${MAVEN_REPO}/org/marketcetera/core/0.1-SNAPSHOT/core-0.1-SNAPSHOT.jar"/>
         <pathelement location="${MAVEN_REPO}/activemq/activemq/4.0-RC2/activemq-4.0-RC2.jar"/>
-        <pathelement location="target/downloads/${CONSOLE_PLUGIN}"/>
-        <pathelement location="target/downloads/${RESOURCES_PLUGIN}"/>
-        <pathelement location="target/downloads/${IDE_PLUGIN}"/>
-        <pathelement location="target/downloads/${FORMS_PLUGIN}"/>
+        <pathelement location="${DOWNLOADS_FOLDER}/${CONSOLE_PLUGIN}"/>
+        <pathelement location="${DOWNLOADS_FOLDER}/${RESOURCES_PLUGIN}"/>
+        <pathelement location="${DOWNLOADS_FOLDER}/${IDE_PLUGIN}"/>
+        <pathelement location="${DOWNLOADS_FOLDER}/${FORMS_PLUGIN}"/>
+        <pathelement location="${DOWNLOADS_FOLDER}/${GLAZEDLISTS_PLUGIN}"/>
 
         <fileset dir="${MAVEN_REPO}/quickfixj">
             <include name="**/*.jar" />
@@ -50,6 +52,7 @@
         <get src="http://repo.marketcetera.org/eclipse/sdks/plugins/${RESOURCES_PLUGIN}" dest="${DOWNLOADS_FOLDER}/${RESOURCES_PLUGIN}" usetimestamp="true"/>
         <get src="http://repo.marketcetera.org/eclipse/sdks/plugins/${IDE_PLUGIN}" dest="${DOWNLOADS_FOLDER}/${IDE_PLUGIN}" usetimestamp="true"/>
         <get src="http://repo.marketcetera.org/eclipse/sdks/plugins/${FORMS_PLUGIN}" dest="${DOWNLOADS_FOLDER}/${FORMS_PLUGIN}" usetimestamp="true"/>
+        <get src="http://repo.marketcetera.org/eclipse/plugins/${GLAZEDLISTS_PLUGIN}" dest="${DOWNLOADS_FOLDER}/${GLAZEDLISTS_PLUGIN}" usetimestamp="true"/>
 
         <unzip src="${DOWNLOADS_FOLDER}/${RCP_ZIP}"
                 dest="target/rcp" />
