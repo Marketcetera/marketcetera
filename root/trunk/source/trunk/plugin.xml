@@ -47,7 +47,7 @@
             class="org.marketcetera.photon.views.FiltersView"
             icon="icons/silk/chart_organisation.png"
             id="org.marketcetera.photon.views.FiltersView"
-            name="Order Filters"/>
+            name="Message Filters"/>
   </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

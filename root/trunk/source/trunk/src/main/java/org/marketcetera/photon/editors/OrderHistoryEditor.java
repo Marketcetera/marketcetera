@@ -1,16 +1,13 @@
 package org.marketcetera.photon.editors;
 
+
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -18,26 +15,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
-import org.eclipse.ui.model.BaseWorkbenchContentProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.IFIXMessageListener;
 import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.views.FilterGroup;
-import org.marketcetera.photon.views.FilterItem;
 
-import quickfix.Message;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.swt.EventTableViewer;
 
 /**
  * An example showing how to create a multi-page editor. This example has 3
@@ -48,8 +40,7 @@ import quickfix.Message;
  * <li>page 2 shows the words in page 0 in sorted order
  * </ul>
  */
-public class OrderHistoryEditor extends MultiPageEditorPart implements
-		IFIXMessageListener, ISelectionListener {
+public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	public enum AvgPriceColumns {
 		DIRECTION("D"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
@@ -105,21 +96,36 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 
 	public static final String ID = "org.marketcetera.photon.editors.OrderHistoryEditor";
 
-	private TableViewer averagePriceViewer;
+	private EventTableViewer averagePriceViewer;
 
-	private TableViewer messagesViewer;
+	private EventTableViewer messagesViewer;
 
-	private TableViewer fillsViewer;
+	private EventTableViewer fillsViewer;
 
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 
-	private FIXMessageHistory input;
+	private EventList<MessageHolder> allMessages;
+	
+	private EventList<MessageHolder> filteredMessages;
+
+	private EventList<MessageHolder> fillMessages;
 
 	private IWorkbenchWindow window;
 	
 	private static final int FILLS_VIEWER_INDEX = 0;
 	private static final int AVERAGE_PRICE_VIEWER_INDEX = 1;
 	private static final int MESSAGES_VIEWER_INDEX = 2;
+
+	private Table fillTable;
+
+	private Table messageTable;
+
+	private Table averagePriceTable;
+
+	private EventList<MessageHolder> averagePriceList;
+
+	private FIXMessageHistory messageHistory;
+
 
 	/**
 	 * Creates a multi-page editor example.
@@ -136,7 +142,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	}
 
 	/**
-	 * Creates page 0 of the multi-page editor, which contains a text editor.
+	 * Creates page 0 of the multi-page editor, which contains the list of fills
 	 */
 	void createPage0() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
@@ -144,32 +150,23 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		composite.setLayout(layout);
 		layout.numColumns = 1;
 
-		fillsViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
-				| SWT.WRAP | SWT.FULL_SELECTION);
-		fillsViewer.getControl().setLayoutData(
-				new GridData(GridData.FILL, GridData.FILL, true, true));
-		// orderViewer.getControl().setEditable(false);
-		fillsViewer.getControl().setBackground(
-				fillsViewer.getControl().getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-		fillsViewer.getControl().setForeground(
-				fillsViewer.getControl().getDisplay().getSystemColor(
-						SWT.COLOR_INFO_FOREGROUND));
-		fillsViewer.getTable().setHeaderVisible(true);
+        fillTable = createMessageTable(composite);
+		fillsViewer = new EventTableViewer(fillMessages, fillTable, new EnumTableFormat(FillColumns.values()));
+        fillTable = formatFillTable(fillTable);
 
-		for (FillColumns aColumn : FillColumns.values()) {
-			TableColumn column = new TableColumn(fillsViewer.getTable(),
-					SWT.LEFT);
-			column.setText(aColumn.toString());
-			column.setWidth(50);
-		}
+        fillTable.setBackground(
+        		fillTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_BACKGROUND));
+        fillTable.setForeground(
+        		fillTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_FOREGROUND));
+
+        fillTable.setHeaderVisible(true);
+
 		int index = addPage(composite);
+		packColumns(fillTable);
 		setPageText(index, "Fills");
-		fillsViewer.setLabelProvider(new FIXMessageLabelProvider(fillsViewer
-				.getTable().getColumns()));
-		fillsViewer.setContentProvider(new FillContentProvider());
-		
-		packColumns(fillsViewer.getTable());
+
 	}
 
 	/**
@@ -182,8 +179,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	}
 	
 	/**
-	 * Creates page 1 of the multi-page editor, which allows you to change the
-	 * font used in page 2.
+	 * Creates page 1 of the multi-page editor, which contains the list of messages
 	 */
 	void createPage1() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
@@ -191,36 +187,28 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		composite.setLayout(layout);
 		layout.numColumns = 1;
 
-		messagesViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
-				| SWT.WRAP | SWT.FULL_SELECTION);
-		messagesViewer.getControl().setLayoutData(
-				new GridData(GridData.FILL, GridData.FILL, true, true));
-		// orderViewer.getControl().setEditable(false);
-		messagesViewer.getControl().setBackground(
-				messagesViewer.getControl().getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-		messagesViewer.getControl().setForeground(
-				messagesViewer.getControl().getDisplay().getSystemColor(
-						SWT.COLOR_INFO_FOREGROUND));
-		messagesViewer.getTable().setHeaderVisible(true);
+        messageTable = createMessageTable(composite);
+		messagesViewer = new EventTableViewer(filteredMessages, messageTable, new EnumTableFormat(MessageColumns.values()));
+        messageTable = formatFillTable(messageTable);
 
-		for (MessageColumns aColumn : MessageColumns.values()) {
-			TableColumn column = new TableColumn(messagesViewer.getTable(),
-					SWT.LEFT);
-			column.setText(aColumn.toString());
-			column.setWidth(50);
-		}
+        messageTable.setBackground(
+        		messageTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_BACKGROUND));
+        messageTable.setForeground(
+        		messageTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_FOREGROUND));
+
+        messageTable.setHeaderVisible(true);
+
 		int index = addPage(composite);
+		packColumns(messageTable);
 		setPageText(index, "Messages");
-		messagesViewer.setLabelProvider(new FIXMessageLabelProvider(
-				messagesViewer.getTable().getColumns()));
-		messagesViewer.setContentProvider(new BaseWorkbenchContentProvider());
-		packColumns(messagesViewer.getTable());
 
 	}
 
+
 	/**
-	 * Creates page 2 of the multi-page editor, which shows the sorted text.
+	 * Creates page 2 of the multi-page editor, which contains the list of average price fills
 	 */
 	void createPage2() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
@@ -228,117 +216,48 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		composite.setLayout(layout);
 		layout.numColumns = 1;
 
-		averagePriceViewer = new TableViewer(composite, SWT.BORDER | SWT.MULTI
-				| SWT.WRAP | SWT.FULL_SELECTION);
-		averagePriceViewer.getControl().setLayoutData(
-				new GridData(GridData.FILL, GridData.FILL, true, true));
-		// orderViewer.getControl().setEditable(false);
-		averagePriceViewer.getControl().setBackground(
-				averagePriceViewer.getControl().getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-		averagePriceViewer.getControl().setForeground(
-				averagePriceViewer.getControl().getDisplay().getSystemColor(
-						SWT.COLOR_INFO_FOREGROUND));
-		averagePriceViewer.getTable().setHeaderVisible(true);
+        averagePriceTable = createMessageTable(composite);
+		averagePriceViewer = new EventTableViewer(averagePriceList, averagePriceTable, new EnumTableFormat(AvgPriceColumns.values()));
+        averagePriceTable = formatFillTable(averagePriceTable);
 
-		for (AvgPriceColumns aColumn : AvgPriceColumns.values()) {
-			TableColumn column = new TableColumn(averagePriceViewer.getTable(),
-					SWT.LEFT);
-			column.setText(aColumn.toString());
-			column.setWidth(50);
-		}
+        averagePriceTable.setBackground(
+        		averagePriceTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_BACKGROUND));
+        averagePriceTable.setForeground(
+        		averagePriceTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_FOREGROUND));
+
+        averagePriceTable.setHeaderVisible(true);
+
 		int index = addPage(composite);
+		packColumns(averagePriceTable);
 		setPageText(index, "Average Price");
-		averagePriceViewer.setLabelProvider(new FIXMessageLabelProvider(
-				averagePriceViewer.getTable().getColumns()));
-		averagePriceViewer
-				.setContentProvider(new AveragePriceContentProvider());
-		packColumns(averagePriceViewer.getTable());
 
 	}
 
-//	/**
-//	 * Creates page 2 of the multi-page editor, which shows the sorted text.
-//	 */
-//	void createPage3() {
-//		Composite composite = new Composite(getContainer(), SWT.NONE);
-//		GridLayout layout = new GridLayout();
-//		composite.setLayout(layout);
-//		layout.numColumns = 1;
-//
-//		
-//		EventList<MessageHolder> messageListG = new BasicEventList<MessageHolder>();
-//		messageListG.add(new IncomingMessageHolder(
-//				FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), BigDecimal.TEN, BigDecimal.TEN, new BigDecimal(1000), BigDecimal.TEN, BigDecimal.TEN, new MSymbol("ASDF"))
-//				
-//				));
-//		FilterList<MessageHolder> fillListG = new FilterList<MessageHolder>(messageListG, 
-//				new Matcher<MessageHolder>() {
-//					public boolean matches(MessageHolder holder) {
-//						if (holder instanceof IncomingMessageHolder) {
-//							IncomingMessageHolder incomingHolder = (IncomingMessageHolder) holder;
-//							try {
-//								if (incomingHolder.getMessage().getDouble(LastShares.FIELD)>0){
-//									return true;
-//								}
-//							} catch (FieldNotFound e) {
-//								return false;
-//							}
-//						}
-//						return false;
-//					}
-//			
-//		});
-//
-//		// Create the Issues Table
-//        Table fillTableG = createFillTableG(composite);
-//    	EventTableViewer issuesTableViewer;
-//        try {
-//			issuesTableViewer = new EventTableViewer(fillListG, fillTableG, new EnumTableFormat(FillColumns.values()));
-//        } catch (java.lang.NoClassDefFoundError ex){
-//        	ex.printStackTrace();
-//        	throw ex;
-//        }
-//        fillTableG = formatFillTableG(fillTableG);
-//
-//        
-//        fillTableG.setBackground(
-//        		fillTableG.getDisplay().getSystemColor(
-//						SWT.COLOR_INFO_BACKGROUND));
-//        fillTableG.setForeground(
-//        		fillTableG.getDisplay().getSystemColor(
-//						SWT.COLOR_INFO_FOREGROUND));
-//
-//        fillTableG.setHeaderVisible(true);
-//
-//		int index = addPage(composite);
-//		setPageText(index, "GlazedList Fills");
-//
-//	}
+    private Table createMessageTable(Composite parent) {
+        Table issuesTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL);
+        GridData issuesTableLayout = new GridData();
+        issuesTableLayout.horizontalSpan = 2;
+        issuesTableLayout.verticalSpan = 1;
+        issuesTableLayout.horizontalAlignment = GridData.FILL;
+        issuesTableLayout.verticalAlignment = GridData.FILL;
+        issuesTableLayout.grabExcessHorizontalSpace = true;
+        issuesTableLayout.grabExcessVerticalSpace = true;
+        issuesTable.setLayoutData(issuesTableLayout);
+        return issuesTable;
+    }
 
-//    private Table createFillTableG(Composite parent) {
-//        Table issuesTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL);
-//        GridData issuesTableLayout = new GridData();
-//        issuesTableLayout.horizontalSpan = 2;
-//        issuesTableLayout.verticalSpan = 1;
-//        issuesTableLayout.horizontalAlignment = GridData.FILL;
-//        issuesTableLayout.verticalAlignment = GridData.FILL;
-//        issuesTableLayout.grabExcessHorizontalSpace = true;
-//        issuesTableLayout.grabExcessVerticalSpace = true;
-//        issuesTable.setLayoutData(issuesTableLayout);
-//        return issuesTable;
-//    }
-//
-//    private Table formatFillTableG(Table issuesTable) {
-//        issuesTable.getVerticalBar().setEnabled(true);
+    private Table formatFillTable(Table issuesTable) {
+        issuesTable.getVerticalBar().setEnabled(true);
 //        issuesTable.getColumn(0).setWidth(30);
 //        issuesTable.getColumn(1).setWidth(50);
 //        issuesTable.getColumn(2).setWidth(46);
 //        issuesTable.getColumn(3).setWidth(50);
 //        issuesTable.getColumn(4).setWidth(60);
 //        issuesTable.getColumn(5).setWidth(250);
-//        return issuesTable;
-//    }
+        return issuesTable;
+    }
 
 	/**
 	 * Creates the pages of the multi-page editor.
@@ -347,17 +266,16 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		createPage0();
 		createPage1();
 		createPage2();
-//		createPage3();
-		setFIXMessageHistory(input);
 		makeActions();
 	}
 
 	private void makeActions() {
 		MenuManager menuMgr = new MenuManager("orderHistoryPopup");
-		Menu menu = menuMgr.createContextMenu(messagesViewer.getControl());
+		Menu menu = menuMgr.createContextMenu(messageTable);
 		menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
-		messagesViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, messagesViewer);
+		messageTable.setMenu(menu);
+		// TODO: FIX ME possible also use SWT TableViewer?
+		getSite().registerContextMenu(menuMgr, null);
 		getSite().setSelectionProvider(new OrderHistorySelectionProvider(this));
 	}
 
@@ -369,7 +287,6 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 	public void dispose() {
 		// ResourcesPlugin.getWorkspace().removeResourceChangeListener(this);
 		super.dispose();
-		window.getSelectionService().removeSelectionListener(this);
 	}
 
 	/**
@@ -381,7 +298,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 
 	/**
 	 * Saves the multi-page editor's document as another file. Also updates the
-	 * text for page 0's tab, and updates this multi-page editor's input to
+	 * text for page 0's tab, and updates this multi-page editor's allMessages to
 	 * correspond to the nested editor's.
 	 */
 	public void doSaveAs() {
@@ -401,7 +318,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 
 	/**
 	 * The <code>MultiPageEditorExample</code> implementation of this method
-	 * checks that the input is an instance of <code>IFileEditorInput</code>.
+	 * checks that the allMessages is an instance of <code>IFileEditorInput</code>.
 	 */
 	public void init(IEditorSite site, IEditorInput editorInput)
 			throws PartInitException {
@@ -409,43 +326,36 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 			throw new PartInitException(
 					"Invalid Input: Must be IFileEditorInput");
 		} else {
-			input = ((OrderHistoryInput) editorInput).getHistory();
+			messageHistory = ((OrderHistoryInput) editorInput).getHistory();
+			allMessages = messageHistory.getAllMessages();
+			filteredMessages = messageHistory.getFilteredMessages();
+			fillMessages = messageHistory.getFills();
+			averagePriceList = messageHistory.getAveragePriceHistory();
+			
+//			allMessages.add(new IncomingMessageHolder(
+//					FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("TESTSYM"))
+//			));
 		}
 		window = site.getWorkbenchWindow();
-		window.getSelectionService().addSelectionListener(this);
 
 		super.init(site, editorInput);
-	}
-
-	public void setFIXMessageHistory(FIXMessageHistory input) {
-		if (input != null) {
-			if (messagesViewer != null) {
-				messagesViewer.setInput(input);
-			}
-			if (fillsViewer != null) {
-				fillsViewer.setInput(input);
-			}
-			if (averagePriceViewer != null) {
-				averagePriceViewer.setInput(input.getAveragePriceHistory());
-			}
-			input.addFIXMessageListener(this);
-		}
 	}
 
 	public ISelectionProvider getActiveSelectionProvider() {
 		int pageIndex = getActivePage();
 		switch (pageIndex) {
 		case FILLS_VIEWER_INDEX:
-			return fillsViewer;
+			return null;
 		case AVERAGE_PRICE_VIEWER_INDEX:
-			return averagePriceViewer;
+			return null;
 		case MESSAGES_VIEWER_INDEX:
-			return messagesViewer;
+			return null;
 		default:
 			return null;
 		}
-
 	}
+	
+
 	
 	/*
 	 * (non-Javadoc) Method declared on IEditorPart.
@@ -454,23 +364,6 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		return true;
 	}
 
-	public void incomingMessage(Message message) {
-		final FIXMessageHistory avgPxHistory = input.getAveragePriceHistory();
-		asyncExec(new Runnable(){
-			public void run() {
-				try {
-					averagePriceViewer.setInput(avgPxHistory);
-					refresh();
-				} catch (Throwable ex){
-					ex.printStackTrace();
-				}
-			}
-		});
-	}
-
-	public void outgoingMessage(Message message) {
-		asyncRefresh();
-	};
 
 	public void asyncExec(Runnable runnable) {
 		Display display = this.getContainer().getDisplay();
@@ -491,141 +384,12 @@ public class OrderHistoryEditor extends MultiPageEditorPart implements
 		});
 	}
 	
-	public void selectionChanged(IWorkbenchPart part, ISelection incoming) {
-		if (incoming instanceof IStructuredSelection) {
-			IStructuredSelection selection = (IStructuredSelection) incoming;
-			if (selection.size() == 1) {
-				Object firstElement = selection.getFirstElement();
-				if (firstElement instanceof FilterItem) {
-					FilterItem filterItem = (FilterItem) firstElement;
-					setFilter(filterItem.getFilter());
-
-					//Application.getMainConsoleLogger().debug(
-					//		"Selected" + filterItem.getItem());
-				} else if (firstElement instanceof FilterGroup) {
-					resetFilters();
-					//Application.getMainConsoleLogger().debug("Unselected");
-				} else {
-					//Application.getMainConsoleLogger().debug(
-					//		"Structured selection with unknown item.");
-				}
-			}
-		} else {
-			// Other selections, for example containing text or of other kinds.
-			//Application.getMainConsoleLogger().debug("Other selection type");
-		}
-	}
-
-	public void setFilter(ViewerFilter filter){
-		resetFilters();
-		addFilter(filter);
-	}
-	
-	public void addFilter(ViewerFilter filter) {
-		fillsViewer.addFilter(filter);
-		messagesViewer.addFilter(filter);
-		averagePriceViewer.addFilter(filter);
-		asyncRefresh();
-		
-	}
-
-	public void removeFilter(ViewerFilter filter) {
-		fillsViewer.removeFilter(filter);
-		messagesViewer.removeFilter(filter);
-		averagePriceViewer.removeFilter(filter);
-		asyncRefresh();
-	}
-
-	public void resetFilters() {
-		boolean didReset = false;
-		if (fillsViewer.getFilters().length > 0){
-			fillsViewer.resetFilters();
-			didReset = true;
-		}
-		if (messagesViewer.getFilters().length > 0){
-			messagesViewer.resetFilters();
-			didReset = true;
-		}
-		if (averagePriceViewer.getFilters().length > 0){
-			averagePriceViewer.resetFilters();
-			didReset = true;
-		}
-		if (didReset){
-			asyncRefresh();
-		}
-	}
 
 	private void refresh() {
-		messagesViewer.refresh();
-		fillsViewer.refresh();
-		averagePriceViewer.refresh();
+//		messagesViewer.refresh();
+//		fillsViewer.refresh();
+//		averagePriceViewer.refresh();
 	}
 
 	
-//	public static TableViewer constructSQLViewer(Composite parentComposite, ResultSetMetaData metaData) {
-//		DBTableModel tableModel = null;
-//		int count = 0;
-//		TableViewer viewer = null;
-//
-//			viewer = new TableViewer(parentComposite, SWT.BORDER | SWT.MULTI
-//					| SWT.WRAP | SWT.FULL_SELECTION);
-//			try {
-//				count = metaData.getColumnCount();
-//			
-//			// set up the SelectionAdapter
-//			final Table table = viewer.getTable();
-//			final SQLTableSorter sorter = new SQLTableSorter(count, metaData);
-//			viewer.setSorter(sorter);
-//			final String[] ss = new String[count];
-//			final TableViewer tmpViewer = viewer;
-//			SelectionListener headerListener = new SelectionAdapter() {
-//
-//				public void widgetSelected(SelectionEvent e) {
-//					// column selected - need to sort
-//					int column = table.indexOf((TableColumn) e.widget);
-//					if (column == sorter.getTopPriority()) {
-//						int k = sorter.reverseTopPriority();
-//// if (k == SQLTableSorter.ASCENDING)
-//// ((TableColumn) e.widget).setImage(imgAsc);
-//// else
-//// ((TableColumn) e.widget).setImage(imgDesc);
-//					} else {
-//						sorter.setTopPriority(column);
-//// ((TableColumn) e.widget).setImage(imgAsc);
-//					}
-//					TableColumn[] tcArr = table.getColumns();
-//					for (int i = 0; i < tcArr.length; i++) {
-//						if (i != column) {
-//							tcArr[i].setImage(null);
-//						}
-//					}
-//					tmpViewer.refresh();
-//
-//				}
-//			};
-//
-//			table.setLinesVisible(true);
-//			table.setHeaderVisible(true);
-//			SQLTableContentProvider slp = new SQLTableContentProvider();
-//			viewer.setContentProvider(slp);
-//			for (int i = 0; i < count; i++) {
-//				TableColumn tc = new TableColumn(table, SWT.NULL);
-//				String rawColumnLabel = metaData.getColumnLabel(i + 1);
-//				tc.setText(rawColumnLabel);
-//				ss[i] = new String(rawColumnLabel);
-//				tc.addSelectionListener(headerListener);
-////				 if (i == 0)
-////				 tc.setImage(imgAsc);
-//			}
-//			viewer.setColumnProperties(ss);
-//			viewer.setLabelProvider(slp);
-//			for (int i = 0; i < count; i++) {
-//				table.getColumn(i).pack();
-//			}
-//			table.layout();
-//		} catch (SQLException ex){
-//			ex.printStackTrace();
-//		}
-//		return viewer;
-//	}
 }

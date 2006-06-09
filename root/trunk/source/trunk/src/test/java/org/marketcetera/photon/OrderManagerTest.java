@@ -21,6 +21,7 @@ import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IncomingMessageHolder;
+import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.model.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -40,6 +41,7 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
+import ca.odell.glazedlists.EventList;
 
 public class OrderManagerTest extends TestCase {
 
@@ -113,30 +115,31 @@ public class OrderManagerTest extends TestCase {
 		messages[0] = getTestableExecutionReport();
 		messages[1] = getTestableExecutionReport();
 		orderManager.handleCounterpartyMessages(messages);
-		Object[] historyArray = messageHistory.getHistory();
-		assertEquals(2, historyArray.length);
-		assertEquals(IncomingMessageHolder.class, historyArray[0].getClass());
-		assertEquals(IncomingMessageHolder.class, historyArray[1].getClass());
-		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyArray[0]).getMessage().getHeader().getString(MsgType.FIELD));
-		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyArray[1]).getMessage().getHeader().getString(MsgType.FIELD));
+		EventList<MessageHolder> historyList = messageHistory.getAllMessages();
+		assertEquals(2, historyList.size());
+		assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
+		assertEquals(IncomingMessageHolder.class, historyList.get(1).getClass());
+		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
+		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyList.get(1)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessages(Object[])'
 	 */
 	public void testHandleInternalMessages() throws FieldNotFound {
-		Object[] historyArray = messageHistory.getHistory();
-		assertEquals(0, historyArray.length);
+		EventList<MessageHolder> historyList = messageHistory.getAllMessages();
+		assertEquals(0, historyList.size());
 		Object[] messages = new Object[2];
 		messages[0] = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		messages[1] = FIXMessageUtil.newCancel(new InternalID("AQWE"), new InternalID("ASDF"), Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
 		orderManager.handleInternalMessages(messages);
-		historyArray = messageHistory.getHistory();
-		assertEquals(2, historyArray.length);
-		assertEquals(OutgoingMessageHolder.class, historyArray[0].getClass());
-		assertEquals(OutgoingMessageHolder.class, historyArray[1].getClass());
-		assertEquals(MsgType.ORDER_SINGLE, ((OutgoingMessageHolder)historyArray[0]).getMessage().getHeader().getString(MsgType.FIELD));
-		assertEquals(MsgType.ORDER_CANCEL_REQUEST, ((OutgoingMessageHolder)historyArray[1]).getMessage().getHeader().getString(MsgType.FIELD));
+		assertNotNull(messageHistory.getLatestMessage("ASDF"));
+		historyList = messageHistory.getAllMessages();
+		assertEquals(2, historyList.size());
+		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
+		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
+		assertEquals(MsgType.ORDER_SINGLE, ((OutgoingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
+		assertEquals(MsgType.ORDER_CANCEL_REQUEST, ((OutgoingMessageHolder)historyList.get(1)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 	/*
@@ -145,10 +148,10 @@ public class OrderManagerTest extends TestCase {
 	public void testHandleCounterpartyMessage() throws FieldNotFound {
 		Message message = getTestableExecutionReport();
 		orderManager.handleCounterpartyMessage(message);
-		Object[] historyArray = messageHistory.getHistory();
-		assertEquals(1, historyArray.length);
-		assertEquals(IncomingMessageHolder.class, historyArray[0].getClass());
-		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyArray[0]).getMessage().getHeader().getString(MsgType.FIELD));
+		EventList<MessageHolder> historyList = messageHistory.getAllMessages();
+		assertEquals(1, historyList.size());
+		assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
+		assertEquals(MsgType.EXECUTION_REPORT, ((IncomingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 	/*
@@ -157,10 +160,10 @@ public class OrderManagerTest extends TestCase {
 	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException, JMSException {
 		Message message = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
-		Object[] historyArray = messageHistory.getHistory();
-		assertEquals(1, historyArray.length);
-		assertEquals(OutgoingMessageHolder.class, historyArray[0].getClass());
-		assertEquals(MsgType.ORDER_SINGLE, ((OutgoingMessageHolder)historyArray[0]).getMessage().getHeader().getString(MsgType.FIELD));
+		EventList<MessageHolder> historyList = messageHistory.getAllMessages();
+		assertEquals(1, historyList.size());
+		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
+		assertEquals(MsgType.ORDER_SINGLE, ((OutgoingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
 
 	}
 
@@ -171,8 +174,8 @@ public class OrderManagerTest extends TestCase {
 		String myClOrdID = "MyClOrdID";
 		Message message = FIXMessageUtil.newLimitOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
-		Object[] history = messageHistory.getHistory();
-		assertEquals(1, history.length);
+		EventList<MessageHolder> history = messageHistory.getAllMessages();
+		assertEquals(1, history.size());
 
 		Message cancelReplaceMessage = new quickfix.fix42.Message();
 		cancelReplaceMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REPLACE_REQUEST));
@@ -181,10 +184,10 @@ public class OrderManagerTest extends TestCase {
 		cancelReplaceMessage.setField(new StringField(OrderQty.FIELD, "100"));
 		orderManager.handleInternalMessage(cancelReplaceMessage);
 		
-		history = messageHistory.getHistory();
-		assertEquals(2, history.length);
-		assertEquals(OutgoingMessageHolder.class, history[1].getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) history[1];
+		history = messageHistory.getAllMessages();
+		assertEquals(2, history.size());
+		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
+		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancelReplace = holder.getMessage();
 		assertEquals(MsgType.ORDER_CANCEL_REPLACE_REQUEST, filledCancelReplace.getHeader().getString(MsgType.FIELD));
 		FIXDataDictionaryManager.getDictionary().validate(filledCancelReplace);
@@ -198,8 +201,8 @@ public class OrderManagerTest extends TestCase {
 		String myClOrdID = "MyClOrdID";
 		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
-		Object[] history = messageHistory.getHistory();
-		assertEquals(1, history.length);
+		EventList<MessageHolder> history = messageHistory.getAllMessages();
+		assertEquals(1, history.size());
 
 		Message cancelMessage = new quickfix.fix42.Message();
 		cancelMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
@@ -207,10 +210,10 @@ public class OrderManagerTest extends TestCase {
 		cancelMessage.setField(new Symbol("QWER"));
 		orderManager.handleInternalMessage(cancelMessage);
 		
-		history = messageHistory.getHistory();
-		assertEquals(2, history.length);
-		assertEquals(OutgoingMessageHolder.class, history[1].getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) history[1];
+		history = messageHistory.getAllMessages();
+		assertEquals(2, history.size());
+		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
+		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
@@ -233,11 +236,11 @@ public class OrderManagerTest extends TestCase {
 		CommandEvent evt = new CommandEvent(message, CommandEvent.Destination.EDITOR);
 		orderManager.handleCommandIssued(evt);
 		
-		assertEquals(0, messageHistory.getHistory().length);
+		assertEquals(0, messageHistory.getAllMessages().size());
 
 		evt = new CommandEvent(message, CommandEvent.Destination.BROKER);
 		orderManager.handleCommandIssued(evt);
-		assertEquals(1, messageHistory.getHistory().length);
+		assertEquals(1, messageHistory.getAllMessages().size());
 		
 	}
 
@@ -256,8 +259,8 @@ public class OrderManagerTest extends TestCase {
 		String myClOrdID = "MyClOrdID";
 		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
-		Object[] history = messageHistory.getHistory();
-		assertEquals(1, history.length);
+		EventList<MessageHolder> history = messageHistory.getAllMessages();
+		assertEquals(1, history.size());
 
 		Message cancelMessage = new quickfix.fix42.Message();
 		cancelMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
@@ -265,10 +268,10 @@ public class OrderManagerTest extends TestCase {
 		cancelMessage.setField(new Symbol("QWER"));
 		orderManager.cancelOneOrderByClOrdID(myClOrdID);
 		
-		history = messageHistory.getHistory();
-		assertEquals(2, history.length);
-		assertEquals(OutgoingMessageHolder.class, history[1].getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) history[1];
+		history = messageHistory.getAllMessages();
+		assertEquals(2, history.size());
+		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
+		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));

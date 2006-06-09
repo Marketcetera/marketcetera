@@ -36,13 +36,13 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 		bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW + ":*");
 		bottomFolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 
-		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.3f,
+		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.35f,
 				editorArea);
 		leftFolder.addPlaceholder(FiltersView.ID + ":*");
 		leftFolder.addView(FiltersView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
-				0.1f, editorArea);
+				0.85f, editorArea);
 		rightFolder.addPlaceholder(StockOrderTicket.ID + ":*");
 		rightFolder.addView(StockOrderTicket.ID);
 		rightFolder.addPlaceholder(WebBrowserView.ID + ":*");

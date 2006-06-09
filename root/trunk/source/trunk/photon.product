@@ -18,6 +18,7 @@
    </launcher>
 
    <plugins>
+      <plugin id="com.publicobject.glazedlists"/>
       <plugin id="org.apache.activemq"/>
       <plugin id="org.apache.log4j"/>
       <plugin id="org.apache.lucene"/>
