@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -97,10 +96,13 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	public static final String ID = "org.marketcetera.photon.editors.OrderHistoryEditor";
 
 	private EventTableViewer averagePriceViewer;
-
+	private ViewerSelectionAdapter averagePriceSelectionProvider;
+	
 	private EventTableViewer messagesViewer;
+	private ViewerSelectionAdapter messagesSelectionProvider;
 
 	private EventTableViewer fillsViewer;
+	private ViewerSelectionAdapter fillsSelectionProvider;
 
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 
@@ -152,7 +154,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
         fillTable = createMessageTable(composite);
 		fillsViewer = new EventTableViewer(fillMessages, fillTable, new EnumTableFormat(FillColumns.values()));
-        fillTable = formatFillTable(fillTable);
+		fillsSelectionProvider = new ViewerSelectionAdapter(fillsViewer);
+		fillTable = formatFillTable(fillTable);
 
         fillTable.setBackground(
         		fillTable.getDisplay().getSystemColor(
@@ -189,7 +192,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
         messageTable = createMessageTable(composite);
 		messagesViewer = new EventTableViewer(filteredMessages, messageTable, new EnumTableFormat(MessageColumns.values()));
-        messageTable = formatFillTable(messageTable);
+		messagesSelectionProvider = new ViewerSelectionAdapter(messagesViewer);
+		messageTable = formatFillTable(messageTable);
 
         messageTable.setBackground(
         		messageTable.getDisplay().getSystemColor(
@@ -218,7 +222,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
         averagePriceTable = createMessageTable(composite);
 		averagePriceViewer = new EventTableViewer(averagePriceList, averagePriceTable, new EnumTableFormat(AvgPriceColumns.values()));
-        averagePriceTable = formatFillTable(averagePriceTable);
+		averagePriceSelectionProvider = new ViewerSelectionAdapter(messagesViewer);
+		averagePriceTable = formatFillTable(averagePriceTable);
 
         averagePriceTable.setBackground(
         		averagePriceTable.getDisplay().getSystemColor(
@@ -274,8 +279,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		Menu menu = menuMgr.createContextMenu(messageTable);
 		menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 		messageTable.setMenu(menu);
-		// TODO: FIX ME possible also use SWT TableViewer?
-		getSite().registerContextMenu(menuMgr, null);
+		getSite().registerContextMenu(menuMgr, messagesSelectionProvider);
 		getSite().setSelectionProvider(new OrderHistorySelectionProvider(this));
 	}
 
@@ -345,11 +349,11 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		int pageIndex = getActivePage();
 		switch (pageIndex) {
 		case FILLS_VIEWER_INDEX:
-			return null;
+			return fillsSelectionProvider;
 		case AVERAGE_PRICE_VIEWER_INDEX:
-			return null;
+			return averagePriceSelectionProvider;
 		case MESSAGES_VIEWER_INDEX:
-			return null;
+			return messagesSelectionProvider;
 		default:
 			return null;
 		}
