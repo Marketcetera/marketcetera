@@ -111,4 +111,5 @@ public class FIXMatcherEditor<FIX_TYPE> extends
 	public String toString(){
 		return mName;
 	}
+
 }

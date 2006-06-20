@@ -60,7 +60,7 @@ public class OrderManagerTest extends TestCase {
     public static Message getTestableExecutionReport() {
             Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), CL_ORD_ID, "987", ExecTransType.STATUS,
                             ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
-                            new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL);
+                            new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL, null);
             aMessage.setUtcTimeStamp(TransactTime.FIELD, THE_TRANSACT_TIME);
             return aMessage;
     }
@@ -81,7 +81,7 @@ public class OrderManagerTest extends TestCase {
 
 	static {
 		try {
-			FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+			FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		} catch (Throwable th) {
 			th.printStackTrace();
 		}

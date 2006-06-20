@@ -26,6 +26,7 @@ import quickfix.field.OrdStatus;
 import quickfix.field.Symbol;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.UniqueList;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
@@ -115,13 +116,14 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     
 	private void initContent() {
         accountMatchers.add(new FIXMatcherEditor<String>(Account.FIELD, null, "<NO ACCOUNT>"));
-        accountMatchers.add(new FIXMatcherEditor<String>(Account.FIELD, "FOO", "FOO"));
-        accountMatchers.add(new FIXMatcherEditor<String>(Account.FIELD, "QWER", "QWER"));
+		addAccount(new AccountID("FOO"));
 
         symbolMatchers.add(new FIXMatcherEditor<String>(Symbol.FIELD, null, "<NO SYMBOL>"));
+		addSymbol(new MSymbol("BAR"));
         ordStatusMatcherEditor.getMatcherEditors().add(new FIXMatcherEditor<Character>(OrdStatus.FIELD, null, "Missing OrdStatus"));
 	}
-	
+
+
 	private void createMatcherEditors() {
 		topMatcherEditor = new CompositeMatcherEditor<MessageHolder>();
         threadedMatcherEditor = new ThreadedMatcherEditor<MessageHolder>(topMatcherEditor);
@@ -182,26 +184,20 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     	matcherStore.getMatcherEditors().add(matcherEditor);
 	}
 
-    public void addAccount(AccountID id){
-        String acctString = id.toString();
-        addAccount(acctString);
-    }
-    public void addAccount(String acctString){
-		if (accountSWTList.indexOf(acctString) < 0){
-        	accountSWTList.add(acctString);
-        }
-    }
-
-    public void addSymbol(MSymbol symbol){
-        String symbolString = symbol.toString();
-		addSymbol(symbolString);
-    }
-
-	private void addSymbol(String symbolString) {
-		if (symbolSWTList.indexOf(symbolString) < 0){
-			symbolSWTList.add(symbolString);
-        }
+	private void addAccount(AccountID id) {
+		FIXMatcherEditor<String> matcherEditor = new FIXMatcherEditor<String>(Account.FIELD, id.toString(), id.getAccountNickname());
+		if (accountMatchers.indexOf(matcherEditor) < 0){
+			accountMatchers.add(matcherEditor);
+		}
 	}
+	
+    public void addSymbol(MSymbol symbol){
+		FIXMatcherEditor<String> matcherEditor = new FIXMatcherEditor<String>(Symbol.FIELD, symbol.getBaseSymbol(), symbol.toString());
+		if (symbolMatchers.indexOf(matcherEditor) < 0){
+			symbolMatchers.add(matcherEditor);
+		}
+    }
+
 
     private void refresh() {
         getSite().getShell().getDisplay().asyncExec(new Runnable() {
@@ -213,13 +209,13 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     public void orderActionTaken(Message message) {
     	try {
 			String accountString = message.getString(Account.FIELD);
-			addAccount(accountString);
+			addAccount(new AccountID(accountString));
     	} catch (FieldNotFound e) {
 			// do nothing
 		}
     	try {
 			String symbolString = message.getString(Symbol.FIELD);
-			addSymbol(symbolString);
+			addSymbol(new MSymbol(symbolString));
 		} catch (FieldNotFound e) {
 			// do nothing
 		}
@@ -229,6 +225,8 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 	public void setFocus() {
 		accountSWTList.setFocus();
 	}
+	
+	
 
 	public ThreadedMatcherEditor<MessageHolder> getMatcherEditor() {
 		return threadedMatcherEditor;

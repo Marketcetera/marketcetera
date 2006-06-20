@@ -131,28 +131,18 @@
          point="org.eclipse.ui.popupMenus">
          <objectContribution
          	adaptable="false"
-         	id="org.marketcetera.photon.MesssageHolder.CancelOrderAction"
+         	id="org.marketcetera.photon.CancelOrderActionDelegate"
          	objectClass="org.marketcetera.photon.model.MessageHolder">
          	<action
-         		class="org.marketcetera.photon.actions.CancelOrderAction"
+         		class="org.marketcetera.photon.actions.CancelOrderActionDelegate"
          		icon="icons/silk/cancel.png"
-         		id="org.marketcetera.photon.CancelOrder"
+         		id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
          		label="&amp;Cancel order"/>
          </objectContribution>
          <objectContribution
          	adaptable="false"
-         	id="org.marketcetera.photon.MessageHolder.ViewSecurityAction"
+         	id="org.marketcetera.photon.actions.ViewSecurityAction"
          	objectClass="org.marketcetera.photon.model.MessageHolder">
-         	<action
-         		class="org.marketcetera.photon.actions.ViewSecurityAction"
-         		icon="icons/silk/world_go.png"
-         		id="org.marketcetera.photon.ViewSecurity"
-         		label="View Security"/>
-         </objectContribution>
-         <objectContribution
-         	adaptable="false"
-         	id="org.marketcetera.photon.PortfolioView.PositionEntry"
-         	objectClass="org.marketcetera.photon.model.PositionEntry">
          	<action
          		class="org.marketcetera.photon.actions.ViewSecurityAction"
          		icon="icons/silk/world_go.png"
