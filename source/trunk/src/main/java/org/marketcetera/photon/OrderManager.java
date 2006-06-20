@@ -15,16 +15,11 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.model.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
-import quickfix.FieldMap;
 import quickfix.FieldNotFound;
-import quickfix.Group;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.StringField;
@@ -32,11 +27,10 @@ import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 
 /**
  * $Id$
@@ -160,7 +154,12 @@ public class OrderManager {
 
 
 	private void handleCancelReject(Message aMessage) throws FieldNotFound {
-		String reason = aMessage.getString(CxlRejReason.FIELD);
+		String reason = null;
+		try {
+			reason = aMessage.getString(CxlRejReason.FIELD);
+		} catch (FieldNotFound fnf){
+			//do nothing
+		}
 		String text = aMessage.getString(Text.FIELD);
 		String origClOrdID = aMessage.getString(OrigClOrdID.FIELD);
 		String errorMsg = "Cancel rejected for order " + origClOrdID + ": "
@@ -179,11 +178,7 @@ public class OrderManager {
 		if (FIXMessageUtil.isOrderSingle(aMessage)) {
 			addNewOrder(aMessage);
 		} else if (FIXMessageUtil.isCancelRequest(aMessage)) {
-			try {
-				aMessage.getString(OrigClOrdID.FIELD);
-				cancelOneOrder(aMessage);
-			} catch (FieldNotFound e) {
-			}
+			cancelOneOrder(aMessage);
 		} else if (FIXMessageUtil.isCancelReplaceRequest(aMessage)) {
 			cancelReplaceOneOrder(aMessage);
 		} else if (FIXMessageUtil.isCancelRequest(aMessage)) {
@@ -235,12 +230,22 @@ public class OrderManager {
 	}
 	
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
-		Message latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
-		if (latestMessage != null){
+		Message latestMessage = fixMessageHistory.getLatestExecutionReport(clOrdID);
+		if (latestMessage == null){
+			latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
+			if (latestMessage == null){
+				internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
+				return;
+			}
 			Message cancelMessage = new quickfix.fix42.Message();
 			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
 			cancelMessage.setField(new OrigClOrdID(clOrdID));
 			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
+			try {
+				cancelMessage.setField(new OrderID(latestMessage.getString(OrderID.FIELD)));
+			} catch (FieldNotFound e) {
+				// do nothing
+			}
 			fillFieldsFromExistingMessage(cancelMessage, latestMessage);
 
 			fixMessageHistory.addOutgoingMessage(cancelMessage);
@@ -249,10 +254,7 @@ public class OrderManager {
 			} catch (JMSException e) {
 				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
 			}
-		} else {
-			internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
 		}
-		
 	}
 
 	private void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage){

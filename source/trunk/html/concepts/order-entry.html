@@ -43,15 +43,18 @@ click on the Window menu and choose <i>Stock Order Ticket</i>.</p>
 	or cancel). The account can be any string of non-whitespace characters.  Note that if you have an account, you
 	must also have a time in force.</dd>
 	<dt>Cancel order</dt>
-	<dd><pre class="commandsyntax">C {<em class="replaceable">clordid</em>}+
-	</pre></dd>
+	<dd>
+	  <pre class="commandsyntax">C {<em class="replaceable">clordid</em>}+</pre>
+	</dd>
 	<dd>This command starts with a "C" followed by a list of ClOrdId (client order id) values separated by whitespace.</dd>
-</dl>
-  CANCEL(&quot;C&quot;),<br />
-  CANCEL_REPLACE(&quot;CXR&quot;),<br />
-  SET(&quot;SET&quot;),<br />
-  UNSET(&quot;UNSET&quot;); </p>
-<p>&nbsp;</p>
+	<dt>Cancel/Replace Order</dt>
+	<dd>
+	  <pre class="commandsyntax">CXR <em class="replaceable">clordid</em> { P | Q } { <em class="replaceable">price</em> | <em class="replaceable">quantity</em> }</pre>
+	</dd>
+	<dd>This command starts with "CXR" followed by a ClOrdId (client order id) of an open order.  Next comes "P" or "Q", specifying replace of price or quantity
+	(replacement of both is not currently supported).  Finally comes the price or quantity depending on the previous token.<br />
+  </dd></dl>
+  <p>&nbsp;</p>
 <p>&nbsp;</p>
 </div>
 </body>

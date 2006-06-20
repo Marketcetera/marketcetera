@@ -36,6 +36,8 @@ public class FIXMessageHistory extends PlatformObject {
 	private FilterList<MessageHolder> latestExecutionReportsList;
 
 	private FilterList<MessageHolder> latestMessageList;
+	
+	private int messageReferenceCounter = 0;
 
 	public FIXMessageHistory() {
 		allMessages = new BasicEventList<MessageHolder>();
@@ -60,11 +62,11 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public void addIncomingMessage(quickfix.Message fixMessage) {
-		allMessages.add(new IncomingMessageHolder(fixMessage));
+		allMessages.add(new IncomingMessageHolder(fixMessage, messageReferenceCounter++));
 	}
 
 	public void addOutgoingMessage(quickfix.Message fixMessage) {
-		allMessages.add(new OutgoingMessageHolder(fixMessage));
+		allMessages.add(new OutgoingMessageHolder(fixMessage, messageReferenceCounter++));
 	}
 
 

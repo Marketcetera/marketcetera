@@ -27,7 +27,10 @@ Function<List<MessageHolder>, MessageHolder>{
 						Date newTime = message.getUtcTimeStamp(TransactTime.FIELD);
 						Date existingTime = latestMessage.getMessage().getUtcTimeStamp(TransactTime.FIELD);
 						int compareVal = newTime.compareTo(existingTime);
-						if (compareVal > 0){
+						if (compareVal > 0 ||
+								(compareVal == 0 && 
+										holder.getMessageReference() > latestMessage.getMessageReference()))
+						{
 							latestMessage = holder;
 						}
 					}

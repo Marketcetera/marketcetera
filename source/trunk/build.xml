@@ -26,7 +26,7 @@
         <pathelement location="${MAVEN_REPO}/junit/junit/3.8.1/junit-3.8.1.jar"/>
         <pathelement location="${MAVEN_REPO}/org/skife/kasparov/csv/1.0/csv-1.0.jar"/>
         <pathelement location="${MAVEN_REPO}/org/marketcetera/core/0.1-SNAPSHOT/core-0.1-SNAPSHOT.jar"/>
-        <pathelement location="${MAVEN_REPO}/activemq/activemq/4.0-RC2/activemq-4.0-RC2.jar"/>
+        <pathelement location="${MAVEN_REPO}/incubator/activemq/4.0/activemq-4.0.jar"/>
         <pathelement location="${DOWNLOADS_FOLDER}/${CONSOLE_PLUGIN}"/>
         <pathelement location="${DOWNLOADS_FOLDER}/${RESOURCES_PLUGIN}"/>
         <pathelement location="${DOWNLOADS_FOLDER}/${IDE_PLUGIN}"/>
