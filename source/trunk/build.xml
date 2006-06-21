@@ -67,6 +67,8 @@
     </target>
     <target name="clean">
         <delete dir="target/classes"/>
+        <delete dir="target/test-classes"/>
+        <delete dir="target/test-output"/>
         <delete dir="${DOWNLOADS_FOLDER}"/>
      </target>
     <target depends="init" name="build">
