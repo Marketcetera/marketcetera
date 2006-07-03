@@ -12,6 +12,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
@@ -41,6 +42,25 @@ import ca.odell.glazedlists.swt.EventTableViewer;
  */
 public class OrderHistoryEditor extends MultiPageEditorPart {
 
+	public enum OpenOrderColumns {
+		TRANSACTTIME("TransactTime"), CLORDID("ClOrdID"),
+		ORDERID("OrderID"), ORDSTATUS("OrdStatus"), SIDE(
+				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
+				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
+				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
+				"LastPx"), LASTMKT("LastMkt");
+
+		private String mName;
+
+		OpenOrderColumns(String name) {
+			mName = name;
+		}
+
+		public String toString() {
+			return mName;
+		}
+	};
+	
 	public enum AvgPriceColumns {
 		DIRECTION("D"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
 		AVGPX("AvgPx"), ACCOUNT("Account");
@@ -62,7 +82,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
 				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
 				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
-				"LastPx"), LASTMKT("LastMkt");
+				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID");
 
 		private String mName;
 
@@ -95,12 +115,19 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	public static final String ID = "org.marketcetera.photon.editors.OrderHistoryEditor";
 
+	private Table openOrderTable;
+	private EventTableViewer openOrderViewer;
+	private ViewerSelectionAdapter openOrderSelectionProvider;
+
+	private Table averagePriceTable;
 	private EventTableViewer averagePriceViewer;
 	private ViewerSelectionAdapter averagePriceSelectionProvider;
 	
+	private Table messageTable;
 	private EventTableViewer messagesViewer;
 	private ViewerSelectionAdapter messagesSelectionProvider;
 
+	private Table fillTable;
 	private EventTableViewer fillsViewer;
 	private ViewerSelectionAdapter fillsSelectionProvider;
 
@@ -111,20 +138,19 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	private EventList<MessageHolder> filteredMessages;
 
 	private EventList<MessageHolder> fillMessages;
+	
+	private EventList<MessageHolder> openOrderMessages;
 
 	private IWorkbenchWindow window;
 	
-	private static final int FILLS_VIEWER_INDEX = 0;
-	private static final int AVERAGE_PRICE_VIEWER_INDEX = 1;
-	private static final int MESSAGES_VIEWER_INDEX = 2;
+	private static final int OPEN_ORDER_VIEWER_INDEX = 0;
+	private static final int FILLS_VIEWER_INDEX = 1;
+	private static final int AVERAGE_PRICE_VIEWER_INDEX = 2;
+	private static final int MESSAGES_VIEWER_INDEX = 3;
 
-	private Table fillTable;
-
-	private Table messageTable;
-
-	private Table averagePriceTable;
 
 	private EventList<MessageHolder> averagePriceList;
+
 
 	private FIXMessageHistory messageHistory;
 
@@ -147,6 +173,31 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	 * Creates page 0 of the multi-page editor, which contains the list of fills
 	 */
 	void createPage0() {
+		Composite composite = new Composite(getContainer(), SWT.NONE);
+		GridLayout layout = new GridLayout();
+		composite.setLayout(layout);
+		layout.numColumns = 1;
+
+        openOrderTable = createMessageTable(composite);
+        openOrderViewer = new EventTableViewer(openOrderMessages, openOrderTable, new EnumTableFormat(OpenOrderColumns.values()));
+        openOrderSelectionProvider = new ViewerSelectionAdapter(openOrderViewer);
+        openOrderTable = formatFillTable(openOrderTable);
+
+        openOrderTable.setBackground(
+        		openOrderTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_BACKGROUND));
+        openOrderTable.setForeground(
+        		openOrderTable.getDisplay().getSystemColor(
+						SWT.COLOR_INFO_FOREGROUND));
+
+        openOrderTable.setHeaderVisible(true);
+
+		int index = addPage(composite);
+		packColumns(openOrderTable);
+		setPageText(index, "Open Orders");
+	}
+	
+	void createPage1() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -184,7 +235,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	/**
 	 * Creates page 1 of the multi-page editor, which contains the list of messages
 	 */
-	void createPage1() {
+	void createPage2() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -214,7 +265,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	/**
 	 * Creates page 2 of the multi-page editor, which contains the list of average price fills
 	 */
-	void createPage2() {
+	void createPage3() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -222,7 +273,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
         averagePriceTable = createMessageTable(composite);
 		averagePriceViewer = new EventTableViewer(averagePriceList, averagePriceTable, new EnumTableFormat(AvgPriceColumns.values()));
-		averagePriceSelectionProvider = new ViewerSelectionAdapter(messagesViewer);
+		averagePriceSelectionProvider = new ViewerSelectionAdapter(averagePriceViewer);
 		averagePriceTable = formatFillTable(averagePriceTable);
 
         averagePriceTable.setBackground(
@@ -271,16 +322,29 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		createPage0();
 		createPage1();
 		createPage2();
+		createPage3();
 		makeActions();
 	}
 
 	private void makeActions() {
-		MenuManager menuMgr = new MenuManager("orderHistoryPopup");
-		Menu menu = menuMgr.createContextMenu(messageTable);
-		menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
-		messageTable.setMenu(menu);
-		getSite().registerContextMenu(menuMgr, messagesSelectionProvider);
+
+		createContextMenu("orderHistoryMessagePopup", messageTable, messagesSelectionProvider);
+
+		createContextMenu("orderHistoryFillPopup", fillTable,fillsSelectionProvider);
+
+		createContextMenu("orderHistoryOpenOrderPopup", openOrderTable, openOrderSelectionProvider);
+		
 		getSite().setSelectionProvider(new OrderHistorySelectionProvider(this));
+	}
+	
+	private void createContextMenu(String name, Control table, ISelectionProvider selectionProvider)
+	{
+		MenuManager menuMgr = new MenuManager(name);
+		Menu menu = menuMgr.createContextMenu(table);
+		menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+
+		table.setMenu(menu);
+		getSite().registerContextMenu(menuMgr, selectionProvider);
 	}
 
 	/**
@@ -335,6 +399,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 			filteredMessages = messageHistory.getFilteredMessages();
 			fillMessages = messageHistory.getFills();
 			averagePriceList = messageHistory.getAveragePriceHistory();
+			openOrderMessages = messageHistory.getOpenOrders();
 			
 //			allMessages.add(new IncomingMessageHolder(
 //					FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("TESTSYM"))
@@ -348,6 +413,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	public ISelectionProvider getActiveSelectionProvider() {
 		int pageIndex = getActivePage();
 		switch (pageIndex) {
+		case OPEN_ORDER_VIEWER_INDEX:
+			return openOrderSelectionProvider;
 		case FILLS_VIEWER_INDEX:
 			return fillsSelectionProvider;
 		case AVERAGE_PRICE_VIEWER_INDEX:

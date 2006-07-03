@@ -8,8 +8,10 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.apache.log4j.Logger;
+import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
@@ -25,6 +27,7 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
+import quickfix.field.ExecID;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
@@ -71,9 +74,13 @@ public class OrderManager {
 				if (message instanceof TextMessage) {
 					TextMessage textMessage = (TextMessage) message;
 					try {
-						quickfix.Message qfMessage = new Message(textMessage
+						final quickfix.Message qfMessage = new Message(textMessage
 								.getText());
-						handleCounterpartyMessage(qfMessage);
+						Display.getDefault().asyncExec(new Runnable() {
+							public void run() {
+								handleCounterpartyMessage(qfMessage);
+							}
+						});
 					} catch (InvalidMessage e) {
 						Application.getMainConsoleLogger().error("Exception processing incoming message", e);
 					} catch (JMSException e) {
@@ -125,6 +132,7 @@ public class OrderManager {
 
 	public void handleCounterpartyMessage(Message aMessage) {
 		fixMessageHistory.addIncomingMessage(aMessage);
+		fireOrderActionOccurred(aMessage);
 		try {
 			if (FIXMessageUtil.isExecutionReport(aMessage)) {
 				handleExecutionReport(aMessage);
@@ -174,6 +182,7 @@ public class OrderManager {
 
 	public void handleInternalMessage(Message aMessage) throws FieldNotFound,
 			MarketceteraException, JMSException {
+		fireOrderActionOccurred(aMessage);
 
 		if (FIXMessageUtil.isOrderSingle(aMessage)) {
 			addNewOrder(aMessage);
@@ -237,6 +246,8 @@ public class OrderManager {
 				internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
 				return;
 			}
+		}
+		try { LoggerAdapter.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD), this); } catch (FieldNotFound e1) {	}
 			Message cancelMessage = new quickfix.fix42.Message();
 			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
 			cancelMessage.setField(new OrigClOrdID(clOrdID));
@@ -254,7 +265,6 @@ public class OrderManager {
 			} catch (JMSException e) {
 				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
 			}
-		}
 	}
 
 	private void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage){
@@ -324,7 +334,7 @@ public class OrderManager {
 	protected void fireOrderActionOccurred(Message fixMessage){
 		for (IOrderActionListener listener : orderActionListeners) {
 			try {
-			listener.orderActionTaken(fixMessage);
+				listener.orderActionTaken(fixMessage);
 			} catch (Exception ex){
 				internalMainLogger.error("Error notifying IOrderActionListener", ex);
 			}
