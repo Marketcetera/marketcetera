@@ -7,6 +7,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 public class LatestExecutionReportsFunction extends LatestMessageFunction {
 
 	protected boolean filter(MessageHolder holder){
-		return (holder instanceof IncomingMessageHolder && FIXMessageUtil.isExecutionReport(holder.getMessage()));
+		return (holder instanceof IncomingMessageHolder 
+				&& FIXMessageUtil.isExecutionReport(holder.getMessage()));
 	}
 }

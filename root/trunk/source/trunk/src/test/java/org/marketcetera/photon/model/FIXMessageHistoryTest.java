@@ -11,6 +11,7 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.BooleanField;
 import quickfix.DateField;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -22,6 +23,7 @@ import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
 import quickfix.field.LastPx;
+import quickfix.field.LastQty;
 import quickfix.field.LastShares;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
@@ -353,4 +355,70 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals( 12.4, returnedAvgPrice.doubleValue(), .0001);
 		assertTrue( new BigDecimal("900").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
 	}
+
+	public void testExecutionReportOrder() throws FieldNotFound
+	{
+		InternalID orderID1 = new InternalID("1");
+		InternalID clOrderID1 = new InternalID("2");
+		String execID = "3";
+		char execTransType = ExecTransType.STATUS;
+		char execType = ExecType.PARTIAL_FILL;
+		char ordStatus = OrdStatus.PARTIALLY_FILLED;
+		char side = Side.SELL_SHORT;
+		BigDecimal orderQty = new BigDecimal(1000);
+		BigDecimal orderPrice = new BigDecimal(789);
+		BigDecimal lastQty = new BigDecimal(100);
+		BigDecimal lastPrice = new BigDecimal("12.3");
+		BigDecimal leavesQty = new BigDecimal(900);
+		BigDecimal cumQty = new BigDecimal(100);
+		BigDecimal avgPrice = new BigDecimal("12.3");
+		MSymbol symbol = new MSymbol("ASDF");
+
+		TransactTime ttField = new TransactTime(new Date(10000000));
+		TransactTime ttFieldLater = new TransactTime(new Date(10010000));
+		
+		Message message1 = FIXMessageUtil.newExecutionReport(null, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		message1.setField(ttField);
+		
+		lastQty = new BigDecimal(200);
+		Message message2 = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		message2.setField(ttField);
+
+		lastQty = new BigDecimal(300);
+		Message message3 = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		message3.setField(ttFieldLater);
+		
+		FIXMessageHistory history = getMessageHistory();
+		history.addIncomingMessage(message1);
+		history.addIncomingMessage(message2);
+		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		
+		history = getMessageHistory();
+		history.addIncomingMessage(message2);
+		history.addIncomingMessage(message1);
+		assertEquals(new BigDecimal(100), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertTrue(!history.getLatestExecutionReport(clOrderID1.toString()).isSetField(OrderID.FIELD));
+
+		history = getMessageHistory();
+		history.addIncomingMessage(message1);
+		history.addIncomingMessage(message2);
+		history.addIncomingMessage(message3);
+		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		
+		history = getMessageHistory();
+		history.addIncomingMessage(message3);
+		history.addIncomingMessage(message2);
+		history.addIncomingMessage(message1);
+		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+
+		history = getMessageHistory();
+		history.addIncomingMessage(message3);
+		history.addIncomingMessage(message1);
+		history.addIncomingMessage(message2);
+		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+}
 }

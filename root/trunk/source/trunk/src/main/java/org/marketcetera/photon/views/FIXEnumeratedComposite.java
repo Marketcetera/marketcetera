@@ -1,10 +1,13 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
@@ -39,6 +42,9 @@ public class FIXEnumeratedComposite extends FIXComposite {
 	public boolean modifyOrder(Message arg0) throws MarketceteraException {
 		for (Button aButton : buttons) {
 			if (aButton.getSelection()) {
+				if (((StringField)aButton.getData()).getField() == 54){
+					LoggerAdapter.debug("modifyingOrder "+aButton + aButton.getSelection()+" "+aButton.hashCode(),this);
+				}
 				arg0.setField(new StringField(fixFieldNumber, ((StringField)aButton.getData()).getValue()));
 				return true;
 			}
@@ -56,33 +62,35 @@ public class FIXEnumeratedComposite extends FIXComposite {
 	 * 
 	 * @see org.eclipse.swt.widgets.Control#setEnabled(boolean)
 	 */
-	public void setSelection(String value, boolean isEnabled) {
+	public boolean setSelection(String value, boolean isEnabled) {
+		boolean found = false;
 		for (Button aButton : buttons) {
 			StringField stringField = (StringField) aButton.getData();
-			if (value.equals(stringField.getValue()))
+			if (value.equals(stringField.getValue())){
 				aButton.setSelection(isEnabled);
+				if (((StringField)aButton.getData()).getField() == 54){
+					LoggerAdapter.debug("setting "+aButton+" "+aButton.hashCode(),this);
+				}
+				assert(aButton.getSelection() == isEnabled);
+				found = true;
+			} else {
+				aButton.setSelection(false);
+				LoggerAdapter.debug("unsetting "+aButton + aButton.getSelection()+" "+aButton.hashCode(),this);
+				assert(!aButton.getSelection());
+			}
 		}
+		return found;
 	}
 
 	@Override
 	public boolean populateFromMessage(Message aMessage) {
-		boolean found = false;
 		try {
 			String valueFromMessage;
 			valueFromMessage = aMessage.getString(fixFieldNumber);
-			for (Button aButton : buttons) {
-				StringField stringField = (StringField) aButton.getData();
-				if (valueFromMessage.equals(stringField.getValue())) {
-					aButton.setSelection(true);
-					found = true;
-				} else {
-					aButton.setSelection(false);
-				}
-			}
+			return setSelection(valueFromMessage, true);
 		} catch (FieldNotFound e) {
 			return false;
 		}
-		return found;
 	}
 
 	/* (non-Javadoc)

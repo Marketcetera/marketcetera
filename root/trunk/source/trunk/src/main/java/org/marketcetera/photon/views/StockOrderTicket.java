@@ -17,6 +17,7 @@ import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.InternalID;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.Application;
@@ -142,6 +143,7 @@ public class StockOrderTicket extends ViewPart {
 	        aMessage.removeField(TimeInForce.FIELD);
  			populateMessageFromUI(aMessage);
 			Application.getOrderManager().handleInternalMessage(aMessage);
+			//clear();
 		} catch (Exception e) {
 			Application.getMainConsoleLogger().error("Error sending order", e);
 		}
@@ -149,6 +151,9 @@ public class StockOrderTicket extends ViewPart {
 	
 	protected void handleCancel()
 	{
+		clear();
+	}
+	protected void clear(){
 		Control[] children = form.getBody().getChildren();
 		for (Control control : children) {
 			if (control instanceof FIXComposite) {
@@ -158,10 +163,6 @@ public class StockOrderTicket extends ViewPart {
 		}
 	}
 
-	@Override
-	public void setFocus() {
-		this.buySellControl.setFocus();
-	}
 
 	/**
 	 * Disposes the toolkit
@@ -213,5 +214,11 @@ public class StockOrderTicket extends ViewPart {
 	 */
 	public ICommandListener getCommandListener() {
 		return commandListener;
+	}
+
+	@Override
+	public void setFocus() {
+		// TODO Auto-generated method stub
+		
 	}
 }

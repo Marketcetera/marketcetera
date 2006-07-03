@@ -116,10 +116,8 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     
 	private void initContent() {
         accountMatchers.add(new FIXMatcherEditor<String>(Account.FIELD, null, "<NO ACCOUNT>"));
-		addAccount(new AccountID("FOO"));
 
         symbolMatchers.add(new FIXMatcherEditor<String>(Symbol.FIELD, null, "<NO SYMBOL>"));
-		addSymbol(new MSymbol("BAR"));
         ordStatusMatcherEditor.getMatcherEditors().add(new FIXMatcherEditor<Character>(OrdStatus.FIELD, null, "Missing OrdStatus"));
 	}
 
@@ -185,7 +183,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 	}
 
 	private void addAccount(AccountID id) {
-		FIXMatcherEditor<String> matcherEditor = new FIXMatcherEditor<String>(Account.FIELD, id.toString(), id.getAccountNickname());
+		FIXMatcherEditor<String> matcherEditor = new FIXMatcherEditor<String>(Account.FIELD, id.toString(), id.toString());
 		if (accountMatchers.indexOf(matcherEditor) < 0){
 			accountMatchers.add(matcherEditor);
 		}

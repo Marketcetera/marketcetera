@@ -182,6 +182,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(deleteAction);
 		menu.add(selectAllAction);
 		menu.add(findAction);
+		menu.add(new Separator());
+		preferencesAction = ActionFactory.PREFERENCES.create(window);
+		menu.add(preferencesAction);
 		menuBar.add(menu);
 
 		// Window menu
@@ -223,9 +226,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		subMenu.add(nextPerspectiveAction);
 		subMenu.add(previousPerspectiveAction);
 		menu.add(subMenu);
-		menu.add(new Separator());
-		preferencesAction = ActionFactory.PREFERENCES.create(window);
-		menu.add(preferencesAction);
 		menu.add(viewMenu);
 
 		menuBar.add(menu);

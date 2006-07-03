@@ -90,6 +90,11 @@
             class="org.marketcetera.photon.JMSPreferencePage"
             id="org.marketcetera.photon.preferences.jms"
             name="JMS Preferences"/>
+      <page
+            name="Hotkeys"
+            class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
+            id="org.eclipse.ui.preferencePages.Keys">
+      </page>
    </extension>
    <extension
          id="Photon"
@@ -125,7 +130,7 @@
             extensions="log"
             icon="icons/sample.gif"
             id="org.marketcetera.photon.editors.OrderHistoryEditor"
-            name="Order History Editor"/>
+            name="Order History"/>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">
@@ -150,5 +155,4 @@
          		label="View Security"/>
          </objectContribution>
    </extension>
-
 </plugin>

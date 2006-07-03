@@ -3,6 +3,7 @@ package org.marketcetera.photon.model;
 import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.photon.editors.AveragePriceFunction;
 import org.marketcetera.photon.editors.ClOrdIDComparator;
 import org.marketcetera.photon.editors.LatestExecutionReportsFunction;
@@ -37,6 +38,8 @@ public class FIXMessageHistory extends PlatformObject {
 
 	private FilterList<MessageHolder> latestMessageList;
 	
+	private FilterList<MessageHolder> openOrderList;
+	
 	private int messageReferenceCounter = 0;
 
 	public FIXMessageHistory() {
@@ -54,6 +57,7 @@ public class FIXMessageHistory extends PlatformObject {
 		averagePriceList = new FilterList<MessageHolder>(
 				new FunctionList<List<MessageHolder>, MessageHolder>(symbolSideList,
 				new AveragePriceFunction()), new NotNullMatcher());
+		openOrderList = new FilterList<MessageHolder>(latestExecutionReportsList, new OpenOrderMatcher());
 	}
 	
 	public FIXMessageHistory(List<MessageHolder> messages){
@@ -93,6 +97,7 @@ public class FIXMessageHistory extends PlatformObject {
 			try {
 				String possMatch = executionReport.getString(ClOrdID.FIELD);
 				if (possMatch.equals(clOrdID)){
+					LoggerAdapter.debug("Returning latest execution report id:"+holder.getMessageReference(), this);
 					return executionReport;
 				}
 			} catch (FieldNotFound fnf) {
@@ -127,6 +132,10 @@ public class FIXMessageHistory extends PlatformObject {
 
 	public EventList<MessageHolder> getFilteredMessages() {
 		return allFilteredMessages;
+	}
+
+	public FilterList<MessageHolder> getOpenOrders() {
+		return openOrderList;
 	}
 	
 }
