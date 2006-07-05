@@ -2,8 +2,6 @@ package org.marketcetera.photon.views;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -26,7 +24,6 @@ import quickfix.field.OrdStatus;
 import quickfix.field.Symbol;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.UniqueList;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
@@ -80,13 +77,13 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     	Group accountGroup = new Group(parent, SWT.NONE);
     	accountGroup.setLayout(marginFillLayout);
     	accountGroup.setText("Account");
-    	accountSWTList = new List(accountGroup, SWT.MULTI);
+        accountSWTList = new List(accountGroup, SWT.MULTI | SWT.V_SCROLL);
     	accountViewer = new EventListViewer(accountMatchers, accountSWTList);
     	
     	Group symbolGroup = new Group(parent, SWT.NONE);
     	symbolGroup.setLayout(marginFillLayout);
     	symbolGroup.setText("Symbol");
-    	symbolSWTList = new List(symbolGroup, SWT.MULTI);
+    	symbolSWTList = new List(symbolGroup, SWT.MULTI | SWT.V_SCROLL);
     	symbolViewer = new EventListViewer(symbolMatchers, symbolSWTList);
     	
     	
