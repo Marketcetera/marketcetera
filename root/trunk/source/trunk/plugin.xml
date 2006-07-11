@@ -29,11 +29,6 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            class="org.marketcetera.photon.views.PortfolioView"
-            icon="icons/silk/briefcase.png"
-            id="org.marketcetera.photon.views.PortfolioView"
-            name="Portfolio"/>
-      <view
             class="org.marketcetera.photon.views.StockOrderTicket"
             icon="icons/silk/medal_gold_add.png"
             id="org.marketcetera.photon.views.StockOrderTicket"
@@ -60,30 +55,7 @@
                visible="true"/>
       </perspectiveExtension>
    </extension>
-   <extension
-         id="product"
-         point="org.eclipse.core.runtime.products">
-      <product
-            application="org.marketcetera.photon.application"
-            name="Marketcetera Photon">
-         <property
-               name="preferenceCustomization"
-               value="preferences.ini"/>
-         <property
-               name="windowImages"
-               value="icons/silk/transmit_blue.gif"/>
-      </product>
-   </extension>
-   <extension
-         point="org.eclipse.help.toc">
-      <toc
-            file="toc.xml"
-            primary="true"/>
-      <toc file="tocconcepts.xml"/>
-      <toc file="tocgettingstarted.xml"/>
-      <toc file="tocreference.xml"/>
-      <toc file="toctasks.xml"/>
-   </extension>
+
       <extension
          point="org.eclipse.ui.preferencePages">
       <page
@@ -101,7 +73,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.marketcetera.photon.application"
-            name="Marketcetera Photon">
+            name="Photon 0.1">
          <property
                name="windowImages"
                value="icons/silk/transmit_blue.gif"/>

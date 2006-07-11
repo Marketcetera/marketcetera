@@ -3,14 +3,12 @@ package org.marketcetera.photon.editors;
 import java.util.Date;
 import java.util.List;
 
-import org.marketcetera.photon.model.IncomingMessageHolder;
 import org.marketcetera.photon.model.MessageHolder;
-
-import ca.odell.glazedlists.FunctionList.Function;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.TransactTime;
+import ca.odell.glazedlists.FunctionList.Function;
 
 public class LatestMessageFunction implements
 Function<List<MessageHolder>, MessageHolder>{
