@@ -11,8 +11,6 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
-import quickfix.BooleanField;
-import quickfix.DateField;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.Account;
