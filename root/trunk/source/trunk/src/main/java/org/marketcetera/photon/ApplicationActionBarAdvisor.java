@@ -19,7 +19,6 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
-import org.eclipse.ui.internal.ReopenEditorMenu;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
