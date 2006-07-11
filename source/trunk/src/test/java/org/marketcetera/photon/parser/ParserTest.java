@@ -9,7 +9,6 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.parser.Parser.Command;
-import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
