@@ -24,6 +24,7 @@ import quickfix.field.OrdStatus;
 import quickfix.field.Symbol;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
@@ -40,14 +41,14 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 
 
 	
-	private EventList<MatcherEditor> symbolMatchers = new BasicEventList<MatcherEditor>();
+	private EventList<MatcherEditor> symbolMatchers = new SortedList<MatcherEditor>(new BasicEventList<MatcherEditor>());
 	private EventListViewer symbolViewer;
     private List symbolSWTList;
 	private CompositeMatcherEditor<MessageHolder> accountMatcherEditor;
 
 	
 	
-	private EventList<MatcherEditor> accountMatchers = new BasicEventList<MatcherEditor>();
+	private EventList<MatcherEditor> accountMatchers = new SortedList<MatcherEditor>(new BasicEventList<MatcherEditor>());
     private List accountSWTList;
 	private EventListViewer accountViewer;
 	private CompositeMatcherEditor<MessageHolder> symbolMatcherEditor;
@@ -77,7 +78,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
     	Group accountGroup = new Group(parent, SWT.NONE);
     	accountGroup.setLayout(marginFillLayout);
     	accountGroup.setText("Account");
-        accountSWTList = new List(accountGroup, SWT.MULTI | SWT.V_SCROLL);
+    	accountSWTList = new List(accountGroup, SWT.MULTI | SWT.V_SCROLL);
     	accountViewer = new EventListViewer(accountMatchers, accountSWTList);
     	
     	Group symbolGroup = new Group(parent, SWT.NONE);
@@ -166,7 +167,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 		createFIXCheckbox(msgTypeGroup, matcherStore, MsgType.FIELD, MsgType.HEARTBEAT);
     }
 
-	private <T> void createFIXCheckbox(Group ordStatusGroup, FIXCheckboxMatcherEditor matcherStore,
+	private <T extends Comparable<T>> void createFIXCheckbox(Group ordStatusGroup, FIXCheckboxMatcherEditor matcherStore,
 			int fieldTag, T fieldValue) 
 	{
 		Button aButton;

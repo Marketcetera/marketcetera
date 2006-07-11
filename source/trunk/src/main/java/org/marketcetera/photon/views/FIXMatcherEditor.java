@@ -9,8 +9,8 @@ import quickfix.Message;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 
-public class FIXMatcherEditor<FIX_TYPE> extends
-		AbstractMatcherEditor<MessageHolder> {
+public class FIXMatcherEditor<FIX_TYPE extends Comparable<FIX_TYPE>> extends
+		AbstractMatcherEditor<MessageHolder> implements Comparable<FIXMatcherEditor<FIX_TYPE>>{
 
 	class FIXMatcher<FIX_TYPE_INNER> implements Matcher<MessageHolder> {
 
@@ -110,6 +110,20 @@ public class FIXMatcherEditor<FIX_TYPE> extends
 	
 	public String toString(){
 		return mName;
+	}
+
+	public int compareTo(FIXMatcherEditor<FIX_TYPE> arg0) {
+		if (arg0.fixField == fixField){
+			if (this.mItem == null){
+				return arg0.mItem == null ? 0 : 1;
+			} else if (arg0.mItem == null)
+			{
+				return -1;
+			}
+			return this.mItem.compareTo(arg0.mItem);
+		} else {
+			return this.fixField - arg0.fixField;
+		}
 	}
 
 }

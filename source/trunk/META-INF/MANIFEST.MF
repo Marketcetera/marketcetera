@@ -28,4 +28,3 @@ Require-Bundle: org.apache.activemq,
  org.marketcetera.core,
  org.eclipse.ui.console,
  com.publicobject.glazedlists
-Eclipse-AutoStart: true
