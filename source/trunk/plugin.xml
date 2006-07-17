@@ -74,9 +74,6 @@
       <product
             application="org.marketcetera.photon.application"
             name="Photon 0.1">
-         <property
-               name="windowImages"
-               value="icons/silk/transmit_blue.gif"/>
       </product>
    </extension>
    <extension

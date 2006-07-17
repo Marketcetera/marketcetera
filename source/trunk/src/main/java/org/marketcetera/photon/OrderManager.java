@@ -19,6 +19,7 @@ import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.MarketceteraFIXException;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -139,6 +140,11 @@ public class OrderManager {
 			} else if (FIXMessageUtil.isCancelReject(aMessage)) {
 				handleCancelReject(aMessage);
 			}
+		} catch (FieldNotFound fnfEx) {
+			MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
+			internalMainLogger.error(
+					"Error decoding incoming message "+mfix.getMessage(), mfix);
+			mfix.printStackTrace();
 		} catch (Throwable ex) {
 			internalMainLogger.error(
 					"Error decoding incoming message "+ex.getMessage(), ex);
@@ -154,8 +160,13 @@ public class OrderManager {
 		char ordStatus = aMessage.getChar(OrdStatus.FIELD);
 
 		if (ordStatus == OrdStatus.REJECTED) {
+			String rejectReason = "";
+			if(aMessage.isSetField(Text.FIELD)) {
+				rejectReason = ": "+aMessage.getString(Text.FIELD);
+			}
+			
 			String rejectMsg = "Order rejected " + orderID + " "
-					+ aMessage.getString(Symbol.FIELD);
+					+ aMessage.getString(Symbol.FIELD) + rejectReason;
 			internalMainLogger.info(rejectMsg);
 		}
 	}
