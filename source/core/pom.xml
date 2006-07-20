@@ -1,0 +1,51 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.marketcetera</groupId>
+        <artifactId>marketcetera</artifactId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>core</artifactId>
+    <packaging>jar</packaging>
+    <name>Marketcetera Core</name>
+    <url>http://maven.apache.org</url>
+    <dependencies>
+        <dependency>
+            <groupId>org.skife.kasparov</groupId>
+            <artifactId>csv</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <!-- JCyclone dependencies -->
+        <dependency>
+            <groupId>jcyclone</groupId>
+            <artifactId>jcyclone-core-marketcetera</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>incubator</groupId>
+            <artifactId>activemq</artifactId>
+        </dependency>
+    </dependencies>
+
+    <!-- try to force a test-jar to be built during jar creation -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>bundle-test-jar</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
