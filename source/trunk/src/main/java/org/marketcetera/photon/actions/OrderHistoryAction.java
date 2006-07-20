@@ -20,7 +20,7 @@ public class OrderHistoryAction extends Action implements IWorkbenchAction {
 		this.window = window;
 		setId(ID);
 		setText("&Order History");
-		setToolTipText("Open the order history editor");
+		setToolTipText("Open the order history");
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.ORDER_HISTORY));
 	}
 	public void dispose() {
