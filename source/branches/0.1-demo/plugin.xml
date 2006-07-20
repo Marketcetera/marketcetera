@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         id="application"
+         name="Photon"
+         point="org.eclipse.core.runtime.applications">
+      <application>
+         <run
+               class="org.marketcetera.photon.Application">
+         </run>
+      </application>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.marketcetera.photon.EquityPerspectiveFactory"
+            icon="icons/silk/medal_gold_2.png"
+            id="org.marketcetera.photon.EquityPerspective"
+            name="Equity Perspective">
+      </perspective>
+      <perspective
+            class="org.marketcetera.photon.NullPerspectiveFactory"
+            icon="icons/silk/bug.png"
+            id="org.marketcetera.photon.DebugPerspective"
+            name="Debug Perspective"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            class="org.marketcetera.photon.views.StockOrderTicket"
+            icon="icons/silk/medal_gold_add.png"
+            id="org.marketcetera.photon.views.StockOrderTicket"
+            name="Stock Order Ticket"/>
+      <view
+            class="org.marketcetera.photon.views.WebBrowserView"
+            icon="icons/silk/world_go.png"
+            id="org.marketcetera.photon.views.WebBrowserView"
+            name="Browser"/>
+      <view
+            class="org.marketcetera.photon.views.FiltersView"
+            icon="icons/silk/chart_organisation.png"
+            id="org.marketcetera.photon.views.FiltersView"
+            name="Message Filters"/>
+  </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
+         <view
+               id="org.eclipse.ui.console.ConsoleView"
+               ratio="0.3"
+               relationship="bottom"
+               relative="org.eclipse.ui.editorss"
+               visible="true"/>
+      </perspectiveExtension>
+   </extension>
+
+      <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.marketcetera.photon.JMSPreferencePage"
+            id="org.marketcetera.photon.preferences.jms"
+            name="JMS Preferences"/>
+      <page
+            name="Hotkeys"
+            class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
+            id="org.eclipse.ui.preferencePages.Keys">
+      </page>
+   </extension>
+   <extension
+         id="Photon"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.marketcetera.photon.application"
+            name="Photon 0.1">
+      </product>
+   </extension>
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            description="Photon Commands"
+            id="org.marketcetera.photon.commands"
+            name="Marketcetera Photon"/>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            description="Focus the cursor on the command entry area"
+            id="org.marketcetera.photon.FocusCommand"
+            name="Focus Command Area"/>
+      <keyBinding
+            commandId="org.marketcetera.photon.FocusCommand"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            keySequence="M3+C"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            class="org.marketcetera.photon.editors.OrderHistoryEditor"
+            extensions="log"
+            icon="icons/sample.gif"
+            id="org.marketcetera.photon.editors.OrderHistoryEditor"
+            name="Order History"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.popupMenus">
+         <objectContribution
+         	adaptable="false"
+         	id="org.marketcetera.photon.CancelOrderActionDelegate"
+         	objectClass="org.marketcetera.photon.model.MessageHolder">
+         	<action
+         		class="org.marketcetera.photon.actions.CancelOrderActionDelegate"
+         		icon="icons/silk/cancel.png"
+         		id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
+         		label="&amp;Cancel order"/>
+         </objectContribution>
+         <objectContribution
+         	adaptable="false"
+         	id="org.marketcetera.photon.actions.ViewSecurityAction"
+         	objectClass="org.marketcetera.photon.model.MessageHolder">
+         	<action
+         		class="org.marketcetera.photon.actions.ViewSecurityAction"
+         		icon="icons/silk/world_go.png"
+         		id="org.marketcetera.photon.ViewSecurity"
+         		label="View Security"/>
+         </objectContribution>
+   </extension>
+</plugin>
