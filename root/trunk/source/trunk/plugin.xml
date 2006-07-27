@@ -73,6 +73,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.marketcetera.photon.application"
+            description="Marketcetera Photon 0.1 (Plugin)"
             name="Photon 0.1">
       </product>
    </extension>
