@@ -4,7 +4,7 @@
 <product name="Photon 0.1" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.application" useFeatures="false">
 
    <aboutInfo>
-      <image path="/org.marketcetera.photon/icons/logo-150x55.gif"/>
+      <image path="/org.marketcetera.photon/icons/marketcetera/logo-150x55.gif"/>
       <text>
          Marketcetera Photon
 
