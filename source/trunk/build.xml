@@ -7,7 +7,7 @@
 <project basedir="." default="build" name="org.marketcetera.photon">
     <property environment="env"/>
     <property name="JUNIT_HOME" value="../../eclipse-3.2/plugins/org.junit_3.8.1"/>
-    <property name="ECLIPSE_HOME" value="../../eclipse-rcp-target/eclipse-win"/>
+    <property name="ECLIPSE_HOME" value="../../eclipse-rcp-target"/>
     <property name="junit.output.dir" value="target/junit"/>
     <property name="debuglevel" value="source,lines,vars"/>
     <property name="target" value="1.5"/>
@@ -20,17 +20,13 @@
         <pathelement location="${ECLIPSE_HOME}/plugins/org.apache.lucene_1.4.103.v20060601/parser.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.commands_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.expressions_3.2.0.v20060605-1400.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.resources_3.2.0.v20060603.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime_3.2.0.v20060603.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.osgi_3.2.0.v20060601.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.common_3.2.0.v20060603.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.jobs_3.2.0.v20060603.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime.compatibility.registry_3.2.0.v20060603/runtime_registry_compatibility.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.registry_3.2.0.v20060601.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.equinox.preferences_3.2.0.v20060601.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.contenttype_3.2.0.v20060603.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.runtime.compatibility_3.1.100.v20060603.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.update.configurator_3.2.0.v20060605.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.help_3.2.0.v20060602.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.jface_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.swt_3.2.0.v3232o.jar"/>
@@ -38,21 +34,18 @@
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.forms_3.2.0.v20060602.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.ide_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.views_3.2.0.I20060605-1400.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.update.core_3.2.0.v20060605.jar"/>
-        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.update.ui_3.2.0.v20060605.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.quickfixj_1.0.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.skife.kasparov.csv_1.0.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.marketcetera.core_0.1.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.console_3.1.100.v20060605.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/com.publicobject.glazedlists_1.6.0.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.core.resources_3.2.0.v20060603.jar"/>
     </path>
     <path id="org.marketcetera.photon.classpath">
         <pathelement location="target/classes"/>
         <path refid="Plug-in Dependencies.libraryclasspath"/>
         <pathelement location="${JUNIT_HOME}/junit.jar"/>
-        <pathelement location="C:/Documents and Settings/gmiller/.m2/repository/org/marketcetera/core/0.1-SNAPSHOT/core-0.1-SNAPSHOT-tests.jar"/>
     </path>
     <target name="init">
         <mkdir dir="target/classes"/>

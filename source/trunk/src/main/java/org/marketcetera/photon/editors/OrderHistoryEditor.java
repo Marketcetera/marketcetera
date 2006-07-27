@@ -22,7 +22,7 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.ide.IDE;
+
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.FIXMessageHistory;
@@ -381,7 +381,6 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	 */
 	public void gotoMarker(IMarker marker) {
 		setActivePage(0);
-		IDE.gotoMarker(getEditor(0), marker);
 	}
 
 	/**
