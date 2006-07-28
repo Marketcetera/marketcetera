@@ -17,18 +17,35 @@ distributed by Marketcetera along with third-party components licensed under
 different terms.  Please see the license notices in those components for 
 further details.
 
+2. EXTERNAL DEPENDENCIES
 
-2. ICONS
+The Marketcetera platform (including Photon) depends on the following projects
+maintained by other organizations.  Thanks to all of them for providing 
+excellent code.  For more specific information on any of the licensing terms,
+please see the associated license file in the appropriate module.
+
+GlazedLists (Copyright publicobject.com)
+Used under the LGPL
+http://publicobject.com/glazedlists/
+
+ActiveMQ (Copyright the Apache Software Foundation)
+Used under the Apache License, Version 2.0
+http://www.activemq.org/site/home.html
+
+
+3. ICONS
 
 Photon makes extensive use of the Silk icon set by Mark James
 (http://www.famfamfam.com/lab/icons/silk/).  See readme.txt in the "icons/silk"
 directory of the Photon distribution for more information.
 
 The icon for the Photon application is a modification of 
-"applications-internet.svg" created by Jakub Steiner and Tuomas Kuosmanen,
-used under the terms of the Creative Commons' "Attribution-Share Alike"
-license (http://creativecommons.org/licenses/by-sa/2.0/).  The source for
-the modified SVG can be found in the Marketcetera source repository at
+"applications-internet.svg" from the Tango Desktop Project
+(http://tango.freedesktop.org/Tango_Icon_Gallery) created by Jakub 
+Steiner and Tuomas Kuosmanen, used under the terms of the Creative 
+Commons' "Attribution-Share Alike" license 
+(http://creativecommons.org/licenses/by-sa/2.0/).  The source for the 
+modified SVG can be found in the Marketcetera source repository at
 http://trac.marketcetera.org/trac.fcgi/browser/client/photon/trunk/icons.
 
 
