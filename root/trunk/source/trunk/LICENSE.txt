@@ -24,13 +24,34 @@ maintained by other organizations.  Thanks to all of them for providing
 excellent code.  For more specific information on any of the licensing terms,
 please see the associated license file in the appropriate module.
 
-GlazedLists (Copyright publicobject.com)
-Used under the LGPL
-http://publicobject.com/glazedlists/
+QuickFIX/J (Copyright (c) 2001-2005 quickfixengine.org)
+Used under the QuickFIX License
+http://www.quickfixj.org/documentation/license.html
 
 ActiveMQ (Copyright the Apache Software Foundation)
 Used under the Apache License, Version 2.0
 http://www.activemq.org/site/home.html
+
+GlazedLists (Copyright publicobject.com)
+Used under the LGPL
+http://publicobject.com/glazedlists/
+
+Log4J (Copyright the Apache Software Foundation)
+Used under the Apache License, Version 2.0
+http://logging.apache.org/log4j/
+
+JCyclone (Copyright (c) 2000-2004 by Matt Welsh and The Regents of the 
+University of California, Copyright (c) 2005, JCyclone Team)
+Used under the terms of the license linked here:
+http://jcyclone.sourceforge.net/license.html
+
+JUnit (Copyright JUnit.org)
+Used under the Common Public License	
+http://www.junit.org/index.htm
+
+CSV Tools (Copyright (c) 2005, Brian McCallister)
+Used under the Apache License, Version 2.0
+http://kasparov.skife.org/csv/
 
 
 3. ICONS
