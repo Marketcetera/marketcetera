@@ -1,11 +1,13 @@
 package org.marketcetera.quickfix;
 
 import quickfix.MessageFactory;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class QuickFIXDescriptor {
     private final String mQuickFIXPackage;
     private final String mFIXBeginString;

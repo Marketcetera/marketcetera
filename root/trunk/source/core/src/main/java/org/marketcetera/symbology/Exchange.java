@@ -1,25 +1,14 @@
-/*
- * Exchange.java
- *
- * Created on April 22, 2005, 12:26 PM
- */
-
 package org.marketcetera.symbology;
 
 import org.marketcetera.core.ClassVersion;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
- *
  * @author gmiller
  * $Id$
  */
-
 @ClassVersion("$Id$")
-
 public class Exchange
 {
     String country;

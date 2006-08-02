@@ -1,6 +1,7 @@
 package org.marketcetera.jcyclone;
 
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * Abstract wrapper for an output version of the message that is
@@ -11,6 +12,7 @@ import org.marketcetera.core.MarketceteraException;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public abstract class OutputElement extends StageElement{
     public OutputElement(Object elem) {
         super(elem);

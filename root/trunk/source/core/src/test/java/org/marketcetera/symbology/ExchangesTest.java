@@ -3,11 +3,13 @@ package org.marketcetera.symbology;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class ExchangesTest extends TestCase {
     public ExchangesTest(String inName) {
         super(inName);

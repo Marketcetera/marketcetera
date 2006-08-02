@@ -1,28 +1,28 @@
 package org.marketcetera.quotefeed;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public abstract class MessageListenerBase implements MessageListener {
 
     public void onQuotes(QuoteMessage [] quotes) {
-        for (int i = 0; i < quotes.length; i++) {
-            QuoteMessage quoteMessage = quotes[i];
+        for (QuoteMessage quoteMessage : quotes) {
             onQuote(quoteMessage);
         }
     }
 
     public void onTrades(TradeMessage [] trades) {
-        for (int i = 0; i < trades.length; i++) {
-            TradeMessage trade = trades[i];
+        for (TradeMessage trade : trades) {
             onTrade(trade);
         }
     }
 
     public void onAdmins(AdminMessage [] adminMessages) {
-        for (int i = 0; i < adminMessages.length; i++) {
-            AdminMessage adminMessage = adminMessages[i];
+        for (AdminMessage adminMessage : adminMessages) {
             onAdmin(adminMessage);
         }
     }

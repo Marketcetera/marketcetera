@@ -10,6 +10,7 @@ import java.util.Properties;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class LoggerStartupTest extends TestCase {
     public LoggerStartupTest(String inName) {
         super(inName);

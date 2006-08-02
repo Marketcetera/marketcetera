@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.ClassVersion;
 import quickfix.field.Side;
 import quickfix.field.ExecType;
 
@@ -12,6 +13,7 @@ import quickfix.field.ExecType;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class FIXDataDictionaryManagerTest extends TestCase {
     public FIXDataDictionaryManagerTest(String name) {
         super(name);

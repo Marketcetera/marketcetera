@@ -2,11 +2,13 @@ package org.marketcetera.jcyclone;
 
 import org.jcyclone.core.handler.EventHandlerException;
 import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class MarketceteraEventHandlerException extends EventHandlerException {
     private Exception nested;
 

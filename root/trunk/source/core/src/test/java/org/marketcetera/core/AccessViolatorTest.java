@@ -2,12 +2,12 @@ package org.marketcetera.core;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class AccessViolatorTest extends TestCase {
 
 

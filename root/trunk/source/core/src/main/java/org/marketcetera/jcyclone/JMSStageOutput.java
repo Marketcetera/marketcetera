@@ -2,6 +2,7 @@ package org.marketcetera.jcyclone;
 
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.ClassVersion;
 
 import javax.jms.JMSException;
 
@@ -10,6 +11,7 @@ import javax.jms.JMSException;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class JMSStageOutput extends OutputElement{
     JMSOutputInfo jmsOutputInfo;
 

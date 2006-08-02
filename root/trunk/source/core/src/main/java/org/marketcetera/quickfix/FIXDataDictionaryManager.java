@@ -6,6 +6,8 @@ import quickfix.DataDictionary;
 import java.io.InputStream;
 import java.util.HashMap;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * Converts the standard FIX field (integers) to their english names
  * This is mostly for better output/debugging purposes since we don't
@@ -14,6 +16,7 @@ import java.util.HashMap;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class FIXDataDictionaryManager {
     public static final String FIX_4_0_BEGIN_STRING = "FIX.4.0";
     public static final String FIX_4_1_BEGIN_STRING = "FIX.4.1";
@@ -61,7 +64,7 @@ public class FIXDataDictionaryManager {
 
     public static DataDictionary getDictionary(){
         if(sCurrent == null) {
-            sCurrent = getDataDictionary(FIX_4_2_BEGIN_STRING); 
+            sCurrent = getDataDictionary(FIX_4_2_BEGIN_STRING);
         }
         return sCurrent;
     }

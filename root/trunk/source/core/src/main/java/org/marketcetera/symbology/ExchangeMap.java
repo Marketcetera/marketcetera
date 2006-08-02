@@ -1,13 +1,15 @@
 package org.marketcetera.symbology;
 
+import org.marketcetera.core.ClassVersion;
+
 import java.util.Map;
-import java.util.Iterator;
 import java.util.HashMap;
 
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class ExchangeMap {
     private SymbolScheme scheme;
     private Map<String, Exchange> schemeToStandardTranslation;
@@ -24,8 +26,8 @@ public class ExchangeMap {
 
     protected void init(Map<String, Exchange> schemeToStandardTranslation) {
         this.schemeToStandardTranslation = schemeToStandardTranslation;
-        for (Iterator iterator = schemeToStandardTranslation.keySet().iterator(); iterator.hasNext();) {
-            String key = (String) iterator.next();
+        for (String s : schemeToStandardTranslation.keySet()) {
+            String key = (String) s;
             standardToSchemeTranslation.put(schemeToStandardTranslation.get(key).getMarketIdentifierCode(), key);
         }
     }

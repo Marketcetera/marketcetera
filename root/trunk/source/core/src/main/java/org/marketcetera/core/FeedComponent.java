@@ -1,13 +1,14 @@
 package org.marketcetera.core;
 
+@ClassVersion("$Id")
 public interface FeedComponent {
 
 	public enum FeedType {
-		LIVE, DELAYED, SIMULATED, UNKNOWN;
+		LIVE, DELAYED, SIMULATED, UNKNOWN
 	}
 
     public enum FeedStatus {
-        OFFLINE, ERROR, AVAILABLE, UNKNOWN;
+        OFFLINE, ERROR, AVAILABLE, UNKNOWN
     }
 
     public FeedType getFeedType();

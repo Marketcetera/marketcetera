@@ -4,7 +4,7 @@ package org.marketcetera.core;
  * @author Graham Miller
  * @version $Id$
  */
-
+@ClassVersion("$Id$")
 public class MemoizedHashCombinator<T1, T2> {
 	String hashString;
 	int hashCode;

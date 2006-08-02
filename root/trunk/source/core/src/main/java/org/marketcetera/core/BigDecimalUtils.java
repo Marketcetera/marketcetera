@@ -5,6 +5,7 @@ import java.math.MathContext;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+@ClassVersion("$Id$")
 public class BigDecimalUtils {
 //	 default to read a double primitive value of 18 digit
 //	 precision

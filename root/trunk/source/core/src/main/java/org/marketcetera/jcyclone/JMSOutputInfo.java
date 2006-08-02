@@ -1,5 +1,7 @@
 package org.marketcetera.jcyclone;
 
+import org.marketcetera.core.ClassVersion;
+
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
@@ -10,6 +12,7 @@ import javax.jms.Session;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class JMSOutputInfo {
     private MessageProducer producer;
     private Session session;

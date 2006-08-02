@@ -2,6 +2,7 @@ package org.marketcetera.jcyclone;
 
 import org.jcyclone.core.queue.ISink;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * Abstract superclass for something that acts as a "source" in JCyclone -
@@ -9,6 +10,7 @@ import org.marketcetera.core.LoggerAdapter;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public abstract class JCycloneSource {
 
     private ISink nextStage;
