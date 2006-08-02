@@ -2,6 +2,7 @@ package org.marketcetera.orderloader;
 
 import org.marketcetera.core.FeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quotefeed.MessageListener;
 import org.marketcetera.jms.JMSAdapter;
 
@@ -15,6 +16,7 @@ import java.util.LinkedList;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class JMSConnector implements FeedComponent {
 
     public static final String JMS_CONNECTOR_ID = "Message Queue";
