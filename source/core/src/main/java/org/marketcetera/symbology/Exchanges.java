@@ -1,6 +1,7 @@
 package org.marketcetera.symbology;
 
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
 
@@ -16,6 +17,7 @@ import java.util.*;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();

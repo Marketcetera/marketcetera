@@ -4,6 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.ClassVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
@@ -12,6 +13,7 @@ import quickfix.StringField;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class DefaultOrderModifierTest extends TestCase {
     public DefaultOrderModifierTest(String inName) {
         super(inName);

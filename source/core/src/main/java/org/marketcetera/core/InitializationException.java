@@ -6,6 +6,7 @@ package org.marketcetera.core;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class InitializationException extends MarketceteraException {
     public InitializationException(String message) {
         super(message);

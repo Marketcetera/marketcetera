@@ -10,6 +10,7 @@ import java.util.HashSet;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class MemoizedHashCombinatorTest extends TestCase {
     class TestCombinator extends MemoizedHashCombinator<String, Integer> {
         public TestCombinator(String s, Integer i){

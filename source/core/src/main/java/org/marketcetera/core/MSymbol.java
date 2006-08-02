@@ -8,6 +8,7 @@ import org.marketcetera.symbology.Exchanges;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class MSymbol {
     private String baseSymbol;
     private String fullSymbol;

@@ -5,6 +5,7 @@ import org.jcyclone.core.handler.ISingleThreadedEventHandler;
 import org.jcyclone.core.cfg.IConfigData;
 import org.jcyclone.core.queue.IElement;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public abstract class JCycloneStageBase extends JCycloneSource implements ISingleThreadedEventHandler  {
     public void init(IConfigData config) throws Exception {
         if(LoggerAdapter.isInfoEnabled(this)) {

@@ -1,6 +1,7 @@
 package org.marketcetera.jcyclone;
 
 import org.jcyclone.core.queue.IElement;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * Wrapper class to represent different types of messages being
@@ -12,10 +13,10 @@ import org.jcyclone.core.queue.IElement;
  * @author gmiller
  * @version $Id$
  */
-
+@ClassVersion("$Id$")
 public abstract class StageElement implements IElement {
     private Object mElement;
-    
+
     public StageElement(Object element){
         mElement = element;
     }

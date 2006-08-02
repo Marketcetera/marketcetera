@@ -6,10 +6,13 @@ import junit.framework.TestSuite;
 
 import java.io.IOException;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class PropertiesExchangeMapTest extends TestCase{
     public PropertiesExchangeMapTest(String inName) {
         super(inName);

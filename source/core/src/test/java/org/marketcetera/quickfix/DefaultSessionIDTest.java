@@ -8,11 +8,13 @@ import quickfix.SessionID;
 import java.lang.reflect.Field;
 
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class DefaultSessionIDTest extends TestCase {
     public DefaultSessionIDTest(String inName) {
         super(inName);

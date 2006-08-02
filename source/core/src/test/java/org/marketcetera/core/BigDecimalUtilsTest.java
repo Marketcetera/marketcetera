@@ -10,6 +10,7 @@ import java.math.RoundingMode;
 /**
  * @author Graham Miller
  */
+@ClassVersion("$Id$")
 public class BigDecimalUtilsTest extends TestCase {
 
     /*

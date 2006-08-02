@@ -2,10 +2,7 @@ package org.marketcetera.quickfix;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.core.AccountID;
-import org.marketcetera.core.InternalID;
-import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.*;
 import quickfix.Message;
 import quickfix.FieldNotFound;
 import quickfix.field.*;
@@ -21,6 +18,7 @@ import java.util.List;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class FIXMessageUtilTest extends TestCase {
     public FIXMessageUtilTest(String inName) {
         super(inName);

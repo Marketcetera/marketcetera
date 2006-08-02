@@ -3,12 +3,14 @@ package org.marketcetera.quickfix;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.ClassVersion;
 import quickfix.field.OrdStatus;
 
 /**
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class FieldNameMapTest extends TestCase {
     public FieldNameMapTest(String inName) {
         super(inName);

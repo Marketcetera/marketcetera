@@ -5,11 +5,13 @@ import quickfix.Session;
 import quickfix.SessionNotFound;
 import quickfix.SessionID;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class FIXStageOutput extends OutputElement {
     SessionID defaultSessionID;
     public FIXStageOutput(Message inElem, SessionID inSessionID) {

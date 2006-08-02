@@ -1,10 +1,14 @@
 package org.marketcetera.quotefeed;
-/**
- * 
- */
 
+import org.marketcetera.core.ClassVersion;
+
+/**
+ * @author graham miller
+ * @version $Id$
+ */
+@ClassVersion("$Id$")
 public interface MessageListener {
-	public void onQuote(QuoteMessage aQuote);
+    public void onQuote(QuoteMessage aQuote);
     public void onQuotes(QuoteMessage [] aQuote);
 
     public void onTrade(TradeMessage aTrade);

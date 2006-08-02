@@ -4,6 +4,7 @@ import org.jcyclone.core.queue.ISink;
 import org.jcyclone.core.queue.IElement;
 import org.jcyclone.core.queue.SinkException;
 import org.jcyclone.core.queue.ITransaction;
+import org.marketcetera.core.ClassVersion;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class DummyISink implements ISink {
     public List<IElement> events = new ArrayList<IElement>();
 

@@ -4,6 +4,7 @@ package org.marketcetera.core;
  * @author Graham Miller
  * @version $Id$
  */
+@ClassVersion("$Id$")
 class ViolatedClass{
 
 
