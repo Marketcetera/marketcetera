@@ -7,6 +7,7 @@ import org.jcyclone.core.boot.JCyclone;
 import org.jcyclone.core.boot.Main;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.Util;
+import org.marketcetera.core.ClassVersion;
 
 import java.net.URL;
 import java.util.Vector;
@@ -18,6 +19,7 @@ import java.util.concurrent.TimeUnit;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class JCycloneStagesTest extends TestCase {
     public JCycloneStagesTest(String inName) {
         super(inName);

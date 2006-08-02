@@ -1,9 +1,6 @@
 package org.marketcetera.oms;
 
-import org.marketcetera.core.AccountID;
-import org.marketcetera.core.ConfigData;
-import org.marketcetera.core.InternalID;
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.*;
 import org.marketcetera.jcyclone.JMSOutputInfo;
 import org.marketcetera.jms.JMSAdapter;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -16,9 +13,11 @@ import javax.jms.MessageProducer;
 import java.math.BigDecimal;
 
 /**
+ * Entry point to manually send out events for testing
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class EventSender {
 
     public static void main(String[] args) throws Exception
