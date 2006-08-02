@@ -7,6 +7,7 @@ import org.jcyclone.core.queue.IElement;
 import org.jcyclone.core.queue.ISink;
 import org.jcyclone.core.queue.SinkException;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class InitialStage implements ISingleThreadedEventHandler
 {
     private ISink nextHandler;

@@ -5,6 +5,7 @@ import org.jcyclone.core.handler.EventHandlerException;
 import org.jcyclone.core.handler.ISingleThreadedEventHandler;
 import org.jcyclone.core.queue.IElement;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 
 import java.util.List;
 import java.util.Vector;
@@ -13,6 +14,7 @@ import java.util.Vector;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class LastStage implements ISingleThreadedEventHandler {
     private String callSign = "last";
     private Vector<String> allMsgs;

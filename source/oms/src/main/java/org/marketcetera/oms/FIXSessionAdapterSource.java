@@ -9,6 +9,7 @@ import org.jcyclone.core.stage.IStageManager;
 import org.jcyclone.core.internal.ISystemManager;
 import org.marketcetera.jcyclone.*;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.QuickFIXSessionAdapter;
 import org.marketcetera.quickfix.QuickFIXInitiator;
 
@@ -25,6 +26,7 @@ import org.marketcetera.quickfix.QuickFIXInitiator;
  * @author Toli Kuznets
  * @version $Id$
  */
+@ClassVersion("$Id$")
 public class FIXSessionAdapterSource extends JCyclonePluginSource implements QuickFIXSessionAdapter {
 
     private static final char HEARTBEAT_CHAR = MsgType.HEARTBEAT.charAt(0);
