@@ -10,12 +10,14 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.marketcetera.core.ClassVersion;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swt.EventTableViewer;
 
+@ClassVersion("$Id$")
 public class ViewerSelectionAdapter<LIST_TYPE> implements ISelectionProvider {
 
 	List<ISelectionChangedListener> listeners = new ArrayList<ISelectionChangedListener>();

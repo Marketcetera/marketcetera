@@ -2,11 +2,13 @@ package org.marketcetera.photon;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.core.ClassVersion;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
+@ClassVersion("$Id$")
 public class PhotonPlugin extends AbstractUIPlugin {
 
 	//The shared instance.

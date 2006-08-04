@@ -10,6 +10,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.views.WebBrowserView;
@@ -18,6 +19,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.Symbol;
 
+@ClassVersion("$Id$")
 public class ViewSecurityAction implements IActionDelegate {
 	public final static String ID = "org.marketcetera.photon.ViewSecurity";
 

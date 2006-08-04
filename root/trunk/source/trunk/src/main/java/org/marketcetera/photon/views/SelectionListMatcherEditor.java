@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.MessageHolder;
 
 import ca.odell.glazedlists.EventList;
@@ -8,6 +9,7 @@ import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.matchers.MatcherEditor;
 
+@ClassVersion("$Id$")
 public class SelectionListMatcherEditor extends
 		AbstractMatcherEditor<MessageHolder> {
 

@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.model.IncomingMessageHolder;
@@ -18,6 +19,7 @@ import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
+@ClassVersion("$Id$")
 public class FIXMessageLabelProvider extends WorkbenchLabelProvider implements
 		ITableLabelProvider {
 	private Image ARROW_RIGHT;

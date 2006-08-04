@@ -14,15 +14,18 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
+import org.marketcetera.photon.parser.ParsedCommand;
 import org.marketcetera.photon.parser.Parser;
 import org.marketcetera.photon.parser.ParserException;
 
 import quickfix.Message;
 
+@ClassVersion("$Id$")
 public class CommandStatusLineContribution extends ContributionItem {
 
 	public static final String ID = "org.marketcetera.photon.CommandStatusLineContribution";
@@ -116,7 +119,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 			CommandEvent.Destination dest) throws NoMoreIDsException,
 			ParserException {
 		commandParser.setInput(theInputString);
-		Parser.Command aCommand;
+		ParsedCommand aCommand;
 		aCommand = commandParser.command();
 
 		for (Object messageObj : aCommand.mResults) {

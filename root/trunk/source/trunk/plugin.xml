@@ -77,16 +77,25 @@
             name="Photon 0.1">
          <property
                name="aboutImage"
-               value="icons/logo-150x55.gif"/>
+               value="icons/marketcetera/logo-150x55.gif"/>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0D;&#x0A;&#x0D;&#x0A;Version: 0.1&#x0D;&#x0A;&#x0D;&#x0A;(c) Copyright Marketcetera LLC 2006.  All rights reserved.&#x0D;&#x0A;Visit http://www.marketcetera.org"/>
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 0.1&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
                value="photon-config.ini"/>
          <property
                name="windowImages"
                value="icons/marketcetera/photon-16x16.gif,icons/marketcetera/photon-32x32.gif,icons/marketcetera/photon-48x48.gif,icons/marketcetera/photon-64x64.gif,icons/marketcetera/photon-128x128.gif"/>
+         <property
+               name="startupProgressRect"
+               value="10,205,364,10"/>
+         <property
+               name="startupForegroundColor"
+               value="000000"/>
+         <property
+               name="startupMessageRect"
+               value="0,0,0,0"/>
       </product>
    </extension>
    <extension

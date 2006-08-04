@@ -8,8 +8,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 
+@ClassVersion("$Id$")
 public class WebBrowserView extends ViewPart {
 
 	public static String ID = "org.marketcetera.photon.views.WebBrowserView"; //$NON-NLS-1$

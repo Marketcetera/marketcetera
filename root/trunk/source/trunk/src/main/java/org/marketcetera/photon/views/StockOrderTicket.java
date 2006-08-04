@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
@@ -34,6 +35,7 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 
+@ClassVersion("$Id$")
 public class StockOrderTicket extends ViewPart {
 
 	public static String ID = "org.marketcetera.photon.views.StockOrderTicket";

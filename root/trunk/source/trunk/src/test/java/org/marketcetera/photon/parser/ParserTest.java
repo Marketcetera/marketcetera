@@ -8,7 +8,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.parser.Parser.Command;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -35,7 +34,7 @@ public class ParserTest extends TestCase {
     	String order;  
     	order = "B 100 IBM 1";
     	aParser.setInput(order);
-    	Command command = aParser.command();
+    	ParsedCommand command = aParser.command();
     	assertEquals(MsgType.ORDER_SINGLE, command.mCommandType);
     	verifyNewOrder((Message)(command.mResults.get(0)), Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("1"), TimeInForce.DAY, null);
 

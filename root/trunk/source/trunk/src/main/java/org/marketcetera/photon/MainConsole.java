@@ -4,8 +4,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.marketcetera.core.ClassVersion;
 
 
+@ClassVersion("$Id$")
 public class MainConsole extends MessageConsole {
 	
 	private MessageConsoleStream errorMessageStream;

@@ -2,6 +2,7 @@ package org.marketcetera.photon.editors;
 
 import java.util.Comparator;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.MessageHolder;
 
 import quickfix.FieldNotFound;
@@ -10,6 +11,7 @@ import quickfix.field.Account;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 
+@ClassVersion("$Id$")
 public class SymbolSideComparator implements Comparator<MessageHolder> {
 	public int compare(MessageHolder arg0, MessageHolder arg1) {
 		try {

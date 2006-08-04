@@ -7,15 +7,16 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.OrderModifier;
 
-import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
+@ClassVersion("$Id$")
 public class FIXStringComposite extends FIXComposite implements OrderModifier {
 
 	

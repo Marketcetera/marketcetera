@@ -4,7 +4,9 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.ui.part.MultiPageEditorPart;
 import org.eclipse.ui.part.MultiPageSelectionProvider;
+import org.marketcetera.core.ClassVersion;
 
+@ClassVersion("$Id$")
 public class OrderHistorySelectionProvider extends MultiPageSelectionProvider {
 
 	public OrderHistorySelectionProvider(MultiPageEditorPart arg0) {

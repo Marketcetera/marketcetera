@@ -7,6 +7,7 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.AccountID;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;

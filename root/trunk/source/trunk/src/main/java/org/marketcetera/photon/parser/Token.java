@@ -4,74 +4,46 @@ import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class Token {
-    protected String image;
-    protected int position;
+	protected String image;
 
+	protected int position;
 
-    public static class NumberToken extends Token
-    {
-        public NumberToken(String image, int position)
-        {
-            super(image, position);
-        }
+	/**
+	 * Creates a new Token, given the string image of the token, and its
+	 * position in the input to the Lexer.
+	 * 
+	 * @param image
+	 *            the string representation of the token
+	 * @param position
+	 *            the position of the first character of the token in the input
+	 *            string
+	 */
+	public Token(String image, int position) {
+		super();
+		this.image = image;
+		this.position = position;
+	}
 
-        public double doubleValue()
-        {
-            return Double.parseDouble(image);
-        }
+	/**
+	 * The image of the token from the input string to the lexer
+	 * 
+	 * @return Returns the string image of the token
+	 */
+	public String getImage() {
+		return image;
+	}
 
-        public int intValue()
-        {
-            return (int)doubleValue();
-        }
-    }
+	public String toString() {
+		return image;
+	}
 
-    public static class IntToken extends NumberToken
-    {
-        public IntToken(String image, int position)
-        {
-            super(image, position);
-        }
-
-
-    }
-
-    public static class StringToken extends Token
-    {
-        public StringToken(String image, int position)
-        {
-            super(image, position);
-        }
-    }
-
-    public static class FloatToken extends NumberToken
-    {
-        public FloatToken(String image, int position)
-        {
-            super(image, position);
-        }
-    }
-
-    public Token(String image, int position) {
-        super();
-        this.image = image;
-        this.position = position;
-    }
-
-    /**
-     * @return Returns the image.
-     */
-    public String getImage() {
-        return image;
-    }
-
-    public String toString() { return image; }
-
-    /**
-     * @return Returns the position.
-     */
-    public int getPosition() {
-        return position;
-    }
+	/**
+	 * Gets the position of this image in the input string of the lexer
+	 * 
+	 * @return The position of this token in the input string to the lexer
+	 */
+	public int getPosition() {
+		return position;
+	}
 
 }

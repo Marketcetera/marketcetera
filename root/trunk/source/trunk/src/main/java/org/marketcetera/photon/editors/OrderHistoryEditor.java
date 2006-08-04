@@ -22,8 +22,8 @@ import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
-
 import org.eclipse.ui.part.MultiPageEditorPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
@@ -40,6 +40,7 @@ import ca.odell.glazedlists.swt.EventTableViewer;
  * <li>page 2 shows the words in page 0 in sorted order
  * </ul>
  */
+@ClassVersion("$Id$")
 public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	public enum OpenOrderColumns {

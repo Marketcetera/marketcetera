@@ -2,7 +2,9 @@ package org.marketcetera.photon;
 
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.marketcetera.core.ClassVersion;
 
+@ClassVersion("$Id$")
 public class NullPerspectiveFactory implements IPerspectiveFactory {
 
 	/* (non-Javadoc)

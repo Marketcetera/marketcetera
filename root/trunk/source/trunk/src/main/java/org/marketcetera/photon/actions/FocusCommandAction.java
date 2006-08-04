@@ -6,10 +6,12 @@ import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.CommandStatusLineContribution;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 
+@ClassVersion("$Id$")
 public class FocusCommandAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
 	public final static String ID = "org.marketcetera.photon.FocusCommand";
