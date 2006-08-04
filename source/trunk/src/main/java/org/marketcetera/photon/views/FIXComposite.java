@@ -7,11 +7,13 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
 
 import quickfix.Message;
 
 
+@ClassVersion("$Id$")
 public abstract class FIXComposite extends Composite {
 
 	protected final int fixFieldNumber;

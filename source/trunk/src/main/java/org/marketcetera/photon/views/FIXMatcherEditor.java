@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
@@ -9,6 +10,7 @@ import quickfix.Message;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 
+@ClassVersion("$Id$")
 public class FIXMatcherEditor<FIX_TYPE extends Comparable<FIX_TYPE>> extends
 		AbstractMatcherEditor<MessageHolder> implements Comparable<FIXMatcherEditor<FIX_TYPE>>{
 

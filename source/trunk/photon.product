@@ -22,7 +22,10 @@ Visit http://www.marketcetera.org
 
    <windowImages i16="/org.marketcetera.photon/icons/marketcetera/photon-16x16.gif" i32="/org.marketcetera.photon/icons/marketcetera/photon-32x32.gif" i48="/org.marketcetera.photon/icons/marketcetera/photon-48x48.gif" i64="/org.marketcetera.photon/icons/marketcetera/photon-64x64.gif" i128="/org.marketcetera.photon/icons/marketcetera/photon-128x128.gif"/>
 
-
+   <splash
+      startupProgressRect="10,205,364,10"
+      startupMessageRect="0,0,0,0"
+      startupForegroundColor="000000" />
    <launcher name="photon.exe">
       <macosx icon="/org.marketcetera.photon/icons/marketcetera/photon.icns"/>
       <solaris/>

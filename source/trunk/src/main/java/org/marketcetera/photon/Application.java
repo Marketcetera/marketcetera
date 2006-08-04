@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.FeedComponent.FeedStatus;
@@ -21,6 +22,7 @@ import quickfix.Message;
 /**
  * This class controls all aspects of the application's execution
  */
+@ClassVersion("$Id$")
 public class Application implements IPlatformRunnable {
 
 	

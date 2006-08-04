@@ -5,6 +5,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.OrderManager;
@@ -15,6 +16,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 
+@ClassVersion("$Id$")
 public class CancelOrderActionDelegate extends ActionDelegate {
 	public final static String ID = "org.marketcetera.photon.actions.CancelOrderActionDelegate";
 

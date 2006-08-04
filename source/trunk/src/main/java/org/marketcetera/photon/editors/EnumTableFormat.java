@@ -4,10 +4,10 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
-import quickfix.ConfigError;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -15,6 +15,7 @@ import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 
+@ClassVersion("$Id$")
 public class EnumTableFormat implements WritableTableFormat, AdvancedTableFormat {
 
 	

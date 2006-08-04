@@ -1,8 +1,11 @@
 package org.marketcetera.photon.actions;
 
+import org.marketcetera.core.ClassVersion;
+
 import quickfix.Message;
 
 
+@ClassVersion("$Id$")
 public class CommandEvent {
 
 	public enum Destination {

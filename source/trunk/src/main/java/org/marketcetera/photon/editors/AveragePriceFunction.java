@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.IncomingMessageHolder;
 import org.marketcetera.photon.model.MessageHolder;
 
@@ -25,6 +26,7 @@ import quickfix.field.Symbol;
 import quickfix.fix42.ExecutionReport;
 import ca.odell.glazedlists.FunctionList.Function;
 
+@ClassVersion("$Id$")
 public class AveragePriceFunction implements Function<List<MessageHolder>, MessageHolder> {
 	public IncomingMessageHolder evaluate(List<MessageHolder> arg0) {
 

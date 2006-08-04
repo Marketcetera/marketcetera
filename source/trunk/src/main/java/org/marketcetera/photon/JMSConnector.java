@@ -5,10 +5,12 @@ import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
 import org.eclipse.jface.util.ListenerList;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.FeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.jms.JMSAdapter;
 
+@ClassVersion("$Id$")
 public class JMSConnector implements FeedComponent {
 
 	public static final String JMS_CONNECTOR_ID = "Message Queue";

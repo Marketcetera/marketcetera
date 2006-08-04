@@ -19,10 +19,12 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 
+@ClassVersion("$Id$")
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchWindow window;

@@ -16,11 +16,13 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.editors.OrderHistoryEditor;
 import org.marketcetera.photon.editors.OrderHistoryInput;
 import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 
+@ClassVersion("$Id$")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {

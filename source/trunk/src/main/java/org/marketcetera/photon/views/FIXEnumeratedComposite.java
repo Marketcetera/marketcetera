@@ -5,6 +5,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -13,6 +14,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 
+@ClassVersion("$Id$")
 public class FIXEnumeratedComposite extends FIXComposite {
 	private Button[] buttons;
 

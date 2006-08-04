@@ -4,10 +4,13 @@
 package org.marketcetera.photon.model;
 
 
+import org.marketcetera.core.ClassVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.field.LastShares;
 import ca.odell.glazedlists.matchers.Matcher;
 
+@ClassVersion("$Id$")
 public final class FillMatcher implements Matcher<MessageHolder> {
 	public boolean matches(MessageHolder holder) {
 		if (holder instanceof IncomingMessageHolder) {

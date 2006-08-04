@@ -4,10 +4,12 @@ import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.WebBrowserView;
 
+@ClassVersion("$Id$")
 public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 	private static final String LEFT_FOLDER = "leftFolder";

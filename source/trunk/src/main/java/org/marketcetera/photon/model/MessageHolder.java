@@ -1,7 +1,10 @@
 package org.marketcetera.photon.model;
 
+import org.marketcetera.core.ClassVersion;
+
 import quickfix.Message;
 
+@ClassVersion("$Id$")
 public class MessageHolder {
 	private Message message;
 	private int messageReference;
