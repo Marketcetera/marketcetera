@@ -20,7 +20,12 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.Message;
 
 /**
- * This class controls all aspects of the application's execution
+ * This class provides methods for some basic application services,
+ * as well as singleton member variables for Photon components, along
+ * with static getters.
+ * 
+ * @author gmiller
+ *
  */
 @ClassVersion("$Id$")
 public class Application implements IPlatformRunnable {
@@ -30,10 +35,10 @@ public class Application implements IPlatformRunnable {
 	private static final String CONNECTION_FACTORY_NAME_DEFAULT = "ConnectionFactory";
 	private static final String INCOMING_TOPIC_NAME_DEFAULT = "oms-messages";
 	private static final String OUTGOING_QUEUE_NAME_DEFAULT = "oms-commands";
-
-
 	public static String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
-    private static Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
+
+	
+	private static Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
     private static IDFactory idFactory = new InMemoryIDFactory(777);
 	private static OrderManager orderManager;
 	private static JMSConnector jmsConnector;
@@ -43,8 +48,16 @@ public class Application implements IPlatformRunnable {
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
 	
-	/* (non-Javadoc)
+	/**
+	 * This method is called by the Eclipse RCP, and therefore is the main 
+	 * entry point to the Application.  This method initializes the FIX version
+	 * for the application (to FIX 4.2), the FIXMessageHistory, the JMSConnector
+	 * the OrderManager.  Finally it creates the display, and creates and runs
+	 * the workbench.
+	 * 
 	 * @see org.eclipse.core.runtime.IPlatformRunnable#run(java.lang.Object)
+	 * @see PlatformUI#createDisplay()
+	 * @see PlatformUI#createAndRunWorkbench(Display, org.eclipse.ui.application.WorkbenchAdvisor)
 	 */
 	public Object run(Object args) throws Exception {
 		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
@@ -66,16 +79,16 @@ public class Application implements IPlatformRunnable {
 		}
 	}
 
-	public static Logger getMainConsoleLogger()
-	{
-		return mainConsoleLogger;
-	}
-	
-	public static OrderManager getOrderManager()
-	{
-		return orderManager;
-	}
-	
+	/**
+	 * Initializes (or re-initializes) the connection to the JMS server,
+	 * by opening a connection to the URL specified in the JMS preferences.
+	 * The connection is established in its own thread to avoid tying up the UI
+	 * thread of the application.  The JMSConnector that is returned, therefore
+	 * may not be fully initialized.
+	 * 
+	 * @see JMSPreferencePage
+	 * @return the newly initialized JMSConnector
+	 */
 	public static JMSConnector initJMSConnector()
 	{
 
@@ -123,17 +136,50 @@ public class Application implements IPlatformRunnable {
 
 
 	/**
-	 * @return Returns the jmsStatus.
+	 * Accessor for the console logger singleton.  This logger writes
+	 * messages into the main console displayed to the user in the application.
+	 * @return the main console logger
+	 */
+	public static Logger getMainConsoleLogger()
+	{
+		return mainConsoleLogger;
+	}
+	
+	
+	/** 
+	 * Accessor for the OrderManager singleton.  The OrderManager is the 
+	 * holder of most of the business logic for the application.
+	 * @return the order manager singleton
+	 */
+	public static OrderManager getOrderManager()
+	{
+		return orderManager;
+	}
+	
+
+	/**
+	 * Accessor for status information for the JMSConnector singleton.
+	 * 
+	 * @return the FeedStatus corresponding with the current status of
+	 *         the jms connection
 	 */
 	public static FeedStatus getJMSStatus() {
 		return jmsConnector.getFeedStatus();
 	}
 
 
-	public static void setTopicListener(MessageListener pJMSListener) {
-		
-	}
-
+	/**
+	 * Sends a message to the outgoing queue, destined for the OMS.
+	 * First checks to see if the feed status on the jmsConnector is 
+	 * FeedStatus.AVAILABLE, then proceeds to send the message.  If 
+	 * there is a previously unknown problem with the JMS connection,
+	 * a JMSException will be thrown.
+	 * 
+	 * @see JMSConnector#sendToQueue(Message)
+	 * 
+	 * @param message
+	 * @throws JMSException
+	 */
 	public static void sendToQueue(Message message) throws JMSException {
 		if (jmsConnector.getFeedStatus() == FeedStatus.AVAILABLE){
 			jmsConnector.sendToQueue(message);
@@ -143,16 +189,28 @@ public class Application implements IPlatformRunnable {
 	}
 
 	/**
-	 * @return Returns the fixMessageHistory.
+	 * Accessor for the FIXMessageHistory singleton.
+	 * 
+	 * @return the FIXMessageHistory singleton
 	 */
 	public static FIXMessageHistory getFIXMessageHistory() {
 		return fixMessageHistory;
 	}
 
+	/**
+	 * Accessor for the JMSConnector singleton.
+	 * 
+	 * @return the JMSConnector singleton
+	 */
 	public static JMSConnector getJMSConnector() {
 		return jmsConnector;
 	}
 
+	/**
+	 * Accessor for the IDFactory singleton.
+	 * 
+	 * @return the IDFactory singleton
+	 */
 	public static IDFactory getIDFactory() {
 		return idFactory;
 	}

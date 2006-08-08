@@ -22,17 +22,36 @@ import org.marketcetera.photon.editors.OrderHistoryInput;
 import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 
+/**
+ * Required by the RCP platform this class is responsible for setting up the
+ * workbench upon startup.
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
+    /**
+     * Simply calls superclass constructor.
+     * @param configurer the configurer to pass to the superclass
+     */
     public ApplicationWorkbenchWindowAdvisor(IWorkbenchWindowConfigurer configurer) {
         super(configurer);
     }
 
+    /* (non-Javadoc)
+     * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#createActionBarAdvisor(org.eclipse.ui.application.IActionBarConfigurer)
+     */
     public ActionBarAdvisor createActionBarAdvisor(IActionBarConfigurer configurer) {
         return new ApplicationActionBarAdvisor(configurer);
     }
     
+    /**
+     * Sets a number of options on the IWorkbenchWindowConfigurer prior
+     * to opening the window.
+     * 
+     * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#preWindowOpen()
+     */
     public void preWindowOpen() {
         IWorkbenchWindowConfigurer configurer = getWindowConfigurer();
         configurer.setInitialSize(new Point(800, 600));
@@ -46,7 +65,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
         configurer.setShowProgressIndicator(true);
     }
     
-	/* (non-Javadoc)
+	/*
+	 * Called after the window has opened, and all UI elements have been initialized,
+	 * this method takes care of wiring UI components to
+	 * the underlying model and controller elements.  For example it connects the
+	 * Console view to a logger appender to feed it data.
+	 * 
+	 * 
 	 * @see org.eclipse.ui.application.WorkbenchWindowAdvisor#postWindowOpen()
 	 */
 	@Override
@@ -95,6 +120,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		
 	}
 
+	/** 
+	 * Initializes the status line.
+	 * 
+	 */
 	private void initStatusLine() {
 //		statusImage = AbstractUIPlugin.imageDescriptorFromPlugin(
 //				"org.eclipsercp.hyperbola", IImageKeys.ONLINE).createImage();
