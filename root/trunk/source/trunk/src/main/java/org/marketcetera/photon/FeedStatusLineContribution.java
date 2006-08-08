@@ -21,7 +21,7 @@ import org.marketcetera.core.FeedComponent.FeedStatus;
  * bottom of the application window that indicate the status of one or more of
  * the "feed" connections.  This could be anything from a market data feed to
  * a JMS connection to a database connection.  The images reflect status by
- * changing color in response to a call to {link {@link #setStatus(String, FeedStatus)}
+ * changing color in response to a call to {@link #setStatus(String, FeedStatus)}
  * 
  * @author gmiller
  *

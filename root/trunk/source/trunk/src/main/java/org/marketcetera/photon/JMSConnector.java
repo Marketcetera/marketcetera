@@ -132,7 +132,7 @@ public class JMSConnector implements FeedComponent {
 	}
 
 	/**
-	 * Register the given {@link MessageListenter} as a listener for messages that
+	 * Register the given {@link javax.jms.MessageListener} as a listener for messages that
 	 * come in on the JMS topic.  All messages received on the topic specified in
 	 * {@link #init(String, String, String, String, String)} will be passed on to the 
 	 * specified listener.  Subsequent calls to this method will replace the original
