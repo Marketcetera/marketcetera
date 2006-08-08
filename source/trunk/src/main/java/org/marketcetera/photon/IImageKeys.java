@@ -1,5 +1,11 @@
 package org.marketcetera.photon;
 
+/**
+ * Stores constants associated with managing Photon images.
+ * 
+ * @author gmiller
+ *
+ */
 public interface IImageKeys {
 	public static final String PORTFOLIO = "icons/silk/briefcase.png";
 	public static final String EQUITY = "icons/silk/medal_gold_1.png";

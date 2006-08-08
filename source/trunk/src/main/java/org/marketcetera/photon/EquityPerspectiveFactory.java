@@ -9,6 +9,11 @@ import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.WebBrowserView;
 
+/**
+ * Factory responsible for creating and laying out the equity perspective.
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
@@ -26,6 +31,14 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 	IFolderLayout bottomFolder;
 
+	/**
+	 * Creates the initial layout of the equity perspective, laying out the
+	 * console view, filters view, stock order ticket view, and browser view.
+	 * Additionally it sets the editor area to be visible.
+	 * 
+	 * @param layout the current layout object
+	 * @see org.eclipse.ui.IPerspectiveFactory#createInitialLayout(org.eclipse.ui.IPageLayout)
+	 */
 	public void createInitialLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(true);
