@@ -23,6 +23,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
+import org.marketcetera.photon.actions.WebHelpAction;
 
 /**
  * This class contains the initialization code for the main application
@@ -110,6 +111,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction focusCommandAction;
 
+	private WebHelpAction webHelpAction;
+
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
 	}
@@ -160,9 +163,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		nextPerspectiveAction = ActionFactory.NEXT_PERSPECTIVE.create(window);  register(nextPerspectiveAction);
 		previousPerspectiveAction = ActionFactory.PREVIOUS_PERSPECTIVE
 				.create(window);  register(previousPerspectiveAction);
-		helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);  register(helpContentsAction);
-		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);  register(helpSearchAction);
-		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
+		webHelpAction = new WebHelpAction(window);  register(webHelpAction);
+//		helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);  register(helpContentsAction);
+//		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);  register(helpSearchAction);
+//		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
 		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(); register(reconnectJMSAction);
 
@@ -265,11 +269,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_HelpMenuName,
 				IWorkbenchActionConstants.M_WINDOW);
-		register(helpContentsAction);
-		menu.add(helpContentsAction);
 
-		menu.add(helpSearchAction);
-		menu.add(dynamicHelpAction);
+		menu.add(webHelpAction);
+//		menu.add(helpContentsAction);
+//		menu.add(helpSearchAction);
+//		menu.add(dynamicHelpAction);
 		menu.add(new Separator());
 		menu.add(aboutAction);
 		menuBar.add(menu);

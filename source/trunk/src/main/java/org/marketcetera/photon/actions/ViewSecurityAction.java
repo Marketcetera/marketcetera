@@ -14,21 +14,42 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.views.WebBrowserView;
+import org.marketcetera.quickfix.QuickFIXDescriptor;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.Symbol;
 
+/**
+ * ViewSecurityAction is responsible for navigating
+ * the internal browser component to an informational
+ * view for the specified security.  Currently it is
+ * set up to use Google Finance to display information
+ * relevant to the symbol.
+ * 
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class ViewSecurityAction implements IActionDelegate {
 	public final static String ID = "org.marketcetera.photon.ViewSecurity";
 
 	private IStructuredSelection selection;
 
+	/**
+	 * Creates a new default ViewSecurityAction
+	 */
 	public ViewSecurityAction(){
 	}
 
 
+	/**
+	 * Determines whether this action should be enabled,
+	 * by testing to see whether the selection is non-trivial
+	 * and if its first element is a {@link quickfix.Message}.
+	 * 
+	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction, org.eclipse.jface.viewers.ISelection)
+	 */
 	public void selectionChanged(IAction proxyAction, ISelection incoming) {
 		if (incoming instanceof IStructuredSelection) {
 			selection = (IStructuredSelection) incoming;
@@ -42,6 +63,14 @@ public class ViewSecurityAction implements IActionDelegate {
 		}
 	}
 
+	/**
+	 * Executes this action, by finding the {@link quickfix.Message}
+	 * referenced by the current selection, extracting the {@link quickfix.field.Symbol}
+	 * field, and if it is present and not null, calling 
+	 * {@link WebBrowserView#browseToGoogleFinanceForSymbol(MSymbol)}
+	 * 
+	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
+	 */
 	public void run(IAction arg0) {
 		if (selection == null){
 			return;
@@ -50,32 +79,31 @@ public class ViewSecurityAction implements IActionDelegate {
 			Object firstElement = selection.getFirstElement();
 			MSymbol symbol = null;
 			
+			Message message;
 			if (firstElement instanceof Message) {
-				Message message = (Message) firstElement;
-				try {
-					symbol = new MSymbol(message.getString(Symbol.FIELD));
-				} catch (FieldNotFound e) {
-					// do nothing
-				}
+				message = (Message) firstElement;
 			} else if (firstElement instanceof MessageHolder) {
 				MessageHolder holder = (MessageHolder) firstElement;
-				try {
-					symbol = new MSymbol(holder.getMessage().getString(Symbol.FIELD));
-				} catch (FieldNotFound e) {
-					// do nothing
-				}
+				message = holder.getMessage();
+			} else {
+				return;
 			}
-			if (symbol != null){
-				IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow(); 
-				IWorkbenchPage page = window.getActivePage();
-				page.showView(WebBrowserView.ID);
-				IViewReference[] viewReferences = page.getViewReferences();
-				for (IViewReference reference : viewReferences) {
-					if (WebBrowserView.ID.equals(reference.getId())) {
-						IViewPart view = reference.getView(true);
-						((WebBrowserView) view).browseToGoogleFinanceForSymbol(symbol);
+			try {
+				symbol = new MSymbol(message.getString(Symbol.FIELD));
+				if (symbol != null){
+					IWorkbenchWindow window = PlatformUI.getWorkbench().getActiveWorkbenchWindow(); 
+					IWorkbenchPage page = window.getActivePage();
+					page.showView(WebBrowserView.ID);
+					IViewReference[] viewReferences = page.getViewReferences();
+					for (IViewReference reference : viewReferences) {
+						if (WebBrowserView.ID.equals(reference.getId())) {
+							IViewPart view = reference.getView(true);
+							((WebBrowserView) view).browseToGoogleFinanceForSymbol(symbol);
+						}
 					}
 				}
+			} catch (FieldNotFound e) {
+				// do nothing
 			}
 		} catch (PartInitException e) {
 			// TODO Auto-generated catch block

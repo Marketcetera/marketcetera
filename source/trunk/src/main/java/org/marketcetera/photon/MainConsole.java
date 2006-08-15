@@ -7,6 +7,16 @@ import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
 
 
+/**
+ * Specialization of the RCP's {@link MessageConsole} that integrates
+ * the platform's console system and the Log4J-based logging system
+ * in the Marketcetera Core, by providing {@link MessageConsoleStream} 
+ * objects for error, warn, info and debug messages.
+ * 
+ * 
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class MainConsole extends MessageConsole {
 	
@@ -15,6 +25,11 @@ public class MainConsole extends MessageConsole {
 	private MessageConsoleStream infoMessageStream;
 	private MessageConsoleStream debugMessageStream;
 
+	/**
+	 * Creates a new MainConsole and initializes the {@link MessageConsoleStream}
+	 * obejcts for error, warn, info, and debug messages, settin each of them to
+	 * output text in a different color.
+	 */
 	public MainConsole() {
 		super(Messages.MainConsole_Name, null);
 		Display display = Display.getDefault();
@@ -34,26 +49,37 @@ public class MainConsole extends MessageConsole {
 	}
 
 	/**
-	 * @return Returns the debugMessageStream.
+	 * Returns the {@link MessageConsoleStream} associated with debug messages.
+	 * 
+	 * @return returns the debug message stream.
 	 */
 	public MessageConsoleStream getDebugMessageStream() {
 		return debugMessageStream;
 	}
 
 	/**
-	 * @return Returns the errorMessageStream.
+	 * Returns the {@link MessageConsoleStream} associated with error messages.
+	 * 
+	 * @return returns the error message stream.
 	 */
 	public MessageConsoleStream getErrorMessageStream() {
 		return errorMessageStream;
 	}
 
 	/**
-	 * @return Returns the infoMessageStream.
+	 * Returns the {@link MessageConsoleStream} associated with info messages.
+	 * 
+	 * @return returns the info message stream.
 	 */
 	public MessageConsoleStream getInfoMessageStream() {
 		return infoMessageStream;
 	}
 
+	/**
+	 * Returns the {@link MessageConsoleStream} associated with warning messages.
+	 * 
+	 * @return returns the warning message stream.
+	 */
 	public MessageConsoleStream getWarnMessageStream() {
 		return warnMessageStream;
 	}

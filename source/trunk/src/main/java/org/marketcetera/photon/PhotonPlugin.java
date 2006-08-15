@@ -6,7 +6,7 @@ import org.marketcetera.core.ClassVersion;
 import org.osgi.framework.BundleContext;
 
 /**
- * The main plugin class to be used in the desktop.
+ * The main plugin class to be used in the Photon application.
  */
 @ClassVersion("$Id$")
 public class PhotonPlugin extends AbstractUIPlugin {
