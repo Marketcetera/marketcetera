@@ -30,7 +30,6 @@ public class OrderLoaderTest extends TestCase
 
     public static Test suite()
     {
-        LoggerAdapter.initializeLogger("test");
 /*
         TestSuite suite = new TestSuite();
         suite.addTest(new OrderLoaderTest("testEndToEndCustom"));
