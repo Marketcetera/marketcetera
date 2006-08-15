@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import quickfix.MessageFactory;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 
 /**
  * @author Toli Kuznets
@@ -43,9 +44,8 @@ public class QuickFIXDescriptor {
             Class messageFactoryClass = Class.forName(className);
             return (MessageFactory) messageFactoryClass.newInstance();
         } catch (Exception ex) {
-            throw new ClassNotFoundException("Could not find class: "
-                                             + className);
         }
+        throw new ClassNotFoundException(MessageKey.CLASS_DNE.getLocalizedMessage(className));
     }
 
     public boolean equals(Object obj) {

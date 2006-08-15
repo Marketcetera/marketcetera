@@ -32,7 +32,7 @@ public class InMemoryIDFactory implements IDFactory {
             retVal = mNextID++;
         }
         if (retVal == Long.MAX_VALUE){
-        	throw new NoMoreIDsException("Overran 'long' counter");
+        	throw new NoMoreIDsException(MessageKey.IN_MEMORY_ID_FACTORY_OVERRUN.getLocalizedMessage());
         }
         return ""+retVal;
     }

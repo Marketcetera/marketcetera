@@ -1,12 +1,12 @@
 package org.marketcetera.symbology;
 
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.ClassVersion;
 
 import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.net.URL;
 import java.io.InputStream;
 import java.io.IOException;
@@ -36,7 +36,7 @@ public class PropertiesExchangeMap extends ExchangeMap {
             String marketIdentifierCode = (String) props.get(key);
             Exchange exch = Exchanges.getExchange(marketIdentifierCode);
             if (exch == null) {
-                LoggerAdapter.error("Could not find exchange for " + marketIdentifierCode, this);
+                LoggerAdapter.error(MessageKey.ERROR_EXCHANGE_DNE.getLocalizedMessage(marketIdentifierCode), this);
             } else {
                 map.put(key, exch);
             }

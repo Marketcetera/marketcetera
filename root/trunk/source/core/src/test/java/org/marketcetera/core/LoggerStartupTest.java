@@ -2,9 +2,9 @@ package org.marketcetera.core;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import java.util.Properties;
+import java.util.List;
 
 /**
  * @author Toli Kuznets
@@ -35,6 +35,10 @@ public class LoggerStartupTest extends TestCase {
     {
         public MyApp(Properties inProps) {
             super(inProps);
+        }
+
+        protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
+            
         }
     }
 }

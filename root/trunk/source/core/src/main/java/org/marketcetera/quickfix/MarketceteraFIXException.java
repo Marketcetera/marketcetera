@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.MessageKey;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
@@ -31,7 +32,7 @@ public class MarketceteraFIXException extends MarketceteraException {
     }
     public static MarketceteraFIXException createFieldNotFoundException(FieldNotFound fnf, Message message) {
         String fieldName = FIXDataDictionaryManager.getHumanFieldName(fnf.field);
-        String msg = "Couldn't find field "+fieldName + " in message";
+        String msg = MessageKey.FIX_FNF.getLocalizedMessage(fieldName);
         String msgSuffix = (message == null) ? "" : ": "+message;
         return new MarketceteraFIXException(msg+msgSuffix, fnf);
     }

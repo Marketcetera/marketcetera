@@ -23,7 +23,7 @@ public class InternalID {
      * @param internalID The string representation of the id to back this object
      */
     public InternalID(String internalID) {
-        if (internalID == null) throw new IllegalArgumentException("ID must not be null");
+        if (internalID == null) throw new IllegalArgumentException(MessageKey.ERROR_NULL_ID.getLocalizedMessage());
         mID = internalID;
     }
     /**

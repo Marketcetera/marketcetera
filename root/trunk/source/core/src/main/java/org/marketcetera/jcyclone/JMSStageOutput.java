@@ -3,6 +3,7 @@ package org.marketcetera.jcyclone;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 
 import javax.jms.JMSException;
 
@@ -29,7 +30,7 @@ public class JMSStageOutput extends OutputElement{
             }
             jmsOutputInfo.getMessageProducer().send(jmsMessage);
         } catch (JMSException ex) {
-            LoggerAdapter.error("failed sending message "+qfMessage, ex, this);
+            LoggerAdapter.error(MessageKey.JMS_SEND_ERROR.getLocalizedMessage(qfMessage), ex, this);
             throw new MarketceteraException(ex);
         }
     }

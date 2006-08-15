@@ -6,6 +6,7 @@ import quickfix.SessionNotFound;
 import quickfix.SessionID;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 
 /**
  * @author Toli Kuznets
@@ -26,7 +27,7 @@ public class FIXStageOutput extends OutputElement {
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("FIX output: "+message, this); }
             Session.sendToTarget(message, defaultSessionID);
         } catch (SessionNotFound snf) {
-            LoggerAdapter.error("Error sending fix message.", snf, this);
+            LoggerAdapter.error(MessageKey.FIX_SEND_ERROR.getLocalizedMessage(), snf, this);
         }
     }
 }

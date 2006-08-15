@@ -10,11 +10,11 @@ public class ConfigFileLoadingException extends MarketceteraException
 {
     public ConfigFileLoadingException(String inFile)
     {
-        super("Unable to open config file "+inFile);
+        super(MessageKey.CONFIG_FILE_OPEN.getLocalizedMessage(inFile));
     }
 
     public ConfigFileLoadingException(String inFile, Throwable nested)
     {
-        super("Unable to open config file '"+inFile+"'", nested);
+        super(MessageKey.CONFIG_FILE_OPEN.getLocalizedMessage(inFile), nested);
     }
 }

@@ -2,6 +2,7 @@ package org.marketcetera.symbology;
 
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
 
@@ -28,7 +29,7 @@ public class Exchanges {
         try {
             loadExchanges();
         } catch (Exception ex) {
-            LoggerAdapter.error("Error initializing exchanges", ex, Exchanges.class);
+            LoggerAdapter.error(MessageKey.ERROR_EXCHANGES_INIT.getLocalizedMessage(), ex, Exchanges.class);
         }
     }
 

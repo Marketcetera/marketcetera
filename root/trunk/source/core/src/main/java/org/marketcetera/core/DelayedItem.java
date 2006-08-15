@@ -22,7 +22,7 @@ public class DelayedItem<T> implements Delayed {
      */
     public DelayedItem(long delayInMillis, T anItem, Clock clock) {
         if (anItem == null) {
-            throw new IllegalArgumentException("Item must not be null.");
+            throw new IllegalArgumentException(MessageKey.ERROR_NULL_DELAYED_ITEM.getLocalizedMessage());
         }
         if (clock == null)
         {
@@ -110,6 +110,6 @@ public class DelayedItem<T> implements Delayed {
      * @return A human readable string describing this object
      */
     public String toString() {
-        return "In " + getDelay(TimeUnit.MILLISECONDS) + " millis, will send " + mItem.toString();
+        return MessageKey.DELAYED_ITEM_DESC.getLocalizedMessage(new Object[]{getDelay(TimeUnit.MILLISECONDS), mItem.toString()});
     }
 }

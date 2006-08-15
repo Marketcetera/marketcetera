@@ -24,7 +24,7 @@ public class MSymbol {
     public MSymbol(String fullSymbol, SymbolScheme scheme) {
         this.fullSymbol = fullSymbol;
         if (fullSymbol == null || scheme == null){
-            throw new IllegalArgumentException("Symbol and scheme must not be null");
+            throw new IllegalArgumentException(MessageKey.ERROR_NULL_MSYMBOL.getLocalizedMessage());
         }
         if (scheme == SymbolScheme.BASIC){
             String [] symbolSplit = fullSymbol.split("\\.");
