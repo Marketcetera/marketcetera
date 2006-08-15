@@ -2,12 +2,12 @@ package org.marketcetera.oms.jcycloneSample;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.jcyclone.core.boot.JCyclone;
 import org.jcyclone.core.boot.Main;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.Util;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.oms.OrderManagementSystem;
 
 import java.net.URL;
 import java.util.Vector;
@@ -26,8 +26,7 @@ public class JCycloneStagesTest extends TestCase {
     }
 
     public static Test suite() {
-        LoggerAdapter.initializeLogger("unitTest");
-        return (new TestSuite(JCycloneStagesTest.class));
+        return (new MarketceteraTestSuite(JCycloneStagesTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO));
     }
 
 

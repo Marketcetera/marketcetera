@@ -44,7 +44,7 @@ public class OrderManagerTest extends TestCase
         } catch (ConfigFileLoadingException ex) {
             // do nothing
         }
-        return new MarketceteraTestSuite(OrderManagerTest.class);
+        return new MarketceteraTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
     }
 
     public void testNewExecutionReportFromOrder() throws Exception

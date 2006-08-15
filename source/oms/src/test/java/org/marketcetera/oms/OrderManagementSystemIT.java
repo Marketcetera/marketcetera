@@ -47,7 +47,7 @@ public class OrderManagementSystemIT extends TestCase
             fail("Unable to init OMS");
         }
 
-        TestSuite suite = new  MarketceteraTestSuite(OrderManagementSystemIT.class);
+        TestSuite suite = new  MarketceteraTestSuite(OrderManagementSystemIT.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
         suite.addTest(new RepeatedTest(new OrderManagementSystemIT("testEndToEndOrderFilling"), 5));
         return suite;
     }

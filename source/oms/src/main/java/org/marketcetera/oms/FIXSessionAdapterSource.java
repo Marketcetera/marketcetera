@@ -10,6 +10,7 @@ import org.jcyclone.core.internal.ISystemManager;
 import org.marketcetera.jcyclone.*;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 import org.marketcetera.quickfix.QuickFIXSessionAdapter;
 import org.marketcetera.quickfix.QuickFIXInitiator;
 
@@ -80,8 +81,8 @@ public class FIXSessionAdapterSource extends JCyclonePluginSource implements Qui
         try {
             getNextStage().enqueue(new JMSStageOutput(inMessage, OrderManagementSystem.getOMS().getJmsOutputInfo()));
         } catch (SinkException ex) {
-            LoggerAdapter.error("Failed while sending a message", ex, this);
-            throw new RuntimeException("Failed while sending a message", ex);
+            LoggerAdapter.error(MessageKey.JMS_SEND_ERROR.getLocalizedMessage(), ex, this);
+            throw new RuntimeException(MessageKey.JMS_SEND_ERROR.getLocalizedMessage(), ex);
         }
     }
 

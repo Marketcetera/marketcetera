@@ -31,7 +31,7 @@ public class QuickFIXAdapterTest extends TestCase
 
     public static Test suite()
     {
-        MarketceteraTestSuite suite = new MarketceteraTestSuite(QuickFIXAdapterTest.class);
+        MarketceteraTestSuite suite = new MarketceteraTestSuite(QuickFIXAdapterTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
         suite.addTest(new RepeatedTest(new QuickFIXAdapterTest("testMessagePassthrough"), 5));
         return suite;
     }
