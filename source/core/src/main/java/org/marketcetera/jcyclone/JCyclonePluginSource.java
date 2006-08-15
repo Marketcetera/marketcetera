@@ -5,6 +5,7 @@ import org.jcyclone.core.stage.IStageManager;
 import org.jcyclone.core.internal.ISystemManager;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 
 /**
  * Abstract superclass for Jcyclone plugin sources
@@ -15,7 +16,7 @@ import org.marketcetera.core.ClassVersion;
 public abstract class JCyclonePluginSource extends JCycloneSource  implements IPlugin {
     public void initialize(IStageManager stagemgr, ISystemManager sysmgr, String pluginName) throws Exception {
         if(LoggerAdapter.isInfoEnabled(this)) {
-            LoggerAdapter.info("Initializing plugin ["+pluginName+"]", this);
+            LoggerAdapter.info(MessageKey.JCYCLONE_PLUGIN_INIT.getLocalizedMessage(pluginName), this);
         }
         // lookup next stage. Since jcyclone doesn't provide a separate configProxy for plugins
         // we have to build the full key lookup path ourselves

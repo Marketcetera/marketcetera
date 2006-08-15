@@ -2,12 +2,13 @@ package org.marketcetera.core;
 
 import org.jcyclone.core.cfg.MapConfig;
 import org.jcyclone.core.boot.JCyclone;
+import org.apache.commons.i18n.ResourceBundleMessageProvider;
+import org.apache.commons.i18n.MessageManager;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
 import javax.management.JMException;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.lang.management.ManagementFactory;
 
 /**
@@ -18,6 +19,9 @@ import java.lang.management.ManagementFactory;
  */
 @ClassVersion("$Id$")
 public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
+
+    public static MessageBundleInfo MESSAGE_BUNDLE_INFO = new MessageBundleInfo("core", "core_messages");
+
     protected static LoggerAdapter sLogger;
 
     // for Applications that take in a config file name
@@ -41,6 +45,10 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
 
     private void commonInit(Properties inProps)
     {
+        List<MessageBundleInfo> bundles =  new ArrayList<MessageBundleInfo>(Arrays.asList( MESSAGE_BUNDLE_INFO));
+        addLocalMessageBundles(bundles);
+        registerMessageBundles(bundles);
+
         sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
         final ApplicationBase outerThis = this;
 
@@ -71,7 +79,7 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
             ObjectName name = new ObjectName(pkgName +":type="+className);
             mbs.registerMBean(this, name);
         } catch (JMException ex) {
-            LoggerAdapter.error("Unable to register JMX Mbean: ", ex, this);
+            LoggerAdapter.error(MessageKey.JMX_BEAN_FAILURE.getLocalizedMessage(), ex, this);
             if(fExitOnFail) {System.exit(-1); }
         }
     }
@@ -83,12 +91,10 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
         return System.currentTimeMillis();
     }
 
+    /** Returns the name of the config file ofr this app */
     public String getCfgFileName() {
         return mCfgFileName;
     }
-
-    /** Returns the name of the config file */
-
 
     /* (non-Javadoc)
     * @see Clock#getApproximateTime
@@ -117,7 +123,7 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
     }
 
     public void shutdown() {
-        LoggerAdapter.info("Shutting down application", this);
+        LoggerAdapter.info(MessageKey.APP_SHUTDOWN.getLocalizedMessage(), this);
         try {
             if(jcyclone!=null) {
                 jcyclone.stop();
@@ -125,11 +131,27 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
                 jcyclone = null;
             }
         } catch (Exception e) {
-            LoggerAdapter.error("Error while shutting down JCyclone framework", e, this);
+            LoggerAdapter.error(MessageKey.JCYCLONE_SHUTDOWN_ERR.getLocalizedMessage(), e, this);
         }
     }
 
     public Properties getProperties() {
         return properties;
+    }
+
+    /** Subclasses can override the implementation if they need to add additoinal or specific
+     * message bundles for internationalization.
+     */
+    protected abstract void addLocalMessageBundles(List<MessageBundleInfo> bundles);
+
+    /** Helper method to be overridden by subclasses to register
+     * additional internationalization message bundles.
+     */
+    public static void registerMessageBundles(List<MessageBundleInfo> infos)
+    {
+        // load the internationalization messages
+        for (MessageBundleInfo oneInfo : infos) {
+            MessageManager.addMessageProvider(oneInfo.getProviderID(), new ResourceBundleMessageProvider(oneInfo.getBundleName()));
+        }
     }
 }

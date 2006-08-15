@@ -62,7 +62,7 @@ public class DatabaseIDFactory implements IDFactory {
                 try {
                     grabIDs();
                 } catch (SQLException ex) {
-                    LoggerAdapter.error("Unable to get database IDs from "+mNextID, ex, this);
+                    LoggerAdapter.error(MessageKey.DB_ID_FETCH.getLocalizedMessage(mNextID), ex, this);
                     throw new NoMoreIDsException(ex);
                 }
             }

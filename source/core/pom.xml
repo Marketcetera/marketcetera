@@ -27,6 +27,11 @@
             <groupId>incubator</groupId>
             <artifactId>activemq</artifactId>
         </dependency>
+        <dependency>
+            <groupId>commons-i18n</groupId>
+            <artifactId>commons-i18n</artifactId>
+            <version>20060814</version>
+        </dependency>
     </dependencies>
 
     <!-- try to force a test-jar to be built during jar creation -->

@@ -40,13 +40,13 @@ public class LoggerAdapter extends Logger
         sLogger = new LoggerAdapter(name);
         PropertyConfigurator.configureAndWatch(LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
         sLogger.setLevel(Level.ERROR);
-        System.out.println("Initialized top-level Logger: "+name);
+        System.out.println(MessageKey.LOGGER_INIT.getLocalizedMessage(name));
         return sLogger;
     }
 
     public void debug(String inMsg)
     {
-        throw new IllegalArgumentException("please specify debug category as 2nd param");
+        throw new IllegalArgumentException(MessageKey.LOGGER_MISSING_CAT.getLocalizedMessage());
     }
 
     /** Get the appropriate logger for the incoming category and delegate the debug to it */
@@ -90,17 +90,17 @@ public class LoggerAdapter extends Logger
 
     public void error(String msg)
     {
-        throw new IllegalArgumentException("please specify logger category as 2nd param");
+        throw new IllegalArgumentException(MessageKey.LOGGER_MISSING_CAT.getLocalizedMessage());
     }
 
     public void info(String msg)
     {
-        throw new IllegalArgumentException("please specify logger category as 2nd param");
+        throw new IllegalArgumentException(MessageKey.LOGGER_MISSING_CAT.getLocalizedMessage());
     }
 
     public void warn(String msg)
     {
-        throw new IllegalArgumentException("please specify logger category as 2nd param");
+        throw new IllegalArgumentException(MessageKey.LOGGER_MISSING_CAT.getLocalizedMessage());
     }
 
     public static boolean isDebugEnabled(Object inCat)

@@ -22,6 +22,7 @@ import java.util.List;
 public class FIXMessageUtil {
 
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();
+    private static final int MAX_FIX_FIELDS = 2000;     // What we think the ID of the last fix field is
 
     /**
      * Creates a new instance of FIXMessageUtil
@@ -305,7 +306,7 @@ public class FIXMessageUtil {
         try {
             String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
             DataDictionary dict = FIXDataDictionaryManager.getDictionary();
-            for (int fieldInt = 1; fieldInt < 2000; fieldInt++){
+            for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
                 if (dict.isRequiredField(msgType, fieldInt) && existingMessage.isSetField(fieldInt) &&
                         !outgoingMessage.isSetField(fieldInt)){
                     try {
@@ -317,7 +318,7 @@ public class FIXMessageUtil {
             }
 
         } catch (FieldNotFound ex) {
-            LoggerAdapter.error("Outgoing message did not have valid MsgType ", ex, LOGGER_NAME);
+            LoggerAdapter.error(MessageKey.FIX_OUTGOING_NO_MSGTYPE.getLocalizedMessage(), ex, LOGGER_NAME);
         }
     }
 

@@ -6,6 +6,7 @@ import org.jcyclone.core.cfg.IConfigData;
 import org.jcyclone.core.queue.IElement;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public abstract class JCycloneStageBase extends JCycloneSource implements ISingleThreadedEventHandler  {
     public void init(IConfigData config) throws Exception {
         if(LoggerAdapter.isInfoEnabled(this)) {
-            LoggerAdapter.info("Initializing stage "+config.getStage().getName(), this);
+            LoggerAdapter.info(MessageKey.JCYCLONE_STAGE_INIT.getLocalizedMessage(config.getStage().getName()), this);
         }
         String nextHandlerName = config.getString(JCycloneConstants.NEXT_STAGE);
         if(nextHandlerName!=null) {

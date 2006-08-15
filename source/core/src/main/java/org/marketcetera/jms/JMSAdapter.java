@@ -2,6 +2,7 @@ package org.marketcetera.jms;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageKey;
 
 import javax.jms.*;
 import javax.naming.Context;
@@ -119,7 +120,7 @@ public class JMSAdapter {
 
                 drainQueue(queueConnectionFactory, queueName);
             } catch (Exception ex) {
-                LoggerAdapter.error("Error clearing queue "+queueName+".", ex, this);
+                LoggerAdapter.error(MessageKey.JMS_CLEAR_ERROR.getLocalizedMessage(queueName), ex, this);
             }
         }
 
@@ -221,12 +222,12 @@ public class JMSAdapter {
             {
                 queueMap.put(name, sess.createQueue(queueName));
             } else {
-                JMSException exception = new JMSException("Could not find queue.");
+                JMSException exception = new JMSException(MessageKey.JMS_QUEUE_DNE.getLocalizedMessage(queueName));
                 exception.setLinkedException(e);
                 throw exception;
             }
         } catch (JMSException e) {
-            JMSException exception = new JMSException("Exception occurred. "+ e.getMessage());
+            JMSException exception = new JMSException(MessageKey.ERROR_WITH_DETAILS.getLocalizedMessage(e.getMessage()));
             exception.setLinkedException(e);
             throw exception;
         }
@@ -256,12 +257,12 @@ public class JMSAdapter {
             {
                 topicMap.put(name, sess.createTopic(topicName));
             } else {
-                JMSException exception = new JMSException("Could not find topic. "+e.getMessage());
+                JMSException exception = new JMSException(MessageKey.JMS_TOPIC_DNE.getLocalizedMessage(topicName));
                 exception.setLinkedException(e);
                 throw exception;
             }
         } catch (JMSException e) {
-            JMSException exception = new JMSException("Exception occurred. "+e.getMessage());
+            JMSException exception = new JMSException(MessageKey.ERROR_WITH_DETAILS.getLocalizedMessage(e.getMessage()));
             exception.setLinkedException(e);
             throw exception;
         }
@@ -277,10 +278,10 @@ public class JMSAdapter {
         try {
             jndiContext = new InitialContext(env);
         } catch (NamingException e) {
-            JMSException exception = new JMSException("Could not create JNDI API context. "+e.getMessage());
-            LoggerAdapter.error("Exception instantiating JNDI context", e, this);
-            exception.setLinkedException(e);
-            throw exception;
+            JMSException jmsEx = new JMSException(MessageKey.ERROR_JNDI_CREATE.getLocalizedMessage(e.getMessage()));
+            LoggerAdapter.error(MessageKey.ERROR_JNDI_CREATE.getLocalizedMessage(), e, this);
+            jmsEx.setLinkedException(e);
+            throw jmsEx;
         }
         return jndiContext;
     }
@@ -291,7 +292,7 @@ public class JMSAdapter {
                 aConnection.start();
                 LoggerAdapter.debug("Adapter for "+mProviderURL + " started for client "+aConnection.getClientID(), this);
             } catch (JMSException ex) {
-                LoggerAdapter.error("Exception starting JMS connection", ex, this);
+                LoggerAdapter.error(MessageKey.JMS_CONNECTION_START_ERROR.getLocalizedMessage(), ex, this);
             }
         }
     }
@@ -311,7 +312,7 @@ public class JMSAdapter {
         try {
             mJNDIContext.close();
         } catch(NamingException ex) {
-            LoggerAdapter.error("Error closing JNDI context", ex, this);
+            LoggerAdapter.error(MessageKey.ERROR_JNDI_CLOSE.getLocalizedMessage(), ex, this);
         }
     }
 
@@ -320,7 +321,7 @@ public class JMSAdapter {
             try {
                 aSession.close();
             } catch (JMSException ex) {
-                LoggerAdapter.error("Exception closing JMS connection", ex, this);
+                LoggerAdapter.error(MessageKey.JMS_CONNECTION_CLOSE_ERROR.getLocalizedMessage(), ex, this);
             }
         }
     }
@@ -330,7 +331,7 @@ public class JMSAdapter {
             try {
                 aProducer.close();
             } catch (JMSException ex) {
-                LoggerAdapter.error("Exception closing JMS connection", ex, this);
+                LoggerAdapter.error(MessageKey.JMS_CONNECTION_CLOSE_ERROR.getLocalizedMessage(), ex, this);
             }
         }
     }
@@ -340,7 +341,7 @@ public class JMSAdapter {
             try {
                 aConsumer.close();
             } catch (JMSException ex) {
-                LoggerAdapter.error("Exception closing JMS connection", ex, this);
+                LoggerAdapter.error(MessageKey.JMS_CONNECTION_CLOSE_ERROR.getLocalizedMessage(), ex, this);
             }
         }
     }
@@ -350,7 +351,7 @@ public class JMSAdapter {
             try {
                 aConnection.close();
             } catch (JMSException ex) {
-                LoggerAdapter.error("Exception closing JMS connection", ex, this);
+                LoggerAdapter.error(MessageKey.JMS_CONNECTION_CLOSE_ERROR.getLocalizedMessage(), ex, this);
             }
         }
     }

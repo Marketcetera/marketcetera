@@ -137,8 +137,7 @@ public class OrderRouteManager implements OrderModifier {
             }
             return isModified;
         } catch(FieldNotFound fnfEx) {
-            throw new MarketceteraException("Couldn't find field ["+
-                    FIXDataDictionaryManager.getHumanFieldName(fnfEx.field)+"] in message", fnfEx);
+            throw MarketceteraFIXException.createFieldNotFoundException(fnfEx, anOrder);
         } catch (Exception ex) {
             throw new MarketceteraException(ex);
         }
