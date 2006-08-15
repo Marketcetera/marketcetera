@@ -37,7 +37,10 @@ import quickfix.field.Symbol;
 import quickfix.field.Text;
 
 /**
- * $Id$
+ * OrderManager is the main repository for business logic.  It can be considered
+ * the "controller" in a standard model-view-controller architecture.  The main entry
+ * points are the <code>handle*</code> methods for handling incoming and outgoing 
+ * messages of various types.  
  * 
  * @author gmiller
  */
@@ -55,8 +58,14 @@ public class OrderManager {
 	private FIXMessageHistory fixMessageHistory;
 	
 
-	/** Creates a new instance of OrderManager 
-	 * @param fixMessageHistory */
+	/** Creates a new instance of OrderManager with the specified {@link IDFactory}--
+	 * used to create new order id's among other things,
+	 * and the specified {@link FIXMessageHistory} into which all fix messages
+	 * will be placed for later use in the UI.
+	 * @param idFactory the id factory for generating order ids and other FIX ids
+	 * @param fixMessageHistory the message history object for storing histories of FIX messages
+	 * 
+	 */
 	public OrderManager(IDFactory idFactory, FIXMessageHistory fixMessageHistory) {
 		this.idFactory = idFactory;
 		this.fixMessageHistory = fixMessageHistory;
@@ -69,6 +78,10 @@ public class OrderManager {
 
 	}
 
+	/**Get the {@link MessageListener} to hand to the JMS subsystem for
+	 * retrieving messages asynchronously off of the incoming topic.
+	 * @return  the MessageListener that routes messages back into this OrderManager
+	 */
 	public MessageListener getMessageListener() {
 		return new MessageListener() {
 			public void onMessage(javax.jms.Message message) {
@@ -94,6 +107,11 @@ public class OrderManager {
 	}
 
 
+	/**
+	 * Handles messages coming in on the incoming topic from the counterparty.
+	 * 
+	 * @param messages the array of incoming messages
+	 */
 	public void handleCounterpartyMessages(Object[] messages) {
 		for (int i = 0; i < messages.length; i++) {
 			Object object = messages[i];

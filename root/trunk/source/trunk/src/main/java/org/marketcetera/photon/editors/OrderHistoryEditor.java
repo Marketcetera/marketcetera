@@ -3,6 +3,7 @@ package org.marketcetera.photon.editors;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.IAdapterFactory;
+import org.eclipse.core.runtime.IAdapterManager;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.GroupMarker;
@@ -32,17 +33,29 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swt.EventTableViewer;
 
 /**
- * An example showing how to create a multi-page editor. This example has 3
- * pages:
+ * OrderHistoryEditor is a user-interface component displaying
+ * all of the messages passed between the application and the
+ * counterparties, through the OMS.  The component consists
+ * of several "pages" providing different views on the same data
  * <ul>
- * <li>page 0 contains a nested text editor.
- * <li>page 1 allows you to change the font used in page 2
- * <li>page 2 shows the words in page 0 in sorted order
+ * <li><b>Open Orders</b> shows all of the orders currently working in the marketplace
+ * <li><b>Fills</b> shows one line per fill
+ * <li><b>Messages</b> shows all of the messages passed between the application and other platform components
+ * <li><b>Average Price</b> shows a summary of all fills, including total quantity and average price
  * </ul>
+ * 
+ * 	
  */
 @ClassVersion("$Id$")
 public class OrderHistoryEditor extends MultiPageEditorPart {
 
+	/**
+	 * The columns of the "Open Orders" page, specified as 
+	 * FIX fields.
+	 * 
+	 * @author gmiller
+	 *
+	 */
 	public enum OpenOrderColumns {
 		TRANSACTTIME("TransactTime"), CLORDID("ClOrdID"),
 		ORDERID("OrderID"), ORDSTATUS("OrdStatus"), SIDE(
@@ -62,6 +75,13 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		}
 	};
 	
+	/**
+	 * The columns of the average price page specified as
+	 * FIX fields.
+	 * 
+	 * @author gmiller
+	 *
+	 */
 	public enum AvgPriceColumns {
 		DIRECTION("D"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
 		AVGPX("AvgPx"), ACCOUNT("Account");
@@ -77,6 +97,13 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		}
 	};
 
+	/**
+	 * The columns of the Messages page, represented
+	 * as FIX fields.
+	 * 
+	 * @author gmiller
+	 *
+	 */
 	public enum MessageColumns {
 		DIRECTION("D"), TRANSACTTIME("TransactTime"), MSGTYPE("MsgType"), CLORDID("ClOrdID"),
 		ORDERID("OrderID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
@@ -96,6 +123,13 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		}
 	};
 
+	/**
+	 * The columns of the Fills page represented
+	 * as FIX fields.
+	 * 
+	 * @author gmiller
+	 *
+	 */
 	public enum FillColumns {
 		CLORDID("ClOrdID"), ORDSTATUS("OrdStatus"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY(
 				"OrderQty"), CUMQTY("CumQty"), LEAVESQTY("LeavesQty"), Price(
@@ -157,7 +191,10 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 
 	/**
-	 * Creates a multi-page editor example.
+	 * Create a new OrderHistoryEditor, and register adapters for
+	 * various types of model objects.
+	 * 
+	 * @see IAdapterManager#registerAdapters(IAdapterFactory, Class)
 	 */
 	public OrderHistoryEditor() {
 		super();
@@ -171,9 +208,9 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	}
 
 	/**
-	 * Creates page 0 of the multi-page editor, which contains the list of fills
+	 * 
 	 */
-	void createPage0() {
+	void createOpenOrderPage() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -198,7 +235,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		setPageText(index, "Open Orders");
 	}
 	
-	void createPage1() {
+	void createFillPage() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -224,19 +261,11 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	}
 
-	/**
-	 * @param table
-	 */
-	private void packColumns(final Table table) {
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			table.getColumn(i).pack();
-		}
-	}
 	
 	/**
 	 * Creates page 1 of the multi-page editor, which contains the list of messages
 	 */
-	void createPage2() {
+	void createMessagePage() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -266,7 +295,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	/**
 	 * Creates page 2 of the multi-page editor, which contains the list of average price fills
 	 */
-	void createPage3() {
+	void createAveragePricePage() {
 		Composite composite = new Composite(getContainer(), SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
@@ -290,6 +319,12 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		packColumns(averagePriceTable);
 		setPageText(index, "Average Price");
 
+	}
+	
+	private void packColumns(final Table table) {
+		for (int i = 0; i < table.getColumnCount(); i++) {
+			table.getColumn(i).pack();
+		}
 	}
 
     private Table createMessageTable(Composite parent) {
@@ -320,10 +355,10 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	 * Creates the pages of the multi-page editor.
 	 */
 	protected void createPages() {
-		createPage0();
-		createPage1();
-		createPage2();
-		createPage3();
+		createOpenOrderPage();
+		createFillPage();
+		createMessagePage();
+		createAveragePricePage();
 		makeActions();
 	}
 

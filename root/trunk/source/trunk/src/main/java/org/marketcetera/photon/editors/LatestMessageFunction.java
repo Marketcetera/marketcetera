@@ -11,13 +11,36 @@ import quickfix.Message;
 import quickfix.field.TransactTime;
 import ca.odell.glazedlists.FunctionList.Function;
 
+/**
+ * LatestMessageFunction is a {@link Function} that
+ * will process a list of FIX messages and find only the
+ * most recent message.  Note that this function does not
+ * do any filtering to ensure that only messages of the
+ * same type are compared.  You must ensure that the
+ * messages passed to {@link #evaluate(List)} are 
+ * all comparable based on the {@link TransactTime} field.
+ * 
+ * Note that subclasses may restrict the messages that are
+ * considered by this function by implementing the
+ * {@link #filter(MessageHolder)} method.
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class LatestMessageFunction implements
-Function<List<MessageHolder>, MessageHolder>{
+  Function<List<MessageHolder>, MessageHolder>{
 
-	public MessageHolder evaluate(List<MessageHolder> arg0) {
+	/** Given a list of messages, compare them all
+	 * based on the value of the {@link TransactTime} field
+	 * returning only the most recent message.
+	 * 
+	 * @param messages the list of messages to process
+	 * @return the message object representing the most recent message from the input
+	 * @see ca.odell.glazedlists.FunctionList$Function#evaluate(java.lang.Object)
+	 */
+	public MessageHolder evaluate(List<MessageHolder> messages) {
 		MessageHolder latestMessage = null;
-		for (MessageHolder holder : arg0) {
+		for (MessageHolder holder : messages) {
 			Message message = holder.getMessage();
 			if (filter(holder)) {
 				try {
@@ -41,6 +64,15 @@ Function<List<MessageHolder>, MessageHolder>{
 		}
 		return latestMessage;
 	}
+	/**
+	 * Determines whether a given {@link MessageHolder} should
+	 * be considered for inclusion in the "latest message" calculation.
+	 * This method is called once per message in the input to
+	 * {@link #evaluate(List)}.
+	 * 
+	 * @param holder the message to consider
+	 * @return true if the message should be considered for inclusion in the "latest message" calculation, false otherwise
+	 */
 	protected boolean filter(MessageHolder holder)
 	{
 		return true;

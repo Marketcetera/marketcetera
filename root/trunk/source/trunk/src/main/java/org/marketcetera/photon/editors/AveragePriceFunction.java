@@ -26,8 +26,35 @@ import quickfix.field.Symbol;
 import quickfix.fix42.ExecutionReport;
 import ca.odell.glazedlists.FunctionList.Function;
 
+/**
+ * The lambda-expression-like {@link Function} implementation
+ * that given a list of FIX {@link Message}s representing
+ * ExecutionReports, returns a single execution report (wrapped
+ * in an {@link IncomingMessageHolder} representing
+ * the average price and total quantity.
+ * 
+ * Note that this implementation assumes that the list passed
+ * to it in {@link #evaluate(List)} have already been filtered
+ * to group by symbol, side, and any other criteria such
+ * that a single average price and quantity result make sense.
+ * That is it doesn't make much sense to calculate the average
+ * price of a buy of 300 IBM and a sale of 600 MSFT.
+ * 
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class AveragePriceFunction implements Function<List<MessageHolder>, MessageHolder> {
+	/**
+	 * Given the list of {@link quickfix.Message}s representing execution
+	 * reports for a single security on a single side of the market, calculates
+	 * the average price, and total quantity
+	 * 
+	 * @return an execution report--wrapped in an
+	 *         IncomingMessageHolder--representing the average price and total
+	 *         quantity
+	 * @see ca.odell.glazedlists.FunctionList$Function#evaluate(java.lang.Object)
+	 */
 	public IncomingMessageHolder evaluate(List<MessageHolder> arg0) {
 
 		Message avgPriceMessage = null;
@@ -50,6 +77,16 @@ public class AveragePriceFunction implements Function<List<MessageHolder>, Messa
 		return avgPriceMessage==null ? null : new IncomingMessageHolder(avgPriceMessage);
 	}
 
+	/**
+	 * The helper method responsible for updating the 
+	 * current statistics for the average price and total
+	 * quantity.  
+	 * 
+	 * @param avgPriceMessage the execution report representing the current view of the average price and total quantity
+	 * @param fillMessage the new execution report to incorporate into the statistics
+	 * @return the message passed in as avgPriceMessage, but modified to incorporate the fill in fillMessage
+	 * @throws FieldNotFound if any of the required fields are not found.
+	 */
 	private Message computeAveragePrice(Message avgPriceMessage, Message fillMessage) throws FieldNotFound {
 		Message returnMessage = null;
 		if (avgPriceMessage == null){

@@ -11,6 +11,15 @@ import org.marketcetera.photon.CommandStatusLineContribution;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 
+/**
+ * FocusCommandAction is the action responsible for putting the
+ * focus into the command entry area at the bottom of the application.
+ * This is bundled into an {@link Action} that implements {@link IWorkbenchAction}
+ * in order to allow us to set up a keyboard shortcut for it in plugin.xml.
+ * 
+ * @author gmiller
+ *
+ */
 @ClassVersion("$Id$")
 public class FocusCommandAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
@@ -18,6 +27,15 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 
 	CommandStatusLineContribution commandInput;
 	
+	/**
+	 * Create a new FocusCommandAction with the default Id, ActionDefinitionId, Text
+	 * ToolTipText, and ImageDescriptor, and the specified {@link IWorkbenchWindow}
+	 * and the {@link CommandStatusLineContribution} that represents the command
+	 * entry area itself.
+	 * 
+	 * @param window the application window
+	 * @param commandInput the command input area as a CommandStatusLineContribution
+	 */
 	public FocusCommandAction(IWorkbenchWindow window, CommandStatusLineContribution commandInput) {
 		setId(ID);
 		setActionDefinitionId(ID);
@@ -27,12 +45,26 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 		this.commandInput = commandInput;
 	}
 
+	/**
+	 * Do nothing.
+	 * @see org.eclipse.ui.actions.ActionFactory$IWorkbenchAction#dispose()
+	 */
 	public void dispose() {
 	}
 
+	/**
+	 * Do nothing
+	 * @see org.eclipse.ui.ISelectionListener#selectionChanged(org.eclipse.ui.IWorkbenchPart, org.eclipse.jface.viewers.ISelection)
+	 */
 	public void selectionChanged(IWorkbenchPart part, ISelection incoming) {
 	}
 
+	/**
+	 * Sets the application focus to be the command input area by calling
+	 * {@link CommandStatusLineContribution#setFocus()}.
+	 * 
+	 * @see org.eclipse.jface.action.Action#run()
+	 */
 	public void run() {
 		commandInput.setFocus();
 	}

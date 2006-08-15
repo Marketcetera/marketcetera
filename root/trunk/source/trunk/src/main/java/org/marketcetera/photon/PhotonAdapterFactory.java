@@ -4,9 +4,24 @@ import org.eclipse.core.runtime.IAdapterFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.model.MessageHolder;
 
+/**
+ * The PhotonAdapterFactory produces adapters that the RCP uses to 
+ * display Marketcetera model objects in the UI.  Instances of 
+ * {@link IWorkbenchAdapter} returned by {@link #getAdapter(Object, Class)}
+ * can provide the text to display as well as parent an child relationships
+ * for tree-based GUI components.
+ * 
+ * @author gmiller
+ *
+ */
+////////////////////////////////////////////////////////
+// TODO: is any of the code in this class used anymore?
+////////////////////////////////////////////////////////
+@ClassVersion("$Id$")
 public class PhotonAdapterFactory implements IAdapterFactory {
 
 
@@ -28,6 +43,22 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 	};
 
+	/**
+	 * Returns an adapter of the specified class for the specified object.
+	 * Currently the only valid values for adaptableObject are
+	 * {@link MessageHolder}, {@link AccountID}, and {@link MSymbol}.
+	 * Currently the only valid value of adapterType is
+	 * {@link IWorkbenchAdapter}. All others will return null.
+	 * 
+	 * @param adaptableObject
+	 *            the object for which to get an adapter
+	 * @param adaptableType
+	 *            the class (or superclass or interface) of the adapter to get
+	 * @return an adapter that is an instance of a subclass of adapterType, or
+	 *         null if adaptableObject or adapterType are unsupported.
+	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
+	 *      java.lang.Class)
+	 */
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof MessageHolder)
