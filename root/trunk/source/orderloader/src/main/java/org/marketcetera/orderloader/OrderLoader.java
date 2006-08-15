@@ -38,7 +38,8 @@ public class OrderLoader extends ApplicationBase
 
     protected static String MKT_PRICE = "MKT";
     protected static String TIME_LIMIT_DAY = "DAY";
-    private static final String CFG_FILE_NAME = "orderloader";
+    public static final String CFG_FILE_NAME = "orderloader";
+    public static final MessageBundleInfo OL_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("orderloader", "orderloader_messages");
     protected static final int USE_DB_ID_FACTORY_STARTID = -1;
 
     private IDFactory idFactory;
@@ -84,6 +85,10 @@ public class OrderLoader extends ApplicationBase
         System.out.println("Usage: java OrderLoader <orderID base> <CSV input file> [cfgFile]");
         System.out.println("Example file format should be: Symbol,Side,OrderQty,Price,TimeInForce,Account");
         System.exit(1);
+    }
+
+    protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
+        bundles.add(OL_MESSAGE_BUNDLE_INFO);
     }
 
     /**
@@ -171,7 +176,7 @@ public class OrderLoader extends ApplicationBase
                     numBlankLines++;
                     return;
                 }else {
-                    throw new OrderParsingException("Wrong number of fields");
+                    throw new OrderParsingException(OrderLoaderMessageKey.PARSING_WRONG_NUM_FIELDS.getLocalizedMessage());
                 }
             } else if(inOrderRow[0].startsWith(COMMENT_MARKER)) {
                 numComments++;
@@ -191,7 +196,8 @@ public class OrderLoader extends ApplicationBase
                 numProcessedOrders++;
             }
         } catch (Exception e) {
-            LoggerAdapter.error("error generating order for: " + Util.getStringFromArray(inOrderRow)+", "+e.getMessage(), e, this);
+            LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(new String[]{
+                    Util.getStringFromArray(inOrderRow),e.getMessage()}), e, this);
             failedOrders.add(Util.getStringFromArray(inOrderRow) + ": " + e.getMessage());
         }
 
@@ -225,10 +231,10 @@ public class OrderLoader extends ApplicationBase
                     try {
                         price = new BigDecimal(inValue);
                     } catch(NumberFormatException ex) {
-                        throw new OrderParsingException("Price ["+inValue + "] must be a valid number", ex);
+                        throw new OrderParsingException(OrderLoaderMessageKey.PARSING_PRICE_VALID_NUM.getLocalizedMessage(inValue), ex);
                     }
                     if(price.compareTo(BigDecimal.ZERO) <= 0) {
-                        throw new OrderParsingException("Price ["+price+"] must be positive");
+                        throw new OrderParsingException(OrderLoaderMessageKey.PARSING_PRICE_POSITIVE.getLocalizedMessage(price));
                     }
                     // just return the original string
                     return inValue;
@@ -239,10 +245,10 @@ public class OrderLoader extends ApplicationBase
                 try {
                     qty = Integer.parseInt(inValue);
                 } catch(NumberFormatException ex) {
-                    throw new OrderParsingException("Quantity ["+inValue + "] must be an integer", ex);
+                    throw new OrderParsingException(OrderLoaderMessageKey.PARSING_QTY_INT.getLocalizedMessage(inValue), ex);
                 }
                 if(qty <=0) {
-                    throw new OrderParsingException("Quantity ["+inValue + "] must be a positive integer");
+                    throw new OrderParsingException(OrderLoaderMessageKey.PARSING_QTY_POS_INT.getLocalizedMessage(inValue));
                 }
                 // just return the original string
                 return inValue;

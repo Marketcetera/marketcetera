@@ -37,7 +37,7 @@ public class OrderLoaderTest extends TestCase
         suite.addTest(new OrderLoaderTest("testWithCustomField"));
         return suite;
 */
-        return new TestSuite(OrderLoaderTest.class);
+        return new MarketceteraTestSuite(OrderLoaderTest.class, OrderLoader.OL_MESSAGE_BUNDLE_INFO);
     }
 
     @Override
