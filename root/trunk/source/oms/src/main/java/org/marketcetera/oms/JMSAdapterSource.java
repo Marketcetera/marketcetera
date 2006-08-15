@@ -2,10 +2,7 @@ package org.marketcetera.oms;
 
 import org.jcyclone.core.internal.ISystemManager;
 import org.jcyclone.core.stage.IStageManager;
-import org.marketcetera.core.ConfigData;
-import org.marketcetera.core.InitializationException;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.*;
 import org.marketcetera.jcyclone.FIXStageOutput;
 import org.marketcetera.jcyclone.JCyclonePluginSource;
 import org.marketcetera.jcyclone.JMSOutputInfo;
@@ -15,10 +12,6 @@ import org.marketcetera.quickfix.ConnectionConstants;
 import javax.jms.*;
 import javax.jms.Message;
 import javax.jms.Session;
-
-import java.io.UnsupportedEncodingException;
-
-import quickfix.*;
 
 /**
  * Starting stage for all the incoming JMS messages that are later
@@ -34,6 +27,7 @@ public class JMSAdapterSource extends JCyclonePluginSource {
     public static final String INCOMING_QUEUE_NAME = "incomingQ";
     public static final String OUTGOING_TOPIC_NAME = "outgoingTopic";
     private JMSAdapter jmsAdapter;
+    private static final String FIX_PREAMBLE = "8=FIX";
 
     public JMSAdapterSource(){
         // jcyclone constructor
@@ -55,7 +49,7 @@ public class JMSAdapterSource extends JCyclonePluginSource {
         if(incomingQueueName != null) {
             jmsAdapter.connectIncomingQueue(INCOMING_QUEUE_NAME, incomingQueueName, Session.AUTO_ACKNOWLEDGE);
         } else {
-            throw new InitializationException("unable to connect incoming queue "+incomingQueueName);
+            throw new InitializationException(MessageKey.JMS_QUEUE_CONNECT_ERROR.getLocalizedMessage(incomingQueueName));
         }
 
         if(outgoingTopicName != null) {
@@ -64,7 +58,7 @@ public class JMSAdapterSource extends JCyclonePluginSource {
             Session session = jmsAdapter.getOutgoingTopicSession(OUTGOING_TOPIC_NAME);
             oms.registerOutgoingJMSInfo(new JMSOutputInfo(producer, session, outgoingTopicName));
         } else {
-            throw new InitializationException("unable to connect topic "+outgoingTopicName);
+            throw new InitializationException(MessageKey.JMS_TOPIC_CONNECT_ERROR.getLocalizedMessage(outgoingTopicName));
         }
 
         setMessageListener(new MessageListener() {
@@ -83,14 +77,13 @@ public class JMSAdapterSource extends JCyclonePluginSource {
                             BytesMessage bytesMessage = ((BytesMessage)message);
                             int length = (int)bytesMessage.getBodyLength();
                             byte [] buf = new byte[length];
-                            int numRead = bytesMessage.readBytes(buf);
 
                             String possibleString = new String(buf, "UTF-16");
-                            if (possibleString.startsWith("8=FIX")){
+                            if (possibleString.startsWith(FIX_PREAMBLE)){
                                 qfMessage = new quickfix.Message(possibleString);
                             }
                         } catch (Exception ex) {
-                            LoggerAdapter.error("Error decoding bytes", ex, this);
+                            LoggerAdapter.error(OMSMessageKey.ERROR_DECODING_MESSAGE.getLocalizedMessage(), ex, this);
 
                         }
                     }
@@ -98,7 +91,7 @@ public class JMSAdapterSource extends JCyclonePluginSource {
                         getNextStage().enqueue(new FIXStageOutput(qfMessage, OrderManagementSystem.getOMS().getDefaultSessionID()));
                     }
                 } catch (Exception ex) {
-                    LoggerAdapter.error("error sending QF message on a pipe", ex, this);
+                    LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_QF_MESSAGE.getLocalizedMessage(), ex, this);
                     // TODO: panic
                 }
             }

@@ -95,13 +95,13 @@ public class OrderManager extends JCycloneStageBase {
             } catch (MarketceteraException e) {
                 sendRejectionMessage(e, message);
             } catch (SinkException ex) {
-                LoggerAdapter.error("Failed while sending a message to the next stage.", ex, this);
-                throw new MarketceteraEventHandlerException("Failed while sending a message to next stage", ex);
+                LoggerAdapter.error(MessageKey.JCYCLONE_ERROR_SEND_NEXT_STAGE.getLocalizedMessage(), ex, this);
+                throw new MarketceteraEventHandlerException(MessageKey.JCYCLONE_ERROR_SEND_NEXT_STAGE.getLocalizedMessage(), ex);
             } catch(Exception ex) {
                 sendRejectionMessage(ex, message);
             }
         } else {
-            LoggerAdapter.error("Unexpected message type "+theEvent, this);
+            LoggerAdapter.error(MessageKey.FIX_UNEXPECTED_MSGTYPE.getLocalizedMessage(theEvent), this);
             // todo: handle others
         }
 
@@ -119,7 +119,7 @@ public class OrderManager extends JCycloneStageBase {
     {
         Message rejection = createRejectionMessage(origMessage);
         String msg = (causeEx.getMessage() == null) ? causeEx.toString() : causeEx.getMessage();
-        LoggerAdapter.error("Exception: "+msg + " caused by message: "+origMessage, causeEx, this);
+        LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(new Object[]{msg, origMessage}), causeEx, this);
         rejection.setString(Text.FIELD, msg);
         FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  origMessage);
         try {
@@ -132,8 +132,8 @@ public class OrderManager extends JCycloneStageBase {
             getNextStage().enqueue(new JMSStageOutput(rejection,
                     OrderManagementSystem.getOMS().getJmsOutputInfo()));
         } catch(SinkException ex) {
-            LoggerAdapter.error("Failed while sending a message", ex, this);
-            throw new MarketceteraEventHandlerException("Failed while sending a message", ex);
+            LoggerAdapter.error(MessageKey.JMS_SEND_ERROR.getLocalizedMessage(), ex, this);
+            throw new MarketceteraEventHandlerException(MessageKey.JMS_SEND_ERROR.getLocalizedMessage(), ex);
         }
     }
 
@@ -244,7 +244,7 @@ public class OrderManager extends JCycloneStageBase {
             int fieldID = Integer.parseInt(realFieldName);
             inOrderModifier.addDefaultField(fieldID, inProps.get(propName, ""), fieldType);
         } catch (Exception ex) {
-            LoggerAdapter.error("Ignoring default propName "+propName + " since int value couldn't be parsed", ex, this);
+            LoggerAdapter.error(OMSMessageKey.ERROR_INIT_PROPNAME_IGNORE.getLocalizedMessage(propName), ex, this);
         }
     }
 

@@ -1,15 +1,15 @@
 package org.marketcetera.oms;
 
-import java.io.FileNotFoundException;
-import java.util.Properties;
-
-import javax.jms.JMSException;
-
 import org.marketcetera.core.*;
 import org.marketcetera.jcyclone.JMSOutputInfo;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.QuickFIXInitiator;
 import quickfix.SessionID;
+
+import javax.jms.JMSException;
+import java.io.FileNotFoundException;
+import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -30,6 +30,7 @@ public class OrderManagementSystem extends ApplicationBase implements OrderManag
 
     private static final String LOGGER_NAME = OrderManagementSystem.class.getName();
     protected static final String CONFIG_FILE_NAME = "oms";
+    public static final MessageBundleInfo OMS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("oms", "oms_messages");
 
     protected static OrderManagementSystem sOMS = null;
     protected ConfigData mainProps;
@@ -49,6 +50,10 @@ public class OrderManagementSystem extends ApplicationBase implements OrderManag
         FIXDataDictionaryManager.setFIXVersion(QuickFIXInitiator.FIX_VERSION_DEFAULT);
     }
 
+    protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
+        bundles.add(OMS_MESSAGE_BUNDLE_INFO);
+    }
+
     public static OrderManagementSystem createOMS(String cfgFile) throws ConfigFileLoadingException {
         if(sOMS == null){
             sOMS = new OrderManagementSystem(cfgFile);
@@ -66,21 +71,21 @@ public class OrderManagementSystem extends ApplicationBase implements OrderManag
 
         try {
             sOMS.init();
-            LoggerAdapter.info("Starting.", LOGGER_NAME);
+            LoggerAdapter.info(MessageKey.APP_START.getLocalizedMessage("OMS"), LOGGER_NAME);
             sOMS.run();
             Thread.currentThread().join();
         } catch (JMSException jmse) {
-            LoggerAdapter.error("JMS error", jmse, LOGGER_NAME);
+            LoggerAdapter.error(MessageKey.JMS_ERROR.getLocalizedMessage(), jmse, LOGGER_NAME);
         } catch (quickfix.ConfigError ce) {
-            LoggerAdapter.error("Config error", ce, LOGGER_NAME);
+            LoggerAdapter.error(MessageKey.CONFIG_ERROR.getLocalizedMessage(), ce, LOGGER_NAME);
         } catch (FileNotFoundException fnf) {
-            LoggerAdapter.error("Config file not found: ", fnf, LOGGER_NAME);
+            LoggerAdapter.error(MessageKey.CONFIG_FILE_DNE.getLocalizedMessage(), fnf, LOGGER_NAME);
         } catch (ClassNotFoundException cnfe) {
-            LoggerAdapter.error("Class not found ", cnfe, LOGGER_NAME);
+            LoggerAdapter.error(MessageKey.CLASS_DNE.getLocalizedMessage(), cnfe, LOGGER_NAME);
         } catch (Exception ex) {
-            LoggerAdapter.error("Error", ex, LOGGER_NAME);
+            LoggerAdapter.error(MessageKey.ERROR.getLocalizedMessage(), ex, LOGGER_NAME);
         } finally {
-            LoggerAdapter.info("Exiting application.", LOGGER_NAME);
+            LoggerAdapter.info(MessageKey.APP_EXIT.getLocalizedMessage(), LOGGER_NAME);
         }
     }
 
