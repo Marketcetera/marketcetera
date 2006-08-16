@@ -3,14 +3,13 @@ package org.marketcetera.photon;
 import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.StringFieldEditor;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.preferences.UrlFieldEditor;
 import org.marketcetera.quickfix.ConnectionConstants;
 
 /**
@@ -27,7 +26,7 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
 	
     private ScopedPreferenceStore mPreferences;
 
-	private ServerUrlFieldEditor serverUrlEditor;
+	private UrlFieldEditor serverUrlEditor;
 
     /**
      * Creates a new JMSPreferencePage and a {@link ScopedPreferenceStore} to 
@@ -70,7 +69,7 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
                 getFieldEditorParent()
                 );
         addField(stringEditor);
-        serverUrlEditor = new ServerUrlFieldEditor(
+        serverUrlEditor = new UrlFieldEditor(
 		                ConnectionConstants.JMS_URL_KEY, "Server URL",
 		                getFieldEditorParent()
 		                );
@@ -99,57 +98,4 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
         return true;
     }
 
-}
-
-/**
- * String field editor for a Server URL with syntactic validation of the URL.
- * <p>
- * Can be easily refactored into a generic URL validating editor by externalizing the error message text.
- * </p>
- *  
- * @author alissovski
- */
-class ServerUrlFieldEditor extends StringFieldEditor
-{
-	private boolean isValid = false;
-	
-	
-	public ServerUrlFieldEditor(String name, String labelText, Composite parent) {
-		super(name, labelText, parent);
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.StringFieldEditor#isValid()
-	 */
-	@Override
-	public boolean isValid() {
-		return isValid;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.preference.StringFieldEditor#refreshValidState()
-	 */
-	@Override
-	protected void refreshValidState() {
-		boolean oldValid = isValid;
-		isValid = checkUrlSyntax(getTextControl().getText());
-		if (!isValid)
-			showErrorMessage("The Server URL is not a valid URL.");
-		else
-			clearErrorMessage();
-		
-		if (oldValid != isValid)
-			fireValueChanged(FieldEditor.IS_VALID, new Boolean(oldValid), new Boolean(isValid));  // causes the framework to update the enabled state of the Ok and Apply buttons
-	}
-	
-	/**
-	 * Checks whether a given string represents a syntactically valid URL. Ignores leading and trailing
-	 * whitespace.
-	 * 
-	 * @param url a URL string; cannot be <code>null</code>.
-	 * @return <code>true</code> if the string is a syntactically valid URL; <code>false</code> otherwise.
-	 */
-	private boolean checkUrlSyntax(String url) {
-		return url.trim().startsWith("tcp://");  // todo:temp until we add a plug-in wrapping org.apache.commons.validator and vet out licensing
-	}
 }
