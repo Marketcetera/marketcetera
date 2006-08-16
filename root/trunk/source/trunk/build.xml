@@ -37,7 +37,7 @@
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.ui.views_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.quickfixj_1.0.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.skife.kasparov.csv_1.0.0.jar"/>
-        <pathelement location="${ECLIPSE_HOME}plugins/org.marketcetera.core_0.1.0.jar"/>
+        <pathelement location="${ECLIPSE_HOME}plugins/org.marketcetera.core_0.1.1.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.ui.console_3.1.100.v20060605.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/com.publicobject.glazedlists_1.6.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}plugins/org.eclipse.core.resources_3.2.0.v20060603.jar"/>
