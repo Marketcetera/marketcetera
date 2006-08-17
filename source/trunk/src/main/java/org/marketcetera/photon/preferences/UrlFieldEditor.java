@@ -14,7 +14,7 @@ import org.marketcetera.core.ClassVersion;
  *  
  * @author alissovski
  */
-@ClassVersion("$Id: $")
+@ClassVersion("$Id$")
 public class UrlFieldEditor extends StringFieldEditor
 {
 	private boolean isValid = false;
