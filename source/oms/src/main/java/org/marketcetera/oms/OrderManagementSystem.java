@@ -16,12 +16,13 @@ import java.util.Properties;
  * OrderManagementSystem
  * Main entrypoint for sending orders and receiving responses from a FIX engine
  *
+ * <pre>
  * The OMS consists of the following JCyclone configuration:
  *
  * FIXSessionAdapterSource  ------|
  *                                |--> OrderManager ---> OutputStage
  * JMSAdapterSource         ------|
- *
+ *</pre>
  * @author gmiller
  * $Id$
  */
