@@ -73,14 +73,14 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.marketcetera.photon.application"
-            description="Marketcetera Photon 0.1.1 (Plugin)"
-            name="Photon 0.1.1">
+            description="Marketcetera Photon 0.1.2 (Plugin)"
+            name="Photon 0.1.2">
          <property
                name="aboutImage"
                value="icons/marketcetera/logo-150x55.gif"/>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0A;&#x0A;Version: 0.1.1&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 0.1.2&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
                value="photon-config.ini"/>
@@ -89,13 +89,13 @@
                value="icons/marketcetera/photon-16x16.gif,icons/marketcetera/photon-32x32.gif,icons/marketcetera/photon-48x48.gif,icons/marketcetera/photon-64x64.gif,icons/marketcetera/photon-128x128.gif"/>
          <property
                name="startupProgressRect"
-               value="10,205,364,10"/>
+               value="0,0,364,10"/>
          <property
                name="startupForegroundColor"
                value="000000"/>
          <property
                name="startupMessageRect"
-               value="0,0,0,0"/>
+               value="0,0,200,10"/>
       </product>
    </extension>
    <extension

@@ -52,7 +52,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 	 * 
 	 * @param adaptableObject
 	 *            the object for which to get an adapter
-	 * @param adaptableType
+	 * @param adapterType
 	 *            the class (or superclass or interface) of the adapter to get
 	 * @return an adapter that is an instance of a subclass of adapterType, or
 	 *         null if adaptableObject or adapterType are unsupported.
