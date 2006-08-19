@@ -30,10 +30,10 @@ public class ClOrdIDComparator implements Comparator<MessageHolder> {
 	 * 
 	 * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
 	 */
-	public int compare(MessageHolder arg0, MessageHolder arg1) {
+	public int compare(MessageHolder msg0, MessageHolder msg1) {
 		try {
-			Message message0 = arg0.getMessage();
-			Message message1 = arg1.getMessage();
+			Message message0 = msg0.getMessage();
+			Message message1 = msg1.getMessage();
 	
 			if (!message0.isSetField(ClOrdID.FIELD) || !message1.isSetField(ClOrdID.FIELD)){
 				return message0.isSetField(ClOrdID.FIELD) ? 1 : 0;

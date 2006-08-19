@@ -9,7 +9,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.FeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.jms.JMSAdapter;
-import org.marketcetera.quickfix.QuickFIXDescriptor;
 
 /**
  * The JMSConnector encapsulates the connection to a JMS message server.
