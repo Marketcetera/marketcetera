@@ -63,7 +63,7 @@ public class Parser {
      * @author gmiller
      *
      */
-    enum CommandImage {
+    public enum CommandImage {
         BUY("B"),
         SELL("S"),
         SELL_SHORT("SS"),
@@ -105,7 +105,7 @@ public class Parser {
      * @author gmiller
      *
      */
-    enum TimeInForceImage {
+    public enum TimeInForceImage {
         DAY("DAY"), // day
         GTC("GTC"), // good-til-cancel
         FOK("FOK"), // fill-or-kill
@@ -118,6 +118,7 @@ public class Parser {
         TimeInForceImage(String anImage) {
             this.image = anImage;
         }
+        
     }
 
     /**
