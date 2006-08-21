@@ -1,7 +1,6 @@
 package org.marketcetera.photon;
 
 import javax.jms.JMSException;
-import javax.jms.MessageListener;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IPlatformRunnable;
@@ -178,13 +177,16 @@ public class Application implements IPlatformRunnable {
 	 * @see JMSConnector#sendToQueue(Message)
 	 * 
 	 * @param message
+	 * @return <code>true</code> if the message was successfully sent to the queue; <code>false</code> otherwise.
 	 * @throws JMSException
 	 */
-	public static void sendToQueue(Message message) throws JMSException {
+	public static boolean sendToQueue(Message message) throws JMSException {
 		if (jmsConnector.getFeedStatus() == FeedStatus.AVAILABLE){
 			jmsConnector.sendToQueue(message);
+			return true;
 		} else {
 			Application.getMainConsoleLogger().error("Could not send message to queue ");
+			return false;
 		}
 	}
 

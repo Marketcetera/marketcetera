@@ -1,5 +1,6 @@
 package org.marketcetera.photon;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.CommandEvent;
 import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.parser.Parser;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
@@ -32,9 +34,13 @@ import quickfix.field.ExecID;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
+import quickfix.field.TimeInForce;
 
 /**
  * OrderManager is the main repository for business logic.  It can be considered
@@ -206,9 +212,6 @@ public class OrderManager {
 	}
 
 
-
-
-
 	public void handleInternalMessage(Message aMessage) throws FieldNotFound,
 			MarketceteraException, JMSException {
 		fireOrderActionOccurred(aMessage);
@@ -219,10 +222,7 @@ public class OrderManager {
 			cancelOneOrder(aMessage);
 		} else if (FIXMessageUtil.isCancelReplaceRequest(aMessage)) {
 			cancelReplaceOneOrder(aMessage);
-		} else if (FIXMessageUtil.isCancelRequest(aMessage)) {
-			cancelOneOrder(aMessage);
 		}
-
 	}
 
 	protected void addNewOrder(Message aMessage) throws FieldNotFound,
@@ -231,14 +231,15 @@ public class OrderManager {
 		try {
 			fixMessageHistory.addOutgoingMessage(aMessage);
 
-			sendToApplicationQueue(aMessage);
+			boolean sentToQueue = sendToApplicationQueue(aMessage);
+			
+			if (sentToQueue)
+				logAddNewOrder(aMessage); 
 		} catch (JMSException ex) {
 			internalMainLogger.error(
 					"Error sending message to JMS", ex);
 		}
 	}
-
-
 
 	protected void cancelReplaceOneOrder(Message cancelMessage)
 			throws NoMoreIDsException, FieldNotFound, JMSException {
@@ -252,7 +253,10 @@ public class OrderManager {
 
 			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			try {
-				sendToApplicationQueue(cancelMessage);
+				boolean sentToQueue = sendToApplicationQueue(cancelMessage);
+				
+				if (sentToQueue)
+					logCancelOneOrder(cancelMessage);  // TEMP reuse the one for pure cancel until we do cancel _and_ replace here 
 			} catch (JMSException e) {
 				internalMainLogger.error("Error sending cancel/replace for order "+clOrdId, e);
 			}
@@ -267,7 +271,7 @@ public class OrderManager {
 		cancelOneOrderByClOrdID(clOrdId);
 	}
 	
-	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
+	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException, FieldNotFound {
 		Message latestMessage = fixMessageHistory.getLatestExecutionReport(clOrdID);
 		if (latestMessage == null){
 			latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
@@ -290,10 +294,73 @@ public class OrderManager {
 
 			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			try {
-				sendToApplicationQueue(cancelMessage);
+				boolean sentToQueue = sendToApplicationQueue(cancelMessage);
+				
+				if (sentToQueue)
+					logCancelOneOrder(cancelMessage);
 			} catch (JMSException e) {
 				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
 			}
+	}
+
+	private void logAddNewOrder(Message message) throws FieldNotFound {
+		String command = MessageFormat.format(
+				"{0} {1} {2} {3} {4}",  //$NON-NLS-1$
+				new Object[] {
+					toSide(message.getChar(Side.FIELD)),
+					message.getString(OrderQty.FIELD),
+					message.getString(Symbol.FIELD),
+					message.getString(Price.FIELD),
+					toTimeInForce(message.getChar(TimeInForce.FIELD))});
+		logOrderCommand(command);
+	}
+
+	private void logCancelOneOrder(Message message) throws FieldNotFound {
+		String command = MessageFormat.format(
+				"C {0}",  //$NON-NLS-1$
+				new Object[] {
+						message.getString(OrigClOrdID.FIELD)});
+		logOrderCommand(command);
+	}
+
+	private void logOrderCommand(String command)
+	{
+		String logMsg = "Order sent: " + command; 
+		internalMainLogger.info(logMsg);
+	}
+	
+	private String toTimeInForce(char fixTimeInForce) {
+		switch(fixTimeInForce) {
+		case TimeInForce.DAY:
+			return Parser.TimeInForceImage.DAY.image;
+		case TimeInForce.GOOD_TILL_CANCEL:
+			return Parser.TimeInForceImage.GTC.image;
+		case TimeInForce.FILL_OR_KILL:
+			return Parser.TimeInForceImage.FOK.image;
+		case TimeInForce.AT_THE_CLOSE:
+			return Parser.TimeInForceImage.CLO.image;
+		case TimeInForce.AT_THE_OPENING:
+			return Parser.TimeInForceImage.OPG.image;
+		case TimeInForce.IMMEDIATE_OR_CANCEL:
+			return Parser.TimeInForceImage.IOC.image;
+		default:
+			return "" + fixTimeInForce; 
+		}
+	}
+	
+	private String toSide(char fixSide) {
+		switch(fixSide) {
+		case Side.BUY:
+			return Parser.CommandImage.BUY.image;
+		case Side.SELL:
+			return Parser.CommandImage.SELL.image;
+		case Side.SELL_SHORT:
+			return Parser.CommandImage.SELL_SHORT.image;
+		case Side.SELL_SHORT_EXEMPT:
+			return Parser.CommandImage.SELL_SHORT_EXEMPT.image;
+		default:
+			return "" + fixSide; 
+		}
 	}
 
 	private void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage){
@@ -371,9 +438,9 @@ public class OrderManager {
 	}
 
 
-	protected void sendToApplicationQueue(Message message) throws JMSException
+	protected boolean sendToApplicationQueue(Message message) throws JMSException
 	{
-		Application.sendToQueue(message);
+		return Application.sendToQueue(message);
 	}
 	
 	/**

@@ -93,8 +93,9 @@ public class OrderManagerTest extends TestCase {
 		queuedMessages = new LinkedList<Message>();
 		orderManager = new OrderManager(idFactory, messageHistory) {
 			@Override
-			protected void sendToApplicationQueue(Message message) throws JMSException {
+			protected boolean sendToApplicationQueue(Message message) throws JMSException {
 				queuedMessages.add(message);
+				return true;
 			}
 		};
 	}
