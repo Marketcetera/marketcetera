@@ -33,6 +33,7 @@ import quickfix.field.CxlRejReason;
 import quickfix.field.ExecID;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
@@ -304,15 +305,33 @@ public class OrderManager {
 	}
 
 	private void logAddNewOrder(Message message) throws FieldNotFound {
+
+		String priceString = getPriceString(message);
 		String command = MessageFormat.format(
 				"{0} {1} {2} {3} {4}",  //$NON-NLS-1$
 				new Object[] {
 					toSide(message.getChar(Side.FIELD)),
 					message.getString(OrderQty.FIELD),
 					message.getString(Symbol.FIELD),
-					message.getString(Price.FIELD),
+					priceString,
 					toTimeInForce(message.getChar(TimeInForce.FIELD))});
 		logOrderCommand(command);
+	}
+
+	private String getPriceString(Message message) {
+		String priceString = "";
+		try {
+			priceString = message.getString(Price.FIELD);
+		} catch (FieldNotFound e) {
+			try {
+				if (OrdType.MARKET == message.getChar(OrdType.FIELD)){
+					priceString = Parser.PriceImage.MKT.toString();
+				}
+			} catch (FieldNotFound fnf){
+				//do nothing
+			}
+		}
+		return priceString;
 	}
 
 	private void logCancelOneOrder(Message message) throws FieldNotFound {

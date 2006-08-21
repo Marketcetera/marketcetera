@@ -88,7 +88,7 @@ public class Parser {
      * @author gmiller
      *
      */
-    enum PriceImage {
+    public enum PriceImage {
         MKT("MKT");
         public String image;
 
