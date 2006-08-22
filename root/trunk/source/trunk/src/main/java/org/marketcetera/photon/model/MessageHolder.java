@@ -5,7 +5,7 @@ import org.marketcetera.core.ClassVersion;
 import quickfix.Message;
 
 @ClassVersion("$Id$")
-public class MessageHolder {
+public class MessageHolder implements Comparable {
 	private Message message;
 	private int messageReference;
 
@@ -25,5 +25,12 @@ public class MessageHolder {
 	public int getMessageReference()
 	{
 		return messageReference;
+	}
+
+	// implementing Comparable is necessary simply to appease glazed lists which otherwise 
+	// currently blows up when a new message is added to the list with a natural sort order 
+	// (i.e., no comparator)
+	public int compareTo(Object o) {  
+		return 0;
 	}
 }
