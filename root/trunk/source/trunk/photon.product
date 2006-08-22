@@ -24,8 +24,8 @@ Visit http://www.marketcetera.org
 
    <splash
       location="org.marketcetera.photon"
-      startupProgressRect="0,0,364,10"
-      startupMessageRect="0,0,200,10"
+      startupProgressRect="0,0,404,10"
+      startupMessageRect="5,15,404,20"
       startupForegroundColor="000000" />
    <launcher name="photon.exe">
       <macosx icon="/org.marketcetera.photon/icons/marketcetera/photon.icns"/>
