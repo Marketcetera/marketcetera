@@ -89,13 +89,7 @@
                value="icons/marketcetera/photon-16x16.gif,icons/marketcetera/photon-32x32.gif,icons/marketcetera/photon-48x48.gif,icons/marketcetera/photon-64x64.gif,icons/marketcetera/photon-128x128.gif"/>
          <property
                name="startupProgressRect"
-               value="0,0,404,10"/>
-         <property
-               name="startupForegroundColor"
-               value="000000"/>
-         <property
-               name="startupMessageRect"
-               value="5,15,404,20"/>
+               value="20,204,364,10"/>
       </product>
    </extension>
    <extension
