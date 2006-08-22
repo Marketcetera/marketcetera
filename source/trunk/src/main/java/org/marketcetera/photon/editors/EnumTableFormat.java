@@ -66,7 +66,7 @@ public class EnumTableFormat implements WritableTableFormat, AdvancedTableFormat
 			Integer fieldID = fieldMap.get(columns[arg1].toString());
 			if (fieldID != null) {
 				try {
-					String value;
+					String value = "";
 					if (dataDictionary.isHeaderField(fieldID)) {
 						value = message.getHeader().getString(fieldID);
 					} else if (dataDictionary.isTrailerField(fieldID)) {
@@ -74,16 +74,18 @@ public class EnumTableFormat implements WritableTableFormat, AdvancedTableFormat
 					} else {
 						value = message.getString(fieldID);
 					}
+					
 					if (dataDictionary.hasFieldValue(fieldID)) {
-						return FIXDataDictionaryManager.getHumanFieldValue(fieldID, value);
+						value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, value);
 					}
+					
 					return value;
 				} catch (FieldNotFound e) {
-					return null;
+					return "";
 				}
 			}
 		}
-		return null;
+		return "";
 	}
 	
 	public Class getColumnClass(int arg0) {

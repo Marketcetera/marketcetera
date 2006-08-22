@@ -29,8 +29,9 @@ import org.marketcetera.photon.PhotonAdapterFactory;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
 
-import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.swt.EventTableViewer;
+import ca.odell.glazedlists.swt.TableComparatorChooser;
 
 /**
  * OrderHistoryEditor is a user-interface component displaying
@@ -168,13 +169,15 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 
-	private EventList<MessageHolder> allMessages;
+	private SortedList<MessageHolder> allMessages;
 	
-	private EventList<MessageHolder> filteredMessages;
+	private SortedList<MessageHolder> filteredMessages;
 
-	private EventList<MessageHolder> fillMessages;
+	private SortedList<MessageHolder> fillMessages;
 	
-	private EventList<MessageHolder> openOrderMessages;
+	private SortedList<MessageHolder> openOrderMessages;
+
+	private SortedList<MessageHolder> averagePriceList;
 
 	private IWorkbenchWindow window;
 	
@@ -182,10 +185,6 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	private static final int FILLS_VIEWER_INDEX = 1;
 	private static final int AVERAGE_PRICE_VIEWER_INDEX = 2;
 	private static final int MESSAGES_VIEWER_INDEX = 3;
-
-
-	private EventList<MessageHolder> averagePriceList;
-
 
 	private FIXMessageHistory messageHistory;
 
@@ -220,7 +219,8 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
         openOrderViewer = new EventTableViewer(openOrderMessages, openOrderTable, new EnumTableFormat(OpenOrderColumns.values()));
         openOrderSelectionProvider = new ViewerSelectionAdapter(openOrderViewer);
         openOrderTable = formatFillTable(openOrderTable);
-
+        hookTableSorting(openOrderViewer, openOrderMessages);
+        
         openOrderTable.setBackground(
         		openOrderTable.getDisplay().getSystemColor(
 						SWT.COLOR_INFO_BACKGROUND));
@@ -245,6 +245,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		fillsViewer = new EventTableViewer(fillMessages, fillTable, new EnumTableFormat(FillColumns.values()));
 		fillsSelectionProvider = new ViewerSelectionAdapter(fillsViewer);
 		fillTable = formatFillTable(fillTable);
+		hookTableSorting(fillsViewer, fillMessages);
 
         fillTable.setBackground(
         		fillTable.getDisplay().getSystemColor(
@@ -261,7 +262,6 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	}
 
-	
 	/**
 	 * Creates page 1 of the multi-page editor, which contains the list of messages
 	 */
@@ -275,6 +275,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		messagesViewer = new EventTableViewer(filteredMessages, messageTable, new EnumTableFormat(MessageColumns.values()));
 		messagesSelectionProvider = new ViewerSelectionAdapter(messagesViewer);
 		messageTable = formatFillTable(messageTable);
+        hookTableSorting(messagesViewer, filteredMessages);
 
         messageTable.setBackground(
         		messageTable.getDisplay().getSystemColor(
@@ -291,6 +292,9 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	}
 
+	private void hookTableSorting(EventTableViewer viewer, SortedList<MessageHolder> messages) {
+		new TableComparatorChooser(viewer, messages, false);
+	}
 
 	/**
 	 * Creates page 2 of the multi-page editor, which contains the list of average price fills
@@ -305,6 +309,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 		averagePriceViewer = new EventTableViewer(averagePriceList, averagePriceTable, new EnumTableFormat(AvgPriceColumns.values()));
 		averagePriceSelectionProvider = new ViewerSelectionAdapter(averagePriceViewer);
 		averagePriceTable = formatFillTable(averagePriceTable);
+		hookTableSorting(averagePriceViewer, averagePriceList);
 
         averagePriceTable.setBackground(
         		averagePriceTable.getDisplay().getSystemColor(
@@ -430,11 +435,11 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 					"Invalid Input: Must be IFileEditorInput");
 		} else {
 			messageHistory = ((OrderHistoryInput) editorInput).getHistory();
-			allMessages = messageHistory.getAllMessages();
-			filteredMessages = messageHistory.getFilteredMessages();
-			fillMessages = messageHistory.getFills();
-			averagePriceList = messageHistory.getAveragePriceHistory();
-			openOrderMessages = messageHistory.getOpenOrders();
+			allMessages = new SortedList<MessageHolder>(messageHistory.getAllMessages());
+			filteredMessages = new SortedList<MessageHolder>(messageHistory.getFilteredMessages());
+			fillMessages = new SortedList<MessageHolder>(messageHistory.getFills());
+			averagePriceList = new SortedList<MessageHolder>(messageHistory.getAveragePriceHistory());
+			openOrderMessages = new SortedList<MessageHolder>(messageHistory.getOpenOrders());
 			
 //			allMessages.add(new IncomingMessageHolder(
 //					FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("TESTSYM"))
