@@ -14,7 +14,7 @@ import java.util.Set;
 /**
  * FIX entrypoint - registers a FIX connection, listens for incoming
  * FIX requests
- * 
+ *
  * @author gmiller
  * @version $Id$
  */
@@ -68,23 +68,22 @@ public class QuickFIXInitiator implements quickfix.Application
         mMessageFactory = descriptor.getMessageFactory();
 
         // populate the default FIX session settings
-        AccessViolator violator = new AccessViolator(SessionSettings.class);
-        SessionID defaultSessionID = (SessionID) violator.getField("DEFAULT_SESSION_ID", null);
-        SessionSettings settings = new SessionSettings();
-        settings.setString(defaultSessionID, "ConnectionType","initiator");
-        settings.setLong(defaultSessionID, "HeartBtInt",30);
-        settings.setString(defaultSessionID, "FileStorePath","store");
-        settings.setString(defaultSessionID, "StartTime","00:00:00");
-        settings.setString(defaultSessionID, "EndTime","00:00:00");
-        settings.setString(defaultSessionID, Session.SETTING_DATA_DICTIONARY, dataDictionary);
-        settings.setString(defaultSessionID, "UseDataDictionary",useDataDictionary);
-        settings.setLong(defaultSessionID, "ReconnectInterval",15);
-        settings.setString(defaultSessionID, Session.SETTING_RESET_ON_LOGOUT, resetOnLogout);
-        settings.setString(defaultSessionID, Session.SETTING_RESET_ON_DISCONNECT, resetOnDisconnect);
-        settings.setString(defaultSessionID, Session.SETTING_RESET_WHEN_INITIATING_LOGON, sendResetSeqNumFlag);
+        Map<String, Object> defaults = new HashMap<String, Object>();
+        defaults.put("ConnectionType","initiator");
+        defaults.put("HeartBtInt",Long.toString(30));
+        defaults.put("FileStorePath","store");
+        defaults.put("StartTime","00:00:00");
+        defaults.put("EndTime","00:00:00");
+        defaults.put(Session.SETTING_DATA_DICTIONARY, dataDictionary);
+        defaults.put("UseDataDictionary",useDataDictionary);
+        defaults.put("ReconnectInterval",Long.toString(15));
+        defaults.put(Session.SETTING_RESET_ON_LOGOUT, resetOnLogout);
+        defaults.put(Session.SETTING_RESET_ON_DISCONNECT, resetOnDisconnect);
+        defaults.put(Session.SETTING_RESET_WHEN_INITIATING_LOGON, sendResetSeqNumFlag);
 
-        settings.setString(defaultSessionID, SOCKET_CONNECT_HOST,mFixServerAddress);
-        settings.setLong(defaultSessionID, SOCKET_CONNECT_PORT,fixServerPort);
+        defaults.put(SOCKET_CONNECT_HOST,mFixServerAddress);
+        defaults.put(SOCKET_CONNECT_PORT,Long.toString(fixServerPort));
+
 
         String [] keys = config.keys();
         for (String key : keys) {
@@ -92,7 +91,7 @@ public class QuickFIXInitiator implements quickfix.Application
             {
                 String suffix = key.substring(ConnectionConstants.FIX_SERVER_ADDRESS.length() + 1);
                 String newKey = SOCKET_CONNECT_HOST + suffix;
-                settings.setString(defaultSessionID, newKey, config.get(key, ""));
+                defaults.put(newKey, config.get(key, ""));
             }
         }
         for (String key : keys) {
@@ -100,9 +99,13 @@ public class QuickFIXInitiator implements quickfix.Application
             {
                 String suffix = key.substring(ConnectionConstants.FIX_SERVER_PORT.length() + 1);
                 String newKey = SOCKET_CONNECT_PORT + suffix;
-                settings.setString(defaultSessionID, newKey, config.get(key, ""));
+                defaults.put(newKey, config.get(key, ""));
             }
         }
+
+        SessionSettings settings = new SessionSettings();
+        // this poorly named set method sets the defaults for the session settings
+        settings.set(defaults);
 
         SessionID id = new SessionID(mCurFixVersion, senderCompID, targetCompID, "");
         settings.setString(id, "BeginString", mCurFixVersion);
