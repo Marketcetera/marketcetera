@@ -1,18 +1,34 @@
 package org.marketcetera.photon.views;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.MessageFormat;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
+import org.eclipse.swt.browser.LocationEvent;
+import org.eclipse.swt.browser.LocationListener;
+import org.eclipse.swt.browser.StatusTextEvent;
+import org.eclipse.swt.browser.StatusTextListener;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.PhotonPlugin;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.widgets.Label;
 
 @ClassVersion("$Id$")
-public class WebBrowserView extends ViewPart {
+public class WebBrowserView extends ViewPart implements StatusTextListener, LocationListener {
 
 	public static String ID = "org.marketcetera.photon.views.WebBrowserView"; //$NON-NLS-1$
 
@@ -21,7 +37,23 @@ public class WebBrowserView extends ViewPart {
 
 	private Browser browser;
 
-	private String location;
+	private String location;  //  @jve:decl-index=0:
+
+	private FormToolkit formToolkit;
+
+	private Composite top;
+
+	private Composite controlsComposite = null;
+
+	private Button backButton = null;
+
+	private Button forwardButton = null;
+
+	private Text addressText = null;
+
+	private Button goButton = null;
+
+	private Label statusLabel = null;
 
 	public WebBrowserView() {
 		super();
@@ -42,13 +74,64 @@ public class WebBrowserView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
+		System.out.println(parent.getDisplay() == Display.getCurrent());
+        GridData statusLabelGridData = new GridData();
+        statusLabelGridData.horizontalAlignment = GridData.FILL;
+        statusLabelGridData.grabExcessHorizontalSpace = true;
+        statusLabelGridData.horizontalIndent = 3;
+        statusLabelGridData.verticalAlignment = GridData.CENTER;
+        GridLayout gridLayout = new GridLayout();
+        gridLayout.marginWidth = 0;
+        gridLayout.verticalSpacing = 0;
+        gridLayout.horizontalSpacing = 5;
+        gridLayout.marginHeight = 0;
+        GridData browserGridData = new GridData();
+        browserGridData.grabExcessHorizontalSpace = true;
+        browserGridData.verticalAlignment = GridData.FILL;
+        browserGridData.grabExcessVerticalSpace = true;
+        browserGridData.horizontalAlignment = GridData.FILL;
+        top = new Composite(parent, SWT.NONE);
+        
+		createControlsComposite();
+
+		top.setLayout(gridLayout);
+		browser = new Browser(top, SWT.NONE);
+		browser.setLayoutData(browserGridData);
+		statusLabel = new Label(top, SWT.NONE);
+		statusLabel.setText("Ready");
+		statusLabel.setLayoutData(statusLabelGridData);
+        
+		browser.addStatusTextListener(this);
+		browser.addLocationListener(this);
 		try {
-		browser = new Browser(parent, SWT.NONE);
-		if (location != null) {
-			browser.setUrl(location);
-		}
+			if (location != null) {
+				setUrl(location);
+			}
 		} catch (Throwable th){
 			th.printStackTrace();
+		}
+	}
+
+	private void go()
+	{
+		String newLocation = addressText.getText();
+		try {
+			new URL(newLocation);
+			setUrl(newLocation);
+		} catch (MalformedURLException e) {
+			// maybe it's a symbol
+			// just check to see if it's 10 characters or less
+			if (newLocation.length()>0 && newLocation.length()<=10){
+				browseToGoogleFinanceForSymbol(new MSymbol(newLocation));
+			}
+		}
+	}
+
+	private void setUrl(String newLocation) {
+		try {
+			browser.setUrl(newLocation);
+		} catch (Exception ex) {
+			statusLabel.setText("Error navigating to URL: "+ex.getMessage());
 		}
 	}
 
@@ -59,7 +142,7 @@ public class WebBrowserView extends ViewPart {
 	public void browseToGoogleFinanceForSymbol(MSymbol symbol) {
 		if (browser != null){
 			location = formatGoogleURL(symbol);
-			browser.setUrl(location);
+			setUrl(location);
 		}
 	}
 
@@ -67,6 +150,98 @@ public class WebBrowserView extends ViewPart {
 	public void setFocus() {
 		if (browser != null)
 			browser.setFocus();
+	}
+
+	/**
+	 * This method initializes formToolkit	
+	 * 	
+	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
+	 */
+	private FormToolkit getFormToolkit() {
+		if (formToolkit == null) {
+			formToolkit = new FormToolkit(Display.getCurrent());
+		}
+		return formToolkit;
+	}
+
+
+
+	/**
+	 * This method initializes controlsComposite	
+	 *
+	 */
+	private void createControlsComposite() {
+		GridData controlsCompositeGridData = new GridData();
+		controlsCompositeGridData.verticalAlignment = GridData.CENTER;
+		controlsCompositeGridData.grabExcessHorizontalSpace = true;
+		controlsCompositeGridData.horizontalAlignment = GridData.FILL;
+		GridData addressTextGridData = new GridData();
+		addressTextGridData.grabExcessHorizontalSpace = true;
+		addressTextGridData.verticalAlignment = GridData.CENTER;
+		addressTextGridData.horizontalAlignment = GridData.FILL;
+		controlsComposite = new Composite(top,SWT.NONE);
+		controlsComposite.setLayout(new GridLayout(4,false));
+		controlsComposite.setLayoutData(controlsCompositeGridData);
+		backButton = getFormToolkit().createButton(controlsComposite, null, SWT.PUSH|SWT.FLAT);
+		backButton.setImage(PhotonPlugin.getImageDescriptor(IImageKeys.BROWSER_BACK).createImage());
+		backButton.setEnabled(false);
+		backButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+				browser.back();
+			}
+		});
+		forwardButton = getFormToolkit().createButton(controlsComposite, null, SWT.PUSH|SWT.FLAT);
+		forwardButton.setImage(PhotonPlugin.getImageDescriptor(IImageKeys.BROWSER_FORWARD).createImage());
+		forwardButton.setEnabled(false);
+		forwardButton
+				.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+					public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+						browser.forward();
+					}
+				});
+		addressText = getFormToolkit().createText(controlsComposite, null, SWT.SINGLE | SWT.BORDER);
+		addressText.setLayoutData(addressTextGridData);
+		addressText.addKeyListener(new org.eclipse.swt.events.KeyAdapter() {
+			public void keyReleased(org.eclipse.swt.events.KeyEvent e) {
+				if (e.keyCode == SWT.CR){
+					go();
+				}
+			}
+		});
+		goButton = getFormToolkit().createButton(controlsComposite, null, SWT.PUSH|SWT.FLAT);
+		goButton.setImage(PhotonPlugin.getImageDescriptor(IImageKeys.BROWSER_GO).createImage());
+
+		goButton.addSelectionListener(new org.eclipse.swt.events.SelectionAdapter() {
+			public void widgetSelected(org.eclipse.swt.events.SelectionEvent e) {
+				go();
+			}
+		});
+	}
+
+
+
+	public void changed(StatusTextEvent event) {
+		statusLabel.setText(event.text);
+		checkButtons();
+	}
+
+
+
+	public void changed(LocationEvent event) {
+		addressText.setText(event.location);
+		checkButtons();		
+	}
+
+
+
+	public void changing(LocationEvent event) {
+		statusLabel.setText(event.location);
+		checkButtons();		
+	}
+
+	private void checkButtons() {
+		backButton.setEnabled(browser.isBackEnabled());
+		forwardButton.setEnabled(browser.isForwardEnabled());
 	}
 
 
