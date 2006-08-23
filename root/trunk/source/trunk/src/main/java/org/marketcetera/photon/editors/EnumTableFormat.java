@@ -11,7 +11,6 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 
@@ -93,7 +92,21 @@ public class EnumTableFormat implements WritableTableFormat, AdvancedTableFormat
 	}
 
 	public Comparator getColumnComparator(int arg0) {
-        return GlazedLists.caseInsensitiveComparator();
+        return new Comparator() {
+			public int compare(Object o1, Object o2) {
+				String s1 = (String) o1;
+				String s2 = (String) o2;
+				try {
+					Double d1 = Double.valueOf(s1);
+					Double d2 = Double.valueOf(s2);
+					return d1.compareTo(d2);
+				}
+				catch (NumberFormatException nfe) {  
+					// either value isn't a double, compare as strings
+					return s1.compareTo(s2);
+				}
+			}
+        };
 	}
 
 }
