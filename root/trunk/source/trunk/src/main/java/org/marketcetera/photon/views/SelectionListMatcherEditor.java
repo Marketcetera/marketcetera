@@ -34,7 +34,7 @@ public class SelectionListMatcherEditor extends
 //		this.factory = factory;
 //		this.selectedItems = selected;
 //		selectedItems.addListEventListener(new SelectionChangeEventList());
-		this.compositeMatcherEditor = new CompositeMatcherEditor(
+		this.compositeMatcherEditor = new CompositeMatcherEditor<MessageHolder>(
 				selected);
 		
 		this.compositeMatcherEditor.setMode(CompositeMatcherEditor.OR);

@@ -34,7 +34,7 @@ public class Application implements IPlatformRunnable {
 	private static final String CONNECTION_FACTORY_NAME_DEFAULT = "ConnectionFactory";
 	private static final String INCOMING_TOPIC_NAME_DEFAULT = "oms-messages";
 	private static final String OUTGOING_QUEUE_NAME_DEFAULT = "oms-commands";
-	public static String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
+	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
 	
 	private static Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);

@@ -169,7 +169,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 
 	private IAdapterFactory adapterFactory = new PhotonAdapterFactory();
 
-	private SortedList<MessageHolder> allMessages;
+	//private SortedList<MessageHolder> allMessages;
 	
 	private SortedList<MessageHolder> filteredMessages;
 
@@ -333,27 +333,27 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 	}
 
     private Table createMessageTable(Composite parent) {
-        Table issuesTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL);
-        GridData issuesTableLayout = new GridData();
-        issuesTableLayout.horizontalSpan = 2;
-        issuesTableLayout.verticalSpan = 1;
-        issuesTableLayout.horizontalAlignment = GridData.FILL;
-        issuesTableLayout.verticalAlignment = GridData.FILL;
-        issuesTableLayout.grabExcessHorizontalSpace = true;
-        issuesTableLayout.grabExcessVerticalSpace = true;
-        issuesTable.setLayoutData(issuesTableLayout);
-        return issuesTable;
+        Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL);
+        GridData messageTableLayout = new GridData();
+        messageTableLayout.horizontalSpan = 2;
+        messageTableLayout.verticalSpan = 1;
+        messageTableLayout.horizontalAlignment = GridData.FILL;
+        messageTableLayout.verticalAlignment = GridData.FILL;
+        messageTableLayout.grabExcessHorizontalSpace = true;
+        messageTableLayout.grabExcessVerticalSpace = true;
+        messageTable.setLayoutData(messageTableLayout);
+        return messageTable;
     }
 
-    private Table formatFillTable(Table issuesTable) {
-        issuesTable.getVerticalBar().setEnabled(true);
-//        issuesTable.getColumn(0).setWidth(30);
-//        issuesTable.getColumn(1).setWidth(50);
-//        issuesTable.getColumn(2).setWidth(46);
-//        issuesTable.getColumn(3).setWidth(50);
-//        issuesTable.getColumn(4).setWidth(60);
-//        issuesTable.getColumn(5).setWidth(250);
-        return issuesTable;
+    private Table formatFillTable(Table messageTable) {
+        messageTable.getVerticalBar().setEnabled(true);
+//        messageTable.getColumn(0).setWidth(30);
+//        messageTable.getColumn(1).setWidth(50);
+//        messageTable.getColumn(2).setWidth(46);
+//        messageTable.getColumn(3).setWidth(50);
+//        messageTable.getColumn(4).setWidth(60);
+//        messageTable.getColumn(5).setWidth(250);
+        return messageTable;
     }
 
 	/**
@@ -435,7 +435,7 @@ public class OrderHistoryEditor extends MultiPageEditorPart {
 					"Invalid Input: Must be IFileEditorInput");
 		} else {
 			messageHistory = ((OrderHistoryInput) editorInput).getHistory();
-			allMessages = new SortedList<MessageHolder>(messageHistory.getAllMessages());
+			//allMessages = new SortedList<MessageHolder>(messageHistory.getAllMessages());
 			filteredMessages = new SortedList<MessageHolder>(messageHistory.getFilteredMessages());
 			fillMessages = new SortedList<MessageHolder>(messageHistory.getFills());
 			averagePriceList = new SortedList<MessageHolder>(messageHistory.getAveragePriceHistory());

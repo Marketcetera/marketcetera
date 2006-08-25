@@ -112,6 +112,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 
     }
     
+	@SuppressWarnings("unchecked")
 	private void initContent() {
         accountMatchers.add(new FIXMatcherEditor<String>(Account.FIELD, null, "<NO ACCOUNT>"));
 
@@ -120,6 +121,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 	}
 
 
+	@SuppressWarnings("unchecked")
 	private void createMatcherEditors() {
 		topMatcherEditor = new CompositeMatcherEditor<MessageHolder>();
         threadedMatcherEditor = new ThreadedMatcherEditor<MessageHolder>(topMatcherEditor);
@@ -167,6 +169,7 @@ public class FiltersView extends ViewPart implements IOrderActionListener {
 		createFIXCheckbox(msgTypeGroup, matcherStore, MsgType.FIELD, MsgType.HEARTBEAT);
     }
 
+	@SuppressWarnings("unchecked")
 	private <T extends Comparable<T>> void createFIXCheckbox(Group ordStatusGroup, FIXCheckboxMatcherEditor matcherStore,
 			int fieldTag, T fieldValue) 
 	{

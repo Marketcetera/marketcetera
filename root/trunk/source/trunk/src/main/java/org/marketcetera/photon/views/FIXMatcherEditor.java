@@ -14,7 +14,7 @@ import ca.odell.glazedlists.matchers.Matcher;
 public class FIXMatcherEditor<FIX_TYPE extends Comparable<FIX_TYPE>> extends
 		AbstractMatcherEditor<MessageHolder> implements Comparable<FIXMatcherEditor<FIX_TYPE>>{
 
-	class FIXMatcher<FIX_TYPE_INNER> implements Matcher<MessageHolder> {
+	static class FIXMatcher<FIX_TYPE_INNER> implements Matcher<MessageHolder> {
 
 		private final int matcherFIXField;
 		private final FIX_TYPE_INNER matcherValue;

@@ -45,7 +45,7 @@ public class OrderHistoryInput implements IEditorInput {
 			return false;
 		return true;
 	}
-	public int hashcode() {
+	public int hashCode() {
 		return this.getClass().getCanonicalName().hashCode();
 	}
 

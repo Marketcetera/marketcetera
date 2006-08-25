@@ -7,7 +7,6 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.AccountID;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -196,6 +195,7 @@ public class FIXMessageHistoryTest extends TestCase {
 			public int numIncomingMessages = 0;
 			public int numOutgoingMessages = 0;
 
+			@SuppressWarnings("unchecked")
 			public void listChanged(ListEvent<MessageHolder> event) {
 				if (event.hasNext())
 				{
