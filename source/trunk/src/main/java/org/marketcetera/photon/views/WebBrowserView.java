@@ -30,9 +30,9 @@ import org.eclipse.swt.widgets.Label;
 @ClassVersion("$Id$")
 public class WebBrowserView extends ViewPart implements StatusTextListener, LocationListener {
 
-	public static String ID = "org.marketcetera.photon.views.WebBrowserView"; //$NON-NLS-1$
+	public static final String ID = "org.marketcetera.photon.views.WebBrowserView"; //$NON-NLS-1$
 
-	public static MessageFormat GOOGLE_URL_FORMAT = new MessageFormat(
+	public static final MessageFormat GOOGLE_URL_FORMAT = new MessageFormat(
 			"http://finance.google.com/finance?q={0}&client=Marketcetera+Photon"); //$NON-NLS-1$
 
 	private Browser browser;
@@ -131,7 +131,8 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 		try {
 			browser.setUrl(newLocation);
 		} catch (Exception ex) {
-			statusLabel.setText("Error navigating to URL: "+ex.getMessage());
+			String message = "Error navigating to URL: "+ex.getMessage();
+			statusLabel.setText(escapeAmpersands(message));
 		}
 	}
 
@@ -221,7 +222,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 
 	public void changed(StatusTextEvent event) {
-		statusLabel.setText(event.text);
+		statusLabel.setText(escapeAmpersands(event.text));
 		checkButtons();
 	}
 
@@ -235,7 +236,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 
 	public void changing(LocationEvent event) {
-		statusLabel.setText(event.location);
+		statusLabel.setText(escapeAmpersands(event.location));
 		checkButtons();		
 	}
 
@@ -244,6 +245,16 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 		forwardButton.setEnabled(browser.isForwardEnabled());
 	}
 
-
+	public static String escapeAmpersands(String input) {
+		StringBuffer title = new StringBuffer(input.length());
+		for (int i = 0; i < input.length(); i++) {
+			char character = input.charAt(i);
+			title.append(character);
+			if (character == '&') {
+				title.append(character); // escape ampersand
+			}
+		}
+		return title.toString();
+	}
 
 }
