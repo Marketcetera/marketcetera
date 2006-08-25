@@ -1,5 +1,6 @@
 package org.marketcetera.photon.editors;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.marketcetera.core.ClassVersion;
@@ -12,7 +13,13 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 
 @ClassVersion("$Id$")
-public class SymbolSideComparator implements Comparator<MessageHolder> {
+public class SymbolSideComparator implements Comparator<MessageHolder>, Serializable {
+	
+	/**
+	 * Recommended field for Serializable objects.
+	 */
+	private static final long serialVersionUID = 6918033431342030636L;
+
 	public int compare(MessageHolder arg0, MessageHolder arg1) {
 		try {
 			Message message0 = arg0.getMessage();
@@ -33,7 +40,7 @@ public class SymbolSideComparator implements Comparator<MessageHolder> {
 			
 			if (account0 == null || account1 == null)
 			{
-				accountComparator = (account0 == account1) ? 0 : (account0 == null ? 1 : -1);
+				accountComparator = (account0 == null && account1 == null) ? 0 : (account0 == null ? 1 : -1);
 			} else {
 				accountComparator = (account0.compareTo(account1));
 			}

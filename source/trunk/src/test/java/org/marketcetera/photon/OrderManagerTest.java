@@ -11,7 +11,6 @@ import javax.jms.MessageListener;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
@@ -45,14 +44,9 @@ import ca.odell.glazedlists.EventList;
 
 public class OrderManagerTest extends TestCase {
 
-    private static final String ROOT_PORTFOLIO_NAME = "Root portfolio";
     public static Date THE_TRANSACT_TIME;
     private static Date THE_DATE;
-    private static String POSITION_NAME = "Testable position entry";
-    private static InternalID INTERNAL_ID = new InternalID("123");
-    private static char SIDE_BUY = Side.BUY;
     public static MSymbol SYMBOL = new MSymbol("SYMB");
-    private static AccountID ACCOUNT_ID = new AccountID("asdf");
     public static InternalID CL_ORD_ID = new InternalID("CLORDID");
    
     

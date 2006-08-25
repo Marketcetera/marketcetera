@@ -22,7 +22,7 @@ import org.marketcetera.quickfix.ConnectionConstants;
 public class JMSPreferencePage extends FieldEditorPreferencePage implements
                                                                  IWorkbenchPreferencePage {
 
-	public static String ID = "org.marketcetera.photon.preferences.jms";
+	public static final String ID = "org.marketcetera.photon.preferences.jms";
 	
     private ScopedPreferenceStore mPreferences;
 

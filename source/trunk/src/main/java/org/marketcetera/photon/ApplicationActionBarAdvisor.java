@@ -37,7 +37,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchWindow window;
 
-	private IWorkbenchAction helpContentsAction;
+	//private IWorkbenchAction helpContentsAction;
 
 	private IWorkbenchAction closeAllAction;
 
@@ -95,9 +95,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction preferencesAction;
 
-	private IWorkbenchAction helpSearchAction;
+	//private IWorkbenchAction helpSearchAction;
 
-	private IWorkbenchAction dynamicHelpAction;
+	//private IWorkbenchAction dynamicHelpAction;
 
 	private IWorkbenchAction aboutAction;
 	

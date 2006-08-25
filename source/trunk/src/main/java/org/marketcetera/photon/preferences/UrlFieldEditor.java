@@ -45,7 +45,7 @@ public class UrlFieldEditor extends StringFieldEditor
 			clearErrorMessage();
 		
 		if (oldValid != isValid)
-			fireValueChanged(FieldEditor.IS_VALID, new Boolean(oldValid), new Boolean(isValid));  // causes the framework to update the enabled state of the Ok and Apply buttons
+			fireValueChanged(FieldEditor.IS_VALID, oldValid, isValid);  // causes the framework to update the enabled state of the Ok and Apply buttons
 	}
 	
 	private String getErrorText() {

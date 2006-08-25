@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.util.List;
+
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
@@ -17,6 +19,7 @@ public class FIXCheckboxMatcherEditor extends
 		setMode(OR);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void widgetSelected(SelectionEvent e) {
 		Button source = (Button)e.getSource();
 		FIXMatcherEditor matcherEditor = ((FIXMatcherEditor)(source).getData());

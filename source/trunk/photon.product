@@ -37,7 +37,7 @@ Visit http://www.marketcetera.org
 
    <plugins>
       <plugin id="com.ibm.icu"/>
-      <plugin id="com.publicobject.glazedlists"/>
+      <plugin id="net.java.dev.glazedlists"/>
       <plugin id="org.apache.activemq"/>
       <plugin id="org.apache.commons.i18n"/>
       <plugin id="org.apache.log4j"/>

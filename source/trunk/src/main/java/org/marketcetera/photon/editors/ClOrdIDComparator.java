@@ -3,6 +3,7 @@
  */
 package org.marketcetera.photon.editors;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import org.marketcetera.core.ClassVersion;
@@ -19,7 +20,12 @@ import quickfix.field.ClOrdID;
  *
  */
 @ClassVersion("$Id$")
-public class ClOrdIDComparator implements Comparator<MessageHolder> {
+public class ClOrdIDComparator implements Comparator<MessageHolder>, Serializable {
+	/**
+	 * Recommended field for Serializable objects.
+	 */
+	private static final long serialVersionUID = -833621597934763848L;
+
 	/**
 	 * Compares the specified messages by the value of the {@link ClOrdID}
 	 * field, if any.  It checks for the lack of a {@link ClOrdID}

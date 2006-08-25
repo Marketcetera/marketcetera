@@ -91,11 +91,9 @@ public class EnumTableFormat implements WritableTableFormat, AdvancedTableFormat
 		return String.class;
 	}
 
-	public Comparator getColumnComparator(int arg0) {
-        return new Comparator() {
-			public int compare(Object o1, Object o2) {
-				String s1 = (String) o1;
-				String s2 = (String) o2;
+	public Comparator<String> getColumnComparator(int arg0) {
+        return new Comparator<String>() {
+			public int compare(String s1, String s2) {
 				try {
 					Double d1 = Double.valueOf(s1);
 					Double d2 = Double.valueOf(s2);

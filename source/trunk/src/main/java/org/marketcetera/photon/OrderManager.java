@@ -422,6 +422,7 @@ public class OrderManager {
 			}
 		} catch (Exception e) {
 			this.internalMainLogger.error("Error processing command", e);
+			e.printStackTrace();
 		}
 	}
 
