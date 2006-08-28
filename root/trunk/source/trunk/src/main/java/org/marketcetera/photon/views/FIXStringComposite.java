@@ -5,6 +5,7 @@ import java.util.prefs.BackingStoreException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.core.ClassVersion;
@@ -19,12 +20,14 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 public class FIXStringComposite extends FIXComposite implements OrderModifier {
 
-	
 	private Text textField;
+	private Label label;
+
+	
 	public FIXStringComposite(Composite parent, int style, FormToolkit toolkit, int fixFieldNumber) {
 		super(parent, style, toolkit, fixFieldNumber);
 		this.setLayout(new RowLayout(SWT.HORIZONTAL));
-		toolkit.createLabel(this, FIXDataDictionaryManager.getHumanFieldName(fixFieldNumber)+": ");
+		label = toolkit.createLabel(this, FIXDataDictionaryManager.getHumanFieldName(fixFieldNumber)+": ");
 		textField = toolkit.createText(this, "");
 	}
 
@@ -51,6 +54,14 @@ public class FIXStringComposite extends FIXComposite implements OrderModifier {
 		return textField.setFocus();
 	}
 
+	public Text getTextControl() {
+		return textField;
+	}
+	
+	public Label getLabel() {
+		return label;
+	}
+	
 	@Override
 	public boolean populateFromMessage(Message aMessage) {
 		try {

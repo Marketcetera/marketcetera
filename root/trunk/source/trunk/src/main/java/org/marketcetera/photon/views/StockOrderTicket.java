@@ -13,6 +13,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
@@ -130,8 +133,76 @@ public class StockOrderTicket extends ViewPart {
 				handleSend();
 			}
 		});
+		orderQtyControl.getTextControl().addListener(
+				SWT.KeyUp, 
+				new Listener() {
+					public void handleEvent(Event event) {
+						validateForm();
+					}
+				});
+		priceControl.getTextControl().addListener(
+				SWT.KeyUp, 
+				new Listener() {
+					public void handleEvent(Event event) {
+						validateForm();
+					}
+				});
+		
+		validateForm();
 	}
 
+	private void validateForm() {
+		boolean orderQtyValid = validateOrderQty();
+		updateLabel(orderQtyControl.getLabel(), orderQtyValid);
+		
+		boolean priceValid = validatePrice();
+		updateLabel(priceControl.getLabel(), priceValid);
+		
+		boolean formValid = orderQtyValid && priceValid;
+		sendButton.setEnabled(formValid);
+	}
+
+	private boolean validateOrderQty() {
+		String text = orderQtyControl.getTextControl().getText().trim();
+		
+		try {
+			int orderQty = Integer.parseInt(text);
+
+			if (orderQty <= 0)
+				return false;
+		}
+		catch(NumberFormatException nfe) {
+			return false;
+		}
+		
+		return true;
+	}
+	
+	private boolean validatePrice() {
+		String text = priceControl.getTextControl().getText().trim();
+		
+		try {
+			double price = Double.parseDouble(text);
+
+			if (price <= 0.0d)
+				return false;
+		}
+		catch(NumberFormatException nfe) {
+			return false;
+		}
+		
+		return true;
+	}
+
+	private void updateLabel(Label label, boolean fieldValid) {
+		if (!fieldValid) {
+			label.setForeground(label.getDisplay().getSystemColor(SWT.COLOR_RED));
+		}
+		else {
+			label.setForeground(toolkit.getColors().getForeground());
+		}
+	}
+	
 	protected void handleSend() {
        try {
 			String orderID = Application.getIDFactory().getNext();
@@ -153,7 +224,9 @@ public class StockOrderTicket extends ViewPart {
 	protected void handleCancel()
 	{
 		clear();
+		validateForm();
 	}
+	
 	protected void clear(){
 		Control[] children = form.getBody().getChildren();
 		for (Control control : children) {
