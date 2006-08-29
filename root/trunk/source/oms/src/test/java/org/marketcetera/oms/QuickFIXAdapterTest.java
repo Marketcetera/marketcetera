@@ -6,13 +6,11 @@ import junit.framework.TestCase;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.QuickFIXInitiator;
-import quickfix.DoNotSend;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.SessionID;
+import quickfix.*;
 import quickfix.field.Side;
 
 import java.util.Vector;
+import java.util.Properties;
 
 /**
  * @author Toli Kuznets
@@ -65,6 +63,43 @@ public class QuickFIXAdapterTest extends TestCase
         qfInitiator.shutdown();
     }
 
+
+    /** Sanity check to make sure that we read the config file paramters correctly
+     * Since the QuickFIXInitiator.mSocketInitator field is private, we use the
+     * {@link AccessViolator} to get to it.
+     * (could create another accessor but we really don't want to expose that field)
+     * @throws Exception
+     */
+    public void testConfigVarReading() throws Exception {
+        QuickFIXInitiator qfi = new QuickFIXInitiator(null);
+        Properties props = new Properties();
+        props.setProperty(Session.SETTING_RESET_ON_DISCONNECT, "N");
+        props.setProperty(Session.SETTING_RESET_ON_LOGOUT, "N");
+        props.setProperty(Session.SETTING_RESET_WHEN_INITIATING_LOGON, "N");
+        ConfigData config = new PropertiesConfigData(props);
+        qfi.init(config);
+
+        AccessViolator violator = new AccessViolator(QuickFIXInitiator.class);
+        SocketInitiator socketI = (SocketInitiator) violator.getField("mSocketInitiator", qfi);
+        assertEquals("N", socketI.getSettings().getString(Session.SETTING_RESET_ON_LOGOUT));
+        assertEquals("N", socketI.getSettings().getString(Session.SETTING_RESET_ON_DISCONNECT));
+        assertEquals("N", socketI.getSettings().getString(Session.SETTING_RESET_WHEN_INITIATING_LOGON));
+        qfi.shutdown();
+
+        // and now with positive values
+        props.setProperty(Session.SETTING_RESET_ON_DISCONNECT, "Y");
+        props.setProperty(Session.SETTING_RESET_ON_LOGOUT, "Y");
+        props.setProperty(Session.SETTING_RESET_WHEN_INITIATING_LOGON, "Y");
+        config = new PropertiesConfigData(props);
+        qfi.init(config);
+
+        socketI = (SocketInitiator) violator.getField("mSocketInitiator", qfi);
+        assertEquals("Y", socketI.getSettings().getString(Session.SETTING_RESET_ON_LOGOUT));
+        assertEquals("Y", socketI.getSettings().getString(Session.SETTING_RESET_ON_DISCONNECT));
+        assertEquals("Y", socketI.getSettings().getString(Session.SETTING_RESET_WHEN_INITIATING_LOGON));
+        qfi.shutdown();
+
+    }
     public void testOnLogon() throws Exception {
         SessionID someSession = new SessionID("a", "b", "c");
         assertFalse(qfInitiator.isLoggedOn(someSession));
@@ -97,7 +132,6 @@ public class QuickFIXAdapterTest extends TestCase
 
         qfInitiator.toAdmin(msg, session);
         myqfAdapterSource.verifySizes(1,1,1,1);
-
     }
 
     private class MyFixSessionAdapterSource extends FIXSessionAdapterSource
