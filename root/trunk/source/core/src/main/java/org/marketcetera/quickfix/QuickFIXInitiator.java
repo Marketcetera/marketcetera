@@ -114,7 +114,7 @@ public class QuickFIXInitiator implements quickfix.Application
         settings.setString(id, "SessionQualifier", "");
 
         MessageStoreFactory storeFactory = new FileStoreFactory(settings);
-        LogFactory logFactory = new ScreenLogFactory(false, false, true);
+        LogFactory logFactory = new ScreenLogFactory(settings);
 
         mSocketInitiator = new SocketInitiator(this, storeFactory, settings,
                                                logFactory, getMessageFactory());
