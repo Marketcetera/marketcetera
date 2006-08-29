@@ -43,8 +43,6 @@ public class StockOrderTicket extends ViewPart {
 
 	public static String ID = "org.marketcetera.photon.views.StockOrderTicket";
 
-	private Composite top = null;
-
 	private FormToolkit toolkit;
 
 	private Form form;
@@ -133,33 +131,43 @@ public class StockOrderTicket extends ViewPart {
 				handleSend();
 			}
 		});
-		orderQtyControl.getTextControl().addListener(
-				SWT.KeyUp, 
-				new Listener() {
-					public void handleEvent(Event event) {
-						validateForm();
-					}
-				});
-		priceControl.getTextControl().addListener(
-				SWT.KeyUp, 
-				new Listener() {
-					public void handleEvent(Event event) {
-						validateForm();
-					}
-				});
-		
+
+		Listener formValidationListener = new Listener() {
+			public void handleEvent(Event event) {
+				validateForm();
+			}
+		};
+		buySellControl.addSelectionListener(formValidationListener);
+		orderQtyControl.getTextControl().addListener(SWT.KeyUp, formValidationListener);
+		symbolControl.getTextControl().addListener(SWT.KeyUp, formValidationListener); 
+		priceControl.getTextControl().addListener(SWT.KeyUp, formValidationListener);
+		timeInForceControl.addSelectionListener(formValidationListener);
+
 		validateForm();
 	}
 
 	private void validateForm() {
+		boolean sideValid = validateSide();
+		updateLabel(buySellControl.getLabel(), sideValid);
+		
 		boolean orderQtyValid = validateOrderQty();
 		updateLabel(orderQtyControl.getLabel(), orderQtyValid);
+		
+		boolean symbolValid = validateSymbol();
+		updateLabel(symbolControl.getLabel(), symbolValid);
 		
 		boolean priceValid = validatePrice();
 		updateLabel(priceControl.getLabel(), priceValid);
 		
-		boolean formValid = orderQtyValid && priceValid;
+		boolean timeInForceValid = validateTimeInForce();
+		updateLabel(timeInForceControl.getLabel(), timeInForceValid);
+		
+		boolean formValid = sideValid && orderQtyValid && symbolValid && priceValid && timeInForceValid;
 		sendButton.setEnabled(formValid);
+	}
+
+	private boolean validateSide() {
+		return buySellControl.hasSelection();
 	}
 
 	private boolean validateOrderQty() {
@@ -178,6 +186,11 @@ public class StockOrderTicket extends ViewPart {
 		return true;
 	}
 	
+	private boolean validateSymbol() {
+		String text = symbolControl.getTextControl().getText().trim();
+		return !text.equals("");
+	}
+	
 	private boolean validatePrice() {
 		String text = priceControl.getTextControl().getText().trim();
 		
@@ -192,6 +205,10 @@ public class StockOrderTicket extends ViewPart {
 		}
 		
 		return true;
+	}
+
+	private boolean validateTimeInForce() {
+		return timeInForceControl.hasSelection();
 	}
 
 	private void updateLabel(Label label, boolean fieldValid) {

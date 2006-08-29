@@ -4,6 +4,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -17,6 +19,7 @@ import quickfix.StringField;
 @ClassVersion("$Id$")
 public class FIXEnumeratedComposite extends FIXComposite {
 	private Button[] buttons;
+	private Label label;
 
 	public FIXEnumeratedComposite(Composite parent, int style,
 			FormToolkit toolkit, int fixFieldNumber, 
@@ -24,8 +27,8 @@ public class FIXEnumeratedComposite extends FIXComposite {
 		super(parent, style, toolkit, fixFieldNumber);
 
 		this.setLayout(new RowLayout(SWT.HORIZONTAL));
-		toolkit.createLabel(this, FIXDataDictionaryManager.getHumanFieldName(fixFieldNumber)
-				+ ": ");
+		label = toolkit.createLabel(this, FIXDataDictionaryManager.getHumanFieldName(fixFieldNumber)
+						+ ": ");
 		buttons = new Button[valuesToDisplay.length];
 		Composite buttonComposite = toolkit.createComposite(this);
 		buttonComposite.setLayout(new RowLayout(SWT.VERTICAL));
@@ -82,6 +85,15 @@ public class FIXEnumeratedComposite extends FIXComposite {
 		return found;
 	}
 
+	public boolean hasSelection() {
+		for(Button button: buttons) {
+			if (button.getSelection())
+				return true;
+		}
+		
+		return false;
+	}
+
 	@Override
 	public boolean populateFromMessage(Message aMessage) {
 		try {
@@ -103,5 +115,17 @@ public class FIXEnumeratedComposite extends FIXComposite {
 		}
 	}
 
-	
+	public Label getLabel() {
+		return label;
+	}
+
+	/**
+	 * Adds a single specified instance of SWT.Selection listener to each of the radio buttons. 
+	 */
+	public void addSelectionListener(Listener listener) {
+		for(Button button: buttons) {
+			button.addListener(SWT.Selection, listener);
+		}
+	}
+
 }
