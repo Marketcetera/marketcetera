@@ -27,6 +27,7 @@ import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
+import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
@@ -146,15 +147,16 @@ public class FIXMessageHistoryTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.getLatestExecutionReports()'
 	 */
 	public void testGetLatestExecutionReports() throws FieldNotFound {
+		long currentTime = System.currentTimeMillis();
 		FIXMessageHistory history = getMessageHistory();
 		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
 		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
-		executionReportForOrder1.setField(new TransactTime(new Date(System.currentTimeMillis() - 10000)));
+		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
 		Message order2 = FIXMessageUtil.newLimitOrder(new InternalID("3"), Side.SELL, new BigDecimal(2000), new MSymbol("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, new AccountID("ACCT"));
 		Message executionReportForOrder2 = FIXMessageUtil.newExecutionReport(new InternalID("1003"), new InternalID("3"), "2003", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, new BigDecimal(2000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("QWER"), null);
-		executionReportForOrder1.setField(new TransactTime(new Date(System.currentTimeMillis() - 8000)));
+		executionReportForOrder2.getHeader().setField(new SendingTime(new Date(currentTime - 8000)));
 		Message secondExecutionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2004", ExecTransType.STATUS, ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(900), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"), null);
-		executionReportForOrder1.setField(new TransactTime(new Date(System.currentTimeMillis() - 7000)));
+		secondExecutionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 7000)));
 
 		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
@@ -373,19 +375,19 @@ public class FIXMessageHistoryTest extends TestCase {
 		BigDecimal avgPrice = new BigDecimal("12.3");
 		MSymbol symbol = new MSymbol("ASDF");
 
-		TransactTime ttField = new TransactTime(new Date(10000000));
-		TransactTime ttFieldLater = new TransactTime(new Date(10010000));
+		SendingTime stField = new SendingTime(new Date(10000000));
+		SendingTime stFieldLater = new SendingTime(new Date(10010000));
 		
 		Message message1 = FIXMessageUtil.newExecutionReport(null, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
-		message1.setField(ttField);
+		message1.getHeader().setField(stField);
 		
 		lastQty = new BigDecimal(200);
 		Message message2 = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
-		message2.setField(ttField);
+		message2.getHeader().setField(stField);
 
 		lastQty = new BigDecimal(300);
 		Message message3 = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
-		message3.setField(ttFieldLater);
+		message3.getHeader().setField(stFieldLater);
 		
 		FIXMessageHistory history = getMessageHistory();
 		history.addIncomingMessage(message1);
@@ -393,11 +395,12 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 		
+		// execution reports come in out of order, use the one that has the OrderID in it.
 		history = getMessageHistory();
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message1);
-		assertEquals(new BigDecimal(100), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
-		assertTrue(!history.getLatestExecutionReport(clOrderID1.toString()).isSetField(OrderID.FIELD));
+		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertTrue(history.getLatestExecutionReport(clOrderID1.toString()).isSetField(OrderID.FIELD));
 
 		history = getMessageHistory();
 		history.addIncomingMessage(message1);

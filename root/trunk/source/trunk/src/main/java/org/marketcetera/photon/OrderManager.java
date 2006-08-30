@@ -387,8 +387,10 @@ public class OrderManager {
 			String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
 		    DataDictionary dict = FIXDataDictionaryManager.getDictionary();
 		    for (int fieldInt = 1; fieldInt < 2000; fieldInt++){
-			    if (dict.isRequiredField(msgType, fieldInt) && existingMessage.isSetField(fieldInt) &&
-			    		!outgoingMessage.isSetField(fieldInt)){
+			    if (dict.isMsgField(msgType, fieldInt)
+			    		&& dict.isRequiredField(msgType, fieldInt) 
+			    		&& existingMessage.isSetField(fieldInt)
+			    		&& !outgoingMessage.isSetField(fieldInt)){
 			    	try {
 			    		outgoingMessage.setField(existingMessage.getField(new StringField(fieldInt)));
 			    	} catch (FieldNotFound e) {
