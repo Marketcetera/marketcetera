@@ -5,9 +5,12 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.OrderID;
+import quickfix.field.SendingTime;
 import quickfix.field.TransactTime;
 import ca.odell.glazedlists.FunctionList.Function;
 
@@ -39,22 +42,15 @@ public class LatestMessageFunction implements
 	 * @see ca.odell.glazedlists.FunctionList$Function#evaluate(java.lang.Object)
 	 */
 	public MessageHolder evaluate(List<MessageHolder> messages) {
-		MessageHolder latestMessage = null;
-		for (MessageHolder holder : messages) {
-			Message message = holder.getMessage();
-			if (filter(holder)) {
+		MessageHolder latestMessageHolder = null;
+		for (MessageHolder loopMessageHolder : messages) {
+			if (filter(loopMessageHolder)) {
 				try {
-					if (latestMessage == null){
-						latestMessage = holder;
+					if (latestMessageHolder == null){
+						latestMessageHolder = loopMessageHolder;
 					} else {
-						Date newTime = message.getUtcTimeStamp(TransactTime.FIELD);
-						Date existingTime = latestMessage.getMessage().getUtcTimeStamp(TransactTime.FIELD);
-						int compareVal = newTime.compareTo(existingTime);
-						if (compareVal > 0 ||
-								(compareVal == 0 && 
-										holder.getMessageReference() > latestMessage.getMessageReference()))
-						{
-							latestMessage = holder;
+						if (isLater(loopMessageHolder, latestMessageHolder)){
+							latestMessageHolder = loopMessageHolder;
 						}
 					}
 				} catch (FieldNotFound fnf){
@@ -62,7 +58,25 @@ public class LatestMessageFunction implements
 				}
 			}
 		}
-		return latestMessage;
+		return latestMessageHolder;
+	}
+	
+	/**
+	 * Determines whether msg1 is a "later" message than msg2
+	 * @param messageHolder1 the first message to consider
+	 * @param messageHolder2 the second message to consider
+	 * @return true if messageHolder1 occurred after messageHolder2, false otherwise
+	 */
+	protected boolean isLater(MessageHolder messageHolder1, MessageHolder messageHolder2) throws FieldNotFound{
+		// compare by transact time and 
+		Date date1;
+		Date date2;
+		date1 = messageHolder1.getMessage().getHeader().getUtcTimeStamp(SendingTime.FIELD);
+		date2 = messageHolder2.getMessage().getHeader().getUtcTimeStamp(SendingTime.FIELD);
+		int compareVal = date1.compareTo(date2);
+		return (compareVal > 0 ||
+				(compareVal == 0 && 
+						messageHolder1.getMessageReference() > messageHolder2.getMessageReference()));
 	}
 	/**
 	 * Determines whether a given {@link MessageHolder} should
