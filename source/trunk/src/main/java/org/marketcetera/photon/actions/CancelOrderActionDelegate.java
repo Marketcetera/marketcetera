@@ -79,8 +79,8 @@ public class CancelOrderActionDelegate extends ActionDelegate {
 				} else if (firstElement instanceof MessageHolder){
 					theMessage = ((MessageHolder) firstElement).getMessage();
 				}
-				if (theMessage != null && (FIXMessageUtil.isOrderSingle(theMessage)
-						|| FIXMessageUtil.isExecutionReport(theMessage))){
+				if (theMessage != null && theMessage.isSetField(ClOrdID.FIELD) &&
+						(FIXMessageUtil.isOrderSingle(theMessage) || FIXMessageUtil.isExecutionReport(theMessage))){
 					shouldEnable = true;
 				}
 			}
