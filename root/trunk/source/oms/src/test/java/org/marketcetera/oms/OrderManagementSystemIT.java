@@ -62,17 +62,6 @@ public class OrderManagementSystemIT extends TestCase
                 props.get(OrderManager.FIX_HEADER_PREFIX+"57", ""));
     }
 
-    /** Verifies that the config file that is being parsed for jcyclone config
-     * is being read correctly
-     * @throws Exception
-     */
-    public void testGenerateJCycloneConfig() throws Exception {
-        Properties props = ConfigPropertiesLoader.loadProperties("oms");
-        MapConfig jCycloneConfig = ApplicationBase.generateJCycloneConfig(props);
-        assertEquals(2, jCycloneConfig.getStageNames().length);
-        assertEquals(2, jCycloneConfig.getPluginNames().length);
-    }
-
     /** This is more of an integration test
      * Star the entire OMS, and then create an additional JMS topic adapter (bound to
      * output on the queue and read/write on the JMS topic).
