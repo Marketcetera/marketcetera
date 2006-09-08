@@ -1,6 +1,7 @@
 package org.marketcetera.core;
 
 import org.jcyclone.core.cfg.MapConfig;
+import org.jcyclone.core.cfg.JCycloneConfig;
 import org.jcyclone.core.boot.JCyclone;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
 import org.apache.commons.i18n.MessageManager;
@@ -27,6 +28,7 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
     // for Applications that take in a config file name
     protected String mCfgFileName;
     public static final String JCYCLONE_PREFIX = "jcyclone.";
+    public static final String JCYCLONE_DFLT_THREAD_MGR_FIELD_NAME = "global.defaultThreadManager";
 
     private Properties properties;
     private MapConfig jcycloneConfig;
@@ -104,8 +106,19 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
         return System.currentTimeMillis();
     }
 
+    /** Generates a JCyclone configuration from the passed in properties.
+     * Always sets the default thread manager to be {@link JCycloneConfig.THREADMGR_TPSTM_CONCURRENT) initially,
+     * but it can be overridden in the config file.
+     * @param props Incoming set of properties, prefixed with {@link #JCYCLONE_PREFIX}.
+     * @return  new JCyclone config with the specified properties
+     */
     public static MapConfig generateJCycloneConfig(Properties props){
         MapConfig newConfig = new MapConfig();
+        // set the default thread manager to the concurrent, but allow it to be overridden from a cfg file
+        String threadMgrPropName = JCYCLONE_PREFIX+JCYCLONE_DFLT_THREAD_MGR_FIELD_NAME;
+        if(props.getProperty(threadMgrPropName) == null) {
+            props.setProperty(threadMgrPropName, JCycloneConfig.THREADMGR_TPSTM_CONCURRENT);
+        }
         Set<Object> keySet = props.keySet();
         for (Object aKeyObject : keySet){
             String aKey = (String)aKeyObject;
@@ -127,7 +140,8 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
         try {
             if(jcyclone!=null) {
                 jcyclone.stop();
-                // reset the var so that we don't try to shutdown twice (this may happen in unit tests)
+                // reset Jcyclone so that we don't try to shutdown twice (this may happen in unit tests)
+                jcyclone.dispose();
                 jcyclone = null;
             }
         } catch (Exception e) {
