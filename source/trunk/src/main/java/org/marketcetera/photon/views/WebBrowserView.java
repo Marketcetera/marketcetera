@@ -21,6 +21,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.RCPUtils;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Text;
@@ -74,7 +75,6 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 	@Override
 	public void createPartControl(Composite parent) {
-		System.out.println(parent.getDisplay() == Display.getCurrent());
         GridData statusLabelGridData = new GridData();
         statusLabelGridData.horizontalAlignment = GridData.FILL;
         statusLabelGridData.grabExcessHorizontalSpace = true;
@@ -132,7 +132,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 			browser.setUrl(newLocation);
 		} catch (Exception ex) {
 			String message = "Error navigating to URL: "+ex.getMessage();
-			statusLabel.setText(escapeAmpersands(message));
+			statusLabel.setText(RCPUtils.escapeAmpersands(message));
 		}
 	}
 
@@ -222,7 +222,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 
 	public void changed(StatusTextEvent event) {
-		statusLabel.setText(escapeAmpersands(event.text));
+		statusLabel.setText(RCPUtils.escapeAmpersands(event.text));
 		checkButtons();
 	}
 
@@ -236,25 +236,13 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 
 	public void changing(LocationEvent event) {
-		statusLabel.setText(escapeAmpersands(event.location));
+		statusLabel.setText(RCPUtils.escapeAmpersands(event.location));
 		checkButtons();		
 	}
 
 	private void checkButtons() {
 		backButton.setEnabled(browser.isBackEnabled());
 		forwardButton.setEnabled(browser.isForwardEnabled());
-	}
-
-	public static String escapeAmpersands(String input) {
-		StringBuffer title = new StringBuffer(input.length());
-		for (int i = 0; i < input.length(); i++) {
-			char character = input.charAt(i);
-			title.append(character);
-			if (character == '&') {
-				title.append(character); // escape ampersand
-			}
-		}
-		return title.toString();
 	}
 
 }
