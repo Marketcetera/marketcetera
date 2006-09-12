@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="Photon 0.1.2" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.application" useFeatures="false">
+<product name="Photon 0.1.2" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.application" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.marketcetera.photon/icons/marketcetera/logo-150x55.gif"/>
@@ -42,6 +42,7 @@ Visit http://www.marketcetera.org
       <plugin id="org.apache.commons.i18n"/>
       <plugin id="org.apache.log4j"/>
       <plugin id="org.apache.lucene"/>
+      <plugin id="org.apache.xerces"/>
       <plugin id="org.eclipse.ant.core"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
@@ -54,10 +55,12 @@ Visit http://www.marketcetera.org
       <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
+      <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
       <plugin id="org.eclipse.core.resources.win32" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
@@ -85,10 +88,19 @@ Visit http://www.marketcetera.org
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
+      <plugin id="org.eclipse.update.core"/>
+      <plugin id="org.eclipse.update.core.linux" fragment="true"/>
+      <plugin id="org.eclipse.update.core.win32" fragment="true"/>
+      <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.marketcetera.core"/>
       <plugin id="org.marketcetera.photon"/>
       <plugin id="org.quickfixj"/>
       <plugin id="org.skife.kasparov.csv"/>
    </plugins>
+
+   <features>
+      <feature id="org.eclipse.rcp" version="3.2.0.v20060609m-SVDNgVrNoh-MeGG"/>
+      <feature id="org.marketcetera.photon.feature" version="0.1.2"/>
+   </features>
 
 </product>
