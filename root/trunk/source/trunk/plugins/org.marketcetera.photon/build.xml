@@ -35,6 +35,8 @@
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.workbench_3.2.0.I20060605-1400.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.forms_3.2.0.v20060602.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.ui.views_3.2.0.I20060605-1400.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.update.core_3.2.0.v20060605.jar"/>
+        <pathelement location="${ECLIPSE_HOME}/plugins/org.eclipse.update.ui_3.2.0.v20060605.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.quickfixj_1.0.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.skife.kasparov.csv_1.0.0.jar"/>
         <pathelement location="${ECLIPSE_HOME}/plugins/org.marketcetera.core_0.1.2.jar"/>
