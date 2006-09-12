@@ -2,6 +2,7 @@ package org.marketcetera.photon;
 
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.GroupMarker;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
@@ -20,6 +21,7 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
@@ -28,8 +30,9 @@ import org.marketcetera.photon.actions.WebHelpAction;
 /**
  * This class contains the initialization code for the main application
  * toolbars, action sets, menu bars, the cool bar, and the status bar.
- * 
+ *
  * @author gmiller
+ * @author alissovski
  *
  */
 @ClassVersion("$Id$")
@@ -100,9 +103,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	//private IWorkbenchAction dynamicHelpAction;
 
 	private IWorkbenchAction aboutAction;
-	
+
 	private IWorkbenchAction orderHistoryAction;
-	
+
 	private IWorkbenchAction reconnectJMSAction;
 
 	private CommandStatusLineContribution commandStatusLineContribution;
@@ -113,15 +116,18 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private WebHelpAction webHelpAction;
 
+    private IAction checkForUpdatesAction;
+
+
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
 		super(configurer);
 	}
 
 	/**
 	 * Constructs and registers all of the actions for the main application.
-	 * Both prototype actions from ActionFactory and actions from the 
+	 * Both prototype actions from ActionFactory and actions from the
 	 * org.marketcetera.photon.actions package are used.
-	 * 
+	 *
 	 * @see ActionFactory
 	 * @see org.eclipse.ui.application.ActionBarAdvisor#makeActions(org.eclipse.ui.IWorkbenchWindow)
 	 */
@@ -132,7 +138,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		commandStatusLineContribution.addCommandListener(Application.getOrderManager().getCommandListener());
 		feedStatusLineContribution = new FeedStatusLineContribution("feedStatus", new String[] {JMSConnector.JMS_CONNECTOR_ID});
 		Application.getJMSConnector().addFeedComponentListener(feedStatusLineContribution);
-		
+
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
 		closeAction = ActionFactory.CLOSE.create(window);  register(closeAction);
 		quitAction = ActionFactory.QUIT.create(window);  register(quitAction);
@@ -167,6 +173,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 //		helpContentsAction = ActionFactory.HELP_CONTENTS.create(window);  register(helpContentsAction);
 //		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);  register(helpSearchAction);
 //		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
+        checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(); register(reconnectJMSAction);
 
@@ -176,9 +183,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	}
 
 	/**
-	 * Sets up the structure of the menu bars and menus, using actions defined in 
+	 * Sets up the structure of the menu bars and menus, using actions defined in
 	 * {@link #makeActions(IWorkbenchWindow)}
-	 * 
+	 *
 	 * @see org.eclipse.ui.application.ActionBarAdvisor#fillMenuBar(org.eclipse.jface.action.IMenuManager)
 	 */
 	@SuppressWarnings("deprecation")
@@ -275,6 +282,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 //		menu.add(helpSearchAction);
 //		menu.add(dynamicHelpAction);
 		menu.add(new Separator());
+        menu.add(checkForUpdatesAction);
+        menu.add(new Separator());
 		menu.add(aboutAction);
 		menuBar.add(menu);
 
@@ -282,7 +291,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	/**
 	 * Sets up the structure of the main application coolbar.
-	 * 
+	 *
 	 * @see org.eclipse.ui.application.ActionBarAdvisor#fillCoolBar(org.eclipse.jface.action.ICoolBarManager)
 	 */
 	@Override
@@ -304,7 +313,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	 * Creates the structure of the main application status line.
 	 * Currently consisting of the command entry area, and the JMS
 	 * feed status indicator.
-	 * 
+	 *
 	 * @see org.eclipse.ui.application.ActionBarAdvisor#fillStatusLine(org.eclipse.jface.action.IStatusLineManager)
 	 */
 	@Override
