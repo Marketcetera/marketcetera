@@ -46,6 +46,10 @@
   </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
+      </perspectiveExtension>
       <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
          <view
                id="org.eclipse.ui.console.ConsoleView"
@@ -53,6 +57,8 @@
                relationship="bottom"
                relative="org.eclipse.ui.editorss"
                visible="true"/>
+         <perspectiveShortcut
+               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
       </perspectiveExtension>
    </extension>
 

@@ -99,7 +99,6 @@ Visit http://www.marketcetera.org
    </plugins>
 
    <features>
-      <feature id="org.eclipse.rcp" version="3.2.0.v20060609m-SVDNgVrNoh-MeGG"/>
       <feature id="org.marketcetera.photon.feature" version="0.1.2"/>
    </features>
 
