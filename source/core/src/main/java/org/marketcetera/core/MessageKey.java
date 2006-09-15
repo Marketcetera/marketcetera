@@ -61,10 +61,11 @@ public enum MessageKey implements LocalizedMessage {
     FIX_SEND_ERROR("core.error.fix_send"),
     JMS_SEND_ERROR("core.error.jms_send"),
 
+    HIBERNATE_CREATION_ERR("core.hibernate.error.creation"),
+
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
     APP_EXIT("core.init.app_exit");
-
 
     private MessageKey(String inKey) {
         key = inKey;
