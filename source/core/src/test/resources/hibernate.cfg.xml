@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+    <session-factory>
+
+        <!-- Database connection settings -->
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="connection.url">jdbc:mysql://server01/marketcetera-dev</property>
+        <property name="connection.username">hibernate</property>
+        <property name="connection.password">hibernate</property>
+
+        <!-- JDBC connection pool (use the built-in) -->
+        <property name="connection.pool_size">1</property>
+
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.MySQLInnoDBDialect</property>
+
+        <!-- Enable Hibernate's automatic session context management -->
+        <property name="current_session_context_class">thread</property>
+
+        <!-- Disable the second-level cache  -->
+        <property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+
+        <!-- Echo all executed SQL to stdout -->
+        <property name="show_sql">true</property>
+
+        <!-- Drop and re-create the database schema on startup . change to update once done debugging creation -->
+        <property name="hbm2ddl.auto">create</property>
+
+        <mapping class="org.marketcetera.datamodel.Account"/>
+        <mapping class="org.marketcetera.datamodel.Currency"/>
+        <mapping class="org.marketcetera.datamodel.Posting"/>
+        <mapping class="org.marketcetera.datamodel.Equity"/>
+        <mapping class="org.marketcetera.datamodel.MSymbol"/>
+        <mapping class="org.marketcetera.datamodel.EquityOptionSeries"/>
+        <mapping class="org.marketcetera.datamodel.EquityOptionUnderlying"/>
+        <mapping class="org.marketcetera.datamodel.EquityOption"/>
+        <mapping class="org.marketcetera.datamodel.Journal"/>
+        <mapping class="org.marketcetera.datamodel.Trade"/>
+        <mapping class="org.marketcetera.datamodel.SubAccountType"/>
+        <mapping class="org.marketcetera.datamodel.SubAccount"/>
+        <mapping class="org.marketcetera.datamodel.Divident"/>
+
+    </session-factory>
+
+</hibernate-configuration>
+
