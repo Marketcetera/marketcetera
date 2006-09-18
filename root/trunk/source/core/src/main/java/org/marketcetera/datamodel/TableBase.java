@@ -7,7 +7,7 @@ import java.util.Date;
 
 /**
  * Reprensents the Marketcetera data model table base class
- * Each table has a "created_on" and "modifiedOn" field
+ * Each table has a "createdOn" and "modifiedOn" field
  * @author toli
  * @version $Id$
  */
@@ -17,32 +17,32 @@ import java.util.Date;
 @Inheritance (strategy = InheritanceType.TABLE_PER_CLASS)
 /*package */ abstract class TableBase {
 
-    @Column(name = "created_on")
-    protected final Date created_on;
+    @Column(name = "createdOn")
+    protected final Date createdOn;
     @Column(name = "updated_on")
-    protected Date updated_on;
+    protected Date updatedOn;
 
-    public static final String MODIFIED_ON_COL_NAME = "updated_on";
-    public static final String CREATED_ON_COL_NAME = "created_on";
+    public static final String MODIFIED_ON_COL_NAME = "updatedOn";
+    public static final String CREATED_ON_COL_NAME = "createdOn";
     @Id
     @GeneratedValue
     @Column(nullable = false, columnDefinition = "INT(11)")
     protected Long id;
 
     public TableBase() {
-        created_on = new Date();
+        createdOn = new Date();
     }
 
-    public Date getCreated_on() {
-        return created_on;
+    public Date getCreatedOn() {
+        return createdOn;
     }
 
     public Date getUpdatedOn() {
-        return updated_on;
+        return updatedOn;
     }
 
-    public void setUpdatedOn(Date updatedOn) {
-        this.updated_on = updatedOn;
+    /* package */ void setUpdatedOn(Date updatedOn) {
+        this.updatedOn = updatedOn;
     }
 
     public Long getId() {
