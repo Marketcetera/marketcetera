@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
-      version="0.1.3"
+      version="0.1.4"
       provider-name="Marketcetera LLC">
 
    <description url="http://www.example.com/description">
@@ -75,7 +75,7 @@
          id="org.marketcetera.photon"
          download-size="0"
          install-size="0"
-         version="0.1.3"
+         version="0.1.4"
          unpack="false"/>
 
    <plugin
