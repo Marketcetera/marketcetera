@@ -17,6 +17,10 @@
       [Enter License Description here.]
    </license>
 
+   <url>
+      <update label="Marketcetera update site" url="http://repo.marketcetera.org/eclipse"/>
+   </url>
+
    <includes
          id="org.eclipse.rcp"
          version="0.0.0"/>
