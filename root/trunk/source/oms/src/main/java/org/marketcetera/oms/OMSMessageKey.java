@@ -31,14 +31,9 @@ public enum OMSMessageKey implements LocalizedMessage {
         return MessageKey.getMessageString(toString());
     }
 
-    public <T> String getLocalizedMessage(T[] args)
+    public String getLocalizedMessage(Object ... args)
     {
         return MessageKey.getMessageString(toString(), args);
-    }
-
-    public <T> String getLocalizedMessage(T arg)
-    {
-        return MessageKey.getMessageString(toString(), new Object[] {arg});
     }
 
 }

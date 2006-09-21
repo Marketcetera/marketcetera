@@ -119,7 +119,7 @@ public class OrderManager extends JCycloneStageBase {
     {
         Message rejection = createRejectionMessage(origMessage);
         String msg = (causeEx.getMessage() == null) ? causeEx.toString() : causeEx.getMessage();
-        LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(new Object[]{msg, origMessage}), causeEx, this);
+        LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, origMessage), causeEx, this);
         rejection.setString(Text.FIELD, msg);
         FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  origMessage);
         try {
