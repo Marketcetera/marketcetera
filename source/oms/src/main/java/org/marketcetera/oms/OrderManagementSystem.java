@@ -10,6 +10,7 @@ import javax.jms.JMSException;
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Properties;
+import java.util.LinkedList;
 
 
 /**
@@ -51,8 +52,10 @@ public class OrderManagementSystem extends ApplicationBase implements OrderManag
         FIXDataDictionaryManager.setFIXVersion(QuickFIXInitiator.FIX_VERSION_DEFAULT);
     }
 
-    protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
+    protected List<MessageBundleInfo> getLocalMessageBundles() {
+        LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
         bundles.add(OMS_MESSAGE_BUNDLE_INFO);
+        return bundles;
     }
 
     public static OrderManagementSystem createOMS(String cfgFile) throws ConfigFileLoadingException {
