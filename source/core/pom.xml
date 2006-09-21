@@ -139,7 +139,7 @@
                                 <property name="hibernateCfgFile" value="${hibernateCfgTemplLoc}/hibernate.cfg.xml"/>
 
                                 <copy file="${hibernateCfgTemplLoc}/hibernate.cfg.tmpl.xml"
-                                    tofile="${hibernateCfgFile}"/>
+                                    tofile="${hibernateCfgFile}" overwrite="true"/>
 
                                 <replace file="${hibernateCfgFile}">
                                     <replacefilter

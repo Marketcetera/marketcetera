@@ -29,7 +29,7 @@
         <property name="show_sql">true</property>
 
         <!-- Drop and re-create the database schema on startup . change to update once done debugging creation -->
-        <property name="hbm2ddl.auto">drop</property>
+        <property name="hbm2ddl.auto">update</property>
 
         <mapping class="org.marketcetera.datamodel.Account"/>
         <mapping class="org.marketcetera.datamodel.Currency"/>
