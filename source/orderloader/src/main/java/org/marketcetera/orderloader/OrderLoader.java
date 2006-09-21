@@ -15,6 +15,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Vector;
+import java.util.LinkedList;
 import java.math.BigDecimal;
 
 /**
@@ -87,8 +88,10 @@ public class OrderLoader extends ApplicationBase
         System.exit(1);
     }
 
-    protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
+    protected List<MessageBundleInfo> getLocalMessageBundles() {
+        LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
         bundles.add(OL_MESSAGE_BUNDLE_INFO);
+        return bundles;
     }
 
     /**
@@ -196,8 +199,8 @@ public class OrderLoader extends ApplicationBase
                 numProcessedOrders++;
             }
         } catch (Exception e) {
-            LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(new String[]{
-                    Util.getStringFromArray(inOrderRow),e.getMessage()}), e, this);
+            LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(
+                    Util.getStringFromArray(inOrderRow),e.getMessage()), e, this);
             failedOrders.add(Util.getStringFromArray(inOrderRow) + ": " + e.getMessage());
         }
 
