@@ -1,0 +1,12 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: I18N Plug-in
+Bundle-SymbolicName: org.apache.commons.i18n
+Bundle-Version: 0.0.20060814
+Bundle-ClassPath: lib/commons-i18n-20060814.jar
+Bundle-Vendor: Marketcetera
+Bundle-Localization: plugin
+Eclipse-LazyStart: false
+Export-Package: .,
+ org.apache.commons.i18n,
+ org.apache.commons.i18n.bundles
