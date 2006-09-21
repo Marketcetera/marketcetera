@@ -37,8 +37,8 @@ public class LoggerStartupTest extends TestCase {
             super(inProps);
         }
 
-        protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
-            
+        protected List<MessageBundleInfo> getLocalMessageBundles() {
+            return null;
         }
     }
 }

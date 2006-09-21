@@ -110,6 +110,6 @@ public class DelayedItem<T> implements Delayed {
      * @return A human readable string describing this object
      */
     public String toString() {
-        return MessageKey.DELAYED_ITEM_DESC.getLocalizedMessage(new Object[]{getDelay(TimeUnit.MILLISECONDS), mItem.toString()});
+        return MessageKey.DELAYED_ITEM_DESC.getLocalizedMessage(getDelay(TimeUnit.MILLISECONDS), mItem.toString());
     }
 }

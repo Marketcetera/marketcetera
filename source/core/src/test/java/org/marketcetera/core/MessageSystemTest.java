@@ -52,8 +52,10 @@ public class MessageSystemTest extends TestCase {
             super(inProps);
         }
 
-        protected void addLocalMessageBundles(List<MessageBundleInfo> bundles) {
+        protected List<MessageBundleInfo> getLocalMessageBundles() {
+            LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
             bundles.add(new MessageBundleInfo("test", "test_messages"));
+            return bundles;
         }
 
         public String getMessage(String key, Object[] args)

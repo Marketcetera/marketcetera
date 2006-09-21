@@ -10,8 +10,6 @@ public interface LocalizedMessage {
     String getLocalizedMessage();
 
     /** Returns the localized and formatted message for this key with the specified arguments.   */
-    <T> String getLocalizedMessage(T[] args);
+    String getLocalizedMessage(Object ... args);
 
-    /** Returns the localized and formatted message for this key with the specified argument.   */
-    <T> String getLocalizedMessage(T arg);
 }
