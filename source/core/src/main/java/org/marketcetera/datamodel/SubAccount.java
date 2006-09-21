@@ -4,6 +4,7 @@ import org.marketcetera.core.ClassVersion;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.JoinColumn;
 
@@ -16,11 +17,11 @@ import javax.persistence.JoinColumn;
 @Entity
 @Table(name = "sub_accounts")
 public class SubAccount extends TableBase {
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="account_id")
     private Account account;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="sub_account_type_id")
     private SubAccountType subAccountType;
 

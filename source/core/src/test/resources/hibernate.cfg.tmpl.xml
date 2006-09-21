@@ -9,7 +9,7 @@
 
         <!-- Database connection settings -->
         <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
-        <property name="connection.url">jdbc:mysql://server01/marketcetera-dev</property>
+        <property name="connection.url">jdbc:mysql://@server@/junit-@user@</property>
         <property name="connection.username">hibernate</property>
         <property name="connection.password">hibernate</property>
 
@@ -29,7 +29,7 @@
         <property name="show_sql">true</property>
 
         <!-- Drop and re-create the database schema on startup . change to update once done debugging creation -->
-        <property name="hbm2ddl.auto">create</property>
+        <property name="hbm2ddl.auto">drop</property>
 
         <mapping class="org.marketcetera.datamodel.Account"/>
         <mapping class="org.marketcetera.datamodel.Currency"/>
@@ -43,7 +43,7 @@
         <mapping class="org.marketcetera.datamodel.Trade"/>
         <mapping class="org.marketcetera.datamodel.SubAccountType"/>
         <mapping class="org.marketcetera.datamodel.SubAccount"/>
-        <mapping class="org.marketcetera.datamodel.Divident"/>
+        <mapping class="org.marketcetera.datamodel.Dividend"/>
 
     </session-factory>
 

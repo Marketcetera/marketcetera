@@ -17,11 +17,11 @@ public class EquityOptionUnderlying extends TableBase {
     @Column(columnDefinition = "DECIMAL(20,5)")
     private BigDecimal quantity;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="equity_option_series_id")
     private EquityOptionSeries equityOptionSeries;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="underlying_m_symbol_id")
     private MSymbol underlyingMSymbol;
 

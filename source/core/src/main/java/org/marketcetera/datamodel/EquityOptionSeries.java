@@ -17,7 +17,7 @@ public class EquityOptionSeries extends EquityBase {
     @Column(name = "cash_deliverable", columnDefinition = "DECIMAL(20,5)")
     private BigDecimal cashDeliverable;
 
-    @OneToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name="cash_deliverable_currency_id")
     private Currency cashDeliverableCurrencyID;
 

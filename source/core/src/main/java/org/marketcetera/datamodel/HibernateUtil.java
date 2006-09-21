@@ -18,27 +18,16 @@ import org.hibernate.cfg.Environment;
 
 @ClassVersion("$Id$")
 public class HibernateUtil {
-    private static final String URL_PREFIX = "jdbc:mysql://";
-
     public HibernateUtil() {
     }
 
     private static SessionFactory sessionFactory;
 
     public static SessionFactory initialize() {
-        return initialize(null);
-    }
-
-    public static SessionFactory initialize(String connectionSuffix)
-    {
         if(sessionFactory != null) return sessionFactory;
 
         try {
             Configuration configuration = new AnnotationConfiguration().configure();
-            if(connectionSuffix != null) {
-                // reset the db
-                configuration.setProperty(Environment.URL, URL_PREFIX+connectionSuffix);
-            }
             configuration.setInterceptor(new AccessTimeModificationInterceptor());
             sessionFactory = configuration.buildSessionFactory();
             return sessionFactory;

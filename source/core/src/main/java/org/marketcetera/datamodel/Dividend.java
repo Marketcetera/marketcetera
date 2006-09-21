@@ -13,17 +13,17 @@ import java.util.Date;
 
 @ClassVersion("$Id$")
 @Entity
-@Table(name = "dividents")
-public class Divident extends TableBase {
-    @OneToOne(optional = false)
-    @JoinColumn(name="equity_id")
+@Table(name = "dividends")
+public class Dividend extends TableBase {
+    @ManyToOne(optional = false)
+    @JoinColumn(name="equity_id", unique = false)
     private Equity equity;
 
     @Column(columnDefinition = "DECIMAL(20,5)")
     private BigDecimal amount;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name="currency_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name="currency_id", unique = false)
     private Currency currency;
 
     @Column(name = "announce_date")
@@ -35,6 +35,7 @@ public class Divident extends TableBase {
     @Column(name = "payable_date")
     private Date payableDate;
 
+    @Column(nullable = true)
     private char status;
     private String description;
 
