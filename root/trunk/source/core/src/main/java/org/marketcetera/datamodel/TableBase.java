@@ -17,13 +17,12 @@ import java.util.Date;
 @Inheritance (strategy = InheritanceType.TABLE_PER_CLASS)
 /*package */ abstract class TableBase {
 
-    @Column(name = "createdOn")
+    @Column(name = "created_on")
     protected final Date createdOn;
     @Column(name = "updated_on")
     protected Date updatedOn;
 
     public static final String MODIFIED_ON_COL_NAME = "updatedOn";
-    public static final String CREATED_ON_COL_NAME = "createdOn";
     @Id
     @GeneratedValue
     @Column(nullable = false, columnDefinition = "INT(11)")
@@ -41,17 +40,7 @@ import java.util.Date;
         return updatedOn;
     }
 
-    /* package */ void setUpdatedOn(Date updatedOn) {
-        this.updatedOn = updatedOn;
-    }
-
     public Long getId() {
         return id;
     }
-
-/*
-    private void setId(Long id) {
-        this.id = id;
-    }
-*/
 }

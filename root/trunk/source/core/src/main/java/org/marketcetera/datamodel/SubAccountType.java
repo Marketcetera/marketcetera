@@ -7,6 +7,14 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 
 /**
+ * Possible Values for accounting_account_type
+ * <ol>
+ * <li>A: asset		DEBIT=increase	CREDIT=decrease</li>
+ * <li>L: liability		DEBIT=decrease	CREDIT=increase</li>
+ * <li>E: expense		DEBIT=increase	CREDIT=decrease</li>
+ * <li>R: revenue		DEBIT=decrease	CREDIT=increase</li>
+ * </ol>
+ *
  * @author toli
  * @version $Id$
  */

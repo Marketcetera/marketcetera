@@ -53,7 +53,6 @@ public class MSymbol {
         return fullSymbol;
     }
 
-    // TODO: change me back to public
     public String getBaseSymbol() {
         return baseSymbol;
     }

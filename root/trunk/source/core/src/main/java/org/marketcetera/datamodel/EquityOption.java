@@ -15,17 +15,17 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "equity_options")
 public class EquityOption extends EquityBase {
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="equity_option_series_id")
     private EquityOptionSeries equityOptionSeries;
 
-    @Column(name = "expiration_date")
+    @Column(name = "expiration_date", columnDefinition = "DATE")
     private Date expirationDate;
 
     @Column(name = "strike_price", columnDefinition = "DECIMAL(20,5)")
     private BigDecimal strikePrice;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="strike_price_currency_id")
     private Currency strikePriceCurrency;
 

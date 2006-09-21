@@ -1,6 +1,9 @@
 package org.marketcetera.core;
 
 import java.net.URL;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
 
 /**
  * Collection of random utilities
@@ -51,4 +54,27 @@ public class Util
         }
         return resource;
     }
+
+    /**
+     * Reads the entire file and stuffs it into a StringBuffer and returns the string
+     * The file is loaded from classpath.
+     * Use wisely, this will choke on very large files.
+     *
+     * @param inFileName
+     * @param inObj some object to get the classloader from
+     * @return The entire contents of the file
+     */
+    public static String getStringFromFile(String inFileName, Object inObj) throws Exception
+    {
+        URL url = Util.loadFileFromClasspath(inFileName,  inObj);
+        BufferedReader reader = new BufferedReader(new FileReader(new File(url.getPath())));
+        String line = null;
+        StringBuffer result = new StringBuffer(2000);
+        while((line = reader.readLine()) != null) {
+            result.append(line);
+        }
+
+        return result.toString();
+    }
+
 }

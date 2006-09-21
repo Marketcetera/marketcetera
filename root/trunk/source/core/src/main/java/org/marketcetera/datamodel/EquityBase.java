@@ -15,7 +15,7 @@ import javax.persistence.*;
 @MappedSuperclass
 @Inheritance (strategy = InheritanceType.TABLE_PER_CLASS)
 /*package */ abstract class EquityBase extends TableBase {
-    @OneToOne(optional = false)
+    @OneToOne
     @JoinColumn(name="m_symbol_id")
     private MSymbol mSymbol;
 

@@ -15,11 +15,11 @@ import java.math.BigDecimal;
 @Table(name = "trades")
 public class Trade extends TableBase {
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "journal_id")
     private Journal journal;
 
-    @Column(name = "asset_type")
+    @Column(name = "asset_type", columnDefinition = "CHAR(2)")
     private char assetType;
 
     @Column(name = "asset_id", columnDefinition = "INT(11)")
@@ -29,7 +29,7 @@ public class Trade extends TableBase {
     @Column(columnDefinition = "DECIMAL(20,5)")
     private BigDecimal quantity;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "account_id")
     private Account account;
 

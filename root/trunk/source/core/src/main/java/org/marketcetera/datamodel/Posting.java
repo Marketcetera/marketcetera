@@ -16,15 +16,15 @@ import java.math.BigDecimal;
 @Table(name = "postings")
 public class Posting extends TableBase {
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "sub_account_id")
     private SubAccount subAccount;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "journal_id")
     private Journal journal;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name="currency_id")
     private Currency currency;
 
