@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Marketcetera Core Plug-in
+Bundle-SymbolicName: org.marketcetera.core
+Bundle-Version: 0.1.3
+Bundle-ClassPath: lib/core-0.1.2-SNAPSHOT-sources.jar,
+ lib/core-0.1.2-SNAPSHOT.jar,
+ lib/core-0.1.2-SNAPSHOT-tests.jar,
+ lib/core-0.1.2-SNAPSHOT-test-sources.jar
+Eclipse-LazyStart: false
+Bundle-Vendor: Marketcetera
+Bundle-Localization: plugin
+Export-Package: .,
+ org.marketcetera.core,
+ org.marketcetera.datamodel,
+ org.marketcetera.jcyclone,
+ org.marketcetera.jms,
+ org.marketcetera.quickfix,
+ org.marketcetera.quickfix.customfields,
+ org.marketcetera.quotefeed,
+ org.marketcetera.symbology
+Require-Bundle: org.apache.activemq;visibility:=reexport,
+ org.apache.log4j;visibility:=reexport,
+ org.quickfixj;visibility:=reexport,
+ org.skife.kasparov.csv;visibility:=reexport,
+ org.apache.commons.i18n;visibility:=reexport
