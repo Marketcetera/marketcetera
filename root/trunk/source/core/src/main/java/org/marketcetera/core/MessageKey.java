@@ -82,26 +82,23 @@ public enum MessageKey implements LocalizedMessage {
         return getMessageString(toString());
     }
 
-    public <T> String getLocalizedMessage(T[] args)
+    public String getLocalizedMessage(Object ... args)
     {
         return getMessageString(toString(), args);
     }
 
-    public <T> String getLocalizedMessage(T arg)
-    {
-        return getMessageString(toString(), new Object[] {arg});
-    }
-
-    /** Corresponds to the suffix in the message bundle file. Currently, we are not distinguishing between different
+    /**
+     * Corresponds to the suffix in the message bundle file. Currently, we are not distinguishing between different
      * kids of entries (title, summary, detail, etc) so we just use 'msg'.
      */
     private static String MESSAGE_BUNDLE_ENTRY = "msg";
 
     public static String getMessageString(String inKey)
     {
-        return MessageManager.getText(inKey, MESSAGE_BUNDLE_ENTRY,  new Object[0], Locale.getDefault());
+        return MessageManager.getText(inKey, MESSAGE_BUNDLE_ENTRY,  null, Locale.getDefault());
     }
-    public static <T> String getMessageString(String inKey, T[] args)
+
+    public static String getMessageString(String inKey, Object... args)
     {
         return MessageManager.getText(inKey, MESSAGE_BUNDLE_ENTRY,  args, Locale.getDefault());
     }

@@ -21,8 +21,6 @@ import java.lang.management.ManagementFactory;
 @ClassVersion("$Id$")
 public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
 
-    public static MessageBundleInfo MESSAGE_BUNDLE_INFO = new MessageBundleInfo("core", "core_messages");
-
     protected static LoggerAdapter sLogger;
 
     // for Applications that take in a config file name
@@ -47,9 +45,13 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
 
     private void commonInit(Properties inProps)
     {
-        List<MessageBundleInfo> bundles =  new ArrayList<MessageBundleInfo>(Arrays.asList( MESSAGE_BUNDLE_INFO));
-        addLocalMessageBundles(bundles);
-        registerMessageBundles(bundles);
+        List<MessageBundleInfo> bundles = getLocalMessageBundles();
+        MessageBundleManager.registerCoreMessageBundle();
+        if (bundles != null){
+            for (MessageBundleInfo messageBundleInfo : bundles) {
+                MessageBundleManager.registerMessageBundle(messageBundleInfo);
+            }
+        }
 
         sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
         final ApplicationBase outerThis = this;
@@ -156,16 +158,6 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
     /** Subclasses can override the implementation if they need to add additoinal or specific
      * message bundles for internationalization.
      */
-    protected abstract void addLocalMessageBundles(List<MessageBundleInfo> bundles);
+    protected abstract List<MessageBundleInfo> getLocalMessageBundles();
 
-    /** Helper method to be overridden by subclasses to register
-     * additional internationalization message bundles.
-     */
-    public static void registerMessageBundles(List<MessageBundleInfo> infos)
-    {
-        // load the internationalization messages
-        for (MessageBundleInfo oneInfo : infos) {
-            MessageManager.addMessageProvider(oneInfo.getProviderID(), new ResourceBundleMessageProvider(oneInfo.getBundleName()));
-        }
-    }
 }
