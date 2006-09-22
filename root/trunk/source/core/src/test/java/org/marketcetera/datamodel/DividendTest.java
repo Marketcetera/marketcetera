@@ -1,12 +1,15 @@
 package org.marketcetera.datamodel;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.datamodel.helpers.HibernateUtil;
+import org.marketcetera.datamodel.helpers.PrecannedDataLoader;
 import org.hibernate.PropertyValueException;
 import org.hibernate.Session;
 
@@ -16,14 +19,13 @@ import org.hibernate.Session;
  */
 
 @ClassVersion("$Id$")
-public class DividendTest extends DBTestBase {
+public class DividendTest extends TestCase {
     public DividendTest(String inName) {
         super(inName);
     }
 
     public static Test suite() {
-        suite = new DBTestSuite(DividendTest.class);
-        return suite;
+        return new DBTestSuite(DividendTest.class);
     }
 
     public void testNoEquityReference() throws Exception {
@@ -40,7 +42,7 @@ public class DividendTest extends DBTestBase {
         cal.set(2006, 7, 8);
         div.setAnnounceDate(cal.getTime());
 
-        div.setCurrency(Currency.USD);
+        div.setCurrency(PrecannedDataLoader.USD);
 
         cal.set(2007, 1,1);
         div.setPayableDate(cal.getTime());
@@ -102,7 +104,7 @@ public class DividendTest extends DBTestBase {
             }
         }.run();
 
-        div.setCurrency(Currency.USD);
+        div.setCurrency(PrecannedDataLoader.USD);
 
         // reset the session since it can't be used after exception
         session.disconnect();

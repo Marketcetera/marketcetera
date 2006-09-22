@@ -23,17 +23,41 @@ import javax.persistence.Column;
 @Entity
 @Table(name = "sub_account_types")
 public class SubAccountType extends TableBase {
+
+    /** Series of named constants for pre-canned account types */
+    public static final String SHORT_TERM_INV = "Short Term Investment";
+    public static final String CASH = "Cash";
+    public static final String DIVIDENT_REVENUE = "Dividend Revenue";
+    public static final String UNREALIZED_GAIN_LOSS = "Unrealized Gain/Loss";
+    public static final String CHANGE_ON_CLOSE_OF_INV = "Change on Close of Investment";
+    public static final String COMMISIONS = "Commissions";
+    public static final String INTEREST_REV = "Interest Revenue";
+
     @Column(name = "accounting_account_type")
     private char accountingAccountType;
 
+    public static enum AccountingType { Asset('A'), Liability('L'), Expense('E'), Revenue('R');
+        private char type;
+        AccountingType(char inType) { type = inType; }
+        private char getType() { return type; }
+    }
+
     private String description;
+
+    public SubAccountType() {
+    }
+
+    public SubAccountType(AccountingType accountingType, String description) {
+        this.accountingAccountType = accountingType.getType();
+        this.description = description;
+    }
 
     public char getAccountingAccountType() {
         return accountingAccountType;
     }
 
-    public void setAccountingAccountType(char accountingAccountType) {
-        this.accountingAccountType = accountingAccountType;
+    public void setAccountingAccountType(AccountingType accountingType) {
+        this.accountingAccountType = accountingType.getType();
     }
 
     public String getDescription() {

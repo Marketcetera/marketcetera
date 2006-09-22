@@ -27,6 +27,12 @@ public class MSymbol extends TableBase {
     public MSymbol() {
     }
 
+    public MSymbol(String root, String bloomberg, String reuters) {
+        this.root = root;
+        this.bloomberg = bloomberg;
+        this.reuters = reuters;
+    }
+
     public String getRoot() {
         return root;
     }

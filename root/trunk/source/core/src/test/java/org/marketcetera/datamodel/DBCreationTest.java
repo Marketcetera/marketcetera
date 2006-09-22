@@ -1,7 +1,11 @@
 package org.marketcetera.datamodel;
 
 import junit.framework.Test;
+import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.datamodel.helpers.HibernateUtil;
+import org.marketcetera.datamodel.helpers.PrecannedDataLoader;
+import org.hibernate.Session;
 
 /**
  * Instantiates a hibernate session and nothing more
@@ -11,13 +15,13 @@ import org.marketcetera.core.ClassVersion;
  */
 
 @ClassVersion("$Id$")
-public class DBCreationTest extends DBTestBase {
+public class DBCreationTest extends TestCase {
     public DBCreationTest(String inName) {
         super(inName);
     }
 
     public static Test suite() {
-        return suite =  new DBTestSuite(DBCreationTest.class);
+        return new DBTestSuite(DBCreationTest.class);
     }
 
     /** Really, just need an empty method that verifies that the session exists and
@@ -25,15 +29,17 @@ public class DBCreationTest extends DBTestBase {
      * @throws Exception
      */
     public void testCreate() throws Exception {
-        suite.dbSession.close();
+        Session session = HibernateUtil.getSessionFactory().openSession();
+        session.close();
     }
 
-    public void testCreateSaveAll() throws Exception {
-        Account acct = new Account();
-        acct.setDescription("stupid desc");
-        acct.setInstitutionIdentifier("bob");
-        acct.setNickname("nick");
-        //acct.setUpdatedOn();
-
+    /** Verify the precanned data gets loaded */
+    public void testPrecannedData() throws Exception {
+        assertNotNull(PrecannedDataLoader.USD);
+        assertNotNull(PrecannedDataLoader.GBP);
+        assertNotNull(PrecannedDataLoader.EUR);
+        assertEquals("USD", PrecannedDataLoader.USD.getAlphaCode());
+        assertNotNull(PrecannedDataLoader.STI);
+        assertEquals(SubAccountType.SHORT_TERM_INV, PrecannedDataLoader.STI.getDescription());
     }
 }

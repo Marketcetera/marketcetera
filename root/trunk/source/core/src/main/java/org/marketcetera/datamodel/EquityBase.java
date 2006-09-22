@@ -19,6 +19,13 @@ import javax.persistence.*;
     @JoinColumn(name="m_symbol_id")
     private MSymbol mSymbol;
 
+    protected EquityBase() {
+    }
+
+    protected EquityBase(MSymbol inSymbol) {
+        this.mSymbol = inSymbol;
+    }
+
     public MSymbol getMSymbol() {
         return mSymbol;
     }

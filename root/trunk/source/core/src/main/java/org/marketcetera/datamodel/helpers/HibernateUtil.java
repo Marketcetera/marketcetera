@@ -1,4 +1,4 @@
-package org.marketcetera.datamodel;
+package org.marketcetera.datamodel.helpers;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -6,7 +6,6 @@ import org.marketcetera.core.MessageKey;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
 
 /**
  * Entrypoint to Hibernate - enables creation of a Hibernate session

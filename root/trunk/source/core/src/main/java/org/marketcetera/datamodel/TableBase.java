@@ -15,7 +15,7 @@ import java.util.Date;
 @ClassVersion("$Id$")
 @MappedSuperclass
 @Inheritance (strategy = InheritanceType.TABLE_PER_CLASS)
-/*package */ abstract class TableBase {
+public abstract class TableBase {
 
     @Column(name = "created_on")
     protected final Date createdOn;

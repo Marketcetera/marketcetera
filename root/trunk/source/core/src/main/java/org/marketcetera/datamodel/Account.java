@@ -23,6 +23,11 @@ public class Account extends TableBase {
     public Account() {
     }
 
+    public Account(String institutionIdentifier, String nickname, String description) {
+        this.nickname = nickname;
+        this.description = description;
+        this.institutionIdentifier = institutionIdentifier;
+    }
 
     public String getNickname() {
         return nickname;

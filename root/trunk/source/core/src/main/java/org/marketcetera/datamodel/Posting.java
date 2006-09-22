@@ -31,6 +31,15 @@ public class Posting extends TableBase {
     @Column(columnDefinition = "DECIMAL(20,5)")
     private BigDecimal quantity;
 
+    public Posting() {
+    }
+
+    public Posting(SubAccount subAccount, Journal journal, Currency currency, BigDecimal quantity) {
+        this.subAccount = subAccount;
+        this.journal = journal;
+        this.currency = currency;
+        this.quantity = quantity;
+    }
 
     public SubAccount getSubAccount() {
         return subAccount;

@@ -21,10 +21,18 @@ public class Trade extends TableBase {
 
     @Column(name = "asset_type", columnDefinition = "CHAR(2)")
     private char assetType;
+    public static enum AssetType { Equity('E'), EquityOption('O');
+        private char type;
+        AssetType(char inType)
+        {
+            type = inType;
+        }
+        public char getType() {return type; }
+    }
 
     @Column(name = "asset_id", columnDefinition = "INT(11)")
     // todo: is this a FK somewhere?
-    private int assetID;
+    private long assetID;
 
     @Column(columnDefinition = "DECIMAL(20,5)")
     private BigDecimal quantity;
@@ -35,6 +43,27 @@ public class Trade extends TableBase {
 
     @Column(name = "trade_type")
     private char tradeType;
+
+    public Trade() {
+    }
+
+    public static enum TradeType { BasicTrade('T'), CorpAction('C'), ExerciseOrExpire('E'), Reconciliation('R');
+        private char type;
+        TradeType(char inType) {
+            type = inType;
+        }
+        private char getType() { return type; }
+    }
+
+
+    public Trade(Journal journal, AssetType assetType, long assetID, BigDecimal quantity, Account account, TradeType tradeType) {
+        this.journal = journal;
+        this.assetType = assetType.getType();
+        this.assetID = assetID;
+        this.quantity = quantity;
+        this.account = account;
+        this.tradeType = tradeType.getType();
+    }
 
     public Journal getJournal() {
         return journal;
@@ -52,7 +81,7 @@ public class Trade extends TableBase {
         this.assetType = assetType;
     }
 
-    public int getAssetID() {
+    public long getAssetID() {
         return assetID;
     }
 

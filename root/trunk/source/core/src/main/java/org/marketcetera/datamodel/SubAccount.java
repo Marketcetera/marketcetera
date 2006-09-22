@@ -27,6 +27,13 @@ public class SubAccount extends TableBase {
 
     private String description;
 
+    public SubAccount() {
+    }
+
+    public SubAccount(Account account, SubAccountType subAccountType) {
+        this.account = account;
+        this.subAccountType = subAccountType;
+    }
 
     public Account getAccount() {
         return account;
