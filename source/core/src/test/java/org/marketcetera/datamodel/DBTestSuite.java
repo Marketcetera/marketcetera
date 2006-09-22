@@ -1,8 +1,9 @@
 package org.marketcetera.datamodel;
 
-import junit.framework.TestCase;
 import org.hibernate.Session;
 import org.marketcetera.core.*;
+import org.marketcetera.datamodel.helpers.HibernateUtil;
+import org.marketcetera.datamodel.helpers.PrecannedDataLoader;
 
 /**
  * Common test suite that initializes db based on the user that runs it
@@ -13,8 +14,6 @@ import org.marketcetera.core.*;
 
 @ClassVersion("$Id$")
 public class DBTestSuite extends MarketceteraTestSuite {
-    private static final String CURRENCIES_FILE_NAME = "currencies.sql";
-    private static final String SUB_ACCOUNT_TYPES_FILE_NAME = "sub_account_types.sql";
     private static Class[] allMappedClasses = new Class[] {
             Account.class, Currency.class, Dividend.class, Equity.class,
             EquityOption.class, EquityOptionSeries.class, EquityOptionUnderlying.class,
@@ -39,10 +38,8 @@ public class DBTestSuite extends MarketceteraTestSuite {
 
     protected Session dbSession;
 
-    // todo: change server01 to be modifiable
     public void init(MessageBundleInfo[] inBundles) {
         super.init(inBundles);
-        dbSession = HibernateUtil.initialize().getCurrentSession();
 
         try {
             // clear all tables
@@ -56,12 +53,12 @@ public class DBTestSuite extends MarketceteraTestSuite {
             session.createSQLQuery("SET FOREIGN_KEY_CHECKS = 1;").executeUpdate();
             session.getTransaction().commit();
 
-            // load the currencies
+            // load the currencies and sub-account types
             session = HibernateUtil.getSessionFactory().openSession();
             session.beginTransaction();
-            session.createSQLQuery(Util.getStringFromFile(CURRENCIES_FILE_NAME, this)).executeUpdate();
-            session.createSQLQuery(Util.getStringFromFile(SUB_ACCOUNT_TYPES_FILE_NAME,  this)).executeUpdate();
-            Currency.initializeCommon(session);
+            PrecannedDataLoader.loadAllCurrencies(session);
+            PrecannedDataLoader.loadSubAccountTypes(session);
+            PrecannedDataLoader.initializeCommon(session);
             session.getTransaction().commit();
 
             System.out.println("Finished loading and initializing the database");

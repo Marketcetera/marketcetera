@@ -21,6 +21,14 @@ public class Journal extends TableBase {
     @Column(name = "post_date")
     private Date postDate;
 
+    public Journal() {
+    }
+
+    public Journal(String description, Date postDate) {
+        this.description = description;
+        this.postDate = postDate;
+    }
+
     public String getDescription() {
         return description;
     }

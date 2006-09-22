@@ -1,8 +1,10 @@
 package org.marketcetera.datamodel;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.datamodel.helpers.HibernateUtil;
 import org.hibernate.Session;
 import junit.framework.Test;
+import junit.framework.TestCase;
 
 import java.util.Date;
 import java.text.DateFormat;
@@ -14,17 +16,17 @@ import java.text.DateFormat;
  */
 
 @ClassVersion("$Id$")
-public class AccountCreationTest extends DBTestBase {
+public class AccountCreationTest extends TestCase {
     public AccountCreationTest(String inName) {
         super(inName);
     }
 
     public static Test suite() {
-        suite = new DBTestSuite(AccountCreationTest.class);
-        return suite;
+        return new DBTestSuite(AccountCreationTest.class);
     }
 
     public void testCreate() throws Exception {
+        Session dbSession = HibernateUtil.getSessionFactory().openSession();
         dbSession.beginTransaction();
 
         Account acct = new Account();

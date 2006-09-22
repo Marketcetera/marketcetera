@@ -18,6 +18,10 @@ public class Equity extends EquityBase {
     public Equity() {
     }
 
+    public Equity(MSymbol inSymbol)
+    {
+        super(inSymbol);
+    }
     public String getDescription() {
         return description;
     }

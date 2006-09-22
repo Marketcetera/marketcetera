@@ -1,6 +1,7 @@
-package org.marketcetera.datamodel;
+package org.marketcetera.datamodel.helpers;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.datamodel.TableBase;
 import org.hibernate.EmptyInterceptor;
 import org.hibernate.type.Type;
 
