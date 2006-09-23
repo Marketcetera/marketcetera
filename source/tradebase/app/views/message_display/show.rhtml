@@ -1,0 +1,8 @@
+<% for column in MessagesLog.content_columns %>
+<p>
+  <b><%= column.human_name %>:</b> <%=h @messages_log.send(column.name) %>
+</p>
+<% end %>
+
+<%= link_to 'Edit', :action => 'edit', :id => @messages_log %> |
+<%= link_to 'Back', :action => 'list' %>

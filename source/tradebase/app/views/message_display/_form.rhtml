@@ -1,0 +1,22 @@
+<%= error_messages_for 'messages_log' %>
+
+<!--[form:messages_log]-->
+<p><label for="messages_log_time">Time</label><br/>
+<%= datetime_select 'messages_log', 'time'  %></p>
+
+<p><label for="messages_log_beginstring">Beginstring</label><br/>
+<%= text_field 'messages_log', 'beginstring'  %></p>
+
+<p><label for="messages_log_sendercompid">Sendercompid</label><br/>
+<%= text_field 'messages_log', 'sendercompid'  %></p>
+
+<p><label for="messages_log_targetcompid">Targetcompid</label><br/>
+<%= text_field 'messages_log', 'targetcompid'  %></p>
+
+<p><label for="messages_log_session_qualifier">Session qualifier</label><br/>
+<%= text_field 'messages_log', 'session_qualifier'  %></p>
+
+<p><label for="messages_log_text">Text</label><br/>
+<%= text_area 'messages_log', 'text'  %></p>
+<!--[eoform:messages_log]-->
+
