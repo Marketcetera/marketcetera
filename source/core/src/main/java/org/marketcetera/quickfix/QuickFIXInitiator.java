@@ -59,6 +59,16 @@ public class QuickFIXInitiator implements quickfix.Application
         String resetOnLogout = config.get(Session.SETTING_RESET_ON_LOGOUT, "Y");
         String resetOnDisconnect = config.get(Session.SETTING_RESET_ON_DISCONNECT, "Y");
         String sendResetSeqNumFlag = config.get(Session.SETTING_RESET_WHEN_INITIATING_LOGON, "Y");
+        String jdbcDriver = config.get(JdbcSetting.SETTING_JDBC_DRIVER, null);
+        String jdbcURL = config.get(JdbcSetting.SETTING_JDBC_CONNECTION_URL, null);
+        String jdbcUser = config.get(JdbcSetting.SETTING_JDBC_USER, null);
+        String jdbcPassword = config.get(JdbcSetting.SETTING_JDBC_PASSWORD, null);
+
+        boolean useJDBC = (jdbcDriver != null &&
+                jdbcURL != null &&
+                jdbcUser!= null &&
+                jdbcPassword != null
+                );
 
         QuickFIXDescriptor descriptor = sFIXVersionMap.get(mCurFixVersion);
         if (descriptor == null) {
@@ -80,6 +90,11 @@ public class QuickFIXInitiator implements quickfix.Application
         defaults.put(Session.SETTING_RESET_ON_LOGOUT, resetOnLogout);
         defaults.put(Session.SETTING_RESET_ON_DISCONNECT, resetOnDisconnect);
         defaults.put(Session.SETTING_RESET_WHEN_INITIATING_LOGON, sendResetSeqNumFlag);
+
+        defaults.put(JdbcSetting.SETTING_JDBC_DRIVER,config.get(JdbcSetting.SETTING_JDBC_DRIVER, ""));
+        defaults.put(JdbcSetting.SETTING_JDBC_CONNECTION_URL,config.get(JdbcSetting.SETTING_JDBC_CONNECTION_URL, ""));
+        defaults.put(JdbcSetting.SETTING_JDBC_USER,config.get(JdbcSetting.SETTING_JDBC_USER, ""));
+        defaults.put(JdbcSetting.SETTING_JDBC_PASSWORD,config.get(JdbcSetting.SETTING_JDBC_PASSWORD, ""));
 
         defaults.put(SOCKET_CONNECT_HOST,mFixServerAddress);
         defaults.put(SOCKET_CONNECT_PORT,Long.toString(fixServerPort));
@@ -114,7 +129,14 @@ public class QuickFIXInitiator implements quickfix.Application
         settings.setString(id, "SessionQualifier", "");
 
         MessageStoreFactory storeFactory = new FileStoreFactory(settings);
-        LogFactory logFactory = new ScreenLogFactory(settings);
+        LogFactory logFactory = null;
+        if (useJDBC)
+        {
+            logFactory = new CompositeLogFactory(new LogFactory[] {new JdbcLogFactory(settings),
+                    new ScreenLogFactory(settings)});
+        } else {
+            logFactory = new ScreenLogFactory(settings);
+        }
 
         mSocketInitiator = new SocketInitiator(this, storeFactory, settings,
                                                logFactory, getMessageFactory());
