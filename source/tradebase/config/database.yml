@@ -12,7 +12,7 @@
 #   http://dev.mysql.com/doc/refman/5.0/en/old-client.html
 development:
   adapter: mysql
-  database: junit-gmiller
+  database: marketcetera_rails
   username: hibernate
   password: hibernate
   host: 127.0.0.1
@@ -22,7 +22,7 @@ development:
 # Do not set this db to the same as development or production.
 test:
   adapter: mysql
-  database: junit-gmiller-test
+  database: marketcetera_rails_test
   username: hibernate
   password: hibernate
   host: 127.0.0.1

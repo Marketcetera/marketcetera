@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
-class MessagesLogTest < Test::Unit::TestCase
-  fixtures :messages_logs
+class EquityTest < Test::Unit::TestCase
+  fixtures :equities
 
   # Replace this with your real tests.
   def test_truth

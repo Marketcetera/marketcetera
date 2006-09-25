@@ -1,3 +1,0 @@
-class MigratePlus
-  
-end
