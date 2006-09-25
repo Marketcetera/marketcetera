@@ -29,6 +29,7 @@ public class EquityOption extends EquityBase {
     @JoinColumn(name="strike_price_currency_id")
     private Currency strikePriceCurrency;
 
+    @Column (name = "call_put")
     private char callPut;
 
     @Column(name = "exercise_type")

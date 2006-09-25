@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @Table(name = "trades")
 public class Trade extends TableBase {
 
-    @ManyToOne(optional = false)
+    @ManyToOne
     @JoinColumn(name = "journal_id")
     private Journal journal;
 
@@ -30,7 +30,7 @@ public class Trade extends TableBase {
         public char getType() {return type; }
     }
 
-    @Column(name = "asset_id", columnDefinition = "INT(11)")
+    @Column(name = "asset_id", columnDefinition = "INT(11)", nullable = false)
     // todo: is this a FK somewhere?
     private long assetID;
 
@@ -43,6 +43,8 @@ public class Trade extends TableBase {
 
     @Column(name = "trade_type")
     private char tradeType;
+
+    private String comment;
 
     public Trade() {
     }
@@ -111,5 +113,13 @@ public class Trade extends TableBase {
 
     public void setTradeType(char tradeType) {
         this.tradeType = tradeType;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 }

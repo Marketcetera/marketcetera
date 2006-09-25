@@ -3,7 +3,6 @@ package org.marketcetera.quickfix;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.AccessViolator;
 import quickfix.*;
 
 import java.util.HashMap;
