@@ -1,0 +1,32 @@
+<%= javascript_include_tag "scriptaculous/prototype" %>
+<%= javascript_include_tag "scriptaculous/scriptaculous" %>
+
+<%= error_messages_for 'dividend' %>
+
+<!--[form:dividend]-->
+<p><label for="m_symbol_root">Symbol</label><br/>
+<%= text_field_with_auto_complete :m_symbol, :root %>
+
+<p><label for="dividend_amount">Amount</label><br/>
+<%= text_field 'dividend', 'amount'  %></p>
+
+<p><label for="currency_alpha_code">Currency Code</label><br/>
+<%= text_field_with_auto_complete :currency, :alpha_code %>
+
+<p><label for="dividend_announce_date">Announce date</label><br/>
+<%= date_select 'dividend', 'announce_date'  %></p>
+
+<p><label for="dividend_ex_date">Ex date</label><br/>
+<%= date_select 'dividend', 'ex_date'  %></p>
+
+<p><label for="dividend_payable_date">Payable date</label><br/>
+<%= date_select 'dividend', 'payable_date'  %></p>
+
+<p><label for="dividend_status">Status</label><br/>
+<%= text_field 'dividend', 'status'  %></p>
+
+<p><label for="dividend_description">Description</label><br/>
+<%= text_field 'dividend', 'description'  %></p>
+
+<!--[eoform:dividend]-->
+

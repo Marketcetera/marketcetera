@@ -1,0 +1,8 @@
+<% for column in Equity.content_columns %>
+<p>
+  <b><%= column.human_name %>:</b> <%=h @equity.send(column.name) %>
+</p>
+<% end %>
+
+<%= link_to 'Edit', :action => 'edit', :id => @equity %> |
+<%= link_to 'Back', :action => 'list' %>

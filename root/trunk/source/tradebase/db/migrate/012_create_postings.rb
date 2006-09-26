@@ -5,7 +5,7 @@ class CreatePostings < ActiveRecord::Migration
 
   def self.up
     create_table :postings do |t|
-      t.column :quantity, :decimal, :precision=>20, :scale=>5
+      t.column :quantity, :float, :precision=>20, :scale=>5
       t.column :sub_account_id, :integer, :null => false
       t.column :journal_id, :integer, :null => false
       t.column :currency_id, :integer, :null => false
