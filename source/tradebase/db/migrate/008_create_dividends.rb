@@ -6,9 +6,9 @@ class CreateDividends < ActiveRecord::Migration
   def self.up
     create_table :dividends do |t|
       t.column :amount, :float
-      t.column :announce_date, :datetime
-      t.column :ex_date, :datetime
-      t.column :payable_date, :datetime
+      t.column :announce_date, :date
+      t.column :ex_date, :date
+      t.column :payable_date, :date
       t.column :status, :string, :limit => 1
       t.column :description, :string, :limit => 255
       t.column :equity_id, :integer

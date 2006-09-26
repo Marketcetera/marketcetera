@@ -1,0 +1,27 @@
+<h1>Listing m_symbols</h1>
+
+<table>
+  <tr>
+  <% for column in MSymbol.content_columns %>
+    <th><%= column.human_name %></th>
+  <% end %>
+  </tr>
+  
+<% for m_symbol in @m_symbols %>
+  <tr>
+  <% for column in MSymbol.content_columns %>
+    <td><%=h m_symbol.send(column.name) %></td>
+  <% end %>
+    <td><%= link_to 'Show', :action => 'show', :id => m_symbol %></td>
+    <td><%= link_to 'Edit', :action => 'edit', :id => m_symbol %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => m_symbol }, :confirm => 'Are you sure?', :post => true %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Previous page', { :page => @m_symbol_pages.current.previous } if @m_symbol_pages.current.previous %>
+<%= link_to 'Next page', { :page => @m_symbol_pages.current.next } if @m_symbol_pages.current.next %> 
+
+<br />
+
+<%= link_to 'New m_symbol', :action => 'new' %>

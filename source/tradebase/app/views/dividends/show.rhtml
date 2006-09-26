@@ -1,0 +1,8 @@
+<h2>Dividend for <%= @dividend.equity.m_symbol.root %></h2>
+<% for column in Dividend.content_columns %>
+<p>
+  <b><%= column.human_name %>:</b> <%=h @dividend.send(column.name) %>
+</p>
+<% end %>
+<%= link_to 'Edit', :action => 'edit', :id => @dividend %> |
+<%= link_to 'Back', :action => 'list' %>

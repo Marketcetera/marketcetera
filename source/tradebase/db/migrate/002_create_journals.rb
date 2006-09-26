@@ -6,7 +6,7 @@ class CreateJournals < ActiveRecord::Migration
   def self.up
     create_table :journals do |t|
       t.column :description, :string, :limit => 255
-      t.column :post_date, :datetime
+      t.column :post_date, :date
       t.column :created_on, :datetime
       t.column :updated_on, :datetime
     end
