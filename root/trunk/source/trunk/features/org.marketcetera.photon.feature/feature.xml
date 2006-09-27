@@ -27,7 +27,7 @@
 
    <includes
          id="org.rubypeople.rdt"
-         version="0.0.0"/>
+         version="0.8.1.609062100PRD"/>
 
    <plugin
          id="net.java.dev.glazedlists"
@@ -334,6 +334,13 @@
          download-size="0"
          install-size="0"
          version="3.2.0.v20060601"
+         unpack="false"/>
+
+   <plugin
+         id="org.marketcetera.photon.registry"
+         download-size="0"
+         install-size="0"
+         version="0.1.0"
          unpack="false"/>
 
 </feature>
