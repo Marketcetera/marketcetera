@@ -1,4 +1,6 @@
 class EquitiesController < ApplicationController
+  auto_complete_for :m_symbol, :root
+
   def index
     list
     render :action => 'list'
@@ -21,7 +23,16 @@ class EquitiesController < ApplicationController
   end
 
   def create
+    symbol = MSymbol.find(:first, :conditions=>['ROOT = ?', params[:m_symbol][:root]])
+    if (symbol == nil && params[:create_new] != nil)
+      symbol = MSymbol.new(:root=>params[:m_symbol][:root])
+    else
+      flash[:error] = "Could not find symbol "+params[:m_symbol][:root]
+      render :action => 'new'
+    end
+
     @equity = Equity.new(params[:equity])
+    @equity.m_symbol = symbol
     if @equity.save
       flash[:notice] = 'Equity was successfully created.'
       redirect_to :action => 'list'

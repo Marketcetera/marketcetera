@@ -2,18 +2,27 @@
 
 <table>
   <tr>
+    <th>Symbol</th>
   <% for column in Equity.content_columns %>
     <th><%= column.human_name %></th>
   <% end %>
+    <th/>
+    <th/>
   </tr>
   
-<% for equity in @equities %>
-  <tr>
+<% 
+i=0
+for equity in @equities %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    
+    <% if equity.m_symbol != nil  %>
+     <td><%=link_to equity.m_symbol.root, {:action => 'show', :id => equity.m_symbol, :controller => 'm_symbols' } %></td>
+    <% end %>
+
   <% for column in Equity.content_columns %>
     <td><%=h equity.send(column.name) %></td>
   <% end %>
     <td><%= link_to 'Show', :action => 'show', :id => equity %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => equity %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => equity }, :confirm => 'Are you sure?', :post => true %></td>
   </tr>
 <% end %>

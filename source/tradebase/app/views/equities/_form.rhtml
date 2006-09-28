@@ -1,6 +1,13 @@
+<%= javascript_include_tag "scriptaculous/prototype" %>
+<%= javascript_include_tag "scriptaculous/scriptaculous" %>
+
 <%= error_messages_for 'equity' %>
 
 <!--[form:equity]-->
+
+<p><label for="m_symbol_root">Symbol</label><br/>
+<%= text_field_with_auto_complete :m_symbol, :root %><%= check_box_tag 'create_new', 1, true%><label for="create_new">Create symbol if missing</label></p>
+
 <p><label for="equity_description">Description</label><br/>
 <%= text_field 'equity', 'description'  %></p>
 

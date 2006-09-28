@@ -6,10 +6,12 @@
   <% for column in Dividend.content_columns %>
     <th><%= column.human_name %></th>
   <% end %>
+  <th colspan=3/>
   </tr>
   
-<% for dividend in @dividends %>
-  <tr>
+<% i=0
+for dividend in @dividends %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%= dividend.equity.m_symbol.root %></td>
   <% for column in Dividend.content_columns %>
     <td><%=h dividend.send(column.name) %></td>

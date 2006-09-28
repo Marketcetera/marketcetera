@@ -12,7 +12,7 @@ class InsertSubAccountTypes < ActiveRecord::Migration
   end
 
   def self.down
-    Currency.delete_all
+    #SubAccountType.delete_all
   end
 end
     

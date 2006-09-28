@@ -258,6 +258,6 @@ class InsertCurrencies < ActiveRecord::Migration
   end
 
   def self.down
-    Currency.delete_all
+    #Currency.delete_all
   end
 end

@@ -7,8 +7,9 @@
   <% end %>
   </tr>
   
-<% for m_symbol in @m_symbols %>
-  <tr>
+<% i=0
+for m_symbol in @m_symbols %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
   <% for column in MSymbol.content_columns %>
     <td><%=h m_symbol.send(column.name) %></td>
   <% end %>

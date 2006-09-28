@@ -7,7 +7,9 @@
   <% end %>
   </tr>
   
-<% for account in @accounts %>
+<% i=0
+for account in @accounts %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
   <tr>
   <% for column in Account.content_columns %>
     <td><%=h account.send(column.name) %></td>
