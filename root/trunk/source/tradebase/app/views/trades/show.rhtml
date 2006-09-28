@@ -1,0 +1,53 @@
+<%require 'bigdecimal'%>
+<p>
+  <b>Quantity:</b> <%=h @trade.send('quantity') %>
+</p>
+<p>
+  <b>Trade type:</b> 
+  <%=h get_human_trade_type(@trade.trade_type) %>
+</p>
+<p>
+  <b>Asset type:</b> 
+  <%=h get_human_asset_type(@trade.asset_type) %>
+</p>
+<p>
+  <b>Comment:</b> <%=h @trade.send('comment') %>
+</p>
+
+<%
+total_credits = BigDecimal('0')
+total_debits = BigDecimal('0')
+%>
+<table>
+    <tr>
+    <th>Sub-account</th><th>Debits</th><th>Credits</th>
+    </tr>
+<% for posting in @trade.journal.postings 
+     posting_quantity = posting.quantity
+     accounting_account_type = get_debit_or_credit(posting_quantity, posting.sub_account.sub_account_type.accounting_account_type)
+     %>
+    <tr>
+    <td><%= (accounting_account_type == :credit ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '' ) %>
+    <%=h posting.sub_account.sub_account_type.description %> </td>
+    <%if (accounting_account_type == :credit)
+    total_credits += posting_quantity
+    %>
+    <td></td>
+    <%end%>
+    <td><%=h posting_quantity.abs() %> </td>
+    <%if (accounting_account_type == :debit)
+    total_debits += posting_quantity
+    %>
+    <td></td>
+    <%end%>
+    <td><%=h posting.currency.alpha_code%></td>
+    </tr>
+<% end %>
+    <tr>
+    <td></td><td><%=h total_debits.abs()%></td><td><%=h total_credits.abs()%></td>
+    </tr>
+
+</table>
+
+<%= link_to 'Edit', :action => 'edit', :id => @trade %> |
+<%= link_to 'Back', :action => 'list' %>

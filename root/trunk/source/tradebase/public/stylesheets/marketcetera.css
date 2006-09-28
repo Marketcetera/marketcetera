@@ -1,0 +1,22 @@
+ul.currencies  {
+  list-style-type: none;
+  margin:0px;
+  padding:0px;
+}
+ul.currencies li.selected { background-color: #ffb; }
+li.currency {
+  list-style-type: none;
+  display:block;
+  margin:0;
+  padding:2px;
+  height:32px;
+}
+li.currency div.alpha_code {
+  font-weight:bold;
+  font-size:12px;
+  line-height:1.2em;
+}
+li.currency div.description {
+  font-size:10px;
+  color:#888;
+}

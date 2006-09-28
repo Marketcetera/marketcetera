@@ -1,0 +1,16 @@
+<%= javascript_include_tag "scriptaculous/prototype" %>
+<%= javascript_include_tag "scriptaculous/scriptaculous" %>
+
+<%= error_messages_for 'sub_account' %>
+
+<!--[form:sub_account]-->
+<p><label for="sub_account_type_description">Sub-account type</label><br/>
+<%= text_field_with_auto_complete :sub_account_type, :description %>
+
+<p><label for="sub_account_description">Description</label><br/>
+<%= text_field 'sub_account', 'description'  %></p>
+
+<%= hidden_field_tag 'account_id', params[:account_id] %>
+    
+<!--[eoform:sub_account]-->
+
