@@ -3,6 +3,7 @@ module ApplicationHelper
 
   def get_equity(ref_symbol)
     symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
+    raise SyntaxError if symbol==nil
     equity = Equity.find(symbol.id)
     return equity
   end

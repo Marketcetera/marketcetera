@@ -5,10 +5,14 @@
   <% for column in SubAccount.content_columns %>
     <th><%= column.human_name %></th>
   <% end %>
+  <th/>
+  <th/>
+  <th/>
   </tr>
   
-<% for sub_account in @sub_accounts %>
-  <tr>
+<% i=0
+ for sub_account in @sub_accounts %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
   <% for column in SubAccount.content_columns %>
     <td><%=h sub_account.send(column.name) %></td>
   <% end %>

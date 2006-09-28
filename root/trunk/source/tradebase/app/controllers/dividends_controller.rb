@@ -25,6 +25,7 @@ class DividendsController < ApplicationController
   end
 
   def create
+   begin
     @dividend = Dividend.new(params[:dividend])
     @params = params
     @dividend.equity = get_equity(params[:m_symbol][:root])
@@ -35,6 +36,11 @@ class DividendsController < ApplicationController
     else
       render :action => 'new'
     end
+    
+    rescue SyntaxError
+      flash[:notice] = 'Please specify the symbol'
+      redirect_to :action => 'new'
+   end
   end
 
   def edit

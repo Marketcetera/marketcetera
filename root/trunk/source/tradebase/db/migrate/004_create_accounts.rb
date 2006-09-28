@@ -7,6 +7,7 @@ class CreateAccounts < ActiveRecord::Migration
       t.column :created_on, :datetime
       t.column :updated_on, :datetime
     end
+    add_index :accounts, :nickname
   end
 
   def self.down
