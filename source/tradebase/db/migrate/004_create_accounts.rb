@@ -1,7 +1,7 @@
 class CreateAccounts < ActiveRecord::Migration
   def self.up
     create_table :accounts do |t|
-      t.column :nickname, :string, :limit => 255
+      t.column :nickname, :string, :limit => 255, :unique => true
       t.column :description, :string, :limit => 255
       t.column :institution_identifier, :string, :limit => 255
       t.column :created_on, :datetime

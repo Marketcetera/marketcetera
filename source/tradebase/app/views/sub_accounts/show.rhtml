@@ -1,0 +1,8 @@
+<% for column in SubAccount.content_columns %>
+<p>
+  <b><%= column.human_name %>:</b> <%=h @sub_account.send(column.name) %>
+</p>
+<% end %>
+
+<%= link_to 'Edit', :action => 'edit', :id => @sub_account %> |
+<%= link_to 'Back', :action => 'list' %>

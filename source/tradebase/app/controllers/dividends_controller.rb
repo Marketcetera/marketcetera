@@ -1,7 +1,7 @@
 class DividendsController < ApplicationController
+  include ApplicationHelper
 
   auto_complete_for :m_symbol, :root, {}
-  auto_complete_for :currency, :alpha_code, {}
 
   def index
     list
@@ -53,16 +53,6 @@ class DividendsController < ApplicationController
     end
   end
 
-  def get_equity(div_symbol)
-    symbol = MSymbol.find(:first, :conditions=>["root = ?", div_symbol])
-    equity = Equity.find(symbol.id)
-    return equity
-  end
-
-  def get_currency(cur_string)
-    currency = Currency.find(:first, :conditions=>["alpha_code = ?", cur_string])
-    return currency
-  end
 
   def destroy
     Dividend.find(params[:id]).destroy

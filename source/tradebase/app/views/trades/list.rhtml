@@ -1,0 +1,27 @@
+<h1>Listing trades</h1>
+
+<table>
+  <tr>
+  <% for column in Trade.content_columns %>
+    <th><%= column.human_name %></th>
+  <% end %>
+  </tr>
+  
+<% for trade in @trades %>
+  <tr>
+  <% for column in Trade.content_columns %>
+    <td><%=h trade.send(column.name) %></td>
+  <% end %>
+    <td><%= link_to 'Show', :action => 'show', :id => trade %></td>
+    <td><%= link_to 'Edit', :action => 'edit', :id => trade %></td>
+    <td><%= link_to 'Destroy', { :action => 'destroy', :id => trade }, :confirm => 'Are you sure?', :post => true %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Previous page', { :page => @trade_pages.current.previous } if @trade_pages.current.previous %>
+<%= link_to 'Next page', { :page => @trade_pages.current.next } if @trade_pages.current.next %> 
+
+<br />
+
+<%= link_to 'New trade', :action => 'new' %>
