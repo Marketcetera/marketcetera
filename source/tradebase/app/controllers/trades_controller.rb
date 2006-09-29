@@ -1,7 +1,4 @@
 require 'bigdecimal'
-#require 'bigdecimal/math'
-#require 'trades_helper'
-
 
 class TradesController < ApplicationController
   include ApplicationHelper
