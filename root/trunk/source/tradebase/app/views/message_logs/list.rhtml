@@ -1,4 +1,4 @@
-<h1>Listing Execution Reports</h1>
+<h1>Listing Executed Trades</h1>
 
 <table>
   <tr>
@@ -32,8 +32,8 @@
     lastPx = Quickfix::LastPx.new
 %>
 <% i=0
-    for message in @all_exec_reports %>
-  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    for message in @exec_report_pages %>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
     <% qf_message = Quickfix::Message.new(message.text) %>
     <td><%= getStringFieldValueIfPresent(qf_message, transactTime) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
@@ -53,3 +53,5 @@
 </table>
 
 <br />
+<%= link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous %>
+<%= link_to 'Next page', { :page => @paginator.current.next } if @paginator.current.next %> 
