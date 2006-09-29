@@ -1,0 +1,55 @@
+<h1>Listing Execution Reports</h1>
+
+<table>
+  <tr>
+    <th>TransactTime</th>
+    <th>ClOrdID</th>
+    <th>OrdStatus</th>
+    <th>Side</th>
+    <th>Symbol</th>
+    <th>OrderQty</th>
+    <th>CumQty</th>
+    <th>LeavesQty</th>
+    <th>AvgPx</th>
+    <th>Account</th>
+    <th>LastShares</th>
+    <th>LastPx</th>
+    <th/>
+  </tr>
+  
+<%
+    transactTime = Quickfix::TransactTime.new
+    clOrdID = Quickfix::ClOrdID.new
+    ordStatus = Quickfix::OrdStatus.new
+    side = Quickfix::Side.new
+    symbol = Quickfix::Symbol.new
+    orderQty = Quickfix::OrderQty.new
+    cumQty = Quickfix::CumQty.new
+    leavesQty = Quickfix::LeavesQty.new
+    avgPx = Quickfix::AvgPx.new
+    account = Quickfix::Account.new
+    lastShares = Quickfix::LastShares.new
+    lastPx = Quickfix::LastPx.new
+%>
+<% i=0
+    for message in @all_exec_reports %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <% qf_message = Quickfix::Message.new(message.text) %>
+    <td><%= getStringFieldValueIfPresent(qf_message, transactTime) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
+    <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
+    <td><%= getHumanSide(getStringFieldValueIfPresent(qf_message, side)) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, symbol) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, leavesQty) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, avgPx) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, account) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
+    <td><%= link_to 'Show', :action => 'show', :id => message %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />

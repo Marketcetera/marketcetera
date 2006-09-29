@@ -1,14 +1,14 @@
 require File.dirname(__FILE__) + '/../test_helper'
-require 'message_display_controller'
+require 'message_logs_controller'
 
 # Re-raise errors caught by the controller.
-class MessageDisplayController; def rescue_action(e) raise e end; end
+class MessageLogsController; def rescue_action(e) raise e end; end
 
-class MessageDisplayControllerTest < Test::Unit::TestCase
-  fixtures :messages_logs
+class MessageLogsControllerTest < Test::Unit::TestCase
+  fixtures :message_logs
 
   def setup
-    @controller = MessageDisplayController.new
+    @controller = MessageLogsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
   end
@@ -25,7 +25,7 @@ class MessageDisplayControllerTest < Test::Unit::TestCase
     assert_response :success
     assert_template 'list'
 
-    assert_not_nil assigns(:messages_logs)
+    assert_not_nil assigns(:message_logs)
   end
 
   def test_show
@@ -34,8 +34,8 @@ class MessageDisplayControllerTest < Test::Unit::TestCase
     assert_response :success
     assert_template 'show'
 
-    assert_not_nil assigns(:messages_log)
-    assert assigns(:messages_log).valid?
+    assert_not_nil assigns(:message_log)
+    assert assigns(:message_log).valid?
   end
 
   def test_new
@@ -44,18 +44,18 @@ class MessageDisplayControllerTest < Test::Unit::TestCase
     assert_response :success
     assert_template 'new'
 
-    assert_not_nil assigns(:messages_log)
+    assert_not_nil assigns(:message_log)
   end
 
   def test_create
-    num_messages_logs = MessagesLog.count
+    num_message_logs = MessageLog.count
 
-    post :create, :messages_log => {}
+    post :create, :message_log => {}
 
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
-    assert_equal num_messages_logs + 1, MessagesLog.count
+    assert_equal num_message_logs + 1, MessageLog.count
   end
 
   def test_edit
@@ -64,8 +64,8 @@ class MessageDisplayControllerTest < Test::Unit::TestCase
     assert_response :success
     assert_template 'edit'
 
-    assert_not_nil assigns(:messages_log)
-    assert assigns(:messages_log).valid?
+    assert_not_nil assigns(:message_log)
+    assert assigns(:message_log).valid?
   end
 
   def test_update
@@ -75,14 +75,14 @@ class MessageDisplayControllerTest < Test::Unit::TestCase
   end
 
   def test_destroy
-    assert_not_nil MessagesLog.find(1)
+    assert_not_nil MessageLog.find(1)
 
     post :destroy, :id => 1
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
     assert_raise(ActiveRecord::RecordNotFound) {
-      MessagesLog.find(1)
+      MessageLog.find(1)
     }
   end
 end
