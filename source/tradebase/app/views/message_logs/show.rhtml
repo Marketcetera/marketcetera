@@ -1,40 +1,38 @@
-<% qf_message = Quickfix::Message.new(@message_log.text) %>
-
 <p>
-  <b>TransactTime: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::TransactTime.new) %>
+  <b>TransactTime: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::TransactTime.new) %>
 </p>
 <p>
-  <b>ClOrdID: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::ClOrdID.new) %>
+  <b>ClOrdID: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::ClOrdID.new) %>
 </p>
 <p>
-  <b>OrdStatus: </b><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, Quickfix::OrdStatus.new)) %>
+  <b>OrdStatus: </b><%= getHumanOrdStatus(getStringFieldValueIfPresent(@qf_message, Quickfix::OrdStatus.new)) %>
 </p>
 <p>
-  <b>Side: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::Side.new) %>
+  <b>Side: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Side.new) %>
 </p>
 <p>
-  <b>Symbol: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::Symbol.new) %>
+  <b>Symbol: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Symbol.new) %>
 </p>
 <p>
-  <b>OrderQty: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::OrderQty.new) %>
+  <b>OrderQty: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::OrderQty.new) %>
 </p>
 <p>
-  <b>CumQty: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::CumQty.new) %>
+  <b>CumQty: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::CumQty.new) %>
 </p>
 <p>
-  <b>LeavesQty: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::LeavesQty.new) %>
+  <b>LeavesQty: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LeavesQty.new) %>
 </p>
 <p>
-  <b>AvgPx: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::AvgPx.new) %>
+  <b>AvgPx: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::AvgPx.new) %>
 </p>
 <p>
-  <b>Account: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::Account.new)  %>
+  <b>Account: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Account.new)  %>
 </p>
 <p>
-  <b>LastShares: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::LastShares.new)  %>
+  <b>LastShares: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LastShares.new)  %>
 </p>
 <p>
-  <b>LastPx: </b><%= getStringFieldValueIfPresent(qf_message, Quickfix::LastPx.new) %>
+  <b>LastPx: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LastPx.new) %>
 </p>
 <p>
   <b>Created On: </b><%= @message_log.created_on %>

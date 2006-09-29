@@ -28,7 +28,7 @@ module MessageLogsHelper
       when FilledCode
         return StatusFilled
       when PartialFilledCode
-        return StatusFilled
+        return StatusPartialFilled
       when CanceledCode
         return StatusCanceled
       when RejectedCode
