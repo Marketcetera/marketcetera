@@ -5,6 +5,9 @@ module MessageLogsHelper
   def getStringFieldValueIfPresent(inMessage, inField)
     return (inMessage.isSetField(inField) ) ? inMessage.getField(inField).getString() : ''
   end
+  def getHeaderStringFieldValueIfPresent(inMessage, inField)
+    return (inMessage.getHeader().isSetField(inField) ) ? inMessage.getHeader().getField(inField).getString() : ''
+  end
    
 # Human Strings
   StatusFilled = "Filled"
