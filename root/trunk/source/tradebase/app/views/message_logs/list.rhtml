@@ -1,8 +1,22 @@
 <h1>Listing Executed Trades</h1>
 
+<%= start_form_tag :action => 'list' %>
+<p><label for="search_type">Select Date Range</label><br/>
+<div>
+ <%= radio_button_tag('search_type', 's', {:checked => true})%><label for="search_type_s">Subset</label><br/>
+ &nbsp;&nbsp;<label for="start_date">Start date</label> 
+ <%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %><br/>
+ &nbsp;&nbsp;<label for="end_date">End date</label> &nbsp;&nbsp;
+ <%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %><br/>
+ </div>
+<%= radio_button_tag('search_type', 'a')%><label for="search_type_a">All</label><br/>
+<p/>
+  <%= submit_tag 'Search' %>
+<%= end_form_tag %>
+<p/>
 <table>
   <tr>
-    <th>TransactTime</th>
+    <th>SendingTime</th>
     <th>ClOrdID</th>
     <th>OrdStatus</th>
     <th>Side</th>
@@ -18,7 +32,7 @@
   </tr>
   
 <%
-    transactTime = Quickfix::TransactTime.new
+    sendingTime = Quickfix::SendingTime.new
     clOrdID = Quickfix::ClOrdID.new
     ordStatus = Quickfix::OrdStatus.new
     side = Quickfix::Side.new
@@ -35,7 +49,7 @@
     for message in @exec_report_pages %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
     <% qf_message = Quickfix::Message.new(message.text) %>
-    <td><%= getStringFieldValueIfPresent(qf_message, transactTime) %></td>
+    <td><%= getHeaderStringFieldValueIfPresent(qf_message, sendingTime) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
     <td><%= getHumanSide(getStringFieldValueIfPresent(qf_message, side)) %></td>

@@ -17,21 +17,37 @@ class MessageLogsController < ApplicationController
   # execReports, and only then paginate them - and we do this every time b/c we can't just 
   # get a slice of data from DB since not every message is going to be displayed.
   def list
-    all_messages = MessageLog.find(:all)
+    fSubsetSearch = params[:search_type] == 's'
+    if(fSubsetSearch)
+      @startDate = Date.new(params[:dates]['start_date(1i)'].to_i, params[:dates]['start_date(2i)'].to_i, params[:dates]['start_date(3i)'].to_i)
+      @endDate = Date.new(params[:dates]['end_date(1i)'].to_i, params[:dates]['end_date(2i)'].to_i, params[:dates]['end_date(3i)'].to_i)
+    end
     all_exec_reports = []
     msgTypeField = Quickfix::MsgType.new
     ordStatusField = Quickfix::OrdStatus.new
+    sendingTimeField = Quickfix::SendingTime.new
+    all_messages = MessageLog.find(:all)
     for oneMessageLog in all_messages
       qfMessage = Quickfix::Message.new(oneMessageLog.text)
       if(isTradeToBeShown(qfMessage, msgTypeField, ordStatusField))
-         logger.error("adding execReport: "+qfMessage.toString())
-         all_exec_reports << oneMessageLog
+        msg_send_time = Date.parse(qfMessage.getHeader.getField(sendingTimeField).getString())
+        if(fSubsetSearch) 
+           logger.error("checking "+msg_send_time.to_s + " against " + @startDate.to_s + " and "+@endDate.to_s)
+           if((msg_send_time >= @startDate) && (msg_send_time <= @endDate))
+             logger.error("adding execReport: "+qfMessage.toString())
+             all_exec_reports << oneMessageLog
+           else 
+            logger.error("discarding date "+msg_send_time.to_s)
+           end
+        else 
+           all_exec_reports << oneMessageLog
+        end
       end
     end
   
-  # deal with pagination later
-  @paginator = Paginator.new(self, all_exec_reports.length, 10, params[:page])
-  @exec_report_pages = all_exec_reports[@paginator.current.offset .. @paginator.current.offset + 9] 
+    # deal with pagination later
+    @paginator = Paginator.new(self, all_exec_reports.length, 10, params[:page])
+    @exec_report_pages = all_exec_reports[@paginator.current.offset .. @paginator.current.offset + 9] 
   end
 
   def show

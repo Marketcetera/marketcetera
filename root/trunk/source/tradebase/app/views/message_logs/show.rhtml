@@ -1,5 +1,5 @@
 <p>
-  <b>TransactTime: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::TransactTime.new) %>
+  <b>SendingTime: </b><%= getHeaderStringFieldValueIfPresent(@qf_message, Quickfix::SendingTime.new) %>
 </p>
 <p>
   <b>ClOrdID: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::ClOrdID.new) %>
