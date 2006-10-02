@@ -6,11 +6,13 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
 
 /**
  * Class required by the RCP to initialize the workbench.
+ * 
  * @author gmiller
- *
+ * @author andrei@lissovski.org
  */
 public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
@@ -38,11 +40,12 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	@Override
 	public void initialize(IWorkbenchConfigurer configurer) {
 		configurer.setSaveAndRestore(true);
+		
+		// explicitly register ide- and resource-related adapters that rdt relies on
+		WorkbenchAdapterBuilder.registerAdapters();
+		
 		ConsolePlugin.getDefault().getConsoleManager().addConsoles(
 				new IConsole[] { new MainConsole() });
 	}
-
-	
-	
 
 }

@@ -25,4 +25,5 @@ Require-Bundle: org.apache.activemq,
  org.apache.commons.i18n,
  net.java.dev.glazedlists,
  org.eclipse.update.core,
- org.eclipse.update.ui
+ org.eclipse.update.ui,
+ org.eclipse.ui.ide
