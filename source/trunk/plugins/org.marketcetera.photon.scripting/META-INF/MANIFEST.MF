@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Scripting Plug-in
+Bundle-SymbolicName: org.marketcetera.photon.scripting
+Bundle-Version: 1.0.0
+Bundle-Activator: org.marketcetera.photon.scripting.Activator
+Bundle-Vendor: Marketcetera
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.jruby,
+ org.apache.bsf
+Eclipse-LazyStart: true
