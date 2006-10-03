@@ -7,6 +7,7 @@ class CreateMessageLogs < ActiveRecord::Migration
       t.column :targetcompid, :string, :limit => 64, :null => false
       t.column :session_qualifier, :string, :limit => 64, :null => false
       t.column :text, :text, :null => false
+      t.column :processed, :boolean, :default => false
       t.column :created_on, :datetime, :default => Time.now
       t.column :updated_on, :datetime, :default => Time.now
     end

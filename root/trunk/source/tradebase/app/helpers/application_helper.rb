@@ -3,12 +3,23 @@ module ApplicationHelper
 
   def get_equity(ref_symbol)
     symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
-    raise SyntaxError if symbol==nil
-    equity = Equity.find(symbol.id)
-    return equity
+    if(symbol == nil)
+      symbol = MSymbol.new(:root => ref_symbol)
+      symbol.save
+      equity = Equity.new(:m_symbol => symbol)
+      equity.save
+      return equity
+    else
+      return Equity.find(symbol.id)
+    end
   end
 
+  # Lookup the specified currency. If not found, return USD by default
   def get_currency(cur_string)
+    if(cur_string == nil || cur_string == '') 
+      cur_string = 'USD'
+      logger.error("No currency specified, defaulting to USD")
+    end
     currency = Currency.find(:first, :conditions=>["alpha_code = ?", cur_string])
     return currency
   end

@@ -14,8 +14,11 @@
   <%= submit_tag 'Search' %>
 <%= end_form_tag %>
 <p/>
+
+<%= start_form_tag :action => 'create_trades', :controller => 'create_trades' %>
 <table>
   <tr>
+    <th>
     <th>SendingTime</th>
     <th>ClOrdID</th>
     <th>OrdStatus</th>
@@ -49,6 +52,7 @@
     for message in @exec_report_pages %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
     <% qf_message = Quickfix::Message.new(message.text) %>
+    <td><%= check_box('trades', message.id.to_s)  %></td>
     <td><%= getHeaderStringFieldValueIfPresent(qf_message, sendingTime) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
@@ -65,7 +69,9 @@
   </tr>
 <% end %>
 </table>
-
-<br />
+<p/>
+<%= submit_tag 'Create Selected Trades' %>
+<%= end_form_tag %>
+<p/>
 <%= link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous %>
 <%= link_to 'Next page', { :page => @paginator.current.next } if @paginator.current.next %> 

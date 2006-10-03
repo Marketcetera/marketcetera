@@ -1,4 +1,6 @@
 class AccountsController < ApplicationController
+  require 'quickfix'
+
   def index
     list
     render :action => 'list'
@@ -29,11 +31,6 @@ class AccountsController < ApplicationController
     else
       render :action => 'new'
     end
-  end
-
-  def fill_in_sub_accounts(account)
-    SubAccountType.find_all.each {|sat| SubAccount.new(:description=>sat.description,
-     :sub_account_type=>sat, :account=>account).save()}
   end
 
   def edit
