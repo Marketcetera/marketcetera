@@ -26,7 +26,7 @@ class MessageLogsController < ApplicationController
     msgTypeField = Quickfix::MsgType.new
     ordStatusField = Quickfix::OrdStatus.new
     sendingTimeField = Quickfix::SendingTime.new
-    all_messages = MessageLog.find(:all)
+    all_messages = MessageLog.find(:all, :conditions => [ 'processed = false' ])
     for oneMessageLog in all_messages
       qfMessage = Quickfix::Message.new(oneMessageLog.text)
       if(isTradeToBeShown(qfMessage, msgTypeField, ordStatusField))
