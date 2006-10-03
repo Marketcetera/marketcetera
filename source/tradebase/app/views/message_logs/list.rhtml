@@ -14,8 +14,7 @@
   <%= submit_tag 'Search' %>
 <%= end_form_tag %>
 <p/>
-
-<%= start_form_tag :action => 'create_trades', :controller => 'create_trades' %>
+<%= start_form_tag( {:action => 'create_trades', :controller => 'create_trades'},  {:id => "selectTrades"}) %>
 <table>
   <tr>
     <th>
@@ -52,7 +51,7 @@
     for message in @exec_report_pages %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
     <% qf_message = Quickfix::Message.new(message.text) %>
-    <td><%= check_box('trades', message.id.to_s)  %></td>
+    <td><%= check_box('trades', message.id.to_s) %></td>
     <td><%= getHeaderStringFieldValueIfPresent(qf_message, sendingTime) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
@@ -69,6 +68,8 @@
   </tr>
 <% end %>
 </table>
+<p/>
+Select: <a href="javascript:toggleCheckboxes('selectTrades', 1);">All</a> <a href="javascript:toggleCheckboxes('selectTrades', 0);">None</a>
 <p/>
 <%= submit_tag 'Create Selected Trades' %>
 <%= end_form_tag %>
