@@ -15,4 +15,8 @@ public class ScriptScheduler {
 	{
 		pool.execute(new ScriptRunnable(script, manager));
 	}
+	
+	void shutdown(){
+		pool.shutdown();
+	}
 }
