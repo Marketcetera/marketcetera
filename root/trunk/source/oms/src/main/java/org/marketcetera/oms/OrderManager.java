@@ -33,16 +33,10 @@ public class OrderManager extends JCycloneStageBase {
     private ArrayList<OrderModifier> orderModifiers = new ArrayList<OrderModifier>(2);
 
     public static final String ORDER_MANAGER_NAME = "OrderManager";
-    public static final String ORDER_MANAGER_FIX_CONDUIT_NAME = "OrderManagerFIXConduit";
-    protected static final String FIX_HEADER_PREFIX = "fix.header.";
-    protected static final String FIX_TRAILER_PREFIX = "fix.trailer.";
-    protected static final String FIX_FIELDS_PREFIX = "fix.fields.";
 
     /** JCyclone constructor: Creates a new instance of OrderManager */
     public OrderManager()
     {
-        defaultFieldModifier = new DefaultOrderModifier();
-        orderModifiers.add(defaultFieldModifier);
         orderModifiers.add(new TransactionTimeInsertOrderModifier());
         routeMgr = new OrderRouteManager();
     }
@@ -54,6 +48,8 @@ public class OrderManager extends JCycloneStageBase {
 
     protected void postInitialize(ConfigData props) throws BackingStoreException
     {
+        defaultFieldModifier = OrderModifierFactory.defaultsModifierInstance(props);
+        orderModifiers.add(defaultFieldModifier);
         routeMgr.init(props);
         readDefaultFields(props, defaultFieldModifier);
     }
@@ -210,43 +206,8 @@ public class OrderManager extends JCycloneStageBase {
     protected void readDefaultFields(ConfigData props, DefaultOrderModifier inOrderModifier)
             throws BackingStoreException
     {
-        String[] propNames = props.keys();
-        for(String oneName : propNames) {
-            if(oneName.startsWith(FIX_FIELDS_PREFIX)) {
-                readDefaultFieldsHelper(props, oneName, FIX_FIELDS_PREFIX, inOrderModifier,
-                        DefaultOrderModifier.MessageFieldType.MESSAGE);
-            } else if(oneName.startsWith(FIX_HEADER_PREFIX)) {
-                readDefaultFieldsHelper(props, oneName, FIX_HEADER_PREFIX, inOrderModifier,
-                        DefaultOrderModifier.MessageFieldType.HEADER);
-            } else if(oneName.startsWith(FIX_TRAILER_PREFIX)) {
-                readDefaultFieldsHelper(props, oneName, FIX_TRAILER_PREFIX, inOrderModifier,
-                        DefaultOrderModifier.MessageFieldType.TRAILER);
-            }
-        }
     }
 
-    /** The header fields are of form:
-     * <prefix>.<fieldName>=<fieldValue>
-     * Where fieldName is an integer number.
-     * So we parse out the field name, store it as an int, and store the value as an object.
-     * @param inProps
-     * @param propName
-     * @param propPrefix
-     * @param inOrderModifier
-     * @param fieldType Which particular kind of field we are modifying: trailer/header/message
-     */
-    protected void readDefaultFieldsHelper(ConfigData inProps, String propName, String propPrefix,
-                                           DefaultOrderModifier inOrderModifier,
-                                           DefaultOrderModifier.MessageFieldType fieldType)
-    {
-        String realFieldName = propName.substring(propPrefix.length());     // trailing . is included in prefix
-        try {
-            int fieldID = Integer.parseInt(realFieldName);
-            inOrderModifier.addDefaultField(fieldID, inProps.get(propName, ""), fieldType);
-        } catch (Exception ex) {
-            LoggerAdapter.error(OMSMessageKey.ERROR_INIT_PROPNAME_IGNORE.getLocalizedMessage(propName), ex, this);
-        }
-    }
 
     /** Apply all the order modifiers to this message */
     protected void modifyOrder(Message inOrder) throws MarketceteraException
