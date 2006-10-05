@@ -90,38 +90,13 @@ public class OrderManagerTest extends TestCase
         FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY);
     }
 
-    /** Put one extra field in the config and make sure that it appears
-     * in the vanilla message after initializing the modifier and running the message
-     * through it
-     * @throws Exception
-     */
-    public void testReadDefaultFieldHelper() throws Exception
-    {
-        Properties props = new Properties();
-        props.setProperty(OrderManager.FIX_HEADER_PREFIX+"57", HEADER_57_VAL);
-
-        DefaultOrderModifier mod = new DefaultOrderModifier();
-        PropertiesConfigData pcd = new PropertiesConfigData(props);
-        mod.init(pcd);
-
-        OrderManager om = new OrderManager();
-        om.readDefaultFieldsHelper(pcd, OrderManager.FIX_HEADER_PREFIX+"57",
-                OrderManager.FIX_HEADER_PREFIX, mod,
-                DefaultOrderModifier.MessageFieldType.HEADER);
-
-        Message msg = FIXMessageUtil.createNewMessage();
-        assertTrue(mod.modifyOrder(msg));
-        assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
-    }
-
     /** Create a configData that creates a few default fields and verify they get placed
      * into the message
      */
     public void testInsertDefaultFields() throws Exception
     {
         Properties props = getPropsWithDefaults();
-        DefaultOrderModifier mod = new DefaultOrderModifier();
-        mod.init(new PropertiesConfigData(props));
+        DefaultOrderModifier mod = OrderModifierFactory.defaultsModifierInstance(new PropertiesConfigData(props));
 
         MyOrderManager mom = new MyOrderManager();
         mom.postInitialize(new PropertiesConfigData(props));
@@ -304,11 +279,11 @@ public class OrderManagerTest extends TestCase
     public static Properties getPropsWithDefaults()
     {
         Properties props = new Properties();
-        props.setProperty(OrderManager.FIX_HEADER_PREFIX+"57", HEADER_57_VAL);
-        props.setProperty(OrderManager.FIX_HEADER_PREFIX+"12", HEADER_12_VAL);
-        props.setProperty(OrderManager.FIX_TRAILER_PREFIX+"2", TRAILER_2_VAL);
-        props.setProperty(OrderManager.FIX_FIELDS_PREFIX+"37", FIELDS_37_VAL);
-        props.setProperty(OrderManager.FIX_FIELDS_PREFIX+"14", FIELDS_14_VAL);
+        props.setProperty(OrderModifierFactory.FIX_HEADER_PREFIX+"57", HEADER_57_VAL);
+        props.setProperty(OrderModifierFactory.FIX_HEADER_PREFIX+"12", HEADER_12_VAL);
+        props.setProperty(OrderModifierFactory.FIX_TRAILER_PREFIX+"2", TRAILER_2_VAL);
+        props.setProperty(OrderModifierFactory.FIX_FIELDS_PREFIX+"37", FIELDS_37_VAL);
+        props.setProperty(OrderModifierFactory.FIX_FIELDS_PREFIX+"14", FIELDS_14_VAL);
         return props;
     }
 

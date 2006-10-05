@@ -12,6 +12,7 @@ import org.marketcetera.jms.JMSAdapterTest;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.OrderModifierFactory;
 import quickfix.Message;
 import quickfix.field.Price;
 import quickfix.field.Side;
@@ -59,7 +60,7 @@ public class OrderManagementSystemIT extends TestCase
         assertEquals(23, props.keys().length);
         // check att least one went through
         assertEquals(OrderManagerTest.HEADER_57_VAL,
-                props.get(OrderManager.FIX_HEADER_PREFIX+"57", ""));
+                props.get(OrderModifierFactory.FIX_HEADER_PREFIX+"57", ""));
     }
 
     /** This is more of an integration test
