@@ -3,8 +3,6 @@ package org.marketcetera.core;
 import org.jcyclone.core.cfg.MapConfig;
 import org.jcyclone.core.cfg.JCycloneConfig;
 import org.jcyclone.core.boot.JCyclone;
-import org.apache.commons.i18n.ResourceBundleMessageProvider;
-import org.apache.commons.i18n.MessageManager;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -138,9 +136,9 @@ public abstract class ApplicationBase implements Clock, ApplicationMBeanBase {
     }
 
     public void shutdown() {
-        LoggerAdapter.info(MessageKey.APP_SHUTDOWN.getLocalizedMessage(), this);
         try {
             if(jcyclone!=null) {
+                LoggerAdapter.info(MessageKey.APP_SHUTDOWN.getLocalizedMessage(), this);
                 jcyclone.stop();
                 // reset Jcyclone so that we don't try to shutdown twice (this may happen in unit tests)
                 jcyclone.dispose();
