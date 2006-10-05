@@ -6,7 +6,7 @@ import java.sql.*;
 @ClassVersion("$Id$")
 public class DatabaseIDFactory implements IDFactory {
 
-    public static final String TABLE_NAME = "IDRepository";
+    public static final String TABLE_NAME = "id_repository";
     public static final String COL_NAME = "nextAllowedID";
 
     private String dbURL;
