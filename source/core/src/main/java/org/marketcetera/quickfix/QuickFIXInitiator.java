@@ -154,7 +154,7 @@ public class QuickFIXInitiator implements quickfix.Application
     }
 
     public void shutdown() {
-        mSocketInitiator.stop();
+        mSocketInitiator.stop(true);
     }
 
     public boolean isLoggedOn(quickfix.SessionID sessionID) {
