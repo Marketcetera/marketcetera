@@ -18,8 +18,12 @@ module ActiveRecord
     end
 
     module ClassMethods
-      def add_limit_with_pessimistic_lock!(sql, options, scope)
-        add_limit_without_pessimistic_lock!(sql, options, scope)
+      def add_limit_with_pessimistic_lock!(sql, options, scope=nil)
+	if (scope == nil)
+	  add_limit_without_pessimistic_lock!(sql, options)
+	else
+	  add_limit_without_pessimistic_lock!(sql, options, scope)
+	end
         if options[:lock]
           sql << " FOR UPDATE"
         end
