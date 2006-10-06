@@ -5,13 +5,16 @@ class CreateTrades < ActiveRecord::Migration
 
   def self.up
     create_table :trades do |t|
-      t.column :asset_type, :string, :limit=>2
-      t.column :asset_id, :integer, :null => false
       t.column :quantity, :float
+      t.column :side, :integer
       t.column :trade_type, :string, :limit=>1
       t.column :journal_id, :integer
       t.column :account_id, :integer, :null => false
       t.column :comment, :string, :limit=>255
+      
+      t.column :tradeable_id, :integer
+      t.column :tradeable_type, :string
+      
       t.column :created_on, :datetime
       t.column :updated_on, :datetime
     end

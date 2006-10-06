@@ -3,12 +3,23 @@
   <b>Quantity:</b> <%=h @trade.send('quantity') %>
 </p>
 <p>
+  <b>Side:</b> <%=h get_human_side(@trade.side.to_s) %>
+</p>
+<p>
   <b>Trade type:</b> 
   <%=h get_human_trade_type(@trade.trade_type) %>
 </p>
 <p>
   <b>Asset type:</b> 
   <%=h get_human_asset_type(@trade.asset_type) %>
+</p>
+<p>
+  <b>Symbol</b>
+  <%= get_equity_by_asset_type(@trade).m_symbol.root %>
+</p>
+<p>
+  <b>Account</b>
+  <%=h @trade.account.nickname %>
 </p>
 <p>
   <b>Comment:</b> <%=h @trade.send('comment') %>
@@ -44,7 +55,7 @@ total_debits = BigDecimal('0')
     </tr>
 <% end %>
     <tr>
-    <td></td><td><%=h total_debits.abs()%></td><td><%=h total_credits.abs()%></td>
+    <td><em>Totals</em></td><td><%=h total_debits.abs()%></td><td><%=h total_credits.abs()%></td>
     </tr>
 
 </table>

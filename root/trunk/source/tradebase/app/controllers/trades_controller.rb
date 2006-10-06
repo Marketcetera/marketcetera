@@ -3,6 +3,7 @@ require 'bigdecimal'
 class TradesController < ApplicationController
   include ApplicationHelper
   include SubAccountsHelper
+  include QF_BuyHelper
   include TradesHelper
 
   auto_complete_for :m_symbol, :root, {}

@@ -1,0 +1,20 @@
+<h1>Available Queries</h1>
+List trades by: 
+  <ol>
+  <li>
+    <%=  start_form_tag :action => 'by_symbol' %>
+    <p><label for="m_symbol_root">Symbol</label><br/>
+       <%= text_field_with_auto_complete :m_symbol, :root %>
+    </p>
+    <%= submit_tag 'Search by Symbol' %>
+    <% end_form_tag %>
+  </li>
+  <li>
+    <%=  start_form_tag :action => 'by_date' %>
+    <p><label for="date_root">Trade Date</label><br/>
+       <%= date_select 'date', 'trade_date', :order => [:year, :month, :day] %>
+    </p>
+    <%= submit_tag 'Search by Trade Date' %>
+    <% end_form_tag %>
+  </li>
+  </ol>
