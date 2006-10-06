@@ -1,0 +1,267 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Apache MINA - 
+    History</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+          <meta name="author" content="
+    Trustin Lee" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+                                    <img src="http://directory.apache.org/images/apache-directory-logo.png" alt="" />
+    
+            </span>
+                          <span id="bannerRight">
+    
+            MINA
+    
+            </span>
+            <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+            <div class="xleft">
+        Last Published: 10/02/2006
+                      </div>
+            <div class="xright">      <a href="http://directory.apache.org/subprojects/apacheds/index.html">ApacheDS</a>
+          |
+          <a href="http://directory.apache.org/projects/naming/index.html">Naming</a>
+          |
+          <a href="index.html">MINA (Network Layer)</a>
+          |
+          <a href="http://directory.apache.org/index.html">Directory</a>
+          
+  
+
+  
+    
+  
+  
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+                   <h5>MINA</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="index.html">Overview</a>
+        </li>
+              
+    <li class="none">
+              <a href="features.html">Features</a>
+        </li>
+              
+    <li class="none">
+              <a href="testimonials.html">Testimonials</a>
+        </li>
+              
+    <li class="none">
+              <a href="getting_started.html">Getting Started</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://www.apache.org/dyn/closer.cgi/directory/mina/">Downloads</a>
+        </li>
+              
+    <li class="none">
+              <a href="faq.html">F.A.Q</a>
+        </li>
+              
+    <li class="none">
+              <a href="roadmap.html">Roadmap</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://issues.apache.org/jira/browse/DIRMINA?report=com.atlassian.jira.plugin.system.project:changelog-panel&subset=-1">Changes</a>
+        </li>
+              
+    <li class="none">
+              <strong>History</strong>
+        </li>
+          </ul>
+          <h5>MINA Community</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="mail-lists.html">Mailing List</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://issues.apache.org/jira/browse/DIRMINA">Issue Tracker</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://wiki.apache.org/directory/MinaHome">Wiki Pages</a>
+        </li>
+          </ul>
+          <h5>MINA References</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="apidocs/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://svn.apache.org/viewvc/directory/trunks/mina/examples/src/main/java/org/apache/mina/examples/">Examples</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://svn.apache.org/viewvc/directory/trunks/mina/">Source code</a>
+        </li>
+          </ul>
+          <h5>Older Releases</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="branches/0.8/index.html">0.8</a>
+        </li>
+          </ul>
+          <h5>Project Documentation</h5>
+        <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="project-info.html">Project Information</a>
+              </li>
+          </ul>
+                                       <a href="http://maven.apache.org/" title="Built by Maven" id="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        
+  
+
+  
+    <a name="History"></a><div class="section"><h2>History</h2>
+      <p>
+        by Trustin Lee (trustin at apache dot org)
+      </p>
+      <p>
+        In June 2004, I released a network application framework,
+        '<a href="http://gleamynode.net/dev/tl-netty2/docs/">Netty2</a>'.
+        It was the first network application framework that provides event-based
+        architecture in Java community.  It attracted network application
+        programmers because of its simplicity and ease of use.  As Netty2
+        community grows up, its problems also arose.  Netty2 didn’t work fine
+        with text protocols and had severe architectural flaw that prevents users
+        from using it for applications with many concurrent clients.
+      </p>
+      <p>
+        Quite large amount of information was collected about what users like
+        about Netty2 and what improvements they want from it for 6 months.  It
+        was clear they like its ease of use and unit-testability.  They wanted
+        support for UDP/IP and text protocols.  I had to invent cleaner, more
+        flexible, and more extensible API so that it is easy to learn yet
+        full-featured.
+      </p>
+      <p>
+        In September 2004, I joined the Apache Directory team to improve
+        another network application framework, Apache SEDA.  It was based
+        on generic event model with predefined stages.  I liked its main idea,
+        but its core was too abstract to call it a network application
+        framework.  I saw many highly abstract but dead frameworks claiming
+        they can do whatever users want, and it was one of them.  So I urged
+        to create a new network application framework ‘MINA’ which is based on
+        my idea on Netty2-NG.
+      </p>
+      <p>
+         Although there was some competition between next generations of
+         Apache SEDA, MINA has finally won and it is now the only network
+         application framework our team uses.  We have implemented several
+         complex protocols such as LDAP, Kerberos, DNS and NTP, and realized
+         that implementing protocols can be a lot of fun instead of tedious
+         coding.
+      </p>
+    </div>
+  
+
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2004-2006
+    
+          
+  
+
+  
+    
+  
+  
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
