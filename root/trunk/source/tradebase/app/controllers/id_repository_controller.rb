@@ -7,8 +7,7 @@ class IdRepositoryController < ApplicationController
     theID.nextAllowedID = @current + NumAllowed
     theID.save
     
-    @code = "success" # do the right thing here   
+    @num_allowed = NumAllowed
     render :layout => false
-#    render :xml => theID.to_xml(:skip_instruct => true, :except => [ :id])
   end
 end
