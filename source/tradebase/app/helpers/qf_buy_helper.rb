@@ -13,7 +13,7 @@ module QF_BuyHelper
   SideSellShortExemptCode = Quickfix::Side_SELL_SHORT_EXEMPT()
 
   # Takes an integer code and translates that into a human string
-  def getHumanSide(inSideCode)
+  def get_human_side(inSideCode)
     case inSideCode
     when SideBuyCode
       return SideBuy
@@ -23,7 +23,7 @@ module QF_BuyHelper
       return SideSellShort
     when SideSellShortExemptCode 
       return SideSellShortExempt
-    else return "Unknown side: " + inSideCode   
+    else return "Unknown side: " + inSideCode.to_s   
     end
   end
 end

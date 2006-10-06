@@ -2,7 +2,8 @@
 
 <!--[form:trade]-->
 <p><label for="m_symbol_root">Symbol</label><br/>
-<%= text_field_with_auto_complete :m_symbol, :root %>
+<%= text_field_with_auto_complete :m_symbol, :root , 
+    :value => (@trade.id == nil) ? '' : get_equity_by_asset_type(@trade).m_symbol.root %>
 
 <p><label for="trade_quantity">Quantity</label><br/>
 <%= text_field 'trade', 'quantity'  %></p>
@@ -26,7 +27,7 @@
 <%= text_field 'trade', 'comment'  %></p>
 
 <p><label for="account_nickname">Account</label><br/>
-<%= text_field_with_auto_complete :account, :nickname %>
+<%= text_field_with_auto_complete :account, :nickname, :value=> (@trade.id ==nil) ? '' : @trade.account.nickname %>
 
 <!--[eoform:trade]-->
 

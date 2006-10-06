@@ -1,8 +1,7 @@
 require 'quickfix_ruby'
-include QF_BuyHelper
+#include QF_BuyHelper
 	
 class MessageLogsController < ApplicationController
-  include QF_BuyHelper
 
   def index
     list

@@ -1,5 +1,6 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
+include QF_BuyHelper
 
   def get_equity(ref_symbol)
     symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
