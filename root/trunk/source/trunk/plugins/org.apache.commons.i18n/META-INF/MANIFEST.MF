@@ -6,6 +6,7 @@ Bundle-Version: 0.0.20060814
 Bundle-ClassPath: lib/commons-i18n-20060814.jar
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
+Eclipse-BuddyPolicy: registered
 Eclipse-LazyStart: false
 Export-Package: .,
  org.apache.commons.i18n,
