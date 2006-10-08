@@ -1,5 +1,13 @@
-# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-first:
+usd:
   id: 1
-another:
+  alpha_code: "USD"
+  numeric_code: 840
+  description: "US Dollar"
+  obsolete: false
+  
+GPB:
   id: 2
+  alpha_code: "GBP"
+  numeric_code: 826
+  description: "Pound Sterling"
+  obsolete: false

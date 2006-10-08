@@ -1,5 +1,12 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-first:
+toli_account:
   id: 1
-another:
+  nickname: "toli money"
+  description: "toli's favourite account"
+  institution_identifier: "etrade"
+graham_account:
   id: 2
+  nickname: "beer money"
+  description: "saving for beer"
+  institution_identifier: "mattress"
+  

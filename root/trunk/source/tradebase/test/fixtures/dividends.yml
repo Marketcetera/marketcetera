@@ -1,5 +1,6 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-first:
+goog_div:
   id: 1
-another:
-  id: 2
+  amount: 20
+  description: "google dividend"
+  currency_id: 1
