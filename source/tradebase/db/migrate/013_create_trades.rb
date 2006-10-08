@@ -6,6 +6,7 @@ class CreateTrades < ActiveRecord::Migration
   def self.up
     create_table :trades do |t|
       t.column :quantity, :float
+      t.column :price_per_share, :float
       t.column :side, :integer
       t.column :trade_type, :string, :limit=>1
       t.column :journal_id, :integer
