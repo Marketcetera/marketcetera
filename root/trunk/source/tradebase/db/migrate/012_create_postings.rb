@@ -9,6 +9,7 @@ class CreatePostings < ActiveRecord::Migration
       t.column :sub_account_id, :integer, :null => false
       t.column :journal_id, :integer, :null => false
       t.column :currency_id, :integer, :null => false
+      t.column :pair_id, :integer, :null => false
       t.column :created_on, :datetime
       t.column :updated_on, :datetime
     end
