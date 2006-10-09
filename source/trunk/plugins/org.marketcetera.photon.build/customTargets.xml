@@ -1,0 +1,25 @@
+<project name="Photon customTargets">
+
+	<target name="allElements">
+	</target>
+
+	<target name="postBuild">
+		<antcall target="test">
+		</antcall>
+	</target>
+
+	<target name="test">
+		<echo message="Setting up tests in ${eclipseAutomatedTestHome}" />
+
+		<copy file="${buildDirectory}/${buildLabel}/org.rubypeople.rdt-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-SDK-RDT-${buildId}.zip" />
+		<copy file="${buildDirectory}/${buildLabel}/org.rubypeople.rdt-tests-${buildId}.zip" tofile="${eclipseAutomatedTestHome}/eclipse-junit-tests-rdt-${buildId}.zip" />
+
+		<ant antfile="${eclipseAutomatedTestHome}/test.xml" target="runtests" dir="${eclipseAutomatedTestHome}">
+			<property name="os" value="${baseos}" />
+			<property name="ws" value="${basews}" />
+			<property name="arch" value="${basearch}" />
+			<property name="testPlugin" value="org.marketcetera.photon.tests.all_0.5.0" />
+			<property name="report" value="org.marketcetera.photon.tests.all" />
+		</ant>
+	</target>
+</project>
