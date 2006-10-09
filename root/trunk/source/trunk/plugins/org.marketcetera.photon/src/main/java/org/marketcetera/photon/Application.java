@@ -11,6 +11,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -60,6 +61,7 @@ public class Application implements IPlatformRunnable {
 	 */
 	public Object run(Object args) throws Exception {
 		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+		MessageBundleManager.registerCoreMessageBundle();
 		
 		fixMessageHistory = new FIXMessageHistory();
 

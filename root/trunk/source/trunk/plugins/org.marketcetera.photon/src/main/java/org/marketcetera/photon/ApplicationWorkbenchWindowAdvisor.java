@@ -98,13 +98,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		IViewPart stockOrderTicket = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(StockOrderTicket.ID);		
 		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
-		if (stockOrderTicket instanceof StockOrderTicket && item instanceof CommandStatusLineContribution) {
-			StockOrderTicket sot = (StockOrderTicket) stockOrderTicket;
+		if (item instanceof CommandStatusLineContribution) {
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
-			cslc.addCommandListener(sot.getCommandListener());
 			cslc.setIDFactory(Application.getIDFactory());
 		}
 

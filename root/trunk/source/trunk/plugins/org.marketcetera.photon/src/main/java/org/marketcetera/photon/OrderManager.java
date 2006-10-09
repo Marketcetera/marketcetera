@@ -15,10 +15,8 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.actions.CommandEvent;
-import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.parser.Parser;
+import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
@@ -57,9 +55,6 @@ public class OrderManager {
 	
 	private Logger internalMainLogger = Application.getMainConsoleLogger();
 
-
-	private ICommandListener commandListener;
-
 	private List<IOrderActionListener> orderActionListeners = new ArrayList<IOrderActionListener>();
 
 	private FIXMessageHistory fixMessageHistory;
@@ -76,13 +71,6 @@ public class OrderManager {
 	public OrderManager(IDFactory idFactory, FIXMessageHistory fixMessageHistory) {
 		this.idFactory = idFactory;
 		this.fixMessageHistory = fixMessageHistory;
-
-		commandListener = new ICommandListener() {
-			public void commandIssued(CommandEvent evt) {
-				handleCommandIssued(evt);
-			};
-		};
-
 	}
 
 	/**Get the {@link MessageListener} to hand to the JMS subsystem for
@@ -325,7 +313,7 @@ public class OrderManager {
 		} catch (FieldNotFound e) {
 			try {
 				if (OrdType.MARKET == message.getChar(OrdType.FIELD)){
-					priceString = Parser.PriceImage.MKT.toString();
+					priceString = PriceImage.MKT.toString();
 				}
 			} catch (FieldNotFound fnf){
 				//do nothing
@@ -349,37 +337,11 @@ public class OrderManager {
 	}
 	
 	private String toTimeInForce(char fixTimeInForce) {
-		switch(fixTimeInForce) {
-		case TimeInForce.DAY:
-			return Parser.TimeInForceImage.DAY.image;
-		case TimeInForce.GOOD_TILL_CANCEL:
-			return Parser.TimeInForceImage.GTC.image;
-		case TimeInForce.FILL_OR_KILL:
-			return Parser.TimeInForceImage.FOK.image;
-		case TimeInForce.AT_THE_CLOSE:
-			return Parser.TimeInForceImage.CLO.image;
-		case TimeInForce.AT_THE_OPENING:
-			return Parser.TimeInForceImage.OPG.image;
-		case TimeInForce.IMMEDIATE_OR_CANCEL:
-			return Parser.TimeInForceImage.IOC.image;
-		default:
-			return "" + fixTimeInForce; 
-		}
+		return FIXDataDictionaryManager.getDictionary().getValueName(TimeInForce.FIELD, ""+fixTimeInForce);
 	}
 	
 	private String toSide(char fixSide) {
-		switch(fixSide) {
-		case Side.BUY:
-			return Parser.CommandImage.BUY.image;
-		case Side.SELL:
-			return Parser.CommandImage.SELL.image;
-		case Side.SELL_SHORT:
-			return Parser.CommandImage.SELL_SHORT.image;
-		case Side.SELL_SHORT_EXEMPT:
-			return Parser.CommandImage.SELL_SHORT_EXEMPT.image;
-		default:
-			return "" + fixSide; 
-		}
+		return FIXDataDictionaryManager.getDictionary().getValueName(Side.FIELD, ""+fixSide);
 	}
 
 	private void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage){
@@ -409,30 +371,6 @@ public class OrderManager {
 
 	public IDFactory getIDFactory() {
 		return idFactory;
-	}
-
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.marketcetera.photon.actions.ICommandListener#commandIssued(org.marketcetera.photon.actions.CommandEvent)
-	 */
-	public void handleCommandIssued(CommandEvent evt) {
-		try {
-			if (evt.getDestination() == CommandEvent.Destination.BROKER){
-				handleInternalMessage(evt.getMessage());
-			}
-		} catch (Exception e) {
-			this.internalMainLogger.error("Error processing command", e);
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * @return Returns the commandListener.
-	 */
-	public ICommandListener getCommandListener() {
-		return commandListener;
 	}
 
 	/* (non-Javadoc)

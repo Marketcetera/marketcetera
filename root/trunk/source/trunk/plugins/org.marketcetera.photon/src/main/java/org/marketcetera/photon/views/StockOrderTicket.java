@@ -1,9 +1,17 @@
 package org.marketcetera.photon.views;
 
-
 import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.layout.GridData;
@@ -11,115 +19,142 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.Form;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.Application;
-import org.marketcetera.photon.actions.CommandEvent;
-import org.marketcetera.photon.actions.ICommandListener;
+import org.marketcetera.photon.parser.SideImage;
+import org.marketcetera.photon.parser.TimeInForceImage;
+import org.marketcetera.photon.ui.AbstractFIXExtractor;
+import org.marketcetera.photon.ui.CComboValidator;
+import org.marketcetera.photon.ui.FIXCComboExtractor;
+import org.marketcetera.photon.ui.FIXTextExtractor;
+import org.marketcetera.photon.ui.FormValidator;
+import org.marketcetera.photon.ui.IMessageDisplayer;
+import org.marketcetera.photon.ui.NumericTextValidator;
+import org.marketcetera.photon.ui.ParentColorHighlighter;
+import org.marketcetera.photon.ui.PriceTextValidator;
+import org.marketcetera.photon.ui.TextValidator;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
-import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.Account;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 
-@ClassVersion("$Id$")
-public class StockOrderTicket extends ViewPart {
+public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 
 	public static String ID = "org.marketcetera.photon.views.StockOrderTicket";
+	private Composite top = null;
+	private FormToolkit formToolkit = null;   //  @jve:decl-index=0:visual-constraint=""
+	private Form form = null;
+	private Label errorMessageLabel = null;
+	private Label sideLabel = null;
+	private Label quantityLabel = null;
+	private Label symbolLabel = null;
+	private Label priceLabel = null;
+	private Label tifLabel = null;
+	private Composite sideBorderComposite = null;
+	private CCombo sideCCombo = null;
+	private Composite quantityBorderComposite = null;
+	private Composite symbolBorderComposite = null;
+	private Composite priceBorderComposite = null;
+	private Composite tifBorderComposite = null;
+	private Text quantityText = null;
+	private Text symbolText = null;
+	private Text priceText = null;
+	private CCombo tifCCombo = null;
+	private ExpandableComposite customFieldsExpandableComposite = null;
+	private Composite customFieldsComposite = null;
+	private Table customFieldsTable = null;
+	private CheckboxTableViewer tableViewer = null;
+	
+	private FormValidator validator = new FormValidator(this);
 
-	private FormToolkit toolkit;
-
-	private Form form;
-
-	private FIXEnumeratedComposite buySellControl;
-
-	private FIXStringComposite orderQtyControl;
-
-	private FIXStringComposite symbolControl;
-
-	private FIXStringComposite priceControl;
-
-	private FIXEnumeratedComposite timeInForceControl;
-
-	private FIXStringComposite accountControl;
-
+	List<AbstractFIXExtractor> extractors = new LinkedList<AbstractFIXExtractor>();
 	private Button sendButton;
-
 	private Button cancelButton;
-
-	private ICommandListener commandListener;
-
-	public StockOrderTicket() {
-		super();
-		commandListener = new ICommandListener() {
-			public void commandIssued(CommandEvent evt) {
-				handleCommandIssued(evt);
-			};
-		};
-	}
-
-	protected void handleCommandIssued(CommandEvent evt) {
-		if (evt.getDestination() == CommandEvent.Destination.EDITOR) {
-			asyncPopulateFromMessage(evt.getMessage());
-		}
-	}
 
 	@Override
 	public void createPartControl(Composite parent) {
+        GridData gridData = new GridData();
+        gridData.horizontalAlignment = GridData.FILL;
+        gridData.grabExcessHorizontalSpace = true;
+        gridData.verticalAlignment = GridData.END;
+        top = new Composite(parent, SWT.NONE);
+        top.setLayout(new GridLayout());
+        createForm();
+        errorMessageLabel = getFormToolkit().createLabel(top, "");
+        errorMessageLabel.setLayoutData(gridData);
+        top.setBackground(errorMessageLabel.getBackground());
+		
+	}
 
-		toolkit = new FormToolkit(parent.getDisplay());
-		form = toolkit.createForm(parent);
-		// form.setText("Stock Order Ticket");
-		GridLayout layout = new GridLayout();
-		form.getBody().setLayout(layout);
+	@Override
+	public void setFocus() {
+	}
 
-		// FIXDataDictionaryManager.loadDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
-		DataDictionary dict = FIXDataDictionaryManager.getDictionary();
-		buySellControl = new FIXEnumeratedComposite(form.getBody(), SWT.NONE,
-				toolkit, Side.FIELD, new String[] { "" + Side.BUY,
-						"" + Side.SELL, "" + Side.SELL_SHORT,
-						"" + Side.SELL_SHORT_EXEMPT });
-		orderQtyControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, OrderQty.FIELD);
-		toolkit.paintBordersFor(orderQtyControl);
-		symbolControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, Symbol.FIELD);
-		toolkit.paintBordersFor(symbolControl);
-		priceControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, Price.FIELD);
-		toolkit.paintBordersFor(priceControl);
-		timeInForceControl = new FIXEnumeratedComposite(form.getBody(),
-				SWT.NONE, toolkit, TimeInForce.FIELD, new String[] {
-						"" + TimeInForce.DAY,
-						"" + TimeInForce.GOOD_TILL_CANCEL,
-						"" + TimeInForce.FILL_OR_KILL,
-						"" + TimeInForce.IMMEDIATE_OR_CANCEL });
-		timeInForceControl.setSelection("" + TimeInForce.DAY, true);
-		accountControl = new FIXStringComposite(form.getBody(), SWT.NONE,
-				toolkit, Account.FIELD);
-		toolkit.paintBordersFor(accountControl);
-		Composite okCancelComposite = toolkit.createComposite(form.getBody());
+	/**
+	 * This method initializes formToolkit	
+	 * 	
+	 * @return org.eclipse.ui.forms.widgets.FormToolkit	
+	 */
+	private FormToolkit getFormToolkit() {
+		if (formToolkit == null) {
+			formToolkit = new FormToolkit(Display.getCurrent());
+		}
+		return formToolkit;
+	}
+
+	/**
+	 * This method initializes form	
+	 *
+	 */
+	private void createForm() {
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 5;
+		gridLayout.marginWidth = 1;
+		gridLayout.verticalSpacing = 1;
+		gridLayout.horizontalSpacing = 1;
+		gridLayout.marginHeight = 1;
+		form = getFormToolkit().createForm(top);
+		form.getBody().setLayout(gridLayout);
+		sideLabel = getFormToolkit().createLabel(form.getBody(), "Side");
+		quantityLabel = getFormToolkit().createLabel(form.getBody(), "Quantity");
+		symbolLabel = getFormToolkit().createLabel(form.getBody(), "Symbol");
+		priceLabel = getFormToolkit().createLabel(form.getBody(), "Price");
+		tifLabel = getFormToolkit().createLabel(form.getBody(), "TIF");
+		createSideBorderComposite();
+		createQuantityBorderComposite();
+		createSymbolBorderComposite();
+		createPriceBorderComposite();
+		createTifBorderComposite();
+		//createCustomFieldsExpandableComposite();
+        GridData formGridData = new GridData();
+        formGridData.grabExcessHorizontalSpace = true;
+        formGridData.horizontalAlignment = GridData.FILL;
+        formGridData.grabExcessVerticalSpace = true;
+        formGridData.verticalAlignment = GridData.FILL;
+        form.setLayoutData(formGridData);
+
+		Composite okCancelComposite = getFormToolkit().createComposite(form.getBody());
 		okCancelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END);
 		okCancelComposite.setLayoutData(gd);
-		sendButton = toolkit.createButton(okCancelComposite, "Send", SWT.PUSH);
-		cancelButton = toolkit.createButton(okCancelComposite, "Cancel",
+		sendButton = getFormToolkit().createButton(okCancelComposite, "Send", SWT.PUSH);
+		cancelButton = getFormToolkit().createButton(okCancelComposite, "Cancel",
 				SWT.PUSH);
 		cancelButton.addMouseListener(new MouseAdapter() {
 			public void mouseUp(MouseEvent e) {
@@ -132,184 +167,292 @@ public class StockOrderTicket extends ViewPart {
 			}
 		});
 
-		Listener formValidationListener = new Listener() {
-			public void handleEvent(Event event) {
-				validateForm();
-			}
-		};
-		buySellControl.addSelectionListener(formValidationListener);
-		orderQtyControl.getTextControl().addListener(SWT.KeyUp, formValidationListener);
-		symbolControl.getTextControl().addListener(SWT.KeyUp, formValidationListener); 
-		priceControl.getTextControl().addListener(SWT.KeyUp, formValidationListener);
-		timeInForceControl.addSelectionListener(formValidationListener);
 
-		validateForm();
 	}
-
-	private void validateForm() {
-		boolean sideValid = validateSide();
-		updateLabel(buySellControl.getLabel(), sideValid);
-		
-		boolean orderQtyValid = validateOrderQty();
-		updateLabel(orderQtyControl.getLabel(), orderQtyValid);
-		
-		boolean symbolValid = validateSymbol();
-		updateLabel(symbolControl.getLabel(), symbolValid);
-		
-		boolean priceValid = validatePrice();
-		updateLabel(priceControl.getLabel(), priceValid);
-		
-		boolean timeInForceValid = validateTimeInForce();
-		updateLabel(timeInForceControl.getLabel(), timeInForceValid);
-		
-		boolean formValid = sideValid && orderQtyValid && symbolValid && priceValid && timeInForceValid;
-		sendButton.setEnabled(formValid);
-	}
-
-	private boolean validateSide() {
-		return buySellControl.hasSelection();
-	}
-
-	private boolean validateOrderQty() {
-		String text = orderQtyControl.getTextControl().getText().trim();
-		
-		try {
-			int orderQty = Integer.parseInt(text);
-
-			if (orderQty <= 0)
-				return false;
-		}
-		catch(NumberFormatException nfe) {
-			return false;
-		}
-		
-		return true;
-	}
-	
-	private boolean validateSymbol() {
-		String text = symbolControl.getTextControl().getText().trim();
-		return !text.equals("");
-	}
-	
-	private boolean validatePrice() {
-		String text = priceControl.getTextControl().getText().trim();
-		
-		try {
-			double price = Double.parseDouble(text);
-
-			if (price <= 0.0d)
-				return false;
-		}
-		catch(NumberFormatException nfe) {
-			return false;
-		}
-		
-		return true;
-	}
-
-	private boolean validateTimeInForce() {
-		return timeInForceControl.hasSelection();
-	}
-
-	private void updateLabel(Label label, boolean fieldValid) {
-		if (!fieldValid) {
-			label.setForeground(label.getDisplay().getSystemColor(SWT.COLOR_RED));
-		}
-		else {
-			label.setForeground(toolkit.getColors().getForeground());
-		}
-	}
-	
-	protected void handleSend() {
-       try {
-			String orderID = Application.getIDFactory().getNext();
-	        Message aMessage = FIXMessageUtil.newLimitOrder(new InternalID(orderID), Side.BUY, BigDecimal.ZERO,
-	        		new MSymbol(""), BigDecimal.ZERO, TimeInForce.DAY, null);
-	        aMessage.removeField(Side.FIELD);
-	        aMessage.removeField(OrderQty.FIELD);
-	        aMessage.removeField(Symbol.FIELD);
-	        aMessage.removeField(Price.FIELD);
-	        aMessage.removeField(TimeInForce.FIELD);
- 			populateMessageFromUI(aMessage);
-			Application.getOrderManager().handleInternalMessage(aMessage);
-			//clear();
-		} catch (Exception e) {
-			Application.getMainConsoleLogger().error("Error sending order", e);
-		}
-	}
-	
-	protected void handleCancel()
-	{
-		clear();
-		validateForm();
-	}
-	
-	protected void clear(){
-		Control[] children = form.getBody().getChildren();
-		for (Control control : children) {
-			if (control instanceof FIXComposite) {
-				FIXComposite composite = (FIXComposite) control;
-				composite.clear();
-			}
-		}
-	}
-
 
 	/**
-	 * Disposes the toolkit
+	 * This method initializes sideBorderComposite	
+	 *
 	 */
-	public void dispose() {
-		super.dispose();
+	private void createSideBorderComposite() {
+		sideBorderComposite = getFormToolkit().createComposite(form.getBody());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.marginWidth = 2;
+		gridLayout.verticalSpacing = 2;
+		gridLayout.horizontalSpacing = 2;
+		gridLayout.marginHeight = 2;
+		sideBorderComposite.setLayout(gridLayout);
+		sideCCombo = new CCombo(sideBorderComposite, SWT.BORDER);
+		sideCCombo.add(SideImage.BUY.getImage());
+		sideCCombo.add(SideImage.SELL.getImage());
+		sideCCombo.add(SideImage.SELL_SHORT.getImage());
+		sideCCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
+		CComboValidator comboValidator = new CComboValidator(sideCCombo,"Side",Arrays.asList(sideCCombo.getItems()), false);
+		ParentColorHighlighter highlighter = new ParentColorHighlighter(sideCCombo);
+
+		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
+		uiStringToMessageStringMap.put(SideImage.BUY.getImage(), ""+Side.BUY);
+		uiStringToMessageStringMap.put(SideImage.SELL.getImage(), ""+Side.SELL);
+		uiStringToMessageStringMap.put(SideImage.SELL_SHORT.getImage(), ""+Side.SELL_SHORT);
+		uiStringToMessageStringMap.put(SideImage.SELL_SHORT_EXEMPT.getImage(), ""+Side.SELL_SHORT_EXEMPT);
+		FIXCComboExtractor extractor = new FIXCComboExtractor(sideCCombo,Side.FIELD,FIXDataDictionaryManager.getDictionary(),uiStringToMessageStringMap);
+		
+		validator.register(sideCCombo, true);
+		extractors.add(extractor);
 	}
 
-	public void populateFromMessage(Message aMessage) {
-		Control[] children = form.getBody().getChildren();
-		for (Control control : children) {
-			if (control instanceof FIXComposite) {
-				FIXComposite composite = (FIXComposite) control;
-				composite.populateFromMessage(aMessage);
-			}
-		}
-	}
-	
-	private void populateMessageFromUI(Message aMessage) throws MarketceteraException{
-		Control[] children = form.getBody().getChildren();
-		for (Control control : children) {
-			if (control instanceof FIXComposite) {
-				FIXComposite composite = (FIXComposite) control;
-				composite.modifyOrder(aMessage);
-			}
-		}
-	}
+	/**
+	 * This method initializes quantityBorderComposite	
+	 *
+	 */
+	private void createQuantityBorderComposite() {
 
-	public void asyncExec(Runnable runnable) {
-		Display display = this.getSite().getShell().getDisplay();
-
-		// If the display is disposed, you can't do anything with it!!!
-		if (display == null || display.isDisposed())
-			return;
-
-		display.asyncExec(runnable);
-	}
-
-	protected void asyncPopulateFromMessage(final Message aMessage) {
-		asyncExec(new Runnable() {
-			public void run() {
-				populateFromMessage(aMessage);
+		quantityBorderComposite = getFormToolkit().createComposite(form.getBody());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.marginWidth = 2;
+		gridLayout.verticalSpacing = 2;
+		gridLayout.horizontalSpacing = 2;
+		gridLayout.marginHeight = 2;
+		quantityBorderComposite.setLayout(gridLayout);
+		quantityText = getFormToolkit().createText(quantityBorderComposite, null, SWT.SINGLE | SWT.BORDER);
+		quantityText.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				((Text)e.widget).selectAll();
 			}
 		});
+		NumericTextValidator textValidator = new NumericTextValidator(quantityText,
+				"Quantity",true, false, false, false);
+		ParentColorHighlighter highlighter = new ParentColorHighlighter(quantityText);
+		FIXTextExtractor extractor = new FIXTextExtractor(quantityText, OrderQty.FIELD, FIXDataDictionaryManager.getDictionary());
+		validator.register(quantityText, true);
+		extractors.add(extractor);
 	}
 
 	/**
-	 * @return Returns the commandListener.
+	 * This method initializes symbolBorderComposite	
+	 *
 	 */
-	public ICommandListener getCommandListener() {
-		return commandListener;
+	private void createSymbolBorderComposite() {
+		GridData symbolTextGridData = new GridData();
+		symbolTextGridData.horizontalAlignment = GridData.FILL;
+		symbolTextGridData.grabExcessHorizontalSpace = true;
+		symbolTextGridData.verticalAlignment = GridData.CENTER;
+		GridData symbolBorderGridData = new GridData();
+		symbolBorderGridData.horizontalAlignment = GridData.FILL;
+		symbolBorderGridData.grabExcessHorizontalSpace = true;
+		symbolBorderGridData.verticalAlignment = GridData.CENTER;
+		symbolBorderComposite = getFormToolkit().createComposite(form.getBody());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.marginWidth = 2;
+		gridLayout.verticalSpacing = 2;
+		gridLayout.horizontalSpacing = 2;
+		gridLayout.marginHeight = 2;
+		symbolBorderComposite.setLayout(gridLayout);
+		symbolBorderComposite.setLayoutData(symbolBorderGridData);
+		symbolText = getFormToolkit().createText(symbolBorderComposite, null, SWT.SINGLE | SWT.BORDER);
+		symbolText.setLayoutData(symbolTextGridData);
+		symbolText.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				((Text)e.widget).selectAll();
+			}
+		});
+		TextValidator textValidator = new TextValidator(symbolText,
+				"Symbol", false);
+		ParentColorHighlighter highlighter = new ParentColorHighlighter(symbolText);
+		FIXTextExtractor extractor = new FIXTextExtractor(symbolText, Symbol.FIELD, FIXDataDictionaryManager.getDictionary());
+		extractors.add(extractor);
 	}
 
-	@Override
-	public void setFocus() {
-		// TODO Auto-generated method stub
+	/**
+	 * This method initializes priceBorderComposite	
+	 *
+	 */
+	private void createPriceBorderComposite() {
+		priceBorderComposite = getFormToolkit().createComposite(form.getBody());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.marginWidth = 2;
+		gridLayout.verticalSpacing = 2;
+		gridLayout.horizontalSpacing = 2;
+		gridLayout.marginHeight = 2;
+		priceBorderComposite.setLayout(gridLayout);
+		priceText = getFormToolkit().createText(priceBorderComposite, null, SWT.SINGLE | SWT.BORDER);
+		priceText.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				((Text)e.widget).selectAll();
+			}
+		});
+		PriceTextValidator textValidator = new PriceTextValidator(priceText,
+				"Price", false, false);
+		ParentColorHighlighter highlighter = new ParentColorHighlighter(priceText);
+		validator.register(priceText, true);
+		FIXTextExtractor extractor = new OrderPriceExtractor(priceText, FIXDataDictionaryManager.getDictionary());
+		extractors.add(extractor);
+	}
+
+	/**
+	 * This method initializes tifBorderComposite	
+	 *
+	 */
+	private void createTifBorderComposite() {
+		tifBorderComposite = getFormToolkit().createComposite(form.getBody());
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.marginWidth = 2;
+		gridLayout.verticalSpacing = 2;
+		gridLayout.horizontalSpacing = 2;
+		gridLayout.marginHeight = 2;
+		tifBorderComposite.setLayout(gridLayout);
+		tifCCombo = new CCombo(tifBorderComposite, SWT.BORDER);
+		tifCCombo.add(TimeInForceImage.DAY.getImage());
+		tifCCombo.add(TimeInForceImage.OPG.getImage());
+		tifCCombo.add(TimeInForceImage.CLO.getImage());
+		tifCCombo.add(TimeInForceImage.FOK.getImage());
+		tifCCombo.add(TimeInForceImage.GTC.getImage());
+		tifCCombo.add(TimeInForceImage.IOC.getImage());
+
+		CComboValidator comboValidator = new CComboValidator(tifCCombo,"TIF",Arrays.asList(tifCCombo.getItems()), false);
+		ParentColorHighlighter highlighter = new ParentColorHighlighter(tifCCombo);
+
+		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
+		uiStringToMessageStringMap.put(TimeInForceImage.DAY.getImage(), ""+TimeInForce.DAY);
+		uiStringToMessageStringMap.put(TimeInForceImage.OPG.getImage(), ""+TimeInForce.AT_THE_OPENING);
+		uiStringToMessageStringMap.put(TimeInForceImage.CLO.getImage(), ""+TimeInForce.AT_THE_CLOSE);
+		uiStringToMessageStringMap.put(TimeInForceImage.FOK.getImage(), ""+TimeInForce.FILL_OR_KILL);
+		uiStringToMessageStringMap.put(TimeInForceImage.GTC.getImage(), ""+TimeInForce.GOOD_TILL_CANCEL);
+		uiStringToMessageStringMap.put(TimeInForceImage.IOC.getImage(), ""+TimeInForce.IMMEDIATE_OR_CANCEL);
+		FIXCComboExtractor extractor = new FIXCComboExtractor(tifCCombo,TimeInForce.FIELD,FIXDataDictionaryManager.getDictionary(),uiStringToMessageStringMap);
+
+		validator.register(tifCCombo, true);
+		extractors.add(extractor);
+	}
+
+	/**
+	 * This method initializes customFieldsExpandableComposite	
+	 *
+	 */
+	private void createCustomFieldsExpandableComposite() {
+		GridData gridData3 = new GridData();
+		gridData3.horizontalSpan = 3;
+		gridData3.verticalAlignment = GridData.CENTER;
+		gridData3.grabExcessHorizontalSpace = true;
+		gridData3.horizontalAlignment = GridData.FILL;
+		customFieldsExpandableComposite = getFormToolkit()
+				.createExpandableComposite(form.getBody(),
+						ExpandableComposite.TWISTIE | ExpandableComposite.TITLE_BAR);
+		customFieldsExpandableComposite.setExpanded(true);
+		customFieldsExpandableComposite.setText("Custom Fields");
+		customFieldsExpandableComposite.setLayoutData(gridData3);
+		
+		createCustomFieldsComposite();
+		customFieldsExpandableComposite.setClient(customFieldsComposite);
+	}
+
+	/**
+	 * This method initializes customFieldsComposite	
+	 *
+	 */
+	private void createCustomFieldsComposite() {
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
+		gridLayout.marginWidth = 1;
+		gridLayout.verticalSpacing = 1;
+		gridLayout.horizontalSpacing = 1;
+		gridLayout.marginHeight = 1;
+
+		customFieldsComposite = getFormToolkit().createComposite(
+				customFieldsExpandableComposite);
+		customFieldsComposite.setLayout(gridLayout);
+
+		GridData tableGridData = new GridData();
+		tableGridData.verticalAlignment = GridData.CENTER;
+		tableGridData.grabExcessHorizontalSpace = true;
+		tableGridData.horizontalAlignment = GridData.FILL;
+		
+
+		customFieldsTable = new Table(customFieldsComposite, SWT.BORDER|SWT.CHECK);
+		customFieldsTable.setLayoutData(tableGridData);
+		customFieldsTable.setHeaderVisible(true);
+
+		TableColumn enabledColumn = new TableColumn(customFieldsTable, SWT.LEFT);
+		enabledColumn.setText("Enabled");
+		enabledColumn.pack();
+		TableColumn keyColumn = new TableColumn(customFieldsTable, SWT.LEFT);
+		keyColumn.setText("Key");
+		keyColumn.pack();
+		TableColumn valueColumn = new TableColumn(customFieldsTable, SWT.LEFT);
+		valueColumn.setText("Value");
+		valueColumn.pack();
+
+//		tableViewer = new CheckboxTableViewer(
+//				customFieldsTable);
+//		tableViewer.setContentProvider(new MapEntryContentProvider(tableViewer, mapEntryList));
+//		tableViewer.setLabelProvider(new MapEntryLabelProvider());
+//		tableViewer.setInput(mapEntryList);
 		
 	}
+
+	protected void handleSend() {
+		try {
+			validator.validateAll();
+			String orderID = Application.getIDFactory().getNext();
+			Message aMessage = FIXMessageUtil.newLimitOrder(new InternalID(
+					orderID), Side.BUY, BigDecimal.ZERO, new MSymbol(""),
+					BigDecimal.ZERO, TimeInForce.DAY, null);
+			aMessage.removeField(Side.FIELD);
+			aMessage.removeField(OrderQty.FIELD);
+			aMessage.removeField(Symbol.FIELD);
+			aMessage.removeField(Price.FIELD);
+			aMessage.removeField(TimeInForce.FIELD);
+			for (AbstractFIXExtractor extractor : extractors) {
+				extractor.modifyOrder(aMessage);
+			}
+			Application.getOrderManager().handleInternalMessage(aMessage);
+			clear();
+		} catch (Exception e) {
+			Application.getMainConsoleLogger().error("Error sending order: "+e.getMessage(), e);
+		}
+	}
+
+	protected void handleCancel() {
+		clear();
+	}
+
+	private void clear() {
+		for (AbstractFIXExtractor extractor : extractors) {
+			extractor.clearUI();
+		}
+	}
+
+	public void clearMessage() {
+		errorMessageLabel.setText("");
+	}
+
+	public void showError(String errorString) {
+		if (errorString == null){
+			errorMessageLabel.setText("");
+		} else {
+			errorMessageLabel.setText(errorString);
+		}
+	}
+
+	public void showWarning(String warningString) {
+		if (warningString == null){
+			errorMessageLabel.setText("");
+		} else {
+			errorMessageLabel.setText(warningString);
+		}
+	}
+
+	public void showOrder(Message order){
+		for (AbstractFIXExtractor extractor : extractors) {
+			extractor.updateUI(order);
+		}
+	}
+	
+	public static StockOrderTicket getDefault() {
+		return (StockOrderTicket)PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(StockOrderTicket.ID);		
+	}
+
 }

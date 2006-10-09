@@ -65,9 +65,13 @@
       <extension
          point="org.eclipse.ui.preferencePages">
       <page
-            class="org.marketcetera.photon.JMSPreferencePage"
-            id="org.marketcetera.photon.preferences.jms"
-            name="JMS Preferences"/>
+            class="org.marketcetera.photon.preferences.ConnectionsPreferencePage"
+            id="org.marketcetera.photon.preferences.connections"
+            name="Connections"/>
+      <page
+            class="org.marketcetera.photon.preferences.CustomOrderFieldPage"
+            id="org.marketcetera.photon.preferences.customorderfield"
+            name="Custom Order Fields"/>
       <page
             name="Hotkeys"
             class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
@@ -96,6 +100,12 @@
          <property
                name="startupProgressRect"
                value="20,204,364,10"/>
+         <property
+               name="startupForegroundColor"
+               value="555555"/>
+         <property
+               name="startupMessageRect"
+               value="225,75,100,20"/>
       </product>
    </extension>
    <extension
