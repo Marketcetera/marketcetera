@@ -28,7 +28,7 @@ public class Activator extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		BSFManager.registerScriptingEngine("ruby",
+		BSFManager.registerScriptingEngine(IScript.RUBY_LANG_STRING,
 				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
 	}
 
