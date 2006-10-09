@@ -7,8 +7,9 @@ import org.apache.bsf.BSFManager;
 public class ScriptSchedulerTest extends TestCase {
 	public void testScriptScheduler() throws Exception {
 		ScriptScheduler sched = new ScriptScheduler();
-		Script script = new Script("$foo='bar'; puts 'hello'");
 		BSFManager manager = new BSFManager();
+		
+		IScript script = new Script("$foo='bar'; puts 'hello'");
 		ScriptRunnable runnable = new ScriptRunnable(script, manager);
 		sched.submitScript(script);
 		

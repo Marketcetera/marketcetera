@@ -8,7 +8,7 @@ import org.apache.bsf.BSFManager;
 public class ScriptRunnableTest extends TestCase {
 	
 	public void testScriptRunnable() throws InterruptedException, BSFException {
-		Script script = new Script("$foo='bar'; puts 'hello'");
+		IScript script = new Script("$foo='bar'; puts 'hello'");
 		BSFManager manager = new BSFManager();
 		ScriptRunnable runnable = new ScriptRunnable(script, manager);
 		runnable.run();
@@ -22,7 +22,7 @@ public class ScriptRunnableTest extends TestCase {
 	}
 
 	public void testScriptRunnableOtherThread() throws InterruptedException, BSFException {
-		Script script = new Script("$foo='bar'; puts 'hello'");
+		IScript script = new Script("$foo='bar'; puts 'hello'");
 		BSFManager manager = new BSFManager();
 		ScriptRunnable runnable = new ScriptRunnable(script, manager);
 		Thread thread = new Thread(runnable);

@@ -4,7 +4,6 @@ import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 
 public class Script implements IScript {
-	protected static final String RUBY_LANG_STRING = "ruby";
 	private String script;
 	private ScriptContext context;
 	private String fileName = "<script>";
