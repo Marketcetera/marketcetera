@@ -27,10 +27,12 @@ public class ConnectionConstants
     public static final String JMS_CONTEXT_FACTORY_KEY = "jms.context.factory";
     public static final String JMS_URL_KEY = "jms.url";
 
+    public static final String WEB_APP_HOST_KEY = "web.app.host";
+
     // ID factory 
     public static final String ID_FACTORY_BASE_KEY = "id.factory.base";
 
-    // HyperFeed
+    // Quote feed
     public static final String QUOTE_FEED_SERVER = "quotefeed.server";
     public static final String QUOTE_FEED_PORT = "quotefeed.port";
     public static final String QUOTE_FEED_USER = "quotefeed.user";
