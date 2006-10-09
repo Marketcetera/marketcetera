@@ -4,7 +4,7 @@ package org.marketcetera.core;
 import java.sql.*;
 
 @ClassVersion("$Id$")
-public class DatabaseIDFactory implements IDFactory {
+public class DatabaseIDFactory extends ExternalIDFactory {
 
     public static final String TABLE_NAME = "id_repository";
     public static final String COL_NAME = "nextAllowedID";
@@ -16,8 +16,6 @@ public class DatabaseIDFactory implements IDFactory {
     private String dbLogin;
     private String dbPassword;
     private int mCacheQuantity;
-    private int mUpTo = 0;
-    private int mNextID = 0;
     private Connection dbConnection;
 
     public static DatabaseIDFactory getInstance(ConfigData inProps) throws Exception
@@ -47,7 +45,7 @@ public class DatabaseIDFactory implements IDFactory {
         dbPassword = password;
     }
 
-    public void init() throws SQLException, ClassNotFoundException {
+    public void init() throws SQLException, ClassNotFoundException, NoMoreIDsException {
         Class.forName(dbDriver);
 
         dbConnection = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
@@ -55,36 +53,29 @@ public class DatabaseIDFactory implements IDFactory {
         grabIDs();
     }
 
-    public String getNext() throws NoMoreIDsException
-    {
-        synchronized (this) {
-            if (mNextID >= mUpTo) {
-                try {
-                    grabIDs();
-                } catch (SQLException ex) {
-                    LoggerAdapter.error(MessageKey.DB_ID_FETCH.getLocalizedMessage(mNextID), ex, this);
-                    throw new NoMoreIDsException(ex);
-                }
-            }
-            return "" + (mNextID++);
-        }
-    }
 
     /** Lock the table to prevent concurrent access with {@link ResultSet.CONCUR_UPDATABLE} */
-    protected void grabIDs() throws SQLException {
-        Statement stmt = dbConnection.createStatement(
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
-        ResultSet set = stmt.executeQuery("SELECT [" + dbColumn + "] FROM ["
-                                          + dbTable + "]");
-        if (!set.next()) {
-            set.insertRow();
-            set.updateInt(dbColumn, 1000);
+    protected int grabIDs() throws NoMoreIDsException {
+        try {
+            Statement stmt = dbConnection.createStatement(
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+            ResultSet set = null;
+                set = stmt.executeQuery("SELECT [" + dbColumn + "] FROM ["
+                                                  + dbTable + "]");
+            if (!set.next()) {
+                set.insertRow();
+                set.updateInt(dbColumn, 1000);
+            }
+            int nextID = set.getInt(dbColumn);
+            int upTo = nextID + mCacheQuantity;
+            set.updateInt(dbColumn, upTo);
+            set.updateRow();
+            stmt.close();
+            this.setMaxAllowedID(upTo);
+            return nextID;
+        } catch (SQLException e) {
+            throw new NoMoreIDsException(e);
         }
-        mNextID = set.getInt(dbColumn);
-        mUpTo = mNextID + mCacheQuantity;
-        set.updateInt(dbColumn, mUpTo);
-        set.updateRow();
-        stmt.close();
     }
 
 }
