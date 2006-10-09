@@ -16,8 +16,6 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.actions.CommandEvent;
-import org.marketcetera.photon.actions.ICommandListener;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.IncomingMessageHolder;
 import org.marketcetera.photon.model.MessageHolder;
@@ -222,30 +220,6 @@ public class OrderManagerTest extends TestCase {
 		assertEquals("999", orderManager.getIDFactory().getNext());
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.handleCommandIssued(CommandEvent)'
-	 */
-	public void testHandleCommandIssued() {
-		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
-		CommandEvent evt = new CommandEvent(message, CommandEvent.Destination.EDITOR);
-		orderManager.handleCommandIssued(evt);
-		
-		assertEquals(0, messageHistory.getAllMessages().size());
-
-		evt = new CommandEvent(message, CommandEvent.Destination.BROKER);
-		orderManager.handleCommandIssued(evt);
-		assertEquals(1, messageHistory.getAllMessages().size());
-		
-	}
-
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.getCommandListener()'
-	 */
-	public void testGetCommandListener() {
-		ICommandListener commandListener = orderManager.getCommandListener();
-		assertNotNull(commandListener);
-	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrderByClOrdID(String)'

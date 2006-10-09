@@ -6,7 +6,7 @@ Bundle-Version: 0.1.4
 Bundle-Activator: org.marketcetera.photon.PhotonPlugin
 Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
-Eclipse-RegisterBuddy: org.apache.log4j
+Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n
 Require-Bundle: org.apache.activemq,
  org.apache.log4j,
  org.eclipse.core.commands,
@@ -26,4 +26,5 @@ Require-Bundle: org.apache.activemq,
  net.java.dev.glazedlists,
  org.eclipse.update.core,
  org.eclipse.update.ui,
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ jfun.parsec

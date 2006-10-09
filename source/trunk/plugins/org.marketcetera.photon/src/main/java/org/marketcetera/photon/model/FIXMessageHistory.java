@@ -99,7 +99,7 @@ public class FIXMessageHistory extends PlatformObject {
 			try {
 				String possMatch = executionReport.getString(ClOrdID.FIELD);
 				if (possMatch.equals(clOrdID)){
-					LoggerAdapter.debug("Returning latest execution report id:"+holder.getMessageReference(), this);
+					//LoggerAdapter.debug("Returning latest execution report id:"+holder.getMessageReference(), this);
 					return executionReport;
 				}
 			} catch (FieldNotFound fnf) {

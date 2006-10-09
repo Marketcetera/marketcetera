@@ -1,7 +1,7 @@
 package org.marketcetera.photon;
 
-import java.util.LinkedList;
-import java.util.List;
+import jfun.parsec.Parser;
+import jfun.parsec.ParserException;
 
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.StatusLineLayoutData;
@@ -16,19 +16,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.actions.CommandEvent;
-import org.marketcetera.photon.actions.ICommandListener;
-import org.marketcetera.photon.parser.ParsedCommand;
-import org.marketcetera.photon.parser.Parser;
-import org.marketcetera.photon.parser.ParserException;
-
-import quickfix.Message;
+import org.marketcetera.photon.commands.MessageCommand;
+import org.marketcetera.photon.commands.ShowOrderInTicketCommand;
+import org.marketcetera.photon.parser.CommandParser;
 
 /**
  * The CommandStatusLineContribution represents the UI component that
  * allows users to enter text-based commands.  It consists of a one-line
- * text area, associated with any number of {@link ICommandListener}s.
+ * text area.
  * 
  * @author gmiller
  *
@@ -52,9 +47,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 
 	private String tooltip;
 
-	private List<ICommandListener> commandListeners = new LinkedList<ICommandListener>();
-
-	private Parser commandParser;
+	private CommandParser commandParser;
 
 	/**
 	 * Create a CommandStatusLineContribution with the specified ID,
@@ -76,7 +69,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 	public CommandStatusLineContribution(String id, int charWidth) {
 		super(id);
 		this.widthHint = charWidth;
-		commandParser = new Parser();
+		commandParser = new CommandParser();
 	}
 
 	/**
@@ -137,43 +130,23 @@ public class CommandStatusLineContribution extends ContributionItem {
 		Text theText = (Text) e.widget;
 		String theInputString = theText.getText();
 		try {
+			IPhotonCommand command = null;
 			if ('\r' == e.character) {
 				theText.setText("");
-				parseAndFireCommandEvent(theInputString,
-						CommandEvent.Destination.BROKER);
+				command = commandParser.parseCommand(theInputString);
 			} else if (e.keyCode == 't' && ((e.stateMask & SWT.CONTROL) != 0)) {
 				theText.setText("");
-				parseAndFireCommandEvent(theInputString,
-						CommandEvent.Destination.EDITOR);
+				command = commandParser.parseCommand(theInputString);
+				command = new ShowOrderInTicketCommand(((MessageCommand)command).getMessage());
 			}
-		} catch (NoMoreIDsException e1) {
-			Application.getMainConsoleLogger().error("Ran out of ID's parsing command '"+theInputString +"'");
+			if (command != null){
+				command.execute();
+			}
 		} catch (ParserException e1) {
 			Application.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
 		}
 	}
 
-	/**
-	 * Parses a string command into a {@link ParsedCommand} and fires the event
-	 * to the {@link ICommandListener}s
-	 * 
-	 * @param theInputString the user-entered command string
-	 * @param dest the destination for the command
-	 * @throws NoMoreIDsException if the IDFactory in the parser is out of ID's
-	 * @throws ParserException if the entered string was not a valid command
-	 */
-	private void parseAndFireCommandEvent(String theInputString,
-			CommandEvent.Destination dest) throws NoMoreIDsException,
-			ParserException {
-		commandParser.setInput(theInputString);
-		ParsedCommand aCommand;
-		aCommand = commandParser.command();
-
-		for (Object messageObj : aCommand.mResults) {
-			Message message = (Message) messageObj;
-			fireCommandEvent(message, dest);
-		}
-	}
 
 	/**
 	 * Gets the text currently in the command entry text area.
@@ -258,47 +231,14 @@ public class CommandStatusLineContribution extends ContributionItem {
 		return textArea.setFocus();
 	}
 
-	/**
-	 * Add an {@link ICommandListener} to the list of listeners that receive notifications
-	 * when a user enters a command.
-	 * 
-	 * @param listener the listener for command events.
-	 */
-	public void addCommandListener(ICommandListener listener) {
-		commandListeners.add(listener);
-	}
 
-	/**
-	 * Remove a previously registered command listener from the list of listeners that 
-	 * receive notifications when a user enters a command.
-	 * 
-	 * @param listener the listener to remove
-	 * @return true if the listener was successfully removed, false otherwise
-	 * @see List#remove(Object)
-	 */
-	public boolean removeCommandListener(ICommandListener listener) {
-		return commandListeners.remove(listener);
-	}
-
-	/**
-	 * Distributes command to all {@link ICommandListener}s previously
-	 * registered with {@link #addCommandListener(ICommandListener)}.
-	 * @param aMessage the message representing a command
-	 * @param dest the intended destination for the command
-	 */
-	protected void fireCommandEvent(Message aMessage, CommandEvent.Destination dest) {
-		for (ICommandListener listener : commandListeners) {
-			CommandEvent evt = new CommandEvent(aMessage, dest);
-			listener.commandIssued(evt);
-		}
-	}
 
 	/**
 	 * Sets the {@link IDFactory} for the {@link Parser} member.
 	 * @see org.marketcetera.photon.parser.Parser#init(org.marketcetera.core.IDFactory)
 	 */
 	public void setIDFactory(IDFactory factory) {
-		commandParser.init(factory);
+		commandParser.setIDFactory(factory);
 	}
 
 }

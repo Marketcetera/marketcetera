@@ -12,36 +12,20 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Application;
 import org.marketcetera.quickfix.ConnectionConstants;
 
-/**
- * The preference page for maintaining preferences related to the connection
- * to the JMS-based message queue.  To connect to a specific message queue and
- * access the correct resources, the preferences specify the name of the outgoing
- * queue ({@link ConnectionConstants#JMS_OUTGOING_QUEUE_KEY}), the incoming topic
- * ({@link ConnectionConstants#JMS_INCOMING_TOPIC_KEY}), and the URL of the JMS 
- * server ({@link ConnectionConstants#JMS_URL_KEY}).  In order to allow for different JMS implementations
- * the preferences specify the JNDI name of the connection factory 
- * ({@link ConnectionConstants#JMS_CONNECTION_FACTORY_KEY}), and the class name of 
- * the context factory ({@link ConnectionConstants#JMS_CONTEXT_FACTORY_KEY}).
- * 
- * 
- * @author gmiller
- * @author alissovski
- */
 @ClassVersion("$Id$")
-public class JMSPreferencePage extends FieldEditorPreferencePage implements
-                                                                 IWorkbenchPreferencePage {
+public class ConnectionsPreferencePage extends FieldEditorPreferencePage implements
+                                                                IWorkbenchPreferencePage {
 
 	public static final String ID = "org.marketcetera.photon.preferences.connections";
 	
     private ScopedPreferenceStore preferences;
 
-	private UrlFieldEditor serverUrlEditor;
+	private UrlFieldEditor jmsServerUrlEditor;
 
-    /**
-     * Creates a new JMSPreferencePage and a {@link ScopedPreferenceStore} to 
-     * serve as the backing store for the preference page.
-     */
-    public JMSPreferencePage() {
+	private UrlFieldEditor webAppHostEditor;
+	
+	
+    public ConnectionsPreferencePage() {
         super(GRID);
         preferences = new ScopedPreferenceStore(new ConfigurationScope(), Application.PLUGIN_ID);
         setPreferenceStore(preferences);
@@ -54,30 +38,23 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
     public void init(IWorkbench workbench) {
     }
 
-    
     /**
-	 * Creates the field editor components associated with the JMS connection.
+	 * Creates the field editor components associated with the vaious connections.
 	 * 
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
 	 * 
 	 * @see ConnectionConstants#JMS_OUTGOING_QUEUE_KEY
 	 * @see ConnectionConstants#JMS_INCOMING_TOPIC_KEY
 	 * @see ConnectionConstants#JMS_URL_KEY
-	 * @see ConnectionConstants#JMS_CONNECTION_FACTORY_KEY
-	 * @see ConnectionConstants#JMS_CONTEXT_FACTORY_KEY
 	 */
+
     protected void createFieldEditors() {
-        StringFieldEditor stringEditor = new StringFieldEditor(
-        		ConnectionConstants.JMS_CONNECTION_FACTORY_KEY, "Connection factory name",
+        jmsServerUrlEditor = new UrlFieldEditor(
+                ConnectionConstants.JMS_URL_KEY, "JMS Server URL",
                 getFieldEditorParent()
                 );
-        addField(stringEditor);
-        stringEditor = new StringFieldEditor(
-                ConnectionConstants.JMS_CONTEXT_FACTORY_KEY, "Context factory name",
-                getFieldEditorParent()
-                );
-        addField(stringEditor);
-        stringEditor = new StringFieldEditor(
+		addField(jmsServerUrlEditor);
+		StringFieldEditor stringEditor = new StringFieldEditor(
                 ConnectionConstants.JMS_INCOMING_TOPIC_KEY, "Incoming topic name",
                 getFieldEditorParent()
                 );
@@ -87,11 +64,28 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
                 getFieldEditorParent()
                 );
         addField(stringEditor);
-        serverUrlEditor = new UrlFieldEditor(
-                ConnectionConstants.JMS_URL_KEY, "Server URL",
+
+        webAppHostEditor = new UrlFieldEditor(
+                ConnectionConstants.WEB_APP_HOST_KEY, "Web App Host",
                 getFieldEditorParent()
                 );
-		addField(serverUrlEditor);
+		addField(webAppHostEditor);
+				
+//        StringFieldEditor stringEditor = new StringFieldEditor(
+//                ConfigPropertiesLoader.DB_URL_KEY, "Database URL",
+//                getFieldEditorParent()
+//                );
+//        addField(stringEditor);
+//        stringEditor = new StringFieldEditor(
+//                ConfigPropertiesLoader.DB_USER_KEY, "Database user",
+//                getFieldEditorParent()
+//                );
+//        addField(stringEditor);
+//        stringEditor = new StringFieldEditor(
+//                ConfigPropertiesLoader.DB_PASS_KEY, "Database password",
+//                getFieldEditorParent()
+//                );
+//        addField(stringEditor);
     }
 
     /**
@@ -104,7 +98,8 @@ public class JMSPreferencePage extends FieldEditorPreferencePage implements
     @Override
     public boolean performOk() {
         try {
-        	serverUrlEditor.setStringValue(serverUrlEditor.getStringValue().trim());
+        	jmsServerUrlEditor.setStringValue(jmsServerUrlEditor.getStringValue().trim());
+        	webAppHostEditor.setStringValue(webAppHostEditor.getStringValue().trim());
         	
         	super.performOk();  // pulls the data out of the page fields and into the preference store. this call does _not_ persist the data to disk.
         	

@@ -25,7 +25,9 @@ Visit http://www.marketcetera.org
 
    <splash
       location="org.marketcetera.photon"
-      startupProgressRect="20,204,364,10" />
+      startupProgressRect="20,204,364,10"
+      startupMessageRect="225,75,100,20"
+      startupForegroundColor="555555" />
    <launcher name="photon.exe">
       <macosx icon="/org.marketcetera.photon/icons/marketcetera/photon.icns"/>
       <solaris/>
@@ -56,12 +58,12 @@ Visit http://www.marketcetera.org
       <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
-      <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
+      <plugin id="org.eclipse.core.resources.compatibility"/>
       <plugin id="org.eclipse.core.resources.win32" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.runtime.compatibility.auth"/>
-      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
@@ -101,6 +103,7 @@ Visit http://www.marketcetera.org
 
    <features>
       <feature id="org.marketcetera.photon.feature" version="0.1.4"/>
+      <feature id="org.rubypeople.rdt" version="0.8.1.609062100PRD"/>
    </features>
 
 </product>

@@ -135,7 +135,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		this.window = window;
 
 		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
-		commandStatusLineContribution.addCommandListener(Application.getOrderManager().getCommandListener());
 		feedStatusLineContribution = new FeedStatusLineContribution("feedStatus", new String[] {JMSConnector.JMS_CONNECTOR_ID});
 		Application.getJMSConnector().addFeedComponentListener(feedStatusLineContribution);
 

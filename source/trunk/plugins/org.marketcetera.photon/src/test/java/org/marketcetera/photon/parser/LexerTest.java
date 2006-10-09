@@ -1,5 +1,9 @@
 package org.marketcetera.photon.parser;
 
+import jfun.parsec.Parsers;
+import jfun.parsec.Tok;
+import jfun.parsec.tokens.TokenType;
+import jfun.parsec.tokens.TypedToken;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
@@ -13,94 +17,81 @@ public class LexerTest extends TestCase {
     }
 
     public void testLexer(){
-        Lexer lexer = new Lexer();
-        lexer.setInput("ASDF asd 123,4 123.4 123;4 abc;d abc.d 1 1.1.1\t .01\te1.0\t123.b");
+    	CommandParser parser = new CommandParser();
+    	
+    	Tok[] parsedTokens = parser.lex("ASDF asd 123.4 123;4 abc;d abc.d 1 1.1.1 .01 e1.0 123.b");
 
-        Token aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("ASDF", aToken.getImage());
+    	int i = 0;
+    	Tok aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("ASDF", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("asd", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("asd", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("123,4", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Decimal,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("123.4", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(FloatToken.class,  aToken.getClass());
-        assertEquals("123.4", aToken.getImage());
-        assertEquals(123.4, ((FloatToken)aToken).doubleValue(), .001);
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("123;4", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("123;4", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("abc;d", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("abc;d", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("abc.d", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("abc.d", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Integer,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("1", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(IntToken.class,  aToken.getClass());
-        assertEquals("1", aToken.getImage());
-        assertEquals(1, ((IntToken)aToken).intValue());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("1.1.1", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("1.1.1", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Decimal,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals(".01", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(FloatToken.class,  aToken.getClass());
-        assertEquals(".01", aToken.getImage());
-        assertEquals(.01, ((FloatToken)aToken).doubleValue(), .001);
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("e1.0", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("e1.0", aToken.getImage());
-
-        aToken = lexer.getNextToken();
-        assertEquals(StringToken.class,  aToken.getClass());
-        assertEquals("123.b", aToken.getImage());
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Word,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("123.b", ((TypedToken)aToken.getToken()).getText());
     }
 
     public void testTypedTokens()
     {
-        Lexer lexer = new Lexer();
-        lexer.setInput("17 18.5 16.4 12.3 19");
+    	CommandParser parser = new CommandParser();
+    	Tok[] parsedTokens = parser.lex("17 18.5 16.4 12.3 19");
 
-        Token aToken = lexer.getNextToken();
-        assertEquals(IntToken.class,  aToken.getClass());
-        assertEquals("17", aToken.getImage());
-        assertEquals(17, ((NumberToken)aToken).intValue());
+    	int i = 0;
+        Tok aToken = parsedTokens[i++];
+        assertEquals(TokenType.Integer,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("17", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(FloatToken.class,  aToken.getClass());
-        assertEquals("18.5", aToken.getImage());
-        assertEquals(18, ((NumberToken)aToken).intValue());
-        assertEquals(18.5, ((NumberToken)aToken).doubleValue(), .001);
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Decimal,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("18.5", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(FloatToken.class,  aToken.getClass());
-        assertEquals("16.4", aToken.getImage());
-        assertEquals(16, ((NumberToken)aToken).intValue());
-        assertEquals(16.4, ((NumberToken)aToken).doubleValue(), .001);
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Decimal,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("16.4", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(FloatToken.class,  aToken.getClass());
-        assertEquals("12.3", aToken.getImage());
-        assertEquals(12, ((NumberToken)aToken).intValue());
-        assertEquals(12.3, ((NumberToken)aToken).doubleValue(), .001);
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Decimal,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("12.3", ((TypedToken)aToken.getToken()).getText());
 
-        aToken = lexer.getNextToken();
-        assertEquals(IntToken.class,  aToken.getClass());
-        assertEquals("19", aToken.getImage());
-        assertEquals(19, ((NumberToken)aToken).intValue());
-        assertEquals(19, ((NumberToken)aToken).doubleValue(), .001);
+        aToken = parsedTokens[i++];
+        assertEquals(TokenType.Integer,  ((TypedToken)aToken.getToken()).getType());
+        assertEquals("19", ((TypedToken)aToken.getToken()).getText());
 
 }
 }
