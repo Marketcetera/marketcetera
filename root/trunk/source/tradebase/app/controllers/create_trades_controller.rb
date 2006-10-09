@@ -30,7 +30,8 @@ class CreateTradesController < ApplicationController
     symbol =   getStringFieldValueIfPresent(qfMessage, Quickfix::Symbol.new)
     price = getStringFieldValueIfPresent(qfMessage, Quickfix::LastPx.new)
     account = getStringFieldValueIfPresent(qfMessage, Quickfix::Account.new)
-    create_equity_trade(theTrade, symbol, BigDecimal(price), BigDecimal("0"),  currency, account)
+    sendingTime = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
+    create_equity_trade(theTrade, symbol, BigDecimal(price), BigDecimal("0"),  currency, account, sendingTime)
     theTrade.trade_type = TradeTypeTrade
     theTrade.side = getStringFieldValueIfPresent(qfMessage, Quickfix::Side.new)
     theTrade.save

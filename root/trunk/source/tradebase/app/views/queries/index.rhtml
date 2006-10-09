@@ -7,7 +7,7 @@ List trades by:
        <%= text_field_with_auto_complete :m_symbol, :root %>
     </p>
     <%= submit_tag 'Search by Symbol' %>
-    <% end_form_tag %>
+    <%= end_form_tag %>
   </li>
   <li>
     <%=  start_form_tag :action => 'by_date' %>
@@ -15,6 +15,6 @@ List trades by:
        <%= date_select 'date', 'trade_date', :order => [:year, :month, :day] %>
     </p>
     <%= submit_tag 'Search by Trade Date' %>
-    <% end_form_tag %>
+    <%= end_form_tag %>
   </li>
   </ol>
