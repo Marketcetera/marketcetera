@@ -3,22 +3,25 @@
 <!--[form:trade]-->
 <p><label for="m_symbol_root">Symbol</label><br/>
 <%= text_field_with_auto_complete :m_symbol, :root , 
-    :value => (@trade.id == nil) ? '' : get_equity_by_asset_type(@trade).m_symbol.root %>
+    :value => (@trade.id.nil?) ? '' : @trade.tradeable_m_symbol_root %>
 
 <p><label for="trade_quantity">Quantity</label><br/>
-<%= text_field 'trade', 'quantity'  %></p>
+<%= text_field :trade, 'quantity'  %></p>
 
-<p><label for="per_share_price">Price</label><br/>
-<%= text_field_tag 'per_share_price' %></p>
+<p><label for="price_per_share">Price</label><br/>
+<%= text_field :trade, :price_per_share %></p>
+
+<p><label for="trade_date">Trade Date</label><br/>
+<%= date_select :trade, :journal_post_date %>
 
 <p><label for="trade_trade_type">Trade type</label><br/>
-<%= radio_button('trade', 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true})%><label for="trade_trade_type_t">Trade</label><br/>
-<%= radio_button('trade', 'trade_type', TradesHelper::TradeTypeExerciseOrExpire)%><label for="trade_trade_type_e">Exercise or expire</label><br/>
-<%= radio_button('trade', 'trade_type', TradesHelper::TradeTypeReconciliation)%><label for="trade_trade_type_r">Reconciliation</label><br/>
-<%= radio_button('trade', 'trade_type', TradesHelper::TradeTypeCorporateAction)%><label for="trade_trade_type_c">Corporate Action</label></p>
+<%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true})%><label for="trade_trade_type_t">Trade</label><br/>
+<%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeExerciseOrExpire)%><label for="trade_trade_type_e">Exercise or expire</label><br/>
+<%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeReconciliation)%><label for="trade_trade_type_r">Reconciliation</label><br/>
+<%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeCorporateAction)%><label for="trade_trade_type_c">Corporate Action</label></p>
 
-<p><label for="per_share_price">Per share commission</label><br/>
-<%= text_field_tag 'per_share_commission' %></p>
+<p><label for="total_commission">Commission</label><br/>
+<%= text_field :trade, :total_commission %></p>
 
 <p><label for="currency_alpha_code">Currency</label><br/>
 <%= text_field_with_auto_complete :currency, :alpha_code, :value=>'USD' %>
@@ -27,7 +30,7 @@
 <%= text_field 'trade', 'comment'  %></p>
 
 <p><label for="account_nickname">Account</label><br/>
-<%= text_field_with_auto_complete :account, :nickname, :value=> (@trade.id ==nil) ? '' : @trade.account.nickname %>
+<%= text_field_with_auto_complete :account, :nickname, :value=> @trade.account_nickname %>
 
 <!--[eoform:trade]-->
 

@@ -26,23 +26,21 @@ class MessageLogsController < ApplicationController
     ordStatusField = Quickfix::OrdStatus.new
     sendingTimeField = Quickfix::SendingTime.new
     all_messages = MessageLog.find(:all, :conditions => [ 'processed = false' ])
-    for oneMessageLog in all_messages
-      qfMessage = Quickfix::Message.new(oneMessageLog.text)
-      if(isTradeToBeShown(qfMessage, msgTypeField, ordStatusField))
-        msg_send_time = Date.parse(qfMessage.getHeader.getField(sendingTimeField).getString())
+    all_messages.each { |msg| 
+      if(msg.executed_trade?)
+        msg_send_time = msg.sending_time
         if(fSubsetSearch) 
            logger.error("checking "+msg_send_time.to_s + " against " + @startDate.to_s + " and "+@endDate.to_s)
            if((msg_send_time >= @startDate) && (msg_send_time <= @endDate))
-             logger.error("adding execReport: "+qfMessage.toString())
-             all_exec_reports << oneMessageLog
+             all_exec_reports << msg
            else 
             logger.error("discarding date "+msg_send_time.to_s)
            end
         else 
-           all_exec_reports << oneMessageLog
+           all_exec_reports << msg
         end
       end
-    end
+    }
   
     # deal with pagination later
     @paginator = Paginator.new(self, all_exec_reports.length, 10, params[:page])
@@ -51,20 +49,10 @@ class MessageLogsController < ApplicationController
 
   def show
     @message_log = MessageLog.find(params[:id])
-    @qf_message = Quickfix::Message.new(@message_log.text)
-      if(!isTradeToBeShown(@qf_message, Quickfix::MsgType.new, Quickfix::OrdStatus.new)) 
+    @qf_message = @message_log.qf_message
+      if(!@message_log.executed_trade?) 
         flash[:notice] = 'Specified message is not a valid executed trade.'
         redirect_to :action => 'list'      
       end
   end
-
-  private 
-  # returns true if this is a successful trade that needs to be shown
-  # ie is an executionReport that's either FILLED or PartiallyFilled
-  def isTradeToBeShown(qfMessage, msgTypeField, ordStatusField)
-    return ((qfMessage.getHeader().getField(msgTypeField).getString() == Quickfix::MsgType_ExecutionReport()) &&
-           (qfMessage.getField(ordStatusField).getString() == Quickfix::OrdStatus_FILLED() || 
-            qfMessage.getField(ordStatusField).getString() == Quickfix::OrdStatus_PARTIALLY_FILLED()))
-  end
-
 end

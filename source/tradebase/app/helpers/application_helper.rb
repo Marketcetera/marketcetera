@@ -15,11 +15,11 @@ include QF_BuyHelper
     end
   end
 
-  # Lookup the specified currency. If not found, return USD by default
+  # Lookup the specified currency. If incoming currency string is empty, returns USD by default
   def get_currency(cur_string)
     if(cur_string == nil || cur_string == '') 
       cur_string = 'USD'
-      logger.error("No currency specified, defaulting to USD")
+      p("No currency specified, defaulting to USD")
     end
     currency = Currency.find(:first, :conditions=>["alpha_code = ?", cur_string])
     return currency

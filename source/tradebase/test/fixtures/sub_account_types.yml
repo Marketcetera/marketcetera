@@ -1,5 +1,8 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-first:
+cash:
   id: 1
-another:
+  description: cash
+ 
+money:
   id: 2
+  description: fake cash

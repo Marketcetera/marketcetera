@@ -19,7 +19,9 @@ class TradesController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
+    logger.error("above paginate")
     @trade_pages, @trades = paginate :trades, :per_page => 10
+    logger.error("below paginate")
   end
 
   def show
@@ -33,9 +35,13 @@ class TradesController < ApplicationController
   def create
     @trade = Trade.new(params[:trade])
     
+    trade2 =  Date.civil(params[:trade_date] )
+    logger.error("trade2 is "+trade2.to_s)
+    
+    trade_date = Date.civil(params['trade_date(1i)'].to_i, params['trade_date(2i)'].to_i, params['trade_date(3i)'].to_i )
     create_equity_trade(@trade, params[:m_symbol][:root],
      BigDecimal(params[:per_share_price]), BigDecimal(params[:per_share_commission]),
-     params[:currency][:alpha_code], params[:account][:nickname])
+     params[:currency][:alpha_code], params[:account][:nickname], trade_date)
     
     if @trade.save
       flash[:notice] = 'Trade was successfully created.'

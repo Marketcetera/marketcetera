@@ -2,6 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 class DividendTest < Test::Unit::TestCase
   fixtures :currencies, :dividends
+  include DividendsHelper
 
   def setup
     @USD = currencies(:usd)
@@ -66,4 +67,12 @@ class DividendTest < Test::Unit::TestCase
     div.save
     assert_equal 0, div.errors.length, "didn't accepted non-integer"
   end
+  
+  def test_human_dividend_status
+    assert_equal "Announced", get_human_dividend_status(DividendStatusAnnounced)
+    
+    assert_match "Unknown", get_human_dividend_status("bogus")
+    
+  end 
+  
 end

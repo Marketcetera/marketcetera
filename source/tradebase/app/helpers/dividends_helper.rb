@@ -13,4 +13,4 @@ module DividendsHelper
     end
   end
 
- endend
+end

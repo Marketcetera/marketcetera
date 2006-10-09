@@ -6,16 +6,23 @@
   <b>Side:</b> <%=h get_human_side(@trade.side.to_s) %>
 </p>
 <p>
+  <b>Price per Share:</b> <%=h @trade.price_per_share.to_s %>
+</p>
+<p>
   <b>Trade type:</b> 
   <%=h get_human_trade_type(@trade.trade_type) %>
 </p>
 <p>
+  <b>Trade date:</b> 
+  <%=h @trade.journal.post_date %>
+</p>
+<p>
   <b>Asset type:</b> 
-  <%=h get_human_asset_type(@trade.asset_type) %>
+  <%=h @trade.tradeable.class %>
 </p>
 <p>
   <b>Symbol</b>
-  <%= get_equity_by_asset_type(@trade).m_symbol.root %>
+  <%= @trade.tradeable.m_symbol.root %>
 </p>
 <p>
   <b>Account</b>
