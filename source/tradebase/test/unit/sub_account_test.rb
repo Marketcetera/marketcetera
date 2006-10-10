@@ -1,27 +1,21 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/marketcetera_test_base'
 
-class SubAccountTest < Test::Unit::TestCase
-  fixtures :sub_accounts, :sub_account_types, :accounts
+class SubAccountTest < MarketceteraTestBase
+  fixtures :sub_accounts, :accounts
   include SubAccountsHelper
   
-  def setup
-    @num_subs = SubAccountType.find_all.length
-    assert_equal 2, @num_subs, "doesn't have any sub_account types"
+  def test_num_descriptions_same_as_preloaded
+    assert SubAccountType.find_all.length > 0, "doesn't have any sub_account types"
+    assert_not_nil SubAccountType::PRELOADED
+    assert_equal SubAccountType::DESCRIPTIONS.length, SubAccountType::PRELOADED.length, "PRELOADED array of SATs not populated"
+    assert_equal SubAccountType::DESCRIPTIONS.length, SubAccountType.find_all.length
   end
   
-  # Create an account, and then make sure all sub-accounts are filled on it.
-  def test_fill_subaccounts
-    toliAcct = accounts(:toli_account)
-    assert_equal 0, toliAcct.sub_accounts.length
-    fill_in_sub_accounts(toliAcct)
-    assert_equal @num_subs, toliAcct.sub_accounts.length
-    
-    # access a random one
-    assert_not_nil toliAcct.sub_accounts[1]
-    assert_equal "fake cash", toliAcct.sub_accounts[1].description
-    
-    # reload
-    readAcct = Account.find(toliAcct.id)
-    assert_equal @num_subs, readAcct.sub_accounts.length
+  def test_types_not_empty
+    assert_equal SubAccountType::TYPES.length, SubAccountType::PRELOADED.length
+    assert SubAccountType::TYPES.length > 0
+    SubAccountType::TYPES.each { |sa| assert_not_nil sa }
   end
+  
 end
