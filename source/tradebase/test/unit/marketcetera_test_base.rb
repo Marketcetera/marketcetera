@@ -10,8 +10,8 @@ class MarketceteraTestBase < Test::Unit::TestCase
   def test_default
     SubAccountType.new
     assert_equal SubAccountType.find_all.length, 7
-    assert_equal SubAccountType::DESCRIPTIONS.length, SubAccountType::PRELOADED.length
-    assert SubAccountType::PRELOADED.length > 0
+    assert_equal SubAccountType::DESCRIPTIONS.length, SubAccountType.preloaded.length
+    assert SubAccountType.preloaded.length > 0
   end
   
 end

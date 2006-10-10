@@ -24,7 +24,6 @@ class AccountsController < ApplicationController
 
   def create
     @account = Account.new(params[:account])
-    fill_in_sub_accounts(@account)
     if @account.save
       flash[:notice] = 'Account was successfully created.'
       redirect_to :action => 'list'

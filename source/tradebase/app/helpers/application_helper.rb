@@ -25,10 +25,6 @@ include QF_BuyHelper
     return currency
   end
   
-  def get_account_by_nickname(nickname)
-    return Account.find(:first, :conditions=>["nickname = ?", nickname])
-  end
-
   def auto_complete_for_currency_alpha_code
     auto_complete_responder_for_currency_alpha_code params[:currency][:alpha_code]
   end
