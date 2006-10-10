@@ -11,11 +11,11 @@ class JournalTest < MarketceteraTestBase
     acct = Account.create(:nickname => "test-acct")
     journal = Journal.create(:description => "random journal")
     
-    sti = acct.find_sub_account_by_sat(SubAccountType::TYPES[:sti])
+    sti = acct.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:sti])
     assert_not_nil sti, "didn't find STI sub_account"
-    cash = acct.find_sub_account_by_sat(SubAccountType::TYPES[:cash])
+    cash = acct.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
     assert_not_nil cash, "didn't find cash sub_account"
-    commissions = acct.find_sub_account_by_sat(SubAccountType::TYPES[:commissions])
+    commissions = acct.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
     assert_not_nil commissions, "didn't find commission sub_account"
     
     # create some postings: sti, cash, commissions, cash
@@ -30,17 +30,17 @@ class JournalTest < MarketceteraTestBase
     journal.save
     
     # now start checking that all postings are found
-    assert_equal sti, journal.find_posting_by_sat(SubAccountType::TYPES[:sti]).sub_account
-    assert_equal cash, journal.find_posting_by_sat(SubAccountType::TYPES[:cash]).sub_account
-    assert_equal commissions, journal.find_posting_by_sat(SubAccountType::TYPES[:commissions]).sub_account
+    assert_equal sti, journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:sti]).sub_account
+    assert_equal cash, journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:cash]).sub_account
+    assert_equal commissions, journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:commissions]).sub_account
     
     # now find the 2nd cash posting with pair-id
-    commissionCash = journal.find_posting_by_sat_and_pair_id(SubAccountType::TYPES[:cash], 2)
+    commissionCash = journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], 2)
     assert_not_nil commissionCash
     assert_equal -17, commissionCash.quantity
     
     # and now empty
-    assert_nil journal.find_posting_by_sat_and_pair_id(SubAccountType::TYPES[:cash], 37)
-    assert_nil journal.find_posting_by_sat(SubAccountType::TYPES[:dividendRevenue])
+    assert_nil journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], 37)
+    assert_nil journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:dividendRevenue])
   end
 end

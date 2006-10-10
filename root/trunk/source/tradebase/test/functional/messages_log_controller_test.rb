@@ -39,4 +39,8 @@ class MessagesLogControllerTest < Test::Unit::TestCase
     assert assigns(:message_log).valid?
     assert_not_nil assigns(:qf_message)
   end
+  
+  def test_conditional_date_list
+    flunk "conditional date list test not implemented yet"
+  end
 end

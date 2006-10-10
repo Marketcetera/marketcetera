@@ -1,7 +1,5 @@
 class Trade < ActiveRecord::Base
 
-include SubAccountsHelper
-
   belongs_to :journal
   belongs_to :account
   
@@ -35,17 +33,21 @@ include SubAccountsHelper
     if(self.id.nil?) 
       return nil
     else 
-      commissions = self.journal.postings.select { |p| p.sub_account.sub_account_type.description == CommissionsDescription }[0]
+      commissions = self.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
       return commissions.quantity
     end
   end
     
   def total_commission=(inCommission)
-    commissions = self.journal.postings.select { |p| p.sub_account.sub_account_type.description == CommissionsDescription }[0]
-    cash = self.journal.postings.select { |p| (p.pair_id == commissions.pair_id) && (p.sub_account.sub_account_type.description == CashDescription) }[0]
+    commissions = self.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
+    cash = self.journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], commissions.pair_id)
     commissions.quantity = inCommission
     cash.quantity = -Float(inCommission)
   end
     
+  def total_price
+    sti = self.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:sti])
+    return sti.quantity
+  end
     
 end

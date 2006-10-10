@@ -9,8 +9,8 @@
     <th>Trade Type</th>
     <th>Trade Date</th>
     <th>Account</th>
+    <th>Total Commission</th>
     <th>Comment</th>
-    <th>Trade Date</th>
   <th colspan=3/>
   </tr>
   
@@ -18,14 +18,14 @@
 for trade in @trades %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
   <td><%= trade.tradeable.m_symbol.root %></td>
-  <td><%=h trade.send('quantity') %></td>
+  <td><%=h trade.quantity %></td>
   <td><%=h get_human_side(trade.side.to_s) %></td>
   <td><%=h trade.price_per_share %>
-  <td><%=h trade.send('trade_type') %></td>
+  <td><%=h get_human_trade_type(trade.trade_type) %></td>
   <td><%=h trade.journal.post_date %></td>
   <td><%=h trade.account.nickname %></td>
-  <td><%=h trade.send('comment') %></td>
-  <td><%=h trade.send('created_on') %></td>
+  <td><%=h trade.total_commission %></td>
+  <td><%=h trade.comment %></td>
     <td><%= link_to 'Show', :action => 'show', :id => trade, :controller => 'trades' %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => trade, :controller => 'trades' %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => trade, :controller => 'trades' }, 
