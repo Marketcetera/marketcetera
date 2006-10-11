@@ -4,12 +4,9 @@ import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.photon.editors.AveragePriceFunction;
 import org.marketcetera.photon.editors.ClOrdIDComparator;
-import org.marketcetera.photon.editors.LatestExecutionReportsFunction;
 import org.marketcetera.photon.editors.LatestMessageFunction;
-import org.marketcetera.photon.editors.SymbolSideComparator;
+import org.marketcetera.photon.views.FIXMatcher;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -76,15 +73,15 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 
-	public EventList<MessageHolder> getLatestExecutionReports() {
+	public EventList<MessageHolder> getLatestExecutionReportsList() {
 		return latestExecutionReportsList;
 	}
 
-	public FilterList<MessageHolder> getFills() {
+	public FilterList<MessageHolder> getFillsList() {
 		return fillMessages;
 	}
 	
-	public EventList<MessageHolder> getAveragePriceHistory()
+	public EventList<MessageHolder> getAveragePricesList()
 	{
 		return averagePriceList;
 	}
@@ -94,38 +91,25 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public Message getLatestExecutionReport(String clOrdID) {
-		for (MessageHolder holder : latestExecutionReportsList) {
-			Message executionReport = holder.getMessage();
-			try {
-				String possMatch = executionReport.getString(ClOrdID.FIELD);
-				if (possMatch.equals(clOrdID)){
-					//LoggerAdapter.debug("Returning latest execution report id:"+holder.getMessageReference(), this);
-					return executionReport;
-				}
-			} catch (FieldNotFound fnf) {
-				// do nothing
-			}
+		FilterList<MessageHolder> list = new FilterList<MessageHolder>(latestExecutionReportsList,new FIXMatcher<String>(ClOrdID.FIELD, clOrdID));
+		if (list.size()>0) {
+			return list.get(0).getMessage();
+		} else {
+			return null;
 		}
-		return null;
 	}
 
-	public EventList<MessageHolder> getAllMessages() {
+	public EventList<MessageHolder> getAllMessagesList() {
 		return allMessages;
 	}
 
 	public Message getLatestMessage(String clOrdID) {
-		for (MessageHolder holder : latestMessageList) {
-			Message executionReport = holder.getMessage();
-			try {
-				String possMatch = executionReport.getString(ClOrdID.FIELD);
-				if (possMatch.equals(clOrdID)){
-					return executionReport;
-				}
-			} catch (FieldNotFound fnf) {
-				// do nothing
-			}
+		FilterList<MessageHolder> list = new FilterList<MessageHolder>(latestMessageList,new FIXMatcher<String>(ClOrdID.FIELD, clOrdID));
+		if (list.size()>0){
+			return list.get(0).getMessage();
+		} else {
+			return null;
 		}
-		return null;
 	}
 
 	public void setMatcherEditor(ThreadedMatcherEditor<MessageHolder> matcherEditor) {
@@ -136,7 +120,7 @@ public class FIXMessageHistory extends PlatformObject {
 		return allFilteredMessages;
 	}
 
-	public FilterList<MessageHolder> getOpenOrders() {
+	public FilterList<MessageHolder> getOpenOrdersList() {
 		return openOrderList;
 	}
 	

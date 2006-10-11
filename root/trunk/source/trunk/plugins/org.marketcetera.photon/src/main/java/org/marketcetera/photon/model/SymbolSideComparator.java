@@ -1,10 +1,9 @@
-package org.marketcetera.photon.editors;
+package org.marketcetera.photon.model;
 
 import java.io.Serializable;
 import java.util.Comparator;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.model.MessageHolder;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

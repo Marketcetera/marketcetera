@@ -14,52 +14,6 @@ import ca.odell.glazedlists.matchers.Matcher;
 public class FIXMatcherEditor<FIX_TYPE extends Comparable<FIX_TYPE>> extends
 		AbstractMatcherEditor<MessageHolder> implements Comparable<FIXMatcherEditor<FIX_TYPE>>{
 
-	static class FIXMatcher<FIX_TYPE_INNER> implements Matcher<MessageHolder> {
-
-		private final int matcherFIXField;
-		private final FIX_TYPE_INNER matcherValue;
-
-		
-		public FIXMatcher(int fixField, FIX_TYPE_INNER value) {
-			matcherFIXField = fixField;
-			matcherValue = value;
-		}
-
-		public boolean matches(MessageHolder item) {
-			try
-			{
-				Message aMessage = item.getMessage();
-				if (matcherValue == null){
-					try {
-						String value = getFieldValueString(aMessage, matcherFIXField);
-						return (value == null);
-					} catch (FieldNotFound ex){
-						return true;
-					}
-				} else {
-					String value = getFieldValueString(aMessage, matcherFIXField);
-					return value.equals(matcherValue.toString());
-				}
-			} catch (Exception ex)
-			{
-				//do nothing
-			}
-			return false;
-		}
-
-		private String getFieldValueString(Message msg, int fieldNum) throws FieldNotFound{
-			DataDictionary dictionary = FIXDataDictionaryManager.getDictionary();
-			if (dictionary.isHeaderField(fieldNum)){
-				return msg.getHeader().getString(fieldNum);
-			} else if (dictionary.isTrailerField(fieldNum)) {
-				return msg.getTrailer().getString(fieldNum);
-			} else {
-				return msg.getString(fieldNum);
-			}
-		}
-	}
-	
-	
 
 	FIX_TYPE mItem;
 

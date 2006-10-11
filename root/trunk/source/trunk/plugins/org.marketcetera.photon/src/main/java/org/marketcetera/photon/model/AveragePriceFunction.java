@@ -1,15 +1,13 @@
 /**
  * 
  */
-package org.marketcetera.photon.editors;
+package org.marketcetera.photon.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.MessageHolder;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

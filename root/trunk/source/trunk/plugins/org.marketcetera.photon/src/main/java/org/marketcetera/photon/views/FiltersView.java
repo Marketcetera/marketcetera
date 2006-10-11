@@ -30,6 +30,7 @@ import ca.odell.glazedlists.matchers.MatcherEditor;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 import ca.odell.glazedlists.swt.EventListViewer;
 
+@Deprecated
 @ClassVersion("$Id$")
 public class FiltersView extends ViewPart implements IOrderActionListener {
 

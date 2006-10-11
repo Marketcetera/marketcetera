@@ -1,8 +1,7 @@
-package org.marketcetera.photon.editors;
+package org.marketcetera.photon.model;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.editors.LatestMessageFunction;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;

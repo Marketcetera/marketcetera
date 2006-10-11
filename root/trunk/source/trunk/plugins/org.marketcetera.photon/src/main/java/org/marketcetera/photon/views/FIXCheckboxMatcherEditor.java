@@ -10,6 +10,7 @@ import org.marketcetera.photon.model.MessageHolder;
 
 import ca.odell.glazedlists.matchers.CompositeMatcherEditor;
 
+@Deprecated
 @ClassVersion("$Id$")
 public class FIXCheckboxMatcherEditor extends
 		CompositeMatcherEditor<MessageHolder> implements SelectionListener {
