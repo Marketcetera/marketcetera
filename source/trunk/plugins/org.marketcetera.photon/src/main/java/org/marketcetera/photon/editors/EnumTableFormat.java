@@ -14,16 +14,13 @@ import quickfix.Message;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 
+@Deprecated
 @ClassVersion("$Id$")
 public class EnumTableFormat implements WritableTableFormat, AdvancedTableFormat {
-
-	
 	
 	private final Enum[] columns;
 	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
 	private DataDictionary dataDictionary;
-
-
 
 	public EnumTableFormat(Enum [] columns) {
 		this.columns = columns;
