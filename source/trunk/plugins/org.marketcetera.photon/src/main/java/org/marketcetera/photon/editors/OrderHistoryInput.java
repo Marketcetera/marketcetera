@@ -6,6 +6,7 @@ import org.eclipse.ui.IPersistableElement;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.model.FIXMessageHistory;
 
+@Deprecated
 @ClassVersion("$Id$")
 public class OrderHistoryInput implements IEditorInput {
 

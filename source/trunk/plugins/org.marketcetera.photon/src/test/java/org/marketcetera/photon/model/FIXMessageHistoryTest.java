@@ -69,7 +69,7 @@ public class FIXMessageHistoryTest extends TestCase {
 
 		{
 			history.addIncomingMessage(message);
-			EventList<MessageHolder> historyList = history.getAllMessages();
+			EventList<MessageHolder> historyList = history.getAllMessagesList();
 			assertEquals(1, historyList.size());
 			assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
 			IncomingMessageHolder holder = (IncomingMessageHolder) historyList.get(0);
@@ -94,7 +94,7 @@ public class FIXMessageHistoryTest extends TestCase {
 			InternalID clOrderID2 = new InternalID("1002");
 			Message message2 = FIXMessageUtil.newExecutionReport(orderID2, clOrderID2, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 			history.addIncomingMessage(message2);
-			EventList<MessageHolder> historyList = history.getAllMessages();
+			EventList<MessageHolder> historyList = history.getAllMessagesList();
 			assertEquals(2, historyList.size());
 			assertEquals(IncomingMessageHolder.class, historyList.get(1).getClass());
 			IncomingMessageHolder holder = (IncomingMessageHolder) historyList.get(1);
@@ -129,7 +129,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		Message message = FIXMessageUtil.newMarketOrder(orderID, side, quantity, symbol, timeInForce, account);
 		history.addOutgoingMessage(message);
 
-		EventList<MessageHolder> historyList = history.getAllMessages();
+		EventList<MessageHolder> historyList = history.getAllMessagesList();
 		assertEquals(1, historyList.size());
 		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
 		OutgoingMessageHolder holder = (OutgoingMessageHolder) historyList.get(0);
@@ -164,7 +164,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		history.addIncomingMessage(executionReportForOrder2);
 		history.addIncomingMessage(secondExecutionReportForOrder1);
 		
-		EventList<MessageHolder> historyList = history.getLatestExecutionReports();
+		EventList<MessageHolder> historyList = history.getLatestExecutionReportsList();
 		assertEquals(2, historyList.size());
 		Message historyExecutionReportForOrder1 = historyList.get(0).getMessage();
 		Message historyExecutionReportForOrder2 = historyList.get(1).getMessage();
@@ -228,7 +228,7 @@ public class FIXMessageHistoryTest extends TestCase {
 			}
 			
 		};
-		history.getAllMessages().addListEventListener(fixMessageListener);
+		history.getAllMessagesList().addListEventListener(fixMessageListener);
 		
 		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
@@ -277,8 +277,8 @@ public class FIXMessageHistoryTest extends TestCase {
 			
 		};
 		
-		history.getAllMessages().addListEventListener(fixMessageListener);
-		history.getAllMessages().removeListEventListener(fixMessageListener);
+		history.getAllMessagesList().addListEventListener(fixMessageListener);
+		history.getAllMessagesList().removeListEventListener(fixMessageListener);
 		
 		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
@@ -321,7 +321,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		messageHistory.addIncomingMessage(message);
 		
-		EventList<MessageHolder> averagePriceList = messageHistory.getAveragePriceHistory();
+		EventList<MessageHolder> averagePriceList = messageHistory.getAveragePricesList();
 
 		assertEquals(1, averagePriceList.size());
 		
@@ -346,7 +346,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		messageHistory.addIncomingMessage(message);
 
-		assertEquals(2, messageHistory.getAveragePriceHistory().size());
+		assertEquals(2, messageHistory.getAveragePricesList().size());
 		holder = (IncomingMessageHolder) averagePriceList.get(0);
 		returnedMessage = holder.getMessage();
 		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));

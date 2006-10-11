@@ -1,17 +1,19 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.jface.action.IToolBarManager;
+import org.marketcetera.photon.actions.ShowHeartbeatsAction;
+import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.ui.EnumLabelProvider;
-import org.marketcetera.photon.ui.EventListContentProvider;
+
+import quickfix.field.MsgType;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.matchers.Matcher;
 
 public class FIXMessagesView extends MessagesView {
 
     public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
+	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT);
 
 	
 	/**
@@ -40,39 +42,34 @@ public class FIXMessagesView extends MessagesView {
 		}
 	}
 
-	private Table messageTable;
-	private TableViewer messagesViewer;
-
-	@Override
-	public void createPartControl(Composite parent) {
-		Composite composite = new Composite(parent, SWT.NONE);
-		GridLayout layout = new GridLayout();
-		composite.setLayout(layout);
-		layout.numColumns = 1;
-
-        messageTable = createMessageTable(composite);
-		messagesViewer = new TableViewer(messageTable);
-		messagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
-		messagesViewer.setLabelProvider(new EnumLabelProvider(MessageColumns.values()));
-		
-		formatTable(messageTable);
-
-        messageTable.setBackground(
-        		messageTable.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_BACKGROUND));
-        messageTable.setForeground(
-        		messageTable.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_FOREGROUND));
-
-        messageTable.setHeaderVisible(true);
-
-		packColumns(messageTable);
+	protected Enum[] getEnumValues() {
+		return MessageColumns.values();
 	}
+
+    protected void initializeToolBar(IToolBarManager theToolBarManager) {
+    	theToolBarManager.add(new ShowHeartbeatsAction(this));
+    }
 
 	@Override
 	public void setFocus() {
-		// TODO Auto-generated method stub
-
 	}
 
+	@SuppressWarnings("unchecked")
+	protected FilterList<MessageHolder> getFilterList() {
+		return (FilterList<MessageHolder>) getMessagesViewer().getInput();
+	}
+
+
+	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
+		return input.getAllMessagesList();
+	}
+
+	public void setShowHeartbeats(boolean shouldShow){
+		FilterList<MessageHolder> list = getFilterList();
+		if (shouldShow){
+			list.setMatcher(HEARTBEAT_MATCHER);
+		} else {
+			list.setMatcher(null);
+		}
+	}
 }

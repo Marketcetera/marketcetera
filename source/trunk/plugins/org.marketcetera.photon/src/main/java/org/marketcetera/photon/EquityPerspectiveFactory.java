@@ -5,8 +5,11 @@ import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
 import org.eclipse.ui.console.IConsoleConstants;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
+import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.photon.views.FiltersView;
+import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.WebBrowserView;
 
@@ -26,7 +29,7 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 	public static final String ID = "org.marketcetera.photon.EquityPerspective";
 
-	IFolderLayout leftFolder;
+	//IFolderLayout leftFolder;
 
 	IFolderLayout rightFolder;
 
@@ -52,12 +55,13 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 				0.7f, editorArea);
 		bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW + ":*");
 		bottomFolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
+		bottomFolder.addView(OpenOrdersView.ID);
+		bottomFolder.addView(AveragePriceView.ID);
+		bottomFolder.addView(FillsView.ID);
 		bottomFolder.addView(FIXMessagesView.ID);
 
-		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.35f,
-				editorArea);
-		leftFolder.addPlaceholder(FiltersView.ID + ":*");
-		leftFolder.addView(FiltersView.ID);
+		//leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0f,
+		//		editorArea);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
 				0.85f, editorArea);

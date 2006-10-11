@@ -105,10 +105,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			cslc.setIDFactory(Application.getIDFactory());
 		}
 
-		IViewPart filterView = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().findView(FiltersView.ID);
-		Application.getFIXMessageHistory().setMatcherEditor(((FiltersView)filterView).getMatcherEditor());
-		Application.getOrderManager().addOrderActionListener(((FiltersView)filterView));
-		
 		Application.initJMSConnector();
 
 		Application.getMainConsoleLogger().info(

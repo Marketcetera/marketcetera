@@ -21,6 +21,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.custom.CCombo;
 
+@Deprecated
 @ClassVersion("$Id$")
 public abstract class ErrorAreaView extends ViewPart {
 

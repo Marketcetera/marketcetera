@@ -206,7 +206,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 	 *
 	 */
 	private void createQuantityBorderComposite() {
-
 		quantityBorderComposite = getFormToolkit().createComposite(form.getBody());
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.marginWidth = 2;
