@@ -2,29 +2,6 @@
 module ApplicationHelper
 include QF_BuyHelper
 
-  def get_equity(ref_symbol)
-    symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
-    if(symbol == nil)
-      symbol = MSymbol.new(:root => ref_symbol)
-      symbol.save
-      equity = Equity.new(:m_symbol => symbol)
-      equity.save
-      return equity
-    else
-      return Equity.find(symbol.id)
-    end
-  end
-
-  # Lookup the specified currency. If incoming currency string is empty, returns USD by default
-  def get_currency(cur_string)
-    if(cur_string == nil || cur_string == '') 
-      cur_string = 'USD'
-      p("No currency specified, defaulting to USD")
-    end
-    currency = Currency.find(:first, :conditions=>["alpha_code = ?", cur_string])
-    return currency
-  end
-  
   def auto_complete_for_currency_alpha_code
     auto_complete_responder_for_currency_alpha_code params[:currency][:alpha_code]
   end

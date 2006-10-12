@@ -1,6 +1,3 @@
-require 'quickfix_ruby'
-#include QF_BuyHelper
-	
 class MessageLogsController < ApplicationController
 
   def index

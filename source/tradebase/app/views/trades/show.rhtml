@@ -31,6 +31,9 @@
 <p>
   <b>Comment:</b> <%=h @trade.send('comment') %>
 </p>
+<p>
+  <b>Total Commission:</b> <%=h @trade.send('total_commission') %>
+</p>
 
 <%
 total_credits = BigDecimal('0')

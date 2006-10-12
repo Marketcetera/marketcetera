@@ -3,8 +3,7 @@ require File.dirname(__FILE__) + '/marketcetera_test_base'
 
 class SubAccountTest < MarketceteraTestBase
   fixtures :sub_accounts, :accounts
-  include SubAccountsHelper
-  
+    
   def test_num_descriptions_same_as_preloaded
     assert SubAccountType.find_all.length > 0, "doesn't have any sub_account types"
     assert_not_nil SubAccountType.preloaded
