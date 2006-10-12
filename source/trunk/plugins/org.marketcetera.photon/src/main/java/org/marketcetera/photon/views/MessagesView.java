@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.photon.Application;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.ui.EnumLabelProvider;
@@ -57,6 +58,10 @@ public abstract class MessagesView extends ViewPart {
 		packColumns(messageTable);
         toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		initializeToolBar(toolBarManager);
+		FIXMessageHistory messageHistory = Application.getFIXMessageHistory();
+		if (messageHistory!= null){
+			setInput(messageHistory);
+		}
 	}
 
 	protected abstract void initializeToolBar(IToolBarManager theToolBarManager);
@@ -91,7 +96,7 @@ public abstract class MessagesView extends ViewPart {
 	}
 	
 
-	protected TableViewer getMessagesViewer() {
+	public TableViewer getMessagesViewer() {
 		return messagesViewer;
 	}
 	
