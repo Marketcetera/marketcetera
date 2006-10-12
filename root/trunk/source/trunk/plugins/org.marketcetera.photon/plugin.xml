@@ -33,7 +33,9 @@
             class="org.marketcetera.photon.views.StockOrderTicket"
             icon="icons/silk/medal_gold_add.png"
             id="org.marketcetera.photon.views.StockOrderTicket"
-            name="Stock Order Ticket"/>
+            name="Stock Order Ticket"
+            allowMultiple="true"
+            />
       <view
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.WebBrowserView"

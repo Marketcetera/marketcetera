@@ -91,13 +91,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		} 
 				
 		IWorkbenchPage page = this.getWindowConfigurer().getWindow().getActivePage();
-		OrderHistoryInput input = new OrderHistoryInput(Application.getFIXMessageHistory());
-		try {
-			page.openEditor(input, OrderHistoryEditor.ID, true);
-		} catch (PartInitException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
 		if (item instanceof CommandStatusLineContribution) {
