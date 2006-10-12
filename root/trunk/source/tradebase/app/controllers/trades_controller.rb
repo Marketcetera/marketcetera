@@ -69,7 +69,6 @@ class TradesController < ApplicationController
     @trade = Trade.find(params[:id])
     @trade.tradeable_m_symbol_root = params[:m_symbol][:root]
     
-    success = true
     @trade.journal_post_date = create_date(params, :trade, :journal_post_date.to_s)
     @trade.quantity = params[:trade][:quantity]
     @trade.side = params[:trade][:side]
@@ -77,8 +76,9 @@ class TradesController < ApplicationController
     @trade.comment = params[:trade][:comment]
     @trade.total_commission = params[:trade][:total_commission]
     @trade.trade_type = params[:trade][:trade_type]
-        
-    if(success)
+    
+    
+    if(@trade.save)
       flash[:notice] = 'Trade was successfully updated.'
       redirect_to :action => 'show', :id => @trade
     else
