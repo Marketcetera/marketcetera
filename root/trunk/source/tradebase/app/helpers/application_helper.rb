@@ -21,6 +21,29 @@ include QF_BuyHelper
     end
   
   end
+  
+  # Designed to create a date from something that may look like this:
+  # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
+  # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
+  def parse_date_from_params(params, object_name, tag_name)
+    return Date.new(Integer(params[object_name][tag_name+"(1i)"]), 
+                      Integer(params[object_name][tag_name+"(2i)"]), 
+                      Integer(params[object_name][tag_name+"(3i)"]))
+  end
+  
+  # Displays all the table columns except for the created_on/updated_on columns
+  def show_relevant_table_columns(inObject, isHeader)
+    outStr = ""
+    for column in inObject.class.content_columns
+      if(column.name != "created_on" && column.name != "updated_on")
+          if(isHeader) 
+            outStr += "<th>" + column.human_name+"</th>"
+          else outStr += "<td>" + inObject.send(column.name).to_s + "</td>"
+          end
+      end
+    end
+    return outStr
+  end
 
   private
   def auto_complete_responder_for_currency_alpha_code(value)
