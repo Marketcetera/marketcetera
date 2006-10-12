@@ -13,6 +13,7 @@ class Trade < ActiveRecord::Base
       logger.debug("setting the journal post date: "+inDate.to_s)
     if(!self.journal.nil?) 
       self.journal.post_date = inDate
+      self.journal.save
     end
   end
 
@@ -22,6 +23,7 @@ class Trade < ActiveRecord::Base
   
   def tradeable_m_symbol_root=(inSymbol)
     self.tradeable.m_symbol.root = inSymbol
+    self.tradeable.m_symbol.save
   end
   
   def account_nickname

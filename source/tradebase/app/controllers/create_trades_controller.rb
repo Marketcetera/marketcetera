@@ -1,5 +1,4 @@
 class CreateTradesController < ApplicationController
-  require 'quickfix'
   require 'bigdecimal'
   
   include MessageLogsHelper

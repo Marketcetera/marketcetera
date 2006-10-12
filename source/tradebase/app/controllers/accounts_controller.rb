@@ -1,5 +1,4 @@
 class AccountsController < ApplicationController
-  require 'quickfix'
 
   def index
     list

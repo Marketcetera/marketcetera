@@ -1,10 +1,7 @@
 require 'bigdecimal'
 
 class TradesController < ApplicationController
-  include QF_BuyHelper
   include ApplicationHelper
-  include TradesHelper
-  helper :application
   
   auto_complete_for :m_symbol, :root, {}
   auto_complete_for :account, :nickname, {}
@@ -42,8 +39,7 @@ class TradesController < ApplicationController
     @trade = Trade.new(:quantity => params[:trade][:quantity], :comment => params[:trade][:comment], 
                        :trade_type => params[:trade][:trade_type], :side => params[:trade][:side])
     
-    trade_date = Date.civil(params[:trade]['journal_post_date(1i)'].to_i, params[:trade]['journal_post_date(2i)'].to_i, 
-                            params[:trade]['journal_post_date(3i)'].to_i )
+    trade_date = parse_date_from_params(params, :trade, "journal_post_date")
     @trade.create_equity_trade(@trade.quantity, params[:m_symbol][:root], BigDecimal.new(params[:trade][:price_per_share]), 
         BigDecimal.new(params[:trade][:total_commission]), params[:currency][:alpha_code], params[:account][:nickname], trade_date)
     
@@ -68,8 +64,8 @@ class TradesController < ApplicationController
     end
     @trade = Trade.find(params[:id])
     @trade.tradeable_m_symbol_root = params[:m_symbol][:root]
-    
-    @trade.journal_post_date = create_date(params, :trade, :journal_post_date.to_s)
+    @trade.account_nickname = params[:account][:nickname]    
+    @trade.journal_post_date = parse_date_from_params(params, :trade, :journal_post_date.to_s)
     @trade.quantity = params[:trade][:quantity]
     @trade.side = params[:trade][:side]
     @trade.price_per_share = params[:trade][:price_per_share]
@@ -91,12 +87,12 @@ class TradesController < ApplicationController
     redirect_to :action => 'list'
   end
   
-  # Designed to create a date from something that may look like this:
-  # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
-  # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
-    def create_date(params, object_name, tag_name)
-    Date.new(Integer(params[object_name][tag_name+"(1i)"]), Integer(params[object_name][tag_name+"(2i)"]), 
-                      Integer(params[object_name][tag_name+"(3i)"]))
-  end
+#  # Designed to create a date from something that may look like this:
+#  # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
+#  # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
+#    def create_date(params, object_name, tag_name)
+#    Date.new(Integer(params[object_name][tag_name+"(1i)"]), Integer(params[object_name][tag_name+"(2i)"]), 
+#                      Integer(params[object_name][tag_name+"(3i)"]))
+#  end
   
 end

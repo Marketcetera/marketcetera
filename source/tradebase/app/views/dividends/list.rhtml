@@ -3,9 +3,7 @@
 <table>
   <tr>
    <th>Symbol</th>
-  <% for column in Dividend.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
+  <%= show_relevant_table_columns(Dividend.new, true) %>
   <th colspan=3/>
   </tr>
   
@@ -13,9 +11,7 @@
 for dividend in @dividends %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%= dividend.equity.m_symbol.root %></td>
-  <% for column in Dividend.content_columns %>
-    <td><%=h dividend.send(column.name) %></td>
-  <% end %>
+  <%= show_relevant_table_columns(dividend, false) %>
     <td><%= link_to 'Show', :action => 'show', :id => dividend %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => dividend %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => dividend }, :confirm => 'Are you sure?', :post => true %></td>
