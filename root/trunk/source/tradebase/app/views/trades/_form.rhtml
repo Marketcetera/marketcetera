@@ -11,6 +11,9 @@
 <p><label for="price_per_share">Price</label><br/>
 <%= text_field :trade, :price_per_share %></p>
 
+<p><label for="side">Side</label</br>
+<%= collection_select(:trade, :side, Side.SIDES_HI_COLLECTION, :value, :name, {:selected => 6}) %>
+
 <p><label for="trade_date">Trade Date</label><br/>
 <%= date_select :trade, :journal_post_date %>
 

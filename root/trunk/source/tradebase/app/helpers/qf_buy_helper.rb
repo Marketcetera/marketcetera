@@ -1,5 +1,10 @@
 module QF_BuyHelper
 
+
+  SIDES = { :buy => "Buy", :sell => "Sell", :sellShort => "Sell Short", :sellShortExempt => "Sell Short Exempt"}
+  QF_SIDE_CODE = { :buy => Quickfix::Side_BUY(), :sell => Quickfix::Side_SELL(), :sellShort => Quickfix::Side_SELL_SHORT(), 
+                   :sellShortExempt => Quickfix::Side_SELL_SHORT_EXEMPT() }
+                   
   # English display constants
   SideBuy = "Buy"
   SideSell = "Sell"

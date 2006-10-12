@@ -1,5 +1,4 @@
 class DividendsController < ApplicationController
-  include ApplicationHelper
 
   auto_complete_for :m_symbol, :root, {}
 
@@ -28,8 +27,8 @@ class DividendsController < ApplicationController
    begin
     @dividend = Dividend.new(params[:dividend])
     @params = params
-    @dividend.equity = get_equity(params[:m_symbol][:root])
-    @dividend.currency = get_currency(params[:currency][:alpha_code])
+    @dividend.equity = Equity.get_equity(params[:m_symbol][:root])
+    @dividend.currency = Currency.get_currency(params[:currency][:alpha_code])
     if @dividend.save
       flash[:notice] = 'Dividend was successfully created.'
       redirect_to :action => 'list'

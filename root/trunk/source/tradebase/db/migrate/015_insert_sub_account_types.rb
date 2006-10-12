@@ -1,5 +1,4 @@
 class InsertSubAccountTypes < ActiveRecord::Migration
-  include SubAccountsHelper
   
   def self.up
     SubAccountType.new(:accounting_account_type => "A", :description => SubAccountType::DESCRIPTIONS[:sti]).save()

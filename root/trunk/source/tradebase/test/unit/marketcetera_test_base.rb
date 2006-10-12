@@ -1,4 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require 'quickfix_ruby'
+require 'quickfix_fields'
 
 class MarketceteraTestBase < Test::Unit::TestCase
   fixtures :currencies, :sub_account_types
