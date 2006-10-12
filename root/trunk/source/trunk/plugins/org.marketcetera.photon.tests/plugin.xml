@@ -5,7 +5,7 @@
    name="Marketcetera Photon Tests"
    version="0.0.0"
    provider-name="Marketcetera"
-   class="org.marketcetera.photon.tests.PhotonTestsPlugin">
+   >
 
    <runtime>
       <library name="photontests.jar">
@@ -16,6 +16,7 @@
    <requires>
       <import plugin="org.junit"/>
       <import plugin="org.marketcetera.photon"/>
+      <import plugin="org.eclipse.sdk"/>
    </requires>
 
 </plugin>
