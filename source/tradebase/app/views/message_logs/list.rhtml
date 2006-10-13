@@ -55,7 +55,7 @@
     <td><%= getHeaderStringFieldValueIfPresent(qf_message, sendingTime) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
-    <td><%= get_human_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
+    <td><%= Side.get_human_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, symbol) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>

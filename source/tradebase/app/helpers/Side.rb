@@ -21,4 +21,7 @@ class Side
     @value
   end  
   
+  def Side.get_human_side(inCode)
+    DataDictionaryMgr.get_value_name(Quickfix::Side.new, inCode)
+  end
 end

@@ -43,6 +43,23 @@ module ApplicationHelper
     end
     return outStr
   end
+  
+  # Returns the first string if it's non-empty, otherwise returns the 2nd string (which can be empty/nil)
+  # This is a workaround for rails not handling nested hashes in URL links yet
+  # The params can contain either a nested parent[nested child] hash, or it may have a 
+  # secondary (hack) variable that has a "flat" name but points to same information.
+  # This is for helping with pagination.
+  def get_non_empty_string_from_two(params, nested_parent, nested_child, secondary)
+    parent = params[nested_parent]
+    if(!parent.nil?)
+      child = parent[nested_child]
+      if(!child.nil? && !child.empty?)
+        return child
+      end
+    end
+    return params[secondary]
+  end
+  
 
   private
   def auto_complete_responder_for_currency_alpha_code(value)
