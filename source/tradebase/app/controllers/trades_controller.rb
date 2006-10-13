@@ -16,9 +16,7 @@ class TradesController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    logger.error("above paginate")
     @trade_pages, @trades = paginate :trades, :per_page => 10
-    logger.error("below paginate")
   end
 
   def show
@@ -31,8 +29,7 @@ class TradesController < ApplicationController
 
   def create
     if(params[:m_symbol][:root].empty?)
-      flash[:notice] = 'Please specify the symbol.'
-      logger.error("no symbol, redirecting")
+      flash[:error] = 'Please specify the symbol.'
       redirect_to :action => 'new'
       return
     end
@@ -86,13 +83,4 @@ class TradesController < ApplicationController
     Trade.find(params[:id]).destroy
     redirect_to :action => 'list'
   end
-  
-#  # Designed to create a date from something that may look like this:
-#  # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
-#  # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
-#    def create_date(params, object_name, tag_name)
-#    Date.new(Integer(params[object_name][tag_name+"(1i)"]), Integer(params[object_name][tag_name+"(2i)"]), 
-#                      Integer(params[object_name][tag_name+"(3i)"]))
-#  end
-  
 end

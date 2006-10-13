@@ -17,4 +17,12 @@ List trades by:
     <%= submit_tag 'Search by Trade Date' %>
     <%= end_form_tag %>
   </li>
+  <li>
+    <%=  start_form_tag :action => 'by_account' %>
+    <p><label for="account_nickname">Account</label><br/>
+        <%= text_field_with_auto_complete :account, :nickname %>
+    </p>
+    <%= submit_tag 'Search by Account' %>
+    <%= end_form_tag %>
+  </li>
   </ol>

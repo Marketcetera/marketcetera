@@ -1,6 +1,5 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-include QF_BuyHelper
 
   def auto_complete_for_currency_alpha_code
     auto_complete_responder_for_currency_alpha_code params[:currency][:alpha_code]

@@ -1,6 +1,5 @@
 module MessageLogsHelper
 
-include QF_BuyHelper
   
   # if the field is present in the message returns the string value of it
   # else returns empty string
