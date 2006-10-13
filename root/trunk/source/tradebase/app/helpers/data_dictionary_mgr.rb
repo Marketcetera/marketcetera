@@ -4,15 +4,18 @@ class DataDictionaryMgr
   private_class_method :new
   @@mgr = Quickfix::DataDictionary.new("lib/FIX42.xml")
   
-  def DataDictionaryMgr.get_field_name(fieldNumber)
-    @@mgr.getFieldName(fieldNumber)
+  
+  def DataDictionaryMgr.get_field_name(field)
+    @@mgr.getFieldName(field.getField)
   end
   
-  def DataDictionaryMgr.get_value_name(fieldNumber, value)
-    result = @@mgr.getValueName(fieldNumber, value)
+  # pass in quickfix field and value constant, get back human value
+  def DataDictionaryMgr.get_value_name(field, value)
+    result = @@mgr.getValueName(field.getField, value)
     return (result.nil?) ? nil : result.gsub('_', ' ')
   end
   
+  # pass in a Quickfix field name (SIde), get back the numerical side for it
   def DataDictionaryMgr.get_field_tag(fieldName)
     @@mgr.getFieldTag(fieldName)
   end

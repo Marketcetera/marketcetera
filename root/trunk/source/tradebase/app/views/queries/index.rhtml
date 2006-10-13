@@ -4,16 +4,19 @@ List trades by:
   <li>
     <%=  start_form_tag :action => 'by_symbol' %>
     <p><label for="m_symbol_root">Symbol</label><br/>
-       <%= text_field_with_auto_complete :m_symbol, :root %>
+       <%= text_field_with_auto_complete :m_symbol, :root  %>
     </p>
     <%= submit_tag 'Search by Symbol' %>
     <%= end_form_tag %>
   </li>
-  <li>
+  <li>Search by Date<br>
     <%=  start_form_tag :action => 'by_date' %>
-    <p><label for="date_root">Trade Date</label><br/>
-       <%= date_select 'date', 'trade_date', :order => [:year, :month, :day] %>
-    </p>
+    <div class="date_from_to">
+    <table>
+    <tr><td><label for="from_date">From</label></td><td><%= date_select 'date', 'from', :order => [:year, :month, :day] %></td></tr>
+    <tr><td><label for="from_date">To</label></td><td><%= date_select 'date', 'to', :order => [:year, :month, :day] %></td></tr>
+    </table>
+    </div>
     <%= submit_tag 'Search by Trade Date' %>
     <%= end_form_tag %>
   </li>

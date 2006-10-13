@@ -1,5 +1,6 @@
 class MessageLogsController < ApplicationController
-
+  include ApplicationHelper
+  
   def index
     list
     render :action => 'list'
@@ -15,8 +16,8 @@ class MessageLogsController < ApplicationController
   def list
     fSubsetSearch = params[:search_type] == 's'
     if(fSubsetSearch)
-      @startDate = Date.new(params[:dates]['start_date(1i)'].to_i, params[:dates]['start_date(2i)'].to_i, params[:dates]['start_date(3i)'].to_i)
-      @endDate = Date.new(params[:dates]['end_date(1i)'].to_i, params[:dates]['end_date(2i)'].to_i, params[:dates]['end_date(3i)'].to_i)
+      @startDate = parse_date_from_params(params, :dates, "start_date")
+      @endDate = parse_date_from_params(params, :dates, "end_date")
     end
     all_exec_reports = []
     msgTypeField = Quickfix::MsgType.new

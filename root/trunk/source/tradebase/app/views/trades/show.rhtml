@@ -3,14 +3,14 @@
   <b>Quantity:</b> <%=h @trade.send('quantity') %>
 </p>
 <p>
-  <b>Side:</b> <%=h get_human_side(@trade.side.to_s) %>
+  <b>Side:</b> <%=h Side.get_human_side(@trade.side.to_s) %>
 </p>
 <p>
   <b>Price per Share:</b> <%=h @trade.price_per_share.to_s %>
 </p>
 <p>
   <b>Trade type:</b> 
-  <%=h get_human_trade_type(@trade.trade_type) %>
+  <%=h DataDictionaryMgr.get_value_name(Quickfix::TradeType.new, @trade.trade_type) %>
 </p>
 <p>
   <b>Trade date:</b> 
@@ -22,7 +22,7 @@
 </p>
 <p>
   <b>Symbol</b>
-  <%= @trade.tradeable.m_symbol.root %>
+  <%= @trade.tradeable_m_symbol_root %>
 </p>
 <p>
   <b>Account</b>

@@ -6,5 +6,4 @@ class ApplicationController < ActionController::Base
   require 'quickfix_fields'
 
   helper :application
-  helper :qf_buy
 end
