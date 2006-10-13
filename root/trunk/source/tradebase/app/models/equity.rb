@@ -4,6 +4,7 @@ class Equity < ActiveRecord::Base
   
   has_many :trades, :as => :tradeable
 
+  # Returns the equity for the underlying root symbol, or creates a new one if it's not there
   def Equity.get_equity(ref_symbol)
     symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
     if(symbol == nil)
@@ -16,8 +17,6 @@ class Equity < ActiveRecord::Base
       return Equity.find(symbol.id)
     end
   end
-
-
 
 end
 

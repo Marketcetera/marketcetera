@@ -1,4 +1,4 @@
-module QF_BuyHelper
+module QfBuyHelper
 
 
   SIDES = { :buy => "Buy", :sell => "Sell", :sellShort => "Sell Short", :sellShortExempt => "Sell Short Exempt"}
