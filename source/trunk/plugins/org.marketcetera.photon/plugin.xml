@@ -159,12 +159,6 @@
    </extension>
    <extension
          point="org.eclipse.ui.editors">
-      <editor
-            class="org.marketcetera.photon.editors.OrderHistoryEditor"
-            extensions="log"
-            icon="icons/sample.gif"
-            id="org.marketcetera.photon.editors.OrderHistoryEditor"
-            name="Order History"/>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">

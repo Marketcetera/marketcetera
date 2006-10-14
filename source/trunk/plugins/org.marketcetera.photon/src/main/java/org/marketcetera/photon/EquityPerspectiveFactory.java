@@ -8,7 +8,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
-import org.marketcetera.photon.views.FiltersView;
 import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.WebBrowserView;

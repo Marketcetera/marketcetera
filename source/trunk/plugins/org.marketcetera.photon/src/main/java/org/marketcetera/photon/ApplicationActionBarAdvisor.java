@@ -23,7 +23,6 @@ import org.eclipse.ui.application.IActionBarConfigurer;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
-import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 import org.marketcetera.quotefeed.IQuoteFeed;
@@ -105,8 +104,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction aboutAction;
 
-	private IWorkbenchAction orderHistoryAction;
-
 	private IWorkbenchAction reconnectJMSAction;
 
 	private CommandStatusLineContribution commandStatusLineContribution;
@@ -187,7 +184,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
-		orderHistoryAction = new OrderHistoryAction(window);
 	}
 
 	/**
@@ -311,8 +307,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		//toolBar.add(viewSecurityCI);
 		ActionContributionItem focusCommandCI = new ActionContributionItem(focusCommandAction);
 		toolBar.add(focusCommandCI);
-		ActionContributionItem orderHistoryCI = new ActionContributionItem(orderHistoryAction);
-		toolBar.add(orderHistoryCI);
 		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
 		toolBar.add(reconnectJMSCI);
 	}

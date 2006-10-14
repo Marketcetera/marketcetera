@@ -6,10 +6,7 @@ import org.apache.log4j.SimpleLayout;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -17,10 +14,6 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.editors.OrderHistoryEditor;
-import org.marketcetera.photon.editors.OrderHistoryInput;
-import org.marketcetera.photon.views.FiltersView;
-import org.marketcetera.photon.views.StockOrderTicket;
 
 /**
  * Required by the RCP platform this class is responsible for setting up the

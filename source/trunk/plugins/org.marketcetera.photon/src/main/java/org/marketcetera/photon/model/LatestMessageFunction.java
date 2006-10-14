@@ -1,10 +1,9 @@
-package org.marketcetera.photon.editors;
+package org.marketcetera.photon.model;
 
 import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;

@@ -22,7 +22,6 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.preferences.JMSPreferencePage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;

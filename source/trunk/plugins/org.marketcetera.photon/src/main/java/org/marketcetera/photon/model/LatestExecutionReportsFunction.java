@@ -1,7 +1,6 @@
 package org.marketcetera.photon.model;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.editors.LatestMessageFunction;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -24,7 +23,7 @@ public class LatestExecutionReportsFunction extends LatestMessageFunction {
 	 * represents an execution report.
 	 * @param holder the message to test
 	 * @return true if the incoming message represents an execution report, false otherwise
-	 * @see org.marketcetera.photon.editors.LatestMessageFunction#filter(org.marketcetera.photon.model.MessageHolder)
+	 * @see org.marketcetera.photon.model.LatestMessageFunction#filter(org.marketcetera.photon.model.MessageHolder)
 	 */
 	protected boolean filter(MessageHolder holder){
 		return (holder instanceof IncomingMessageHolder 

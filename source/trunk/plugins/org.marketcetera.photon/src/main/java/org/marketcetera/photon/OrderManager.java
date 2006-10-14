@@ -55,8 +55,6 @@ public class OrderManager {
 	
 	private Logger internalMainLogger = Application.getMainConsoleLogger();
 
-	private List<IOrderActionListener> orderActionListeners = new ArrayList<IOrderActionListener>();
-
 	private FIXMessageHistory fixMessageHistory;
 	
 
@@ -146,7 +144,6 @@ public class OrderManager {
 
 	public void handleCounterpartyMessage(Message aMessage) {
 		fixMessageHistory.addIncomingMessage(aMessage);
-		fireOrderActionOccurred(aMessage);
 		try {
 			if (FIXMessageUtil.isExecutionReport(aMessage)) {
 				handleExecutionReport(aMessage);
@@ -203,7 +200,6 @@ public class OrderManager {
 
 	public void handleInternalMessage(Message aMessage) throws FieldNotFound,
 			MarketceteraException, JMSException {
-		fireOrderActionOccurred(aMessage);
 
 		if (FIXMessageUtil.isOrderSingle(aMessage)) {
 			addNewOrder(aMessage);
@@ -373,29 +369,6 @@ public class OrderManager {
 		return idFactory;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.util.List#add(E)
-	 */
-	public boolean addOrderActionListener(IOrderActionListener arg0) {
-		return orderActionListeners.add(arg0);
-	}
-
-	/* (non-Javadoc)
-	 * @see java.util.List#remove(int)
-	 */
-	public boolean removeOrderActionListener(IOrderActionListener arg0) {
-		return orderActionListeners.remove(arg0);
-	}
-	
-	protected void fireOrderActionOccurred(Message fixMessage){
-		for (IOrderActionListener listener : orderActionListeners) {
-			try {
-				listener.orderActionTaken(fixMessage);
-			} catch (Exception ex){
-				internalMainLogger.error("Error notifying IOrderActionListener", ex);
-			}
-		}
-	}
 
 
 	protected boolean sendToApplicationQueue(Message message) throws JMSException
