@@ -26,7 +26,6 @@ public abstract class ViewTestBase extends TestCase {
 			getActivePage().
 			showView(getViewID());
 		waitForJobs();
-		delay(3000);
 	}
 
 	protected abstract String getViewID();
