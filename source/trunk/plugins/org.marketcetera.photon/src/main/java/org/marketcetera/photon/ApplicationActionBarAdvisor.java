@@ -26,6 +26,7 @@ import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.OrderHistoryAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.WebHelpAction;
+import org.marketcetera.quotefeed.IQuoteFeed;
 
 /**
  * This class contains the initialization code for the main application
@@ -110,13 +111,16 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private CommandStatusLineContribution commandStatusLineContribution;
 
-	private FeedStatusLineContribution feedStatusLineContribution;
+	private FeedStatusLineContribution jmsStatusLineContribution;
+
+	private FeedStatusLineContribution quoteFeedStatusLineContribution;
 
 	private IWorkbenchAction focusCommandAction;
 
 	private WebHelpAction webHelpAction;
 
     private IAction checkForUpdatesAction;
+
 
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -135,8 +139,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		this.window = window;
 
 		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
-		feedStatusLineContribution = new FeedStatusLineContribution("feedStatus", new String[] {JMSConnector.JMS_CONNECTOR_ID});
-		Application.getJMSConnector().addFeedComponentListener(feedStatusLineContribution);
+		jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", new String[] {JMSConnector.JMS_CONNECTOR_ID});
+		Application.getJMSConnector().addFeedComponentListener(jmsStatusLineContribution);
+		IQuoteFeed quoteFeed = Application.getQuoteFeed();
+		String quoteFeedID = "Quote Feed";
+		if (quoteFeed != null) quoteFeedID = quoteFeed.getID();
+		quoteFeedStatusLineContribution = new FeedStatusLineContribution("quoteFeedStatus", new String[] {quoteFeedID });
+		if (quoteFeed != null) quoteFeed.addFeedComponentListener(quoteFeedStatusLineContribution);
 
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
 		closeAction = ActionFactory.CLOSE.create(window);  register(closeAction);
@@ -318,7 +327,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
 		statusLine.add(commandStatusLineContribution);
-		statusLine.add(feedStatusLineContribution);
+		statusLine.add(jmsStatusLineContribution);
+		statusLine.add(quoteFeedStatusLineContribution);
 
 	}
 

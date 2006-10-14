@@ -31,10 +31,12 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.ui.AbstractFIXExtractor;
+import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.ui.CComboValidator;
 import org.marketcetera.photon.ui.FIXCComboExtractor;
 import org.marketcetera.photon.ui.FIXTextExtractor;
@@ -46,6 +48,7 @@ import org.marketcetera.photon.ui.PriceTextValidator;
 import org.marketcetera.photon.ui.TextValidator;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.Message;
 import quickfix.field.OrderQty;
@@ -83,9 +86,12 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 	
 	private FormValidator validator = new FormValidator(this);
 
+	private MSymbol listenedSymbol = null;
+	
 	List<AbstractFIXExtractor> extractors = new LinkedList<AbstractFIXExtractor>();
 	private Button sendButton;
 	private Button cancelButton;
+	private BookComposite bookComposite;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -100,6 +106,21 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
         errorMessageLabel.setLayoutData(gridData);
         top.setBackground(errorMessageLabel.getBackground());
 		
+		IQuoteFeed quoteFeed = Application.getQuoteFeed();
+		if (quoteFeed != null)
+		{
+			quoteFeed.addBookListener(bookComposite);
+		}
+	}
+
+	@Override
+	public void dispose() {
+		unlisten();
+		IQuoteFeed quoteFeed = Application.getQuoteFeed();
+		if (quoteFeed != null)
+		{
+			quoteFeed.removeBookListener(bookComposite);
+		}
 	}
 
 	@Override
@@ -152,6 +173,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		Composite okCancelComposite = getFormToolkit().createComposite(form.getBody());
 		okCancelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		gd.horizontalSpan=5;
 		okCancelComposite.setLayoutData(gd);
 		sendButton = getFormToolkit().createButton(okCancelComposite, "Send", SWT.PUSH);
 		cancelButton = getFormToolkit().createButton(okCancelComposite, "Cancel",
@@ -167,7 +189,9 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 			}
 		});
 
-
+		bookComposite = new BookComposite(form.getBody(),SWT.NONE);
+		getFormToolkit().adapt(bookComposite);
+		
 	}
 
 	/**
@@ -256,12 +280,36 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 			public void focusGained(FocusEvent e) {
 				((Text)e.widget).selectAll();
 			}
+			@Override
+			public void focusLost(FocusEvent e) {
+				listenMarketData(((Text)e.widget).getText());
+			}
 		});
 		TextValidator textValidator = new TextValidator(symbolText,
 				"Symbol", false);
 		ParentColorHighlighter highlighter = new ParentColorHighlighter(symbolText);
 		FIXTextExtractor extractor = new FIXTextExtractor(symbolText, Symbol.FIELD, FIXDataDictionaryManager.getDictionary());
 		extractors.add(extractor);
+	}
+
+	protected void listenMarketData(String text) {
+		IQuoteFeed quoteFeed = Application.getQuoteFeed();
+		MSymbol newListenedSymbol = new MSymbol(text);
+		if (quoteFeed != null && quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
+				&& !newListenedSymbol.equals(listenedSymbol)){
+			unlisten();
+			quoteFeed.listenLevel2(newListenedSymbol);
+			listenedSymbol = newListenedSymbol;
+		}
+	}
+	
+	protected void unlisten(){
+		IQuoteFeed quoteFeed = Application.getQuoteFeed();
+		if (quoteFeed != null && quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE){
+			if (listenedSymbol != null){
+				quoteFeed.unListenLevel2(listenedSymbol);
+			}
+		}
 	}
 
 	/**
@@ -422,6 +470,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		for (AbstractFIXExtractor extractor : extractors) {
 			extractor.clearUI();
 		}
+		unlisten();
 	}
 
 	public void clearMessage() {
