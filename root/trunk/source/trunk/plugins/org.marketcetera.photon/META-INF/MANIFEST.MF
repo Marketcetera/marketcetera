@@ -7,6 +7,7 @@ Bundle-Activator: org.marketcetera.photon.PhotonPlugin
 Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n
+Eclipse-BuddyPolicy: registered
 Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.apache.log4j;visibility:=reexport,
  org.eclipse.core.commands;visibility:=reexport,
@@ -35,5 +36,6 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.model,
  org.marketcetera.photon.parser,
  org.marketcetera.photon.preferences,
+ org.marketcetera.photon.quotefeed,
  org.marketcetera.photon.ui,
  org.marketcetera.photon.views

@@ -11,11 +11,12 @@ import org.marketcetera.core.ClassVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.StringField;
 import quickfix.field.Account;
 import quickfix.field.AvgPx;
 import quickfix.field.CumQty;
 import quickfix.field.LastPx;
-import quickfix.field.LastQty;
+import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
@@ -64,7 +65,7 @@ public class AveragePriceFunction implements Function<List<MessageHolder>, Messa
 				// a BigDecimal, but because we're just comparing
 				// to zero, it's ok
 				try {
-					if (message.getDouble(LastQty.FIELD) > 0) {
+					if (message.getDouble(LastShares.FIELD) > 0) {
 						avgPriceMessage = computeAveragePrice(avgPriceMessage, message);
 					}
 				} catch (FieldNotFound fnf){
@@ -92,15 +93,15 @@ public class AveragePriceFunction implements Function<List<MessageHolder>, Messa
 			returnMessage.setField(fillMessage.getField(new Side()));
 			returnMessage.setField(fillMessage.getField(new Symbol()));
 			returnMessage.setField(fillMessage.getField(new OrderQty()));
-			returnMessage.setField(fillMessage.getField(new CumQty()));
 			returnMessage.setField(fillMessage.getField(new LeavesQty()));
-			returnMessage.setField(fillMessage.getField(new AvgPx()));
+			returnMessage.setField(new StringField(CumQty.FIELD, fillMessage.getString(LastShares.FIELD)));
+			returnMessage.setField(new StringField(AvgPx.FIELD, fillMessage.getString(LastPx.FIELD)));
 			try { returnMessage.setField(fillMessage.getField(new Account())); } catch (FieldNotFound ex) { /* do nothing */ }
 			returnMessage.getHeader().setField(new MsgType(MsgType.EXECUTION_REPORT));
 		} else {
 			BigDecimal existingCumQty = new BigDecimal(avgPriceMessage.getString(CumQty.FIELD));
 			BigDecimal existingAvgPx = new BigDecimal(avgPriceMessage.getString(AvgPx.FIELD));
-			BigDecimal newLastQty = new BigDecimal(fillMessage.getString(LastQty.FIELD));
+			BigDecimal newLastQty = new BigDecimal(fillMessage.getString(LastShares.FIELD));
 			BigDecimal newLastPx = new BigDecimal(fillMessage.getString(LastPx.FIELD));
 			BigDecimal newTotal = existingCumQty.add(newLastQty);
 			if (newTotal.compareTo(BigDecimal.ZERO) != 0){

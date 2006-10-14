@@ -94,13 +94,18 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
+
 		if (item instanceof CommandStatusLineContribution) {
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
 			cslc.setIDFactory(Application.getIDFactory());
 		}
 
-		Application.initJMSConnector();
-
+		try {
+			Application.initJMSConnector();
+			Application.initQuoteFeed();
+		} catch (Exception ex){
+			Application.getMainConsoleLogger().error("Exeption making network connections ", ex);
+		}
 		Application.getMainConsoleLogger().info(
 				"Application initialized: " + new Date());
 		

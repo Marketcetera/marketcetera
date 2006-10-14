@@ -7,15 +7,17 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.ui.EnumLabelProvider;
+import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.MessageListTableFormat;
+import org.marketcetera.photon.ui.TableComparatorChooser;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 
 public abstract class MessagesView extends ViewPart {
 
@@ -23,15 +25,13 @@ public abstract class MessagesView extends ViewPart {
 	private TableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
 	private FIXMessageHistory fixMessageHistory;
+	private EnumTableFormat tableFormat;
+	private TableComparatorChooser<MessageHolder> chooser;
 
 
-    protected void formatTable(Table messageTable, Enum[] columns) {
+    protected void formatTable(Table messageTable) {
         messageTable.getVerticalBar().setEnabled(true);
 		int i = 0;
-        for (Enum aColumn : columns) {
-			TableColumn tableColumn = new TableColumn(messageTable, SWT.LEFT);
-			tableColumn.setText(columns[i++].toString());
-		}
         messageTable.setBackground(
         		messageTable.getDisplay().getSystemColor(
 						SWT.COLOR_INFO_BACKGROUND));
@@ -53,7 +53,8 @@ public abstract class MessagesView extends ViewPart {
         messageTable = createMessageTable(composite);
 		messagesViewer = createTableViewer(messageTable, getEnumValues());
 		
-		formatTable(messageTable,getEnumValues());
+		tableFormat = (EnumTableFormat)messagesViewer.getLabelProvider();
+		formatTable(messageTable);
 
 		packColumns(messageTable);
         toolBarManager = getViewSite().getActionBars().getToolBarManager();
@@ -62,6 +63,7 @@ public abstract class MessagesView extends ViewPart {
 		if (messageHistory!= null){
 			setInput(messageHistory);
 		}
+		
 	}
 
 	protected abstract void initializeToolBar(IToolBarManager theToolBarManager);
@@ -90,8 +92,9 @@ public abstract class MessagesView extends ViewPart {
     
 	protected TableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
 		TableViewer aMessagesViewer = new TableViewer(aMessageTable);
+		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
-		aMessagesViewer.setLabelProvider(new EnumLabelProvider(enums));
+		aMessagesViewer.setLabelProvider(new MessageListTableFormat(aMessageTable, enums, getSite()));
 		return aMessagesViewer;
 	}
 	
@@ -103,10 +106,24 @@ public abstract class MessagesView extends ViewPart {
 	public void setInput(FIXMessageHistory input)
 	{
 		fixMessageHistory = input;
-		messagesViewer.setInput(extractList(input));
+		SortedList<MessageHolder> extractedList = 
+			new SortedList<MessageHolder>(extractList(input));
+
+		if (chooser != null){
+			chooser.dispose();
+			chooser = null;
+		}
+		chooser = new TableComparatorChooser<MessageHolder>(
+							messageTable, 
+							tableFormat,
+							extractedList, false);
+
+		messagesViewer.setInput(extractedList);
 	}
 
 	protected abstract EventList<MessageHolder> extractList(FIXMessageHistory input);
+
+	
 
 
 }

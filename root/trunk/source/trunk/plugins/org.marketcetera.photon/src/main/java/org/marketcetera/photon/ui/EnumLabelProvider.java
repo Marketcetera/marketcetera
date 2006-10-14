@@ -13,6 +13,7 @@ import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
+@Deprecated
 public class EnumLabelProvider implements ITableLabelProvider {
 
 	Enum [] columns;

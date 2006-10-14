@@ -44,21 +44,28 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 	}
 
 	public void listChanged(ListEvent<T> event) {
-		while (event.next()){
-			int index = event.getIndex();
-			switch (event.getType()){
-			case ListEvent.DELETE:
-				viewer.remove(viewedList.get(index));
-				viewedList.remove(index);
-				break;
-			case ListEvent.INSERT:
-				viewedList.add(index, inputList.get(index));
-				viewer.insert(viewedList.get(index), index);
-				break;
-			case ListEvent.UPDATE:
-				viewer.refresh(viewedList.get(index));
-				break;
-			default:
+		if (event.isReordering()){
+			viewedList.clear();
+			viewedList.addAll(inputList);
+			viewer.refresh();
+		} else {
+			while (event.next()){
+				int index = event.getIndex();
+				switch (event.getType()){
+				case ListEvent.DELETE:
+					viewer.remove(viewedList.get(index));
+					viewedList.remove(index);
+					break;
+				case ListEvent.INSERT:
+					viewedList.add(index, inputList.get(index));
+					viewer.insert(viewedList.get(index), index);
+					break;
+				case ListEvent.UPDATE:
+					viewedList.set(index, inputList.get(index));
+					viewer.replace(viewedList.get(index), index);
+					break;
+				default:
+				}
 			}
 		}
 	}

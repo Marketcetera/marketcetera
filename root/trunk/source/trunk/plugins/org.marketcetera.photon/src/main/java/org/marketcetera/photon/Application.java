@@ -1,9 +1,17 @@
 package org.marketcetera.photon;
 
+import java.io.IOException;
+import java.lang.reflect.Constructor;
+
 import javax.jms.JMSException;
 
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPlatformRunnable;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
@@ -14,8 +22,12 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.preferences.JMSPreferencePage;
+import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quotefeed.IQuoteFeed;
+import org.marketcetera.quotefeed.IQuoteFeedFactory;
 
 import quickfix.Message;
 
@@ -45,6 +57,7 @@ public class Application implements IPlatformRunnable {
 	
 
 	private static FIXMessageHistory fixMessageHistory;
+	private static IQuoteFeed quoteFeed;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
 	
@@ -68,6 +81,9 @@ public class Application implements IPlatformRunnable {
 		jmsConnector = new JMSConnector();
 
 		orderManager = new OrderManager(idFactory, fixMessageHistory);
+		
+		setUpQuoteFeed();
+		
 		Display display = PlatformUI.createDisplay();
 		try {
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
@@ -78,8 +94,31 @@ public class Application implements IPlatformRunnable {
 		} finally {
 			display.dispose();
 		}
+
 	}
 
+	private void setUpQuoteFeed() {
+		try {
+			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
+			IExtensionPoint extensionPoint =
+			extensionRegistry.getExtensionPoint(IQuoteFeedConstants.EXTENSION_POINT_ID);
+			IExtension[] extensions = extensionPoint.getExtensions();
+			if (extensions != null && extensions.length > 0)
+			{
+				IConfigurationElement[] configurationElements = extensions[0].getConfigurationElements();
+				IConfigurationElement feedElement = configurationElements[0];
+				String factoryClass = feedElement.getAttribute(IQuoteFeedConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
+				Class<IQuoteFeedFactory> clazz = (Class<IQuoteFeedFactory>) Class.forName(factoryClass);
+				Constructor<IQuoteFeedFactory> constructor = clazz.getConstructor( new Class[0] );
+				IQuoteFeedFactory factory = constructor.newInstance(new Object[0]);
+				quoteFeed = factory.getInstance("datasvr.tradearca.com:8092", "", "");
+			}
+		} catch (Exception ex){
+			getMainConsoleLogger().error("Exception starting quote feed: "+ex.getMessage());
+		}
+	}
+
+	
 	/**
 	 * Initializes (or re-initializes) the connection to the JMS server,
 	 * by opening a connection to the URL specified in the JMS preferences.
@@ -90,7 +129,7 @@ public class Application implements IPlatformRunnable {
 	 * @see JMSPreferencePage
 	 * @return the newly initialized JMSConnector
 	 */
-	public static JMSConnector initJMSConnector()
+	public static void initJMSConnector()
 	{
 
 		ScopedPreferenceStore preferences = new ScopedPreferenceStore(new ConfigurationScope(), Application.PLUGIN_ID);
@@ -131,10 +170,13 @@ public class Application implements IPlatformRunnable {
         	};
         	jmsConnectThread.start();
         	
-			return jmsConnector;
-		
 	}
 
+	public static void initQuoteFeed() throws IOException
+	{
+		quoteFeed.connect();
+	}
+	
 
 	/**
 	 * Accessor for the console logger singleton.  This logger writes
@@ -217,5 +259,9 @@ public class Application implements IPlatformRunnable {
 	 */
 	public static IDFactory getIDFactory() {
 		return idFactory;
+	}
+	
+	public static IQuoteFeed getQuoteFeed() {
+		return quoteFeed;
 	}
 }
