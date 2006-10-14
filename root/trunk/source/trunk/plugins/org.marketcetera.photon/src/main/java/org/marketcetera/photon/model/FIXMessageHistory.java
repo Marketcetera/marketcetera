@@ -5,7 +5,6 @@ import java.util.List;
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.editors.ClOrdIDComparator;
-import org.marketcetera.photon.editors.LatestMessageFunction;
 import org.marketcetera.photon.views.FIXMatcher;
 
 import quickfix.FieldNotFound;
