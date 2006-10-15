@@ -1,8 +1,5 @@
 <%= render :partial => 'trades/trade_list_display' %>
 
-<%= link_to 'Previous page', { :page => @trade_pages.current.previous } if @trade_pages.current.previous %>
-<%= link_to 'Next page', { :page => @trade_pages.current.next } if @trade_pages.current.next %> 
-
-<br />
-
+<%= pagination_links(@trade_pages) %>
+<p/>
 <%= link_to 'New trade', :action => 'new' %>

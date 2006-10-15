@@ -14,7 +14,7 @@ class Equity < ActiveRecord::Base
       equity.save
       return equity
     else
-      return Equity.find(symbol.id)
+      return Equity.find_by_m_symbol_id(symbol.id)
     end
   end
 

@@ -10,7 +10,7 @@
 </p>
 <p>
   <b>Trade type:</b> 
-  <%=h DataDictionaryMgr.get_value_name(Quickfix::TradeType.new, @trade.trade_type) %>
+  <%=h get_human_trade_type(@trade.trade_type) %>
 </p>
 <p>
   <b>Trade date:</b> 
