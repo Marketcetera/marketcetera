@@ -21,7 +21,7 @@ for trade in @trades %>
   <td><%=h trade.quantity %></td>
   <td><%=h Side.get_human_side(trade.side.to_s) %></td>
   <td><%=h trade.price_per_share %>
-  <td><%=h DataDictionaryMgr.get_value_name(Quickfix::TradeType.new, trade.trade_type) %></td>
+  <td><%=h get_human_trade_type(trade.trade_type) %></td>
   <td><%=h trade.journal.post_date %></td>
   <td><%=h trade.account.nickname %></td>
   <td><%=h trade.total_commission %></td>

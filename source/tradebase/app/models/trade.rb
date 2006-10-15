@@ -88,6 +88,12 @@ class Trade < ActiveRecord::Base
                                     self.quantity * self.price_per_share)
   end    
   
+  # Override the to_s function to print something more useful for debugging
+  def to_s
+    "["+Side.get_human_side(self.side.to_s)+"] "+self.quantity.abs.to_s + 
+    " <"+self.tradeable_m_symbol_root+"> @"+self.price_per_share.to_s + " in acct ["+self.account.nickname+"]"
+  end
+  
   
     
  def create_equity_trade(quantity, symbol, price_per_share, 
@@ -97,7 +103,7 @@ class Trade < ActiveRecord::Base
     notional = self.quantity * self.price_per_share
     total_commission = total_commission
     self.tradeable = Equity.get_equity(symbol)
-    logger.debug("creating a trade for "+symbol + " for "+notional.to_s + "/("+total_commission.to_s + ")")
+    logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
     if(self.account == nil)
       self.account = Account.create(:nickname => account_nickname)

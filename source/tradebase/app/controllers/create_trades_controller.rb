@@ -20,8 +20,14 @@ class CreateTradesController < ApplicationController
   # Creates currency, equity and other info if needed
   def create_one_trade(id)
     dbMessage = MessageLog.find(id)
+    
+    if(dbMessage.processed) 
+      logger.debug("skipping message ["+dbMessage.id+"], already processed")
+      return nil
+    end
+    
     qfMessage = Quickfix::Message.new(dbMessage.text)
-    logger.error("creating a trade for msg: "+ qfMessage.to_s)
+    logger.debug("creating a trade for msg: "+ qfMessage.to_s)
     theTrade = Trade.new
     quantity = getStringFieldValueIfPresent(qfMessage, Quickfix::LastShares.new)
     currency = getStringFieldValueIfPresent(qfMessage, Quickfix::Currency.new)
@@ -34,8 +40,12 @@ class CreateTradesController < ApplicationController
     theTrade.side = getStringFieldValueIfPresent(qfMessage, Quickfix::Side.new)
     theTrade.save
     
+    logger.debug("created trade: "+theTrade.to_s)
+    
     dbMessage.processed = true;
     dbMessage.save
+    
+    return theTrade
   end
   
 end

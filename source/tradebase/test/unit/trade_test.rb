@@ -82,6 +82,13 @@ class TradeTest < MarketceteraTestBase
     verify_trade_prices(t, Float(25*200), 14.99)
   end 
   
+  def test_to_s
+    t = Trade.new
+    t.create_equity_trade(10, "TOLI", 4.99, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    t.side = Side::QF_SIDE_CODE[:sellShort]
+    assert_equal "[SELL SHORT] 10.0 <TOLI> @4.99 in acct [some-account]", t.to_s
+  end
+   
    
   ##### Helpers ######
 

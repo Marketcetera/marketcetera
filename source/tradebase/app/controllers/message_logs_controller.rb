@@ -39,6 +39,9 @@ class MessageLogsController < ApplicationController
       end
     }
   
+    if(all_exec_reports.empty?)
+      flash.now[:error] = "No matching messages found"
+    end
     # paginate manually
     @paginator = Paginator.new(self, all_exec_reports.length, 10, params[:page])
     @exec_report_pages = all_exec_reports[@paginator.current.offset .. @paginator.current.offset + 9] 

@@ -34,8 +34,12 @@ class TradesController < ApplicationController
       return
     end
     @trade = Trade.new(:quantity => params[:trade][:quantity], :comment => params[:trade][:comment], 
-                       :trade_type => params[:trade][:trade_type], :side => params[:trade][:side])
-    
+                       :trade_type => params[:trade][:trade_type], :side => params[:trade][:side], 
+                       :price_per_share => BigDecimal.new(params[:trade][:price_per_share]))
+    if (!validate_trade_numbers(@trade, 'new')) 
+      return
+    end
+    adjust_quantity_by_side(@trade)
     trade_date = parse_date_from_params(params, :trade, "journal_post_date")
     @trade.create_equity_trade(@trade.quantity, params[:m_symbol][:root], BigDecimal.new(params[:trade][:price_per_share]), 
         BigDecimal.new(params[:trade][:total_commission]), params[:currency][:alpha_code], params[:account][:nickname], trade_date)
@@ -54,17 +58,20 @@ class TradesController < ApplicationController
 
   def update
     if(params[:m_symbol][:root].empty?)
-      flash[:notice] = 'Please specify the symbol.'
-      logger.error("no symbol, redirecting")
+      flash.now[:error] = 'Please specify the symbol.'
       redirect_to :action => 'edit'
       return
     end
+    
     @trade = Trade.find(params[:id])
     @trade.tradeable_m_symbol_root = params[:m_symbol][:root]
     @trade.account_nickname = params[:account][:nickname]    
     @trade.journal_post_date = parse_date_from_params(params, :trade, :journal_post_date.to_s)
-    @trade.quantity = params[:trade][:quantity]
     @trade.side = params[:trade][:side]
+    if (!validate_trade_numbers(@trade, 'edit')) 
+      return
+    end
+    adjust_quantity_by_side(@trade)
     @trade.price_per_share = params[:trade][:price_per_share]
     @trade.comment = params[:trade][:comment]
     @trade.total_commission = params[:trade][:total_commission]
@@ -82,5 +89,27 @@ class TradesController < ApplicationController
   def destroy
     Trade.find(params[:id]).destroy
     redirect_to :action => 'list'
+  end
+  
+  def validate_trade_numbers(trade, action)
+    if(trade.quantity <= 0)
+      flash[:error] = 'Please specify positive quantity.'
+      redirect_to :action => action
+      return false
+    end
+    if(trade.price_per_share <= 0)
+      flash[:error] = 'Please specify positive price per share.'
+      redirect_to :action => action
+      return false
+    end
+    
+    return true
+  end
+  
+  def adjust_quantity_by_side(trade)
+    if(trade.side != Quickfix::Side_BUY().to_i) 
+      trade.quantity *= (-1)
+    end
+    return trade
   end
 end

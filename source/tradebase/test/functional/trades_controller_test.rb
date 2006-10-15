@@ -5,12 +5,17 @@ require 'trades_controller'
 class TradesController; def rescue_action(e) raise e end; end
 
 class TradesControllerTest < Test::Unit::TestCase
-  fixtures :trades
+  fixtures :trades, :messages_log
 
   def setup
     @controller = TradesController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
+    
+    # create the trades from the messages 
+    messageLogController = MessageLogsController.new
+#    messageLogController.create
+    
   end
 
   def test_index
@@ -85,4 +90,13 @@ class TradesControllerTest < Test::Unit::TestCase
       Trade.find(1)
     }
   end
+  
+  ######## testing helper methods 
+  def test_adjust_quantity_by_side
+    assert_equal 100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:buy])).quantity
+    assert_equal -100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sell])).quantity
+    assert_equal -100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShort])).quantity
+    assert_equal -100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShortExempt])).quantity
+  end
+  
 end

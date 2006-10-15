@@ -1,15 +1,18 @@
 <h1>Listing Executed Trades</h1>
 
-<%= start_form_tag :action => 'list' %>
+<%= start_form_tag({:action => 'list'}, { :id => 'dateRange' }) %>
 <p><label for="search_type">Select Date Range</label><br/>
-<div>
- <%= radio_button_tag('search_type', 's', {:checked => true})%><label for="search_type_s">Subset</label><br/>
- &nbsp;&nbsp;<label for="start_date">Start date</label> 
- <%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %><br/>
- &nbsp;&nbsp;<label for="end_date">End date</label> &nbsp;&nbsp;
- <%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %><br/>
- </div>
-<%= radio_button_tag('search_type', 'a')%><label for="search_type_a">All</label><br/>
+ <%= radio_button_tag('search_type', 's', true,  { :id => 'search_type_s', :onClick=> "toggleDivSelection('date_from_to', true)" })%>
+ <label for="search_type_s">Subset</label><br/>
+<div class="date_from_to">
+<table>
+<tr><td><label for="start_date">Start date</label></td>
+<td><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></td></tr>
+<tr><td><label for="end_date">End date</label></td>
+<td><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></td></tr>
+</table>
+</div>
+ <%= radio_button_tag('search_type', 'a', false,  {:id => 'search_type_a', :onClick=> "toggleDivSelection('date_from_to', false)" } )%><label for="search_type_a">All</label><br/>
 <p/>
   <%= submit_tag 'Search' %>
 <%= end_form_tag %>
