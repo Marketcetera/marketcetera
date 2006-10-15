@@ -31,6 +31,10 @@ class CreateTradesControllerTest < MarketceteraTestBase
     assert_equal "GOOG", getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new)
     logger.debug(trade.to_s)
     assert_equal getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new), trade.tradeable_m_symbol_root
-    
+
+    # need to verify accounts, etc
+
+    # now try creating this again
+    assert_nil @controller.create_one_trade(20)
   end
 end
