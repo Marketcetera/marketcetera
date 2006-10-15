@@ -22,7 +22,7 @@ class CreateTradesController < ApplicationController
     dbMessage = MessageLog.find(id)
     
     if(dbMessage.processed) 
-      logger.debug("skipping message ["+dbMessage.id+"], already processed")
+      logger.debug("skipping message ["+dbMessage.id.to_s+"], already processed")
       return nil
     end
     
