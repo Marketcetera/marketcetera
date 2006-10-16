@@ -3,7 +3,6 @@ package org.marketcetera.orderloader;
 import org.marketcetera.core.FeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quotefeed.MessageListener;
 import org.marketcetera.jms.JMSAdapter;
 
 import javax.jms.JMSException;
