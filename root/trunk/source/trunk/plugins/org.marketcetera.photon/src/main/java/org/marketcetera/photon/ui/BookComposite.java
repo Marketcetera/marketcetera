@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.marketcetera.quotefeed.ILevel2Listener;
+import org.marketcetera.quotefeed.IMessageListener;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -20,7 +20,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
-public class BookComposite extends Composite implements ILevel2Listener
+public class BookComposite extends Composite implements IMessageListener
 {
 
 	public enum BookColumns{
@@ -127,7 +127,7 @@ public class BookComposite extends Composite implements ILevel2Listener
 		}
 	}
 
-	public void level2Updated(final Message aMarketRefresh) {
+	public void onQuote(final Message aMarketRefresh) {
 		Display.getDefault().asyncExec(
 			new Runnable(){
 				public void run()
@@ -137,6 +137,29 @@ public class BookComposite extends Composite implements ILevel2Listener
 			}
 		);
 	}
+	public void onAdmin(Message arg0) {
+	}
 
-	
+	public void onTrade(Message arg0) {
+	}
+
+
+    public void onQuotes(Message [] quotes) {
+        for (Message quoteMessage : quotes) {
+            onQuote(quoteMessage);
+        }
+    }
+
+    public void onTrades(Message [] trades) {
+        for (Message trade : trades) {
+            onTrade(trade);
+        }
+    }
+
+    public void onAdmins(Message [] adminMessages) {
+        for (Message adminMessage : adminMessages) {
+            onAdmin(adminMessage);
+        }
+    }
+
 }

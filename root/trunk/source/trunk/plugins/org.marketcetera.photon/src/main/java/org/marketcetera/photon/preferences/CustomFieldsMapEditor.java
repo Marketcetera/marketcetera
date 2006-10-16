@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.ui.MMapEntry;
+import org.marketcetera.core.MMapEntry;
 import org.marketcetera.photon.ui.MapEditor;
 
 import ca.odell.glazedlists.BasicEventList;

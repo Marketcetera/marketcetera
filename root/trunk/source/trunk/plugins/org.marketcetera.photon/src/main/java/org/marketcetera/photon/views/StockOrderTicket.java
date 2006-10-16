@@ -106,11 +106,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
         errorMessageLabel.setLayoutData(gridData);
         top.setBackground(errorMessageLabel.getBackground());
 		
-		IQuoteFeed quoteFeed = Application.getQuoteFeed();
-		if (quoteFeed != null)
-		{
-			quoteFeed.addBookListener(bookComposite);
-		}
 	}
 
 	@Override
@@ -119,7 +114,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		IQuoteFeed quoteFeed = Application.getQuoteFeed();
 		if (quoteFeed != null)
 		{
-			quoteFeed.removeBookListener(bookComposite);
+			quoteFeed.unListenLevel2(listenedSymbol, bookComposite);
 		}
 	}
 
@@ -298,7 +293,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		if (quoteFeed != null && quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
 				&& !newListenedSymbol.equals(listenedSymbol)){
 			unlisten();
-			quoteFeed.listenLevel2(newListenedSymbol);
+			quoteFeed.listenLevel2(newListenedSymbol, bookComposite);
 			listenedSymbol = newListenedSymbol;
 		}
 	}
@@ -307,7 +302,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		IQuoteFeed quoteFeed = Application.getQuoteFeed();
 		if (quoteFeed != null && quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE){
 			if (listenedSymbol != null){
-				quoteFeed.unListenLevel2(listenedSymbol);
+				quoteFeed.unListenLevel2(listenedSymbol, bookComposite);
 			}
 		}
 	}
