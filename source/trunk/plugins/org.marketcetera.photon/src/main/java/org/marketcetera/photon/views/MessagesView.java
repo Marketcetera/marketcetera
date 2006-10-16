@@ -3,10 +3,15 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.model.FIXMessageHistory;
@@ -27,6 +32,8 @@ public abstract class MessagesView extends ViewPart {
 	private FIXMessageHistory fixMessageHistory;
 	private EnumTableFormat tableFormat;
 	private TableComparatorChooser<MessageHolder> chooser;
+	private Clipboard clipboard;
+	private CopyMessagesAction copyMessagesAction;
 
 
     protected void formatTable(Table messageTable) {
@@ -64,6 +71,13 @@ public abstract class MessagesView extends ViewPart {
 			setInput(messageHistory);
 		}
 		
+		copyMessagesAction = new CopyMessagesAction(getClipboard(),messageTable, "Copy");
+		
+		IWorkbench workbench = PlatformUI.getWorkbench();
+		ISharedImages platformImages = workbench.getSharedImages();
+		copyMessagesAction.setImageDescriptor(platformImages .getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+		copyMessagesAction.setDisabledImageDescriptor(platformImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
+		hookGlobalActions();
 	}
 
 	protected abstract void initializeToolBar(IToolBarManager theToolBarManager);
@@ -124,6 +138,31 @@ public abstract class MessagesView extends ViewPart {
 	protected abstract EventList<MessageHolder> extractList(FIXMessageHistory input);
 
 	
+	private void hookGlobalActions(){
+		getViewSite().getActionBars()
+		.setGlobalActionHandler(ActionFactory.COPY.getId(), copyMessagesAction);
+	}
 
+	@Override
+	public void dispose() {
+		if (clipboard != null)
+			clipboard.dispose();
+		super.dispose();
+
+	}
+	
+	protected Clipboard getClipboard()
+	{
+		if (clipboard == null){
+			clipboard = new Clipboard(getSite().getShell().getDisplay());
+		}
+		return clipboard;
+	}
+
+	@Override
+	public void setFocus() {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

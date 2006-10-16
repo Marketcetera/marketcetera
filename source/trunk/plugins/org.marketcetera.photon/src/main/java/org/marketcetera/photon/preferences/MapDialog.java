@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.ui.MMapEntry;
+import org.marketcetera.core.MMapEntry;
 
 @ClassVersion("$Id$")
 public class MapDialog extends Dialog {
