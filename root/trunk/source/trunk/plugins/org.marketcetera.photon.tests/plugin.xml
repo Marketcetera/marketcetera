@@ -14,9 +14,9 @@
    </runtime>
 
    <requires>
-      <import plugin="org.junit"/>
       <import plugin="org.marketcetera.photon"/>
       <import plugin="org.eclipse.sdk"/>
+      <import plugin="org.junit"/>
    </requires>
 
 </plugin>
