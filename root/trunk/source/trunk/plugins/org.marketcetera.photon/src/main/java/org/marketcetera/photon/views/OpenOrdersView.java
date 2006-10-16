@@ -26,12 +26,12 @@ public class OpenOrdersView extends MessagesView {
 	 *
 	 */
 	public enum OpenOrderColumns {
-		SENDINGTIME("SendingTime"), CLORDID("ClOrdID"),
-		ORDERID("OrderID"), ORDSTATUS("OrdStatus"), SIDE(
+		SENDINGTIME("SendingTime"), CLORDID("ClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
 				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
 				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
-				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID");
+				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID"),
+				ORDERID("OrderID");
 
 		private String mName;
 

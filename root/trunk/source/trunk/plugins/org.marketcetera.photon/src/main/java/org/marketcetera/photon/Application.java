@@ -25,6 +25,7 @@ import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quotefeed.IQuoteFeed;
 import org.marketcetera.quotefeed.IQuoteFeedFactory;
 
@@ -72,8 +73,8 @@ public class Application implements IPlatformRunnable {
 	 * @see PlatformUI#createAndRunWorkbench(Display, org.eclipse.ui.application.WorkbenchAdvisor)
 	 */
 	public Object run(Object args) throws Exception {
-		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
-		MessageBundleManager.registerCoreMessageBundle();
+		
+		initResources();
 		
 		fixMessageHistory = new FIXMessageHistory();
 
@@ -96,6 +97,13 @@ public class Application implements IPlatformRunnable {
 
 	}
 
+	public static void initResources() throws FIXFieldConverterNotAvailable
+	{
+		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+		MessageBundleManager.registerCoreMessageBundle();
+		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
+	}
+	
 	private void setUpQuoteFeed() {
 		try {
 			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();

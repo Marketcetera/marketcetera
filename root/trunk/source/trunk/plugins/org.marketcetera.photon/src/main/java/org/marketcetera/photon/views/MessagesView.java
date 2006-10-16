@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -72,11 +73,17 @@ public abstract class MessagesView extends ViewPart {
 		}
 		
 		copyMessagesAction = new CopyMessagesAction(getClipboard(),messageTable, "Copy");
-		
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		ISharedImages platformImages = workbench.getSharedImages();
 		copyMessagesAction.setImageDescriptor(platformImages .getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 		copyMessagesAction.setDisabledImageDescriptor(platformImages.getImageDescriptor(ISharedImages.IMG_TOOL_COPY_DISABLED));
+
+		Object menuObj = messageTable.getData(MenuManager.class.toString());
+		if (menuObj != null && menuObj instanceof MenuManager) {
+			MenuManager menuManager = (MenuManager) menuObj;
+			menuManager.add(copyMessagesAction);
+		}
+		
 		hookGlobalActions();
 	}
 

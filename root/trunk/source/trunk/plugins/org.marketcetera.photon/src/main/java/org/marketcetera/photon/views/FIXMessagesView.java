@@ -24,12 +24,13 @@ public class FIXMessagesView extends MessagesView {
 	 *
 	 */
 	public enum MessageColumns {
-		DIRECTION("D"), TRANSACTTIME("TransactTime"), MSGTYPE("MsgType"), CLORDID("ClOrdID"),
-		ORDERID("OrderID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
+		DIRECTION("D"), TRANSACTTIME("TransactTime"), MSGTYPE("MsgType"), CLORDID(
+				"ClOrdID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
 				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
 				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
-				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID");
+				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID"), ORDERID(
+				"OrderID");
 
 		private String mName;
 
