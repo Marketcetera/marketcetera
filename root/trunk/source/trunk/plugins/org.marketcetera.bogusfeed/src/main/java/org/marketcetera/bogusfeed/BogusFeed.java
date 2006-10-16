@@ -9,10 +9,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Map.Entry;
 
 import org.marketcetera.core.IFeedComponentListener;
+import org.marketcetera.core.MMapEntry;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.quotefeed.ILevel2Listener;
+import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.Message;
@@ -22,16 +24,14 @@ import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryTime;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDMkt;
-import quickfix.field.NoMDEntries;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 public class BogusFeed implements IQuoteFeed {
 
-	private List<ILevel2Listener> bookListeners = new LinkedList<ILevel2Listener>();
 	private FeedStatus feedStatus;
 	private List<IFeedComponentListener> feedComponentListeners = new LinkedList<IFeedComponentListener>();
-	private List<MSymbol> listenedSymbols = new LinkedList<MSymbol>();
+	private List<Map.Entry<MSymbol, IMessageListener>> listenedSymbols = new LinkedList<Map.Entry<MSymbol, IMessageListener>>();
 	private QuoteGeneratorThread quoteGeneratorThread;
 	
 
@@ -44,13 +44,14 @@ public class BogusFeed implements IQuoteFeed {
 		{
 			while (!shouldShutdown){
 				try {
-					List<MSymbol> mySymbols;
+					LinkedList<Entry<MSymbol, IMessageListener>> entries;
 					synchronized (listenedSymbols){
-						mySymbols = new LinkedList<MSymbol>(listenedSymbols);
+						entries = new LinkedList<Map.Entry<MSymbol, IMessageListener>>(listenedSymbols);
 					}
-					for (MSymbol symbol : mySymbols) {
+					for (Map.Entry<MSymbol, IMessageListener> entry : entries) {
+						MSymbol symbol = entry.getKey();
 						Message quote = generateQuote(symbol);
-						fireLevel2Updated(quote);
+						entry.getValue().onQuote(quote);
 					}
 					sleep(randAmount());
 				} catch (InterruptedException ex){}
@@ -121,30 +122,16 @@ public class BogusFeed implements IQuoteFeed {
 	}
 
 	
-	public void listenLevel2(MSymbol symbol) {
+	public void listenLevel2(MSymbol symbol, IMessageListener listener) {
 		synchronized (listenedSymbols) {
-			listenedSymbols.add(symbol);
+			MMapEntry<MSymbol, IMessageListener> entry = new MMapEntry<MSymbol, IMessageListener>(symbol, listener);
+			listenedSymbols.add(entry);
 		}
 	}
 
-	public void unListenLevel2(MSymbol symbol){
+	public void unListenLevel2(MSymbol symbol, IMessageListener listener){
 		synchronized (listenedSymbols) {
 			listenedSymbols.remove(symbol);
-		}
-	}
-
-
-	public void addBookListener(ILevel2Listener listener) {
-		bookListeners.add(listener);
-	}
-
-	public void removeBookListener(ILevel2Listener listener) {
-		bookListeners.remove(listener);
-	}
-	
-	public void fireLevel2Updated(Message aBookMessage){
-		for (ILevel2Listener listener : bookListeners) {
-			listener.level2Updated(aBookMessage);
 		}
 	}
 
