@@ -1,9 +1,14 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.widgets.Table;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
 import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
+import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.MessageListTableFormat;
 
 import quickfix.field.MsgType;
 import ca.odell.glazedlists.EventList;
@@ -12,7 +17,8 @@ import ca.odell.glazedlists.matchers.Matcher;
 
 public class FIXMessagesView extends MessagesView {
 
-    public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
+
+	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
 	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT);
 
 	
@@ -72,5 +78,21 @@ public class FIXMessagesView extends MessagesView {
 		} else {
 			list.setMatcher(null);
 		}
+	}
+	
+	@Override
+	protected TableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+		TableViewer aMessagesViewer = new TableViewer(aMessageTable);
+		getSite().setSelectionProvider(aMessagesViewer);
+		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
+		aMessagesViewer.setLabelProvider(new DirectionalMessageTableFormat(aMessageTable, enums, getSite()));
+		return aMessagesViewer;
+	}
+
+    @Override
+	protected void packColumns(Table table) {
+		super.packColumns(table);
+		table.getColumn(0).setWidth(25);
+
 	}
 }
