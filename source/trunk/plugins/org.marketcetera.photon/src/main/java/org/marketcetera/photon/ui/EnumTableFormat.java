@@ -10,6 +10,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
@@ -32,22 +33,22 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 		this.columns = columns;
 		dataDictionary = FIXDataDictionaryManager.getDictionary();
 		// TODO: how can we get the max number of fields?
-		for (int fieldNum = 1; fieldNum < 1000; fieldNum++) {
+		for (int fieldNum = 1; fieldNum < 10000; fieldNum++) {
 			if (dataDictionary.isField(fieldNum))
 				fieldMap.put(dataDictionary.getFieldName(fieldNum), fieldNum);
 		}
 		int i = 0;
         for (Enum aColumn : columns) {
 			TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
-			tableColumn.setText(columns[i++].toString());
+			String localizedName = FIXFieldLocalizer.getLocalizedMessage(columns[i++].toString());
+			tableColumn.setText(localizedName);
 		}
-
 	}
 
 	public int getColumnCount() {
 		return columns.length;
 	}
-
+	
 	public String getColumnName(int index) {
 		return columns[index].toString();
 	}

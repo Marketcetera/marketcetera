@@ -92,6 +92,7 @@ public class MessageListTableFormat extends EnumTableFormat {
 		}
 	
 		table.setMenu(menu);
+		table.setData(MenuManager.class.toString(), menuMgr);
 		site.registerContextMenu(menuMgr, selectionProvider);
 	}
 
