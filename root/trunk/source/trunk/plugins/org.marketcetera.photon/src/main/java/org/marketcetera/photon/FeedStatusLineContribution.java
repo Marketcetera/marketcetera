@@ -103,12 +103,14 @@ public class FeedStatusLineContribution extends ContributionItem implements
 		final Label theLabel = labelMap.get(feedName);
 		if (theLabel == null)
 			return;
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				theLabel.setImage(getStatusImage(aStatus));
-				theLabel.setToolTipText(feedName + " " + aStatus.name());
-			}
-		});
+			Display.getDefault().asyncExec(new Runnable() {
+				public void run() {
+					if (!theLabel.isDisposed()){
+						theLabel.setImage(getStatusImage(aStatus));
+						theLabel.setToolTipText(feedName + " " + aStatus.name());
+					}
+				}
+			});
 	}
 
 	/**

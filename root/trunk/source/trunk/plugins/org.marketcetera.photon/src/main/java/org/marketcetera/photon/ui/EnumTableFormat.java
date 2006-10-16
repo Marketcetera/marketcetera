@@ -1,6 +1,9 @@
 package org.marketcetera.photon.ui;
 
 import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,8 +30,11 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 	Enum [] columns;
 	private DataDictionary dataDictionary;
 	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
-
+	
 	private static final String COLUMN_WIDTH_SAVED_KEY_NAME = "width.saved";  //$NON-NLS-1$
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
 	public EnumTableFormat(Table table, Enum[] columns) {
 		this.columns = columns;
 		dataDictionary = FIXDataDictionaryManager.getDictionary();
@@ -55,14 +61,31 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 
 	public Object getColumnValue(MessageHolder element, int columnIndex) {
 		Integer fieldID = fieldMap.get(columns[columnIndex].toString());
-		String text = getColumnTextHelper(element, fieldID);
-		FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
-		Class clazz = fieldType.getJavaType();
-		if (Number.class.isAssignableFrom(clazz)){
-			return new BigDecimal(text);
-		} else {
-			return text;
+		Object value = null;
+		if (fieldID != null) {
+			FieldMap map = extractMap(element, fieldID);
+			if (map != null){
+				try {
+					FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
+					if (fieldType.equals(FieldType.UtcTimeOnly)) {
+						value = map.getUtcTimeOnly(fieldID);
+					} else if (fieldType.equals(FieldType.UtcTimeStamp)){
+						value = map.getUtcTimeStamp(fieldID);
+					} else if (fieldType.equals(FieldType.UtcDateOnly)
+							||fieldType.equals(FieldType.UtcDate)){
+						value = map.getUtcDateOnly(fieldID);
+					} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
+						value = new BigDecimal(map.getString(fieldID));
+					} else if (dataDictionary.hasFieldValue(fieldID)){
+						value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, map.getString(fieldID));
+					} else {
+						value = map.getString(fieldID);
+					}
+				} catch (FieldNotFound e) {
+				}
+			}
 		}
+		return value;
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -71,38 +94,40 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 
 	public String getColumnText(Object element, int columnIndex) {
 		Integer fieldID = fieldMap.get(columns[columnIndex].toString());
-		return getColumnTextHelper(element, fieldID);
-	}
-
-	private String getColumnTextHelper(Object element, Integer fieldID) {
-		Message message = null;
-		FieldMap map = null;
-		if (fieldID != null) {
-			if (element instanceof MessageHolder) {
-				MessageHolder holder = (MessageHolder) element;
-				message = holder.getMessage();
-				map = getAppropriateMap(fieldID, message);
-			} if (element instanceof Message) {
-				message = (Message) element;
-				map = getAppropriateMap(fieldID, message);
-			} else if (element instanceof FieldMap){
-				map = (FieldMap) element;
-			}
-			if (map != null){
-				try {
-					String value = map.getString(fieldID);
-					
-					if (dataDictionary.hasFieldValue(fieldID)) {
-						value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, value);
-					}
-					
-					return value;
-				} catch (FieldNotFound e) {
-					return "";
-				}
+		Object objValue = getColumnValue((MessageHolder)element, columnIndex);
+		String value = "";
+		if (objValue != null){
+			FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
+			if (fieldType.equals(FieldType.UtcTimeOnly)
+					|| fieldType.equals(FieldType.UtcTimeStamp)){
+				value = TIME_FORMAT.format((Date)objValue);
+			} else if (fieldType.equals(FieldType.UtcDateOnly)
+					||fieldType.equals(FieldType.UtcDate)){
+				value = DATE_FORMAT.format((Date)objValue);
+			} else if (objValue instanceof BigDecimal){
+				value  = ((BigDecimal)objValue).toPlainString();
+			} else {
+				value = objValue.toString();
 			}
 		}
-		return "";
+		return value;
+	}
+
+
+	private FieldMap extractMap(Object element, Integer fieldID) {
+		FieldMap map = null;
+		Message message = null;
+		if (element instanceof MessageHolder) {
+			MessageHolder holder = (MessageHolder) element;
+			message = holder.getMessage();
+			map = getAppropriateMap(fieldID, message);
+		} if (element instanceof Message) {
+			message = (Message) element;
+			map = getAppropriateMap(fieldID, message);
+		} else if (element instanceof FieldMap){
+			map = (FieldMap) element;
+		}
+		return map;
 	}
 
 	private FieldMap getAppropriateMap(Integer fieldID, Message message) {
