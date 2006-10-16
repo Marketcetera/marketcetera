@@ -21,6 +21,8 @@ class TradeTest < MarketceteraTestBase
     assert_equal 420.23, theTrade.price_per_share
     assert_equal 19.99, theTrade.total_commission
     assert_equal 420.23 * theTrade.quantity, theTrade.total_price
+    
+    assert_equal SubAccountType::DESCRIPTIONS.length, theTrade.account.sub_accounts.length
   end
   
   def test_update_price_per_share

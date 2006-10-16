@@ -19,6 +19,15 @@ class CreateTradesControllerTest < MarketceteraTestBase
     # testing the goog_20 message
     msg = MessageLog.find(20)
     assert_equal false, msg.processed
+  
+    qfMsgOrig = Quickfix::Message.new(msg.text)
+    # the message doesn't have an account on it, let's set it.
+    qfMsgOrig.setField(Quickfix::Account.new.getField, "funny money")
+    # set the commission
+    qfMsgOrig.setField(Quickfix::Commission.new.getField, "14.95")
+    msg.text = qfMsgOrig.to_s
+    msg.save
+    
     trade = @controller.create_one_trade(20)
     msg.reload
     assert_equal true, msg.processed
@@ -29,12 +38,27 @@ class CreateTradesControllerTest < MarketceteraTestBase
     
     qfMsg = Quickfix::Message.new(msg.text)
     assert_equal "GOOG", getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new)
+    assert_equal 14.95.to_s, trade.total_commission.to_s
     logger.debug(trade.to_s)
     assert_equal getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new), trade.tradeable_m_symbol_root
 
     # need to verify accounts, etc
-
+    acct = Account.find_by_nickname("funny money")
+    assert_not_nil acct, "account was not created"
+    assert_equal trade.account, acct
+    assert_equal SubAccountType::DESCRIPTIONS.length, trade.account.sub_accounts.length
+    
     # now try creating this again
     assert_nil @controller.create_one_trade(20)
+  end
+  
+  def test_create_trades
+    assert_equal 0, Trade.find_all.length
+    # setup 3 trades to be created: 20, 21, 23
+    post :create_trades, :trades => { 20 => "1", 21 => "1", 23 => "1", 24 => 0}  
+  
+    assert_equal "Created 3 trades", flash[:notice]
+    assert_equal 3, Trade.find_all.length  
+    assert_redirected_to :controller => 'trades', :action => 'list'
   end
 end

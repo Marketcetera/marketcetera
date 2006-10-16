@@ -11,9 +11,9 @@ class CreateTradesController < ApplicationController
     
     chosen_exec_reports.each {|id, value| create_one_trade(id) }
     
-    @num_created = chosen_exec_reports.length
-    logger.error("numCreated is "+@num_created.to_s)
-    #redirect_to :action => 'list', :controller => 'trades'
+    num_created = chosen_exec_reports.length
+    flash[:notice] = "Created "+num_created.to_s + " trades"
+    redirect_to :action => 'list', :controller => 'trades'
   end
   
   # Given a particular message ID, creates one trade for it
@@ -35,7 +35,8 @@ class CreateTradesController < ApplicationController
     price = getStringFieldValueIfPresent(qfMessage, Quickfix::LastPx.new)
     account = getStringFieldValueIfPresent(qfMessage, Quickfix::Account.new)
     sendingTime = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
-    theTrade.create_equity_trade(quantity, symbol, BigDecimal(price), BigDecimal("0"),  currency, account, sendingTime)
+    commission = getStringFieldValueIfPresent(qfMessage, Quickfix::Commission.new)
+    theTrade.create_equity_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime)
     theTrade.trade_type = TradeTypeTrade
     theTrade.side = getStringFieldValueIfPresent(qfMessage, Quickfix::Side.new)
     theTrade.save
