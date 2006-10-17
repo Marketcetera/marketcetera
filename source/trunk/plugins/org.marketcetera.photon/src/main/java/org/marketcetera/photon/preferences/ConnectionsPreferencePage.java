@@ -18,8 +18,6 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 
 	public static final String ID = "org.marketcetera.photon.preferences.connections";
 	
-    private ScopedPreferenceStore preferences;
-
 	private UrlFieldEditor jmsServerUrlEditor;
 
 	private UrlFieldEditor webAppHostEditor;
@@ -27,8 +25,7 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 	
     public ConnectionsPreferencePage() {
         super(GRID);
-        preferences = new ScopedPreferenceStore(new ConfigurationScope(), Application.PLUGIN_ID);
-        setPreferenceStore(preferences);
+		setPreferenceStore(Application.getPreferenceStore());
     }
 
     /**
@@ -103,7 +100,7 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
         	
         	super.performOk();  // pulls the data out of the page fields and into the preference store. this call does _not_ persist the data to disk.
         	
-            preferences.save();  // persists the preference store to disk
+            ((ScopedPreferenceStore)getPreferenceStore()).save();  // persists the preference store to disk
         } catch (IOException e) {
             //TODO: do something
 

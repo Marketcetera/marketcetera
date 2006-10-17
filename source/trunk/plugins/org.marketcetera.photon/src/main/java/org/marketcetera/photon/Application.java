@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 
 import javax.jms.JMSException;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
@@ -13,6 +14,11 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -22,6 +28,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -40,7 +47,7 @@ import quickfix.Message;
  *
  */
 @ClassVersion("$Id$")
-public class Application implements IPlatformRunnable {
+public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	
 	private static final String CONTEXT_FACTORY_NAME_DEFAULT = "org.apache.activemq.jndi.ActiveMQInitialContextFactory";
@@ -58,6 +65,7 @@ public class Application implements IPlatformRunnable {
 
 	private static FIXMessageHistory fixMessageHistory;
 	private static IQuoteFeed quoteFeed;
+	private static ScopedPreferenceStore preferenceStore;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
 	
@@ -73,6 +81,9 @@ public class Application implements IPlatformRunnable {
 	 * @see PlatformUI#createAndRunWorkbench(Display, org.eclipse.ui.application.WorkbenchAdvisor)
 	 */
 	public Object run(Object args) throws Exception {
+		preferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),
+				PLUGIN_ID);
+		preferenceStore.addPropertyChangeListener(this);
 		
 		initResources();
 		
@@ -270,5 +281,29 @@ public class Application implements IPlatformRunnable {
 	
 	public static IQuoteFeed getQuoteFeed() {
 		return quoteFeed;
+	}
+
+	private void changeLogLevel(String levelValue){
+		Logger logger = getMainConsoleLogger();
+		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)){
+			logger.setLevel(Level.ERROR);
+		} else if (PhotonPage.LOG_LEVEL_VALUE_WARN.equals(levelValue)){
+			logger.setLevel(Level.WARN);
+		} else if (PhotonPage.LOG_LEVEL_VALUE_INFO.equals(levelValue)){
+			logger.setLevel(Level.INFO);
+		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)){
+			logger.setLevel(Level.DEBUG);
+		}
+		logger.info("Changed log level to '"+levelValue+"'");
+	}
+
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getProperty().equals(PhotonPage.LOG_LEVEL_KEY)){
+			changeLogLevel(""+event.getNewValue());
+		}
+	}
+
+	public static ScopedPreferenceStore getPreferenceStore() {
+		return preferenceStore;
 	}
 }

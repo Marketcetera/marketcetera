@@ -14,13 +14,11 @@ import org.marketcetera.photon.Application;
 @ClassVersion("$Id$")
 public class CustomOrderFieldPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-    private ScopedPreferenceStore mPreferences;
 	private static final String CUSTOM_FIELDS_PREFERENCE = "custom.fields";
 
 	public CustomOrderFieldPage() {
 		super(GRID);
-        mPreferences = new ScopedPreferenceStore(new ConfigurationScope(), Application.PLUGIN_ID);
-        setPreferenceStore(mPreferences);
+        setPreferenceStore(Application.getPreferenceStore());
 	}
 	
     public void init(IWorkbench workbench) {
@@ -38,7 +36,7 @@ public class CustomOrderFieldPage extends FieldEditorPreferencePage implements I
     @Override
     public boolean performOk() {
         try {
-            mPreferences.save();
+            ((ScopedPreferenceStore)getPreferenceStore()).save();  // persists the preference store to disk
         } catch (IOException e) {
             //TODO: do something
         }
