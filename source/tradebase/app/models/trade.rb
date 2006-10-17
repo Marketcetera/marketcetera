@@ -106,7 +106,7 @@ class Trade < ActiveRecord::Base
     logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
     if(self.account == nil)
-      self.account = Account.create(:nickname => account_nickname)
+      self.account = Account.create(:nickname => account_nickname, :institution_identifier => account_nickname)
       logger.debug("created new account [" + account_nickname + "] and sub-accounts")
       self.account.save
     end

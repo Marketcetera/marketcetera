@@ -9,4 +9,8 @@ graham_account:
   nickname: "beer money"
   description: "saving for beer"
   institution_identifier: "mattress"
-  
+
+unassigned:
+  id: 3
+  nickname: "[UNASSIGNED]"
+  description: "unassigned account"

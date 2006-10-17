@@ -41,6 +41,13 @@ class MessagesLogControllerTest < Test::Unit::TestCase
   end
   
   def test_conditional_date_list
-    flunk "conditional date list test not implemented yet"
+    # there are 2 messages that  are done on Sept 23-24, shoudl find just these 2
+    get :list, {:dates => { "start_date(1i)"=>"2006", "start_date(2i)"=>"9", "start_date(3i)"=>"16", 
+                            "end_date(1i)"=>"2006", "end_date(2i)"=>"9", "end_date(3i)"=>"27"}, "search_type"=>"s"}
+    assert_response :success
+    assert_template 'list'
+    assert_equal 2, assigns(:exec_report_pages).length
+                              
+                            
   end
 end

@@ -1,10 +1,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 require 'accounts_controller'
 
 # Re-raise errors caught by the controller.
 class AccountsController; def rescue_action(e) raise e end; end
 
-class AccountsControllerTest < Test::Unit::TestCase
+class AccountsControllerTest < MarketceteraTestBase
   fixtures :accounts
 
   def setup
@@ -17,6 +18,7 @@ class AccountsControllerTest < Test::Unit::TestCase
     get :index
     assert_response :success
     assert_template 'list'
+    
   end
 
   def test_list
@@ -26,6 +28,7 @@ class AccountsControllerTest < Test::Unit::TestCase
     assert_template 'list'
 
     assert_not_nil assigns(:accounts)
+    assert_equal 3, assigns(:accounts).length
   end
 
   def test_show
@@ -50,12 +53,14 @@ class AccountsControllerTest < Test::Unit::TestCase
   def test_create
     num_accounts = Account.count
 
-    post :create, :account => {}
+    post :create, :account => { :nickname=>"vasya", :description=>"pupkin", :institution_identifier=>"vp"}
 
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
     assert_equal num_accounts + 1, Account.count
+    
+    assert_not_nil Account.find_by_nickname('vasya')
   end
 
   def test_edit
@@ -69,20 +74,55 @@ class AccountsControllerTest < Test::Unit::TestCase
   end
 
   def test_update
-    post :update, :id => 1
+    initial = Account.find(1)
+    assert_not_equal "new nick", initial.nickname
+    
+    post :update, {:id => 1, :account => {:nickname => "new nick" }}
     assert_response :redirect
     assert_redirected_to :action => 'show', :id => 1
+    assert_equal "Account was successfully updated.", flash[:notice]
+    assert assigns(:account).valid?
+    assert_equal "new nick", assigns(:account).nickname
+    assert_equal "new nick", Account.find(1).nickname
+  end
+
+  def test_reject_empty_nickname
+    initial = Account.find(2)
+    assert_not_nil initial.nickname
+    
+    post :update, {:id => 2, :account => {:nickname => nil } }
+    assert_response :success
+    assert_errors
+    post :update, {:id => 2, :account => {:nickname => '' } }
+    assert_response :success
+    assert_errors
+      
+    post :update, {:id => 2, :account => {:nickname => "bob", :institution_identifier=>nil } }
+    assert_response :success
+    assert_errors
+      
+    post :update, {:id => 2, :account => {:nickname => "bob", :institution_identifier=>'' } }
+    assert_response :success
+    assert_errors
+      
   end
 
   def test_destroy
-    assert_not_nil Account.find(1)
-
-    post :destroy, :id => 1
+    # create a new account
+    acct = Account.create(:nickname=>"test acct", :institution_identifier=>"test")
+    assert_not_nil acct
+    assert acct.sub_accounts.length > 0
+    assert_not_nil SubAccount.find_by_account_id(acct.id)
+    
+    post :destroy, :id => acct.id
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
     assert_raise(ActiveRecord::RecordNotFound) {
-      Account.find(1)
+      Account.find(acct.id)
     }
+    
+    # verify subaccounts are gone
+    assert_nil SubAccount.find_by_account_id(acct.id)
   end
 end
