@@ -12,7 +12,6 @@ Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,
- org.marketcetera.datamodel,
  org.marketcetera.jcyclone,
  org.marketcetera.jms,
  org.marketcetera.quickfix,
