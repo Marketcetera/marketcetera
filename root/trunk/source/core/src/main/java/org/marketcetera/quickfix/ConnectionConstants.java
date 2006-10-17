@@ -28,8 +28,9 @@ public class ConnectionConstants
     public static final String JMS_URL_KEY = "jms.url";
 
     public static final String WEB_APP_HOST_KEY = "web.app.host";
+    public static final String WEB_APP_PORT_KEY = "web.app.port";
 
-    // ID factory 
+    // ID factory
     public static final String ID_FACTORY_BASE_KEY = "id.factory.base";
 
     // Quote feed
