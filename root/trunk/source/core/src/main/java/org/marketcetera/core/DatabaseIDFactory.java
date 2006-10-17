@@ -55,7 +55,7 @@ public class DatabaseIDFactory extends ExternalIDFactory {
 
 
     /** Lock the table to prevent concurrent access with {@link ResultSet.CONCUR_UPDATABLE} */
-    protected int grabIDs() throws NoMoreIDsException {
+    protected void grabIDs() throws NoMoreIDsException {
         try {
             Statement stmt = dbConnection.createStatement(
                     ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
@@ -71,8 +71,8 @@ public class DatabaseIDFactory extends ExternalIDFactory {
             set.updateInt(dbColumn, upTo);
             set.updateRow();
             stmt.close();
-            this.setMaxAllowedID(upTo);
-            return nextID;
+            setMaxAllowedID(upTo);
+            setNextID(nextID);
         } catch (SQLException e) {
             throw new NoMoreIDsException(e);
         }
