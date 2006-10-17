@@ -42,6 +42,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	//private IWorkbenchAction helpContentsAction;
 
+	private IWorkbenchAction saveAction;
+
 	private IWorkbenchAction closeAllAction;
 
 	private IWorkbenchAction closeAction;
@@ -144,6 +146,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		quoteFeedStatusLineContribution = new FeedStatusLineContribution("quoteFeedStatus", new String[] {quoteFeedID });
 		if (quoteFeed != null) quoteFeed.addFeedComponentListener(quoteFeedStatusLineContribution);
 
+		saveAction = ActionFactory.SAVE.create(window);  register(saveAction);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
 		closeAction = ActionFactory.CLOSE.create(window);  register(closeAction);
 		quitAction = ActionFactory.QUIT.create(window);  register(quitAction);
@@ -198,6 +201,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_FileMenuName);
 		menu.add(reconnectJMSAction);
+		menu.add(new Separator());
+		menu.add(saveAction);
 		menu.add(new Separator());
 		menu.add(closeAllAction);
 		menu.add(closeAction);
