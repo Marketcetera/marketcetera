@@ -12,21 +12,28 @@ public abstract class ExternalIDFactory implements IDFactory {
     private int mNextID = 0;
 
     /**
+     * This method is responsible for grabbing another set of
+     * allowed ID's, calling both setMaxAllowedID, and setNextID.
      *
-     * @return the next allowed id
+     *
      */
-    protected abstract int grabIDs() throws NoMoreIDsException;
+    protected abstract void grabIDs() throws NoMoreIDsException;
 
     protected void setMaxAllowedID(int newVal)
     {
         mUpTo = newVal;
     }
 
+    protected void setNextID(int nextID)
+    {
+    	mNextID = nextID;
+	}
+
     public String getNext() throws NoMoreIDsException
     {
         synchronized (this) {
             if (mNextID >= mUpTo) {
-                int numAllowed = grabIDs();
+                grabIDs();
             }
             return "" + (mNextID++);
         }

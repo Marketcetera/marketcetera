@@ -32,65 +32,6 @@
             <version>20060814</version>
         </dependency>
 
-        <!-- Hiberante dependencies -->
-        <dependency>
-            <groupId>hibernate</groupId>
-            <artifactId>hibernate</artifactId>
-            <version>3.2cr2</version>
-        </dependency>
-        <dependency>
-            <groupId>hibernate</groupId>
-            <artifactId>hibernate-annotations</artifactId>
-            <version>3.2.0cr1</version>
-        </dependency>
-        <dependency>
-            <groupId>hibernate</groupId>
-            <artifactId>hibernate-tools</artifactId>
-            <version>3.2b7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>javax.persistence</groupId>
-            <artifactId>persistence-api</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>dom4j</groupId>
-            <artifactId>dom4j</artifactId>
-            <version>1.6.1</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>cglib</groupId>
-            <artifactId>cglib</artifactId>
-            <version>2.1_3</version>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.0.3</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-collections</groupId>
-            <artifactId>commons-collections</artifactId>
-            <version>2.1.1</version>
-        </dependency>
-        <dependency>
-            <groupId>jta</groupId>
-            <artifactId>jta</artifactId>
-            <version>1.0.1b</version>
-        </dependency>
-        <dependency>
-            <groupId>asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>1.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>antlr</groupId>
-            <artifactId>antlr</artifactId>
-            <version>2.7.6</version>
-        </dependency>
     </dependencies>
 
     <!-- try to force a test-jar to be built during jar creation -->
@@ -117,57 +58,6 @@
                         <goals>
                             <goal>jar</goal>
                             <goal>test-jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <!-- Modify the hibernate.cfg.xml file on the fly to substitute user name -->
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>modify-hibernate.cfg.xml</id>
-                        <phase>generate-test-resources</phase>
-                        <configuration>
-
-                            <path id="hibernateToolPath" description="class path for hibernate tool">
-                                <pathelement location="${localRepository}/hibernate/hibernate-tools-hibernate/3.0.0.alpha4a/hibernate-tools-hibernate-3.0.0.alpha4a.jar" />
-                            </path>
-                            <tasks>
-                                <echo message="user is ${user.name}"/>
-                                <echo message="server is ${dbServer}"/>
-                                <property name="hibernateCfgTemplLoc" value="src/test/resources"/>
-                                <property name="hibernateCfgFile" value="${hibernateCfgTemplLoc}/hibernate.cfg.xml"/>
-
-                                <copy file="${hibernateCfgTemplLoc}/hibernate.cfg.tmpl.xml"
-                                    tofile="${hibernateCfgFile}" overwrite="true"/>
-
-                                <replace file="${hibernateCfgFile}">
-                                    <replacefilter
-                                         token="@user@"
-                                         value="${user.name}"/>
-                                    <replacefilter
-                                         token="@server@"
-                                         value="localhost"/>
-                                </replace>
-                                <!-- run hibernate tool to drop/create db -->
-                                <taskdef name="hibernatetool" classname="org.hibernate.tool.ant.HibernateToolTask">
-                                    <classpath>
-                                        <path refid="maven.test.classpath"/>
-                                    </classpath>
-                                </taskdef>
-                                <hibernatetool destdir="">
-                                    <annotationconfiguration configurationfile="${hibernateCfgFile}" />
-                                    <hbm2ddl drop="true" create="true" export="true" update="false"/>
-                                </hibernatetool>
-
-                                <echo message="*** Finished re-generating database schema ***"/>
-
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
