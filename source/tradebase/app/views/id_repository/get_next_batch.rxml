@@ -1,4 +1,4 @@
 xml.id do
- xml.next(@current.to_s, :id => 'nextID')
- xml.num(@num_allowed.to_s, :id => 'numAllowed')
+ xml.next(@current.to_s)
+ xml.num(@num_allowed.to_s)
 end
