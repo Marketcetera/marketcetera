@@ -98,6 +98,10 @@
       <extension
          point="org.eclipse.ui.preferencePages">
       <page
+            class="org.marketcetera.photon.preferences.PhotonPage"
+            id="org.marketcetera.photon.preferences.photon"
+            name="Photon"/>
+      <page
             class="org.marketcetera.photon.preferences.ConnectionsPreferencePage"
             id="org.marketcetera.photon.preferences.connections"
             name="Connections"/>
