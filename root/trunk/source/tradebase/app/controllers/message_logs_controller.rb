@@ -27,7 +27,7 @@ class MessageLogsController < ApplicationController
     all_messages.each { |msg| 
       if(msg.executed_trade?)
         if(fSubsetSearch) 
-           logger.error("checking "+msg.sending_time.to_s + " against " + @startDate.to_s + " and "+@endDate.to_s)
+           logger.error("checking "+msg.sending_time.to_s + " against [" + @startDate.to_s + " to "+@endDate.to_s+"]")
            if((msg.sending_time >= @startDate) && (msg.sending_time <= @endDate))
              all_exec_reports << msg
            else 

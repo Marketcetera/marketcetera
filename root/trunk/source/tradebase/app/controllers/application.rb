@@ -5,5 +5,5 @@ class ApplicationController < ActionController::Base
   require 'quickfix_ruby'
   require 'quickfix_fields'
 
-  helper :application
+  helper :application, :trades
 end

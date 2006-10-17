@@ -8,7 +8,7 @@ class JournalTest < MarketceteraTestBase
   # Populate journal with some sub-account types and find them by desc
   def test_find_posting_by_sat
     # create an account
-    acct = Account.create(:nickname => "test-acct")
+    acct = Account.create(:nickname => "test-acct", :institution_identifier => "bob")
     journal = Journal.create(:description => "random journal")
     
     sti = acct.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:sti])

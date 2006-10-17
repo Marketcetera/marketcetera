@@ -2,6 +2,11 @@ class Account < ActiveRecord::Base
   has_many :sub_accounts
   has_many :trades
   
+  validates_length_of :nickname, :minimum => 1
+  validates_length_of :institution_identifier, :minimum => 1
+  
+  UNASSIGNED_NAME = '[UNASSIGNED]'
+  
   # Given an account, creates all the sub-accounts for it.  
   def before_create()
     SubAccountType.preloaded.each {|sat| 
@@ -18,6 +23,14 @@ class Account < ActiveRecord::Base
     else 
       return self.sub_accounts.select {|sa| sa.sub_account_type.description == desc }[0]
     end
+  end
+  
+  def Account.find_by_nickname(nick)
+    if(nick.nil? || nick.empty?)
+      nick = UNASSIGNED_NAME
+    end  
+    
+    super(nick)
   end
   
 end

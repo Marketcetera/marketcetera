@@ -16,4 +16,16 @@ class MarketceteraTestBase < Test::Unit::TestCase
     assert SubAccountType.preloaded.length > 0
   end
   
+  def assert_errors
+    assert_tag error_message_field
+  end
+  
+  def assert_no_errors
+    assert_no_tag error_message_field
+  end
+  
+  def error_message_field
+    {:tag => "div", :attributes => { :class => "fieldWithErrors" }}
+  end
+  
 end
