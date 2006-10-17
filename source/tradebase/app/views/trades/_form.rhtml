@@ -34,6 +34,6 @@
 
 <p><label for="account_nickname">Account</label><br/>
 <%= text_field_with_auto_complete :account, :nickname, :value=> @trade.account_nickname %>
-
+<%= link_to "Create new account", {:controller => 'accounts', :action => 'new'} %><p>
 <!--[eoform:trade]-->
 
