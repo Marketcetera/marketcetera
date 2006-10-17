@@ -2,6 +2,8 @@ package org.marketcetera.photon;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.net.InetAddress;
+import java.net.URL;
 
 import javax.jms.JMSException;
 
@@ -14,9 +16,6 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences.PreferenceChangeEvent;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
@@ -28,6 +27,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.model.FIXMessageHistory;
+import org.marketcetera.photon.model.HttpDatabaseIDFactory;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -58,7 +58,7 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	
 	private static Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
-    private static IDFactory idFactory = new InMemoryIDFactory(777);
+    private static IDFactory idFactory;
 	private static OrderManager orderManager;
 	private static JMSConnector jmsConnector;
 	
@@ -193,6 +193,24 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 	public static void initQuoteFeed() throws IOException
 	{
 		quoteFeed.connect();
+	}
+	
+	public static void initIDFactory() throws IOException
+	{
+		URL url = new URL(
+				"http",
+				getPreferenceStore().getString(ConnectionConstants.WEB_APP_HOST_KEY),
+				getPreferenceStore().getInt(ConnectionConstants.WEB_APP_PORT_KEY),
+				"/id_repository/get_next_batch"
+		);
+		HttpDatabaseIDFactory tempIDFactory = new HttpDatabaseIDFactory(url);
+		try {
+			tempIDFactory.grabIDs();
+			idFactory = tempIDFactory;
+		} catch (Throwable t) {
+			getMainConsoleLogger().warn("Error connecting to web app for ID base, reverting to built in IDFactory.");
+			idFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+InetAddress.getLocalHost().toString());
+		}
 	}
 	
 

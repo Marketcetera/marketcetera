@@ -1,5 +1,6 @@
 package org.marketcetera.photon;
 
+import java.io.IOException;
 import java.util.Date;
 
 import org.apache.log4j.SimpleLayout;
@@ -87,6 +88,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
+
+		
+		try {
+			Application.initIDFactory();
+		} catch (IOException e) {
+			Application.getMainConsoleLogger().error("Exeption connecting to web app", e);
+		}
 
 		if (item instanceof CommandStatusLineContribution) {
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
