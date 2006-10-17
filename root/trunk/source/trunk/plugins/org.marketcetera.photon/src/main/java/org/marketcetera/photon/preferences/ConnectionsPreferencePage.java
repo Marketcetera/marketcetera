@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
@@ -21,6 +22,8 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 	private UrlFieldEditor jmsServerUrlEditor;
 
 	private UrlFieldEditor webAppHostEditor;
+	
+	private IntegerFieldEditor webAppPortEditor;
 	
 	
     public ConnectionsPreferencePage() {
@@ -68,6 +71,11 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
                 );
 		addField(webAppHostEditor);
 				
+        webAppPortEditor = new IntegerFieldEditor(
+                ConnectionConstants.WEB_APP_PORT_KEY, "Web App Port",
+                getFieldEditorParent()
+                );
+		addField(webAppPortEditor);
 //        StringFieldEditor stringEditor = new StringFieldEditor(
 //                ConfigPropertiesLoader.DB_URL_KEY, "Database URL",
 //                getFieldEditorParent()
