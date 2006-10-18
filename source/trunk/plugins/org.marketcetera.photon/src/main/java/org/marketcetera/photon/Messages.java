@@ -30,6 +30,8 @@ public class Messages extends NLS {
 
 	public static String ApplicationActionBarAdvisor_ScriptMenuName;
 
+	public static String ApplicationActionBarAdvisor_ScriptMenuID;
+
 	public static String ApplicationActionBarAdvisor_NavigationMenuName;
 
 	public static String ApplicationActionBarAdvisor_HelpMenuName;

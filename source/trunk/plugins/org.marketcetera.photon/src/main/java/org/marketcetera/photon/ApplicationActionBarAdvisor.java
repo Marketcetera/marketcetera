@@ -275,16 +275,15 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		// Script menu
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_ScriptMenuName,
-				IWorkbenchActionConstants.M_WINDOW);
-		menu.add(new Separator());
+				Messages.ApplicationActionBarAdvisor_ScriptMenuID);
+		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		menuBar.add(menu);
 
 		menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 
 		// Help menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_HelpMenuName,
-				IWorkbenchActionConstants.M_WINDOW);
+				Messages.ApplicationActionBarAdvisor_HelpMenuName);
 
 		menu.add(webHelpAction);
 //		menu.add(helpContentsAction);
