@@ -164,6 +164,25 @@
    <extension
          point="org.eclipse.ui.editors">
    </extension>
+   <extension point="org.eclipse.ui.editorActions"> 
+      <editorContribution 
+         id="org.marketcetera.photon.RunScript" 
+         targetID="org.rubypeople.rdt.ui.EditorRubyFile"> 
+         <action 
+            id="org.marketcetera.photon.actions.RunScriptActionDelegate" 
+            label="Run &amp;script..." 
+            menubarPath="script/additions" 
+            toolbarPath="standard/additions"
+            style="push"
+            state="false" 
+            icon="icons/other/RunScript.gif" 
+            disabledIcon="icons/other/RunScriptDisabled.gif"
+            tooltip="Run script..." 
+            class="org.marketcetera.photon.actions.RunScriptActionDelegate"> 
+            <selection class="org.eclipse.core.resources.IFile" name="*.rb"/> 
+         </action> 
+      </editorContribution> 
+   </extension>    
    <extension
          point="org.eclipse.ui.popupMenus">
          <objectContribution
