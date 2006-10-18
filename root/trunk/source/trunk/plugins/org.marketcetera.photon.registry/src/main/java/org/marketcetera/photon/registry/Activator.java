@@ -43,7 +43,9 @@ public class Activator implements BundleActivator {
 	private static final String[] UNWANTED_EXTENSIONS = new String[] {
 		"org.eclipse.ui.resourcePerspective",  //$NON-NLS-1$
 		"org.rubypeople.rdt.ui.RubyBrowsingPerspective",  //$NON-NLS-1$
-		"org.eclipse.update.internal.ui.preferences.MainPreferencePage"  //$NON-NLS-1$
+		"org.eclipse.update.internal.ui.preferences.MainPreferencePage",  //$NON-NLS-1$
+		"org.eclipse.debug.ui.launchActionSet",  //$NON-NLS-1$
+		"org.rubypeople.rdt.debug.ui.RDTDebugActionSet"  //$NON-NLS-1$
 	};
 
 	private RegistryProviderOSGI defaultRegistryProvider;
