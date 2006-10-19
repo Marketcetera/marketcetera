@@ -1,18 +1,18 @@
 <%= error_messages_for 'trade' %>
 
 <!--[form:trade]-->
-<p><label for="m_symbol_root">Symbol</label><br/>
-<%= text_field_with_auto_complete :m_symbol, :root , 
-    :value => (@trade.id.nil?) ? '' : @trade.tradeable_m_symbol_root %>
+<p><label for="side">Side</label</br>
+<%= collection_select(:trade, :side, Side.SIDES_HI_COLLECTION, :value, :name, {:selected => Side::QF_SIDE_CODE[:buy]}) %>
 
 <p><label for="trade_quantity">Quantity</label><br/>
 <%= text_field :trade, :quantity  %></p>
 
+<p><label for="m_symbol_root">Symbol</label><br/>
+<%= text_field_with_auto_complete :m_symbol, :root , 
+    :value => (@trade.id.nil?) ? '' : @trade.tradeable_m_symbol_root %>
+
 <p><label for="price_per_share">Price</label><br/>
 <%= text_field :trade, :price_per_share %></p>
-
-<p><label for="side">Side</label</br>
-<%= collection_select(:trade, :side, Side.SIDES_HI_COLLECTION, :value, :name, {:selected => Side::QF_SIDE_CODE[:buy]}) %>
 
 <p><label for="trade_date">Trade Date</label><br/>
 <%= date_select :trade, :journal_post_date %>
