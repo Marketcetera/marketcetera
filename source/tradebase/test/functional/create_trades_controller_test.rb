@@ -38,7 +38,7 @@ class CreateTradesControllerTest < MarketceteraTestBase
     
     qfMsg = Quickfix::Message.new(msg.text)
     assert_equal "GOOG", getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new)
-    assert_equal 14.95.to_s, trade.total_commission.to_s
+    assert_equal 14.95.to_s, trade.total_commission.to_s, "total commission not present"
     logger.debug(trade.to_s)
     assert_equal getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new), trade.tradeable_m_symbol_root
 
@@ -58,7 +58,7 @@ class CreateTradesControllerTest < MarketceteraTestBase
     post :create_trades, :trades => { 20 => "1", 21 => "1", 23 => "1", 24 => 0}  
   
     assert_equal "Created 3 trades", flash[:notice]
-    assert_equal 3, Trade.find_all.length  
+    assert_equal 3, Trade.count
     assert_redirected_to :controller => 'trades', :action => 'list'
   end
 end

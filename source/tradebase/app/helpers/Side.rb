@@ -5,7 +5,8 @@ class Side
                    :sellShortExempt => Quickfix::Side_SELL_SHORT_EXEMPT() }
   
   def Side.SIDES_HI_COLLECTION 
-    SIDES.collect {|s| Side.new(s[1], QF_SIDE_CODE[s[0]]) }
+    coll = SIDES.collect {|s| Side.new(s[1], QF_SIDE_CODE[s[0]]) }
+    return coll.sort {|x,y| x.value.to_i - y.value.to_i }
   end
   
   def initialize(name, value)
@@ -22,6 +23,7 @@ class Side
   end  
   
   def Side.get_human_side(inCode)
-    DataDictionaryMgr.get_value_name(Quickfix::Side.new, inCode)
+    if(inCode.blank?) then return '' end
+    DataDictionaryMgr.get_value_name(Quickfix::Side.new, inCode.to_s)
   end
 end

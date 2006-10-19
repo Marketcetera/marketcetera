@@ -2,8 +2,29 @@ class Trade < ActiveRecord::Base
 
   belongs_to :journal
   belongs_to :account
-  
   belongs_to :tradeable, :polymorphic => true
+  
+  # validation
+  validates_numericality_of :price_per_share
+  validates_numericality_of :quantity
+  
+  def validate
+    logger.error("**** in validation: price/qty/side: "+price_per_share.to_s + "/"+
+                quantity.to_s+"/"+Side.get_human_side(side))
+
+    if(tradeable_m_symbol_root.blank?)
+      errors.add(:symbol, "Symbol cannot be empty")
+    end
+    #breakpoint("trade validation")
+    if(quantity.blank? ||
+    ((quantity <= 0 && side == Side::QF_SIDE_CODE[:buy].to_i) ||
+      (quantity >= 0 && side != Side::QF_SIDE_CODE[:buy].to_i)))
+      errors.add(:quantity, 'Please specify positive quantity.')
+    end    
+    if(price_per_share.blank? || price_per_share <= 0)
+      errors.add(:price_per_share, 'Please specify positive price per share.')
+    end
+  end 
   
   def journal_post_date
     (self.journal.nil?) ? nil : self.journal.post_date
@@ -27,7 +48,7 @@ class Trade < ActiveRecord::Base
   end
   
   def account_nickname
-    (self.account.nil?) ? nil : self.account.nickname
+    (self.account.nil?) ? '' : self.account.nickname
   end
   
   # todo: should this create a new account if it DNE?
@@ -36,7 +57,7 @@ class Trade < ActiveRecord::Base
     if(!newAcct.nil?) 
       self.account = newAcct
     else
-      self.account = Account.create(:nickname => inNick)
+      self.account = Account.create(:nickname => inNick, :institution_identifier=>inNick)
       logger.debug("created new acct")
     end
   end
@@ -90,19 +111,34 @@ class Trade < ActiveRecord::Base
   
   # Override the to_s function to print something more useful for debugging
   def to_s
-    "["+Side.get_human_side(self.side.to_s)+"] "+self.quantity.abs.to_s + 
-    " <"+self.tradeable_m_symbol_root+"> @"+self.price_per_share.to_s + " in acct ["+self.account.nickname+"]"
+    "["+Side.get_human_side(self.side.to_s)+"] "+self.quantity.to_s + 
+    " <"+self.tradeable_m_symbol_root+"> @"+self.price_per_share.to_s + " in acct ["+self.account_nickname+"]"
   end
   
-  
+  # this is the var we want to use for all displaying and calculations in the order
+  # It is adjusted according to the side, ie it's positive if it's a Buy or 
+  # negative if it's a sell
+  def quantity
+    if(!side.blank? && side != Quickfix::Side_BUY().to_i)
+      return super * (-1)  
+    else return super
+    end
+  end
+
+  ##### Helper Methods #####
     
  def create_equity_trade(quantity, symbol, price_per_share, 
                           total_commission, currency_alpha_code, account_nickname, trade_date)
     self.price_per_share = Float(price_per_share)
     self.quantity = quantity
+    self.tradeable = Equity.get_equity(symbol)
+    if(!valid?) 
+      logger.debug("Skipping out on create_equity_trade b/c trade doesn't validate with errors: "+self.errors.full_messages().to_s)
+      return false
+    end
+    
     notional = self.quantity * self.price_per_share
     total_commission = total_commission
-    self.tradeable = Equity.get_equity(symbol)
     logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
     if(self.account == nil)
@@ -110,6 +146,7 @@ class Trade < ActiveRecord::Base
       logger.debug("created new account [" + account_nickname + "] and sub-accounts")
       self.account.save
     end
+    logger.debug("Using account " + self.account.to_s)
     sub_accounts = self.account.sub_accounts
     short_term_investment_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:sti])
     cash_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
@@ -124,8 +161,8 @@ class Trade < ActiveRecord::Base
     
     self.journal.save
     logger.debug("created and saved all related postings")
+    return true
   end
-  
   
   def update_underlying_posting_pairs(debitName, creditName, qty)
     logger.debug("updating the posting transactions when updating trade for postings: "+debitName+"/"+creditName + " for total: "+qty.to_s)

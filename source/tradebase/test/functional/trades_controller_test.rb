@@ -1,10 +1,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 require 'trades_controller'
 
 # Re-raise errors caught by the controller.
 class TradesController; def rescue_action(e) raise e end; end
 
-class TradesControllerTest < Test::Unit::TestCase
+class TradesControllerTest < MarketceteraTestBase
   fixtures :trades, :messages_log
 
   def setup
@@ -13,9 +14,10 @@ class TradesControllerTest < Test::Unit::TestCase
     @response   = ActionController::TestResponse.new
     
     # create the trades from the messages 
-    messageLogController = MessageLogsController.new
-#    messageLogController.create
-    
+    creator = CreateTradesController.new
+    [20,21].each { |id| creator.create_one_trade(id) }
+    assert_equal 2, Trade.count
+    @allTrades = Trade.find_all
   end
 
   def test_index
@@ -31,10 +33,11 @@ class TradesControllerTest < Test::Unit::TestCase
     assert_template 'list'
 
     assert_not_nil assigns(:trades)
+    assert_equal @allTrades.length, assigns(:trades).length
   end
 
   def test_show
-    get :show, :id => 1
+    get :show, :id => @allTrades[0].id
 
     assert_response :success
     assert_template 'show'
@@ -62,9 +65,28 @@ class TradesControllerTest < Test::Unit::TestCase
 
     assert_equal num_trades + 1, Trade.count
   end
+  
+  def test_create_no_symbol
+    num_trades = Trade.count
+    post :create, :trade => {}
+
+    assert_redirected_to :action => 'new'
+    assert_equal "Please specify the symbol.", flash[:error]
+    assert_equal num_trades, Trade.count
+  end
+  
+  def test_create_no_qty
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "bob"} }
+
+    assert_redirected_to :action => 'new'
+    assert_equal 'Please specify positive quantity.', flash[:error]
+    assert_equal num_trades, Trade.count
+  end
+  
 
   def test_edit
-    get :edit, :id => 1
+    get :edit, :id => @allTrades[0].id
 
     assert_response :success
     assert_template 'edit'
@@ -74,29 +96,23 @@ class TradesControllerTest < Test::Unit::TestCase
   end
 
   def test_update
-    post :update, :id => 1
+    post :update, :id =>  @allTrades[0].id
     assert_response :redirect
-    assert_redirected_to :action => 'show', :id => 1
+    assert_redirected_to :action => 'show', :id =>  @allTrades[0].id
   end
 
   def test_destroy
-    assert_not_nil Trade.find(1)
+    assert_not_nil Trade.find( @allTrades[0].id)
 
-    post :destroy, :id => 1
+    post :destroy, :id =>  @allTrades[0].id
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
     assert_raise(ActiveRecord::RecordNotFound) {
-      Trade.find(1)
+      Trade.find( @allTrades[0].id)
     }
   end
   
   ######## testing helper methods 
-  def test_adjust_quantity_by_side
-    assert_equal 100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:buy])).quantity
-    assert_equal -100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sell])).quantity
-    assert_equal -100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShort])).quantity
-    assert_equal -100, @controller.adjust_quantity_by_side( Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShortExempt])).quantity
-  end
   
 end
