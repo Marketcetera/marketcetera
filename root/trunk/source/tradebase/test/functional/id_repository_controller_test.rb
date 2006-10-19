@@ -6,7 +6,8 @@ require 'id_repository_controller'
 class IdRepositoryController; def rescue_action(e) raise e end; end
 
 class IdRepositoryControllerTest < MarketceteraTestBase
-include IdRepositoryHelper
+  fixtures :id_repository
+  include IdRepositoryHelper
 
   def setup
     @controller = IdRepositoryController.new

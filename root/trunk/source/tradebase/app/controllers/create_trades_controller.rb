@@ -29,6 +29,7 @@ class CreateTradesController < ApplicationController
     qfMessage = Quickfix::Message.new(dbMessage.text)
     logger.debug("creating a trade for msg: "+ qfMessage.to_s)
     theTrade = Trade.new
+    theTrade.side = getStringFieldValueIfPresent(qfMessage, Quickfix::Side.new)
     quantity = getStringFieldValueIfPresent(qfMessage, Quickfix::LastShares.new)
     currency = getStringFieldValueIfPresent(qfMessage, Quickfix::Currency.new)
     symbol =   getStringFieldValueIfPresent(qfMessage, Quickfix::Symbol.new)
@@ -36,9 +37,12 @@ class CreateTradesController < ApplicationController
     account = getStringFieldValueIfPresent(qfMessage, Quickfix::Account.new)
     sendingTime = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
     commission = getStringFieldValueIfPresent(qfMessage, Quickfix::Commission.new)
+    
+    logger.debug("creating trade for "+Side.get_human_side(@side) + " " + quantity + " " + 
+                  symbol + " @ "+price + "/["+commission+"] in <"+account+">")
+    
     theTrade.create_equity_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime)
     theTrade.trade_type = TradeTypeTrade
-    theTrade.side = getStringFieldValueIfPresent(qfMessage, Quickfix::Side.new)
     theTrade.save
     
     logger.debug("created trade: "+theTrade.to_s)

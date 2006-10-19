@@ -26,7 +26,7 @@ class Account < ActiveRecord::Base
   end
   
   def Account.find_by_nickname(nick)
-    if(nick.nil? || nick.empty?)
+    if(nick.blank?)
       nick = UNASSIGNED_NAME
     end  
     

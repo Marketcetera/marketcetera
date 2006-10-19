@@ -9,7 +9,7 @@ class QueriesController < ApplicationController
 
   def by_symbol
     symbol_str = get_non_empty_string_from_two(params, :m_symbol, :root, "m_symbol_root")
-    if(symbol_str.nil? || symbol_str.empty?) 
+    if(symbol_str.blank?) 
       @trade_pages, @trades = paginate :trades, :per_page => 10
     else
       @trade_pages, @trades  = paginate :trades, :per_page => 10, :conditions => ['m_symbols.root = ? ', symbol_str], 
