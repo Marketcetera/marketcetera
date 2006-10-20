@@ -31,7 +31,12 @@
             <artifactId>commons-i18n</artifactId>
             <version>20060814</version>
         </dependency>
-
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.0.3</version>
+	    <scope>runtime</scope>
+	</dependency>
     </dependencies>
 
     <!-- try to force a test-jar to be built during jar creation -->
