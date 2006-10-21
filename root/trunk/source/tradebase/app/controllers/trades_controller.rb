@@ -53,7 +53,6 @@ class TradesController < ApplicationController
         end
       end
     rescue
-      flash[:notice] = "recovered from error"
       render :action => 'new'
     end
   end
@@ -64,23 +63,28 @@ class TradesController < ApplicationController
 
   def update
     @trade = Trade.find(params[:id])
-    @trade.transaction do
-      @trade.tradeable_m_symbol_root = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
-      @trade.account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil)
-      @trade.journal_post_date = parse_date_from_params(params, :trade, :journal_post_date.to_s)
-      @trade.side = params[:trade][:side]
-      @trade.quantity = params[:trade][:quantity]
-      @trade.price_per_share = params[:trade][:price_per_share]
-      @trade.comment = params[:trade][:comment]
-      @trade.total_commission = params[:trade][:total_commission]
-      @trade.trade_type = params[:trade][:trade_type]
-      if(@trade.save)
-        flash[:notice] = 'Trade was successfully updated.'
-        redirect_to :action => 'show', :id => @trade
-      else
+    begin
+      @trade.transaction do
+        @trade.tradeable_m_symbol_root = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
+        @trade.account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil)
+        @trade.journal_post_date = parse_date_from_params(params, :trade, :journal_post_date.to_s)
+        @trade.side = params[:trade][:side]
+        @trade.quantity = params[:trade][:quantity]
+        @trade.price_per_share = params[:trade][:price_per_share]
+        @trade.comment = params[:trade][:comment]
+        @trade.total_commission = params[:trade][:total_commission]
+        @trade.trade_type = params[:trade][:trade_type]
+        if(@trade.save)
+          flash[:notice] = 'Trade was successfully updated.'
+          redirect_to :action => 'show', :id => @trade
+        else
+          logger.debug("trade not created, nErrors: "+@trade.errors.length.to_s)
+          throw Exception
+        end
+      end 
+    rescue
         render :action => 'edit'
-      end
-    end      
+    end  
   end
 
   def destroy

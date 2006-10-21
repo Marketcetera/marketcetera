@@ -6,7 +6,7 @@ class Currency < ActiveRecord::Base
   def Currency.get_currency(cur_string)
     if(cur_string == nil || cur_string == '') 
       cur_string = 'USD'
-      p("No currency specified, defaulting to USD")
+      logger.debug("No currency specified, defaulting to USD")
     end
     currency = Currency.find(:first, :conditions=>["alpha_code = ?", cur_string])
     return currency

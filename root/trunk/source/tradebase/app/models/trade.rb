@@ -7,6 +7,7 @@ class Trade < ActiveRecord::Base
   # validation
   validates_numericality_of :price_per_share
   validates_numericality_of :quantity
+#  validates_numericality_of :total_commission
   
   def validate
     logger.error("**** in validation: price/qty/side: "+price_per_share.to_s + "/"+
@@ -25,7 +26,7 @@ class Trade < ActiveRecord::Base
       errors.add(:price_per_share, 'Please specify positive price per share.')
     end
     
-    if(!total_commission.blank? && BigDecimal.new(total_commission.to_s) < 0)
+    if(!total_commission.blank? && BigDecimal(total_commission.to_s) < 0)
       errors.add(:total_commission, "Commissions cannot be negative")
     end
   end 
@@ -68,7 +69,7 @@ class Trade < ActiveRecord::Base
   
   def total_commission
     if(self.journal.nil?) 
-      return nil
+      return 0
     else 
       commissions = self.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
       return commissions.quantity
@@ -80,7 +81,7 @@ class Trade < ActiveRecord::Base
       logger.debug("we are not initialized yet, so jumping out early")
       return
     end
-    if(inCommission.nil?) 
+    if(inCommission.blank?) 
       inCommission = 0
     end
     update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:commissions], SubAccountType::DESCRIPTIONS[:cash], 
