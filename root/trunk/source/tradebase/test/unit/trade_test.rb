@@ -164,21 +164,6 @@ class TradeTest < MarketceteraTestBase
   
   ##### Helpers ######
 
-  # verifies trade has the right total price + commissions
-  def verify_trade_prices(trade, total_price, total_commission)
-    sti = trade.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:sti])
-    assert_nums_equal total_price, sti.quantity
-    assert_nums_equal -sti.quantity, 
-        trade.journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], sti.pair_id).quantity, 
-        "cash portion of STI is incorrect"
-    
-    comm = trade.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
-    assert_nums_equal total_commission, comm.quantity
-    assert_nums_equal -comm.quantity, 
-        trade.journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], comm.pair_id).quantity, 
-        "cash portion of commission is incorrect"   
-  end
-  
   def test_assert_nums_equal
     assert_nums_equal 0, 0
     assert_nums_equal 10, 10
