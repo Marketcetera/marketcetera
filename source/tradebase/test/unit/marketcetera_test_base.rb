@@ -27,7 +27,8 @@ class MarketceteraTestBase < Test::Unit::TestCase
   def error_message_field
     {:tag => "div", :attributes => { :class => "fieldWithErrors" }}
   end
-  
+
+  # Add more helper methods to be used by all tests here...
   def assert_nums_equal(expected, actual, message=nil, tolerance=BigDecimal.new("0.000001"))
      full_message = build_message(message, <<EOT, expected, actual)
 <?> expected but was
@@ -38,4 +39,19 @@ EOT
     assert_block(full_message) { (expected - actual).abs < tolerance }
   end
   
+  # verifies trade has the right total price + commissions
+  def verify_trade_prices(trade, total_price, total_commission)
+    sti = trade.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:sti])
+    assert_nums_equal total_price, sti.quantity
+    assert_nums_equal -sti.quantity, 
+        trade.journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], sti.pair_id).quantity, 
+        "cash portion of STI is incorrect"
+    
+    comm = trade.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
+    assert_nums_equal total_commission, comm.quantity
+    assert_nums_equal -comm.quantity, 
+        trade.journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], comm.pair_id).quantity, 
+        "cash portion of commission is incorrect"   
+  end
+   
 end
