@@ -115,6 +115,19 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal 14.99, t.total_commission
     # lookup the posting too
     verify_trade_prices(t, 11*4.99, 14.99)
+    
+    # set an empty and then nil commission and make sure it comes back as 0
+    t.total_commission = nil
+    assert_nums_equal 0, t.total_commission
+    # lookup the posting too
+    verify_trade_prices(t, 11*4.99, 0)
+
+    t.total_commission = 5    
+    assert_nums_equal 5, t.total_commission
+    verify_trade_prices(t, 11*4.99, 5)
+    t.total_commission = ''
+    assert_nums_equal 0, t.total_commission
+    verify_trade_prices(t, 11*4.99, 0)
   end 
   
   def test_update_price_and_qty_and_commission
