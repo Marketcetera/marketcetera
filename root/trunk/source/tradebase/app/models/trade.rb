@@ -24,6 +24,10 @@ class Trade < ActiveRecord::Base
     if(price_per_share.blank? || price_per_share <= 0)
       errors.add(:price_per_share, 'Please specify positive price per share.')
     end
+    
+    if(!total_commission.blank? && BigDecimal.new(total_commission.to_s) < 0)
+      errors.add(:total_commission, "Commissions cannot be negative")
+    end
   end 
   
   def journal_post_date
@@ -76,7 +80,9 @@ class Trade < ActiveRecord::Base
       logger.debug("we are not initialized yet, so jumping out early")
       return
     end
-
+    if(inCommission.nil?) 
+      inCommission = 0
+    end
     update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:commissions], SubAccountType::DESCRIPTIONS[:cash], 
                                     inCommission)
   end
@@ -85,6 +91,7 @@ class Trade < ActiveRecord::Base
     sti = self.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:sti])
     return sti.quantity
   end
+    
     
   # Need to update all the underlying journals/postings when we update the price_per_share
   def price_per_share=(new_price)
@@ -95,7 +102,7 @@ class Trade < ActiveRecord::Base
     end
     
     update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:sti], SubAccountType::DESCRIPTIONS[:cash], 
-                                    self.quantity * Float(new_price))
+                                    self.quantity * BigDecimal(new_price.to_s))
   end
   
   # Need to update the underlying journals/postings when we update the price_per_share
@@ -129,8 +136,8 @@ class Trade < ActiveRecord::Base
     
  def create_equity_trade(quantity, symbol, price_per_share, 
                           total_commission, currency_alpha_code, account_nickname, trade_date)
-    self.price_per_share = Float(price_per_share)
-    self.quantity = quantity
+    self.price_per_share = BigDecimal(price_per_share.to_s)
+    self.quantity = BigDecimal(quantity.to_s)
     self.tradeable = Equity.get_equity(symbol)
     if(!valid?) 
       logger.debug("Skipping out on create_equity_trade b/c trade doesn't validate with errors: "+self.errors.full_messages().to_s)
@@ -138,7 +145,7 @@ class Trade < ActiveRecord::Base
     end
     
     notional = self.quantity * self.price_per_share
-    total_commission = total_commission
+    total_commission = BigDecimal(total_commission.to_s)
     logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
     if(self.account == nil)
@@ -169,7 +176,7 @@ class Trade < ActiveRecord::Base
     debitP = self.journal.find_posting_by_sat(debitName)
     creditP = self.journal.find_posting_by_sat_and_pair_id(creditName, debitP.pair_id)
     debitP.quantity = qty
-    creditP.quantity = -Float(qty)
+    creditP.quantity = -BigDecimal(qty.to_s)
     logger.debug("updated total price for "+self.tradeable_m_symbol_root + "["+debitName+"] to "+debitP.quantity.to_s)
     debitP.save
     creditP.save

@@ -8,8 +8,13 @@
 <%= text_field :trade, :quantity  %></p>
 
 <p><label for="m_symbol_root">Symbol</label><br/>
-<%= text_field_with_auto_complete :m_symbol, :root , 
-    :value => (@trade.id.nil?) ? '' : @trade.tradeable_m_symbol_root %>
+<% if(!@trade.errors[:symbol].nil?) %> 
+<div class="fieldWithErrors"> 
+<% end %>
+<%= text_field_with_auto_complete :m_symbol, :root, :value => @trade.tradeable_m_symbol_root %>
+<% if(!@trade.errors[:symbol].nil?) %>
+  </div>
+<% end  %>
 
 <p><label for="price_per_share">Price</label><br/>
 <%= text_field :trade, :price_per_share %></p>
