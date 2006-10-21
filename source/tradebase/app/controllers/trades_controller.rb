@@ -28,21 +28,33 @@ class TradesController < ApplicationController
   end
 
   def create
-    Trade.transaction() do 
     @trade = Trade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil), 
                        :comment => params[:trade][:comment], 
                        :trade_type => params[:trade][:trade_type], :side => params[:trade][:side], 
                        :price_per_share => params[:trade][:price_per_share])
-      trade_date = parse_date_from_params(params, :trade, "journal_post_date")
-      @trade.create_equity_trade(@trade.quantity, params[:m_symbol][:root], BigDecimal.new(params[:trade][:price_per_share]), 
-          BigDecimal.new(params[:trade][:total_commission]), params[:currency][:alpha_code], params[:account][:nickname], trade_date)
-        
-      if @trade.save
-        flash[:notice] = 'Trade was successfully created.'
-        redirect_to :action => 'list'
-      else
-        render :action => 'new'
+    begin
+      Trade.transaction() do
+        trade_date = parse_date_from_params(params, :trade, "journal_post_date")
+        @trade.create_equity_trade(@trade.quantity, 
+            get_non_empty_string_from_two(params, :m_symbol, :root, nil), 
+            @trade.price_per_share, 
+            params[:trade][:total_commission], 
+            get_non_empty_string_from_two(params, :currency, :alpha_code, nil), 
+            get_non_empty_string_from_two(params, :account, :nickname, nil), 
+            trade_date)
+          
+        if @trade.save
+          flash[:notice] = 'Trade was successfully created.'
+          logger.debug("created trade: "+@trade.to_s)
+          redirect_to :action => 'list'
+        else
+          logger.debug("trade not created, nErrors: "+@trade.errors.length.to_s)
+          throw Exception
+        end
       end
+    rescue
+      flash[:notice] = "recovered from error"
+      render :action => 'new'
     end
   end
 

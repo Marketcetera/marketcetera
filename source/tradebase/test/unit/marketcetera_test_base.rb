@@ -28,4 +28,14 @@ class MarketceteraTestBase < Test::Unit::TestCase
     {:tag => "div", :attributes => { :class => "fieldWithErrors" }}
   end
   
+  def assert_nums_equal(expected, actual, message=nil, tolerance=BigDecimal.new("0.000001"))
+     full_message = build_message(message, <<EOT, expected, actual)
+<?> expected but was
+<?>.
+EOT
+    expected = BigDecimal.new(expected.to_s)
+    actual =   BigDecimal.new(actual.to_s)
+    assert_block(full_message) { (expected - actual).abs < tolerance }
+  end
+  
 end
