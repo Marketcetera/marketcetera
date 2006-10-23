@@ -45,7 +45,17 @@ public class Activator implements BundleActivator {
 		"org.rubypeople.rdt.ui.RubyBrowsingPerspective",  //$NON-NLS-1$
 		"org.eclipse.update.internal.ui.preferences.MainPreferencePage",  //$NON-NLS-1$
 		"org.eclipse.debug.ui.launchActionSet",  //$NON-NLS-1$
-		"org.rubypeople.rdt.debug.ui.RDTDebugActionSet"  //$NON-NLS-1$
+		"org.rubypeople.rdt.debug.ui.RDTDebugActionSet",  //$NON-NLS-1$
+		"org.eclipse.debug.ui.DebugPerspective",  //$NON-NLS-1$
+		"org.eclipse.debug.ui",  //agl an entire view category  //$NON-NLS-1$
+		"org.rubypeople.rdt.ui.ruby.browsing",  //agl an entire view category  //$NON-NLS-1$
+		"org.rubypeople.rdt.ui.preferences.PreferencePageRubyBase",  //agl an entire preference category  //$NON-NLS-1$
+		"org.eclipse.debug.ui.DebugPreferencePage",  //agl an entire preference category  //$NON-NLS-1$
+		"org.eclipse.ui.preferencePages.Workbench",  //agl an entire preference category  //$NON-NLS-1$
+		"org.eclipse.ui.preferencePages.GeneralTextEditor",  //agl an entire preference category  //$NON-NLS-1$
+		"org.eclipse.search.preferences.SearchPreferencePage",  //$NON-NLS-1$
+		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter",  //$NON-NLS-1$
+		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageEvaluationExpressions"  //$NON-NLS-1$
 	};
 
 	private RegistryProviderOSGI defaultRegistryProvider;
