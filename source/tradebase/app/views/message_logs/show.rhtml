@@ -8,7 +8,7 @@
   <b>OrdStatus: </b><%= getHumanOrdStatus(getStringFieldValueIfPresent(@qf_message, Quickfix::OrdStatus.new)) %>
 </p>
 <p>
-  <b>Side: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Side.new) %>
+  <b>Side: </b><%= Side.get_human_side(getStringFieldValueIfPresent(@qf_message, Quickfix::Side.new)) %>
 </p>
 <p>
   <b>Symbol: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Symbol.new) %>

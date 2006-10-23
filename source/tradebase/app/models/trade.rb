@@ -7,7 +7,6 @@ class Trade < ActiveRecord::Base
   # validation
   validates_numericality_of :price_per_share
   validates_numericality_of :quantity
-#  validates_numericality_of :total_commission
   
   def validate
     logger.error("**** in validation: price/qty/side: "+price_per_share.to_s + "/"+
@@ -16,7 +15,6 @@ class Trade < ActiveRecord::Base
     if(tradeable_m_symbol_root.blank?)
       errors.add(:symbol, "Symbol cannot be empty")
     end
-    #breakpoint("trade validation")
     if(quantity.blank? ||
     ((quantity <= 0 && side == Side::QF_SIDE_CODE[:buy].to_i) ||
       (quantity >= 0 && side != Side::QF_SIDE_CODE[:buy].to_i)))
@@ -47,9 +45,9 @@ class Trade < ActiveRecord::Base
     (self.tradeable.nil?) ? nil : self.tradeable.m_symbol.root
   end
   
+  # for now, we deal with equities only
   def tradeable_m_symbol_root=(inSymbol)
-    self.tradeable.m_symbol.root = inSymbol
-    self.tradeable.m_symbol.save
+    self.tradeable = Equity.get_equity(inSymbol)
   end
   
   def account_nickname
@@ -64,6 +62,18 @@ class Trade < ActiveRecord::Base
     else
       self.account = Account.create(:nickname => inNick, :institution_identifier=>inNick)
       logger.debug("created new acct")
+    end
+  end
+  
+  # When an account is updated make sure you update all the refrenced postings as well
+  def after_update
+    logger.debug("**** currently self.account is "+((self.account.nil?)?'nil': self.account.to_s))
+    if(!self.journal.nil?)
+      if(!self.account.nil?)
+        logger.debug("updating " + self.journal.postings.length.to_s + " postings from old acct "+
+            self.journal.postings[0].sub_account.account.to_s + " to new acct "+self.account.to_s)
+      end           
+      self.journal.postings.each { |p| p.sub_account.account = self.account} 
     end
   end
   
@@ -149,9 +159,10 @@ class Trade < ActiveRecord::Base
     total_commission = BigDecimal(total_commission.to_s)
     logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
-    if(self.account == nil)
+    if(self.account.nil?)
+      logger.debug("** before **" + ((self.account.nil?) ? 'nil': self.account.to_s))
       self.account = Account.create(:nickname => account_nickname, :institution_identifier => account_nickname)
-      logger.debug("created new account [" + account_nickname + "] and sub-accounts")
+      logger.debug("created new account [" + account_nickname + "] and sub-accounts and self.account is "+self.account.to_s)
       self.account.save
     end
     logger.debug("Using account " + self.account.to_s)
