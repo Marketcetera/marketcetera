@@ -6,6 +6,7 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.DataDictionary;
 import quickfix.field.*;
+import quickfix.fix42.OrderCancelReplaceRequest;
 import quickfix.fix42.MarketDataRequest;
 
 import java.math.BigDecimal;
@@ -35,7 +36,7 @@ public class FIXMessageUtil {
             MsgType msgTypeField = new MsgType();
             fixMessage.getHeader().getField(msgTypeField);
             return msgType.equals(msgTypeField.getValue());
-        } catch (FieldNotFound exception) {
+        } catch (Exception exception) {
             return false;
         }
     }
@@ -99,6 +100,10 @@ public class FIXMessageUtil {
 
     public static boolean isCancelRequest(Message jmsMessage) {
         return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REQUEST);
+    }
+
+    public static boolean isReplaceRequest(Message jmsMessage) {
+        return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
     }
 
     public static boolean isCancelReplaceRequest(Message jmsMessage) {
@@ -322,8 +327,6 @@ public class FIXMessageUtil {
         }
     }
 
-
-
     public static Message newCancelReplaceShares(
             InternalID orderID,
             InternalID origOrderID,
@@ -351,6 +354,21 @@ public class FIXMessageUtil {
         aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
         return aMessage;
     }
+
+	public static Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound
+	{
+		Message cancelReplaceMessage = new OrderCancelReplaceRequest();
+		cancelReplaceMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
+		fillFieldsFromExistingMessage(cancelReplaceMessage, oldMessage);
+		if (oldMessage.getChar(OrdType.FIELD) != OrdType.MARKET && oldMessage.isSetField(Price.FIELD)){
+			cancelReplaceMessage.setField(oldMessage.getField(new Price()));
+		}
+		if (oldMessage.isSetField(OrderQty.FIELD)){
+			cancelReplaceMessage.setField(oldMessage.getField(new OrderQty()));
+		}
+		return cancelReplaceMessage;
+
+	}
 
     private static final int TOP_OF_BOOK_DEPTH = 1;
 
