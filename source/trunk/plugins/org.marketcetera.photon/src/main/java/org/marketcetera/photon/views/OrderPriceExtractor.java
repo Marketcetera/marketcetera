@@ -20,6 +20,7 @@ public class OrderPriceExtractor extends FIXTextExtractor {
 	public void modifyOrder(Message aMessage) {
 		if (PriceImage.MKT.getImage().equals(field.getText())){
 			aMessage.setField(new OrdType(OrdType.MARKET));
+			aMessage.removeField(Price.FIELD);
 		} else {
 			aMessage.setField(new OrdType(OrdType.LIMIT));
 			super.modifyOrder(aMessage);
