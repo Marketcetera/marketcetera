@@ -46,4 +46,12 @@ class AccountTest < MarketceteraTestBase
   
   end
   
+  def test_to_s
+    a = Account.new(:nickname => "trali vali", :institution_identifier => "bob")
+    assert_equal "[trali vali]", a.to_s
+    
+    a.nickname = nil
+    assert_equal "[]", a.to_s
+  end
+  
 end

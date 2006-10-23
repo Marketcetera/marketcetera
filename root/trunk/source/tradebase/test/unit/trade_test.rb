@@ -1,6 +1,5 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require 'bigdecimal'
-require 'logger'
 require File.dirname(__FILE__) + '/marketcetera_test_base'
 
 class TradeTest < MarketceteraTestBase
@@ -73,7 +72,24 @@ class TradeTest < MarketceteraTestBase
     account = "beer money-"+Date.new.to_s
     theTrade.create_equity_trade(theTrade.quantity, '', theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
     assert !theTrade.save, "no symbol: " + theTrade.tradeable_m_symbol_root
-    assert nTrades, Trade.count
+    assert_equal nTrades, Trade.count
+  end
+  
+  def test_update_equity
+    nTrades = Trade.count
+    test_create_equity_trade
+    assert_equal nTrades+1, Trade.count, "new trade wasn't created"
+    trade = Trade.find_all[Trade.count-1]
+    oldEquity = Equity.find(trade.tradeable.id)
+    
+    nEquities = Equity.count    
+    trade.tradeable_m_symbol_root = "rama"
+    trade.save
+    
+    assert_not_equal oldEquity.m_symbol.root, trade.tradeable_m_symbol_root, "didn't switch symbols"
+    assert_not_equal oldEquity.id, trade.tradeable.id, "didn't switch equities"
+    assert_equal nEquities +1, Equity.count, "didn't create new equity"
+    assert_not_equal oldEquity, trade.tradeable, "didn't switch equities"
   end
   
   def test_update_price_per_share

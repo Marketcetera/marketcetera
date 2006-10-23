@@ -181,6 +181,155 @@ class TradesControllerTest < MarketceteraTestBase
     verify_trade_prices(Trade.find(@allTrades[0].id), tradeCopy.quantity * 125, tradeCopy.total_commission)
   end
 
+  def test_update_qty
+    tradeCopy = @allTrades[0].clone
+        
+    post :update, { :id =>  @allTrades[0].id, 
+                    :trade => @allTrades[0].attributes.merge(
+                     {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
+                     "quantity" => 350}), 
+                    :account => {:nickname => @allTrades[0].account_nickname}, 
+                    :m_symbol => {:root => @allTrades[0].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[0].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_nums_equal 350, assigns(:trade).quantity
+    # verify numbers/accounts still same
+    verify_trade_prices(Trade.find(@allTrades[0].id), tradeCopy.price_per_share * 350, tradeCopy.total_commission)
+  end
+
+  def test_update_commission
+    tradeCopy = @allTrades[0].clone
+        
+    post :update, { :id =>  @allTrades[0].id, 
+                    :trade => @allTrades[0].attributes.merge(
+                     {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
+                     "total_commission" => 12.34}), 
+                    :account => {:nickname => @allTrades[0].account_nickname}, 
+                    :m_symbol => {:root => @allTrades[0].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[0].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_nums_equal 12.34, assigns(:trade).total_commission
+    # verify numbers/accounts still same
+    verify_trade_prices(Trade.find(@allTrades[0].id), tradeCopy.price_per_share * tradeCopy.quantity, 12.34)
+  end
+
+  def test_update_buy_to_sell
+    tradeCopy = @allTrades[0].clone
+        
+    post :update, { :id =>  @allTrades[0].id, 
+                    :trade => @allTrades[0].attributes.merge(
+                     {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
+                     "side" => Side::QF_SIDE_CODE[:sell]}), 
+                    :account => {:nickname => @allTrades[0].account_nickname}, 
+                    :m_symbol => {:root => @allTrades[0].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[0].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_nums_equal -tradeCopy.quantity, assigns(:trade).quantity
+    # verify numbers/accounts still same
+    verify_trade_prices(Trade.find(@allTrades[0].id), -tradeCopy.price_per_share * tradeCopy.quantity, tradeCopy.total_commission)
+  end
+
+  # allTrades[1] is a SSE that we just change to Sell but all #s shoudl stay same
+  def test_update_sse_to_sell_short
+    tradeCopy = @allTrades[1].clone
+        
+    post :update, { :id =>  @allTrades[1].id, 
+                    :trade => @allTrades[1].attributes.merge(
+                     {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
+                     "side" => Side::QF_SIDE_CODE[:sell]}), 
+                    :account => {:nickname => @allTrades[1].account_nickname}, 
+                    :m_symbol => {:root => @allTrades[1].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[1].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_nums_equal tradeCopy.quantity, assigns(:trade).quantity
+    # verify numbers/accounts still same
+    verify_trade_prices(Trade.find(@allTrades[1].id), tradeCopy.price_per_share * tradeCopy.quantity, tradeCopy.total_commission)
+  end
+
+  # new date: 2005-9-11
+  def test_update_date
+    tradeCopy = @allTrades[1].clone
+        
+    post :update, { :id =>  @allTrades[1].id, 
+                    :trade => @allTrades[1].attributes.merge(
+                     {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
+                    :account => {:nickname => @allTrades[1].account_nickname}, 
+                    :m_symbol => {:root => @allTrades[1].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[1].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_equal Date.civil(2005, 9, 11), assigns(:trade).journal_post_date
+    # verify numbers/accounts still same
+    verify_trade_prices(Trade.find(@allTrades[1].id), tradeCopy.price_per_share * tradeCopy.quantity, tradeCopy.total_commission)
+  end
+
+  # Switch to a different account
+  # Need to verify the old postings are now referring to different sub-account ids
+  def test_update_switch_accounts
+    tradeCopy = @allTrades[1].clone
+    newAcct = Account.create(:nickname => 'new-account-'+Date.new.to_s, :institution_identifier => "12345")    
+    post :update, { :id =>  @allTrades[1].id, 
+                    :trade => @allTrades[1].attributes.merge(
+                     {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
+                    :account => {:nickname => newAcct.nickname }, 
+                    :m_symbol => {:root => @allTrades[1].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[1].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_equal newAcct.nickname, assigns(:trade).account_nickname
+    assert_not_equal  newAcct.nickname, tradeCopy.account_nickname
+    # verify that all postings point to new account
+    assigns(:trade).journal.postings.each { |p| assert_equal newAcct, p.sub_account.account, "posting not referencing right account"  }
+  end
+  
+  # Switch to a different equity
+  # Verify that old equity still exists, the m_symbol still exists
+  # and that we have a new equity pointing to a new m_symbol
+  def test_update_equity
+    tradeCopy = @allTrades[1].clone
+    newSymbol = "IFLI"
+    oldSymbol = @allTrades[1].tradeable_m_symbol_root
+    oldEquityId = @allTrades[1].tradeable.id
+    
+    post :update, { :id =>  @allTrades[1].id, 
+                    :trade => @allTrades[1].attributes.merge(
+                     {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
+                    :m_symbol => {:root => newSymbol}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[1].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_equal newSymbol, assigns(:trade).tradeable_m_symbol_root
+    assert_not_equal oldEquityId, assigns(:trade).tradeable.id, "equity IDs are same"
+    assert_not_equal tradeCopy.tradeable.m_symbol.id, assigns(:trade).tradeable.m_symbol.id, "m_symbol ids are same"
+  end
+  
+  def test_update_comment
+    tradeCopy = @allTrades[1].clone
+    newComment = "your momma so fat.."
+    post :update, { :id =>  @allTrades[1].id, 
+                    :trade => @allTrades[1].attributes.merge(
+                     {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11", 
+                     "comment" => newComment}), 
+                    :m_symbol => {:root => @allTrades[1].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[1].id
+    assert "Trade was successfully updated", flash[:notice]
+    
+    assert_equal newComment, assigns(:trade).comment
+    assert_not_equal tradeCopy.comment, assigns(:trade).comment, "comments are same"
+  end
+  
 
   def test_destroy
     assert_not_nil Trade.find( @allTrades[0].id)

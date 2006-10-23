@@ -28,18 +28,8 @@ class MarketceteraTestBase < Test::Unit::TestCase
     {:tag => "div", :attributes => { :class => "fieldWithErrors" }}
   end
 
-  # Add more helper methods to be used by all tests here...
-  def assert_nums_equal(expected, actual, message=nil, tolerance=BigDecimal.new("0.000001"))
-     full_message = build_message(message, <<EOT, expected, actual)
-<?> expected but was
-<?>.
-EOT
-    expected = BigDecimal.new(expected.to_s)
-    actual =   BigDecimal.new(actual.to_s)
-    assert_block(full_message) { (expected - actual).abs < tolerance }
-  end
-  
   # verifies trade has the right total price + commissions
+  # Looks at all the postings and makes sure the numbers are the same as passed in
   def verify_trade_prices(trade, total_price, total_commission)
     sti = trade.journal.find_posting_by_sat(SubAccountType::DESCRIPTIONS[:sti])
     assert_nums_equal total_price, sti.quantity
@@ -53,5 +43,17 @@ EOT
         trade.journal.find_posting_by_sat_and_pair_id(SubAccountType::DESCRIPTIONS[:cash], comm.pair_id).quantity, 
         "cash portion of commission is incorrect"   
   end
+
+  # Compare two numbers (float, bigDecimal, strings, etc) with a given tolerance
+  def assert_nums_equal(expected, actual, message=nil, tolerance=BigDecimal.new("0.000001"))
+     full_message = build_message(message, <<EOT, expected, actual)
+<?> expected but was
+<?>.
+EOT
+    expected = BigDecimal.new(expected.to_s)
+    actual =   BigDecimal.new(actual.to_s)
+    assert_block(full_message) { (expected - actual).abs < tolerance }
+  end
+  
    
 end
