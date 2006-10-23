@@ -33,4 +33,7 @@ class Account < ActiveRecord::Base
     super(nick)
   end
   
+  def to_s
+    (self.nickname.nil? ) ? '[]' : "["+self.nickname+"]"
+  end
 end
