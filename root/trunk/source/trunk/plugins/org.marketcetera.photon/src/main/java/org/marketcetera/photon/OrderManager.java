@@ -229,25 +229,11 @@ public class OrderManager {
 	protected void cancelReplaceOneOrder(Message cancelMessage)
 			throws NoMoreIDsException, FieldNotFound, JMSException {
 
-		String clOrdId = (String) cancelMessage.getString(OrigClOrdID.FIELD);
-		Message latestMessage = fixMessageHistory.getLatestMessage(clOrdId);
-		if (latestMessage != null){
-			cancelMessage.setField(new OrigClOrdID(clOrdId));
-			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
-			fillFieldsFromExistingMessage(cancelMessage, latestMessage);
-
-			fixMessageHistory.addOutgoingMessage(cancelMessage);
-			try {
-				boolean sentToQueue = sendToApplicationQueue(cancelMessage);
-				
-				if (sentToQueue)
-					logCancelOneOrder(cancelMessage);  // TEMP reuse the one for pure cancel until we do cancel _and_ replace here 
-			} catch (JMSException e) {
-				internalMainLogger.error("Error sending cancel/replace for order "+clOrdId, e);
-			}
-		} else {
-			internalMainLogger.error("Could not send cancel/replace request for order ID "+clOrdId);
-		}
+		fixMessageHistory.addOutgoingMessage(cancelMessage);
+		boolean sentToQueue = sendToApplicationQueue(cancelMessage);
+		
+		if (sentToQueue)
+			logCancelOneOrder(cancelMessage);  // TEMP reuse the one for pure cancel until we do cancel _and_ replace here 
 	}
 
 	protected void cancelOneOrder(Message cancelMessage)

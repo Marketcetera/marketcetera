@@ -187,13 +187,23 @@
          point="org.eclipse.ui.popupMenus">
          <objectContribution
          	adaptable="false"
-         	id="org.marketcetera.photon.CancelOrderActionDelegate"
+         	id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
          	objectClass="org.marketcetera.photon.model.MessageHolder">
          	<action
          		class="org.marketcetera.photon.actions.CancelOrderActionDelegate"
          		icon="icons/silk/cancel.png"
          		id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
          		label="&amp;Cancel order"/>
+         </objectContribution>
+         <objectContribution
+         	adaptable="false"
+         	id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
+         	objectClass="org.marketcetera.photon.model.MessageHolder">
+         	<action
+         		class="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
+         		icon="icons/silk/pencil.png"
+         		id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
+         		label="&amp;Replace order"/>
          </objectContribution>
          <objectContribution
          	adaptable="false"
