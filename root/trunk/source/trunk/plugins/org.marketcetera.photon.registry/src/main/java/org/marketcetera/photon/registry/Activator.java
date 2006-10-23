@@ -57,7 +57,8 @@ public class Activator implements BundleActivator {
 		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter",  //$NON-NLS-1$
 		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageEvaluationExpressions",  //$NON-NLS-1$
 		"org.eclipse.ui.WorkingSetActionSet",  //$NON-NLS-1$
-		"org.eclipse.ui.edit.text.actionSet.annotationNavigation"  //$NON-NLS-1$
+		"org.eclipse.ui.edit.text.actionSet.annotationNavigation",  //$NON-NLS-1$
+		"org.eclipse.debug.ui.contextualLaunch.debug"  //$NON-NLS-1$
 	};
 
 	private RegistryProviderOSGI defaultRegistryProvider;
