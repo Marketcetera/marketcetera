@@ -1,10 +1,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 require 'dividends_controller'
 
 # Re-raise errors caught by the controller.
 class DividendsController; def rescue_action(e) raise e end; end
 
-class DividendsControllerTest < Test::Unit::TestCase
+class DividendsControllerTest < MarketceteraTestBase
   fixtures :dividends, :currencies, :m_symbols
 
   def setup
@@ -47,15 +48,96 @@ class DividendsControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:dividend)
   end
 
-  def test_create
+  def test_create_no_args
     num_dividends = Dividend.count
 
     post :create, :dividend => {}
+  
+    assert_template 'new'
+    
+    assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'USD' }
+    
+    assert_equal 2, assigns(:dividend).errors.length, "number of validation errors"
+    assert_not_nil assigns(:dividend).errors[:symbol]
+    assert_not_nil assigns(:dividend).errors[:amount]
+    assert_equal num_dividends, Dividend.count
+  end
+  
+  # almost same as above, but we simulate just clicking new and pressing enter
+  # on the webpage - ie specifying dates, sending nulls for symbol/amount/etc
+  def test_create_no_entered_args
+    num_dividends = Dividend.count
+
+    post :create, :params => { :m_symbol => {:root=>""}, :currency =>{:alpha_code =>""}, 
+            :dividend => {"status"=>"", "payable_date(1i)"=>"2006", "announce_date(1i)"=>"2006", "announce_date(2i)"=>"10", 
+            "payable_date(2i)"=>"10", "ex_date(1i)"=>"2006", "payable_date(3i)"=>"24", "announce_date(3i)"=>"24", 
+            "ex_date(2i)"=>"10", "ex_date(3i)"=>"24", "description"=>"", "amount"=>""} }
+
+    assert_template 'new'
+    
+    assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'USD' }
+    
+    assert_equal 2, assigns(:dividend).errors.length, "number of validation errors"
+    assert_not_nil assigns(:dividend).errors[:symbol]
+    assert_not_nil assigns(:dividend).errors[:amount]
+    assert_equal num_dividends, Dividend.count
+  end
+  
+  def test_create_no_symbol
+    num_dividends = Dividend.count
+
+    post :create, { :m_symbol =>{ :root=>""}, :currency =>{ :alpha_code =>""}, 
+         :dividend => {:status =>"", :description=>"", :amount =>"23",
+         "payable_date(1i)"=>"2006", "payable_date(2i)"=>"10", "payable_date(3i)"=>"24", 
+         "announce_date(1i)"=>"2006", "announce_date(2i)"=>"10", "announce_date(3i)"=>"24", 
+          "ex_date(1i)"=>"2006", "ex_date(2i)"=>"10", "ex_date(3i)"=>"24"}}
+
+    assert_template 'new'
+    
+    assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'USD' }
+    assert_equal 1, assigns(:dividend).errors.length, 
+      "number of validation errors: "+(assigns(:dividend).errors.collect { |n, v| n.to_s + ": " + v.to_s + "\n"}).to_s
+    assert_not_nil assigns(:dividend).errors[:symbol]
+    assert_tag :input, :attributes => { :id => 'dividend_amount', :value => '23'}
+    assert_equal num_dividends, Dividend.count
+  end
+
+  def test_create_no_amount
+    num_dividends = Dividend.count
+
+    post :create, {"m_symbol"=>{"root"=>"abc"}, 
+         :dividend =>{"status"=>"", "payable_date(1i)"=>"2006", "announce_date(1i)"=>"2006", "announce_date(2i)"=>"10", 
+                       "payable_date(2i)"=>"10", "ex_date(1i)"=>"2006", "payable_date(3i)"=>"24", "announce_date(3i)"=>"24", 
+                       "ex_date(2i)"=>"10", "ex_date(3i)"=>"24", "description"=>"", "amount"=>""}, 
+         "currency"=>{"alpha_code"=>"ZAI"}}
+
+    assert_template 'new'
+    
+    assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'ZAI' }
+    assert_equal 1, assigns(:dividend).errors.length, "number of validation errors"
+    assert_not_nil assigns(:dividend).errors[:amount]
+    assert_tag :input, :attributes => { :id => 'currency_alpha_code', :value => 'ZAI'}
+    assert_tag :input, :attributes => { :id => 'm_symbol_root', :value => 'abc'}
+    assert_equal num_dividends, Dividend.count
+  end
+
+  def test_create_successful
+    num_dividends = Dividend.count
+
+    post :create, { :m_symbol =>{ :root=>"IFLI"}, :currency =>{ :alpha_code =>"ZAI"}, 
+         :dividend => {:status =>"E", :description=>"ifli rocks", :amount =>"23",
+         "payable_date(1i)"=>"2006", "payable_date(2i)"=>"7", "payable_date(3i)"=>"8", 
+         "announce_date(1i)"=>"2006", "announce_date(2i)"=>"9", "announce_date(3i)"=>"10", 
+          "ex_date(1i)"=>"2006", "ex_date(2i)"=>"11", "ex_date(3i)"=>"12"}}
 
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
     assert_equal num_dividends + 1, Dividend.count
+    ifli = Dividend.find_all[Dividend.count-1]
+    
+    verify_dividend_value(ifli, "IFLI", "ZAI", 23, Date.civil(2006, 9, 10), Date.civil(2006, 11, 12),  
+                          Date.civil(2006, 7, 8), "E", "ifli rocks")
   end
 
   def test_edit
@@ -77,10 +159,51 @@ class DividendsControllerTest < Test::Unit::TestCase
     assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'ZAI' }
   end
 
-  def test_update
-    post :update, :id => 1
+  def test_update_no_actual_edits
+    origDiv = dividends(:goog_div)
+    post :update, { :id =>  origDiv.id, 
+                    :m_symbol =>{ :root=> origDiv.equity_m_symbol_root }, 
+                    :currency =>{ :alpha_code => origDiv.currency_alpha_code}, 
+                    :dividend => origDiv.attributes }
+
     assert_response :redirect
-    assert_redirected_to :action => 'show', :id => 1
+    assert_redirected_to :action => 'show', :id => origDiv.id
+    
+    # verify all parts of dividend
+    compare_dividends(origDiv, Dividend.find(origDiv.id))
+  end
+
+  def test_update_amount
+    origDiv = dividends(:goog_div)
+    post :update, { :id =>  origDiv.id, 
+                    :m_symbol =>{ :root=> origDiv.equity_m_symbol_root }, 
+                    :currency =>{ :alpha_code => origDiv.currency_alpha_code}, 
+                    :dividend => origDiv.attributes.merge({ "amount" => "0.49" }) }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id => origDiv.id
+    
+    # verify all parts of dividend
+    assert_nums_equal 0.49, Dividend.find(origDiv.id).amount
+  end
+
+  def test_update_everything
+    origDiv = dividends(:goog_div)
+    post :update, { :id =>  origDiv.id, 
+                    :m_symbol =>{ :root=> "ABC" }, 
+                    :currency =>{ :alpha_code => "ZAI"}, 
+                    :dividend => origDiv.attributes.merge({ "amount" => "0.49" , 
+                         "status" =>"E", "description"=>"ifli rocks", 
+                         "payable_date(1i)"=>"2006", "payable_date(2i)"=>"7", "payable_date(3i)"=>"8", 
+                         "announce_date(1i)"=>"2006", "announce_date(2i)"=>"9", "announce_date(3i)"=>"10", 
+                         "ex_date(1i)"=>"2006", "ex_date(2i)"=>"11", "ex_date(3i)"=>"12"}) }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id => origDiv.id
+    
+    # verify all parts of dividend
+    verify_dividend_value(Dividend.find(origDiv.id), "ABC", "ZAI", 0.49, Date.civil(2006, 9, 10), Date.civil(2006, 11, 12),  
+                          Date.civil(2006, 7, 8), "E", "ifli rocks")
   end
 
   def test_destroy
@@ -93,5 +216,21 @@ class DividendsControllerTest < Test::Unit::TestCase
     assert_raise(ActiveRecord::RecordNotFound) {
       Dividend.find(1)
     }
+  end
+  
+  def compare_dividends(origDiv, newDiv)
+    verify_dividend_value(newDiv, origDiv.equity_m_symbol_root, origDiv.currency_alpha_code, origDiv.amount, 
+        origDiv.announce_date, origDiv.ex_date, origDiv.payable_date, origDiv.status, origDiv.description)
+  end
+  
+  def verify_dividend_value(div, symbol, currency, amount, announceDate, exDate, payableDate, status, description)
+    assert_equal symbol, div.equity_m_symbol_root, "symbol"
+    assert_equal status, div.status, "status"
+    assert_equal description, div.description, "description"
+    assert_equal currency, div.currency_alpha_code, "currency"
+    assert_equal payableDate, div.payable_date, "payable date"
+    assert_equal announceDate, div.announce_date, "announce date"
+    assert_equal exDate, div.ex_date, "ex date"
+    assert_nums_equal amount, div.amount, "amount"
   end
 end

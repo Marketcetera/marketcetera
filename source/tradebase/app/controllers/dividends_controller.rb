@@ -25,19 +25,23 @@ class DividendsController < ApplicationController
   end
 
   def create
+    logger.debug("params[:dividend] "+params[:dividend].to_s)
     @dividend = Dividend.new(params[:dividend])
     @dividend.transaction() do
       begin
         @params = params
-        @dividend.equity = Equity.get_equity(params[:m_symbol][:root])
-        @dividend.currency = Currency.get_currency(params[:currency][:alpha_code])
+        @dividend.equity = Equity.get_equity(get_non_empty_string_from_two(params, :m_symbol, :root, nil))
+        @dividend.currency = Currency.get_currency(get_non_empty_string_from_two(params, :currency, :alpha_code, nil))
         if @dividend.save
           flash[:notice] = 'Dividend was successfully created.'
           redirect_to :action => 'list'
         else
           throw Exception
         end
-      rescue
+      rescue => ex
+        logger.debug("exception in divident save with errors: "+@dividend.errors.length.to_s + 
+          " and ex is: "+ex.class.to_s + ":" + ex.message)
+        logger.debug(ex.backtrace.join("\n"))
         render :action => 'new'
      end
     end
