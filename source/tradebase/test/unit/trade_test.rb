@@ -64,13 +64,15 @@ class TradeTest < MarketceteraTestBase
     theTrade.tradeable = @equity
     tradeDate = Date.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
-    assert !theTrade.create_equity_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
+    assert !theTrade.create_equity_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate), 
+          "accepted negative qty"
     assert nTrades, Trade.count
   
     theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])
     tradeDate = Date.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
-    theTrade.create_equity_trade(theTrade.quantity, '', theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
+    assert !theTrade.create_equity_trade(theTrade.quantity, '', theTrade.price_per_share, 19.99,  "USD", account, tradeDate), 
+      "accepted empty symbol"
     assert !theTrade.save, "no symbol: " + theTrade.tradeable_m_symbol_root
     assert_equal nTrades, Trade.count
   end

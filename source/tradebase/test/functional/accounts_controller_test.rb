@@ -93,18 +93,23 @@ class AccountsControllerTest < MarketceteraTestBase
     post :update, {:id => 2, :account => {:nickname => nil } }
     assert_response :success
     assert_errors
+    assert_not_nil assigns(:account).errors[:nickname]
+    
+    
     post :update, {:id => 2, :account => {:nickname => '' } }
     assert_response :success
     assert_errors
+    assert_not_nil assigns(:account).errors[:nickname]
       
     post :update, {:id => 2, :account => {:nickname => "bob", :institution_identifier=>nil } }
     assert_response :success
     assert_errors
+    assert_not_nil assigns(:account).errors[:institution_identifier]
       
     post :update, {:id => 2, :account => {:nickname => "bob", :institution_identifier=>'' } }
     assert_response :success
     assert_errors
-      
+    assert_not_nil assigns(:account).errors[:institution_identifier]    
   end
 
   def test_destroy

@@ -44,6 +44,20 @@ class MarketceteraTestBase < Test::Unit::TestCase
         "cash portion of commission is incorrect"   
   end
 
+  # Verfies a particular action does not exist in the controller
+  def assert_no_controller_action(isPost, action, params = {})
+    begin
+      if(isPost) 
+        post action, params
+      else 
+        get action
+      end
+    rescue ActionController::UnknownAction => err
+      assert_equal "No action responded to "+action.to_s, err.message
+    
+    end 
+  end
+
   # Compare two numbers (float, bigDecimal, strings, etc) with a given tolerance
   def assert_nums_equal(expected, actual, message=nil, tolerance=BigDecimal.new("0.000001"))
      full_message = build_message(message, <<EOT, expected, actual)

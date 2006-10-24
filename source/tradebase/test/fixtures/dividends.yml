@@ -4,3 +4,4 @@ goog_div:
   amount: 20
   description: "google dividend"
   currency_id: 1
+  equity_id: 3
