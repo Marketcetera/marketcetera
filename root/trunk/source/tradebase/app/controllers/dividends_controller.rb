@@ -1,4 +1,5 @@
 class DividendsController < ApplicationController
+  include ApplicationHelper
 
   auto_complete_for :m_symbol, :root, {}
 

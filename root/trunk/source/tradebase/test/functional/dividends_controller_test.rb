@@ -5,7 +5,7 @@ require 'dividends_controller'
 class DividendsController; def rescue_action(e) raise e end; end
 
 class DividendsControllerTest < Test::Unit::TestCase
-  fixtures :dividends
+  fixtures :dividends, :currencies, :m_symbols
 
   def setup
     @controller = DividendsController.new
@@ -66,6 +66,15 @@ class DividendsControllerTest < Test::Unit::TestCase
 
     assert_not_nil assigns(:dividend)
     assert assigns(:dividend).valid?
+  end
+
+  def test_edit_currency_value_shows
+    get :edit, :id => dividends(:sunw_div).id
+    
+    assert_response :success
+    assert_template 'edit'
+
+    assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'ZAI' }
   end
 
   def test_update
