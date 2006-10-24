@@ -1,0 +1,31 @@
+PessimisticLocking
+==================
+
+PessimisticLocking provides row-level pessimistic locking using SELECT FOR UPDATE.
+
+You can specify the new option :lock of ActiveRecord::Base.find() to lock rows:
+
+    Account.transaction do
+      shugo = Account.find(:first, :conditions => "name = 'shugo'", :lock => true)
+      yuko = Account.find(:first, :conditions => "name = 'yuko'", :lock => true)
+      shugo.balance -= 100
+      shugo.save
+      yuko.balance += 100
+      yuko.save
+    end
+
+Or you can also use ActiveRecord::Base#lock() instead:
+
+    Account.transaction do
+      accounts = Account.find(:all, :conditions => ...)
+      account1 = accounts.detect { |account| ... }
+      account2 = accounts.detect { |account| ... }
+      account1.lock
+      account2.lock
+      account1.balance -= 100
+      account1.save
+      account2.balance += 100
+      account2.save
+    end
+
+The latter way may be better if you don't need lock all SELECTed rows.
