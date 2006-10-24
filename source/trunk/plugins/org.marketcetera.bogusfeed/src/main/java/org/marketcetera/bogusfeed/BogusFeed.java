@@ -26,6 +26,7 @@ import quickfix.field.MDEntryType;
 import quickfix.field.MDMkt;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 public class BogusFeed implements IQuoteFeed {
 
@@ -129,9 +130,14 @@ public class BogusFeed implements IQuoteFeed {
 		}
 	}
 
-	public void unListenLevel2(MSymbol symbol, IMessageListener listener){
+	public void unlistenLevel2(MSymbol symbol, IMessageListener listener){
 		synchronized (listenedSymbols) {
-			listenedSymbols.remove(symbol);
+			for (Map.Entry<MSymbol, IMessageListener> entry : listenedSymbols) {
+				if (entry.getKey().equals(symbol) && entry.getValue().equals(listener)){
+					listenedSymbols.remove(entry);
+					break;
+				}
+			}
 		}
 	}
 
@@ -164,6 +170,27 @@ public class BogusFeed implements IQuoteFeed {
 		for (IFeedComponentListener listener: feedComponentListeners) {
 			listener.feedComponentChanged(this);
 		}
+	}
+
+	public void listenQuotes(MSymbol symbol, IMessageListener listener) {
+		synchronized (listenedSymbols) {
+			MMapEntry<MSymbol, IMessageListener> entry = new MMapEntry<MSymbol, IMessageListener>(symbol, listener);
+			listenedSymbols.add(entry);
+		}
+	}
+
+	public void listenTrades(MSymbol symbol, IMessageListener listener) {
+		throw new NotImplementedException();
+	}
+
+	public void unlistenQuotes(MSymbol symbol, IMessageListener listener) {
+		synchronized (listenedSymbols) {
+			listenedSymbols.remove(symbol);
+		}
+	}
+
+	public void unlistenTrades(MSymbol symbol, IMessageListener listener) {
+		throw new NotImplementedException();
 	}
 
 }
