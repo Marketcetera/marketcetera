@@ -36,6 +36,11 @@ class TradeTest < MarketceteraTestBase
     t = Trade.new(:quantity => -20, :price_per_share => 20, :side => Side::QF_SIDE_CODE[:sell])
     t.tradeable = @equity
     assert !t.valid?, "invalid qty"
+    
+    # blank equity
+    t = Trade.new(:quantity => 20, :price_per_share => 420.23, :side=> Side::QF_SIDE_CODE[:buy])
+    t.tradeable = Equity.get_equity('')
+    assert !t.valid?, "empty/blank root symbol in equity"
   end
     
   # Replace this with your real tests.

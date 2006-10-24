@@ -48,8 +48,8 @@ class DividendsController < ApplicationController
 
   def update
     @dividend = Dividend.find(params[:id])
-    @dividend.equity = get_equity(params[:m_symbol_root])
-    @dividend.currency = get_currency(params[:currency][:alpha_code])
+    @dividend.equity = Equity.get_equity(params[:m_symbol][:root])
+    @dividend.currency = Currency.get_currency(params[:currency][:alpha_code])
     if @dividend.update_attributes(params[:dividend])
       flash[:notice] = 'Dividend was successfully updated.'
       redirect_to :action => 'show', :id => @dividend

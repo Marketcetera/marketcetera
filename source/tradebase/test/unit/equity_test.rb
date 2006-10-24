@@ -40,6 +40,14 @@ class EquityTest < Test::Unit::TestCase
     assert_nil eq.m_symbol.id, "unsaved equity already has symbol id" 
   end
   
+  def test_get_equity
+    assert_nil MSymbol.find_by_root("dne_1")
+    assert_not_nil Equity.get_equity("dne-1")
+    
+    assert_nil MSymbol.find_by_root("dne-2")
+    assert_nil Equity.get_equity("dne-2", false), "equity/msymbol still created even though told not to"
+  end
+  
   def test_to_s
     preloaded = Equity.find(2) # goog
     assert_equal "[GOOG Equity]", preloaded.to_s   

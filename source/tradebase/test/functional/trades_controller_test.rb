@@ -122,7 +122,43 @@ class TradesControllerTest < MarketceteraTestBase
 
     # verify the account is not created
     assert_nil Account.find_by_nickname("noSuchAccount")
-    assert_nil Equity.find_by_m_symbol_id("bob")
+  end
+  
+  # not specifying an account should get the default UNASSIGNED account
+  def test_create_no_account_should_pickup_default
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "bob"}, 
+                   :account => {:nickname => ""},
+                    :trade => {:price_per_share => "23", :side => 1, :quantity=> "111",
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+    assert_equal num_trades+1, Trade.count
+    assert_not_nil assigns(:trade).account
+    assert_equal Account.find_by_nickname(nil), assigns(:trade).account
+    assert_equal Account::UNASSIGNED_NAME, assigns(:trade).account.nickname
+    assert_not_nil Equity.get_equity("bob", false), "didn't create equity"
+  end
+  
+  def test_create_successful
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "bob"}, 
+                   :account => {:nickname => "pupkin"},
+                    :trade => {:price_per_share => "23", :side => 1, :quantity => "111", :total_commission => "14.99",
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+    assert_equal num_trades+1, Trade.count
+    
+    assert_not_nil assigns(:trade), "didn't createa  trade"
+    assert_not_nil Account.find_by_nickname("pupkin"), "didn't create account"
+    assert_not_nil Equity.get_equity("bob", false), "didn't create equity"
+    
+    assert_equal "pupkin", assigns(:trade).account_nickname
+    assert_equal "bob", assigns(:trade).tradeable_m_symbol_root
+    verify_trade_prices(assigns(:trade), 23 * 111, 14.99)
   end
   
   def test_create_neg_commission

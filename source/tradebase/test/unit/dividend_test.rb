@@ -44,7 +44,19 @@ class DividendTest < Test::Unit::TestCase
     
     div.amount = 23
     assert div.valid?
+  end
   
+  def test_symbol_presense_validation
+    div = Dividend.new
+    div.equity = Equity.new
+    assert !div.valid?
+    assert_not_nil div.errors[:symbol]
+    
+    # test validation fails on blank equity root
+    blankE = Equity.get_equity('')
+    div.equity = blankE
+    assert !div.valid?
+    assert_not_nil div.errors[:symbol]
   end
   
   def test_numericality_validation
@@ -94,7 +106,25 @@ class DividendTest < Test::Unit::TestCase
     assert_equal "Announced", get_human_dividend_status(DividendStatusAnnounced)
     
     assert_match "Unknown", get_human_dividend_status("bogus")
-    
   end 
+  
+  def test_equity_m_symbol_root
+    div = Dividend.find(:first)
+    assert_not_nil div.equity_m_symbol_root
+    assert_equal div.equity.m_symbol.root, div.equity_m_symbol_root
+    
+    # null
+    div = Dividend.new
+    assert_nil div.equity_m_symbol_root 
+    
+    div.equity = Equity.new
+    assert_nil div.equity_m_symbol_root 
+    
+    div.equity = @ifli
+    assert_not_nil div.equity_m_symbol_root
+    
+    @ifli.m_symbol = nil
+    assert_nil div.equity_m_symbol_root 
+  end
   
 end
