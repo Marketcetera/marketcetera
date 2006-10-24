@@ -5,51 +5,45 @@ import java.util.Map;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.IShellProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MMapEntry;
 
-@ClassVersion("$Id$")
-public class MapDialog extends Dialog {
 
-    private Text keyText;
+/**
+ * Dialog for mapping an event to a Ruby script.
+ *  
+ * @author gmiller 
+ * @author andrei@lissovski.org
+ */
+public class EventScriptMapDialog extends Dialog {
 
-    private Text valueText;
+    private static final String TITLE = "Register script";
+    
+    private static final String EVENT_PROMPT = "Event";
+    private static final String SCRIPT_PROMPT = "Script";
+    
+	private Combo eventCombo;
+    private Text scriptText;
 
-    private String key;
-    private String value;
+    private String event;
+    private String script;
 
-	private final String keyPrompt;
-
-	private final String valuePrompt;
-
-	private final String title;
-
-    public MapDialog(IShellProvider parentShell, String title, String keyPrompt, String valuePrompt) {
+	
+    public EventScriptMapDialog(Shell parentShell) {
         super(parentShell);
-		this.title = title;
-		this.keyPrompt = keyPrompt;
-		this.valuePrompt = valuePrompt;
-    }
-
-    public MapDialog(Shell parentShell, String title, String keyPrompt, String valuePrompt) {
-        super(parentShell);
-		this.title = title;
-		this.keyPrompt = keyPrompt;
-		this.valuePrompt = valuePrompt;
     }
 
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(title);
+        newShell.setText(TITLE);
     }
 
     protected Control createDialogArea(Composite parent) {
@@ -57,25 +51,28 @@ public class MapDialog extends Dialog {
         GridLayout layout = new GridLayout(2, false);
         composite.setLayout(layout);
 
-
         Label keyLabel = new Label(composite, SWT.NONE);
-        keyLabel.setText(keyPrompt);
+        keyLabel.setText(EVENT_PROMPT);
         keyLabel.setLayoutData(new GridData(GridData.END, GridData.CENTER,
                                                      false, false));
 
-        keyText = new Text(composite, SWT.BORDER);
+        eventCombo = new Combo(composite, SWT.DROP_DOWN | SWT.READ_ONLY | SWT.BORDER);
+        //agl todo:revisit we need canonical event types in the model and have a mapping between those and the combo items
+        eventCombo.add("Trade", 0);  
+        eventCombo.add("Quote", 1);
+        eventCombo.select(0);
         GridData gridData = new GridData(GridData.FILL, GridData.FILL, true,
                                          false);
         gridData.widthHint = convertHeightInCharsToPixels(20);
-        keyText.setLayoutData(gridData);
+        eventCombo.setLayoutData(gridData);
 
         Label valueLabel = new Label(composite, SWT.NONE);
-        valueLabel.setText(valuePrompt);
+        valueLabel.setText(SCRIPT_PROMPT);
         valueLabel.setLayoutData(new GridData(GridData.END, GridData.CENTER,
                                               false, false));
 
-        valueText = new Text(composite, SWT.BORDER);
-        valueText.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
+        scriptText = new Text(composite, SWT.BORDER);
+        scriptText.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
                                               true, false));
 
         return composite;
@@ -89,28 +86,22 @@ public class MapDialog extends Dialog {
     }
 
     public Map.Entry<String, String> getEntry() {
-        if (key == null) return null;
-        return new MMapEntry<String, String>(key, value);
+        return new MMapEntry<String, String>(event, script);
     }
 
     protected void buttonPressed(int buttonId) {
-        key = keyText.getText();
-        value = valueText.getText();
+        event = eventCombo.getText();
+        script = scriptText.getText();
         super.buttonPressed(buttonId);
     }
 
     protected void okPressed() {
-
-        if (key == null || key.equals("")) {
-            MessageDialog.openError(getShell(), "Invalid "+keyPrompt,
-                                    keyPrompt + " field must not be blank.");
+        if (script == null || script.equals("")) {
+            MessageDialog.openError(getShell(), "Invalid "+ SCRIPT_PROMPT,
+            		SCRIPT_PROMPT + " field must not be blank.");
             return;
         }
-        if (value == null || value.equals("")) {
-            MessageDialog.openError(getShell(), "Invalid "+valuePrompt,
-            		valuePrompt + " field must not be blank.");
-            return;
-        }
+        
         super.okPressed();
     }
 

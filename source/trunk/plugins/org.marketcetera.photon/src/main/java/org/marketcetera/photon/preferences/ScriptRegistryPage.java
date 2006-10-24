@@ -7,29 +7,35 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Application;
 
-@ClassVersion("$Id$")
-public class CustomOrderFieldPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private static final String CUSTOM_FIELDS_PREFERENCE = "custom.fields";
+/**
+ * "Script Registry" preference page.
+ *  
+ * @author gmiller
+ * @author andrei@lissovski.org
+ */
+public class ScriptRegistryPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	public CustomOrderFieldPage() {
+	private static final String SCRIPT_REGISTRY_PREFERENCE = "script.registry";
+
+	
+	public ScriptRegistryPage() {
 		super(GRID);
         setPreferenceStore(Application.getPreferenceStore());
 	}
 	
     public void init(IWorkbench workbench) {
         // TODO Auto-generated method stub
-
     }
-	@Override
+
+    @Override
 	protected void createFieldEditors() {
-		Composite theFieldEditorParent = getFieldEditorParent();
-		@SuppressWarnings("unused")
-		CustomFieldsMapEditor pathEditor = new CustomFieldsMapEditor(CUSTOM_FIELDS_PREFERENCE, "Custom Fields", theFieldEditorParent);
-		addField(pathEditor);
+		Composite fieldEditorParent = getFieldEditorParent();
+		ScriptRegistryMapEditor mapEditor = 
+			new ScriptRegistryMapEditor(SCRIPT_REGISTRY_PREFERENCE, "Registered scripts", fieldEditorParent);
+		addField(mapEditor);
 	}
 
     @Override
@@ -41,7 +47,5 @@ public class CustomOrderFieldPage extends FieldEditorPreferencePage implements I
         }
         return super.performOk();
     }
-
-
 
 }

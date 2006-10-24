@@ -110,10 +110,9 @@
             id="org.marketcetera.photon.preferences.customorderfield"
             name="Custom Order Fields"/>
       <page
-            name="Hotkeys"
-            class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
-            id="org.eclipse.ui.preferencePages.Keys">
-      </page>
+            class="org.marketcetera.photon.preferences.ScriptRegistryPage"
+            id="org.marketcetera.photon.preferences.scriptregistry"
+            name="Script Registry"/>
    </extension>
    <extension
          id="Photon"
