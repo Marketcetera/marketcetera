@@ -1,7 +1,8 @@
 class CreateUnassignedAccount < ActiveRecord::Migration
   def self.up
-      Account.new(:nickname => Account::UNASSIGNED_NAME, 
-                  :description => "General catch-all for all unassigned trades").save()
+      Account.create(:nickname => Account::UNASSIGNED_NAME, 
+                  :description => "General catch-all for all unassigned trades", 
+                  :institution_identifier => "<empty>")
   end
 
   def self.down

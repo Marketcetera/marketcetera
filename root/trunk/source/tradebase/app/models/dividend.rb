@@ -5,8 +5,10 @@ class Dividend < ActiveRecord::Base
   
   def validate
     errors.add(:amount, "should be positive") unless amount.nil? || amount >= 0
-    
-    errors.add(:symbol, "Symbol cannot be empty") unless !equity.nil?
-    logger.debug("equity is "+equity.to_s)
+    errors.add(:symbol, "Symbol cannot be empty") unless !equity_m_symbol_root.blank?
+  end
+  
+  def equity_m_symbol_root
+      (self.equity.nil? || self.equity.m_symbol.nil?) ? nil : self.equity.m_symbol.root
   end
 end
