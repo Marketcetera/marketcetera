@@ -5,17 +5,20 @@ import java.util.Map.Entry;
 
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.ui.MapEditor;
 
 import ca.odell.glazedlists.EventList;
 
 
-@ClassVersion("$Id$")
-public class CustomFieldsMapEditor extends MapEditor {
+/**
+ * todo:doc
+ *  
+ * @author andrei@lissovski.org
+ */
+public class ScriptRegistryMapEditor extends MapEditor {
 
-	public CustomFieldsMapEditor(String custom_fields_preference, String label, Composite theFieldEditorParent) {
-		super(custom_fields_preference, label, theFieldEditorParent);
+	public ScriptRegistryMapEditor(String preferenceName, String label, Composite fieldEditorParent) {
+		super(preferenceName, label, fieldEditorParent);
 	}
 
 	@Override
@@ -30,10 +33,7 @@ public class CustomFieldsMapEditor extends MapEditor {
 	
 	@Override
     protected Entry<String, String> getNewInputObject() {
-    	String keyPrompt = "Key";
-    	String valuePrompt = "Value";
-    	String title = "New custom field";
-		MapDialog dialog = new MapDialog(getShell(), title , keyPrompt, valuePrompt);
+		EventScriptMapDialog dialog = new EventScriptMapDialog(getShell());
         if (dialog.open() == Window.OK){
             return dialog.getEntry();
         }
