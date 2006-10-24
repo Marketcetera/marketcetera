@@ -9,6 +9,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.quotefeed.IMessageListener;
 
 import quickfix.FieldNotFound;
@@ -41,10 +42,16 @@ public class BookComposite extends Composite implements IMessageListener
 	private Table askTable;
 	private TableViewer bidViewer;
 	private TableViewer askViewer;
+	private final FormToolkit toolkit;
 
-	public BookComposite(Composite parent, int style) 
+	public BookComposite(Composite parent, int style){
+		this(parent, style, null);
+	}
+	
+	public BookComposite(Composite parent, int style, FormToolkit toolkit) 
 	{
 		super(parent, style);
+		this.toolkit = toolkit;
 		
 		GridLayout gridLayout = new GridLayout();
 		GridData layoutData = new GridData();
@@ -69,14 +76,20 @@ public class BookComposite extends Composite implements IMessageListener
 
 	private TableViewer getTableViewer(Table theTable) {
 		TableViewer tableViewer = new TableViewer(theTable);
-		EnumTableFormat format = new EnumTableFormat(theTable, BookColumns.values());
+		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values());
 		tableViewer.setContentProvider(new EventListContentProvider<Group>());
 		tableViewer.setLabelProvider(format);
 		return tableViewer;
 	}
 
 	private Table getTable() {
-        Table table = new Table(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
+
+		Table table;
+		if (toolkit == null){
+			table = new Table(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		} else {
+			table = toolkit.createTable(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
+		}
         GridData tableLayout = new GridData();
         tableLayout.horizontalAlignment = GridData.FILL;
         tableLayout.verticalAlignment = GridData.FILL;
@@ -85,17 +98,22 @@ public class BookComposite extends Composite implements IMessageListener
         tableLayout.heightHint = 200;
         tableLayout.widthHint = 200;
         table.setLayoutData(tableLayout);
-        table.setHeaderVisible(true);
+        table.setHeaderVisible(false);
 
         return table;
 	}
 
 
 	public void setInput(Message marketRefresh){
-		Object oldInput = bidViewer.getInput();
-		bidViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.BID));
-		askViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.OFFER));
-		if (oldInput == null){
+		boolean hadOldInput = bidViewer.getInput()!= null;
+		if (marketRefresh == null){
+			bidViewer.setInput(null);
+			askViewer.setInput(null);
+		} else {
+			bidViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.BID));
+			askViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.OFFER));
+		}
+		if (!hadOldInput && marketRefresh != null){
 			packColumns();
 		}
 	}
@@ -137,8 +155,6 @@ public class BookComposite extends Composite implements IMessageListener
 			}
 		);
 	}
-	public void onAdmin(Message arg0) {
-	}
 
 	public void onTrade(Message arg0) {
 	}
@@ -156,10 +172,5 @@ public class BookComposite extends Composite implements IMessageListener
         }
     }
 
-    public void onAdmins(Message [] adminMessages) {
-        for (Message adminMessage : adminMessages) {
-            onAdmin(adminMessage);
-        }
-    }
 
 }

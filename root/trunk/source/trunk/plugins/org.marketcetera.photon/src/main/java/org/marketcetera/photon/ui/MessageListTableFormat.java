@@ -12,10 +12,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.marketcetera.photon.model.MessageHolder;
 
 
 
-public class MessageListTableFormat extends EnumTableFormat {
+public class MessageListTableFormat extends EnumTableFormat<MessageHolder> {
 
 	private final IWorkbenchPartSite site;
 	private final ISelectionProvider selectionProvider;

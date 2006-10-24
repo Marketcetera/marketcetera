@@ -31,7 +31,7 @@ public abstract class MessagesView extends ViewPart {
 	private TableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
 	private FIXMessageHistory fixMessageHistory;
-	private EnumTableFormat tableFormat;
+	private EnumTableFormat<MessageHolder> tableFormat;
 	private TableComparatorChooser<MessageHolder> chooser;
 	private Clipboard clipboard;
 	private CopyMessagesAction copyMessagesAction;
@@ -61,7 +61,7 @@ public abstract class MessagesView extends ViewPart {
         messageTable = createMessageTable(composite);
 		messagesViewer = createTableViewer(messageTable, getEnumValues());
 		
-		tableFormat = (EnumTableFormat)messagesViewer.getLabelProvider();
+		tableFormat = (EnumTableFormat<MessageHolder>)messagesViewer.getLabelProvider();
 		formatTable(messageTable);
 
 		packColumns(messageTable);

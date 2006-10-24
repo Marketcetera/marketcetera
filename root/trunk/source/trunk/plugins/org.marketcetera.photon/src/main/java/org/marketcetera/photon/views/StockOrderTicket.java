@@ -159,7 +159,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		unlisten();
 		IQuoteFeed quoteFeed = Application.getQuoteFeed();
 		if (quoteFeed != null) {
-			quoteFeed.unListenLevel2(listenedSymbol, bookComposite);
+			quoteFeed.unlistenLevel2(listenedSymbol, bookComposite);
 		}
 	}
 
@@ -354,14 +354,16 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 	}
 
 	protected void listenMarketData(String text) {
-		IQuoteFeed quoteFeed = Application.getQuoteFeed();
-		MSymbol newListenedSymbol = new MSymbol(text);
-		if (quoteFeed != null
-				&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
-				&& !newListenedSymbol.equals(listenedSymbol)) {
-			unlisten();
-			quoteFeed.listenLevel2(newListenedSymbol, bookComposite);
-			listenedSymbol = newListenedSymbol;
+		unlisten();
+		if (text != null && !"".equals(text)){
+			IQuoteFeed quoteFeed = Application.getQuoteFeed();
+			MSymbol newListenedSymbol = new MSymbol(text);
+			if (quoteFeed != null
+					&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
+					&& !newListenedSymbol.equals(listenedSymbol)) {
+				quoteFeed.listenLevel2(newListenedSymbol, bookComposite);
+				listenedSymbol = newListenedSymbol;
+			}
 		}
 	}
 
@@ -370,9 +372,10 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		if (quoteFeed != null
 				&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE) {
 			if (listenedSymbol != null) {
-				quoteFeed.unListenLevel2(listenedSymbol, bookComposite);
+				quoteFeed.unlistenLevel2(listenedSymbol, bookComposite);
 			}
 		}
+		bookComposite.setInput(null);
 	}
 
 	/**
@@ -576,7 +579,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		bookSection.setLayout(gridLayout);
 		bookSection.setLayoutData(layoutData);
 		
-		bookComposite = new BookComposite(bookSection, SWT.NONE);
+		bookComposite = new BookComposite(bookSection, SWT.NONE, getFormToolkit());
 		bookSection.setClient(bookComposite);
 	}
 
