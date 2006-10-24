@@ -27,4 +27,21 @@ class EquityTest < Test::Unit::TestCase
     assert_equal "google", eq.description
     assert_equal "GOOG", eq.m_symbol.root    
   end
+  
+  # Currently, we don't actually save the equity yet 
+  # after the method call. should keep this assumption around
+  # to make sure it breaks if we change the assumption and 
+  # then we need to either delete this test, or rethink the assumption
+  def test_assumption_equity_not_saved_after_call
+    eq = Equity.get_equity("mifli")
+    assert_not_nil eq, "equity is nil"
+    assert_nil eq.id, "unsaved equity already has id"
+    assert_not_nil eq.m_symbol, "equity doesn't have symbol"
+    assert_nil eq.m_symbol.id, "unsaved equity already has symbol id" 
+  end
+  
+  def test_to_s
+    preloaded = Equity.find(2) # goog
+    assert_equal "[GOOG Equity]", preloaded.to_s   
+  end
 end

@@ -24,22 +24,22 @@ class DividendsController < ApplicationController
   end
 
   def create
-   begin
     @dividend = Dividend.new(params[:dividend])
-    @params = params
-    @dividend.equity = Equity.get_equity(params[:m_symbol][:root])
-    @dividend.currency = Currency.get_currency(params[:currency][:alpha_code])
-    if @dividend.save
-      flash[:notice] = 'Dividend was successfully created.'
-      redirect_to :action => 'list'
-    else
-      render :action => 'new'
+    @dividend.transaction() do
+      begin
+        @params = params
+        @dividend.equity = Equity.get_equity(params[:m_symbol][:root])
+        @dividend.currency = Currency.get_currency(params[:currency][:alpha_code])
+        if @dividend.save
+          flash[:notice] = 'Dividend was successfully created.'
+          redirect_to :action => 'list'
+        else
+          throw Exception
+        end
+      rescue
+        render :action => 'new'
+     end
     end
-    
-    rescue SyntaxError
-      flash[:notice] = 'Please specify the symbol'
-      redirect_to :action => 'new'
-   end
   end
 
   def edit
