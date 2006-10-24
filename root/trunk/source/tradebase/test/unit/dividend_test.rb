@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 
 class DividendTest < Test::Unit::TestCase
-  fixtures :currencies, :dividends, :equities
+  fixtures :currencies, :m_symbols, :equities, :dividends
   include DividendsHelper
 
   def setup

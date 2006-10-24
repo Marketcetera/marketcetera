@@ -6,7 +6,7 @@ class CreateEquities < ActiveRecord::Migration
   def self.up
     create_table :equities do |t|
       t.column :description, :string, :limit => 255
-      t.column :m_symbol_id, :integer
+      t.column :m_symbol_id, :integer, :null => false
       t.column :created_on, :datetime
       t.column :updated_on, :datetime
     end
