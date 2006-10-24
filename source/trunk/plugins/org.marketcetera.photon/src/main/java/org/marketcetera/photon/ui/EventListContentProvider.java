@@ -15,8 +15,8 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 	private TableViewer viewer;
 	
 	public Object[] getElements(Object inputElement) {
-		if (inputList != null){
-			return inputList.toArray();
+		if (viewedList != null){
+			return viewedList.toArray();
 		} else {
 			return new Object[0];
 		}
@@ -34,7 +34,10 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 		this.viewer = (TableViewer) viewer;
 		inputList = ((EventList<T>) newInput);
 		viewedList = null;
-		if (newInput != null){
+		if (newInput == null){
+			viewedList = new BasicEventList<T>();
+			viewer.refresh();
+		} else {
 			inputList.addListEventListener(this);
 			viewedList = new BasicEventList<T>(inputList.size());
 			viewedList.addAll(inputList);

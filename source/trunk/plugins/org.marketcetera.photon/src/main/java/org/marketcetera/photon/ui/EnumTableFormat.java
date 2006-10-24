@@ -24,7 +24,7 @@ import quickfix.FieldType;
 import quickfix.Message;
 import ca.odell.glazedlists.gui.TableFormat;
 
-public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelProvider
+public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 {
 
 	Enum [] columns;
@@ -59,7 +59,7 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 		return columns[index].toString();
 	}
 
-	public Object getColumnValue(MessageHolder element, int columnIndex) {
+	public Object getColumnValue(T element, int columnIndex) {
 		Integer fieldID = fieldMap.get(columns[columnIndex].toString());
 		Object value = null;
 		if (fieldID != null) {
@@ -94,7 +94,7 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 
 	public String getColumnText(Object element, int columnIndex) {
 		Integer fieldID = fieldMap.get(columns[columnIndex].toString());
-		Object objValue = getColumnValue((MessageHolder)element, columnIndex);
+		Object objValue = getColumnValue((T)element, columnIndex);
 		String value = "";
 		if (objValue != null){
 			FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
@@ -114,7 +114,7 @@ public class EnumTableFormat implements TableFormat<MessageHolder>, ITableLabelP
 	}
 
 
-	private FieldMap extractMap(Object element, Integer fieldID) {
+	private FieldMap extractMap(T element, Integer fieldID) {
 		FieldMap map = null;
 		Message message = null;
 		if (element instanceof MessageHolder) {
