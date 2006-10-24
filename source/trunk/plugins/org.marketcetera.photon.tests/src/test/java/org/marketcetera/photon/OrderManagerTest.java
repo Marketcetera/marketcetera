@@ -170,11 +170,9 @@ public class OrderManagerTest extends TestCase {
 		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
 		assertEquals(1, history.size());
 
-		Message cancelReplaceMessage = new quickfix.fix42.Message();
-		cancelReplaceMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REPLACE_REQUEST));
+		Message cancelReplaceMessage = FIXMessageUtil.newCancelReplaceFromMessage(message);
 		cancelReplaceMessage.setField(new OrigClOrdID(myClOrdID));
-		cancelReplaceMessage.setField(new Symbol("QWER"));
-		cancelReplaceMessage.setField(new StringField(OrderQty.FIELD, "100"));
+
 		orderManager.handleInternalMessage(cancelReplaceMessage);
 		
 		history = messageHistory.getAllMessagesList();
@@ -184,7 +182,7 @@ public class OrderManagerTest extends TestCase {
 		Message filledCancelReplace = holder.getMessage();
 		assertEquals(MsgType.ORDER_CANCEL_REPLACE_REQUEST, filledCancelReplace.getHeader().getString(MsgType.FIELD));
 		FIXDataDictionaryManager.getDictionary().validate(filledCancelReplace);
-		assertEquals("100", filledCancelReplace.getString(OrderQty.FIELD));
+		assertEquals("1", filledCancelReplace.getString(OrderQty.FIELD));
 	}
 
 	/*
