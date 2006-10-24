@@ -22,9 +22,4 @@ public abstract class MessageListenerBase implements IMessageListener {
         }
     }
 
-    public void onAdmins(Message [] adminMessages) {
-        for (Message adminMessage : adminMessages) {
-            onAdmin(adminMessage);
-        }
-    }
 }

@@ -16,6 +16,4 @@ public interface IMessageListener {
     public void onTrade(Message aTrade);
     public void onTrades(Message [] aTrade);
 
-    public void onAdmin(Message anAdminMessage);
-    public void onAdmins(Message [] anAdminMessage);
 }
