@@ -6,7 +6,7 @@ require 'trades_controller'
 class TradesController; def rescue_action(e) raise e end; end
 
 class TradesControllerTest < MarketceteraTestBase
-  fixtures :trades, :messages_log
+  fixtures :trades, :messages_log, :currencies
 
   def setup
     @controller = TradesController.new
@@ -139,6 +139,7 @@ class TradesControllerTest < MarketceteraTestBase
     assert_equal Account.find_by_nickname(nil), assigns(:trade).account
     assert_equal Account::UNASSIGNED_NAME, assigns(:trade).account.nickname
     assert_not_nil Equity.get_equity("bob", false), "didn't create equity"
+    assert_equal currencies(:usd).alpha_code, assigns(:trade).currency_alpha_code
   end
   
   def test_create_successful
@@ -159,6 +160,22 @@ class TradesControllerTest < MarketceteraTestBase
     assert_equal "pupkin", assigns(:trade).account_nickname
     assert_equal "bob", assigns(:trade).tradeable_m_symbol_root
     verify_trade_prices(assigns(:trade), 23 * 111, 14.99)
+  end
+  
+  def test_create_successful_set_currency
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "bob"}, 
+                   :account => {:nickname => "pupkin"},
+                   :currency => { :alpha_code => 'ZAI'}, 
+                    :trade => {:price_per_share => "23", :side => 1, :quantity => "111", :total_commission => "14.99",
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+    assert_equal num_trades+1, Trade.count
+    
+    assert_not_nil assigns(:trade), "didn't create a  trade"
+    assert_equal currencies(:ZAI).alpha_code, assigns(:trade).currency_alpha_code
   end
   
   def test_create_neg_commission
@@ -182,6 +199,30 @@ class TradesControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:trade)
     assert assigns(:trade).valid?
+    
+    # verify the symbol edit box shows up 
+    assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'USD' }
+  end
+
+  def test_edit_verify_fields_prefilled
+    # create some trade with ZAI currency
+    t = Trade.new(:quantity => 11, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
+    assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.37, "ZAI", "some-account", Date.civil(2006, 10,10))
+    assert t.save, "couldn't save the trade"
+    get :edit, :id => t.id
+
+    assert_response :success
+    assert_template 'edit'
+
+    assert_not_nil assigns(:trade)
+    assert assigns(:trade).valid?
+    
+    # verify the symbol edit box shows up 
+    assert_tag :input, :attributes => { :id => 'currency_alpha_code', :value => 'ZAI' }
+    assert_tag :input, :attributes => { :id => 'account_nickname', :value => 'some-account' }
+    assert_tag :input, :attributes => { :id => 'trade_price_per_share', :value => '4.99' }
+    assert_tag :input, :attributes => { :id => 'trade_quantity', :value => '11' }
+    assert_tag :input, :attributes => { :id => 'trade_total_commission', :value => '7.37' }
   end
 
   def test_update_no_actual_edits
@@ -288,6 +329,21 @@ class TradesControllerTest < MarketceteraTestBase
     assert_nums_equal tradeCopy.quantity, assigns(:trade).quantity
     # verify numbers/accounts still same
     verify_trade_prices(Trade.find(@allTrades[1].id), tradeCopy.price_per_share * tradeCopy.quantity, tradeCopy.total_commission)
+  end
+
+  def test_update_currency
+    tradeCopy = @allTrades[1].clone
+        
+    post :update, { :id =>  @allTrades[1].id, 
+                    :trade => @allTrades[1].attributes.merge(
+                     {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
+                    :account => {:nickname => @allTrades[1].account_nickname}, 
+                    :currency => { :alpha_code => 'ZAI'}, 
+                    :m_symbol => {:root => @allTrades[1].tradeable_m_symbol_root}}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  @allTrades[1].id
+    assert "Trade was successfully updated", flash[:notice]
+    assert_equal currencies(:ZAI).alpha_code, assigns(:trade).currency_alpha_code
   end
 
   # new date: 2005-9-11

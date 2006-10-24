@@ -7,8 +7,7 @@
 <p><label for="dividend_amount">Amount</label><br/>
 <%= text_field 'dividend', 'amount'  %></p>
 
-<p><label for="currency_alpha_code">Currency Code</label><br/>
-<%= text_field_with_auto_complete :currency, :alpha_code %>
+<%= render :partial => '/shared/currency_auto_complete', :locals => { :alpha_code => @dividend.currency_alpha_code }%>
 
 <p><label for="dividend_announce_date">Announce date</label><br/>
 <%= date_select 'dividend', 'announce_date'  %></p>

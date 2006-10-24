@@ -6,7 +6,5 @@ class CreateUnassignedAccount < ActiveRecord::Migration
   end
 
   def self.down
-#    Account.find_by_nickname(Account::UNASSIGNED_NAME).sub_accounts.each{ |sa| sa.destroy }
-#    Account.find_by_nickname(Account::UNASSIGNED_NAME).destroy
   end
 end

@@ -127,4 +127,14 @@ class DividendTest < Test::Unit::TestCase
     assert_nil div.equity_m_symbol_root 
   end
   
+  def test_currency_alpha_code
+    d = Dividend.new
+    d.equity = @ifli
+    d.currency = @USD
+    assert_equal @USD.alpha_code, d.currency_alpha_code
+    
+    d.currency = currencies(:GPB)
+    assert_equal currencies(:GPB).alpha_code, d.currency_alpha_code
+  end
+  
 end

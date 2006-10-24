@@ -3,7 +3,7 @@ require 'bigdecimal'
 require File.dirname(__FILE__) + '/marketcetera_test_base'
 
 class TradeTest < MarketceteraTestBase
-  fixtures :trades, :messages_log, :equities
+  fixtures :trades, :messages_log, :equities, :currencies
   include TradesHelper
   
   def setup
@@ -183,6 +183,25 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal -100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sell]).quantity
     assert_nums_equal -100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShort]).quantity
     assert_nums_equal -100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShortExempt]).quantity
+  end
+  
+  def test_currency_alpha_code
+   t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
+   assert_nil t.currency_alpha_code
+   assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "ZAI", "some-account", Date.civil(2006, 10,10))
+   assert_equal currencies(:ZAI).alpha_code, t.currency_alpha_code 
+  end
+  
+  def test_currency_update 
+   t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
+   assert_nil t.currency_alpha_code
+   assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+   assert t.save
+   
+   # now, update trade currency
+   t.currency = currencies(:ZAI)   
+   assert_equal currencies(:ZAI).alpha_code, t.currency_alpha_code
+   t.journal.postings.each { |p| assert_equal currencies(:ZAI), p.currency, "not all sub-postings got updated" }
   end
   
   ##### Helpers ######

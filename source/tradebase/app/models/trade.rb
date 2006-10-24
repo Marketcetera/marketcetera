@@ -194,4 +194,16 @@ class Trade < ActiveRecord::Base
     creditP.save
   
   end
+  
+  # gets the currency code for this trade (assumption is that all postings have same currency)
+  def currency_alpha_code
+    (self.journal.nil?) ? nil : self.journal.postings[0].currency.alpha_code
+  end
+  
+  # setting the currency just updates all the postings to that currency
+  def currency= (inCur)
+    if(!self.journal.nil?)
+      self.journal.postings.each{ |p| p.currency = inCur }
+    end
+  end
 end

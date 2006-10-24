@@ -67,6 +67,7 @@ class TradesController < ApplicationController
       @trade.transaction do
         @trade.tradeable_m_symbol_root = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
         @trade.account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil)
+        @trade.currency = Currency.get_currency(get_non_empty_string_from_two(params, :currency, :alpha_code, nil))
         @trade.journal_post_date = parse_date_from_params(params, :trade, :journal_post_date.to_s)
         @trade.side = params[:trade][:side]
         @trade.quantity = params[:trade][:quantity]
