@@ -52,4 +52,35 @@ class EquityTest < Test::Unit::TestCase
     preloaded = Equity.find(2) # goog
     assert_equal "[GOOG Equity]", preloaded.to_s   
   end
+  
+  def test_m_symbol_root
+    e = Equity.new
+    assert_nil e.m_symbol_root
+    
+    e = equities(:SUNW)
+    assert_equal "SUNW", e.m_symbol_root
+  end
+  
+  def test_validate
+    assert !Equity.new.valid?
+    
+    assert equities(:SUNW).valid?
+    
+    eq = Equity.new
+    eq.m_symbol = MSymbol.new
+    assert !eq.valid?
+    assert_not_nil eq.errors[:symbol]
+  end
+  
+  def test_validate_duplicates
+    ifli = Equity.get_equity("ifli")
+    assert ifli.save
+    
+    dupe = Equity.new(:description => "dupe")
+    dupe.m_symbol = ifli.m_symbol
+    assert !dupe.valid?
+    assert !dupe.save
+    assert_not_nil dupe.errors[:m_symbol_id], "should flag as duplicate"
+  end
+  
 end

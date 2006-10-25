@@ -11,6 +11,7 @@ class CreateEquities < ActiveRecord::Migration
       t.column :updated_on, :datetime
     end
     add_fkey :equities, :m_symbol_id, :m_symbols
+    add_index :equities, :m_symbol_id, :unique => true
   end
 
   def self.down

@@ -2,7 +2,7 @@
 
 <!--[form:dividend]-->
 <%= render :partial => '/shared/symbol_auto_complete', 
-    :locals => { :errors => @dividend.errors, :init_value => @dividend.equity_m_symbol_root} %>
+    :locals => { :errors => @dividend.errors, :init_value => @dividend.equity_m_symbol_root, :error_key => :symbol} %>
 
 <p><label for="dividend_amount">Amount</label><br/>
 <%= text_field 'dividend', 'amount'  %></p>

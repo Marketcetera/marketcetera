@@ -23,7 +23,7 @@ for equity in @equities %>
     <td><%=h equity.send(column.name) %></td>
   <% end %>
     <td><%= link_to 'Show', :action => 'show', :id => equity %></td>
-    <td><%= link_to 'Edit', :action => 'update', :id => equity %></td>
+    <td><%= link_to 'Edit', :action => 'edit', :id => equity %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => equity }, :confirm => 'Are you sure?', :post => true %></td>
   </tr>
 <% end %>
