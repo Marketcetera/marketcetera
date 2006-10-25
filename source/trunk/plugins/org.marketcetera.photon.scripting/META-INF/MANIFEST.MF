@@ -11,3 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.jruby,
  org.apache.bsf
 Eclipse-LazyStart: true
+Export-Package: org.marketcetera.photon.scripting
