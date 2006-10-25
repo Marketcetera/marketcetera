@@ -2,7 +2,6 @@ package org.marketcetera.photon.scripting;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.bsf.BSFManager;
 
