@@ -4,6 +4,12 @@ class Equity < ActiveRecord::Base
   
   has_many :trades, :as => :tradeable
 
+  validates_uniqueness_of :m_symbol_id, :message => "Equity with that symbol already exists"
+  
+  def validate
+    errors.add(:symbol, "Symbol cannot be empty") unless !m_symbol_root.blank?
+  end
+
   # Returns the equity for the underlying root symbol, or creates a new one if it's not there
   def Equity.get_equity(ref_symbol, create_missing=true)
     symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
@@ -21,7 +27,12 @@ class Equity < ActiveRecord::Base
   end
 
   def to_s
-    return "[" + m_symbol.root + " Equity]"
+    return "[" + self.m_symbol_root + " Equity]"
   end
+  
+  def m_symbol_root
+    (self.m_symbol.nil?) ? nil : self.m_symbol.root
+  end
+  
 end
 

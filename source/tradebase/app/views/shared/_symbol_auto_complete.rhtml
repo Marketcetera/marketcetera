@@ -1,9 +1,9 @@
 <p><label for="m_symbol_root">Symbol</label><br/>
-<% if(!errors[:symbol].nil?) %> 
+<% if(!errors[error_key].nil?) %> 
     <div class="fieldWithErrors"> 
 <% end %>
 <%= text_field_with_auto_complete :m_symbol, :root, :value => init_value %>
-<% if(!errors[:symbol].nil?) %>
+<% if(!errors[error_key].nil?) %>
     </div>
 <% end  -%>
 </p>

@@ -8,7 +8,7 @@
 <%= text_field :trade, :quantity  %></p>
 
 <%= render :partial => '/shared/symbol_auto_complete', 
-    :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root} %>
+    :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root, :error_key => :symbol} %>
 
 <p><label for="price_per_share">Price</label><br/>
 <%= text_field :trade, :price_per_share %></p>
