@@ -6,7 +6,7 @@ require 'dividends_controller'
 class DividendsController; def rescue_action(e) raise e end; end
 
 class DividendsControllerTest < MarketceteraTestBase
-  fixtures :dividends, :currencies, :m_symbols
+  fixtures :dividends, :currencies, :m_symbols, :equities
 
   def setup
     @controller = DividendsController.new
