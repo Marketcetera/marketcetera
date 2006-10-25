@@ -18,7 +18,8 @@ import org.marketcetera.photon.Application;
  */
 public class ScriptRegistryPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private static final String SCRIPT_REGISTRY_PREFERENCE = "script.registry";
+	//agl todo:refactor move this out as we're using it to retrieve the preference elsewhere
+	public static final String SCRIPT_REGISTRY_PREFERENCE = "script.registry";
 
 	
 	public ScriptRegistryPage() {

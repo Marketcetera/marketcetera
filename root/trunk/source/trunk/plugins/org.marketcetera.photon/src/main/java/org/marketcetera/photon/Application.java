@@ -30,6 +30,7 @@ import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.HttpDatabaseIDFactory;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
+import org.marketcetera.photon.quotefeed.ScriptingAwareQuoteFeed;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
@@ -129,7 +130,9 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 				Class<IQuoteFeedFactory> clazz = (Class<IQuoteFeedFactory>) Class.forName(factoryClass);
 				Constructor<IQuoteFeedFactory> constructor = clazz.getConstructor( new Class[0] );
 				IQuoteFeedFactory factory = constructor.newInstance(new Object[0]);
-				quoteFeed = factory.getInstance("datasvr.tradearca.com:8092", "", "");
+				IQuoteFeed targetQuoteFeed = factory.getInstance("datasvr.tradearca.com:8092", "", "");
+				if (targetQuoteFeed != null)
+					quoteFeed = new ScriptingAwareQuoteFeed(targetQuoteFeed);
 			}
 		} catch (Exception ex){
 			getMainConsoleLogger().error("Exception starting quote feed: "+ex.getMessage());

@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.awt.FlowLayout;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -353,11 +352,11 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		extractors.add(extractor);
 	}
 
-	protected void listenMarketData(String text) {
+	protected void listenMarketData(String symbol) {
 		unlisten();
-		if (text != null && !"".equals(text)){
+		if (symbol != null && !"".equals(symbol)){
 			IQuoteFeed quoteFeed = Application.getQuoteFeed();
-			MSymbol newListenedSymbol = new MSymbol(text);
+			MSymbol newListenedSymbol = new MSymbol(symbol);
 			if (quoteFeed != null
 					&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
 					&& !newListenedSymbol.equals(listenedSymbol)) {
