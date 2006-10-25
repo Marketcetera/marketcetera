@@ -1,6 +1,6 @@
 <h2>Equity</h2>
 <p>
-  <b>Symbol: </b><%=h @equity.m_symbol == nil ? '' : @equity.m_symbol.root %>
+  <b>Symbol: </b><%=h @equity.m_symbol == nil ? '' : @equity.m_symbol_root %>
 </p>
 <% for column in Equity.content_columns %>
 <p>

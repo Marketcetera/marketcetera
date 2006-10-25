@@ -7,12 +7,12 @@ class Equity < ActiveRecord::Base
   validates_uniqueness_of :m_symbol_id, :message => "Equity with that symbol already exists"
   
   def validate
-    errors.add(:symbol, "Symbol cannot be empty") unless !m_symbol_root.blank?
+    errors.add(:m_symbol_id, "Symbol cannot be empty") unless !m_symbol_root.blank?
   end
 
   # Returns the equity for the underlying root symbol, or creates a new one if it's not there
   def Equity.get_equity(ref_symbol, create_missing=true)
-    symbol = MSymbol.find(:first, :conditions=>["root = ?", ref_symbol])
+    symbol = MSymbol.find_by_root(ref_symbol)
     if(symbol.nil?)
       if(create_missing)
         symbol = MSymbol.new(:root => ref_symbol)

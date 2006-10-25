@@ -47,8 +47,22 @@ class MSymbolsControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:m_symbol)
   end
 
-  def test_create
+  def test_create_no_args
     num_m_symbols = MSymbol.count
+
+    post :create, :m_symbol => {}
+
+    assert_template 'new'
+    assert_equal 1, assigns(:m_symbol).errors.length, "number of validation errors"
+    assert_not_nil assigns(:m_symbol).errors[:root]
+
+    assert_equal num_m_symbols, MSymbol.count
+  end
+
+  def test_create_successful
+    num_m_symbols = MSymbol.count
+    
+    flunk("finish implementing me")
 
     post :create, :m_symbol => {}
 
@@ -57,6 +71,7 @@ class MSymbolsControllerTest < Test::Unit::TestCase
 
     assert_equal num_m_symbols + 1, MSymbol.count
   end
+
 
   def test_edit
     get :edit, :id => 1
