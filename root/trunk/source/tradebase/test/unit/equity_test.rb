@@ -69,7 +69,7 @@ class EquityTest < Test::Unit::TestCase
     eq = Equity.new
     eq.m_symbol = MSymbol.new
     assert !eq.valid?
-    assert_not_nil eq.errors[:symbol]
+    assert_not_nil eq.errors[:m_symbol_id], "accepted equity with m_symbol with nonexisting root"
   end
   
   def test_validate_duplicates

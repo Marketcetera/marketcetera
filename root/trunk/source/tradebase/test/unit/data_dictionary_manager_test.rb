@@ -5,11 +5,7 @@ class DataDictionaryTradeTest < MarketceteraTestBase
   #module DataDictionaryMgr
   
   def test_data_mgr_creation
-    begin 
-      DataDictionaryMgr.new
-      flunk "DataDictionaryMgr.new should've failed"
-    rescue NoMethodError
-    end
+    assert_raise(NoMethodError) { DataDictionaryMgr.new}
   end
 
   def test_get_value_name

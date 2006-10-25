@@ -25,11 +25,9 @@ class EquitiesController < ApplicationController
   end
 
   def create
-    forceCreate = params[:create_new]
-    found = Equity.get_equity(get_non_empty_string_from_two(params, :m_symbol, :root, nil), forceCreate)
-#    logger.debug("found equity: "+((found.nil?) ? '' : found.to_s) + " with create: "+forceCreate.to_s)
     @equity = Equity.new(params[:equity])
-    @equity.m_symbol = (found.nil?) ? nil : found.m_symbol
+    handle_equity_creation(params, @equity)    
+
     if @equity.save
       flash[:notice] = 'Equity was successfully created.'
       redirect_to :action => 'list'
@@ -44,7 +42,9 @@ class EquitiesController < ApplicationController
 
   def update
     @equity = Equity.find(params[:id])
-    if @equity.update_attributes(params[:equity])
+    @equity.update_attributes(params[:equity])
+    handle_equity_creation(params, @equity)
+    if @equity.save
       flash[:notice] = 'Equity was successfully updated.'
       redirect_to :action => 'show', :id => @equity
     else
@@ -56,4 +56,18 @@ class EquitiesController < ApplicationController
     Equity.find(params[:id]).destroy
     redirect_to :action => 'list'
   end
+  
+  private 
+  def handle_equity_creation(params, theEquity)
+    forceCreate = params[:create_new]
+    ref_symbol = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
+    found = Equity.get_equity(ref_symbol, forceCreate)
+    logger.debug("updating equity to "+((ref_symbol.nil?) ? 'nil' : ref_symbol) + " and found it: "+(!found.nil?).to_s)
+#    logger.debug("found equity: "+((found.nil?) ? '' : found.to_s) + " with create: "+forceCreate.to_s)
+    # so this is a bit of a hack - the symbol may exist even though the equity may not so we need to re-look it up again
+    theEquity.m_symbol = (found.nil?) ? MSymbol.find_by_root(ref_symbol) : found.m_symbol
+    
+    logger.debug(" returning equity with root: "+((theEquity.nil? || theEquity.m_symbol.nil? || theEquity.m_symbol_root.nil?) ? 'nil' : theEquity.m_symbol_root))
+  end
+  
 end
