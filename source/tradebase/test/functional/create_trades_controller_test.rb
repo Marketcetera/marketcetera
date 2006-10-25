@@ -7,7 +7,7 @@ class CreateTradesController; def rescue_action(e) raise e end; end
   
 class CreateTradesControllerTest < MarketceteraTestBase
   include MessageLogsHelper
-  fixtures :messages_log
+  fixtures :messages_log, :currencies, :m_symbols, :equities, :sub_accounts, :sub_account_types
 
   def setup
     @controller = CreateTradesController.new
