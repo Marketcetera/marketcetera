@@ -35,6 +35,7 @@ public abstract class MessagesView extends ViewPart {
 	private TableComparatorChooser<MessageHolder> chooser;
 	private Clipboard clipboard;
 	private CopyMessagesAction copyMessagesAction;
+	private EventList<MessageHolder> rawInputList;
 
 
     protected void formatTable(Table messageTable) {
@@ -127,8 +128,9 @@ public abstract class MessagesView extends ViewPart {
 	public void setInput(FIXMessageHistory input)
 	{
 		fixMessageHistory = input;
+		rawInputList = extractList(input);
 		SortedList<MessageHolder> extractedList = 
-			new SortedList<MessageHolder>(extractList(input));
+			new SortedList<MessageHolder>(rawInputList);
 
 		if (chooser != null){
 			chooser.dispose();
@@ -140,6 +142,11 @@ public abstract class MessagesView extends ViewPart {
 							extractedList, false);
 
 		messagesViewer.setInput(extractedList);
+	}
+	
+	public EventList<MessageHolder> getInput()
+	{
+		return rawInputList;
 	}
 
 	protected abstract EventList<MessageHolder> extractList(FIXMessageHistory input);

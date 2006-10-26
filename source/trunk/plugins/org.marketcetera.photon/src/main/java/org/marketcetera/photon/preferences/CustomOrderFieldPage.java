@@ -13,7 +13,7 @@ import org.marketcetera.photon.Application;
 @ClassVersion("$Id$")
 public class CustomOrderFieldPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
-	private static final String CUSTOM_FIELDS_PREFERENCE = "custom.fields";
+	public static final String CUSTOM_FIELDS_PREFERENCE = "custom.fields";
 
 	public CustomOrderFieldPage() {
 		super(GRID);

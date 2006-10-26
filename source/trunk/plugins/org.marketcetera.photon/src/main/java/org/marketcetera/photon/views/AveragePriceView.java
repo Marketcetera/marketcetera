@@ -53,7 +53,7 @@ public class AveragePriceView extends MessagesView {
 
 	@SuppressWarnings("unchecked")
 	protected FilterList<MessageHolder> getFilterList() {
-		return (FilterList<MessageHolder>) getMessagesViewer().getInput();
+		return (FilterList<MessageHolder>) getInput();
 	}
 
 
