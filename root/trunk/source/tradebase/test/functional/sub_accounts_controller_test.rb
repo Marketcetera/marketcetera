@@ -1,12 +1,14 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 require 'sub_accounts_controller'
 
 # Re-raise errors caught by the controller.
 class SubAccountsController; def rescue_action(e) raise e end; end
 
-class SubAccountsControllerTest < Test::Unit::TestCase
-  fixtures :sub_accounts
-
+class SubAccountsControllerTest < MarketceteraTestBase
+  fixtures :sub_accounts, :accounts
+  include ApplicationHelper
+  
   def setup
     @controller = SubAccountsController.new
     @request    = ActionController::TestRequest.new
@@ -17,6 +19,9 @@ class SubAccountsControllerTest < Test::Unit::TestCase
     get :index
     assert_response :success
     assert_template 'list'
+    
+    assert_not_nil assigns(:sub_accounts)
+    assert_equal 7, assigns(:sub_accounts).length
   end
 
   def test_list
@@ -26,6 +31,7 @@ class SubAccountsControllerTest < Test::Unit::TestCase
     assert_template 'list'
 
     assert_not_nil assigns(:sub_accounts)
+    assert_equal 7, assigns(:sub_accounts).length
   end
 
   def test_show
@@ -38,13 +44,12 @@ class SubAccountsControllerTest < Test::Unit::TestCase
     assert assigns(:sub_account).valid?
   end
 
-  def test_new
+  def test_new_no_account_id
     get :new
 
-    assert_response :success
     assert_template 'new'
-
-    assert_not_nil assigns(:sub_account)
+    assert_has_error_box
+    assert_not_nil assigns(:sub_account).errors[:account]
   end
 
   def test_create

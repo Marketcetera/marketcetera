@@ -15,11 +15,19 @@ class Trade < ActiveRecord::Base
     if(tradeable_m_symbol_root.blank?)
       errors.add(:symbol, "Symbol cannot be empty")
     end
+    
+    if(side.nil? || !Side::QF_SIDE_CODE.invert.key?(side.to_s))
+      errors.add(:side, "Side is unknown")
+    end
+    
     if(quantity.blank? ||
-    ((quantity <= 0 && side == Side::QF_SIDE_CODE[:buy].to_i) ||
+      ((quantity <= 0 && side == Side::QF_SIDE_CODE[:buy].to_i) ||
       (quantity >= 0 && side != Side::QF_SIDE_CODE[:buy].to_i)))
+      logger.debug("failed validation of trade: price/qty/side: "+price_per_share.to_s + "/"+
+                quantity.to_s+"/"+Side.get_human_side(side))
       errors.add(:quantity, 'Please specify positive quantity.')
     end    
+    
     if(price_per_share.blank? || price_per_share <= 0)
       errors.add(:price_per_share, 'Please specify positive price per share.')
     end
@@ -67,7 +75,7 @@ class Trade < ActiveRecord::Base
   
   # When an account is updated make sure you update all the refrenced postings as well
   def after_update
-    logger.debug("**** currently self.account is "+((self.account.nil?)?'nil': self.account.to_s))
+    logger.debug("**** currently self.account is "+((self.account.nil?) ? 'nil': self.account.to_s))
     if(!self.journal.nil?)
       if(!self.account.nil?)
         logger.debug("updating " + self.journal.postings.length.to_s + " postings from old acct "+
@@ -88,7 +96,7 @@ class Trade < ActiveRecord::Base
     
   def total_commission=(inCommission)
     if(self.journal.nil?)
-      logger.debug("we are not initialized yet, so jumping out early")
+      logger.debug("we are not initialized yet, so jumping out early[commission]")
       return
     end
     if(inCommission.blank?) 
@@ -119,19 +127,12 @@ class Trade < ActiveRecord::Base
   # Need to update the underlying journals/postings when we update the price_per_share
   def quantity=(new_qty)
     super(new_qty)
-    if(self.journal.nil?)
-      logger.debug("we are not initialized yet, so jumping out early, internal qty set to "+self.quantity.to_s)
-      return
+    logger.debug("updated qty to "+new_qty.to_s)
+    if(!self.journal.nil?)
+      update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:sti], SubAccountType::DESCRIPTIONS[:cash], 
+                                      self.quantity * self.price_per_share)
     end
-    update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:sti], SubAccountType::DESCRIPTIONS[:cash], 
-                                    self.quantity * self.price_per_share)
   end    
-  
-  # Override the to_s function to print something more useful for debugging
-  def to_s
-    "["+Side.get_human_side(self.side.to_s)+"] "+self.quantity.to_s + 
-    " <"+self.tradeable_m_symbol_root+"> @"+self.price_per_share.to_s + " in acct ["+self.account_nickname+"]"
-  end
   
   # this is the var we want to use for all displaying and calculations in the order
   # It is adjusted according to the side, ie it's positive if it's a Buy or 
@@ -143,12 +144,23 @@ class Trade < ActiveRecord::Base
     end
   end
 
+  # Override the to_s function to print something more useful for debugging
+  def to_s
+    qty_str = (self.quantity.nil?) ? '<no qty>' : self.quantity.to_s
+    "["+Side.get_human_side(self.side.to_s)+"] "+ qty_str + 
+    " <"+self.tradeable_m_symbol_root+"> @"+self.price_per_share.to_s + " in acct ["+self.account_nickname+"]"
+  end
+  
   ##### Helper Methods #####
     
- def create_equity_trade(quantity, symbol, price_per_share, 
+ # Incoming qty can be negative (if, for example, we are doing pre-created @trade.qty
+ # That's OK, we just do an abs() on that and rely on the qty/side combo to determine whether 
+ # the qty is positive or negative
+ def create_equity_trade(inQuantity, symbol, price_per_share, 
                           total_commission, currency_alpha_code, account_nickname, trade_date)
     self.price_per_share = BigDecimal(price_per_share.to_s)
-    self.quantity = BigDecimal(quantity.to_s)
+    self.quantity = BigDecimal(inQuantity.to_s).abs
+    
     self.tradeable = Equity.get_equity(symbol)
     if(!valid?) 
       logger.debug("Skipping out on create_equity_trade b/c trade doesn't validate with errors: "+self.errors.full_messages().to_s)
@@ -160,7 +172,6 @@ class Trade < ActiveRecord::Base
     logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
     if(self.account.nil?)
-      logger.debug("** before **" + ((self.account.nil?) ? 'nil': self.account.to_s))
       self.account = Account.create(:nickname => account_nickname, :institution_identifier => account_nickname)
       logger.debug("created new account [" + account_nickname + "] and sub-accounts and self.account is "+self.account.to_s)
       self.account.save

@@ -20,6 +20,15 @@ class SubAccountsController < ApplicationController
 
   def new
     @sub_account = SubAccount.new
+    account_id = params[:account_id]
+    if(account_id.blank?)
+      @sub_account.errors.add(:account, "Please specify the parent account. <br/>" +
+          "Create a new sub-account from a specific <a href=\"" + 
+          url_for(:controller => 'accounts', :action => 'list') + "\">account</a> listing")
+    else 
+      @account = Account.find(account_id)  
+    end
+    
   end
 
   def create

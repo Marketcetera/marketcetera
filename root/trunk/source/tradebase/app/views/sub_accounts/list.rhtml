@@ -1,31 +1,6 @@
 <h1>Listing Sub-accounts</h1>
 
-<table>
-  <tr>
-  <% for column in SubAccount.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
-  <th/>
-  <th/>
-  <th/>
-  </tr>
-  
-<% i=0
- for sub_account in @sub_accounts %>
-  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-  <% for column in SubAccount.content_columns %>
-    <td><%=h sub_account.send(column.name) %></td>
-  <% end %>
-    <td><%= link_to 'Show', :action => 'show', :id => sub_account %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => sub_account %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => sub_account }, :confirm => 'Are you sure?', :post => true %></td>
-  </tr>
-<% end %>
-</table>
+<%= render :partial => 'sub_accounts/sub_account_list_display' %>
 
-<%= link_to 'Previous page', { :page => @sub_account_pages.current.previous } if @sub_account_pages.current.previous %>
-<%= link_to 'Next page', { :page => @sub_account_pages.current.next } if @sub_account_pages.current.next %> 
-
+<%= pagination_links(@sub_account_pages) %>
 <br />
-
-<%= link_to 'New sub_account', :action => 'new' %>

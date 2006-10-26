@@ -64,7 +64,7 @@ class TradesControllerTest < MarketceteraTestBase
     post :create, :trade => {}
 
     assert_template 'new'
-    assert_equal 3, assigns(:trade).errors.length, "number of validation errors"
+    assert_equal 4, assigns(:trade).errors.length, "number of validation errors"
     assert_not_nil assigns(:trade).errors[:symbol]
     assert_not_nil assigns(:trade).errors[:quantity]
     assert_not_nil assigns(:trade).errors[:price_per_share]
@@ -160,6 +160,28 @@ class TradesControllerTest < MarketceteraTestBase
     assert_equal "pupkin", assigns(:trade).account_nickname
     assert_equal "bob", assigns(:trade).tradeable_m_symbol_root
     verify_trade_prices(assigns(:trade), 23 * 111, 14.99)
+  end
+  
+  def test_create_successful_sell
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "bob"}, 
+                   :account => {:nickname => "pupkin"},
+                    :trade => {:price_per_share => "23", :side => Side::QF_SIDE_CODE[:sell].to_s, 
+                               :quantity => "111", :total_commission => "14.99",
+                               "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+    assert_equal num_trades+1, Trade.count
+    
+    assert_not_nil assigns(:trade), "didn't createa  trade"
+    assert_not_nil Account.find_by_nickname("pupkin"), "didn't create account"
+    assert_not_nil Equity.get_equity("bob", false), "didn't create equity"
+    
+    assert_equal "pupkin", assigns(:trade).account_nickname
+    assert_equal "bob", assigns(:trade).tradeable_m_symbol_root
+    assert_nums_equal Side::QF_SIDE_CODE[:sell], assigns(:trade).side
+    verify_trade_prices(assigns(:trade), -23 * 111, 14.99)
   end
   
   def test_create_successful_set_currency

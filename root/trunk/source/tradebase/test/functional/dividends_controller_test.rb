@@ -7,7 +7,8 @@ class DividendsController; def rescue_action(e) raise e end; end
 
 class DividendsControllerTest < MarketceteraTestBase
   fixtures :dividends, :currencies, :m_symbols, :equities
-
+  include ApplicationHelper
+  
   def setup
     @controller = DividendsController.new
     @request    = ActionController::TestRequest.new
@@ -96,7 +97,7 @@ class DividendsControllerTest < MarketceteraTestBase
     
     assert_tag  :input, :attributes => { :id => 'currency_alpha_code', :value => 'USD' }
     assert_equal 1, assigns(:dividend).errors.length, 
-      "number of validation errors: "+(assigns(:dividend).errors.collect { |n, v| n.to_s + ": " + v.to_s + "\n"}).to_s
+      "number of validation errors: "+collect_errors_into_string(assigns(:dividend).errors)
     assert_not_nil assigns(:dividend).errors[:symbol]
     assert_tag :input, :attributes => { :id => 'dividend_amount', :value => '23'}
     assert_equal num_dividends, Dividend.count

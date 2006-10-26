@@ -4,25 +4,9 @@
 </p>
 <% end %>
 
-<h2>Sub-accounts</h2><%= link_to '(Create new)',{:action=>'new', :controller=>'sub_accounts', :account_id=>@account}%>
-<table>
-  <tr>
-  <% for column in SubAccount.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
-  </tr>
-  
-<% for sub_account in @account.sub_accounts %>
-  <tr>
-  <% for column in SubAccount.content_columns %>
-    <td><%=h sub_account.send(column.name) %></td>
-  <% end %>
-    <td><%= link_to 'Show', :action => 'show', :id => sub_account %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => sub_account %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => sub_account }, :confirm => 'Are you sure?', :post => true %></td>
-  </tr>
-<% end %>
-</table>
-
+<h2>Sub-accounts</h2><%= link_to '(Create new)',{:action=>'new', :controller=>'sub_accounts', :account_id => @account} %>
+<% @sub_accounts = @account.sub_accounts %>
+<%= render :partial => 'sub_accounts/sub_account_list_display' %>
+<p/>
 <%= link_to 'Edit', :action => 'edit', :id => @account %> |
 <%= link_to 'Back', :action => 'list' %>

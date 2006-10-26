@@ -64,6 +64,11 @@ module ApplicationHelper
     return params[secondary]
   end
   
+  # Collects all the errors (in AR object) into 1 string for printing
+  def collect_errors_into_string(errors)
+    (errors.collect { |n, v| n.to_s + ": " + v.to_s + "\n"}).to_s
+  end
+  
 
   private
   def auto_complete_responder_for_currency_alpha_code(value)
