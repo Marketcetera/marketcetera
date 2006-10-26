@@ -12,11 +12,22 @@ public class FIXMatcher<T> implements Matcher<MessageHolder> {
 
 	private final int matcherFIXField;
 	private final T matcherValue;
+	private final boolean shouldInclude;
 
 	
 	public FIXMatcher(int fixField, T value) {
+		this(fixField, value, true);
+	}
+
+	/**
+	 * @param fixField the fix field to check against
+	 * @param value the value of the fix field to match against
+	 * @param shouldInclude Whether this matcher should include or exclude the matched messages
+	 */
+	public FIXMatcher(int fixField, T value, boolean shouldInclude) {
 		matcherFIXField = fixField;
 		matcherValue = value;
+		this.shouldInclude = shouldInclude;
 	}
 
 	public boolean matches(MessageHolder item) {
@@ -32,7 +43,8 @@ public class FIXMatcher<T> implements Matcher<MessageHolder> {
 				}
 			} else {
 				String value = getFieldValueString(aMessage, matcherFIXField);
-				return value.equals(matcherValue.toString());
+				boolean returnValue = shouldInclude ^ value.equals(matcherValue.toString());
+				return returnValue;
 			}
 		} catch (Exception ex)
 		{

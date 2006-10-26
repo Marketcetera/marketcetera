@@ -63,12 +63,13 @@ public class FIXMessagesView extends MessagesView {
 
 	@SuppressWarnings("unchecked")
 	protected FilterList<MessageHolder> getFilterList() {
-		return (FilterList<MessageHolder>) getMessagesViewer().getInput();
+		return (FilterList<MessageHolder>) getInput();
 	}
 
 
 	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
-		return input.getAllMessagesList();
+		FilterList<MessageHolder> filterList = new FilterList<MessageHolder>(input.getAllMessagesList());
+		return filterList;
 	}
 
 	public void setShowHeartbeats(boolean shouldShow){
@@ -78,6 +79,7 @@ public class FIXMessagesView extends MessagesView {
 		} else {
 			list.setMatcher(null);
 		}
+		getMessagesViewer().refresh();
 	}
 	
 	@Override
@@ -93,6 +95,6 @@ public class FIXMessagesView extends MessagesView {
 	protected void packColumns(Table table) {
 		super.packColumns(table);
 		table.getColumn(0).setWidth(25);
-
 	}
+    
 }

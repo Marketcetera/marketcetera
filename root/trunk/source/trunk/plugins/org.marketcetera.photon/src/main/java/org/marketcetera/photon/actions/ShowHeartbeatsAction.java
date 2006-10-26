@@ -23,13 +23,12 @@ public class ShowHeartbeatsAction extends Action {
 		setText("&Show heartbeats");
 		setToolTipText("Show heartbeats");
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.SHOW_HEARTBEATS));
-		setChecked(true);
+		setChecked(false);
 	}
 
 	@Override
 	public void run() {
-		System.out.println(""+isChecked());
-		
+		view.setShowHeartbeats(isChecked());
 	}
 
 
