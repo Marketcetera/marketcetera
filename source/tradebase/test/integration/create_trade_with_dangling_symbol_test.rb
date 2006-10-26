@@ -1,9 +1,8 @@
-require File.dirname(__FILE__) + '/../test_helper'
+require "#{File.dirname(__FILE__)}/../test_helper"
 require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
-require 'trades_controller'
 
-class CreateTradeWithDanglingSymbolTest < MarketceteraTestBase
-  fixtures :currencies
+class CreateTradeWithDanglingSymbolTest < ActionController::IntegrationTest
+  fixtures :currencies, :accounts, :sub_accounts, :sub_account_types
 
   # test the use case where you try to create a trade
   # where the symbol exists but the equity does not
@@ -17,7 +16,7 @@ class CreateTradeWithDanglingSymbolTest < MarketceteraTestBase
     assert_not_nil ifli.id
     theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])
     assert theTrade.create_equity_trade(theTrade.quantity, "IFLI", theTrade.price_per_share, 19.99,  "USD", 
-                                        "beer", Date.today)
+                                        'beer', Date.today)
     assert theTrade.save
     
     assert_equal ifli, theTrade.tradeable.m_symbol    
