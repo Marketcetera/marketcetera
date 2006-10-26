@@ -1,0 +1,27 @@
+
+
+
+<h1>Listing positions</h1>
+
+<table>
+  <tr>
+    <th>Position</th>
+    <th>Symbol</th>
+    <th>Account</th>
+  </tr>
+
+<% 
+i=0
+for position in @positions %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <td><%=h position.send(:position) %></td>
+    <td><%=h position.tradeable.m_symbol.root %></td>
+    <td><%=h position.account.nickname %></td>
+  </tr>
+<% end %>
+</table>
+
+<%= link_to 'Previous page', { :page => @position_pages.current.previous } if @position_pages.current.previous %>
+<%= link_to 'Next page', { :page => @position_pages.current.next } if @position_pages.current.next %>
+
+<br />
