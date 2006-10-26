@@ -44,50 +44,11 @@ class SubAccountsControllerTest < MarketceteraTestBase
     assert assigns(:sub_account).valid?
   end
 
-  def test_new_no_account_id
-    get :new
-
-    assert_template 'new'
-    assert_has_error_box
-    assert_not_nil assigns(:sub_account).errors[:account]
-  end
-
-  def test_create
-    num_sub_accounts = SubAccount.count
-
-    post :create, :sub_account => {}
-
-    assert_response :redirect
-    assert_redirected_to :action => 'list'
-
-    assert_equal num_sub_accounts + 1, SubAccount.count
-  end
-
-  def test_edit
-    get :edit, :id => 1
-
-    assert_response :success
-    assert_template 'edit'
-
-    assert_not_nil assigns(:sub_account)
-    assert assigns(:sub_account).valid?
-  end
-
-  def test_update
-    post :update, :id => 1
-    assert_response :redirect
-    assert_redirected_to :action => 'show', :id => 1
-  end
-
-  def test_destroy
-    assert_not_nil SubAccount.find(1)
-
-    post :destroy, :id => 1
-    assert_response :redirect
-    assert_redirected_to :action => 'list'
-
-    assert_raise(ActiveRecord::RecordNotFound) {
-      SubAccount.find(1)
-    }
+  def test_verify_edit_create_update_dne
+    assert_no_controller_action(false, :new)
+    assert_no_controller_action(true, :create, :sub_account => {})
+    assert_no_controller_action(false, :edit, :id => 1)
+    assert_no_controller_action(true, :update, :id => 1)
+    assert_no_controller_action(true, :destroy, :id => 1)
   end
 end
