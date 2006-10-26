@@ -5,6 +5,7 @@ require File.dirname(__FILE__) + '/marketcetera_test_base'
 class TradeTest < MarketceteraTestBase
   fixtures :trades, :messages_log, :equities, :currencies
   include TradesHelper
+  include ApplicationHelper
   
   def setup
     @equity = equities(:SUNW)
@@ -14,7 +15,7 @@ class TradeTest < MarketceteraTestBase
   def test_validation 
     t = Trade.new(:quantity => 20, :price_per_share => 420.23, :side=> Side::QF_SIDE_CODE[:buy])
     t.tradeable = @equity
-    assert t.valid?  
+    assert t.valid?, "regular buy 20"
     
     # empty trade
     assert !(Trade.new.valid?), "empty trade"
@@ -24,23 +25,56 @@ class TradeTest < MarketceteraTestBase
     t = Trade.new(:quantity => 20)
     t.tradeable = @equity
     assert !t.valid?, "no price_per_share"
+    assert_equal 4, t.errors.length, collect_errors_into_string(t.errors)
 
     t = Trade.new(:price_per_share => 20)
     t.tradeable = @equity
     assert !t.valid?, "no qty"
+    assert_not_nil t.errors[:quantity], collect_errors_into_string(t.errors)
+    assert_nil t.errors[:symbol]
     
     t = Trade.new(:quantity => -20, :price_per_share => 20, :side => Side::QF_SIDE_CODE[:buy])
     t.tradeable = @equity
     assert !t.valid?, "invalid qty"
+    assert_not_nil t.errors[:quantity]
+    assert_equal 1, t.errors.length
     
     t = Trade.new(:quantity => -20, :price_per_share => 20, :side => Side::QF_SIDE_CODE[:sell])
     t.tradeable = @equity
     assert !t.valid?, "invalid qty"
+    assert_not_nil t.errors[:quantity]
+    assert_equal 1, t.errors.length
     
     # blank equity
     t = Trade.new(:quantity => 20, :price_per_share => 420.23, :side=> Side::QF_SIDE_CODE[:buy])
     t.tradeable = Equity.get_equity('')
     assert !t.valid?, "empty/blank root symbol in equity"
+    assert_not_nil t.errors[:symbol]
+    assert_equal 1, t.errors.length
+    
+    # sell
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sell])
+    t.tradeable = @equity
+    assert t.valid?, "sell 10 does not validate: " + collect_errors_into_string(t.errors)
+    
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShort])
+    t.tradeable = @equity
+    
+    assert t.valid?, "sellShort 10 does not validate: " + collect_errors_into_string(t.errors)
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShortExempt])
+    t.tradeable = @equity
+    assert t.valid?, "sse 10 does not validate: " + collect_errors_into_string(t.errors)
+  end
+  
+  # this simulates behaviour when new trade is created in controller
+  def test_validation_no_side
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99)
+    t.tradeable = @equity
+    assert !t.valid?, "trade with no side 10 does not validate: " + collect_errors_into_string(t.errors)
+
+    t = Trade.new(:quantity => -10, :price_per_share => 4.99)
+    t.tradeable = @equity
+    assert !t.valid?, "trade with no side 10 does not validate: " + collect_errors_into_string(t.errors)
   end
     
   # Replace this with your real tests.
@@ -69,8 +103,8 @@ class TradeTest < MarketceteraTestBase
     theTrade.tradeable = @equity
     tradeDate = Date.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
-    assert !theTrade.create_equity_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate), 
-          "accepted negative qty"
+    assert theTrade.create_equity_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate), 
+          "did not accept negative incoming qty - we should do an abs on the incoming qty"
     assert nTrades, Trade.count
   
     theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])

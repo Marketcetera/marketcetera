@@ -83,4 +83,14 @@ class EquityTest < Test::Unit::TestCase
     assert_not_nil dupe.errors[:m_symbol_id], "should flag as duplicate"
   end
   
+  # Use case: the mSymbol exists, but the equity does not. should create a new equity pointing to msymbol
+  def test_get_equity_dangling_symbol
+    assert_nil MSymbol.find_by_root("IFLI")
+    ifli = MSymbol.create(:root => "IFLI")
+    
+    eq = Equity.get_equity("IFLI")
+    assert_not_nil eq
+    assert_equal ifli, eq.m_symbol
+  end
+  
 end

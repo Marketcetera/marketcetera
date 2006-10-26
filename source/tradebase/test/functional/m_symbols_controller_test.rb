@@ -1,10 +1,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 require 'm_symbols_controller'
 
 # Re-raise errors caught by the controller.
 class MSymbolsController; def rescue_action(e) raise e end; end
 
-class MSymbolsControllerTest < Test::Unit::TestCase
+class MSymbolsControllerTest < MarketceteraTestBase
   fixtures :m_symbols
 
   def setup
@@ -55,6 +56,7 @@ class MSymbolsControllerTest < Test::Unit::TestCase
     assert_template 'new'
     assert_equal 1, assigns(:m_symbol).errors.length, "number of validation errors"
     assert_not_nil assigns(:m_symbol).errors[:root]
+    assert_has_error_box
 
     assert_equal num_m_symbols, MSymbol.count
   end
@@ -62,14 +64,17 @@ class MSymbolsControllerTest < Test::Unit::TestCase
   def test_create_successful
     num_m_symbols = MSymbol.count
     
-    flunk("finish implementing me")
-
-    post :create, :m_symbol => {}
+    post :create, :m_symbol => { :root => "ifli", :reuters => "IFLI", :isin => "8765", :bloomberg => "IFLI.IM"}
 
     assert_response :redirect
     assert_redirected_to :action => 'list'
-
+    
     assert_equal num_m_symbols + 1, MSymbol.count
+    assert_not_nil MSymbol.find_by_root("ifli")
+    ifli = MSymbol.find_by_root("ifli")
+    assert_equal "IFLI", ifli.reuters
+    assert_equal "8765", ifli.isin
+    assert_equal "IFLI.IM", ifli.bloomberg
   end
 
 
@@ -84,13 +89,14 @@ class MSymbolsControllerTest < Test::Unit::TestCase
   end
 
   def test_update
-    post :update, :id => 1
+    post :update, { :id => 1, :m_symbol => { :isin => "435" } }
     assert_response :redirect
     assert_redirected_to :action => 'show', :id => 1
+    assert_equal "435", MSymbol.find(1).isin
   end
 
   def test_destroy
-    assert_not_nil MSymbol.find(1)
+    assert_not_nil MSymbol.find(4)
 
     post :destroy, :id => 1
     assert_response :redirect

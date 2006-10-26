@@ -32,6 +32,7 @@ class TradesController < ApplicationController
                        :comment => params[:trade][:comment], 
                        :trade_type => params[:trade][:trade_type], :side => params[:trade][:side], 
                        :price_per_share => params[:trade][:price_per_share])
+    logger.debug("initial trade creation, qty is: "+@trade.quantity.to_s)
     begin
       Trade.transaction() do
         trade_date = parse_date_from_params(params, :trade, "journal_post_date")
@@ -42,17 +43,20 @@ class TradesController < ApplicationController
             get_non_empty_string_from_two(params, :currency, :alpha_code, nil), 
             get_non_empty_string_from_two(params, :account, :nickname, nil), 
             trade_date)
+      
+        logger.debug("after createEqtyTrade, qty is: "+@trade.quantity.to_s)
           
         if @trade.save
           flash[:notice] = 'Trade was successfully created.'
           logger.debug("created trade: "+@trade.to_s)
           redirect_to :action => 'list'
         else
-          logger.debug("trade not created, nErrors: "+@trade.errors.length.to_s)
+          logger.debug("trade not created: "+collect_errors_into_string(@trade.errors))
           throw Exception
         end
       end
-    rescue
+    rescue => ex
+      logger.debug("createTrade encountered error: "+ex.message + ":\n"+ex.backtrace.join("\n"))
       render :action => 'new'
     end
   end
@@ -83,8 +87,9 @@ class TradesController < ApplicationController
           throw Exception
         end
       end 
-    rescue
-        render :action => 'edit'
+    rescue => ex
+      logger.debug("updateTrade encountered error: "+ex.message + ":\n"+ex.backtrace.join("\n"))
+      render :action => 'edit'
     end  
   end
 

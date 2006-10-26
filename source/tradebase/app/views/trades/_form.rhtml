@@ -5,7 +5,7 @@
 <%= collection_select(:trade, :side, Side.SIDES_HI_COLLECTION, :value, :name, {:selected => Side::QF_SIDE_CODE[:buy]}) %>
 </p>
 <p><label for="trade_quantity">Quantity</label><br/>
-<%= text_field :trade, :quantity  %></p>
+<%= text_field :trade, :quantity %></p>
 
 <%= render :partial => '/shared/symbol_auto_complete', 
     :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root, :error_key => :symbol} %>

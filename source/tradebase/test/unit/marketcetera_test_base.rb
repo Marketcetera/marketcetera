@@ -11,9 +11,9 @@ class MarketceteraTestBase < Test::Unit::TestCase
   
   def test_default
     SubAccountType.new
-    assert_equal SubAccountType.find_all.length, 7
+    assert_equal 7, SubAccountType.find_all.length
     assert_equal SubAccountType::DESCRIPTIONS.length, SubAccountType.preloaded.length
-    assert SubAccountType.preloaded.length > 0
+    assert SubAccountType.preloaded.length > 0, "didn't load preloaded sub-accounts"
   end
   
   def assert_errors
@@ -27,7 +27,11 @@ class MarketceteraTestBase < Test::Unit::TestCase
   def error_message_field
     {:tag => "div", :attributes => { :class => "fieldWithErrors" }}
   end
-
+  
+  def assert_has_error_box
+    assert_tag :tag => "div", :attributes => { :class => "errorExplanation" }
+  end
+  
   # verifies trade has the right total price + commissions
   # Looks at all the postings and makes sure the numbers are the same as passed in
   def verify_trade_prices(trade, total_price, total_commission)

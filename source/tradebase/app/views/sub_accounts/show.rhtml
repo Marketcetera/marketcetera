@@ -3,6 +3,11 @@
   <b><%= column.human_name %>:</b> <%=h @sub_account.send(column.name) %>
 </p>
 <% end %>
+<p>
+  <b>Parent Account:</b> <%= link_to @sub_account.account.nickname, :controller => 'accounts', 
+                                     :action => 'show', :id => @sub_account.account %>
+</p>
+
 
 <%= link_to 'Edit', :action => 'edit', :id => @sub_account %> |
 <%= link_to 'Back', :action => 'list' %>

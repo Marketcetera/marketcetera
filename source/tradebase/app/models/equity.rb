@@ -22,7 +22,11 @@ class Equity < ActiveRecord::Base
         return nil 
       end
     else
-      return Equity.find_by_m_symbol_id(symbol.id)
+      eq = Equity.find_by_m_symbol_id(symbol.id)
+      if(eq.nil?)
+        eq = Equity.new(:m_symbol => symbol)
+      end
+      return eq
     end
   end
 
