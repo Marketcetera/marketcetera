@@ -85,6 +85,11 @@ class Trade < ActiveRecord::Base
     end
   end
   
+  # set the position_qty to the side-adjusted quantity
+  def before_save
+    self.position_qty = self.quantity
+  end
+  
   def total_commission
     if(self.journal.nil?) 
       return 0

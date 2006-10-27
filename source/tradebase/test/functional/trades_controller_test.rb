@@ -6,7 +6,7 @@ require 'trades_controller'
 class TradesController; def rescue_action(e) raise e end; end
 
 class TradesControllerTest < MarketceteraTestBase
-  fixtures :trades, :messages_log, :currencies
+  fixtures :messages_log, :currencies
 
   def setup
     @controller = TradesController.new
