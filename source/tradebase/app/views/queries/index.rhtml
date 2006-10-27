@@ -28,4 +28,11 @@ List trades by:
     <%= submit_tag 'Search by Account' %>
     <%= end_form_tag %>
   </li>
+  <li>
+    <%=  start_form_tag :controller => 'positions', :action => 'positions_as_of' %>
+    <p><label for="as_of">Positions as of: </label><br/><%= date_select :position, :as_of, :order => [:year, :month, :day] %>
+    </p>
+    <%= submit_tag 'List Positions' %>
+    <%= end_form_tag %>
+  </li>
   </ol>

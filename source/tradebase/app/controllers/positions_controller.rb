@@ -11,22 +11,27 @@ class PositionsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    positions = Position.find_by_sql([
-     'select sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id from trades'+
-     ' LEFT JOIN journals on trades.journal_id=journals.id '+
-     ' WHERE journals.post_date<? GROUP BY tradeable_id, account_id, tradeable_type',
-      Time.now+(24*60*60)])
-    @position_pages, @positions = paginate_collection(positions, {:per_page => 10, :page => params[:page]})
+    lookup_positions(Date.today)    
   end
 
-  def paginate_collection(collection, options = {})
-    default_options = {:per_page => 10, :page => 1}
-    options = default_options.merge options
-    
-    pages = Paginator.new self, collection.size, options[:per_page], options[:page]
-    first = pages.current.offset
-    last = [first + options[:per_page], collection.size].min
-    slice = collection[first...last]
-    return [pages, slice]
+  def positions_as_of
+    as_of_date = parse_date_from_params(params, :position, "as_of")
+    lookup_positions(as_of_date)
+    render :template => '/positions/list'
+  end
+
+  private 
+  # Here's the SQL
+  # 'select sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id from trades'+
+  # ' LEFT JOIN journals on trades.journal_id=journals.id '+
+  # ' WHERE journals.post_date< ? GROUP BY tradeable_id, account_id, tradeable_type',
+  #  date])
+  def lookup_positions(date)
+     @date = date
+     @position_pages, @positions  = paginate :positions, :per_page => 10, 
+             :select => 'sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id',
+             :conditions => ['journals.post_date < ? ', date], 
+             :joins => 'LEFT JOIN journals on trades.journal_id=journals.id', 
+             :group => 'tradeable_id, account_id, tradeable_type'
   end
 end
