@@ -82,10 +82,9 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 	 * @see PlatformUI#createAndRunWorkbench(Display, org.eclipse.ui.application.WorkbenchAdvisor)
 	 */
 	public Object run(Object args) throws Exception {
-		preferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),
-				PLUGIN_ID);
+		initPreferenceStore();
 		preferenceStore.addPropertyChangeListener(this);
-		
+
 		initResources();
 		
 		fixMessageHistory = new FIXMessageHistory();
@@ -107,6 +106,11 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 			display.dispose();
 		}
 
+	}
+
+	public static void initPreferenceStore() {
+		preferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),
+				PLUGIN_ID);
 	}
 
 	public static void initResources() throws FIXFieldConverterNotAvailable

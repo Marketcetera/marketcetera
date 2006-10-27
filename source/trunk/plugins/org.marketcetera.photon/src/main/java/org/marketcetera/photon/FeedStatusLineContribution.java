@@ -6,11 +6,14 @@ import java.util.Map;
 
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IDecoratorManager;
+import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.FeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
@@ -75,6 +78,7 @@ public class FeedStatusLineContribution extends ContributionItem implements
 	 * @return the image associated with the given status
 	 */
 	protected Image getStatusImage(FeedStatus aStatus) {
+		ILabelDecorator labelDecorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator("asdf");
 		Image theImage = statusImageMap.get(aStatus);
 		if (theImage == null) {
 			ImageDescriptor descriptor;

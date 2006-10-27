@@ -15,7 +15,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GroupingList;
 
-public class OpenOrdersView extends MessagesView {
+public class OpenOrdersView extends HistoryMessagesView {
 
 	public static final String ID = "org.marketcetera.photon.views.OpenOrdersView";
 	/**

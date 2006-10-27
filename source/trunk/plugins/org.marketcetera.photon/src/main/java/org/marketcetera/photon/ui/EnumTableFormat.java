@@ -64,25 +64,31 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		Object value = null;
 		if (fieldID != null) {
 			FieldMap map = extractMap(element, fieldID);
-			if (map != null){
-				try {
-					FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
-					if (fieldType.equals(FieldType.UtcTimeOnly)) {
-						value = map.getUtcTimeOnly(fieldID);
-					} else if (fieldType.equals(FieldType.UtcTimeStamp)){
-						value = map.getUtcTimeStamp(fieldID);
-					} else if (fieldType.equals(FieldType.UtcDateOnly)
-							||fieldType.equals(FieldType.UtcDate)){
-						value = map.getUtcDateOnly(fieldID);
-					} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
-						value = new BigDecimal(map.getString(fieldID));
-					} else if (dataDictionary.hasFieldValue(fieldID)){
-						value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, map.getString(fieldID));
-					} else {
-						value = map.getString(fieldID);
-					}
-				} catch (FieldNotFound e) {
+			value = fieldValueFromMap(map, fieldID);
+		}
+		return value;
+	}
+
+	protected Object fieldValueFromMap(FieldMap map, Integer fieldID) {
+		Object value = null;
+		if (map != null){
+			try {
+				FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
+				if (fieldType.equals(FieldType.UtcTimeOnly)) {
+					value = map.getUtcTimeOnly(fieldID);
+				} else if (fieldType.equals(FieldType.UtcTimeStamp)){
+					value = map.getUtcTimeStamp(fieldID);
+				} else if (fieldType.equals(FieldType.UtcDateOnly)
+						||fieldType.equals(FieldType.UtcDate)){
+					value = map.getUtcDateOnly(fieldID);
+				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
+					value = new BigDecimal(map.getString(fieldID));
+				} else if (dataDictionary.hasFieldValue(fieldID)){
+					value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, map.getString(fieldID));
+				} else {
+					value = map.getString(fieldID);
 				}
+			} catch (FieldNotFound e) {
 			}
 		}
 		return value;

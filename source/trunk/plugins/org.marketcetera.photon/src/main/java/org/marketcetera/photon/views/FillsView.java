@@ -12,7 +12,7 @@ import org.marketcetera.photon.model.MessageHolder;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 
-public class FillsView extends MessagesView {
+public class FillsView extends HistoryMessagesView {
 
 	public static final String ID = "org.marketcetera.photon.views.FillsView";
 
