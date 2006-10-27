@@ -30,7 +30,6 @@ public abstract class MessagesView extends ViewPart {
 	private Table messageTable;
 	private TableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
-	private FIXMessageHistory fixMessageHistory;
 	private EnumTableFormat<MessageHolder> tableFormat;
 	private TableComparatorChooser<MessageHolder> chooser;
 	private Clipboard clipboard;
@@ -40,7 +39,6 @@ public abstract class MessagesView extends ViewPart {
 
     protected void formatTable(Table messageTable) {
         messageTable.getVerticalBar().setEnabled(true);
-		int i = 0;
         messageTable.setBackground(
         		messageTable.getDisplay().getSystemColor(
 						SWT.COLOR_INFO_BACKGROUND));
@@ -68,10 +66,6 @@ public abstract class MessagesView extends ViewPart {
 		packColumns(messageTable);
         toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		initializeToolBar(toolBarManager);
-		FIXMessageHistory messageHistory = Application.getFIXMessageHistory();
-		if (messageHistory!= null){
-			setInput(messageHistory);
-		}
 		
 		copyMessagesAction = new CopyMessagesAction(getClipboard(),messageTable, "Copy");
 		IWorkbench workbench = PlatformUI.getWorkbench();
@@ -125,12 +119,10 @@ public abstract class MessagesView extends ViewPart {
 		return messagesViewer;
 	}
 	
-	public void setInput(FIXMessageHistory input)
+	public void setInput(EventList<MessageHolder> input)
 	{
-		fixMessageHistory = input;
-		rawInputList = extractList(input);
 		SortedList<MessageHolder> extractedList = 
-			new SortedList<MessageHolder>(rawInputList);
+			new SortedList<MessageHolder>(rawInputList = input);
 
 		if (chooser != null){
 			chooser.dispose();
@@ -148,8 +140,6 @@ public abstract class MessagesView extends ViewPart {
 	{
 		return rawInputList;
 	}
-
-	protected abstract EventList<MessageHolder> extractList(FIXMessageHistory input);
 
 	
 	private void hookGlobalActions(){

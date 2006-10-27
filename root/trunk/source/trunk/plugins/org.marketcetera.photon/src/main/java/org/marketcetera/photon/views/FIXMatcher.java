@@ -43,7 +43,7 @@ public class FIXMatcher<T> implements Matcher<MessageHolder> {
 				}
 			} else {
 				String value = getFieldValueString(aMessage, matcherFIXField);
-				boolean returnValue = shouldInclude ^ value.equals(matcherValue.toString());
+				boolean returnValue = (!shouldInclude) ^ value.equals(matcherValue.toString());
 				return returnValue;
 			}
 		} catch (Exception ex)

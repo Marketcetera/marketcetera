@@ -8,6 +8,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
+import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.WebBrowserView;
@@ -69,6 +70,7 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 				editorArea);
 		leftFolder.addPlaceholder(WebBrowserView.ID + ":*");	
 		leftFolder.addView(WebBrowserView.ID);
+		leftFolder.addView(MarketDataView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
 				0.85f, editorArea);

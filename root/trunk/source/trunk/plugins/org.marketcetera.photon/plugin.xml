@@ -76,6 +76,12 @@
             icon="icons/silk/calculator.png"
             id="org.marketcetera.photon.views.AveragePriceView"
             name="Average Price"/>
+      <view
+            category="org.marketcetera.photon.category"
+            class="org.marketcetera.photon.views.MarketDataView"
+            icon="icons/silk/chart_curve.png"
+            id="org.marketcetera.photon.views.MarketDataView"
+            name="Market Data"/>
   </extension>
    <extension
          point="org.eclipse.ui.perspectiveExtensions">

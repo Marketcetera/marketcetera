@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -38,6 +40,7 @@ import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
+import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.AbstractFIXExtractor;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.ui.CComboValidator;
@@ -54,13 +57,14 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.Message;
+import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 
-public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
+public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPropertyChangeListener {
 
 	private static final String NEW_EQUITY_ORDER = "New Equity Order";
 
@@ -151,10 +155,12 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		errorMessageLabel.setLayoutData(gridData);
 		top.setBackground(errorMessageLabel.getBackground());
 
+		Application.getPreferenceStore().addPropertyChangeListener(this);
 	}
 
 	@Override
 	public void dispose() {
+		Application.getPreferenceStore().removePropertyChangeListener(this);
 		unlisten();
 		IQuoteFeed quoteFeed = Application.getQuoteFeed();
 		if (quoteFeed != null) {
@@ -661,13 +667,18 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer {
 		} else {
 			form.setText(NEW_EQUITY_ORDER);
 		}
-
 	}
 
 	public static StockOrderTicket getDefault() {
 		return (StockOrderTicket) PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().findView(
 						StockOrderTicket.ID);
+	}
+
+	public void propertyChange(PropertyChangeEvent event) {
+		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(event.getProperty())){
+			System.out.println("GOT HERE");
+		}
 	}
 
 }

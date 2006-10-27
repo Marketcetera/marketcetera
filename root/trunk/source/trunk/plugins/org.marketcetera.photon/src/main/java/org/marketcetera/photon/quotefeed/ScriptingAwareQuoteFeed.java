@@ -145,7 +145,7 @@ public class ScriptingAwareQuoteFeed implements IQuoteFeed, IMessageListener {
 		for (String path : scriptPaths) {
 			System.out.println(path);
 		}
-		System.out.println("----");
+		//System.out.println("----");
 	}
 
 	private List<String> getOnQuoteScripts() {

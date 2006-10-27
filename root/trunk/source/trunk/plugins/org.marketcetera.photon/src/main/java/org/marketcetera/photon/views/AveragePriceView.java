@@ -14,7 +14,7 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GroupingList;
 
-public class AveragePriceView extends MessagesView {
+public class AveragePriceView extends HistoryMessagesView {
 
 
 	public static final String ID = "org.marketcetera.photon.views.AveragePriceView";

@@ -15,11 +15,11 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
 
-public class FIXMessagesView extends MessagesView {
+public class FIXMessagesView extends HistoryMessagesView {
 
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
-	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT);
+	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT, false);
 
 	
 	/**
