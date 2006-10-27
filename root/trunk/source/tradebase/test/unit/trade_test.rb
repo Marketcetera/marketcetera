@@ -3,7 +3,7 @@ require 'bigdecimal'
 require File.dirname(__FILE__) + '/marketcetera_test_base'
 
 class TradeTest < MarketceteraTestBase
-  fixtures :trades, :messages_log, :equities, :currencies
+  fixtures :messages_log, :equities, :currencies
   include TradesHelper
   include ApplicationHelper
   
@@ -204,6 +204,29 @@ class TradeTest < MarketceteraTestBase
     # lookup the posting too
     verify_trade_prices(t, 25*200, 14.99)
   end 
+  
+  # verify that position qty is set to neg of the qty for Sell situations
+  def test_position_qty_set_correctly
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy], :tradeable => @equity)
+    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.save, "wasn't able tos save b 10 GOOG 4.99"
+    assert_nums_equal 10, t.position_qty
+    
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sell], :tradeable => @equity)
+    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.save, "wasn't able tos save b 10 GOOG 4.99"
+    assert_nums_equal -10, t.position_qty
+    
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShort], :tradeable => @equity)
+    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.save, "wasn't able tos save b 10 GOOG 4.99"
+    assert_nums_equal -10, t.position_qty
+    
+    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShortExempt], :tradeable => @equity)
+    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.save, "wasn't able tos save b 10 GOOG 4.99"
+    assert_nums_equal -10, t.position_qty
+  end
   
   def test_to_s
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
