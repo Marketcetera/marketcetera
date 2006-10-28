@@ -2,7 +2,7 @@
 
 <!--[form:trade]-->
 <p><label for="side">Side</label><br/>
-<%= collection_select(:trade, :side, Side.SIDES_HI_COLLECTION, :value, :name, {:selected => Side::QF_SIDE_CODE[:buy]}) %>
+<%= select(:trade, :side, Side.SIDES_HI_COLLECTION, { :selected => @trade.side.to_s }) %>
 </p>
 <p><label for="trade_quantity">Quantity</label><br/>
 <%= text_field :trade, :quantity %></p>
@@ -14,7 +14,7 @@
 <%= text_field :trade, :price_per_share %></p>
 
 <p><label for="trade_date">Trade Date</label><br/>
-<%= date_select :trade, :journal_post_date %></p>
+<%= date_select :trade, :journal_post_date %></p>   
 
 <p><label for="trade_trade_type">Trade type</label><br/>
 <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true})%><label for="trade_trade_type_t">Trade</label><br/>

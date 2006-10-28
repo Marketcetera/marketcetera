@@ -18,4 +18,4 @@ for position in @positions %>
 <% end %>
 </table>
 
-<%= pagination_links(@position_pages) %><br />
+<%= pagination_links(@position_pages, :params => { :as_of_date => @date }) %><br />

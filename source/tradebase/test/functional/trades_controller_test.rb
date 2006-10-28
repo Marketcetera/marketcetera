@@ -14,6 +14,8 @@ class TradesControllerTest < MarketceteraTestBase
     @response   = ActionController::TestResponse.new
     
     # create the trades from the messages 
+    # trade20: B 100 GOOG 408.18
+    # trade21: SSE GOOG 4000 408.18
     creator = CreateTradesController.new
     [20,21].each { |id| creator.create_one_trade(id) }
     assert_equal 2, Trade.count
@@ -227,26 +229,18 @@ class TradesControllerTest < MarketceteraTestBase
   end
 
   def test_edit_verify_fields_prefilled
-    # create some trade with ZAI currency
-    t = Trade.new(:quantity => 11, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
-    assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.37, "ZAI", "some-account", Date.civil(2006, 10,10))
-    assert t.save, "couldn't save the trade"
-    get :edit, :id => t.id
-
-    assert_response :success
-    assert_template 'edit'
-
-    assert_not_nil assigns(:trade)
-    assert assigns(:trade).valid?
-    
-    # verify the symbol edit box shows up 
-    assert_tag :input, :attributes => { :id => 'currency_alpha_code', :value => 'ZAI' }
-    assert_tag :input, :attributes => { :id => 'account_nickname', :value => 'some-account' }
-    assert_tag :input, :attributes => { :id => 'trade_price_per_share', :value => '4.99' }
-    assert_tag :input, :attributes => { :id => 'trade_quantity', :value => '11' }
-    assert_tag :input, :attributes => { :id => 'trade_total_commission', :value => '7.37' }
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShort], "TOLI", 4.99, 11, "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, '', "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, '', '', 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, '', nil, 7.37, Date.civil(2006, 10,10))
   end
-
+  
+  def test_edit_verify_side_selected_correctly
+    prefilled_test_helper( Side::QF_SIDE_CODE[:buy], "TOLI", 4.99, 11, "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShortExempt], "TOLI", 4.99, 11, "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, nil, "ZAI", 7.37, Date.civil(2006, 10,10))
+  end
+  
   def test_update_no_actual_edits
     tradeCopy = @allTrades[0].clone
     post :update, { :id =>  @allTrades[0].id, 
@@ -444,7 +438,6 @@ class TradesControllerTest < MarketceteraTestBase
     assert_not_equal tradeCopy.comment, assigns(:trade).comment, "comments are same"
   end
   
-
   def test_destroy
     assert_not_nil Trade.find( @allTrades[0].id)
 
@@ -455,5 +448,33 @@ class TradesControllerTest < MarketceteraTestBase
     assert_raise(ActiveRecord::RecordNotFound) {
       Trade.find( @allTrades[0].id)
     }
+  end
+  
+  ### Helpers ####
+  # this tests internal ticket:66
+  # Need to verify that when we click on Edit the right option is selected in the side drop-down
+  def prefilled_test_helper(side, symbol, price, qty, account, cur, commission, date)
+    # create some trade with ZAI currency
+    t = Trade.new(:quantity => qty, :price_per_share => price, :side => side)
+    assert t.create_equity_trade(t.quantity, symbol, t.price_per_share, commission, cur, account, date)
+    assert t.save, "couldn't save the trade"
+    get :edit, :id => t.id
+
+    assert_response :success
+    assert_template 'edit'
+
+    assert_not_nil assigns(:trade)
+    assert assigns(:trade).valid?
+    
+    # verify the symbol edit box shows up 
+    cur = cur.blank? ? "USD" : cur
+    account = account.blank? ? Account::UNASSIGNED_NAME : account
+    assert_tag :input, :attributes => { :id => 'currency_alpha_code', :value => cur }
+    assert_tag :input, :attributes => { :id => 'account_nickname', :value => account }
+    assert_tag :input, :attributes => { :id => 'trade_price_per_share', :value => price }
+    assert_tag :input, :attributes => { :id => 'trade_quantity', :value => qty }
+    assert_tag :input, :attributes => { :id => 'trade_total_commission', :value => commission }
+    assert_tag :tag => 'option', :attributes => { :value => side, :selected => "selected"}, 
+               :parent => { :tag => 'select', :attributes => {:id => 'trade_side' } }
   end
 end

@@ -1,4 +1,5 @@
 module TradesHelper
+#  include Side
   
   TradeTypeTrade = 'T'
   TradeTypeReconciliation = 'R'
