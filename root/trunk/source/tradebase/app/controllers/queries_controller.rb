@@ -56,14 +56,4 @@ class QueriesController < ApplicationController
     render :template => 'queries/queries_output'
   end
   
-  # Take 2 params: either the nested hash or a flat varname stringified date and return whichever is setup, 
-  # giving the nested one preference
-  def get_date_from_params(params, nested_parent, nested_child, secondary)
-    parent = params[nested_parent]
-    logger.debug "have parent:  " + parent.to_s
-    if(!parent.nil?)
-        return parse_date_from_params(params, nested_parent, nested_child)
-    end
-    return Date.parse(params[secondary])
-  end  
 end

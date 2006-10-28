@@ -15,7 +15,7 @@ class PositionsController < ApplicationController
   end
 
   def positions_as_of
-    as_of_date = parse_date_from_params(params, :position, "as_of")
+    as_of_date = get_date_from_params(params, :position, "as_of", "as_of_date")
     lookup_positions(as_of_date)
     render :template => '/positions/list'
   end
@@ -28,10 +28,10 @@ class PositionsController < ApplicationController
   #  date])
   def lookup_positions(date)
      @date = date
-     @position_pages, @positions  = paginate :positions, :per_page => 10, 
-             :select => 'sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id',
-             :conditions => ['journals.post_date < ? ', date], 
-             :joins => 'LEFT JOIN journals on trades.journal_id=journals.id', 
-             :group => 'tradeable_id, account_id, tradeable_type'
+     @position_pages, @positions = paginate_by_sql Position, 
+            [ 'select sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id from trades'+
+              ' LEFT JOIN journals on trades.journal_id=journals.id '+
+              ' WHERE journals.post_date< ? GROUP BY tradeable_id, account_id, tradeable_type',
+              date], 10
   end
 end
