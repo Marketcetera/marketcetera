@@ -14,7 +14,7 @@ import org.marketcetera.photon.views.FIXMessagesView;
 
 public class ShowHeartbeatsAction extends Action {
 
-	private static final String ID = ".marketcetera.photon.actions.ShowHeartbeatsAction";
+	private static final String ID = "org.marketcetera.photon.actions.ShowHeartbeatsAction";
 	private FIXMessagesView view;
 
 	public ShowHeartbeatsAction(FIXMessagesView view) {

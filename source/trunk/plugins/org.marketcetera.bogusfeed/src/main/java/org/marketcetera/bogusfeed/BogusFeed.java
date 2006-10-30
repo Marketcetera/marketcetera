@@ -19,6 +19,7 @@ import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.Message;
 import quickfix.StringField;
+import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryTime;
@@ -80,7 +81,8 @@ public class BogusFeed implements IQuoteFeed {
 			}
 			addGroup(quoteMessage, MDEntryType.BID, randBid.setScale(2, RoundingMode.HALF_UP), new BigDecimal(200), new Date(), "BGUS", quoteMessage);
 			addGroup(quoteMessage, MDEntryType.OFFER, randAsk.setScale(2, RoundingMode.HALF_UP), new BigDecimal(300), new Date(), "BGUS", quoteMessage);
-			return quoteMessage;
+			quoteMessage.setString(LastPx.FIELD,randBid.add(randAsk).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP).toPlainString());
+			return quoteMessage;	
 		}
 		private void addGroup(Message message, char side, BigDecimal price, BigDecimal quantity, Date time, String mkt, Message refreshMessage) {
 			MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
