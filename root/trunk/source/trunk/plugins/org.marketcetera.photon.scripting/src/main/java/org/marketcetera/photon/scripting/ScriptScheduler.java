@@ -10,12 +10,12 @@ public class ScriptScheduler {
 	BSFManager manager = new BSFManager();
 	
 	
-	void submitScript(IScript script)
+	public void submitScript(IScript script)
 	{
 		pool.execute(new ScriptRunnable(script, manager));
 	}
 	
-	void shutdown(){
+	public void shutdown(){
 		pool.shutdown();
 	}
 }

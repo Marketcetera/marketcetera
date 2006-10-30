@@ -8,7 +8,7 @@ Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.jruby,
- org.apache.bsf
+ org.jruby;visibility:=reexport,
+ org.apache.bsf;visibility:=reexport
 Eclipse-LazyStart: true
 Export-Package: org.marketcetera.photon.scripting
