@@ -40,11 +40,11 @@ module ApplicationHelper
   # in the pagination_links function and it currently doesn't accept two-named nested hash
   def get_date_from_params(params, nested_parent, nested_child, secondary)
     parent = params[nested_parent]
-    logger.debug "have parent:  " + parent.to_s
     if(!parent.nil?)
         return parse_date_from_params(params, nested_parent, nested_child)
     end
-    return Date.parse(params[secondary])
+    secondaryStr = params[secondary]
+    return (secondaryStr.blank?) ? nil : Date.parse(secondaryStr)
   end  
   
   

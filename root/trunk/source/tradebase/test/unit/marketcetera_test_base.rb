@@ -61,6 +61,16 @@ class MarketceteraTestBase < Test::Unit::TestCase
     
     end 
   end
+  
+  # Helper function to create a trade
+  def create_test_trade(qty, price, side, account, date, symbol, commission, cur)
+      theTrade = Trade.new(:quantity => qty, :price_per_share => price, :side => side)
+    theTrade.tradeable = Equity.get_equity(symbol)
+    assert theTrade.create_equity_trade(theTrade.quantity, symbol, theTrade.price_per_share, 
+                                        commission,  cur, account, date)
+    theTrade.save
+    return theTrade  
+  end
 
   # Compare two numbers (float, bigDecimal, strings, etc) with a given tolerance
   def assert_nums_equal(expected, actual, message=nil, tolerance=BigDecimal.new("0.000001"))

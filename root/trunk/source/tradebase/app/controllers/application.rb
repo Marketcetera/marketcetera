@@ -9,16 +9,6 @@ class ApplicationController < ActionController::Base
   helper :application, :trades
 end
 
-# Patch bigDecimal to print it nicely formatted instead of default engineering notation
-BigDecimal.class_eval do
-  alias :_original_to_s :to_s
-
-  def to_s(format="F")
-    _original_to_s(format)
-  end
-end
-
-
 # modify the ActiveRecord and ActiveController to add paginate_by_sql behaviour
 # lifted from: http://thebogles.com/blog/2006/06/paginate_by_sql-for-rails-a-more-general-approach/
 module ActiveRecord 

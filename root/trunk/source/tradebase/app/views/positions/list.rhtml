@@ -5,6 +5,7 @@
     <th>Position</th>
     <th>Symbol</th>
     <th>Account</th>
+    <th/>
   </tr>
 
 <% 
@@ -12,8 +13,11 @@ i=0
 for position in @positions %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%=h position.send(:position) %></td>
-    <td><%=h position.tradeable.m_symbol.root %></td>
+    <td><%= link_to  position.tradeable.m_symbol.root, :action => 'by_symbol', :controller => 'queries', 
+                      :m_symbol_root => position.tradeable.m_symbol.root  %></td>
     <td><%=h position.account.nickname %></td>
+    <td><%= link_to  'See all trades', :action => 'by_symbol', :controller => 'queries', 
+                      :m_symbol_root => position.tradeable.m_symbol.root  %></td>
   </tr>
 <% end %>
 </table>
