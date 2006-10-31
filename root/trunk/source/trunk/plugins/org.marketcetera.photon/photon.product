@@ -103,7 +103,7 @@ Visit http://www.marketcetera.org
 
    <features>
       <feature id="org.marketcetera.photon.feature" version="0.1.4"/>
-      <!--feature id="org.rubypeople.rdt" version="0.8.1.609062100PRD"/-->
+      <feature id="org.rubypeople.rdt" version="0.8.1.609062100PRD"/>
    </features>
 
 </product>
