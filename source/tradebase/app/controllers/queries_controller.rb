@@ -13,7 +13,8 @@ class QueriesController < ApplicationController
       @trade_pages, @trades = paginate :trades, :per_page => 10
     else
       @trade_pages, @trades  = paginate :trades, :per_page => 10, :conditions => ['m_symbols.root = ? ', symbol_str], 
-                           :joins => 'as t inner join ( equities inner join m_symbols on m_symbols.id=equities.m_symbol_id) on equities.id = t.tradeable_id'
+                           :joins => 'as t inner join ( equities inner join m_symbols on m_symbols.id=equities.m_symbol_id) on equities.id = t.tradeable_id',
+                           :select => 't.*'
     end
     if(@trades.empty?)
       flash.now[:error] = "No Matching trades were found for symbol [#{symbol_str}]"                                       
@@ -31,7 +32,8 @@ class QueriesController < ApplicationController
 
     @trade_pages, @trades  = paginate :trades, :per_page => 10, 
                          :conditions => ['post_date >= ? and post_date <= ?', @from_date, @to_date], 
-                         :joins => 'as t inner join journals on journals.id = t.journal_id'
+                         :joins => 'as t inner join journals on journals.id = t.journal_id', 
+                         :select => 't.*'
 
     if(@trades.empty?)
       flash.now[:error] = "No trades were found in range  [#{@from_date} to #{@to_date}]"                                       
@@ -44,7 +46,9 @@ class QueriesController < ApplicationController
       @trade_pages, @trades = paginate :trades, :per_page => 10
     else
       @trade_pages, @trades  = paginate :trades, :per_page => 10, :conditions => ['accounts.nickname = ? ', nickname], 
-                           :joins => 'as t inner join accounts on accounts.id = t.account_id'
+                           :joins => 'inner join accounts on accounts.id = account_id', 
+                           :select => 'trades.*'
+                           
     end                           
 
     if(@trades.empty?)
