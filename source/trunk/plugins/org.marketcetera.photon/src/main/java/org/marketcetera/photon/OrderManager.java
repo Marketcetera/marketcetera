@@ -51,11 +51,12 @@ import quickfix.field.TimeInForce;
  */
 @ClassVersion("$Id$")
 public class OrderManager {
-	private IDFactory idFactory;
-	
+
 	private Logger internalMainLogger = Application.getMainConsoleLogger();
 
 	private FIXMessageHistory fixMessageHistory;
+
+	private IDFactory idFactory;
 	
 
 	/** Creates a new instance of OrderManager with the specified {@link IDFactory}--
@@ -66,8 +67,7 @@ public class OrderManager {
 	 * @param fixMessageHistory the message history object for storing histories of FIX messages
 	 * 
 	 */
-	public OrderManager(IDFactory idFactory, FIXMessageHistory fixMessageHistory) {
-		this.idFactory = idFactory;
+	public OrderManager(FIXMessageHistory fixMessageHistory) {
 		this.fixMessageHistory = fixMessageHistory;
 	}
 
@@ -255,7 +255,7 @@ public class OrderManager {
 			Message cancelMessage = new quickfix.fix42.Message();
 			cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
 			cancelMessage.setField(new OrigClOrdID(clOrdID));
-			cancelMessage.setField(new ClOrdID(this.idFactory.getNext()));
+			cancelMessage.setField(new ClOrdID(idFactory.getNext()));
 			try {
 				cancelMessage.setField(new OrderID(latestMessage.getString(OrderID.FIELD)));
 			} catch (FieldNotFound e) {
@@ -272,6 +272,10 @@ public class OrderManager {
 			} catch (JMSException e) {
 				internalMainLogger.error("Error sending cancel for order "+clOrdID, e);
 			}
+	}
+	
+	public void setIDFactory(IDFactory fact){
+		idFactory = fact;
 	}
 
 	private void logAddNewOrder(Message message) throws FieldNotFound {
@@ -349,11 +353,6 @@ public class OrderManager {
 		}
 	}
 	
-
-
-	public IDFactory getIDFactory() {
-		return idFactory;
-	}
 
 
 

@@ -384,10 +384,6 @@ public class TextContributionItem extends ContributionItem {
 		return textField.isReparentable();
 	}
 
-	public boolean isVisible() {
-		return textField.isVisible();
-	}
-
 	public void notifyListeners(int eventType, Event event) {
 		textField.notifyListeners(eventType, event);
 	}

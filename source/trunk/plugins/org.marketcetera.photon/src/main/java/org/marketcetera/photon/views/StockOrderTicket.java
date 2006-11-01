@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -25,6 +26,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
@@ -36,11 +38,13 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
+import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.ui.AbstractFIXExtractor;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.ui.CComboValidator;
@@ -56,13 +60,17 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
+import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.Message;
-import quickfix.field.MsgType;
+import quickfix.StringField;
+import quickfix.field.Account;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
+import ca.odell.glazedlists.EventList;
 
 public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPropertyChangeListener {
 
@@ -242,6 +250,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		createOtherExpandableComposite();
 		createBookComposite();
 
+		updateCustomFields(Application.getPreferenceStore().getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
 	}
 
 	/**
@@ -513,7 +522,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		tableGridData.horizontalAlignment = GridData.FILL;
 
 		customFieldsTable = new Table(customFieldsComposite, SWT.BORDER
-				| SWT.CHECK);
+				| SWT.CHECK | SWT.FULL_SELECTION);
 		customFieldsTable.setLayoutData(tableGridData);
 		customFieldsTable.setHeaderVisible(true);
 
@@ -562,6 +571,9 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		accountText = getFormToolkit().createText(otherComposite, "");
 		getFormToolkit().paintBordersFor(otherComposite);
 		otherExpandableComposite.setClient(otherComposite);
+		FIXTextExtractor extractor = new FIXTextExtractor(accountText,Account.FIELD, FIXDataDictionaryManager.getDictionary());
+
+		extractors.add(extractor);
 	}
 
 
@@ -609,6 +621,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 			for (AbstractFIXExtractor extractor : extractors) {
 				extractor.modifyOrder(aMessage);
 			}
+			addCustomFields(aMessage);
 			Application.getOrderManager().handleInternalMessage(aMessage);
 			clear();
 		} catch (Exception e) {
@@ -616,6 +629,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 					"Error sending order: " + e.getMessage(), e);
 		}
 	}
+
 
 	protected void handleCancel() {
 		clear();
@@ -676,8 +690,67 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(event.getProperty())){
-			System.out.println("GOT HERE");
+		String property = event.getProperty();
+		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(property)){
+			String valueString = event.getNewValue().toString();
+			updateCustomFields(valueString);
+		}
+	}
+
+	private void updateCustomFields(String preferenceString) {
+		customFieldsTable.setItemCount(0);
+		EventList<Entry<String, String>> fields = MapEditorUtil.parseString(preferenceString);
+		for (Entry<String, String> entry : fields) {
+			TableItem item = new TableItem(customFieldsTable, SWT.NONE);
+			item.setText(new String[]{"", entry.getKey(), entry.getValue()});
+		}
+		TableColumn[] columns = customFieldsTable.getColumns();
+		for (TableColumn column : columns) {
+			column.pack();
+		}
+	}
+
+	private void addCustomFields(Message message) throws MarketceteraException {
+		TableItem[] items = customFieldsTable.getItems();
+		DataDictionary dictionary = FIXDataDictionaryManager.getDictionary();
+		for (TableItem item : items) {
+			if (item.getChecked()) {
+				String key = item.getText(1);
+				String value = item.getText(2);
+				int fieldNumber = -1;
+				try {
+					fieldNumber = Integer.parseInt(key);
+				} catch (Exception e) {
+					try {
+						fieldNumber = dictionary.getFieldTag(key);
+					} catch (Exception ex) {
+
+					}
+				}
+				if (fieldNumber > 0) {
+					if (dictionary.isHeaderField(fieldNumber)) {
+						insertFieldIfMissing(fieldNumber, value, message
+								.getHeader());
+					}
+					if (dictionary.isTrailerField(fieldNumber)) {
+						insertFieldIfMissing(fieldNumber, value, message
+								.getTrailer());
+					} else if (dictionary.isField(fieldNumber)) {
+						insertFieldIfMissing(fieldNumber, value, message);
+					}
+				} else {
+					throw new MarketceteraException("Could not find field "
+							+ key);
+				}
+			}
+		}
+	}
+
+	private void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
+		if (fieldMap.isSetField(fieldNumber)){
+			throw new MarketceteraException("Field "+fieldNumber+" is already set in message.");
+		} else {
+			fieldMap.setField(new StringField(fieldNumber, value));
 		}
 	}
 

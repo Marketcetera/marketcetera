@@ -94,7 +94,7 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 		jmsConnector = new JMSConnector();
 
-		orderManager = new OrderManager(idFactory, fixMessageHistory);
+		orderManager = new OrderManager(fixMessageHistory);
 		
 		setUpQuoteFeed();
 		
@@ -221,6 +221,7 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 			getMainConsoleLogger().warn("Error connecting to web app for ID base, reverting to built in IDFactory.");
 			idFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+InetAddress.getLocalHost().toString());
 		}
+		getOrderManager().setIDFactory(idFactory);
 	}
 	
 
