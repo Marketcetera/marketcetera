@@ -54,7 +54,7 @@
          id="org.marketcetera.core"
          download-size="0"
          install-size="0"
-         version="0.1.3"
+         version="0.1.4"
          unpack="false"/>
 
    <plugin
@@ -323,6 +323,12 @@
          unpack="false"/>
 
       <plugin id="org.marketcetera.photon.registry"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+      <plugin id="org.marketcetera.bogusfeed"
          download-size="0"
          install-size="0"
          version="0.0.0"
