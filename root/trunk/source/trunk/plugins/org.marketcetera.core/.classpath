@@ -4,10 +4,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT-tests.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT-test-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT-tests.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT-test-sources.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="output" path="bin"/>
