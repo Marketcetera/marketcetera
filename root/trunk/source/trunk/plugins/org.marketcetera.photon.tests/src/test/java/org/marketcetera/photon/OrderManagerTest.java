@@ -83,13 +83,14 @@ public class OrderManagerTest extends TestCase {
 		idFactory = new InMemoryIDFactory(999);
 		messageHistory = new FIXMessageHistory();
 		queuedMessages = new LinkedList<Message>();
-		orderManager = new OrderManager(idFactory, messageHistory) {
+		orderManager = new OrderManager(messageHistory) {
 			@Override
 			protected boolean sendToApplicationQueue(Message message) throws JMSException {
 				queuedMessages.add(message);
 				return true;
 			}
 		};
+		orderManager.setIDFactory(idFactory);
 	}
 
 	/*
@@ -211,12 +212,6 @@ public class OrderManagerTest extends TestCase {
 		FIXDataDictionaryManager.getDictionary().validate(filledCancel);
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.getIDFactory()'
-	 */
-	public void testGetIDFactory() throws NoMoreIDsException {
-		assertEquals("999", orderManager.getIDFactory().getNext());
-	}
 
 
 	/*

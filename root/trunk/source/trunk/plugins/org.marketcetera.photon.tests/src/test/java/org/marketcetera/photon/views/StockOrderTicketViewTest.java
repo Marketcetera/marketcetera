@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.Application;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
@@ -14,6 +15,13 @@ import quickfix.field.Side;
 import quickfix.field.TimeInForce;
 
 public class StockOrderTicketViewTest extends ViewTestBase {
+
+	@Override
+	protected void setUp() throws Exception {
+		Application.initPreferenceStore();
+		
+		super.setUp();
+	}
 
 	public StockOrderTicketViewTest(String name) {
 		super(name);

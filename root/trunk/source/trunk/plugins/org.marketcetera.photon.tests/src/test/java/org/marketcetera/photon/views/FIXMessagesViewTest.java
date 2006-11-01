@@ -13,11 +13,13 @@ import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
 import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.fix42.ExecutionReport;
+import quickfix.fix42.Heartbeat;
 
 public class FIXMessagesViewTest extends ViewTestBase {
 
@@ -47,6 +49,20 @@ public class FIXMessagesViewTest extends ViewTestBase {
 		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("orderid1", message.getString(OrderID.FIELD));
+	}
+	
+	public void testShowHeartbeats() throws Exception {
+		FIXMessageHistory hist = new FIXMessageHistory();
+		FIXMessagesView view = (FIXMessagesView) getTestView();
+		view.setInput(hist);
+		hist.addIncomingMessage(new Heartbeat());
+		delay(1);
+		TableViewer tableViewer = view.getMessagesViewer();
+		Table table = tableViewer.getTable();
+		TableItem item = table.getItem(0);
+		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
+		Message message = returnedMessageHolder.getMessage();
+		assertEquals(MsgType.HEARTBEAT, message.getHeader().getString(MsgType.FIELD));
 	}
 	
 	@Override
