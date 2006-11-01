@@ -17,6 +17,7 @@
       <import plugin="org.marketcetera.photon"/>
       <import plugin="org.eclipse.sdk"/>
       <import plugin="org.junit"/>
+      <import plugin="org.marketcetera.bogusfeed"/>
    </requires>
 
 </plugin>
