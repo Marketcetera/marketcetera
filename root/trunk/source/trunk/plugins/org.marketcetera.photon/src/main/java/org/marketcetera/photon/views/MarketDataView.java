@@ -9,6 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.Application;
@@ -16,7 +17,6 @@ import org.marketcetera.photon.model.IncomingMessageHolder;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
-import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
@@ -52,6 +52,11 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 		}
 	};
 
+	public MarketDataView()
+	{
+		super(false);
+	}
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -95,7 +100,7 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 	    
 	    // Set the cell modifier for the viewer
 	    aMessagesViewer.setCellModifier(new MarketDataCellModifier(this));
-	    
+
 	    return aMessagesViewer;
 	}
 

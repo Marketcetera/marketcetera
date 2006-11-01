@@ -35,9 +35,19 @@ public abstract class MessagesView extends ViewPart {
 	private Clipboard clipboard;
 	private CopyMessagesAction copyMessagesAction;
 	private EventList<MessageHolder> rawInputList;
+	private final boolean sortableColumns;
 
+	public MessagesView()
+	{
+		this(true);
+	}
 
-    protected void formatTable(Table messageTable) {
+    public MessagesView(boolean sortableColumns) {
+		this.sortableColumns = sortableColumns;
+    	
+    }
+
+	protected void formatTable(Table messageTable) {
         messageTable.getVerticalBar().setEnabled(true);
         messageTable.setBackground(
         		messageTable.getDisplay().getSystemColor(
@@ -124,15 +134,16 @@ public abstract class MessagesView extends ViewPart {
 		SortedList<MessageHolder> extractedList = 
 			new SortedList<MessageHolder>(rawInputList = input);
 
-		if (chooser != null){
-			chooser.dispose();
-			chooser = null;
+		if (sortableColumns){
+			if (chooser != null){
+				chooser.dispose();
+				chooser = null;
+			}
+			chooser = new TableComparatorChooser<MessageHolder>(
+								messageTable, 
+								tableFormat,
+								extractedList, false);
 		}
-		chooser = new TableComparatorChooser<MessageHolder>(
-							messageTable, 
-							tableFormat,
-							extractedList, false);
-
 		messagesViewer.setInput(extractedList);
 	}
 	

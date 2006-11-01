@@ -8,6 +8,7 @@ import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.TextContributionItem;
 
 import quickfix.field.MsgType;
 import ca.odell.glazedlists.EventList;
@@ -53,7 +54,7 @@ public class FIXMessagesView extends HistoryMessagesView {
 	}
 
     protected void initializeToolBar(IToolBarManager theToolBarManager) {
-//    	theToolBarManager.add(new TextContributionItem());
+    	//theToolBarManager.add(new TextContributionItem(""));
     	theToolBarManager.add(new ShowHeartbeatsAction(this));
     }
 
