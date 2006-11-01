@@ -8,6 +8,8 @@ Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n
 Eclipse-BuddyPolicy: registered
+Bundle-ClassPath: .,
+ src/main/resources
 Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.apache.log4j;visibility:=reexport,
  org.eclipse.core.commands;visibility:=reexport,
