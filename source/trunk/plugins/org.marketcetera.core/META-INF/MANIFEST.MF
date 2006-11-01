@@ -2,11 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Marketcetera Core Plug-in
 Bundle-SymbolicName: org.marketcetera.core
-Bundle-Version: 0.1.3
-Bundle-ClassPath: lib/core-0.1.2-SNAPSHOT-sources.jar,
- lib/core-0.1.2-SNAPSHOT.jar,
- lib/core-0.1.2-SNAPSHOT-tests.jar,
- lib/core-0.1.2-SNAPSHOT-test-sources.jar
+Bundle-Version: 0.1.4
+Bundle-ClassPath: lib/core-0.1.4-SNAPSHOT.jar,
+ lib/core-0.1.4-SNAPSHOT-sources.jar,
+ lib/core-0.1.4-SNAPSHOT-tests.jar,
+ lib/core-0.1.4-SNAPSHOT-test-sources.jar
 Eclipse-LazyStart: false
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
