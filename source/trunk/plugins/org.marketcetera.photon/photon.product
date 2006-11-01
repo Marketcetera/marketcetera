@@ -28,7 +28,7 @@ Visit http://www.marketcetera.org
       startupProgressRect="20,204,364,10"
       startupMessageRect="225,75,100,20"
       startupForegroundColor="555555" />
-   <launcher name="photon.exe">
+   <launcher name="photon">
       <macosx icon="/org.marketcetera.photon/icons/marketcetera/photon.icns"/>
       <solaris/>
       <win useIco="true">
@@ -103,7 +103,6 @@ Visit http://www.marketcetera.org
 
    <features>
       <feature id="org.marketcetera.photon.feature" version="0.1.4"/>
-      <feature id="org.rubypeople.rdt" version="0.0.0"/>
    </features>
 
 </product>
