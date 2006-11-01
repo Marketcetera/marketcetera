@@ -6,13 +6,10 @@ import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Map.Entry;
 
-import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.MMapEntry;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
@@ -27,13 +24,9 @@ import quickfix.field.MDEntryType;
 import quickfix.field.MDMkt;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class BogusFeed implements IQuoteFeed {
+public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 
-	private FeedStatus feedStatus;
-	private List<IFeedComponentListener> feedComponentListeners = new LinkedList<IFeedComponentListener>();
-	private List<Map.Entry<MSymbol, IMessageListener>> listenedSymbols = new LinkedList<Map.Entry<MSymbol, IMessageListener>>();
 	private QuoteGeneratorThread quoteGeneratorThread;
 	
 
@@ -125,74 +118,12 @@ public class BogusFeed implements IQuoteFeed {
 	}
 
 	
-	public void listenLevel2(MSymbol symbol, IMessageListener listener) {
-		synchronized (listenedSymbols) {
-			MMapEntry<MSymbol, IMessageListener> entry = new MMapEntry<MSymbol, IMessageListener>(symbol, listener);
-			listenedSymbols.add(entry);
-		}
-	}
-
-	public void unlistenLevel2(MSymbol symbol, IMessageListener listener){
-		synchronized (listenedSymbols) {
-			for (Map.Entry<MSymbol, IMessageListener> entry : listenedSymbols) {
-				if (entry.getKey().equals(symbol) && entry.getValue().equals(listener)){
-					listenedSymbols.remove(entry);
-					break;
-				}
-			}
-		}
-	}
-
-	public void addFeedComponentListener(IFeedComponentListener arg0) {
-		feedComponentListeners.add(arg0);
-	}
-
-	public FeedStatus getFeedStatus() {
-		return feedStatus;
-	}
-
 	public FeedType getFeedType() {
 		return FeedType.SIMULATED;
 	}
 
 	public String getID() {
 		return "Bogus Book";
-	}
-
-	public void removeFeedComponentListener(IFeedComponentListener arg0) {
-		feedComponentListeners.remove(arg0);
-	}
-	
-	private void setFeedStatus(FeedStatus status){
-		feedStatus = status;
-		fireFeedStatusChanged();
-	}
-	
-	public void fireFeedStatusChanged(){
-		for (IFeedComponentListener listener: feedComponentListeners) {
-			listener.feedComponentChanged(this);
-		}
-	}
-
-	public void listenQuotes(MSymbol symbol, IMessageListener listener) {
-		synchronized (listenedSymbols) {
-			MMapEntry<MSymbol, IMessageListener> entry = new MMapEntry<MSymbol, IMessageListener>(symbol, listener);
-			listenedSymbols.add(entry);
-		}
-	}
-
-	public void listenTrades(MSymbol symbol, IMessageListener listener) {
-		throw new NotImplementedException();
-	}
-
-	public void unlistenQuotes(MSymbol symbol, IMessageListener listener) {
-		synchronized (listenedSymbols) {
-			listenedSymbols.remove(symbol);
-		}
-	}
-
-	public void unlistenTrades(MSymbol symbol, IMessageListener listener) {
-		throw new NotImplementedException();
 	}
 
 }
