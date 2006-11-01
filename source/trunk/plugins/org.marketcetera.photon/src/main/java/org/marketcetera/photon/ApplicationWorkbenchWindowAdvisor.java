@@ -103,9 +103,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 		try {
 			Application.initJMSConnector();
-			Application.initQuoteFeed();
 		} catch (Exception ex){
-			Application.getMainConsoleLogger().error("Exeption making network connections ", ex);
+			Application.getMainConsoleLogger().error("Exeption making connection to JMS: "+ex.getMessage(), ex);
+		}
+		try {
+			Application.initQuoteFeed();
+		} catch (Exception ex) {
+			Application.getMainConsoleLogger().error("Exeption making connection to quote feed: "+ex.getMessage(), ex);
 		}
 		Application.getMainConsoleLogger().info(
 				"Application initialized: " + new Date());
