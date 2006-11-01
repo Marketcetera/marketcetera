@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT-sources.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT-tests.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/core-0.1.4-SNAPSHOT-test-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT-sources.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT-tests.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/core-0.1.2-SNAPSHOT-test-sources.jar"/>
