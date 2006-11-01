@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
@@ -9,8 +8,6 @@ import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.MessageHolder;
 import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
-import org.marketcetera.photon.ui.MessageListTableFormat;
-import org.marketcetera.photon.ui.TextContributionItem;
 
 import quickfix.field.MsgType;
 import ca.odell.glazedlists.EventList;
