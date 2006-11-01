@@ -30,7 +30,9 @@ import org.marketcetera.photon.model.FIXMessageHistory;
 import org.marketcetera.photon.model.HttpDatabaseIDFactory;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
-import org.marketcetera.photon.quotefeed.ScriptingAwareQuoteFeed;
+import org.marketcetera.photon.scripting.IScriptRegistry;
+import org.marketcetera.photon.scripting.ScriptRegistry;
+import org.marketcetera.photon.scripting.ScriptingAwareQuoteFeed;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
@@ -66,6 +68,7 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	private static FIXMessageHistory fixMessageHistory;
 	private static IQuoteFeed quoteFeed;
+	private static IScriptRegistry scriptRegistry = new ScriptRegistry();
 	private static ScopedPreferenceStore preferenceStore;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
@@ -308,6 +311,18 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 		return quoteFeed;
 	}
 
+	public static IScriptRegistry getScriptRegistry() {
+		return scriptRegistry;
+	}
+	
+	/**
+	 * This method is not part of the API and only intended for testing, i.e., supplying a mock
+	 * script registry.
+	 */
+	public static void setScriptRegistry(IScriptRegistry registry) {
+		scriptRegistry = registry;
+	}
+	
 	private void changeLogLevel(String levelValue){
 		Logger logger = getMainConsoleLogger();
 		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)){

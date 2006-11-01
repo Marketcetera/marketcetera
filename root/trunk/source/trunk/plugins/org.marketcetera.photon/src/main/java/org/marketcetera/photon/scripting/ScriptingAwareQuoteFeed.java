@@ -1,31 +1,16 @@
-package org.marketcetera.photon.quotefeed;
+package org.marketcetera.photon.scripting;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
-import java.net.URI;
 import java.util.List;
-import java.util.Map.Entry;
 
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.Application;
-import org.marketcetera.photon.preferences.MapEditorUtil;
-import org.marketcetera.photon.preferences.ScriptRegistryPage;
-import org.marketcetera.photon.scripting.Script;
-import org.marketcetera.photon.scripting.ScriptScheduler;
 import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.Message;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.matchers.Matcher;
+
 
 /**
  * A quote feed wrapper that executes registered scripts on events (i.e., trade,
@@ -179,55 +164,22 @@ public class ScriptingAwareQuoteFeed implements IQuoteFeed, IMessageListener {
 	 * @see org.marketcetera.quotefeed.IMessageListener#onQuote(quickfix.Message)
 	 */
 	public void onQuote(Message message) {
-		List<String> scriptPaths = getOnQuoteScripts();
-
-		for (String path : scriptPaths) {
-			Script aScript;
+		List<IScript> scripts = getOnQuoteScripts();
+		for (IScript script : scripts) {
 			try {
-				IWorkspace workspace = ResourcesPlugin.getWorkspace();
-				IResource resource = workspace.getRoot().findMember(path);
-				URI resourceURI = resource.getRawLocationURI();
-
-				aScript = new Script(readFileAsString(resourceURI.getPath()));
-				scriptScheduler.submitScript(aScript);
+				scriptScheduler.submitScript(script);
 			} catch (Exception e) {
-				Application.getMainConsoleLogger().error("Error executing script "+path, e);
+				Application.getMainConsoleLogger().error("Error executing script "+script, e);
 			}
 		}
 	}
 
-	private List<String> getOnQuoteScripts() {
-		return getEventScripts("quote"); // agl todo:change use a constant
-											// from the model (once we have it)
+	private List<IScript> getOnQuoteScripts() {
+		return Application.getScriptRegistry().listScriptsByEventType(ScriptingEventType.QUOTE);
 	}
 
-	private List<String> getOnTradeScripts() {
-		return getEventScripts("trade"); // agl todo:change use a constant
-											// from the model (once we have it)
-	}
-
-	private List<String> getEventScripts(final String eventType) {
-		String encodedScriptList = Application.getPreferenceStore().getString(
-				ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE);
-		// agl (any event type, script path) tuples
-		EventList<Entry<String, String>> completeEventScriptList = MapEditorUtil
-				.parseString(encodedScriptList);
-		// agl (specified event type, script path) tuples
-		FilterList<Entry<String, String>> eventScriptList = new FilterList<Entry<String, String>>(
-				completeEventScriptList, new Matcher<Entry<String, String>>() {
-					public boolean matches(Entry<String, String> entry) {
-						return entry.getKey().equalsIgnoreCase(eventType);
-					}
-				});
-		// agl only (script path)'s
-		List<String> scriptList = new FunctionList<Entry<String, String>, String>(
-				eventScriptList,
-				new FunctionList.Function<Entry<String, String>, String>() {
-					public String evaluate(Entry<String, String> entry) {
-						return entry.getValue();
-					}
-				});
-		return scriptList;
+	private List<IScript> getOnTradeScripts() {
+		return Application.getScriptRegistry().listScriptsByEventType(ScriptingEventType.TRADE);
 	}
 
 	/*
@@ -257,30 +209,5 @@ public class ScriptingAwareQuoteFeed implements IQuoteFeed, IMessageListener {
 	 */
 	public void onTrades(Message[] messages) {
 		// agl todo:implement
-	}
-
-	/**
-	 * @param filePath
-	 *            the name of the file to open. Not sure if it can accept URLs
-	 *            or just filenames. Path handling could be better, and buffer
-	 *            sizes are hardcoded
-	 */
-	private static String readFileAsString(String filePath)
-			throws java.io.IOException {
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(filePath));
-			char[] buf = new char[1024];
-			int numRead = 0;
-			while ((numRead = reader.read(buf)) != -1) {
-				String readData = String.valueOf(buf, 0, numRead);
-				fileData.append(readData);
-				buf = new char[1024];
-			}
-		} finally {
-			if (reader != null ) reader.close();
-		}
-		return fileData.toString();
 	}
 }
