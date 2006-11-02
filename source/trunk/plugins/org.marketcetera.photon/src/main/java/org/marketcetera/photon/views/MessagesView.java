@@ -104,7 +104,7 @@ public abstract class MessagesView extends ViewPart {
 	}
 
     protected Table createMessageTable(Composite parent) {
-        Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER | SWT.VIRTUAL);
+        Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
         GridData messageTableLayout = new GridData();
         messageTableLayout.horizontalSpan = 2;
         messageTableLayout.verticalSpan = 1;
