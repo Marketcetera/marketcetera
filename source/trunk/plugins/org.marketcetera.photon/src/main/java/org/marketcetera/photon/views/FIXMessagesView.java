@@ -33,7 +33,7 @@ public class FIXMessagesView extends HistoryMessagesView {
 		DIRECTION("D"), TRANSACTTIME("TransactTime"), MSGTYPE("MsgType"), CLORDID(
 				"ClOrdID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
-				"CumQty"), LEAVESQTY("LeavesQty"), Price("Price"), AVGPX(
+				"CumQty"), LEAVESQTY("LeavesQty"), ORDTYPE("OrdType"), Price("Price"), AVGPX(
 				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
 				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID"), ORDERID(
 				"OrderID");

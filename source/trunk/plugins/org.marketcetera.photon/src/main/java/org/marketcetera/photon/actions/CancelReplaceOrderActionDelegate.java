@@ -114,7 +114,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 				Message cancelReplaceMessage = FIXMessageUtil.newCancelReplaceFromMessage(oldMessage);
 				cancelReplaceMessage.setField(new ClOrdID(Application.getIDFactory().getNext()));
 				StockOrderTicket.getDefault().showOrder(cancelReplaceMessage);
-			} catch (NoMoreIDsException e) {
+			} catch (NoMoreIDsException e) {	
 				Application.getMainConsoleLogger().error("Ran out of order ID's");
 			} catch (FieldNotFound e) {
 				Application.getMainConsoleLogger().error("Could not send order: "+e.getMessage());
