@@ -6,7 +6,6 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.marketcetera.photon
-Require-Bundle: org.apache.mina.java5,
- org.quickfixj,
+Require-Bundle: org.quickfixj,
  net.java.dev.glazedlists,
  org.marketcetera.photon
