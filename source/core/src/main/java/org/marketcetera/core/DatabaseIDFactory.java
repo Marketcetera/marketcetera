@@ -54,7 +54,7 @@ public class DatabaseIDFactory extends ExternalIDFactory {
     }
 
 
-    /** Lock the table to prevent concurrent access with {@link ResultSet.CONCUR_UPDATABLE} */
+    /** Lock the table to prevent concurrent access with {@link ResultSet#CONCUR_UPDATABLE} */
     protected void grabIDs() throws NoMoreIDsException {
         try {
             Statement stmt = dbConnection.createStatement(
