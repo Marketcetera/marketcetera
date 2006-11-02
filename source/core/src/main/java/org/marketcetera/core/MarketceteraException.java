@@ -7,6 +7,8 @@ package org.marketcetera.core;
 @ClassVersion("$Id$")
 public class MarketceteraException extends Exception
 {
+    Throwable nestedException;
+
     /** Should used with an already localized string
      * otherwise, use the {@link #MarketceteraException(MessageKey)} instead
      * @param message
@@ -22,6 +24,7 @@ public class MarketceteraException extends Exception
     public MarketceteraException(String msg, Throwable nested)
     {
         super(msg, nested);
+	nestedException = nested;
     }
 
     public MarketceteraException(Throwable nested) { super(nested); }
@@ -33,5 +36,25 @@ public class MarketceteraException extends Exception
     public MarketceteraException(MessageKey inKey, Throwable nested)
     {
         super(MessageKey.getMessageString(inKey.toString()), nested);
+    }
+
+    @Override
+    public String getMessage(){
+	String superMessage = super.getMessage();
+	if (superMessage == null && nestedException != null)
+	    {
+		return nestedException.getMessage();
+	    }
+	return superMessage;
+    }
+
+    @Override
+    public String getLocalizedMessage(){
+	String superMessage = super.getMessage();
+	if (superMessage == null && nestedException != null)
+	    {
+		return nestedException.getMessage();
+	    }
+	return superMessage;
     }
 }
