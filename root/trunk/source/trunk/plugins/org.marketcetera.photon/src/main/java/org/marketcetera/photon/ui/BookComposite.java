@@ -74,6 +74,11 @@ public class BookComposite extends Composite implements IMessageListener
 		
 	}
 
+	@Override
+	public void dispose() {
+		super.dispose();
+	}
+
 	private TableViewer getTableViewer(Table theTable) {
 		TableViewer tableViewer = new TableViewer(theTable);
 		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values());

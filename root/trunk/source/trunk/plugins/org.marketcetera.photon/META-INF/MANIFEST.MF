@@ -32,7 +32,6 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.eclipse.ui.ide;visibility:=reexport,
  jfun.parsec;visibility:=reexport,
  org.marketcetera.photon.scripting;visibility:=reexport,
- org.marketcetera.bogusfeed,
  org.jruby;visibility:=reexport
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
