@@ -17,6 +17,7 @@ import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import ca.odell.glazedlists.swt.EventTableViewer;
 
+@Deprecated
 @ClassVersion("$Id$")
 public class ViewerSelectionAdapter<LIST_TYPE> implements ISelectionProvider {
 
