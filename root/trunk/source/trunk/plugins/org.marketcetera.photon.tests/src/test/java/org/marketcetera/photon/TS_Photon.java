@@ -3,6 +3,7 @@ package org.marketcetera.photon;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.marketcetera.photon.parser.ParserTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
@@ -15,6 +16,7 @@ public class TS_Photon {
 		suite.addTestSuite(FIXMessagesViewTest.class);
 		suite.addTestSuite(FillsViewTest.class);
 		suite.addTestSuite(AveragePricesViewTest.class);
+		suite.addTestSuite(ParserTest.class);
 		return suite;
 	}
 

@@ -52,6 +52,11 @@ public class ParserTest extends TestCase {
     	result = command.getMessage();
     	verifyNewOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null);
 
+    	order = "ss 1234 IBM 1.8 day";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null);
+
     	order = "SSE 999 IBM .7";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
