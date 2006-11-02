@@ -85,21 +85,21 @@ public class CommandParser {
 	final Parser<SideImage> sideImageParser = Parsers.token(
 			"sideImageParser", new FromToken<SideImage>() {
 				public SideImage fromToken(Tok tok) {
-					return SideImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText());
+					return SideImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase());
 				}
 			});
 
 	final Parser<TimeInForceImage> timeInForceParser = Parsers.token(
 			"sideImageParser", new FromToken<TimeInForceImage>() {
 				public TimeInForceImage fromToken(Tok tok) {
-					return TimeInForceImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText());
+					return TimeInForceImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase());
 				}
 			});
 	
 	final Parser<CommandImage> commandImageParser = Parsers.token(
 			"commandImageParser", new FromToken<CommandImage>() {
 				public CommandImage fromToken(Tok tok) {
-					return CommandImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText());
+					return CommandImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase());
 				}
 			});
 
