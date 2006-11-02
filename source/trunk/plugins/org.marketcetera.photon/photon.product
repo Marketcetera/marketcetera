@@ -97,6 +97,7 @@ Visit http://www.marketcetera.org
       <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.marketcetera.core"/>
       <plugin id="org.marketcetera.photon"/>
+      <plugin id="org.marketcetera.bogusfeed"/>
       <plugin id="org.quickfixj"/>
       <plugin id="org.skife.kasparov.csv"/>
    </plugins>
