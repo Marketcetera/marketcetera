@@ -29,9 +29,9 @@
          id="org.rubypeople.rdt"
          version="0.0.0"/>
 
-   <requires>
+   <!--requires>
       <import plugin="org.marketcetera.bogusfeed"/>
-   </requires>
+   </requires-->
 
    <plugin
          id="net.java.dev.glazedlists"
