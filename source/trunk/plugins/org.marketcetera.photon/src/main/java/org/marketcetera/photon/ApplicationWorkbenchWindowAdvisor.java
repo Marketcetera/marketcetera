@@ -7,6 +7,8 @@ import org.apache.log4j.SimpleLayout;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -15,6 +17,7 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.views.WebBrowserView;
 
 /**
  * Required by the RCP platform this class is responsible for setting up the
@@ -70,6 +73,19 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	 */
 	@Override
 	public void postWindowOpen() {
+		IWorkbenchPage page = this.getWindowConfigurer().getWindow().getActivePage();
+
+//		IViewReference[] references = page.getViewReferences();
+//		for (IViewReference reference : references) {
+//			if (WebBrowserView.ID.equals(reference.getId()))
+//			{
+//				WebBrowserView view = (WebBrowserView) reference.getView(false);
+//				if (view != null){
+//					view.go("http://www.marketdcetera.com/");
+//				}
+//			}
+//		}
+
 		initStatusLine();
 
 		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager()
@@ -84,7 +100,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			}
 		} 
 				
-		IWorkbenchPage page = this.getWindowConfigurer().getWindow().getActivePage();
 
 		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);

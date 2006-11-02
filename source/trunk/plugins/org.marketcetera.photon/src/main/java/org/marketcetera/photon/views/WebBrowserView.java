@@ -38,8 +38,6 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 	private Browser browser;
 
-	private String location;  //  @jve:decl-index=0:
-
 	private FormToolkit formToolkit;
 
 	private Composite top;
@@ -58,7 +56,6 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 	public WebBrowserView() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -103,18 +100,16 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
         
 		browser.addStatusTextListener(this);
 		browser.addLocationListener(this);
-		try {
-			if (location != null) {
-				setUrl(location);
-			}
-		} catch (Throwable th){
-			th.printStackTrace();
-		}
 	}
 
 	private void go()
 	{
 		String newLocation = addressText.getText();
+		go(newLocation);
+	}
+
+
+	public void go(String newLocation) {
 		try {
 			new URL(newLocation);
 			setUrl(newLocation);
@@ -142,7 +137,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 
 	public void browseToGoogleFinanceForSymbol(MSymbol symbol) {
 		if (browser != null){
-			location = formatGoogleURL(symbol);
+			String location = formatGoogleURL(symbol);
 			setUrl(location);
 		}
 	}
