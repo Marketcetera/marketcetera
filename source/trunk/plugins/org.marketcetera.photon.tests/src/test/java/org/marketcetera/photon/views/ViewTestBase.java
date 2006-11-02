@@ -32,7 +32,6 @@ public abstract class ViewTestBase extends TestCase {
 
 	@Override
 	protected void tearDown() throws Exception {
-		super.tearDown();
 		waitForJobs();
 		
 		PlatformUI.
@@ -40,6 +39,8 @@ public abstract class ViewTestBase extends TestCase {
 			getActiveWorkbenchWindow().
 			getActivePage().
 			hideView(testView);
+		
+		super.tearDown();
 	}
 
 	protected void delay(long millis) {
