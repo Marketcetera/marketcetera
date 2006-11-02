@@ -360,7 +360,7 @@ public class FIXMessageUtil {
 		Message cancelReplaceMessage = new OrderCancelReplaceRequest();
 		cancelReplaceMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
 		fillFieldsFromExistingMessage(cancelReplaceMessage, oldMessage);
-		if (oldMessage.getChar(OrdType.FIELD) != OrdType.MARKET && oldMessage.isSetField(Price.FIELD)){
+		if (oldMessage.isSetField(Price.FIELD)){
 			cancelReplaceMessage.setField(oldMessage.getField(new Price()));
 		}
 		if (oldMessage.isSetField(OrderQty.FIELD)){
