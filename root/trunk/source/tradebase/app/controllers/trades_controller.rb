@@ -52,7 +52,7 @@ class TradesController < ApplicationController
           redirect_to :action => 'list'
         else
           logger.debug("trade not created: "+collect_errors_into_string(@trade.errors))
-          throw Exception
+          throw Exception.new
         end
       end
     rescue => ex
@@ -84,7 +84,7 @@ class TradesController < ApplicationController
           redirect_to :action => 'show', :id => @trade
         else
           logger.debug("trade not created, nErrors: "+@trade.errors.length.to_s)
-          throw Exception
+          throw Exception.new
         end
       end 
     rescue => ex

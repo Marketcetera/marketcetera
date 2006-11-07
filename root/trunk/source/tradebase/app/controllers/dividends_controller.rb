@@ -36,7 +36,7 @@ class DividendsController < ApplicationController
           flash[:notice] = 'Dividend was successfully created.'
           redirect_to :action => 'list'
         else
-          throw Exception
+          throw Exception.new
         end
       rescue => ex
         logger.debug("exception in divident save with errors: "+@dividend.errors.length.to_s + 
