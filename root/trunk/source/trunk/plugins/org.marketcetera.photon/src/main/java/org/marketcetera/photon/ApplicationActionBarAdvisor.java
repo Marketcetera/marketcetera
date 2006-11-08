@@ -32,8 +32,7 @@ import org.marketcetera.quotefeed.IQuoteFeed;
  * toolbars, action sets, menu bars, the cool bar, and the status bar.
  *
  * @author gmiller
- * @author alissovski
- *
+ * @author andrei@lissovski.org
  */
 @ClassVersion("$Id$")
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
@@ -229,9 +228,20 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(preferencesAction);
 		menuBar.add(menu);
 
+		// Script menu
+		menu = new MenuManager(
+				Messages.ApplicationActionBarAdvisor_ScriptMenuName,
+				Messages.ApplicationActionBarAdvisor_ScriptMenuID);
+		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));  //agl necessary since the RunScript action is contributed as an editorContribution (see plugin.xml) 
+		menuBar.add(menu);
+
+		// Contributions to the top-level menu
+		menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
+
 		// Window menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_WindowMenuName);
+				Messages.ApplicationActionBarAdvisor_WindowMenuName,
+				IWorkbenchActionConstants.M_WINDOW);
 		//menu.add(viewSecurityAction);
 		menu.add(new Separator());
 		menu.add(openNewWindowAction);
@@ -269,17 +279,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		subMenu.add(previousPerspectiveAction);
 		menu.add(subMenu);
 		menu.add(viewMenu);
+		menu.add(new Separator(IWorkbenchActionConstants.WINDOW_EXT));
 
 		menuBar.add(menu);
-
-		// Script menu
-		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_ScriptMenuName,
-				Messages.ApplicationActionBarAdvisor_ScriptMenuID);
-		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-		menuBar.add(menu);
-
-		menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 
 		// Help menu
 		menu = new MenuManager(
