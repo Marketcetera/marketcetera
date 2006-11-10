@@ -1,3 +1,5 @@
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trades", :action_name => "List Trades" } %>
+
 <%= render :partial => 'trades/trade_list_display' %>
 
 <%= pagination_links(@trade_pages) %>

@@ -1,38 +1,60 @@
-<h1>Available Queries</h1>
-List trades by: 
-  <ol>
-  <li>
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Reports"} %>
+<h1>Reports</h1>
+<p>Please choose from the following reports:</p>
     <%=  start_form_tag :action => 'by_symbol' %>
-    <p><label for="m_symbol_root">Symbol</label><br/>
-       <%= text_field_with_auto_complete :m_symbol, :root  %>
-    </p>
-    <%= submit_tag 'Search by Symbol' %>
+        <fieldset>
+            <h2>Trades By Symbol</h2>
+            <p>List all trades for a particular symbol.</p>
+            <label for="m_symbol_root">Symbol</label>
+            <%= text_field_with_auto_complete :m_symbol, :root  %>
+        </fieldset>
+        <div>
+            <%= submit_tag 'Search by Symbol', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
     <%= end_form_tag %>
-  </li>
-  <li>Search by Date<br>
+
     <%=  start_form_tag :action => 'by_date' %>
-    <div class="date_from_to">
-    <table>
-    <tr><td><label for="from_date">From</label></td><td><%= date_select 'date', 'from', :order => [:year, :month, :day] %></td></tr>
-    <tr><td><label for="from_date">To</label></td><td><%= date_select 'date', 'to', :order => [:year, :month, :day] %></td></tr>
-    </table>
-    </div>
-    <%= submit_tag 'Search by Trade Date' %>
+        <fieldset>
+            <h2>Trades By Date</h2>
+            <p>List all trades posting between specified dates.</p>
+            
+            <div class="form_left">
+                <label for="from_date">From</label>
+                <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+            </div>
+            <div class="form_right">
+                <label for="to_date">To</label>
+                <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
+            </div>
+        </fieldset>
+        <div>
+            <%= submit_tag 'Search by Date', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
     <%= end_form_tag %>
-  </li>
-  <li>
+
     <%=  start_form_tag :action => 'by_account' %>
-    <p><label for="account_nickname">Account</label><br/>
-        <%= text_field_with_auto_complete :account, :nickname %>
-    </p>
-    <%= submit_tag 'Search by Account' %>
+        <fieldset>
+            <h2>Trades By Account</h2>
+            <p>List all trades for a particular account</p>
+            <label for="account_nickname">Account</label>
+            <%= text_field_with_auto_complete :account, :nickname %>
+        </fieldset>
+        <div>
+            <%= submit_tag 'Search by Account', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
     <%= end_form_tag %>
-  </li>
-  <li>
+        
     <%=  start_form_tag :controller => 'positions', :action => 'positions_as_of' %>
-    <p><label for="as_of">Positions as of: </label><br/><%= date_select :position, :as_of, :order => [:year, :month, :day] %>
-    </p>
-    <%= submit_tag 'List Positions' %>
+        <fieldset>
+            <h2>Positions As Of Date</h2>
+            <label for="as_of">Positions as of: </label>
+            <%= date_select :position, :as_of, :order => [:year, :month, :day] %>
+        </fieldset>
+        <div>
+            <%= submit_tag 'List Positions', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
     <%= end_form_tag %>
-  </li>
-  </ol>

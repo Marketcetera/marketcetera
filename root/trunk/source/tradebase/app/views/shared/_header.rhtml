@@ -1,16 +1,33 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-<meta name="description" content="Marketcetera trade database" />
-<%= stylesheet_link_tag "scaffold" %>
-<%= stylesheet_link_tag "marketcetera" %>
-<%= javascript_include_tag "scriptaculous/prototype" %>
-<%= javascript_include_tag "scriptaculous/scriptaculous" %>
-<%= javascript_include_tag "marketcetera" %>
-<title>Marketcetera Trade Database: <%= controller.action_name + ' ' + controller.controller_name %></title>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Marketcetera trade database" />
+    <meta name="robots" content="index, follow" />
+    <%= stylesheet_link_tag "global" %>
+    <%= stylesheet_link_tag "scaffold" %>
+    <%= javascript_include_tag "marketcetera/global" %>
+    <title>Marketcetera Trade Database: <%= controller.action_name + ' ' + controller.controller_name %></title>
+    <link rel="alternate" type="application/rss+xml" title="" href="" />
+    <link rel="shorcut icon" type="image/x-ico" href="/images/favicon.ico" />
 </head>
 
-<body><div id="wrap">
+<body>
+    <div id="productcontainer">
+<!-- BEGIN HEADER -->
+      <div id="header">
+        <div id="logo">
+          <a title="Marketcetera" href="/"><img src="/images/logo.jpg" width="150" height="55" alt="Marketcetera" /></a>
+        </div>
+        <div id="slogan">
+          <img src="/images/downloadruntrade.jpg" width="165" height="8" alt="download.run.trade." />
+        </div>
+        <div class="clear"></div>
+      </div>
+<!-- END HEADER -->
 
-
+<!-- BEGIN BODY -->
+      <div id="body">
+<%= render :partial => 'shared/left_navigation_column' %>
+        <div class="right_column">
+   
