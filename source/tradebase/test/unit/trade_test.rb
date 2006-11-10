@@ -228,6 +228,16 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal -10, t.position_qty
   end
   
+  def test_summary 
+    t = create_test_trade(10, 4.99, Side::QF_SIDE_CODE[:sellShort], "some-acct", Date.civil(2006, 10,10), "TOLI", 
+                          7.50, "USD")
+    assert_equal "SS 10.0 TOLI 4.99", t.summary
+
+    t = create_test_trade(340, 43.99, Side::QF_SIDE_CODE[:buy], "some-acct", Date.civil(2006, 10,10), "bob", 
+                          7.50, "USD")
+    assert_equal "B 340.0 bob 43.99", t.summary
+  end
+  
   def test_to_s
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
     assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))

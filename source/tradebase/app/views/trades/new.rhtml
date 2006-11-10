@@ -1,8 +1,10 @@
-<h1>New trade</h1>
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trades", :action_name => "Enter New Trade" } %>
+<h1>Enter Trade</h1>
 
 <%= start_form_tag :action => 'create' %>
   <%= render :partial => 'form' %>
-  <%= submit_tag "Create" %>
+  <%= submit_tag "Create", :class => "submit floatright" %>
+  <input class="reset floatright" name="clear" type="reset" value="Clear" />
 <%= end_form_tag %>
 
 <%= link_to 'Back', :action => 'list' %>
