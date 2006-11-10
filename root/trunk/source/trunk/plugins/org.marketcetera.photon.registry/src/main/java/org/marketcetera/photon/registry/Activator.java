@@ -61,7 +61,7 @@ public class Activator implements BundleActivator {
 		"org.eclipse.debug.ui.contextualLaunch.debug"  //$NON-NLS-1$
 	};
 
-	private RegistryProviderOSGI defaultRegistryProvider;
+	private RegistryProviderOSGI registryProvider;
 
 	private ServiceRegistration registryRegistration;
 
@@ -76,7 +76,7 @@ public class Activator implements BundleActivator {
 		RegistryProperties.setContext(context);
 		
 		createRegistry();
-		removeUnwatedExtensions();
+		removeUnwantedExtensions();
 	}
 
 	/*
@@ -84,12 +84,10 @@ public class Activator implements BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext context) throws Exception {
-		stopRegistry();
-		
 		RegistryProperties.setContext(null);		
 	}
 
-	private void removeUnwatedExtensions() {
+	private void removeUnwantedExtensions() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
 
 		for (String xtId : UNWANTED_EXTENSIONS) {
@@ -144,19 +142,10 @@ public class Activator implements BundleActivator {
 		registry = RegistryFactory.createRegistry(registryStrategy, masterRegistryKey, userRegistryKey);
 
 		registryRegistration = context.registerService(IExtensionRegistry.class.getName(), registry, new Hashtable());
-		defaultRegistryProvider = new RegistryProviderOSGI();
+		registryProvider = new RegistryProviderOSGI();
 		
 		// Set the registry provider and specify this as a default registry:
-		RegistryProviderFactory.setDefault(defaultRegistryProvider);
-	}
-
-	private void stopRegistry() {
-		if (registry != null) {
-			RegistryProviderFactory.releaseDefault();
-			defaultRegistryProvider.release();
-			registryRegistration.unregister();
-			registry.stop(masterRegistryKey);
-		}
+		RegistryProviderFactory.setDefault(registryProvider);
 	}
 
 }
