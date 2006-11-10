@@ -26,7 +26,6 @@ import ca.odell.glazedlists.gui.TableFormat;
 
 public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 {
-
 	Enum [] columns;
 	private DataDictionary dataDictionary;
 	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
@@ -34,7 +33,9 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	private static final String COLUMN_WIDTH_SAVED_KEY_NAME = "width.saved";  //$NON-NLS-1$
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final int ORDERID_FIELDID = 11;  //agl todo:change figure out how to retrieve this id with quickfix
 
+	
 	public EnumTableFormat(Table table, Enum[] columns) {
 		this.columns = columns;
 		dataDictionary = FIXDataDictionaryManager.getDictionary();
@@ -85,6 +86,8 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 					value = new BigDecimal(map.getString(fieldID));
 				} else if (dataDictionary.hasFieldValue(fieldID)){
 					value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, map.getString(fieldID));
+				} else if (fieldID.intValue() == ORDERID_FIELDID) {
+					value = new SortableOrderID(map.getString(fieldID));
 				} else {
 					value = map.getString(fieldID);
 				}
