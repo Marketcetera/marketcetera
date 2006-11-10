@@ -1,39 +1,42 @@
 <%require 'bigdecimal'%>
-<p>
-  <b>Quantity:</b> <%=h @trade.send('quantity') %>
-</p>
-<p>
-  <b>Side:</b> <%=h Side.get_human_side(@trade.side.to_s) %>
-</p>
-<p>
-  <b>Price per Share:</b> <%=h @trade.price_per_share.to_s %>
-</p>
-<p>
-  <b>Trade type:</b> 
-  <%=h get_human_trade_type(@trade.trade_type) %>
-</p>
-<p>
-  <b>Trade date:</b> 
-  <%=h @trade.journal.post_date %>
-</p>
-<p>
-  <b>Asset type:</b> 
-  <%=h @trade.tradeable.class %>
-</p>
-<p>
-  <b>Symbol</b>
-  <%= @trade.tradeable_m_symbol_root %>
-</p>
-<p>
-  <b>Account</b>
-  <%=h @trade.account.nickname %>
-</p>
-<p>
-  <b>Comment:</b> <%=h @trade.send('comment') %>
-</p>
-<p>
-  <b>Total Commission:</b> <%=h @trade.send('total_commission') %>
-</p>
+
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trades", :action_name => "View Trade" } %>
+<h1>View Trade: <span><%= @trade.summary %></span></h1>
+
+<form>
+    <fieldset>
+        <div class="form_left">
+            <label for="m_symbol_root" class="view_background">Symbol</label>
+            <div id="m_symbol_root" class="data view_data"><%= @trade.tradeable_m_symbol_root %></div>
+
+            <label for="trade_quantity" class="view_background">Quantity</label>
+            <div id="trade_quantity" class="data view_data"><%=h @trade.send('quantity') %></div>
+            
+            <label for="price_per_share" class="view_background">Price Per Share</label>
+            <div id="price_per_share" class="data view_data"><%=h @trade.price_per_share.to_s %></div>
+
+            <label for="trade_trade_type" class="view_background">Trade type</label>
+            <div id="trade_trade_type" class="data view_data"><%=h get_human_trade_type(@trade.trade_type) %></div>
+        </div>
+        
+        <div class="form_right">
+            <label for="side" class="view_background">Side</label>
+            <div id="side" class="data view_data"><%=h Side.get_human_side(@trade.side.to_s) %></div>
+            
+            <label for="trade_date" class="view_background">Trade Date</label>
+            <div id="trade_date" class="data view_data"><%=h @trade.journal.post_date %></div>
+            
+            <label for="total_commission" class="view_background">Total Commission</label>
+            <div id="total_commission" class="data view_data"><%=h @trade.send('total_commission') %></div>
+            
+            <label for="asset_type" class="view_background">Asset Type</label>
+            <div id="asset_type" class="data view_data"><%=h @trade.tradeable.class %></div>
+        </div>
+        <div class="clear"></div>
+        <label for="view_trade_comment" class="view_background">Comment</label>
+        <div id="view_trade_comment" class="data view_data"><%=h @trade.send('comment') %></div>
+    </fieldset>
+</form>
 
 <%
 total_credits = BigDecimal('0')
@@ -42,6 +45,7 @@ total_debits = BigDecimal('0')
 <table>
     <tr>
     <th>Sub-account</th><th>Debits</th><th>Credits</th>
+    <th/>
     </tr>
 <% for posting in @trade.journal.postings 
      posting_quantity = posting.quantity
@@ -66,9 +70,8 @@ total_debits = BigDecimal('0')
 <% end %>
     <tr>
     <td><em>Totals</em></td><td><%=h total_debits.abs()%></td><td><%=h total_credits.abs()%></td>
+    <td/>
     </tr>
-
 </table>
-
-<%= link_to 'Edit', :action => 'edit', :id => @trade %> |
-<%= link_to 'Back', :action => 'list' %>
+<div class="clear"></div>
+<%= button_to "Edit", {:action => 'edit', :id => @trade}, {:class => "submit floatright"} %>

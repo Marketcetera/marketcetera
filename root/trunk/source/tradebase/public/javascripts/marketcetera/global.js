@@ -15,8 +15,8 @@ var GlobalScripts = {
   load: function() {
     var path ="/javascripts/";
 
-    this.require(path + "scriptaculous/scriptaculous.js");
     this.require(path + "scriptaculous/prototype.js");
+    this.require(path + "scriptaculous/scriptaculous.js");
     this.require(path + "marketcetera/moo.fx.js");
     this.require(path + "marketcetera/moo.fx.pack.js");
     this.require(path + "marketcetera/event-selectors.js");

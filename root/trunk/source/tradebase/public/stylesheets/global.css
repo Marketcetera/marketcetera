@@ -38,14 +38,14 @@ body {
   float: right;
 }
 
-.error {
+#errorExplanation {
   margin-top: 10px;
   border: 1px solid #880000;
   background: #ffeeee;
   color: #000000;
 }
 
-.error h2 {
+#errorExplanation h2 {
   position: relative;
   background: #880000;
   color: #ffffff;
@@ -54,15 +54,22 @@ body {
   padding: 0 10px 0 10px;
 }
 
-.error p {
+#errorExplanation p {
   font-size: 0.9em;
   padding: 10px;
 }
 
-.error ul {
+#errorExplanation ul {
   font-size: 0.9em;
   margin: 0 10px 10px 40px;
 }
+
+.fieldWithErrors {
+  padding: 2px;
+  background-color: #880000;
+  display: table;
+}
+
 
 /* END GLOBAL CSS */
 

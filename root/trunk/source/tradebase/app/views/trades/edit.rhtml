@@ -1,9 +1,11 @@
-<h1>Editing trade</h1>
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trades", :action_name => "Update Trade" } %>
+<h1>Update Trade</h1>
 
 <%= start_form_tag :action => 'update', :id => @trade %>
   <%= render :partial => 'form' %>
-  <%= submit_tag 'Edit' %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
 <%= end_form_tag %>
 
-<%= link_to 'Show', :action => 'show', :id => @trade %> |
+<%= button_to 'Cancel', {:action => 'show', :id => @trade}, {:class => "reset floatright"} %>
+
 <%= link_to 'Back', :action => 'list' %>

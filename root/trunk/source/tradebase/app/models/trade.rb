@@ -149,7 +149,16 @@ class Trade < ActiveRecord::Base
     end
   end
 
+  # Produces short summary: B 1000 IBM 94.32 
+  # or SS 1000 IBM 23.34
+  # Always return absolute value of qty here since we have the leading side code 
+  def summary
+    qty_str = (self.quantity.nil?) ? '<no qty>' : self.quantity.abs.to_s
+    Side::SIDE_SHORT_CODE[self.side] + " " + qty_str + " " + self.tradeable_m_symbol_root+" "+self.price_per_share.to_s
+  end
+
   # Override the to_s function to print something more useful for debugging
+  # same as summary, but with account added
   def to_s
     qty_str = (self.quantity.nil?) ? '<no qty>' : self.quantity.to_s
     "["+Side.get_human_side(self.side.to_s)+"] "+ qty_str + 
