@@ -1,45 +1,49 @@
-<p>
-  <b>SendingTime: </b><%= getHeaderStringFieldValueIfPresent(@qf_message, Quickfix::SendingTime.new) %>
-</p>
-<p>
-  <b>ClOrdID: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::ClOrdID.new) %>
-</p>
-<p>
-  <b>OrdStatus: </b><%= getHumanOrdStatus(getStringFieldValueIfPresent(@qf_message, Quickfix::OrdStatus.new)) %>
-</p>
-<p>
-  <b>Side: </b><%= Side.get_human_side(getStringFieldValueIfPresent(@qf_message, Quickfix::Side.new)) %>
-</p>
-<p>
-  <b>Symbol: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Symbol.new) %>
-</p>
-<p>
-  <b>OrderQty: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::OrderQty.new) %>
-</p>
-<p>
-  <b>CumQty: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::CumQty.new) %>
-</p>
-<p>
-  <b>LeavesQty: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LeavesQty.new) %>
-</p>
-<p>
-  <b>AvgPx: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::AvgPx.new) %>
-</p>
-<p>
-  <b>Account: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Account.new)  %>
-</p>
-<p>
-  <b>LastShares: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LastShares.new)  %>
-</p>
-<p>
-  <b>LastPx: </b><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LastPx.new) %>
-</p>
-<p>
-  <b>Created On: </b><%= @message_log.created_on %>
-</p>
-<p>
-  <b>Updated On: </b><%= @message_log.updated_on %>
-</p>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "View Recorded Trade", :top_level_controller => 'message_logs' } %>
+<h1>Show Recorded Trade Message</h1>
 
+<form>
+    <fieldset>
+        <div class="form_left">
+            <label for="sending_time" class="view_background">SendingTime</label>
+            <div id="sending_time" class="data view_data"><%= getHeaderStringFieldValueIfPresent(@qf_message, Quickfix::SendingTime.new) %></div>
+            
+            <label for="clordid" class="view_background">ClOrdID</label>
+            <div id="clordid" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::ClOrdID.new) %></div>
+            
+            <label for="ord_status" class="view_background">OrdStatus</label>
+            <div id="ord_status" class="data view_data"><%= getHumanOrdStatus(getStringFieldValueIfPresent(@qf_message, Quickfix::OrdStatus.new)) %></div>
+            
+            <label for="side" class="view_background">Side</label>
+            <div id="side" class="data view_data"><%= Side.get_human_side(getStringFieldValueIfPresent(@qf_message, Quickfix::Side.new)) %></div>
+            
+            <label for="symbol" class="view_background">Symbol</label>
+            <div id="symbol" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Symbol.new) %></div>
 
-<%= link_to 'Back', :action => 'list' %>
+            <label for="order_qty" class="view_background">OrderQty</label>
+            <div id="order_qty" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::OrderQty.new) %></div>
+       </div>
+        
+        <div class="form_right">    
+            <label for="cum_qty" class="view_background">CumQty</label>
+            <div id="cum_qty" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::CumQty.new) %></div>
+            
+            <label for="leaves_qty" class="view_background">LeavesQty</label>
+            <div id="leaves_qty" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LeavesQty.new) %></div>
+            
+            <label for="avg_px" class="view_background">AvgPx</label>
+            <div id="avg_px" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::AvgPx.new) %></div>
+
+            <label for="account" class="view_background">Account</label>
+            <div id="account" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::Account.new) %></div>
+
+            <label for="last_shares" class="view_background">LastShares</label>
+            <div id="last_shares" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LastShares.new)  %></div>
+            
+            <label for="last_px" class="view_background">LastPx</label>
+            <div id="last_px" class="data view_data"><%= getStringFieldValueIfPresent(@qf_message, Quickfix::LastPx.new) %></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+            

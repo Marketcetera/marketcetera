@@ -61,4 +61,18 @@ class CreateTradesControllerTest < MarketceteraTestBase
     assert_equal 3, Trade.count
     assert_redirected_to :controller => 'trades', :action => 'list'
   end
+  
+  # Verify that we don't process the same trade twice, and that we keep count of only processed ones
+  def test_create_trades_already_processed
+    # process some trades
+    test_create_trades
+
+    assert_equal 3, Trade.find_all.length
+    # setup 3 trades to be created: 20, 21, 23
+    post :create_trades, :trades => { 20 => "1", 21 => "1", 23 => "1", 24 => 0, 27 => "1"}  
+  
+    assert_equal "Created 1 trades", flash[:notice]
+    assert_equal 4, Trade.count
+    assert_redirected_to :controller => 'trades', :action => 'list'
+  end
 end

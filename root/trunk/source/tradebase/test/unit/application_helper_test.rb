@@ -16,5 +16,14 @@ class ApplicationHelperTest < MarketceteraTestBase
     assert_nil get_date_from_params({"position" => {} }, "position", "as_of", "as_of_date")
   end
 
+  def test_contract_string
+    assert_nil contract_string(nil, 5)
+    assert_equal "", contract_string("", 5)
+    assert_equal "tolik", contract_string("tolik", 10)
+    assert_equal "tolik", contract_string("tolik", 5)
+    assert_equal "t..k", contract_string("tolik", 4)
+    assert_equal "al..ba", contract_string("alibaba", 5)
+    assert_equal "zapo..hets", contract_string("zaporozhets", 10)  
+  end
 
 end

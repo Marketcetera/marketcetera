@@ -45,7 +45,7 @@ body {
   color: #000000;
 }
 
-#errorExplanation h2 {
+#errorExplanation h2{
   position: relative;
   background: #880000;
   color: #ffffff;
@@ -64,8 +64,36 @@ body {
   margin: 0 10px 10px 40px;
 }
 
+/* Generic error/notice for for output of flash[] notices */
+#notice {
+  color: #ffffff;
+  background: #008040;
+  font-size: 1.0em;
+  line-height: 1.2em;
+  margin-bottom: 10px;
+  padding: 3px, 0px, 3px, 0px;
+}
+
+#error_notice {
+  background: #880000;
+  color: #ffffff;
+  font-size: 1.0em;
+  padding: 3px, 0px, 3px, 0px;
+  line-height: 1.2em;
+  margin-bottom: 10px;
+}
+
+
+/* Override the CSS for fields with errors to move the bottom margin from 
+   the form field to the wrapping div */
+#body .right_column .fieldWithErrors select, 
+#body .right_column .fieldWithErrors input, 
+#body .right_column .error fieldWithErrors { 
+	margin-bottom: 0;
+}
 .fieldWithErrors {
   padding: 2px;
+  margin-bottom: 10px;
   background-color: #880000;
   display: table;
 }
@@ -298,6 +326,12 @@ body {
   padding-left: 5px;
 }
 
+#body .right_column fieldset .date select { 
+	width: 100px; 
+	margin-right: 5px;
+}
+
+/* this doesn't work b/c we can't individually specify day/year/month in date_select code in rails
 #body .right_column fieldset .year {
   width: 90px;
   margin-right: 5px;
@@ -311,6 +345,8 @@ body {
 #body .right_column fieldset .day {
   width: 60px;
 }
+
+*/
 
 #body .right_column fieldset #trade_comment {
   width: 335px; height: 55px;  

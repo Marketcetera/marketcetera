@@ -22,6 +22,7 @@ class QueriesController < ApplicationController
     
     @param_name = :m_symbol_root
     @param_value = symbol_str
+    @query_type = "Symbol"
     
     render :template => 'queries/queries_output'
   end
@@ -56,6 +57,7 @@ class QueriesController < ApplicationController
     end
     @param_name = "nickname"
     @param_value = nickname
+    @query_type = "Account"
     
     render :template => 'queries/queries_output'
   end

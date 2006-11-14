@@ -49,6 +49,7 @@ module ApplicationHelper
   
   
   # Displays all the table columns except for the created_on/updated_on columns
+  # ex:   <%= show_relevant_table_columns(Currency.new, true) %>
   def show_relevant_table_columns(inObject, isHeader)
     outStr = ""
     for column in inObject.class.content_columns
@@ -81,6 +82,25 @@ module ApplicationHelper
   # Collects all the errors (in AR object) into 1 string for printing
   def collect_errors_into_string(errors)
     (errors.collect { |n, v| n.to_s + ": " + v.to_s + "\n"}).to_s
+  end
+  
+  # If a string is longer than (2x+1), contracts it by grabbing the first and last X chars
+  # for example, for maxLen 10, does 4..4
+  # for example:
+  # contract_string("zaporozhets", 10) ==> zapo..hets
+  # NOTE: for odd length, it's actually possible that we'll get an outgoing string that's longer than 
+  # the incoming. oh well.
+  def contract_string(theString, maxLen)
+    if(theString.blank?) 
+      return theString
+    end
+    
+    if(theString.length > maxLen)
+      halfLen = (maxLen / 2.0).ceil - 1 
+      theString = theString[0, halfLen]+".."+theString[-halfLen, halfLen]
+    end
+    
+    theString
   end
   
 

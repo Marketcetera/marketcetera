@@ -1,8 +1,8 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Accounts", :action_name => "New Account", :top_level_controller => 'accounts' } %>
 <h1>New account</h1>
 
 <%= start_form_tag :action => 'create' %>
   <%= render :partial => 'form' %>
-  <%= submit_tag "Create" %>
+  <%= render :partial => '/shared/clear_create_form_buttons' %>
 <%= end_form_tag %>
-
-<%= link_to 'Back', :action => 'list' %>

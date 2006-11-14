@@ -9,9 +9,13 @@ class CreateTradesController < ApplicationController
     
     chosen_exec_reports = all_exec_reports.select { |id, value| value == "1"}
     
-    chosen_exec_reports.each {|id, value| create_one_trade(id) }
+    num_created = 0
+    chosen_exec_reports.each {|id, value| 
+      if(!create_one_trade(id).nil?)  
+        num_created += 1
+      end
+    }
     
-    num_created = chosen_exec_reports.length
     flash[:notice] = "Created "+num_created.to_s + " trades"
     redirect_to :action => 'list', :controller => 'trades'
   end

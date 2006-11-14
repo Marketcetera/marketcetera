@@ -11,6 +11,19 @@ class MessageLogsHelperTest < Test::Unit::TestCase
     assert_equal Quickfix::MsgType_ExecutionReport(), getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::MsgType.new)
   end
   
+  def test_getStringFieldValueIfPresent
+    qfMessage = Quickfix::Message.new(MessageLog.find(20).text)
+    
+    assert_equal "GOOG", getStringFieldValueIfPresent(qfMessage, Quickfix::Symbol.new)   
+    assert_equal "", getStringFieldValueIfPresent(qfMessage, Quickfix::LocationID.new)   
+  end
+  
+  def test_getHeaderStringFieldValueIfPresent
+    qfMessage = Quickfix::Message.new(MessageLog.find(20).text)
+    assert_equal "MRKTC-EXCH", getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SenderCompID.new)
+    assert_equal "", getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::LocationID.new)   
+  end
+  
   # verifyt the qf_message field is populated correctly
   def test_qf_message_parsing
     mlog = MessageLog.find(20)
