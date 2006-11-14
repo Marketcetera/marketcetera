@@ -1,4 +1,4 @@
-<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Reports"} %>
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Reports", :top_level_controller => 'queries'} %>
 <h1>Reports</h1>
 <p>Please choose from the following reports:</p>
     <%=  start_form_tag :action => 'by_symbol' %>
@@ -21,11 +21,15 @@
             
             <div class="form_left">
                 <label for="from_date">From</label>
-                <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                <div class="date">
+                    <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                </div>
             </div>
             <div class="form_right">
                 <label for="to_date">To</label>
-                <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
+                <div class="date">
+                    <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
+                </div>
             </div>
         </fieldset>
         <div>
@@ -46,15 +50,17 @@
             <div class="clear"></div>
         </div>
     <%= end_form_tag %>
-        
-    <%=  start_form_tag :controller => 'positions', :action => 'positions_as_of' %>
-        <fieldset>
-            <h2>Positions As Of Date</h2>
-            <label for="as_of">Positions as of: </label>
-            <%= date_select :position, :as_of, :order => [:year, :month, :day] %>
-        </fieldset>
-        <div>
-            <%= submit_tag 'List Positions', :class => "submit floatright"  %>
-            <div class="clear"></div>
-        </div>
-    <%= end_form_tag %>
+    
+    <div id="positions_as_of">
+        <%=  start_form_tag :controller => 'positions', :action => 'positions_as_of' %>
+            <fieldset>
+                <h2>Positions As Of Date</h2>
+                <label for="as_of">Positions as of: </label>
+                <div class="date"><%= date_select :position, :as_of, :order => [:year, :month, :day] %></div>
+            </fieldset>
+            <div>
+                <%= submit_tag 'List Positions', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <%= end_form_tag %>
+    </div>

@@ -1,8 +1,10 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Reports", :action_name => "List Trades for #{@query_type}", :top_level_controller => 'reports' } %>
+<h1>List Trades for <%= @query_type -%>: <span><%= @param_value %></span></h1>
+
 <%= render :partial => 'trades/trade_list_display' %>
 
 <%= pagination_links(@trade_pages, :params => { @param_name => @param_value } ) %>
 
-<br />
-<%= link_to 'Search again', :action => :index %><br/>
-<%= link_to 'New trade', :action => 'new', :controller => 'trades' %>
+<%= button_to 'Search again', {:action => :index}, {:class => "submit floatright"} %>
 

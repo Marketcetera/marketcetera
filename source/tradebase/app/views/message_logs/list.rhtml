@@ -1,37 +1,54 @@
-<h1>Listing Executed Trades</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "Import Trades", :top_level_controller => 'trades' } %>
+<h1>Import Trades</h1>
 
 <%= start_form_tag({:action => 'list'}, { :id => 'dateRange' }) %>
-<p><label for="search_type">Select Date Range</label><br/>
- <%= radio_button_tag('search_type', 's', true,  { :id => 'search_type_s', :onClick=> "toggleDivSelection('date_from_to', true)" })%>
- <label for="search_type_s">Subset</label><br/>
-<div class="date_from_to">
-<table>
-<tr><td><label for="start_date">Start date</label></td>
-<td><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></td></tr>
-<tr><td><label for="end_date">End date</label></td>
-<td><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></td></tr>
-</table>
-</div>
- <%= radio_button_tag('search_type', 'a', false,  {:id => 'search_type_a', :onClick=> "toggleDivSelection('date_from_to', false)" } )%><label for="search_type_a">All</label><br/>
-<p/>
-  <%= submit_tag 'Search' %>
+    <fieldset>
+        <label for="search_type">Select Date Range</label>
+        <table id="import_date_range">
+        <tr>
+            <td>
+                <%= radio_button_tag('search_type', 's', false,  
+                    { :id => 'search_type_s', :onClick=> "toggleDivSelection('date_from_to', true)", :class => 'radio' })%>
+                <label for="search_type_s">Subset</label>
+            </td>
+            <td>
+                <label for="start_date">Start date</label>
+                <div class="date"><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></div>
+                <div class="clear"></div>
+                <label for="end_date">End date</label>
+                <div class="date"><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+       <%= radio_button_tag('search_type', 'a', true,  
+            {:id => 'search_type_a', :onClick=> "toggleDivSelection('date_from_to', false)", :class => 'radio' } )%>
+       <label for="search_type_a">All</label>
+        <div class="clear"></div>
+            </td>
+         </tr>
+      </table>
+    </fieldset>
+  <%= submit_tag 'Search', :class => "submit floatright" %>
+  <div class="clear"></div>
 <%= end_form_tag %>
-<p/>
+
 <%= start_form_tag( {:action => 'create_trades', :controller => 'create_trades'},  {:id => "selectTrades"}) %>
 <table>
   <tr>
     <th>
     <th>SendingTime</th>
     <th>ClOrdID</th>
-    <th>OrdStatus</th>
+    <th>Status</th>
     <th>Side</th>
     <th>Symbol</th>
     <th>OrderQty</th>
-    <th>CumQty</th>
-    <th>LeavesQty</th>
+    <th>Done</th>
+    <th>Leaves</th>
     <th>AvgPx</th>
     <th>Account</th>
-    <th>LastShares</th>
+    <th>Last</th>
     <th>LastPx</th>
     <th/>
   </tr>
@@ -55,8 +72,8 @@
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
     <% qf_message = Quickfix::Message.new(message.text) %>
     <td><%= check_box('trades', message.id.to_s) %></td>
-    <td><%= getHeaderStringFieldValueIfPresent(qf_message, sendingTime) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, clOrdID) %></td>
+    <td><%= DateTime.parse(getHeaderStringFieldValueIfPresent(qf_message, sendingTime)).to_s %></td>
+    <td><%= contract_string(getStringFieldValueIfPresent(qf_message, clOrdID), 10) %></td>
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
     <td><%= Side.get_human_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, symbol) %></td>
@@ -74,7 +91,7 @@
 <p/>
 Select: <a href="javascript:toggleCheckboxes('selectTrades', 1);">All</a> <a href="javascript:toggleCheckboxes('selectTrades', 0);">None</a>
 <p/>
-<%= submit_tag 'Create Selected Trades' %>
+<%= submit_tag 'Import Trades', :class => "submit floatright" %>
 <%= end_form_tag %>
 <p/>
 <%= link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous %>

@@ -1,12 +1,20 @@
-<% for column in Account.content_columns %>
-<p>
-  <b><%= column.human_name %>:</b> <%=h @account.send(column.name) %>
-</p>
-<% end %>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Accounts", :action_name => "View Account", :top_level_controller => 'accounts' } %>
+<h1>View Account</h1>
+
+<form>
+    <fieldset>
+        <div class="form_left">
+            <% for column in Account.content_columns %>
+                <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
+                <div id="<%= column.name %>" class="data view_data"><%=h @account.send(column.name) %></div>
+            <% end %>
+        <div class="clear"></div>
+    </fieldset>
+</form>
 
 <h2>Sub-accounts</h2><%= link_to '(Create new)',{:action=>'new', :controller=>'sub_accounts', :account_id => @account} %>
 <% @sub_accounts = @account.sub_accounts %>
 <%= render :partial => 'sub_accounts/sub_account_list_display' %>
-<p/>
-<%= link_to 'Edit', :action => 'edit', :id => @account %> |
-<%= link_to 'Back', :action => 'list' %>
+
+<%= button_to "Edit", {:action => 'edit', :id => @account}, {:class => "submit floatright"} %>

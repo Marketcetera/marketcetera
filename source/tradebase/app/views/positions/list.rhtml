@@ -1,4 +1,6 @@
-<h2>Listing positions as of open on <%= @date %></h2>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Positions", :action_name => "List Positions", :top_level_controller => 'positions' } %>
+<h1>Listing positions as of open on <%= @date %></h1>
 
 <table>
   <tr>

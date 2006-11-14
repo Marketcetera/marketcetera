@@ -2,7 +2,7 @@ module MessageLogsHelper
 
   
   # if the field is present in the message returns the string value of it
-  # else returns empty string
+  # else returns a space
   def getStringFieldValueIfPresent(inMessage, inField)
     return (inMessage.isSetField(inField) ) ? inMessage.getField(inField).getString() : ''
   end

@@ -1,6 +1,7 @@
 <%require 'bigdecimal'%>
 
-<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trades", :action_name => "View Trade" } %>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "View Trade", :top_level_controller => 'trades' } %>
 <h1>View Trade: <span><%= @trade.summary %></span></h1>
 
 <form>

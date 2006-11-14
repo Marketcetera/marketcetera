@@ -1,11 +1,15 @@
   <ul id="breadcrumbs">
-    <li><a title="<%= top_level -%>" href=""><%= top_level -%></a>
+    <li><a title="<%= top_level -%>" href="/<%= top_level_controller -%>"><%= top_level -%></a>
 <% if(!action_name.blank?) -%>
     <span>&gt;</span></li>
     <li class="active"><%= action_name -%>
 <% end -%>
     </li>
   </ul>
-<p style="color: red"><%= flash[:error] %></p>
-<p style="color: green"><%= flash[:notice] %></p>
   <div class="clear"></div>
+  <% if(!flash[:error].nil?) -%>
+      <div id="error_notice"><%= flash[:error] %></div>
+  <% end -%>
+  <% if(!flash[:notice].nil?) -%>
+      <div id="notice"><%= flash[:notice] %></div>
+  <% end -%>

@@ -1,19 +1,18 @@
-<h1>Listing accounts</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Accounts", :action_name => "List Accounts", :top_level_controller => 'accounts' } %>
+<h1>List Accounts</h1>
 
 <table>
   <tr>
-  <% for column in Account.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
+    <%= show_relevant_table_columns(Account.new, true) %>
+    <th colspan="3"/>
   </tr>
   
 <% i=0
 for account in @accounts %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
   <tr>
-  <% for column in Account.content_columns %>
-    <td><%=h account.send(column.name) %></td>
-  <% end %>
+    <%= show_relevant_table_columns(account, false) %>
     <td><%= link_to 'Show', :action => 'show', :id => account %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => account %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => account }, :confirm => 'Are you sure?', :post => true %></td>
@@ -21,9 +20,4 @@ for account in @accounts %>
 <% end %>
 </table>
 
-<%= link_to 'Previous page', { :page => @account_pages.current.previous } if @account_pages.current.previous %>
-<%= link_to 'Next page', { :page => @account_pages.current.next } if @account_pages.current.next %> 
-
-<br />
-
-<%= link_to 'New account', :action => 'new' %>
+<%= pagination_links(@account_pages) %>
