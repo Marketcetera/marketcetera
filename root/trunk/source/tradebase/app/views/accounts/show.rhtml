@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Accounts", :action_name => "View Account", :top_level_controller => 'accounts' } %>
+    :locals=> { :top_level => "Accounts", :action_name => "View Account", :top_level_controller => @controller } %>
 <h1>View Account</h1>
 
 <form>
@@ -9,11 +9,12 @@
                 <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
                 <div id="<%= column.name %>" class="data view_data"><%=h @account.send(column.name) %></div>
             <% end %>
+        </div>
         <div class="clear"></div>
     </fieldset>
 </form>
 
-<h2>Sub-accounts</h2><%= link_to '(Create new)',{:action=>'new', :controller=>'sub_accounts', :account_id => @account} %>
+<h2>Sub-accounts</h2>
 <% @sub_accounts = @account.sub_accounts %>
 <%= render :partial => 'sub_accounts/sub_account_list_display' %>
 

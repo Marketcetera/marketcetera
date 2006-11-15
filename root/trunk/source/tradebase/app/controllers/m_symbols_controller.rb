@@ -24,7 +24,7 @@ class MSymbolsController < ApplicationController
   def create
     @m_symbol = MSymbol.new(params[:m_symbol])
     if @m_symbol.save
-      flash[:notice] = 'MSymbol was successfully created.'
+      flash[:notice] = 'Symbol was successfully created.'
       redirect_to :action => 'list'
     else
       render :action => 'new'
@@ -38,7 +38,7 @@ class MSymbolsController < ApplicationController
   def update
     @m_symbol = MSymbol.find(params[:id])
     if @m_symbol.update_attributes(params[:m_symbol])
-      flash[:notice] = 'MSymbol was successfully updated.'
+      flash[:notice] = 'Symbol was successfully updated.'
       redirect_to :action => 'show', :id => @m_symbol
     else
       render :action => 'edit'

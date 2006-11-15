@@ -302,13 +302,15 @@ body {
   width: 140px;
 }
 
-#body .right_column fieldset .radio {
+#body .right_column fieldset .radio, 
+#body .right_column fieldset .checkbox {
   float: left;
   width: auto;
   margin: 0 3px 2px 15px;
 }
 
-#body .right_column fieldset .radio_label {
+#body .right_column fieldset .radio_label, 
+#body .right_column fieldset .checkbox_label {
   font-weight: normal;
   vertical-align: middle;
 }
@@ -348,7 +350,9 @@ body {
 
 */
 
-#body .right_column fieldset #trade_comment {
+#body .right_column fieldset #trade_comment, 
+#body .right_column fieldset #dividend_description, 
+#body .right_column fieldset .description {
   width: 335px; height: 55px;  
 }
 

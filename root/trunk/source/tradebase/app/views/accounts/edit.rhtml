@@ -1,10 +1,10 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Accounts", :action_name => "Update Account", :top_level_controller => 'accounts' } %>
+    :locals=> { :top_level => "Accounts", :action_name => "Update Account", :top_level_controller => @controller } %>
 <h1>Update Account</h1>
 
 <%= start_form_tag :action => 'update', :id => @account %>
   <%= render :partial => 'form' %>
-  <%= submit_tag 'Update',  :class => "submit floatright" %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
 <%= end_form_tag %>
 
 <%= button_to 'Cancel', {:action => 'show', :id => @account}, {:class => "reset floatright"} %>

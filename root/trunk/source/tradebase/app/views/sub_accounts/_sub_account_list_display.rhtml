@@ -2,7 +2,7 @@
   <tr>
   <th>Description</th>
   <th>Account</th>
-  <th colspan="3"/>
+  <th/>
   </tr>
   
 <% i=0
@@ -11,8 +11,6 @@
     <td><%=h sub_account.description %></td>
     <td><%= link_to sub_account.account.nickname, :controller => 'accounts', :action => 'show', :id => sub_account.account %></td>
     <td><%= link_to 'Show', :controller => 'sub_accounts', :action => 'show', :id => sub_account %></td>
-    <td><%= link_to 'Edit', :controller => 'sub_accounts', :action => 'edit', :id => sub_account %></td>
-    <td><%= link_to 'Destroy', { :controller => 'sub_accounts', :action => 'destroy', :id => sub_account }, :confirm => 'Are you sure?', :post => true %></td>
   </tr>
 <% end %>
 </table>

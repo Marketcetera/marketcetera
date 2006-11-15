@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Reports", :action_name => "List Trades for #{@query_type}", :top_level_controller => 'reports' } %>
+    :locals=> { :top_level => "Reports", :action_name => "List Trades for #{@query_type}", :top_level_controller => 'queries' } %>
 <h1>List Trades for <%= @query_type -%>: <span><%= @param_value %></span></h1>
 
 <%= render :partial => 'trades/trade_list_display' %>

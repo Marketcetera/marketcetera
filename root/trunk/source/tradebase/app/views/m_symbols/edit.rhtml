@@ -1,9 +1,10 @@
-<h1>Editing m_symbol</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Symbols", :action_name => "Update Symbol", :top_level_controller => @controller } %>
+<h1>Update Symbol</h1>
 
 <%= start_form_tag :action => 'update', :id => @m_symbol %>
   <%= render :partial => 'form' %>
-  <%= submit_tag 'Edit' %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
 <%= end_form_tag %>
 
-<%= link_to 'Show', :action => 'show', :id => @m_symbol %> |
-<%= link_to 'Back', :action => 'list' %>
+<%= button_to 'Cancel', {:action => 'show', :id => @m_symbol}, {:class => "reset floatright"} %>

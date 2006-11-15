@@ -1,6 +1,6 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Accounts", :action_name => "New Account", :top_level_controller => 'accounts' } %>
-<h1>New account</h1>
+    :locals=> { :top_level => "Accounts", :action_name => "New Account", :top_level_controller => @controller } %>
+<h1>New Account</h1>
 
 <%= start_form_tag :action => 'create' %>
   <%= render :partial => 'form' %>

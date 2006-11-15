@@ -1,18 +1,17 @@
-<h1>Listing m_symbols</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Symbols", :action_name => "List Symbols", :top_level_controller => @controller } %>
+<h1>List Symbols</h1>
 
 <table>
   <tr>
-  <% for column in MSymbol.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
+  <%= show_relevant_table_columns(MSymbol.new, true) %>
+  <th colspan="3"/>
   </tr>
   
 <% i=0
 for m_symbol in @m_symbols %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-  <% for column in MSymbol.content_columns %>
-    <td><%=h m_symbol.send(column.name) %></td>
-  <% end %>
+    <%= show_relevant_table_columns(m_symbol, false) %>
     <td><%= link_to 'Show', :action => 'show', :id => m_symbol %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => m_symbol %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => m_symbol }, :confirm => 'Are you sure?', :post => true %></td>
@@ -21,7 +20,3 @@ for m_symbol in @m_symbols %>
 </table>
 
 <%= pagination_links(@m_symbol_pages) %>
-
-<br />
-
-<%= link_to 'New m_symbol', :action => 'new' %>

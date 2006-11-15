@@ -1,6 +1,7 @@
-<h1>Listing Sub-accounts</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Sub-Accounts", :action_name => "List Sub-Accounts", :top_level_controller => @controller } %>
+<h1>List Sub-Accounts</h1>
 
 <%= render :partial => 'sub_accounts/sub_account_list_display' %>
 
 <%= pagination_links(@sub_account_pages) %>
-<br />
