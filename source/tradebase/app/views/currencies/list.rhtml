@@ -1,4 +1,7 @@
-<h1>Listing currencies</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Currencies", :action_name => "List Currencies", :top_level_controller => @controller } %>
+
+<h1>Listing Currencies</h1>
 
 <table>
   <tr>
@@ -16,5 +19,3 @@
 </table>
 
 <%= pagination_links @currency_pages %>
-
-<br />

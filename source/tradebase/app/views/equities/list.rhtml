@@ -1,27 +1,23 @@
-<h1>Listing equities</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Equities", :action_name => "List Equities", :top_level_controller => @controller } %>
+<h1>List Equities</h1>
 
 <table>
   <tr>
     <th>Symbol</th>
-  <% for column in Equity.content_columns %>
-    <th><%= column.human_name %></th>
-  <% end %>
-    <th/>
-    <th/>
+    <th>Description</th>
+    <th colspan="3"/>
   </tr>
   
-<% 
-i=0
+<% i=0
 for equity in @equities %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     
     <% if equity.m_symbol != nil  %>
-     <td><%=link_to equity.m_symbol.root, {:action => 'show', :id => equity.m_symbol, :controller => 'm_symbols' } %></td>
+     <td><%= equity_symbol_link(equity) %></td>
     <% end %>
 
-  <% for column in Equity.content_columns %>
-    <td><%=h equity.send(column.name) %></td>
-  <% end %>
+    <td><%= equity.description %></td>
     <td><%= link_to 'Show', :action => 'show', :id => equity %></td>
     <td><%= link_to 'Edit', :action => 'edit', :id => equity %></td>
     <td><%= link_to 'Destroy', { :action => 'destroy', :id => equity }, :confirm => 'Are you sure?', :post => true %></td>
@@ -29,9 +25,4 @@ for equity in @equities %>
 <% end %>
 </table>
 
-<%= link_to 'Previous page', { :page => @equity_pages.current.previous } if @equity_pages.current.previous %>
-<%= link_to 'Next page', { :page => @equity_pages.current.next } if @equity_pages.current.next %> 
-
-<br />
-
-<%= link_to 'New equity', :action => 'new' %>
+<%= pagination_links(@equity_pages) %> 

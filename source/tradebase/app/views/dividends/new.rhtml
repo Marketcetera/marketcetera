@@ -1,8 +1,9 @@
-<h1>New dividend</h1>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Dividends", :action_name => "New Dividend", :top_level_controller => @controller } %>
+<h1>New Dividend</h1>
 
 <%= start_form_tag :action => 'create' %>
   <%= render :partial => 'form' %>
-  <%= submit_tag "Create" %>
+  <%= render :partial => '/shared/clear_create_form_buttons' %>
 <%= end_form_tag %>
 
-<%= link_to 'Back', :action => 'list' %>

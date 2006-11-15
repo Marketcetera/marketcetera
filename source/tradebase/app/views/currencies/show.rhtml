@@ -1,7 +1,16 @@
-<% for column in Currency.content_columns %>
-<p>
-  <b><%= column.human_name %>:</b> <%=h @currency.send(column.name) %>
-</p>
-<% end %>
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Currencies", :action_name => "View Currency", :top_level_controller => @controller } %>
+<h1>View Currency</h1>
 
-<%= link_to 'Back', :action => 'list' %>
+<form>
+    <fieldset>
+        <div class="form_left">
+            <% for column in Currency.content_columns %>
+              <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
+              <div id="<%= column.name %>" class="data view_data"><%=h @currency.send(column.name) %></div>
+            </p>
+            <% end %>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
