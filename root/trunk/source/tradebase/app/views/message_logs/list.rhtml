@@ -5,30 +5,20 @@
 <%= start_form_tag({:action => 'list'}, { :id => 'dateRange' }) %>
     <fieldset>
         <label for="search_type">Select Date Range</label>
-        <table id="import_date_range">
-        <tr>
-            <td>
-                <%= radio_button_tag('search_type', 's', false,  
-                    { :id => 'search_type_s', :onClick=> "toggleDivSelection('date_from_to', true)", :class => 'radio' })%>
-                <label for="search_type_s">Subset</label>
-            </td>
-            <td>
-                <label for="start_date">Start date</label>
-                <div class="date"><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></div>
-                <div class="clear"></div>
-                <label for="end_date">End date</label>
-                <div class="date"><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></div>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
+        <%= radio_button_tag('search_type', 's', false,  
+            { :id => 'subset',  :class => 'radio' })%>
+        <label for="subset">Subset</label>
+        <div id="subset_content">
+            <label for="start_date">Start date</label>
+            <div class="date"><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></div>
+            <div class="clear"></div>
+            <label for="end_date">End date</label>
+            <div class="date"><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></div>
+        </div>
        <%= radio_button_tag('search_type', 'a', true,  
-            {:id => 'search_type_a', :onClick=> "toggleDivSelection('date_from_to', false)", :class => 'radio' } )%>
-       <label for="search_type_a">All</label>
+            {:id => 'all', :class => 'radio', :checked => 'true'} )%>
+       <label for="all">All</label>
         <div class="clear"></div>
-            </td>
-         </tr>
-      </table>
     </fieldset>
   <%= submit_tag 'Search', :class => "submit floatright" %>
   <div class="clear"></div>
