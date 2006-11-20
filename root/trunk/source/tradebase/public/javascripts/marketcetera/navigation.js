@@ -9,12 +9,14 @@
  *************************************************************/
 
 var Navigation = Class.create();
+
 Navigation.prototype = {
   initialize: function(s) {
     this.settings = s;
     this.s = {
       stretcherClass: 'stretcher',
-      toggleClass: 'display'
+      toggleClass: 'display',
+      navId: 'navitem'
     };
     for(var key in s) this.s[key] = s[key];
 
@@ -26,13 +28,14 @@ Navigation.prototype = {
   },
   checkHash : function() {
     var found = false;
-    for (var i = 0; i < this.toggles.length; i++) {
-      if (window.location.href.indexOf(this.toggles[i].title) > 0) {
-        this.navAccordion.showThisHideOpen(this.stretchers[i]);
-        found = true;
+    if ($(this.s['navId'])) {
+      for (var i = 0; i < this.toggles.length; i++) {
+        if (this.toggles[i].title.indexOf($(this.s['navId']).innerHTML) != -1) {
+          this.navAccordion.showThisHideOpen(this.stretchers[i]);
+          return true;
+        }
       }
     }
-
     return found;
   },
   pullNavigation : function() {

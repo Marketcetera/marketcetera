@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
   require 'quickfix_fields'
   require 'bigdecimal'
     
-  helper :application, :trades
+  helper :application, :trades, :navigation
 end
 
 # modify the ActiveRecord and ActiveController to add paginate_by_sql behaviour
