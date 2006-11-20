@@ -28,6 +28,8 @@ body {
   width: 894px;
 }
 
+#navitem { display: none; visibility: hidden; }
+
 .clear {
   clear: both;
   height: 1px;
