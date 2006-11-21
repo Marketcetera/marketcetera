@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Symbols", :action_name => "Update Symbol", :top_level_controller => @controller } %>
+    :locals=> { :top_level => "Symbols", :action_name => "Update Symbol", :top_level_controller => @controller.controller_name } %>
 <h1>Update Symbol</h1>
 
 <%= start_form_tag :action => 'update', :id => @m_symbol %>

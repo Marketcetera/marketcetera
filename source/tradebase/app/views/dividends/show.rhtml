@@ -1,8 +1,8 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Dividends", :action_name => "View Dividend", :top_level_controller => @controller } %>
+    :locals=> { :top_level => "Dividends", :action_name => "View Dividend", :top_level_controller => @controller.controller_name } %>
 <h1>Dividend for <%= @dividend.equity.m_symbol.root %></h1>
 
-<form>
+<form action="">
     <fieldset>
         <div class="form_left">
             <label for="amount" class="view_background">Amount</label>

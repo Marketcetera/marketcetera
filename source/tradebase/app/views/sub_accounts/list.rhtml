@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Sub-Accounts", :action_name => "List Sub-Accounts", :top_level_controller => @controller } %>
+    :locals=> { :top_level => "Sub-Accounts", :action_name => "List Sub-Accounts", :top_level_controller => @controller.controller_name } %>
 <h1>List Sub-Accounts</h1>
 
 <%= render :partial => 'sub_accounts/sub_account_list_display' %>
