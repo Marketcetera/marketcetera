@@ -11,6 +11,7 @@ end
 
 # modify the ActiveRecord and ActiveController to add paginate_by_sql behaviour
 # lifted from: http://thebogles.com/blog/2006/06/paginate_by_sql-for-rails-a-more-general-approach/
+# Except for we (marketcetera) added the return of total # of records found
 module ActiveRecord 
     class Base
         def self.find_by_sql_with_limit(sql, offset, limit)
@@ -42,6 +43,6 @@ class ApplicationController < ActionController::Base
             @params['page']
        objects = model.find_by_sql_with_limit(sql,
             object_pages.current.to_sql[1], per_page)
-       return [object_pages, objects]
+       return [object_pages, objects, total]
    end
 end
