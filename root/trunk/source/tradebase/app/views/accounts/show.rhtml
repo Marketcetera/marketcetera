@@ -1,8 +1,8 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Accounts", :action_name => "View Account", :top_level_controller => @controller } %>
+    :locals=> { :top_level => "Accounts", :action_name => "View Account", :top_level_controller => @controller.controller_name } %>
 <h1>View Account</h1>
 
-<form>
+<form action="">
     <fieldset>
         <div class="form_left">
             <% for column in Account.content_columns %>

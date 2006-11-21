@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Dividends", :action_name => "Edit Dividend", :top_level_controller => @controller } %>
+    :locals=> { :top_level => "Dividends", :action_name => "Edit Dividend", :top_level_controller => @controller.controller_name } %>
 <h1>Edit Dividend</h1>
 
 <%= start_form_tag :action => 'update', :id => @dividend %>

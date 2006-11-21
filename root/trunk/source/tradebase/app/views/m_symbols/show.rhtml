@@ -1,7 +1,7 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Symbols", :action_name => "Show Symbol", :top_level_controller => @controller } %>
+    :locals=> { :top_level => "Symbols", :action_name => "Show Symbol", :top_level_controller => @controller.controller_name } %>
 
-<form>
+<form action="">
     <fieldset>
         <div class="form_left">
             <% for column in MSymbol.content_columns %>
