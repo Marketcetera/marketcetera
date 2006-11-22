@@ -75,12 +75,22 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 
 		final String ICONS_PATH = "$nl$/icons/full/";//$NON-NLS-1$
 		final String PATH_ETOOL = ICONS_PATH + "etool16/"; // Enabled toolbar icons.//$NON-NLS-1$
+		final String PATH_OBJECT = ICONS_PATH + "obj16/"; // Model object icons//$NON-NLS-1$
 
 		Bundle ideBundle = Platform.getBundle(IDEWorkbenchPlugin.IDE_WORKBENCH);
 
 		declareIdeWorkbenchImage(ideBundle,
 				IDEInternalWorkbenchImages.IMG_ETOOL_PROBLEM_CATEGORY,
 				PATH_ETOOL + "problem_category.gif", true); //$NON-NLS-1$
+		declareIdeWorkbenchImage(ideBundle,
+				IDEInternalWorkbenchImages.IMG_OBJS_ERROR_PATH, PATH_OBJECT
+						+ "error_tsk.gif", true); //$NON-NLS-1$
+		declareIdeWorkbenchImage(ideBundle,
+				IDEInternalWorkbenchImages.IMG_OBJS_WARNING_PATH, PATH_OBJECT
+						+ "warn_tsk.gif", true); //$NON-NLS-1$
+		declareIdeWorkbenchImage(ideBundle,
+				IDEInternalWorkbenchImages.IMG_OBJS_INFO_PATH, PATH_OBJECT
+						+ "info_tsk.gif", true); //$NON-NLS-1$
 	}
 	
 	/**
