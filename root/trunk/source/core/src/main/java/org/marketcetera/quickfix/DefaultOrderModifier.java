@@ -82,7 +82,7 @@ public class DefaultOrderModifier implements OrderModifier {
 
     public enum MessageFieldType { MESSAGE, HEADER, TRAILER };
 
-    protected DefaultOrderModifier()
+    public DefaultOrderModifier()
     {
         messageModifiers = new HashMap<String, MessageModifier>();
     }
