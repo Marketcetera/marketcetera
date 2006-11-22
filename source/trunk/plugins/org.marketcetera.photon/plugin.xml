@@ -220,5 +220,18 @@
          		id="org.marketcetera.photon.ViewSecurity"
          		label="View Security"/>
          </objectContribution>
+		 <viewerContribution 
+	         id="org.marketcetera.photon.actions.RunScriptActionDelegate" 
+	         targetID="org.rubypeople.rdt.ui.rubyeditor.contextMenu"> 
+	         <action
+	            id="org.marketcetera.photon.actions.RunScriptActionDelegate" 
+	            label="Run &amp;script..." 
+	            style="push"
+	            state="false"
+	            menubarPath="additions" 
+	            icon="icons/other/RunScript.gif" 
+	            class="org.marketcetera.photon.actions.RunScriptActionDelegate"> 
+	         </action>
+	     </viewerContribution> 
    </extension>
 </plugin>
