@@ -11,6 +11,7 @@ import org.eclipse.ui.application.WorkbenchAdvisor;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
@@ -91,6 +92,11 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		declareIdeWorkbenchImage(ideBundle,
 				IDEInternalWorkbenchImages.IMG_OBJS_INFO_PATH, PATH_OBJECT
 						+ "info_tsk.gif", true); //$NON-NLS-1$
+		declareIdeWorkbenchImage(ideBundle, IDE.SharedImages.IMG_OBJ_PROJECT,
+				PATH_OBJECT + "prj_obj.gif", true); //$NON-NLS-1$
+		declareIdeWorkbenchImage(ideBundle,
+				IDE.SharedImages.IMG_OBJ_PROJECT_CLOSED, PATH_OBJECT
+						+ "cprj_obj.gif", true); //$NON-NLS-1$
 	}
 	
 	/**
