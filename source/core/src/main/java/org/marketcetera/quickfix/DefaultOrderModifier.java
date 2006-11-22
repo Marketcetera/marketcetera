@@ -9,8 +9,9 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.MsgType;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.prefs.BackingStoreException;
 
 /**
@@ -25,6 +26,8 @@ public class DefaultOrderModifier implements OrderModifier {
     private static final String ADMIN_MODIFIER_KEY = "ADMIN";
     private static final String APP_MODIFIER_KEY = "APP";
     private static final String GLOBAL_MODIFIER_KEY = "*";
+    private static final String PARSER_REGEX = "([0-9]+)(\\((\\*|[0-9a-z]|admin|app)\\))?";
+    private static final Pattern DEFAULT_FIELDS_PATTERN = Pattern.compile(PARSER_REGEX, Pattern.CASE_INSENSITIVE);
 
     class MessageModifier {
         private Map<Integer, Object> msgFields;
@@ -78,18 +81,30 @@ public class DefaultOrderModifier implements OrderModifier {
 
     private Map<String, MessageModifier> messageModifiers;
 
-
-
-    public enum MessageFieldType { MESSAGE, HEADER, TRAILER };
+    public enum MessageFieldType { MESSAGE, HEADER, TRAILER }
 
     public DefaultOrderModifier()
     {
         messageModifiers = new HashMap<String, MessageModifier>();
     }
 
-
     public void init(ConfigData data) throws BackingStoreException
     {
+    }
+
+    public void setMsgFields(Map<String, String> fields)
+    {
+        setFieldsHelper(fields, MessageFieldType.MESSAGE);
+    }
+
+    public void setHeaderFields(Map<String, String> fields)
+    {
+        setFieldsHelper(fields, MessageFieldType.HEADER);
+    }
+
+    public void setTrailerFields(Map<String, String> fields)
+    {
+        setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
     public boolean modifyOrder(Message order) throws MarketceteraException {
@@ -99,6 +114,7 @@ public class DefaultOrderModifier implements OrderModifier {
         try {
             msgType = order.getHeader().getString(MsgType.FIELD);
         } catch (FieldNotFound fieldNotFound) {
+            // ignore
         }
         MessageModifier mod;
         if (msgType != null){
@@ -145,4 +161,31 @@ public class DefaultOrderModifier implements OrderModifier {
         mod.addDefaultField(field, defaultValue, fieldType);
     }
 
+        /**
+     * The fields are of form:
+     * <fieldName>(predicate)=<fieldValue>
+     * Where fieldName is an integer number.
+     * So we parse out the field name, store it as an int, and store the value as an object.
+     * The predicate is optional
+     *
+     * @param fields    Map of key-value pairs
+     * @param fieldType       Which particular kind of field we are modifying: trailer/header/message
+     */
+    protected void setFieldsHelper(Map<String, String> fields, DefaultOrderModifier.MessageFieldType fieldType) {
+        Set<String> keys = fields.keySet();
+        for (String oneKey : keys) {
+            String value = fields.get(oneKey);
+            Matcher defaultFieldsMatcher = DEFAULT_FIELDS_PATTERN.matcher(oneKey);
+            String predicate = null;
+            if (defaultFieldsMatcher.matches()) {
+                int groupCount = defaultFieldsMatcher.groupCount();
+                String fieldIDString = defaultFieldsMatcher.group(1);
+                int fieldID = Integer.parseInt(fieldIDString);
+                if (groupCount == 3) {
+                    predicate = defaultFieldsMatcher.group(3);
+                }
+                addDefaultField(fieldID, value, fieldType, predicate);
+            }
+        }
+    }
 }

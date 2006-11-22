@@ -78,7 +78,7 @@ public class QuickFIXInitiator implements quickfix.Application
 
         // populate the default FIX session settings
         Map<String, Object> defaults = new HashMap<String, Object>();
-        defaults.put("ConnectionType","initiator");
+        defaults.put(SessionFactory.SETTING_CONNECTION_TYPE, SessionFactory.INITIATOR_CONNECTION_TYPE);
         defaults.put("HeartBtInt",Long.toString(30));
         defaults.put("FileStorePath","store");
         defaults.put("StartTime","00:00:00");

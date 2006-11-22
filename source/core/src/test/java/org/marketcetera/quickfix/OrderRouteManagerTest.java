@@ -10,7 +10,6 @@ import quickfix.field.*;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
 /**
@@ -31,9 +30,7 @@ public class OrderRouteManagerTest extends TestCase
         
     public void testModifyOrderSeparateSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
     {
-        OrderRouteManager routeManager = new OrderRouteManager();
-        ConfigData data = getPropsWithOrderRouting();
-        routeManager.init(data);
+        OrderRouteManager routeManager = getORMWithOrderRouting();
 
         Message message =FIXMessageUtil.newLimitOrder(
             new InternalID(""+12345),
@@ -110,14 +107,9 @@ public class OrderRouteManagerTest extends TestCase
     public void testModifyOrderAttachedSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
     {
         OrderRouteManager routeManager = new OrderRouteManager();
-        Properties props = new Properties();
-
-        props.put(OrderRouteManager.ORDER_ROUTE_TYPE, OrderRouteManager.FIELD_100_METHOD);
-        props.put(OrderRouteManager.SEPARATE_SUFFIX_KEY, false);
-        props.put(OrderRouteManager.ROUTES_NODE_KEY+".1", "N SIGMA");
-
-        PropertiesConfigData data = new PropertiesConfigData(props);
-        routeManager.init(data);
+        routeManager.setSeparateSuffix(false);
+        routeManager.addOneRoute("N", "SIGMA");
+        routeManager.setRouteMethod(OrderRouteManager.FIELD_100_METHOD);
 
         Message message =FIXMessageUtil.newLimitOrder(
             new InternalID(""+12345),
@@ -228,25 +220,20 @@ public class OrderRouteManagerTest extends TestCase
     public void testAddOneRoute() throws Exception
     {
         OrderRouteManager orMgr = new OrderRouteManager();
-        HashMap<String,String> map = new HashMap<String, String>();
-
-        orMgr.addOneRoute("A B", map);
-        orMgr.addOneRoute("S SIGMA", map);
-        assertEquals("A", "B", map.get("A"));
-        assertEquals("S", "SIGMA", map.get("S"));
+        orMgr.addOneRoute("A","B");
+        orMgr.addOneRoute("S", "SIGMA");
+        assertEquals("A", "B", orMgr.getRoutesMap().get("A"));
+        assertEquals("S", "SIGMA", orMgr.getRoutesMap().get("S"));
     }
 
     /** tests when routes come from properties */
     public void testRouteParsingPropsBased() throws Exception
     {
-        Properties props = new Properties();
-        props.setProperty(OrderRouteManager.ROUTES_NODE_KEY+".1", "A B");
-        props.setProperty(OrderRouteManager.ROUTES_NODE_KEY+".2", "S SIGMA");
-        props.setProperty(OrderRouteManager.ROUTES_NODE_KEY+".3", "N M");
-        props.setProperty(OrderRouteManager.ROUTES_NODE_KEY+".4", "NnoSpaceM");
-
         OrderRouteManager mgr = new OrderRouteManager();
-        mgr.init(new PropertiesConfigData(props));
+        mgr.addOneRoute("A", "B");
+        mgr.addOneRoute("S", "SIGMA");
+        mgr.addOneRoute("N", "M");
+        mgr.addOneRoute("NnoSpaceM", "");
 
         Map<String,String> map = mgr.getRoutesMap();
         assertEquals(3, map.size());
@@ -261,35 +248,31 @@ public class OrderRouteManagerTest extends TestCase
             protected void execute() throws Throwable
             {
                 OrderRouteManager routeManager = new OrderRouteManager();
-                Properties props = new Properties();
-
-                props.put(OrderRouteManager.ORDER_ROUTE_TYPE, "bob");
-                props.put(OrderRouteManager.SEPARATE_SUFFIX_KEY, false);
-
-                routeManager.init(new PropertiesConfigData(props));
+                routeManager.setSeparateSuffix(false);
+                routeManager.setRouteMethod("bob");
             }
         }).run();
     }
 
     /**
-     * Creates a basic route using the {@link OrderRouteManager.FIELD_100_METHOD}
+     * Creates a basic OrderRouteManager using the {@link OrderRouteManager#FIELD_100_METHOD}
      * # enable class share separate
      * separate.suffix=true
      * order.route.type=field:100
      * # routes
-     * routes.1=N SIGMA
-     * routes.2=IM Milan
-     * routes.3=A B
+     * 1. N SIGMA
+     * 2. IM Milan
+     * 3. A B
      */
-    public static ConfigData getPropsWithOrderRouting() {
-        Properties props = new Properties();
-
-        props.put(OrderRouteManager.ORDER_ROUTE_TYPE, OrderRouteManager.FIELD_100_METHOD);
-        props.put(OrderRouteManager.SEPARATE_SUFFIX_KEY, true);
-        props.put(OrderRouteManager.ROUTES_NODE_KEY + ".1", "N SIGMA");
-        props.put(OrderRouteManager.ROUTES_NODE_KEY + ".2", "IM Milan");
-        props.put(OrderRouteManager.ROUTES_NODE_KEY + ".3", "A B");
-
-        return new PropertiesConfigData(props);
+    public static OrderRouteManager getORMWithOrderRouting() {
+        OrderRouteManager orm = new OrderRouteManager();
+        orm.setRouteMethod(OrderRouteManager.FIELD_100_METHOD);
+        orm.setSeparateSuffix(true);
+        HashMap<String, String> routesMap = new HashMap<String, String>();
+        routesMap.put("N", "SIGMA");
+        routesMap.put("IM", "Milan");
+        routesMap.put("A", "B");
+        orm.setRoutes(routesMap);
+        return orm;
     }
 }
