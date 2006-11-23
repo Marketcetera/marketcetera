@@ -1,7 +1,8 @@
 package org.marketcetera.photon.views;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.FIXMatcher;
+import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import quickfix.DataDictionary;

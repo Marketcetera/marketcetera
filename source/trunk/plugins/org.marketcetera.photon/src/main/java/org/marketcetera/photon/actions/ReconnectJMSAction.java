@@ -46,7 +46,7 @@ public class ReconnectJMSAction extends Action implements IWorkbenchAction {
 	 * @see Application#initJMSConnector()
 	 */
 	public void run() {
-		Application.initJMSConnector();
+		// TODO: fix 
 	}
 
 }

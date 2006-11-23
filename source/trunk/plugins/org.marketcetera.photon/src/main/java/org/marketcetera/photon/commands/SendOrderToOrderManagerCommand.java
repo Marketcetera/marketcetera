@@ -14,7 +14,7 @@ public class SendOrderToOrderManagerCommand extends MessageCommand {
 
 	public void execute() {
 		try {
-			Application.getOrderManager().handleInternalMessage(getMessage());
+			Application.getOrderManager().handleMessage(getMessage());
 		} catch (Exception ex){
 			Application.getMainConsoleLogger().error("Exception sending order", ex);
 		}

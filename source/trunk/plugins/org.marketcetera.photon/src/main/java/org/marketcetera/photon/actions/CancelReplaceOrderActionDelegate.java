@@ -8,8 +8,8 @@ import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
-import org.marketcetera.photon.OrderManager;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.PhotonController;
+import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -37,7 +37,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 
 	private IStructuredSelection selection;
 
-	private OrderManager manager;
+	private PhotonController manager;
 
 	/**
 	 * Create a new {@link CancelReplaceOrderActionDelegate}
@@ -95,7 +95,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 
 	/**
 	 * Cancels the order specified by the FIX message in the selection,
-	 * by extracting the {@link ClOrdID} and then calling {@link OrderManager#cancelOneOrderByClOrdID(String)}
+	 * by extracting the {@link ClOrdID} and then calling {@link PhotonController#cancelOneOrderByClOrdID(String)}
 	 * 
 	 * @see org.eclipse.ui.actions.ActionDelegate#runWithEvent(org.eclipse.jface.action.IAction, org.eclipse.swt.widgets.Event)
 	 */

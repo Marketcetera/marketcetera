@@ -12,7 +12,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.quickfix.QuickFIXDescriptor;
 

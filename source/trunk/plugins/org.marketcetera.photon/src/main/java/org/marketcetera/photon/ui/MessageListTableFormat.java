@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 
 
 

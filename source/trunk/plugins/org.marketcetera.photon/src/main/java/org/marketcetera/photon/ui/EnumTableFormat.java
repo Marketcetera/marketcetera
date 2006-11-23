@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.photon.FIXFieldLocalizer;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import quickfix.DataDictionary;

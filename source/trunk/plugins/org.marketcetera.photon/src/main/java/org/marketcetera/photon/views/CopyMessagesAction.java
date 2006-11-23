@@ -11,7 +11,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 
 import quickfix.Message;
 

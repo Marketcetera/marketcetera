@@ -1,7 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;

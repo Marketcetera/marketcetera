@@ -15,6 +15,8 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
+import org.marketcetera.photon.ui.EquityPerspectiveFactory;
+import org.marketcetera.photon.ui.MainConsole;
 import org.osgi.framework.Bundle;
 
 /**

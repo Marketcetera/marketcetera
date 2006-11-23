@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.Application;
-import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.quotefeed.IMessageListener;
@@ -221,11 +221,11 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 			MessageHolder messageHolder = (MessageHolder)tableItem.getData();
 			Message message = messageHolder.getMessage();
 			IQuoteFeed quoteFeed = Application.getQuoteFeed();
-			try {quoteFeed.unlistenQuotes(new MSymbol(message.getString(Symbol.FIELD)), view); } catch (FieldNotFound fnf){}
+			try {quoteFeed.unlistenQuotes(new MSymbol(message.getString(Symbol.FIELD))); } catch (FieldNotFound fnf){}
 			message.clear();
 			if (stringValue.length()>0){
 				message.setField(new Symbol(stringValue));
-				quoteFeed.listenQuotes(new MSymbol(stringValue), view);
+				quoteFeed.listenQuotes(new MSymbol(stringValue));
 				getMessagesViewer().refresh();
 				ensureOneAtEnd();
 			}

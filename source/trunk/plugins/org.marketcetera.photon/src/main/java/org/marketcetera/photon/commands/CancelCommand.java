@@ -5,8 +5,6 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IPhotonCommand;
 
-import quickfix.FieldNotFound;
-
 public class CancelCommand implements IPhotonCommand {
 
 	private final String id;
@@ -20,8 +18,6 @@ public class CancelCommand implements IPhotonCommand {
 		try {
 			Application.getOrderManager().cancelOneOrderByClOrdID(id);
 		} catch (NoMoreIDsException e) {
-			logger.error("Exception cancelling order", e);
-		} catch (FieldNotFound e) {
 			logger.error("Exception cancelling order", e);
 		}
 	}

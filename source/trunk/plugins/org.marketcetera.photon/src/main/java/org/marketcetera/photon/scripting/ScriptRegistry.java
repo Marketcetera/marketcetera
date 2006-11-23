@@ -10,6 +10,8 @@ import java.util.Map.Entry;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
+import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
@@ -26,11 +28,14 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author andrei@lissovski.org
  * @author gmiller
  */
-public class ScriptRegistry implements IScriptRegistry {
+public class ScriptRegistry implements IPropertyChangeListener {
 
+	EventScriptController tradeScriptController;
+	EventScriptController quoteScriptController;
+	
 	public ScriptRegistry() {
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.marketcetera.photon.scripting.IScriptRegistry#listScriptsByEventType(org.marketcetera.photon.scripting.ScriptingEventType)
 	 */
@@ -76,7 +81,8 @@ public class ScriptRegistry implements IScriptRegistry {
 		URI scriptResourceURI = scriptResource.getRawLocationURI();
 
 		try {
-			return new Script(readFileAsString(scriptResourceURI.getPath()));
+			String path = scriptResourceURI.getPath();
+			return new Script(readFileAsString(path), path, 1, 1);
 		} catch (IOException e) {
 			return null;
 		}
@@ -105,6 +111,16 @@ public class ScriptRegistry implements IScriptRegistry {
 			if (reader != null ) reader.close();
 		}
 		return fileData.toString();
+	}
+
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getProperty().equals(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE)){
+			Object newValue = event.getNewValue();
+			Object oldValue = event.getOldValue();
+			if (newValue != null){
+				//deleted
+			}
+		}
 	}
 
 

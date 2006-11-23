@@ -2,7 +2,7 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.parser.PriceImage;
-import org.marketcetera.photon.ui.FIXTextExtractor;
+import org.marketcetera.photon.ui.validation.FIXTextExtractor;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
