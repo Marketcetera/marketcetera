@@ -9,6 +9,7 @@ import org.marketcetera.core.MMapEntry;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
+import org.springframework.jms.core.JmsTemplate;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ca.odell.glazedlists.BasicEventList;
@@ -27,20 +28,21 @@ public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
 
 	protected FeedStatus feedStatus;
 	private List<IFeedComponentListener> feedComponentListeners = new LinkedList<IFeedComponentListener>();
-	protected BasicEventList<Map.Entry<MSymbol, IMessageListener>> listenedSymbols = new BasicEventList<Map.Entry<MSymbol, IMessageListener>>();
+	protected BasicEventList<MSymbol> listenedSymbols = new BasicEventList<MSymbol>();
+	private JmsTemplate quoteJmsTemplate;
+	private JmsTemplate tradeJmsTemplate;
 
-	
-	public void listenLevel2(MSymbol symbol, IMessageListener listener) {
+
+	public void listenLevel2(MSymbol symbol) {
 		synchronized (listenedSymbols) {
-			MMapEntry<MSymbol, IMessageListener> entry = new MMapEntry<MSymbol, IMessageListener>(symbol, listener);
-			listenedSymbols.add(entry);
+			listenedSymbols.add(symbol);
 		}
 	}
 
-	public void unlistenLevel2(MSymbol symbol, IMessageListener listener) {
+	public void unlistenLevel2(MSymbol symbol) {
 		synchronized (listenedSymbols) {
-			for (Map.Entry<MSymbol, IMessageListener> entry : listenedSymbols) {
-				if (entry.getKey().equals(symbol) && entry.getValue().equals(listener)){
+			for (MSymbol entry : listenedSymbols) {
+				if (entry.equals(symbol)){
 					listenedSymbols.remove(entry);
 					break;
 				}
@@ -66,25 +68,24 @@ public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
 		}
 	}
 
-	public void listenQuotes(MSymbol symbol, IMessageListener listener) {
+	public void listenQuotes(MSymbol symbol) {
 		synchronized (listenedSymbols) {
-			MMapEntry<MSymbol, IMessageListener> entry = new MMapEntry<MSymbol, IMessageListener>(symbol, listener);
-			listenedSymbols.add(entry);
+			listenedSymbols.add(symbol);
 		}
 	}
 
-	public void listenTrades(MSymbol symbol, IMessageListener listener) {
+	public void listenTrades(MSymbol symbol) {
 		//agl todo:implement listenTrades()
 		throw new NotImplementedException();
 	}
 
-	public void unlistenQuotes(MSymbol symbol, IMessageListener listener) {
+	public void unlistenQuotes(MSymbol symbol) {
 		synchronized (listenedSymbols) {
-			listenedSymbols.remove(new MMapEntry<MSymbol, IMessageListener>(symbol, listener));
+			listenedSymbols.remove(symbol);
 		}
 	}
 
-	public void unlistenTrades(MSymbol symbol, IMessageListener listener) {
+	public void unlistenTrades(MSymbol symbol) {
 		//agl todo:implement unlistenTrades()
 		throw new NotImplementedException();
 	}
@@ -94,4 +95,21 @@ public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
 		fireFeedStatusChanged();
 	}
 
+	public JmsTemplate getQuoteJmsTemplate() {
+		// TODO Auto-generated method stub
+		return quoteJmsTemplate;
+	}
+
+	public JmsTemplate getTradeJmsTemplate() {
+		// TODO Auto-generated method stub
+		return tradeJmsTemplate;
+	}
+
+	public void setQuoteJmsTemplate(JmsTemplate template) {
+		quoteJmsTemplate = template;
+	}
+
+	public void setTradeJmsTemplate(JmsTemplate template) {
+		tradeJmsTemplate = template;		
+	}
 }

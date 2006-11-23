@@ -1,6 +1,5 @@
 package org.marketcetera.bogusfeed;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
@@ -8,11 +7,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Random;
-import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
+import org.springframework.jms.core.JmsTemplate;
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -28,7 +27,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 
 	private QuoteGeneratorThread quoteGeneratorThread;
-	
+	AtomicBoolean isRunning = new AtomicBoolean(false);
 
 	class QuoteGeneratorThread extends Thread {
 		boolean shouldShutdown = false;
@@ -39,14 +38,16 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 		{
 			while (!shouldShutdown){
 				try {
-					LinkedList<Entry<MSymbol, IMessageListener>> entries;
+					LinkedList<MSymbol> entries;
 					synchronized (listenedSymbols){
-						entries = new LinkedList<Map.Entry<MSymbol, IMessageListener>>(listenedSymbols);
+						entries = new LinkedList<MSymbol>(listenedSymbols);
 					}
-					for (Map.Entry<MSymbol, IMessageListener> entry : entries) {
-						MSymbol symbol = entry.getKey();
+					for (MSymbol symbol : entries) {
 						Message quote = generateQuote(symbol);
-						entry.getValue().onQuote(quote);
+						JmsTemplate quoteJmsTemplate = getQuoteJmsTemplate();
+						if (quoteJmsTemplate != null){
+							quoteJmsTemplate.convertAndSend(quote);
+						}
 					}
 					sleep(randAmount());
 				} catch (InterruptedException ex){}
@@ -106,15 +107,22 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 		
 	}
 	
-	public void connect() throws IOException {
+	public void start() {
+		boolean oldValue = isRunning.getAndSet(true);
+		if (oldValue)
+			throw new IllegalStateException();
+				
 		quoteGeneratorThread = new QuoteGeneratorThread();
 		quoteGeneratorThread.start();
 		setFeedStatus(FeedStatus.AVAILABLE);
 	}
 
-	public void disconnect() {
-		setFeedStatus(FeedStatus.OFFLINE);
-		quoteGeneratorThread.shutdown();
+	public void stop() {
+		boolean oldValue = isRunning.getAndSet(false);
+		if (oldValue){
+			setFeedStatus(FeedStatus.OFFLINE);
+			quoteGeneratorThread.shutdown();
+		}
 	}
 
 	
@@ -124,6 +132,10 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 
 	public String getID() {
 		return "Bogus Book";
+	}
+
+	public boolean isRunning() {
+		return isRunning.get();
 	}
 
 }
