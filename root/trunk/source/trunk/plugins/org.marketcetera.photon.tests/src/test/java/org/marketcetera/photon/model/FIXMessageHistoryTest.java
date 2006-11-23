@@ -9,6 +9,10 @@ import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.core.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -31,7 +35,6 @@ import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;

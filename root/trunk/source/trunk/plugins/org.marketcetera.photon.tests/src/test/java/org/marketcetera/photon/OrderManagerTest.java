@@ -6,27 +6,22 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 
-import javax.jms.JMSException;
-import javax.jms.MessageListener;
-
 import junit.framework.TestCase;
 
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.model.OutgoingMessageHolder;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.core.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.IncorrectTagValue;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.ClOrdID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
@@ -68,7 +63,7 @@ public class OrderManagerTest extends TestCase {
 	
 	private InMemoryIDFactory idFactory;
 	private FIXMessageHistory messageHistory;
-	private OrderManager orderManager;
+	private PhotonController orderManager;
 	private LinkedList<Message> queuedMessages;
 
 	static {
@@ -83,32 +78,23 @@ public class OrderManagerTest extends TestCase {
 		idFactory = new InMemoryIDFactory(999);
 		messageHistory = new FIXMessageHistory();
 		queuedMessages = new LinkedList<Message>();
-		orderManager = new OrderManager(messageHistory) {
-			@Override
-			protected boolean sendToApplicationQueue(Message message) throws JMSException {
-				queuedMessages.add(message);
-				return true;
-			}
-		};
+		orderManager = new PhotonController();
+		orderManager.setMessageHistory(messageHistory);
 		orderManager.setIDFactory(idFactory);
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.OrderManager.getMessageListener()'
-	 */
-	public void testGetMessageListener() {
-		MessageListener messageListener = orderManager.getMessageListener();
-		assertNotNull(messageListener);
-	}
 	
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleCounterpartyMessages(Object[])'
 	 */
 	public void testHandleCounterpartyMessages() throws FieldNotFound {
-		Object[] messages = new Object[2];
+		Message[] messages = new Message[2];
 		messages[0] = getTestableExecutionReport();
 		messages[1] = getTestableExecutionReport();
-		orderManager.handleCounterpartyMessages(messages);
+		for (Message aMessage : messages) {
+			orderManager.handleMessage(aMessage);
+			
+		}
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
 		assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
@@ -123,10 +109,12 @@ public class OrderManagerTest extends TestCase {
 	public void testHandleInternalMessages() throws FieldNotFound {
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(0, historyList.size());
-		Object[] messages = new Object[2];
+		Message[] messages = new Message[2];
 		messages[0] = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		messages[1] = FIXMessageUtil.newCancel(new InternalID("AQWE"), new InternalID("ASDF"), Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
-		orderManager.handleInternalMessages(messages);
+		for (Message message : messages) {
+			orderManager.handleMessage(message);
+		}
 		assertNotNull(messageHistory.getLatestMessage("ASDF"));
 		historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
@@ -151,7 +139,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessage(Message)'
 	 */
-	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException, JMSException {
+	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException {
 		Message message = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
@@ -164,7 +152,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelReplaceOneOrder(Message)'
 	 */
-	public void testCancelReplaceOneOrder() throws FieldNotFound, JMSException, MarketceteraException, IncorrectTagValue {
+	public void testCancelReplaceOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
 		Message message = FIXMessageUtil.newLimitOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
@@ -189,7 +177,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrder(Message)'
 	 */
-	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, JMSException, IncorrectTagValue {
+	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
 		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);
@@ -217,7 +205,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrderByClOrdID(String)'
 	 */
-	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, JMSException, IncorrectTagValue {
+	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
 		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		orderManager.handleInternalMessage(message);

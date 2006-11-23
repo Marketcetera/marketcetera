@@ -52,4 +52,8 @@ public class MockScript implements IScript {
 		throw new NotImplementedException();
 	}
 
+	public String getID() {
+		throw new NotImplementedException();
+	}
+
 }
