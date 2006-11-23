@@ -111,9 +111,11 @@ public class BookComposite extends Composite implements IMessageListener
 
 	public void setInput(Message marketRefresh){
 		boolean hadOldInput = bidViewer.getInput()!= null;
-		if (marketRefresh == null){
-			bidViewer.setInput(null);
-			askViewer.setInput(null);
+		if (marketRefresh == null) {
+			if (!isDisposed()) {
+				bidViewer.setInput(null);
+				askViewer.setInput(null);
+			}
 		} else {
 			bidViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.BID));
 			askViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.OFFER));
