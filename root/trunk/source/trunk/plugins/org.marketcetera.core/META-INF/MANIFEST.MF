@@ -17,6 +17,7 @@ Export-Package: .,
  org.marketcetera.quickfix,
  org.marketcetera.quickfix.customfields,
  org.marketcetera.quotefeed,
+ org.marketcetera.spring,
  org.marketcetera.symbology
 Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.apache.log4j;visibility:=reexport,
