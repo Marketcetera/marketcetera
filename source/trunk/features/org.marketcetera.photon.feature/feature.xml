@@ -44,7 +44,7 @@
          id="org.apache.activemq"
          download-size="0"
          install-size="0"
-         version="4.0.0"
+         version="4.0.2"
          unpack="false"/>
 
    <plugin
