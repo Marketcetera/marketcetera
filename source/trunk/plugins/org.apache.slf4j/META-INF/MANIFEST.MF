@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: SLF4J Plug-in
 Bundle-SymbolicName: org.apache.slf4j
 Bundle-Version: 1.0.1
-Bundle-ClassPath: lib/slf4j-jdk14-1.0.1.jar
+Bundle-ClassPath: lib/slf4j-log4j12-1.0.1.jar
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Export-Package: org.slf4j,
