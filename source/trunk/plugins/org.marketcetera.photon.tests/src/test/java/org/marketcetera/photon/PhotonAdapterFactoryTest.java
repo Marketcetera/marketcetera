@@ -8,7 +8,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.model.IncomingMessageHolder;
+import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;

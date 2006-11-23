@@ -5,8 +5,8 @@ import java.math.BigDecimal;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.IncomingMessageHolder;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.IncomingMessageHolder;
 
 import quickfix.Message;
 import quickfix.field.AvgPx;

@@ -3,8 +3,8 @@ package org.marketcetera.photon.views;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.photon.ui.NumericTextValidator;
-import org.marketcetera.photon.ui.ValidationException;
+import org.marketcetera.photon.ui.validation.NumericTextValidator;
+import org.marketcetera.photon.ui.validation.ValidationException;
 
 public class NumericTextValidatorTest extends TestCase {
 
