@@ -63,6 +63,8 @@ public enum MessageKey implements LocalizedMessage {
 
     HIBERNATE_CREATION_ERR("core.hibernate.error.creation"),
 
+    ORDER_MODIFIER_WRONG_FIELD_FORMAT("core.init.ordermodifier.wrong_format"),
+
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
     APP_EXIT("core.init.app_exit");

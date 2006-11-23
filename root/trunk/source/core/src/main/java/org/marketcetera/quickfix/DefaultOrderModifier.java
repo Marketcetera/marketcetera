@@ -3,6 +3,7 @@ package org.marketcetera.quickfix;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.MessageKey;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -92,18 +93,15 @@ public class DefaultOrderModifier implements OrderModifier {
     {
     }
 
-    public void setMsgFields(Map<String, String> fields)
-    {
+    public void setMsgFields(Map<String, String> fields) throws MarketceteraException {
         setFieldsHelper(fields, MessageFieldType.MESSAGE);
     }
 
-    public void setHeaderFields(Map<String, String> fields)
-    {
+    public void setHeaderFields(Map<String, String> fields) throws MarketceteraException {
         setFieldsHelper(fields, MessageFieldType.HEADER);
     }
 
-    public void setTrailerFields(Map<String, String> fields)
-    {
+    public void setTrailerFields(Map<String, String> fields) throws MarketceteraException {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
@@ -171,7 +169,7 @@ public class DefaultOrderModifier implements OrderModifier {
      * @param fields    Map of key-value pairs
      * @param fieldType       Which particular kind of field we are modifying: trailer/header/message
      */
-    protected void setFieldsHelper(Map<String, String> fields, DefaultOrderModifier.MessageFieldType fieldType) {
+    protected void setFieldsHelper(Map<String, String> fields, DefaultOrderModifier.MessageFieldType fieldType) throws MarketceteraException {
         Set<String> keys = fields.keySet();
         for (String oneKey : keys) {
             String value = fields.get(oneKey);
@@ -185,6 +183,8 @@ public class DefaultOrderModifier implements OrderModifier {
                     predicate = defaultFieldsMatcher.group(3);
                 }
                 addDefaultField(fieldID, value, fieldType, predicate);
+            } else {
+                throw new MarketceteraException(MessageKey.ORDER_MODIFIER_WRONG_FIELD_FORMAT.getLocalizedMessage(oneKey));
             }
         }
     }
