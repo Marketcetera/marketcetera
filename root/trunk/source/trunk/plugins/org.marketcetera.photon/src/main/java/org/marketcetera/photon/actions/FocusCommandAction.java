@@ -7,9 +7,9 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.CommandStatusLineContribution;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.ui.CommandStatusLineContribution;
 
 /**
  * FocusCommandAction is the action responsible for putting the

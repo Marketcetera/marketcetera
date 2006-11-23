@@ -5,8 +5,8 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.model.IncomingMessageHolder;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 
 public class DirectionalMessageTableFormat extends MessageListTableFormat {
 

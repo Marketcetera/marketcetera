@@ -45,17 +45,17 @@ import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.preferences.MapEditorUtil;
-import org.marketcetera.photon.ui.AbstractFIXExtractor;
 import org.marketcetera.photon.ui.BookComposite;
-import org.marketcetera.photon.ui.CComboValidator;
-import org.marketcetera.photon.ui.FIXCComboExtractor;
-import org.marketcetera.photon.ui.FIXTextExtractor;
-import org.marketcetera.photon.ui.FormValidator;
-import org.marketcetera.photon.ui.IMessageDisplayer;
-import org.marketcetera.photon.ui.NumericTextValidator;
-import org.marketcetera.photon.ui.ParentColorHighlighter;
-import org.marketcetera.photon.ui.PriceTextValidator;
-import org.marketcetera.photon.ui.TextValidator;
+import org.marketcetera.photon.ui.validation.AbstractFIXExtractor;
+import org.marketcetera.photon.ui.validation.CComboValidator;
+import org.marketcetera.photon.ui.validation.FIXCComboExtractor;
+import org.marketcetera.photon.ui.validation.FIXTextExtractor;
+import org.marketcetera.photon.ui.validation.FormValidator;
+import org.marketcetera.photon.ui.validation.IMessageDisplayer;
+import org.marketcetera.photon.ui.validation.NumericTextValidator;
+import org.marketcetera.photon.ui.validation.ParentColorHighlighter;
+import org.marketcetera.photon.ui.validation.PriceTextValidator;
+import org.marketcetera.photon.ui.validation.TextValidator;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quotefeed.IQuoteFeed;
@@ -172,7 +172,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		unlisten();
 		IQuoteFeed quoteFeed = Application.getQuoteFeed();
 		if (quoteFeed != null) {
-			quoteFeed.unlistenLevel2(listenedSymbol, bookComposite);
+			quoteFeed.unlistenLevel2(listenedSymbol);
 		}
 	}
 
@@ -375,7 +375,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 			if (quoteFeed != null
 					&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
 					&& !newListenedSymbol.equals(listenedSymbol)) {
-				quoteFeed.listenLevel2(newListenedSymbol, bookComposite);
+				quoteFeed.listenLevel2(newListenedSymbol);
 				listenedSymbol = newListenedSymbol;
 			}
 		}
@@ -386,7 +386,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		if (quoteFeed != null
 				&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE) {
 			if (listenedSymbol != null) {
-				quoteFeed.unlistenLevel2(listenedSymbol, bookComposite);
+				quoteFeed.unlistenLevel2(listenedSymbol);
 			}
 		}
 		bookComposite.setInput(null);
@@ -622,7 +622,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				extractor.modifyOrder(aMessage);
 			}
 			addCustomFields(aMessage);
-			Application.getOrderManager().handleInternalMessage(aMessage);
+			Application.getOrderManager().handleMessage(aMessage);
 			clear();
 		} catch (Exception e) {
 			Application.getMainConsoleLogger().error(

@@ -16,13 +16,13 @@
    <extension
          point="org.eclipse.ui.perspectives">
       <perspective
-            class="org.marketcetera.photon.EquityPerspectiveFactory"
+            class="org.marketcetera.photon.ui.EquityPerspectiveFactory"
             icon="icons/silk/medal_gold_2.png"
             id="org.marketcetera.photon.EquityPerspective"
             name="Equity Perspective">
       </perspective>
       <perspective
-            class="org.marketcetera.photon.NullPerspectiveFactory"
+            class="org.marketcetera.photon.ui.NullPerspectiveFactory"
             icon="icons/silk/bug.png"
             id="org.marketcetera.photon.DebugPerspective"
             name="Debug Perspective"/>

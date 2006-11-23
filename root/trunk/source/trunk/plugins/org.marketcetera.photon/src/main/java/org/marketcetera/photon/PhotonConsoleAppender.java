@@ -6,6 +6,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.ui.MainConsole;
 
 
 /**

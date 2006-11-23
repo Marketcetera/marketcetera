@@ -2,8 +2,8 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.photon.Application;
-import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.MessageHolder;
 
 import ca.odell.glazedlists.EventList;
 

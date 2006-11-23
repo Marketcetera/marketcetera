@@ -3,11 +3,11 @@ package org.marketcetera.photon.views;
 import java.util.List;
 
 import org.eclipse.jface.action.IToolBarManager;
-import org.marketcetera.photon.model.AveragePriceFunction;
-import org.marketcetera.photon.model.FIXMessageHistory;
-import org.marketcetera.photon.model.MessageHolder;
-import org.marketcetera.photon.model.NotNullMatcher;
-import org.marketcetera.photon.model.SymbolSideComparator;
+import org.marketcetera.photon.core.AveragePriceFunction;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.core.NotNullMatcher;
+import org.marketcetera.photon.core.SymbolSideComparator;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;

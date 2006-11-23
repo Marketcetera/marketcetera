@@ -17,6 +17,8 @@ import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.ui.CommandStatusLineContribution;
+import org.marketcetera.photon.ui.MainConsole;
 import org.marketcetera.photon.views.WebBrowserView;
 
 /**
@@ -73,18 +75,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	 */
 	@Override
 	public void postWindowOpen() {
-		IWorkbenchPage page = this.getWindowConfigurer().getWindow().getActivePage();
-
-//		IViewReference[] references = page.getViewReferences();
-//		for (IViewReference reference : references) {
-//			if (WebBrowserView.ID.equals(reference.getId()))
-//			{
-//				WebBrowserView view = (WebBrowserView) reference.getView(false);
-//				if (view != null){
-//					view.go("http://www.marketdcetera.com/");
-//				}
-//			}
-//		}
 
 		initStatusLine();
 
@@ -105,27 +95,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
 
 		
-		try {
-			Application.initIDFactory();
-		} catch (IOException e) {
-			Application.getMainConsoleLogger().error("Exeption connecting to web app", e);
-		}
-
 		if (item instanceof CommandStatusLineContribution) {
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
 			cslc.setIDFactory(Application.getIDFactory());
 		}
 
-		try {
-			Application.initJMSConnector();
-		} catch (Exception ex){
-			Application.getMainConsoleLogger().error("Exeption making connection to JMS: "+ex.getMessage(), ex);
-		}
-		try {
-			Application.initQuoteFeed();
-		} catch (Exception ex) {
-			Application.getMainConsoleLogger().error("Exeption making connection to quote feed: "+ex.getMessage(), ex);
-		}
 		Application.getMainConsoleLogger().info(
 				"Application initialized: " + new Date());
 		

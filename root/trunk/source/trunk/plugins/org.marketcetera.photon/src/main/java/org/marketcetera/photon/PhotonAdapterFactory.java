@@ -6,7 +6,7 @@ import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.model.MessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
 
 /**
  * The PhotonAdapterFactory produces adapters that the RCP uses to 
