@@ -1,5 +1,6 @@
 package org.marketcetera.photon;
 
+import java.io.PrintStream;
 import java.net.URL;
 
 import org.eclipse.core.runtime.Path;
@@ -55,8 +56,12 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		registerIdeAdapters();
 		declareIdeWorkbenchImages();
 		
+		MainConsole mainConsole = new MainConsole();
 		ConsolePlugin.getDefault().getConsoleManager().addConsoles(
-				new IConsole[] { new MainConsole() });
+				new IConsole[] { mainConsole });
+		
+		System.setOut(new PrintStream(mainConsole.getInfoMessageStream(), true));
+		System.setErr(new PrintStream(mainConsole.getErrorMessageStream(), true));
 	}
 
 	/**
