@@ -1,17 +1,12 @@
 package org.marketcetera.oms;
 
-import org.marketcetera.core.*;
-import org.marketcetera.jcyclone.JMSOutputInfo;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.QuickFIXInitiator;
-import quickfix.SessionID;
-
-import javax.jms.JMSException;
-import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.Properties;
-import java.util.LinkedList;
-
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.ConfigFileLoadingException;
+import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageBundleInfo;
+import org.marketcetera.core.MessageBundleManager;
+import org.marketcetera.core.MessageKey;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * OrderManagementSystem
@@ -28,64 +23,38 @@ import java.util.LinkedList;
  * $Id$
  */
 @ClassVersion("$Id$")
-public class OrderManagementSystem extends ApplicationBase implements OrderManagementSystemMBean {
+public class OrderManagementSystem {
 
     private static final String LOGGER_NAME = OrderManagementSystem.class.getName();
-    protected static final String CONFIG_FILE_NAME = "oms";
     public static final MessageBundleInfo OMS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("oms", "oms_messages");
 
     protected static OrderManagementSystem sOMS = null;
-    protected ConfigData mainProps;
-    private JMSOutputInfo jmsOutputInfo = null;        // used to store the info for OrderManager to find
-    private SessionID defaultSessionID;         // used to store the SessionID so that FIX sender can find it 
+	private static LoggerAdapter sLogger;
 
-    enum JMSPorts { INCOMING_COMMANDS, OUTGOING_MESSAGES }
 
-    protected OrderManagementSystem(String inCfgFile) throws ConfigFileLoadingException {
-        super(inCfgFile);
+    protected OrderManagementSystem()
+    {
     }
 
-    public void init() throws Exception {
-        super.init();
-        Properties props = ConfigPropertiesLoader.loadProperties(mCfgFileName);
-        mainProps = new PropertiesConfigData(props);
-        FIXDataDictionaryManager.setFIXVersion(QuickFIXInitiator.FIX_VERSION_DEFAULT);
+
+    public static void init()
+    {
+        MessageBundleManager.registerCoreMessageBundle();
+        MessageBundleManager.registerMessageBundle(OMS_MESSAGE_BUNDLE_INFO);
+        sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
     }
 
-    protected List<MessageBundleInfo> getLocalMessageBundles() {
-        LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
-        bundles.add(OMS_MESSAGE_BUNDLE_INFO);
-        return bundles;
-    }
 
-    public static OrderManagementSystem createOMS(String cfgFile) throws ConfigFileLoadingException {
-        if(sOMS == null){
-            sOMS = new OrderManagementSystem(cfgFile);
-        }
-        return sOMS;
-    }
+
 
     public static void main(String [] args) throws ConfigFileLoadingException
     {
-        String configFile = CONFIG_FILE_NAME;
-        if(args.length == 1) {
-            configFile = args[0];
-        }
-        sOMS = createOMS(configFile);
-
+    	init();
         try {
-            sOMS.init();
-            LoggerAdapter.info(MessageKey.APP_START.getLocalizedMessage("OMS"), LOGGER_NAME);
-            sOMS.run();
-            Thread.currentThread().join();
-        } catch (JMSException jmse) {
-            LoggerAdapter.error(MessageKey.JMS_ERROR.getLocalizedMessage(), jmse, LOGGER_NAME);
-        } catch (quickfix.ConfigError ce) {
-            LoggerAdapter.error(MessageKey.CONFIG_ERROR.getLocalizedMessage(), ce, LOGGER_NAME);
-        } catch (FileNotFoundException fnf) {
-            LoggerAdapter.error(MessageKey.CONFIG_FILE_DNE.getLocalizedMessage(), fnf, LOGGER_NAME);
-        } catch (ClassNotFoundException cnfe) {
-            LoggerAdapter.error(MessageKey.CLASS_DNE.getLocalizedMessage(), cnfe, LOGGER_NAME);
+        	ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("oms.xml");
+            appCtx.registerShutdownHook();
+//            appCtx.start();
+            System.in.read();
         } catch (Exception ex) {
             LoggerAdapter.error(MessageKey.ERROR.getLocalizedMessage(), ex, LOGGER_NAME);
         } finally {
@@ -95,25 +64,7 @@ public class OrderManagementSystem extends ApplicationBase implements OrderManag
 
     public static OrderManagementSystem getOMS() { return sOMS; }
 
-    public ConfigData getInitProps() { return mainProps; }
 
-    public void registerOutgoingJMSInfo(JMSOutputInfo inJMSOutputInfo)
-    {
-        jmsOutputInfo = inJMSOutputInfo;
-    }
 
-    /** Sets the default session that's actually created in {@link QuickFIXInitiator} */
-    public void registerDefaultSessionID(SessionID inSessionID)
-    {
-        defaultSessionID = inSessionID;
-    }
-
-    public JMSOutputInfo getJmsOutputInfo() {
-        return jmsOutputInfo;
-    }
-
-    public SessionID getDefaultSessionID() {
-        return defaultSessionID;
-    }
 }
 

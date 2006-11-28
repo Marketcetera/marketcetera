@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+    <!--
+    || ActiveMQ Broker
+    -->
+    <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+        <property name="config" value="classpath:broker.xml"/>
+    </bean>
+
+    <bean id="requestQueue" class="org.apache.activemq.command.ActiveMQQueue">
+        <constructor-arg value="oms-commands"/>
+    </bean>
+
+    <bean id="replyTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="oms-messages"/>
+    </bean>
+
+    <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+        <property name="brokerURL" value="tcp://localhost:61616"/>
+    </bean>
+
+    <bean id="listener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="outgoingMessageHandler"/>
+        <property name="defaultListenerMethod" value="handleMessage"/>
+        <property name="defaultResponseDestination" ref="replyTopic"/>
+        <property name="messageConverter">
+            <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+        </property>
+    </bean>
+
+    <!-- note that this needs to use the non-pooled connection factory -->
+    <bean id="container" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="listener"/>
+        <property name="destination" ref="requestQueue"/>
+    </bean>
+
+    <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+        <property name="connectionFactory" ref="connectionFactory"/>
+    </bean>
+
+    <!-- Spring JMS Template -->
+    <bean id="outgoingJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory">
+            <ref local="pooledConnectionFactory"/>
+        </property>
+        <property name="messageConverter">
+            <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+        </property>
+        <property name="defaultDestination" ref="replyTopic"/>
+    </bean>
+    <!--
+    || Message Driven POJOs
+    -->
+
+    <bean id="defaultSessionID" class="quickfix.SessionID">
+        <constructor-arg value="FIX.4.2"/>
+        <constructor-arg value="MRKTC-DEMO-OMS"/>
+        <constructor-arg value="MRKTC-EXCH"/>
+    </bean>
+
+    <!-- a thread safe non-pooled MessageListener -->
+    <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" singleton="false">
+        <property name="defaultSessionID" ref="defaultSessionID"/>
+        <property name="orderRouteManager" ref="orderRouting"/>
+        <property name="orderModifiers">
+            <list>
+                <ref bean="defaultOrderModifier"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Sets up core Spring objects for QFJ -->
+    <import resource="classpath:quickfixj.xml"/>
+    <!-- Sets up the order modifiers and order routing -->
+    <import resource="classpath:order-modifiers.xml"/>
+</beans>
+
+        <!-- END SNIPPET: spring -->

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- Sets up core Spring objects for QFJ -->
+    <import resource="classpath:quickfixj.appctx.xml"/>
+
+    <bean id="jdbcLogFactory" class="quickfix.JdbcLogFactory">
+        <constructor-arg>
+            <ref bean="sessionSettings"/>
+        </constructor-arg>
+    </bean>
+
+    <bean id="screenLogFactory" class="quickfix.ScreenLogFactory">
+        <constructor-arg value="true"/>
+        <constructor-arg value="true"/>
+        <constructor-arg value="true"/>
+    </bean>
+
+    <bean id="comboLogFactory" class="quickfix.CompositeLogFactory">
+        <constructor-arg>
+            <list>
+                <ref bean="jdbcLogFactory"/>
+                <ref bean="screenLogFactory"/>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <bean id="dataDictionary" class="quickfix.DataDictionary">
+        <constructor-arg ref="quickfix:FIX42:URLstring"/>
+    </bean>
+
+	<bean id="sessionSettings" class="quickfix.spring.SessionSettings">
+		<property name="defaults">
+			<map>
+                <entry key="ConnectionType" value="initiator"/>
+                <entry key="HeartBtInt" value="30"/>
+                <entry key="FileStorePath" value="store"/>
+                <entry key="StartTime" value="00:00:00"/>
+                <entry key="EndTime" value="00:00:00"/>
+                <entry><key><value>DataDictionary</value></key><ref bean="quickfix:FIX42:URL" /></entry>
+                <entry key="UseDataDictionary" value="Y"/>
+                <entry key="ReconnectInterval" value="15"/>
+                <entry key="ResetOnLogout" value="Y"/>
+                <entry key="ResetOnDisconnect" value="Y"/>
+                <entry key="SendResetSeqNumFlag" value="Y"/>
+                <entry key="JdbcDriver" value="com.mysql.jdbc.Driver"/>
+                <entry key="JdbcURL" value="jdbc:mysql://localhost/marketcetera_rails"/>
+                <entry key="JdbcUser" value="marketcetera"/>
+                <entry key="JdbcPassword" value="marketcetera"/>
+			</map>
+		</property>
+		<property name="sessionDescriptors">
+			<list>
+				<bean class="quickfix.spring.SessionDescriptor">
+					<property name="sessionID" ref="defaultSessionID"/>
+					<property name="settings">
+						<map>
+							<entry key="SocketConnectHost" value="exchange.marketcetera.com"/>
+							<entry key="SocketConnectPort" value="7001"/>
+						</map>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+    <bean id="messageStoreFactory" class="quickfix.FileStoreFactory">
+        <constructor-arg>
+        	<ref bean="sessionSettings"/>
+        </constructor-arg>		
+    </bean>
+
+    <bean id="messageFactory" class="quickfix.fix42.MessageFactory"/>
+
+    <!-- Sessions are configured directly in the Spring configuration -->
+    <!-- There is no use of the standard QF configuration file -->
+
+	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" singleton="true">
+	  <property name="jmsTemplate" ref="outgoingJmsTemplate"/>
+	</bean>
+
+    <bean id="socketInitiator" class="quickfix.spring.SocketInitiator">
+		<constructor-arg ref="qfApplication"/>
+		<constructor-arg ref="messageStoreFactory"/>
+		<constructor-arg ref="sessionSettings"/>
+		<constructor-arg ref="comboLogFactory"/>
+		<constructor-arg ref="messageFactory"/>
+    </bean>
+
+
+
+</beans>
+
