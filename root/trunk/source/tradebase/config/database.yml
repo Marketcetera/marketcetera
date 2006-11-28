@@ -13,8 +13,8 @@
 development:
   adapter: mysql
   database: marketcetera_rails
-  username: hibernate
-  password: hibernate
+  username: marketcetera
+  password: marketcetera
   host: 127.0.0.1
 
 # Warning: The database defined as 'test' will be erased and
@@ -23,8 +23,8 @@ development:
 test:
   adapter: mysql
   database: marketcetera_rails_test
-  username: hibernate
-  password: hibernate
+  username: marketcetera
+  password: marketcetera
   host: 127.0.0.1
 
 production:
