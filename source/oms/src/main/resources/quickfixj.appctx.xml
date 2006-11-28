@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+    <!-- TODO Document as available -->
+    <bean id="quickfix:FIX40" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="FIX40.xml"/>
+    </bean>
+    <!-- TODO Document as available -->
+    <bean id="quickfix:FIX41" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="FIX41.xml"/>
+    </bean>
+    <!-- TODO Document as available -->
+    <bean id="quickfix:FIX42" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="FIX42.xml"/>
+    </bean>
+    <!-- TODO Document as available -->
+    <bean id="quickfix:FIX43" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="FIX43.xml"/>
+    </bean>
+    <!-- TODO Document as available -->
+    <bean id="quickfix:FIX44" class="org.springframework.core.io.ClassPathResource">
+        <constructor-arg value="FIX44.xml"/>
+    </bean>
+
+    <bean name="quickfix:FIX40:URL"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="propertyPath" value="URL"/>
+    </bean>
+    <bean name="quickfix:FIX41:URL"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="propertyPath" value="URL"/>
+    </bean>
+    <bean name="quickfix:FIX42:URL"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="propertyPath" value="URL"/>
+    </bean>
+    <bean name="quickfix:FIX43:URL"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="propertyPath" value="URL"/>
+    </bean>
+    <bean name="quickfix:FIX44:URL"
+        class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="propertyPath" value="URL"/>
+    </bean>
+	<bean id="quickfix:FIX40:URLstring" factory-bean="quickfix:FIX40:URL" factory-method="toString"/>
+	<bean id="quickfix:FIX41:URLstring" factory-bean="quickfix:FIX41:URL" factory-method="toString"/>
+	<bean id="quickfix:FIX42:URLstring" factory-bean="quickfix:FIX42:URL" factory-method="toString"/>
+	<bean id="quickfix:FIX43:URLstring" factory-bean="quickfix:FIX43:URL" factory-method="toString"/>
+	<bean id="quickfix:FIX44:URLstring" factory-bean="quickfix:FIX44:URL" factory-method="toString"/>
+
+
+
+</beans>
+
