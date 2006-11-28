@@ -29,14 +29,14 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class OrderManagementSystemIT extends TestCase
+public class OrderManagementSystemTest extends TestCase
 {
     public static final String CONFIG_FILE = "oms-test";
     private static ClassPathXmlApplicationContext appContext;
     private static JmsTemplate jmsQueueSender;
     private static NullQuickFIXSender qfSender;
 
-    public OrderManagementSystemIT(String inName)
+    public OrderManagementSystemTest(String inName)
     {
         super(inName);
     }
@@ -44,7 +44,7 @@ public class OrderManagementSystemIT extends TestCase
     public static Test suite()
     {
 
-        return new  MarketceteraTestSuite(OrderManagementSystemIT.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
+        return new  MarketceteraTestSuite(OrderManagementSystemTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
     }
 
 
@@ -54,7 +54,7 @@ public class OrderManagementSystemIT extends TestCase
 			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
         } catch (Exception e) {
-            LoggerAdapter.error("Unable to initialize OMS", e, OrderManagementSystemIT.class.getName());
+            LoggerAdapter.error("Unable to initialize OMS", e, OrderManagementSystemTest.class.getName());
             fail("Unable to init OMS");
         }
 	}

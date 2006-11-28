@@ -60,55 +60,7 @@
     </dependencies>
 
     <build>
-        <!-- want to run all the tests forked b/c of singleton issues with Jcyclone and OMS -->
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <configuration>
-                    <forkMode>pertest</forkMode>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>run-integration-tests</id>
-                        <phase>integration-test</phase>
-                        <configuration>
-                            <tasks>
-                                <property name="integrationTestReportDir" value="${project.build.directory}/integration-test-reports"/>
-                                <taskdef name="junit"
-                                         classname="org.apache.tools.ant.taskdefs.optional.junit.JUnitTask">
-                                    <classpath>
-                                        <path refid="maven.test.classpath"/>
-                                    </classpath>
-                                </taskdef>
-
-                                <mkdir dir="${integrationTestReportDir}"/>
-
-                                <junit printSummary="yes" haltonerror="true" haltonfailure="true" fork="true" dir=".">
-                                    <sysproperty key="basedir" value="."/>
-                                    <formatter type="plain" usefile="true"/>
-                                    <classpath>
-                                        <path refid="maven.test.classpath"/>
-                                    </classpath>
-                                    <batchtest todir="${integrationTestReportDir}">
-                                        <fileset dir="src/test/java">
-                                            <include name="**/*IT.java"/>
-                                        </fileset>
-                                    </batchtest>
-                                </junit>
-
-                            </tasks>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>exec-maven-plugin</artifactId>
