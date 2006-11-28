@@ -69,6 +69,13 @@
          unpack="false"/>
 
    <plugin
+         id="org.marketcetera.photon.core"
+         download-size="0"
+         install-size="0"
+         version="0.1.4"
+         unpack="false"/>
+
+   <plugin
          id="org.marketcetera.photon.scripting"
          download-size="0"
          install-size="0"
