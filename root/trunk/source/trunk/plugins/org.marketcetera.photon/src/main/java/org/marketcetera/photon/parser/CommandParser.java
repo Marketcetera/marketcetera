@@ -187,7 +187,7 @@ public class CommandParser {
 			"user input");
 	}
 	
-	Tok[] lex(String theInputString){
+	public Tok[] lex(String theInputString){
 		return Parsers.runParser(theInputString, mainLexeme, "lex only");
 	}
 	public void setIDFactory(IDFactory factory) {

@@ -1,8 +1,10 @@
 package org.marketcetera.photon;
 
+import org.apache.bsf.BSFManager;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.scripting.IScript;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -26,6 +28,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		BSFManager.registerScriptingEngine(IScript.RUBY_LANG_STRING,
+				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
 	}
 
 	/**

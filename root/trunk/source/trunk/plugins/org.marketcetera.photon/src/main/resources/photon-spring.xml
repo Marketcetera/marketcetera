@@ -46,6 +46,19 @@
     <constructor-arg value="trades"/>
   </bean>
 
+  <bean id="quotesMarketDataViewListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+    <property name="defaultListenerMethod" value="onEvent"/>
+	<property name="messageConverter">
+		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+	</property>		
+  </bean>
+
+  <bean id="quotesMarketDataViewContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+    <property name="connectionFactory" ref="internalConnectionFactory"/>
+    <property name="messageListener" ref="quotesMarketDataViewListener"/>
+    <property name="destination" ref="quotesTopic"/>
+  </bean>
+
   <bean id="quotesScriptControllerListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
     <property name="delegate" ref="quotesScriptController"/>
     <property name="defaultListenerMethod" value="onEvent"/>

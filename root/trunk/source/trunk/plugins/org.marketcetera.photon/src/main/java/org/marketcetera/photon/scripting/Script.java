@@ -5,7 +5,6 @@ import org.apache.bsf.BSFManager;
 
 public class Script implements IScript {
 	private String script;
-	private ScriptContext context;
 	private String fileName = "<script>";
 	private int lineNumber = 1;
 	private int columnNumber = 1;
@@ -15,17 +14,8 @@ public class Script implements IScript {
 		this.script = script;
 	}
 
-	public Script(String script, ScriptContext context) {
-		this(script);
-		this.context = context;
-	}
-	
 	public Script(String script, String fileName, int lineNo, int columnNo){
-		this(script, null, fileName, lineNo, columnNo);
-	}
-
-	public Script(String script, ScriptContext context, String fileName, int lineNo, int columnNo){
-		this(script, context);
+		this(script);
 		if (fileName != null){
 			this.fileName = fileName;
 		}
@@ -46,10 +36,6 @@ public class Script implements IScript {
 		return script;
 	}
 
-	public void setContext(ScriptContext ctxt) {
-		context = ctxt;
-	}
-
 
 	public int getColumnNumber() {
 		return columnNumber;
@@ -63,12 +49,33 @@ public class Script implements IScript {
 		return lineNumber;
 	}
 	
-	protected ScriptContext getContext()
-	{
-		return context;
-	}
 
 	public String getID() {
 		return getFileName();
+	}
+
+	@Override
+	public boolean equals(Object otherScriptObj) {
+		boolean equals = true;
+		if (otherScriptObj instanceof IScript) {
+			IScript otherScript = (IScript) otherScriptObj;
+			String otherScriptString = otherScript.getScript();
+			if (script == null){
+				equals &= (otherScriptString == null);
+			} else {
+				equals &= script.equals(otherScriptString);
+			}
+			String otherID = otherScript.getID();
+			if (getID() == null){
+				equals &= otherID == null;
+			} else {
+				equals &= otherID.equals(getID());
+			}
+		}
+		if (otherScriptObj instanceof Script) {
+			Script otherScript = (Script) otherScriptObj;
+			equals &= otherScript.getLineNumber()==lineNumber && otherScript.getColumnNumber() == columnNumber;
+		}
+		return equals;
 	}
 }
