@@ -5,20 +5,25 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.Preferences.IPropertyChangeListener;
-import org.eclipse.core.runtime.Preferences.PropertyChangeEvent;
-import org.marketcetera.photon.Application;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.marketcetera.core.MMapEntry;
 import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
+import org.springframework.beans.factory.InitializingBean;
 
+import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.FunctionList;
+import ca.odell.glazedlists.GlazedLists;
 import ca.odell.glazedlists.matchers.Matcher;
 
 
@@ -28,54 +33,20 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author andrei@lissovski.org
  * @author gmiller
  */
-public class ScriptRegistry implements IPropertyChangeListener {
+public class ScriptRegistry implements IPropertyChangeListener, InitializingBean {
 
-	EventScriptController tradeScriptController;
-	EventScriptController quoteScriptController;
+	private BasicEventList<Entry<IScript, BSFManager>> quoteScripts = new BasicEventList<Entry<IScript, BSFManager>>();
+	private BasicEventList<Entry<IScript, BSFManager>> tradeScripts = new BasicEventList<Entry<IScript, BSFManager>>();
+	private String initialRegistryValueString;
 	
 	public ScriptRegistry() {
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.scripting.IScriptRegistry#listScriptsByEventType(org.marketcetera.photon.scripting.ScriptingEventType)
-	 */
-	public List<IScript> listScriptsByEventType(final ScriptingEventType eventType) {
-		String encodedScriptList = Application.getPreferenceStore().getString(
-				ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE);
-		//agl (any event type, script path) tuples
-		EventList<Entry<String, String>> completeEventScriptList = MapEditorUtil
-				.parseString(encodedScriptList);
-		//agl (specified event type, script path) tuples
-		FilterList<Entry<String, String>> eventScriptList = new FilterList<Entry<String, String>>(
-				completeEventScriptList, new Matcher<Entry<String, String>>() {
-					public boolean matches(Entry<String, String> entry) {
-						return entry.getKey().equalsIgnoreCase(eventType.getName());
-					}
-				});
-		//agl only (script path)'s
-		EventList<String> scriptList = new FunctionList<Entry<String, String>, String>(
-				eventScriptList,
-				new FunctionList.Function<Entry<String, String>, String>() {
-					public String evaluate(Entry<String, String> entry) {
-						return entry.getValue();
-					}
-				});
-
-		//agl actual (script)'s
-		List<IScript> scripts = new FunctionList<String, IScript>(
-				scriptList,
-				new FunctionList.Function<String, IScript>() {
-					public IScript evaluate(String scriptPath) {
-						return loadScript(scriptPath);
-					}
-				});
-		return scripts;
-	}
 
 	/**
 	 * @return <code>null</code> if script couldn't be loaded.
 	 */
-	private Script loadScript(String scriptWorkspacePath) {
+	protected Script loadScript(String scriptWorkspacePath) {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IResource scriptResource = workspace.getRoot().findMember(scriptWorkspacePath);
 		URI scriptResourceURI = scriptResource.getRawLocationURI();
@@ -115,13 +86,114 @@ public class ScriptRegistry implements IPropertyChangeListener {
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE)){
-			Object newValue = event.getNewValue();
-			Object oldValue = event.getOldValue();
-			if (newValue != null){
-				//deleted
-			}
+			String newValue = event.getNewValue().toString();
+			updateScripts(newValue);
 		}
 	}
 
+
+	private void updateScripts(String registryValueString) {
+		EventList<Entry<String, String>> completeEventScriptList = MapEditorUtil.parseString(registryValueString);
+
+		FilterList<Entry<String, String>> quoteScriptList = new FilterList<Entry<String, String>>(
+				completeEventScriptList, new Matcher<Entry<String, String>>() {
+					public boolean matches(Entry<String, String> entry) {
+						return entry.getKey().equalsIgnoreCase(ScriptingEventType.QUOTE.getName());
+					}
+				});
+		unifyScriptLists(quoteScriptList, quoteScripts);
+
+		FilterList<Entry<String, String>> tradeScriptList = new FilterList<Entry<String, String>>(
+				completeEventScriptList, new Matcher<Entry<String, String>>() {
+					public boolean matches(Entry<String, String> entry) {
+						return entry.getKey().equalsIgnoreCase(ScriptingEventType.TRADE.getName());
+					}
+				});
+		unifyScriptLists(tradeScriptList, tradeScripts);
+	}
+
+	protected void unifyScriptLists(EventList<Entry<String, String>> newScripts, EventList<Entry<IScript, BSFManager>> existingScripts) {
+
+		//agl only (script path)'s
+		EventList<String> scriptList = new FunctionList<Entry<String, String>, String>(
+				newScripts,
+		new FunctionList.Function<Entry<String, String>, String>() {
+			public String evaluate(Entry<String, String> entry) {
+				return entry.getValue();
+			}
+		});
+
+		//agl actual (script)'s
+		List<Entry<IScript, BSFManager>> scripts = new FunctionList<String, Entry<IScript, BSFManager>>(
+		scriptList,
+		new FunctionList.Function<String, Entry<IScript, BSFManager>>() {
+			public Entry<IScript, BSFManager> evaluate(String scriptPath) {
+				return new KeysEqualEntry<IScript, BSFManager>(loadScript(scriptPath), new BSFManager());
+			}
+		});
+
+		synchronized (existingScripts.getReadWriteLock()){
+			EventList<Entry<IScript, BSFManager>> toDelete = GlazedLists.eventList(existingScripts);
+			toDelete.removeAll(scripts);
+	
+			EventList<Entry<IScript, BSFManager>> toAdd = GlazedLists.eventList(scripts);
+			toAdd.removeAll(existingScripts);
+			
+			if (toDelete.size() > 0)
+			{
+				existingScripts.removeAll(toDelete);
+			}
+			if (toAdd.size() > 0)
+			{
+				existingScripts.addAll(toAdd);
+			}
+		}
+	}
+	
+	public EventList<Entry<IScript, BSFManager>> getScriptList(ScriptingEventType type) {
+		switch (type) {
+		case QUOTE:
+			return quoteScripts;
+		case TRADE:
+			return tradeScripts;
+		default:
+			return null;
+		}
+	}
+
+	class KeysEqualEntry<K,V> extends MMapEntry<K,V>{
+
+
+		public KeysEqualEntry(K key, V value) {
+			super(key, value);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Map.Entry) {
+				Map.Entry otherEntry = (Map.Entry) obj;
+				return this.getKey().equals(otherEntry.getKey());
+			}
+			return false;
+		}
+		
+	}
+
+	public void afterPropertiesSet() throws Exception {
+		if (initialRegistryValueString!=null && initialRegistryValueString.length()>0)
+		{
+			updateScripts(initialRegistryValueString);
+		}
+	}
+
+
+	public String getInitialRegistryValueString() {
+		return initialRegistryValueString;
+	}
+
+
+	public void setInitialRegistryValueString(String initialRegistryValueString) {
+		this.initialRegistryValueString = initialRegistryValueString;
+	}
 
 }

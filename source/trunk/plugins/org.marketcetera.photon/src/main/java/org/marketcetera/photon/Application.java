@@ -1,9 +1,20 @@
 package org.marketcetera.photon;
 
-import org.apache.bsf.BSFManager;
+import java.lang.reflect.Constructor;
+
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+
+import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IExtension;
+import org.eclipse.core.runtime.IExtensionPoint;
+import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IPlatformRunnable;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -15,12 +26,22 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.preferences.PhotonPage;
-import org.marketcetera.photon.scripting.IScript;
+import org.marketcetera.photon.preferences.ScriptRegistryPage;
+import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
+import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
+import org.marketcetera.photon.scripting.EventScriptController;
 import org.marketcetera.photon.scripting.ScriptRegistry;
+import org.marketcetera.photon.scripting.ScriptingEventType;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quotefeed.IQuoteFeed;
+import org.marketcetera.quotefeed.IQuoteFeedFactory;
+import org.marketcetera.spring.JMSFIXMessageConverter;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.jms.listener.adapter.MessageListenerAdapter;
+import org.springframework.jms.support.converter.MessageConverter;
 
 /**
  * This class provides methods for some basic application services,
@@ -33,7 +54,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 @ClassVersion("$Id$")
 public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
-	
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
 	private static Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
@@ -43,7 +63,7 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	private static FIXMessageHistory fixMessageHistory;
 	private static IQuoteFeed quoteFeed;
-	private static ScriptRegistry scriptRegistry = new ScriptRegistry();
+	private static ScriptRegistry scriptRegistry;
 	private static ScopedPreferenceStore preferenceStore;
 
 	public static final String PLUGIN_ID = "org.marketcetera.photon";
@@ -52,13 +72,29 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 	public static final String JMS_IN_ENDPOINT_URI = "jms.in";
 	public static final String QUOTE_FEED_ENDPOINT_URI = "quotefeed.in";
 
-	private ClassPathXmlApplicationContext mainApplicationContext;
+	private static ClassPathXmlApplicationContext mainApplicationContext;
 
 	private ClassPathXmlApplicationContext jmsApplicationContext;
 
 	private ClassPathXmlApplicationContext outgoingJmsTemplate;
 
 	private ClassPathXmlApplicationContext quoteFeedApplicationContext;
+
+	private ActiveMQConnectionFactory internalConnectionFactory;
+
+	private ActiveMQTopic quotesTopic;
+
+	private static MessageListenerAdapter quotesMarketDataViewListener;
+
+
+	private JmsTemplate quoteJmsTemplate;
+
+	private ActiveMQTopic tradesTopic;
+
+	private MessageListenerAdapter quotesScriptListener;
+
+	private MessageListenerAdapter tradesScriptListener;
+
 	
 	
 	/**
@@ -76,17 +112,17 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 		initPreferenceStore();
 		preferenceStore.addPropertyChangeListener(this);
 
-		BSFManager.registerScriptingEngine(IScript.RUBY_LANG_STRING,
-				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
-
 		initResources();
 		
 		fixMessageHistory = new FIXMessageHistory();
 
-		mainApplicationContext = new ClassPathXmlApplicationContext("photon-spring.xml");
-		photonController = (PhotonController) mainApplicationContext.getBean("photonController");
+//		mainApplicationContext = new ClassPathXmlApplicationContext("photon-spring.xml");
+//		photonController = (PhotonController) mainApplicationContext.getBean("photonController");
 		
-		startJMS();
+		initInternalBroker();
+		initQuoteFeed();
+		initScriptRegistry();
+		
 		startQuoteFeed();
 		
 		Display display = PlatformUI.createDisplay();
@@ -102,6 +138,24 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	}
 
+	private void initScriptRegistry() {
+		scriptRegistry = new ScriptRegistry();
+		scriptRegistry.setInitialRegistryValueString(getPreferenceStore().getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
+		try {
+			scriptRegistry.afterPropertiesSet();
+		} catch (Exception e) {
+		}
+		getPreferenceStore().addPropertyChangeListener(scriptRegistry);
+		
+		
+		EventScriptController tradesController = new EventScriptController();
+		tradesController.setScriptList(scriptRegistry.getScriptList(ScriptingEventType.TRADE));
+		tradesScriptListener.setDelegate(tradesController);
+		EventScriptController quotesController = new EventScriptController();
+		quotesController.setScriptList(scriptRegistry.getScriptList(ScriptingEventType.QUOTE));
+		quotesScriptListener.setDelegate(quotesController);
+	}
+
 	private void startJMS() {
 		if (jmsApplicationContext != null){
 			jmsApplicationContext.stop();
@@ -113,13 +167,80 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 		}
 	}
 
-	private void startQuoteFeed() {
-		if (quoteFeedApplicationContext != null){
-			quoteFeedApplicationContext.stop();
-		}
-		quoteFeedApplicationContext = new ClassPathXmlApplicationContext(new String[]{"quotefeed.xml"}, mainApplicationContext);
+	private void initQuoteFeed() {
+        try {
+        	IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
+        	IExtensionPoint extensionPoint =
+        	extensionRegistry.getExtensionPoint(IQuoteFeedConstants.EXTENSION_POINT_ID);
+        	IExtension[] extensions = extensionPoint.getExtensions();
+        	if (extensions != null && extensions.length > 0)
+        	{
+        		IConfigurationElement[] configurationElements = extensions[0].getConfigurationElements();
+        		IConfigurationElement feedElement = configurationElements[0];
+        		String factoryClass = feedElement.getAttribute(IQuoteFeedConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
+        		Class<IQuoteFeedFactory> clazz = (Class<IQuoteFeedFactory>) Class.forName(factoryClass);
+        		Constructor<IQuoteFeedFactory> constructor = clazz.getConstructor( new Class[0] );
+        		IQuoteFeedFactory factory = constructor.newInstance(new Object[0]);
+        		IQuoteFeed targetQuoteFeed = factory.getInstance("", "", "");
+        		if (targetQuoteFeed != null){
+        			quoteFeed = targetQuoteFeed;
+        			targetQuoteFeed.setQuoteJmsTemplate(quoteJmsTemplate);
+        		}
+    		}
+    	} catch (Exception ex){
+    		getMainConsoleLogger().error("Exception starting quote feed: "+ex.getMessage());
+    	}
 	}
 
+	private void startQuoteFeed() {
+    	quoteFeed.start();
+	}
+	
+	private void initInternalBroker(){
+
+		internalConnectionFactory = new ActiveMQConnectionFactory();
+		internalConnectionFactory.setBrokerURL("vm://it-oms?broker.persistent=false");
+		
+		quotesTopic = new ActiveMQTopic("quotes");
+		tradesTopic = new ActiveMQTopic("trades");
+
+		quotesMarketDataViewListener = createMessageListenerAdapter("onQuote",
+				new JMSFIXMessageConverter(), internalConnectionFactory,
+				quotesTopic);
+		
+		quotesScriptListener = createMessageListenerAdapter("onEvent",
+				new JMSFIXMessageConverter(), internalConnectionFactory,
+				quotesTopic);
+
+		tradesScriptListener = createMessageListenerAdapter("onEvent",
+				new JMSFIXMessageConverter(), internalConnectionFactory,
+				tradesTopic);
+		
+		quoteJmsTemplate = new JmsTemplate();
+		quoteJmsTemplate.setConnectionFactory(internalConnectionFactory);
+		quoteJmsTemplate.setDefaultDestination(quotesTopic);
+		quoteJmsTemplate.afterPropertiesSet();
+
+
+	}
+
+	private MessageListenerAdapter createMessageListenerAdapter(
+			String methodName, MessageConverter converter,
+			ConnectionFactory connectionFactory, Destination destination) {
+		MessageListenerAdapter listener;
+		listener = new MessageListenerAdapter();
+		listener.setDefaultListenerMethod(methodName);
+		listener.setMessageConverter(converter);
+
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setMessageListener(listener);
+		container.setDestination(destination);
+		container.afterPropertiesSet();
+		container.start();
+		return listener;
+	}
+	
 	public static void initPreferenceStore() {
 		preferenceStore = new ScopedPreferenceStore(new ConfigurationScope(),
 				PLUGIN_ID);
@@ -173,10 +294,6 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 		return idFactory;
 	}
 	
-	public static IQuoteFeed getQuoteFeed() {
-		return quoteFeed;
-	}
-
 	public static ScriptRegistry getScriptRegistry() {
 		return scriptRegistry;
 	}
@@ -211,5 +328,15 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	public static ScopedPreferenceStore getPreferenceStore() {
 		return preferenceStore;
+	}
+
+
+	public static void registerMarketDataView(IQuoteFeedAware view) {
+		quotesMarketDataViewListener.setDelegate(view);
+		view.setQuoteFeed(quoteFeed);
+	}
+	public static void unregisterMarketDataView(IQuoteFeedAware view) {
+		quotesMarketDataViewListener.setDelegate(null);
+		view.setQuoteFeed(null);
 	}
 }

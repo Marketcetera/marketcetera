@@ -15,6 +15,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.quotefeed.IMessageListener;
@@ -32,10 +33,11 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
-public class MarketDataView extends MessagesView implements IMessageListener{
+public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
 
 	private static final int LAST_NORMAL_COLUMN = 1;
+	private IQuoteFeed quoteFeed;
 	
 	public enum MarketDataColumns
 	{
@@ -60,8 +62,15 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
+		Application.registerMarketDataView(this);
 	    this.setInput(new BasicEventList<MessageHolder>());
 	    ensureOneAtEnd();
+	}
+
+	@Override
+	public void dispose() {
+		Application.unregisterMarketDataView(this);
+		super.dispose();
 	}
 	
 	@Override
@@ -178,12 +187,6 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 	}
 
 
-	public void onQuotes(Message[] messageArray) {
-		for (Message message : messageArray) {
-			onQuote(message);
-		}
-	}
-
 	public void onTrade(Message arg0) {
 		//do nothing
 	}
@@ -220,7 +223,6 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 			TableItem tableItem = (TableItem) element;
 			MessageHolder messageHolder = (MessageHolder)tableItem.getData();
 			Message message = messageHolder.getMessage();
-			IQuoteFeed quoteFeed = Application.getQuoteFeed();
 			try {quoteFeed.unlistenQuotes(new MSymbol(message.getString(Symbol.FIELD))); } catch (FieldNotFound fnf){}
 			message.clear();
 			if (stringValue.length()>0){
@@ -313,4 +315,9 @@ public class MarketDataView extends MessagesView implements IMessageListener{
 		
 		
 	}
+
+	public void setQuoteFeed(IQuoteFeed feed) {
+		quoteFeed = feed;
+	}
+
 }
