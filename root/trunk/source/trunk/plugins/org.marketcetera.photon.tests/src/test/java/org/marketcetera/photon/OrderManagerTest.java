@@ -66,7 +66,7 @@ public class OrderManagerTest extends TestCase {
 	
 	private InMemoryIDFactory idFactory;
 	private FIXMessageHistory messageHistory;
-	private PhotonController photonController;
+	private ImmediatePhotonController photonController;
 
 	static {
 		try {

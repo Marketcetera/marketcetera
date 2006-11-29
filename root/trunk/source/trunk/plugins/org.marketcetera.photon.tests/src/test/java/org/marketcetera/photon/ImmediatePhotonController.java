@@ -14,12 +14,12 @@ public class ImmediatePhotonController extends PhotonController {
 	}
 
 	@Override
-	protected void handleCounterpartyMessage(Message aMessage) {
+	public void handleCounterpartyMessage(Message aMessage) {
 		super.handleCounterpartyMessage(aMessage);
 	}
 
 	@Override
-	protected void handleInternalMessage(Message aMessage) {
+	public void handleInternalMessage(Message aMessage) {
 		super.handleInternalMessage(aMessage);
 	}
 
