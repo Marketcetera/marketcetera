@@ -11,6 +11,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.ConnectionConstants;
 
 @ClassVersion("$Id$")
@@ -28,7 +29,7 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 	
     public ConnectionsPreferencePage() {
         super(GRID);
-		setPreferenceStore(Application.getPreferenceStore());
+		setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
     }
 
     /**

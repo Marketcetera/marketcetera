@@ -1,7 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Composite;
-import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 
@@ -14,7 +14,7 @@ public abstract class HistoryMessagesView extends MessagesView {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		FIXMessageHistory messageHistory = Application.getFIXMessageHistory();
+		FIXMessageHistory messageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
 		if (messageHistory!= null){
 			setInput(messageHistory);
 		}

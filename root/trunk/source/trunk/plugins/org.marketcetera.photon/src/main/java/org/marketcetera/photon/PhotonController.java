@@ -1,6 +1,7 @@
 package org.marketcetera.photon;
 
 import org.apache.log4j.Logger;
+import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LoggerAdapter;
@@ -8,6 +9,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 
 import quickfix.FieldNotFound;
@@ -34,13 +36,13 @@ import quickfix.field.Text;
 @ClassVersion("$Id$")
 public class PhotonController {
 
-	private Logger internalMainLogger = Application.getMainConsoleLogger();
+	private Logger internalMainLogger = PhotonPlugin.getMainConsoleLogger();
 
 	private FIXMessageHistory fixMessageHistory;
 
 	private IDFactory idFactory;
 	
-	private JmsTemplate jmsTemplate;
+	private JmsOperations jmsOperations;
 
 
 	/** Creates a new instance of OrderManager with the specified {@link IDFactory}--
@@ -69,8 +71,14 @@ public class PhotonController {
 		}
 	}
 
-	protected void handleCounterpartyMessage(Message aMessage) {
-		fixMessageHistory.addIncomingMessage(aMessage);
+	protected void handleCounterpartyMessage(final Message aMessage) {
+		asyncExec(
+			new Runnable() {
+				public void run() {
+					fixMessageHistory.addIncomingMessage(aMessage);
+				}
+			}
+		);
 		try {
 			if (FIXMessageUtil.isExecutionReport(aMessage)) {
 				handleExecutionReport(aMessage);
@@ -89,6 +97,10 @@ public class PhotonController {
 		}
 	}
 	
+	protected void asyncExec(Runnable runnable) {
+		Display.getDefault().asyncExec(runnable);
+	}
+
 	protected void handleInternalMessage(Message aMessage) {
 	
 		try {
@@ -148,17 +160,22 @@ public class PhotonController {
 
 
 
-	protected void handleNewOrder(Message aMessage)
-	{
-		fixMessageHistory.addOutgoingMessage(aMessage);
-		jmsTemplate.convertAndSend(aMessage);
+	protected void handleNewOrder(final Message aMessage) {
+		asyncExec(new Runnable() {
+			public void run() {
+				fixMessageHistory.addOutgoingMessage(aMessage);
+			}
+		});
+		convertAndSend(aMessage);
 	}
 
-	protected void cancelReplaceOneOrder(Message cancelMessage) 
-	{
-		fixMessageHistory.addOutgoingMessage(cancelMessage);
-
-		jmsTemplate.convertAndSend(cancelMessage);
+	protected void cancelReplaceOneOrder(final Message cancelMessage) {
+		asyncExec(new Runnable() {
+			public void run() {
+				fixMessageHistory.addOutgoingMessage(cancelMessage);
+			}
+		});
+		convertAndSend(cancelMessage);
 	}
 
 	protected void cancelOneOrder(Message cancelMessage)
@@ -177,7 +194,7 @@ public class PhotonController {
 			}
 		}
 		try { LoggerAdapter.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD), this); } catch (FieldNotFound e1) {	}
-		Message cancelMessage = new quickfix.fix42.Message();
+		final Message cancelMessage = new quickfix.fix42.Message();
 		cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
 		cancelMessage.setField(new OrigClOrdID(clOrdID));
 		cancelMessage.setField(new ClOrdID(idFactory.getNext()));
@@ -188,8 +205,16 @@ public class PhotonController {
 		}
 		FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, latestMessage);
 
-		fixMessageHistory.addOutgoingMessage(cancelMessage);
-		jmsTemplate.convertAndSend(cancelMessage);
+		asyncExec(new Runnable() {
+			public void run() {
+				fixMessageHistory.addOutgoingMessage(cancelMessage);
+			}
+		});
+		convertAndSend(cancelMessage);
+	}
+
+	private void convertAndSend(Message fixMessage) {
+		jmsOperations.convertAndSend(fixMessage);
 	}
 	
 	public void setIDFactory(IDFactory fact){
@@ -210,12 +235,12 @@ public class PhotonController {
 		this.internalMainLogger = mainConsoleLogger;
 	}
 
-	public JmsTemplate getJmsTemplate() {
-		return jmsTemplate;
+	public JmsOperations getJmsOperations() {
+		return jmsOperations;
 	}
 
-	public void setJmsTemplate(JmsTemplate jmsTemplate) {
-		this.jmsTemplate = jmsTemplate;
+	public void setJmsOperations(JmsOperations jmsOperations) {
+		this.jmsOperations = jmsOperations;
 	}
 
 }

@@ -4,8 +4,25 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
+  <bean id="omsCommandsQueue" class="org.apache.activemq.command.ActiveMQQueue">
+    <constructor-arg value="oms-commands"/>
+  </bean>
+	
+  <bean id="omsMessagesTopic" class="org.apache.activemq.command.ActiveMQTopic">
+    <constructor-arg value="oms-messages"/>
+  </bean>
+
   <bean id="externalConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
     <property name="brokerURL" value="tcp://localhost:61616"/>
+  </bean>
+  
+  <bean id="photonControllerListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+    <!--property name="delegate" ref="photonController"/-->
+    <property name="defaultListenerMethod" value="handleMessage"/>
+    <property name="defaultResponseDestination" ref="omsCommandsQueue"/>
+	<property name="messageConverter">
+		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+	</property>		
   </bean>
   
     <!-- note that this needs to use the non-pooled connection factory -->
@@ -24,7 +41,7 @@
     <property name="connectionFactory">
       <ref local="pooledExternalConnectionFactory"/>
     </property>
-	<property name="defaultDestination" ref="omsMessagesTopic"/>
+	<property name="defaultDestination" ref="omsCommandsQueue"/>
   </bean>
 
 </beans>  

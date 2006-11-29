@@ -25,8 +25,8 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IPhotonCommand;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
@@ -145,7 +145,7 @@ public class CommandParser {
 							message = FIXMessageUtil.newLimitOrder(new InternalID(factory.getNext()), sideImage.getFIXValue(), quantity, new MSymbol(symbol), new BigDecimal(priceObject.getImage()), timeInForce.getFIXValue(), accountID);
 						}
 					} catch (NoMoreIDsException e) {
-						Application.getMainConsoleLogger().error(this, e);
+						PhotonPlugin.getMainConsoleLogger().error(this, e);
 					}
 					return new SendOrderToOrderManagerCommand(message);
 				}

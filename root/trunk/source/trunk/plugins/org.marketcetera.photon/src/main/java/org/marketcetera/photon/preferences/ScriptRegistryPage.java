@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 
 
 /**
@@ -24,7 +24,7 @@ public class ScriptRegistryPage extends FieldEditorPreferencePage implements IWo
 	
 	public ScriptRegistryPage() {
 		super(GRID);
-        setPreferenceStore(Application.getPreferenceStore());
+        setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
 	}
 	
     public void init(IWorkbench workbench) {

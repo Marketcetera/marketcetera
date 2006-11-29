@@ -9,6 +9,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonController;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -48,7 +49,7 @@ public class CancelOrderActionDelegate extends ActionDelegate {
 	 * @see Application#getOrderManager()
 	 */
 	public void init(IAction arg0) {
-		this.manager = Application.getOrderManager();
+		this.manager = PhotonPlugin.getDefault().getPhotonController();
 	}
 
 	/**
@@ -108,9 +109,9 @@ public class CancelOrderActionDelegate extends ActionDelegate {
 			try {
 				this.manager.cancelOneOrderByClOrdID(qfMessage.getString(ClOrdID.FIELD));
 			} catch (NoMoreIDsException e) {
-				Application.getMainConsoleLogger().error("Ran out of order ID's");
+				PhotonPlugin.getMainConsoleLogger().error("Ran out of order ID's");
 			} catch (FieldNotFound e) {
-				Application.getMainConsoleLogger().error("Could not send order because message contains no ClOrdID");
+				PhotonPlugin.getMainConsoleLogger().error("Could not send order because message contains no ClOrdID");
 			}
 		}
 	}
