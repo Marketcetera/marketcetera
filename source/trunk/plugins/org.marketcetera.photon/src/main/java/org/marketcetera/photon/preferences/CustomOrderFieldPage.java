@@ -8,7 +8,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 
 @ClassVersion("$Id$")
 public class CustomOrderFieldPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
@@ -17,7 +17,7 @@ public class CustomOrderFieldPage extends FieldEditorPreferencePage implements I
 
 	public CustomOrderFieldPage() {
 		super(GRID);
-        setPreferenceStore(Application.getPreferenceStore());
+        setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
 	}
 	
     public void init(IWorkbench workbench) {

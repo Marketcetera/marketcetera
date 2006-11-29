@@ -41,6 +41,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.FeedComponent.FeedStatus;
 import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
@@ -166,12 +167,12 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		errorMessageLabel.setLayoutData(gridData);
 		top.setBackground(errorMessageLabel.getBackground());
 
-		Application.getPreferenceStore().addPropertyChangeListener(this);
+		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
 
 	@Override
 	public void dispose() {
-		Application.getPreferenceStore().removePropertyChangeListener(this);
+		PhotonPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 		unlisten();
 		if (quoteFeed != null) {
 			quoteFeed.unlistenLevel2(listenedSymbol);
@@ -252,7 +253,8 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		createOtherExpandableComposite();
 		createBookComposite();
 
-		updateCustomFields(Application.getPreferenceStore().getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
+		updateCustomFields(PhotonPlugin.getDefault().getPreferenceStore()
+				.getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
 	}
 
 	/**
@@ -605,7 +607,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 			validator.validateAll();
 			Message aMessage;
 			if (targetOrder == null) {
-				String orderID = Application.getIDFactory().getNext();
+				String orderID = PhotonPlugin.getDefault().getIDFactory().getNext();
 				aMessage = FIXMessageUtil
 						.newLimitOrder(new InternalID(orderID), Side.BUY,
 								BigDecimal.ZERO, new MSymbol(""),
@@ -622,10 +624,10 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				extractor.modifyOrder(aMessage);
 			}
 			addCustomFields(aMessage);
-			Application.getOrderManager().handleMessage(aMessage);
+			PhotonPlugin.getDefault().getPhotonController().handleMessage(aMessage);
 			clear();
 		} catch (Exception e) {
-			Application.getMainConsoleLogger().error(
+			PhotonPlugin.getMainConsoleLogger().error(
 					"Error sending order: " + e.getMessage(), e);
 		}
 	}

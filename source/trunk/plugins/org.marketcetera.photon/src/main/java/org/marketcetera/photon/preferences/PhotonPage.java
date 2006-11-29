@@ -2,13 +2,12 @@ package org.marketcetera.photon.preferences;
 
 import java.io.IOException;
 
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 
 public class PhotonPage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage {
@@ -21,7 +20,7 @@ public class PhotonPage extends FieldEditorPreferencePage implements
 
 	public PhotonPage() {
 		super(GRID);
-		setPreferenceStore(Application.getPreferenceStore());
+		setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
 	}
 
 	@Override

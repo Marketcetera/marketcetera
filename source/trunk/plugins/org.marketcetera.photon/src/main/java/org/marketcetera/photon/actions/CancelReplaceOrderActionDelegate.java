@@ -9,6 +9,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonController;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -16,10 +17,6 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
-import quickfix.field.OrdType;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.Price;
-import quickfix.fix42.OrderCancelReplaceRequest;
 
 /**
  * CancelOrderActionDelegate is a subclass of {@link ActionDelegate}
@@ -37,7 +34,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 
 	private IStructuredSelection selection;
 
-	private PhotonController manager;
+	private PhotonController controller;
 
 	/**
 	 * Create a new {@link CancelReplaceOrderActionDelegate}
@@ -53,7 +50,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 	 * @see Application#getOrderManager()
 	 */
 	public void init(IAction arg0) {
-		this.manager = Application.getOrderManager();
+		this.controller = PhotonPlugin.getDefault().getPhotonController();
 	}
 
 	/**
@@ -112,12 +109,12 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 		if (oldMessage != null){
 			try {
 				Message cancelReplaceMessage = FIXMessageUtil.newCancelReplaceFromMessage(oldMessage);
-				cancelReplaceMessage.setField(new ClOrdID(Application.getIDFactory().getNext()));
+				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin.getDefault().getIDFactory().getNext()));
 				StockOrderTicket.getDefault().showOrder(cancelReplaceMessage);
 			} catch (NoMoreIDsException e) {	
-				Application.getMainConsoleLogger().error("Ran out of order ID's");
+				PhotonPlugin.getMainConsoleLogger().error("Ran out of order ID's");
 			} catch (FieldNotFound e) {
-				Application.getMainConsoleLogger().error("Could not send order: "+e.getMessage());
+				PhotonPlugin.getMainConsoleLogger().error("Could not send order: "+e.getMessage());
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package org.marketcetera.photon;
 import java.io.IOException;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
@@ -80,13 +81,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager()
 				.getConsoles();
+		Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
 		for (IConsole console : consoles) {
 			if (console instanceof MainConsole) {
 				MainConsole mainConsole = (MainConsole) console;
 				PhotonConsoleAppender appender = new PhotonConsoleAppender(
 						mainConsole);
 				appender.setLayout(new SimpleLayout());
-				Application.getMainConsoleLogger().addAppender(appender);
+				mainConsoleLogger.addAppender(appender);
 			}
 		} 
 				
@@ -97,10 +99,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		
 		if (item instanceof CommandStatusLineContribution) {
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
-			cslc.setIDFactory(Application.getIDFactory());
+			cslc.setIDFactory(PhotonPlugin.getDefault().getIDFactory());
 		}
 
-		Application.getMainConsoleLogger().info(
+		mainConsoleLogger.info(
 				"Application initialized: " + new Date());
 		
 	}

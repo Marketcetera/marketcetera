@@ -27,7 +27,7 @@ public class AveragePriceView extends HistoryMessagesView {
 	 *
 	 */
 	public enum AvgPriceColumns {
-		DIRECTION("D"), SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
+		SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
 		AVGPX("AvgPx"), ACCOUNT("Account");
 
 		private String mName;

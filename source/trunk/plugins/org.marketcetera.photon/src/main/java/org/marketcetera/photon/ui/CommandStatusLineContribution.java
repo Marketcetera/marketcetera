@@ -16,9 +16,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.ShowOrderInTicketCommand;
 import org.marketcetera.photon.parser.CommandParser;
@@ -146,7 +146,7 @@ public class CommandStatusLineContribution extends ContributionItem {
 				command.execute();
 			}
 		} catch (ParserException e1) {
-			Application.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
+			PhotonPlugin.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
 		}
 	}
 

@@ -1,8 +1,16 @@
 package org.marketcetera.photon;
 
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
+import javax.jms.Topic;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.Lifecycle;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.listener.SimpleMessageListenerContainer;
+import org.springframework.jms.listener.adapter.MessageListenerAdapter;
+import org.springframework.jms.support.converter.MessageConverter;
 
 public class SpringUtils {
 
@@ -23,4 +31,29 @@ public class SpringUtils {
 		lifecycleBean.stop();
 	}
 	
+	public static JmsTemplate createJmsTemplate(ConnectionFactory connectionFactory, Topic topic) {
+		JmsTemplate jmsTemplate = new JmsTemplate();
+		jmsTemplate.setConnectionFactory(connectionFactory);
+		jmsTemplate.setDefaultDestination(topic);
+		jmsTemplate.afterPropertiesSet();
+		return jmsTemplate;
+	}
+
+	public static MessageListenerAdapter createMessageListenerAdapter(
+			String methodName, MessageConverter converter,
+			ConnectionFactory connectionFactory, Destination destination) {
+		MessageListenerAdapter listener;
+		listener = new MessageListenerAdapter();
+		listener.setDefaultListenerMethod(methodName);
+		listener.setMessageConverter(converter);
+
+		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
+		container.setConnectionFactory(connectionFactory);
+		container.setMessageListener(listener);
+		container.setDestination(destination);
+		container.afterPropertiesSet();
+		container.start();
+		return listener;
+	}
+
 }

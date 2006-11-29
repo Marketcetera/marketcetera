@@ -9,16 +9,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
-import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.FieldMap;
@@ -62,14 +60,14 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		Application.registerMarketDataView(this);
+		PhotonPlugin.getDefault().registerMarketDataView(this);
 	    this.setInput(new BasicEventList<MessageHolder>());
 	    ensureOneAtEnd();
 	}
 
 	@Override
 	public void dispose() {
-		Application.unregisterMarketDataView(this);
+		PhotonPlugin.getDefault().unregisterMarketDataView(this);
 		super.dispose();
 	}
 	

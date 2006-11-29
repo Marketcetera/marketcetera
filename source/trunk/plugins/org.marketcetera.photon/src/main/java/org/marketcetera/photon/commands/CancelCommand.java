@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IPhotonCommand;
+import org.marketcetera.photon.PhotonPlugin;
 
 public class CancelCommand implements IPhotonCommand {
 
@@ -14,9 +15,9 @@ public class CancelCommand implements IPhotonCommand {
 	}
 
 	public void execute() {
-		Logger logger = Application.getMainConsoleLogger();
+		Logger logger = PhotonPlugin.getMainConsoleLogger();
 		try {
-			Application.getOrderManager().cancelOneOrderByClOrdID(id);
+			PhotonPlugin.getDefault().getPhotonController().cancelOneOrderByClOrdID(id);
 		} catch (NoMoreIDsException e) {
 			logger.error("Exception cancelling order", e);
 		}

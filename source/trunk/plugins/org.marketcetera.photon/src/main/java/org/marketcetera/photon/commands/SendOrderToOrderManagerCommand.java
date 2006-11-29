@@ -1,6 +1,7 @@
 package org.marketcetera.photon.commands;
 
 import org.marketcetera.photon.Application;
+import org.marketcetera.photon.PhotonPlugin;
 
 import quickfix.Message;
 
@@ -14,9 +15,9 @@ public class SendOrderToOrderManagerCommand extends MessageCommand {
 
 	public void execute() {
 		try {
-			Application.getOrderManager().handleMessage(getMessage());
+			PhotonPlugin.getDefault().getPhotonController().handleMessage(getMessage());
 		} catch (Exception ex){
-			Application.getMainConsoleLogger().error("Exception sending order", ex);
+			PhotonPlugin.getMainConsoleLogger().error("Exception sending order", ex);
 		}
 	}
 
