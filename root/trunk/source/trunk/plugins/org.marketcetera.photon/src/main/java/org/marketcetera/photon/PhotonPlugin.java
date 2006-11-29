@@ -11,6 +11,8 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
@@ -131,12 +133,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		}
 		thePreferenceStore.addPropertyChangeListener(scriptRegistry);
 		
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptRegistry, 
+				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
 		
-		EventScriptController tradesController = new EventScriptController();
-		tradesController.setScriptList(scriptRegistry.getScriptList(ScriptingEventType.TRADE));
+		EventScriptController tradesController = new EventScriptController(ScriptingEventType.TRADE);
 		tradesScriptListener.setDelegate(tradesController);
-		EventScriptController quotesController = new EventScriptController();
-		quotesController.setScriptList(scriptRegistry.getScriptList(ScriptingEventType.QUOTE));
+		EventScriptController quotesController = new EventScriptController(ScriptingEventType.QUOTE);
 		quotesScriptListener.setDelegate(quotesController);
 	}
 
@@ -146,6 +148,11 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
+		
+		if (scriptRegistry != null) {
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptRegistry);
+			scriptRegistry = null;
+		}
 	}
 
 	/**
