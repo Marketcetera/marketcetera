@@ -2,14 +2,11 @@ package org.marketcetera.bogusfeed;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.MMapEntry;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.quotefeed.IMessageListener;
 import org.marketcetera.quotefeed.IQuoteFeed;
-import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.JmsOperations;
 
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import ca.odell.glazedlists.BasicEventList;
@@ -29,8 +26,8 @@ public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
 	protected FeedStatus feedStatus;
 	private List<IFeedComponentListener> feedComponentListeners = new LinkedList<IFeedComponentListener>();
 	protected BasicEventList<MSymbol> listenedSymbols = new BasicEventList<MSymbol>();
-	private JmsTemplate quoteJmsTemplate;
-	private JmsTemplate tradeJmsTemplate;
+	private JmsOperations quoteJmsOperations;
+	private JmsOperations tradeJmsOperations;
 
 
 	public void listenLevel2(MSymbol symbol) {
@@ -95,21 +92,21 @@ public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
 		fireFeedStatusChanged();
 	}
 
-	public JmsTemplate getQuoteJmsTemplate() {
+	public JmsOperations getQuoteJmsOperations() {
 		// TODO Auto-generated method stub
-		return quoteJmsTemplate;
+		return quoteJmsOperations;
 	}
 
-	public JmsTemplate getTradeJmsTemplate() {
+	public JmsOperations getTradeJmsOperations() {
 		// TODO Auto-generated method stub
-		return tradeJmsTemplate;
+		return tradeJmsOperations;
 	}
 
-	public void setQuoteJmsTemplate(JmsTemplate template) {
-		quoteJmsTemplate = template;
+	public void setQuoteJmsOperations(JmsOperations jms) {
+		quoteJmsOperations = jms;
 	}
 
-	public void setTradeJmsTemplate(JmsTemplate template) {
-		tradeJmsTemplate = template;		
+	public void setTradeJmsOperations(JmsOperations jms) {
+		tradeJmsOperations = jms;		
 	}
 }
