@@ -4,17 +4,24 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceChangeListener;
+import org.eclipse.core.resources.IResourceDelta;
+import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.marketcetera.core.MMapEntry;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.springframework.beans.factory.InitializingBean;
@@ -33,11 +40,12 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author andrei@lissovski.org
  * @author gmiller
  */
-public class ScriptRegistry implements IPropertyChangeListener, InitializingBean {
+public class ScriptRegistry implements IPropertyChangeListener, IResourceChangeListener, InitializingBean {
 
 	private BasicEventList<Entry<IScript, BSFManager>> quoteScripts = new BasicEventList<Entry<IScript, BSFManager>>();
 	private BasicEventList<Entry<IScript, BSFManager>> tradeScripts = new BasicEventList<Entry<IScript, BSFManager>>();
 	private String initialRegistryValueString;
+	
 	
 	public ScriptRegistry() {
 	}
@@ -47,16 +55,20 @@ public class ScriptRegistry implements IPropertyChangeListener, InitializingBean
 	 * @return <code>null</code> if script couldn't be loaded.
 	 */
 	protected Script loadScript(String scriptWorkspacePath) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IResource scriptResource = workspace.getRoot().findMember(scriptWorkspacePath);
-		URI scriptResourceURI = scriptResource.getRawLocationURI();
-
+		String path = workspacePathToAbsolutePath(scriptWorkspacePath);
 		try {
-			String path = scriptResourceURI.getPath();
 			return new Script(readFileAsString(path), path, 1, 1);
 		} catch (IOException e) {
 			return null;
 		}
+	}
+
+	private String workspacePathToAbsolutePath(String workspacePath) {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IResource resource = workspace.getRoot().findMember(workspacePath);
+		URI resourceURI = resource.getRawLocationURI();
+
+		return resourceURI.getPath();
 	}
 
 	/**
@@ -196,4 +208,55 @@ public class ScriptRegistry implements IPropertyChangeListener, InitializingBean
 		this.initialRegistryValueString = initialRegistryValueString;
 	}
 
+	public void resourceChanged(IResourceChangeEvent event) {
+		IResourceDeltaVisitor resourceDeltaVisitor = new IResourceDeltaVisitor() {
+			public boolean visit(IResourceDelta delta) throws CoreException {
+				if (delta.getResource().getType() == IResource.FILE
+						&& (delta.getFlags() & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
+
+					String resourcePath = delta.getResource().getFullPath().toString();
+					if (isScript(resourcePath))
+					{
+						refreshScript(resourcePath, tradeScripts);
+						refreshScript(resourcePath, quoteScripts);
+					}
+
+					return false;  //agl skip children
+				}
+
+				return true;  //agl visit children
+			}
+		};
+		
+		try {
+			event.getDelta().accept(resourceDeltaVisitor);
+		} catch (CoreException e) {
+			PhotonPlugin.getMainConsoleLogger().error("Could not process resource change", e);
+		}
+	}
+
+
+	private boolean isScript(String resourcePath) {
+		return resourcePath.toLowerCase().endsWith(".rb");  //$NON-NLS-1$
+	}
+
+	/**
+	 * Reloads a script with the specified path if it's part of the specified list.
+	 */
+	private void refreshScript(String scriptWorkspacePath, BasicEventList<Entry<IScript, BSFManager>> scripts) {
+		String scriptAbsolutePath = workspacePathToAbsolutePath(scriptWorkspacePath);
+		synchronized (scripts.getReadWriteLock()) {
+			Iterator<Entry<IScript, BSFManager>> iter = scripts.iterator();
+			for (int i = 0; iter.hasNext(); i++) {
+				Entry<IScript, BSFManager> entry = iter.next();
+				if (entry.getKey().getID().equals(scriptAbsolutePath))
+				{
+					IScript newScript = loadScript(scriptWorkspacePath);
+					Entry<IScript, BSFManager> newEntry = new KeysEqualEntry<IScript, BSFManager>(newScript, new BSFManager());
+					
+					scripts.set(i, newEntry);
+				}
+			}
+		}
+	}
 }
