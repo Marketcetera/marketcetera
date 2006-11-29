@@ -28,7 +28,7 @@ public class MockQuoteFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 		MarketDataSnapshotFullRefresh quoteMessage = new MarketDataSnapshotFullRefresh();
 		quoteMessage.setField(new Symbol(symbol.getBaseSymbol()));  //agl not setting any other fields as only care about the symbol for mocking
 
-		getQuoteJmsTemplate().convertAndSend(quoteMessage);
+		getQuoteJmsOperations().convertAndSend(quoteMessage);
 	}
 
 	/* (non-Javadoc)

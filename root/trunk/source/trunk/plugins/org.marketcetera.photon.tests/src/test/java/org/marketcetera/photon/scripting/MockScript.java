@@ -11,11 +11,19 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
  *
  * @author andrei@lissovski.org
  */
-public class MockScript implements IScript {
+public class MockScript extends Script {
 
 	private boolean execed = false;
+	private final String scriptWorkspacePath;
+	private final String scriptContent;
 	
 	
+	public MockScript(String scriptContent,String scriptWorkspacePath) {
+		super(scriptContent, scriptWorkspacePath, 1,1);
+		this.scriptWorkspacePath = scriptWorkspacePath;
+		this.scriptContent = scriptContent;
+	}
+
 	public boolean isExeced() {
 		return execed;
 	}
@@ -42,18 +50,11 @@ public class MockScript implements IScript {
 	 * @see org.marketcetera.photon.scripting.IScript#getScript()
 	 */
 	public String getScript() {
-		throw new NotImplementedException();
-	}
-
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.scripting.IScript#setContext(org.marketcetera.photon.scripting.ScriptContext)
-	 */
-	public void setContext(ScriptContext ctxt) {
-		throw new NotImplementedException();
+		return scriptContent;
 	}
 
 	public String getID() {
-		throw new NotImplementedException();
+		return scriptWorkspacePath;
 	}
 
 }

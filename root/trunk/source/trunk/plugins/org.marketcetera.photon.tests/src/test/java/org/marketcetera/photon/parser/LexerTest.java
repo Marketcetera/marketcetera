@@ -4,9 +4,11 @@ import jfun.parsec.Parsers;
 import jfun.parsec.Tok;
 import jfun.parsec.tokens.TokenType;
 import jfun.parsec.tokens.TypedToken;
+import junit.framework.Test;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MarketceteraTestSuite;
 
 @ClassVersion("$Id$")
 public class LexerTest extends TestCase {
@@ -14,6 +16,12 @@ public class LexerTest extends TestCase {
     public LexerTest(String name)
     {
         super(name);
+    }
+
+    public static Test suite()
+    {
+        MarketceteraTestSuite suite = new MarketceteraTestSuite(LexerTest.class);
+        return suite;
     }
 
     public void testLexer(){

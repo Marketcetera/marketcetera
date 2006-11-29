@@ -18,7 +18,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 	@Override
 	protected void setUp() throws Exception {
-		Application.initPreferenceStore();
 		
 		super.setUp();
 	}
