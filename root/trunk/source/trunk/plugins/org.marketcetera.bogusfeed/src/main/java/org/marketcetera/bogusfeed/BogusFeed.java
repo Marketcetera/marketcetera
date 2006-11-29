@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quotefeed.IQuoteFeed;
+import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 
 import quickfix.Message;
@@ -32,6 +33,10 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 	class QuoteGeneratorThread extends Thread {
 		boolean shouldShutdown = false;
 		Random rand = new Random();
+
+		public QuoteGeneratorThread() {
+			setName("BogusFeed quote generator");
+		}
 		
 		@Override
 		public void run() 
@@ -44,9 +49,9 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 					}
 					for (MSymbol symbol : entries) {
 						Message quote = generateQuote(symbol);
-						JmsTemplate quoteJmsTemplate = getQuoteJmsTemplate();
-						if (quoteJmsTemplate != null){
-							quoteJmsTemplate.convertAndSend(quote);
+						JmsOperations quoteJmsOperations = getQuoteJmsOperations();
+						if (quoteJmsOperations != null){
+							quoteJmsOperations.convertAndSend(quote);
 						}
 					}
 					sleep(randAmount());
