@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/activeio-core-3.0-beta3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/geronimo-j2ee-management_1.0_spec-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/backport-util-concurrent-3.0.jar"/>
