@@ -2,7 +2,6 @@ package org.marketcetera.core;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 import java.util.ArrayList;
 import java.util.Properties;

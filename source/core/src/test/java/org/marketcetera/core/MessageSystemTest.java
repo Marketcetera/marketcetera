@@ -23,8 +23,7 @@ public class MessageSystemTest extends TestCase {
     }
 
     public void testLoadMessage() throws Exception {
-        MyApp app = new MyApp(new Properties());
-        app.init();
+        MyApp app = new MyApp();
         String msg = app.getMessage("test1", new Object[0]);
         assertEquals("This is test1", msg);
 
@@ -32,8 +31,7 @@ public class MessageSystemTest extends TestCase {
     }
 
     public void testMultiPartKey() throws Exception {
-        MyApp app = new MyApp(new Properties());
-        app.init();
+        MyApp app = new MyApp();
         assertEquals("multi.part.key", "This key has a lot of parts to it.", app.getMessage("key.with.dots", new Object[0]));
     }
 
@@ -48,10 +46,6 @@ public class MessageSystemTest extends TestCase {
 
     private class MyApp extends ApplicationBase
     {
-        public MyApp(Properties inProps) {
-            super(inProps);
-        }
-
         protected List<MessageBundleInfo> getLocalMessageBundles() {
             LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
             bundles.add(new MessageBundleInfo("test", "test_messages"));

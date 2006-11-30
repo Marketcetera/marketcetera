@@ -25,7 +25,7 @@ public class LoggerStartupTest extends TestCase {
      * @throws Exception
      */
     public void testLogSomething() throws Exception {
-        MyApp app = new MyApp(new Properties());
+        MyApp app = new MyApp();
 
         LoggerAdapter.info("info message coming through", this);
         LoggerAdapter.error("not a real error: testing error message coming through", this);
@@ -33,10 +33,6 @@ public class LoggerStartupTest extends TestCase {
 
     private class MyApp extends ApplicationBase
     {
-        public MyApp(Properties inProps) {
-            super(inProps);
-        }
-
         protected List<MessageBundleInfo> getLocalMessageBundles() {
             return null;
         }
