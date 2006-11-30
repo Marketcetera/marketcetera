@@ -16,12 +16,6 @@
             <artifactId>csv</artifactId>
             <version>1.0</version>
         </dependency>
-
-        <!-- JCyclone dependencies -->
-        <dependency>
-            <groupId>jcyclone</groupId>
-            <artifactId>jcyclone-core-marketcetera</artifactId>
-        </dependency>
         <dependency>
             <groupId>incubator</groupId>
             <artifactId>activemq</artifactId>

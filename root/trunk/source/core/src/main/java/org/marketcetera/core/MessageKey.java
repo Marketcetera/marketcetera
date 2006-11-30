@@ -13,24 +13,7 @@ import java.util.Locale;
 
 @ClassVersion("$Id$")
 public enum MessageKey implements LocalizedMessage {
-    JCYCLONE_SHUTDOWN_ERR("core.jcyclone.shutdown_err"),
-    JCYCLONE_PLUGIN_INIT("core.jcyclone.plugin_init"),
-    JCYCLONE_STAGE_INIT("core.jcyclone.stage_init"),
-    JCYCLONE_UNEXPECTED_ELEM("core.jcyclone.unexpected_elem"),
-    JCYCLONE_ERROR_OUTPUT_SEND("core.jcyclone.error_output_send"),
-    JCYCLONE_SEND_NUM_ERRORS("core.jcyclone.output_send_num_errors"),
-    JCYCLONE_ERROR_SEND_NEXT_STAGE("core.jcyclone.error_send_next_stage"),
     JMX_BEAN_FAILURE("core.init.jmx_reg_error"),
-
-
-    JMS_ERROR("core.error.jms"),
-    JMS_CLEAR_ERROR("core.jms.error_clearing"),
-    JMS_CONNECTION_START_ERROR("core.jms.error_start_jms"),
-    JMS_CONNECTION_CLOSE_ERROR("core.jms.error_connection_close"),
-    JMS_QUEUE_DNE("core.jms.queue_not_found"),
-    JMS_TOPIC_DNE("core.jms.topic_not_found"),
-    JMS_QUEUE_CONNECT_ERROR("core.jms.queue_connect"),
-    JMS_TOPIC_CONNECT_ERROR("core.jms.topic_connect"),
 
     FIX_FNF("core.error.fix.fnf"),
     FIX_OUTGOING_NO_MSGTYPE("core.error.fix.outgoing_no_msgtype"),
@@ -57,11 +40,9 @@ public enum MessageKey implements LocalizedMessage {
     LOGGER_MISSING_CAT("core.logger.missing_cat"),
     LOGGER_INIT("core.logger.init"),
 
-    DB_ID_FETCH("core.error.db_id_fetch"),
-    FIX_SEND_ERROR("core.error.fix_send"),
-    JMS_SEND_ERROR("core.error.jms_send"),
-
-    HIBERNATE_CREATION_ERR("core.hibernate.error.creation"),
+    ERROR_DBFACTORY_HTTP_PARSER_INIT("core.error.dbfactory_http_parser_init"),
+    ERROR_DBFACTORY_MISSING_PARSER("core.error.dbfactory_missing_parser"),
+    ERROR_DBFACTORY_FAILED_INIT("core.error.dbfactory_init"),
 
     ORDER_MODIFIER_WRONG_FIELD_FORMAT("core.init.ordermodifier.wrong_format"),
 

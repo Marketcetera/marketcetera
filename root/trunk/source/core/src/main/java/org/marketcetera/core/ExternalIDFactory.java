@@ -1,7 +1,5 @@
 package org.marketcetera.core;
 
-import java.sql.SQLException;
-
 /**
  * @author Graham Miller
  * @version $Id$
@@ -39,7 +37,8 @@ public abstract class ExternalIDFactory implements IDFactory {
         }
     }
 
-    protected int getNextAsInt()
+    /** Returns the value of the next ID, but does not increment the id - this is more of a peek */
+    protected int peekNextAsInt()
     {
         return mNextID;
     }

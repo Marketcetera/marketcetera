@@ -1,7 +1,6 @@
 package org.marketcetera.core;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.InetAddress;
@@ -14,14 +13,26 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+/**
+ * ID Factory that knows how to connect to an oustside URL and grab a block of IDs from it
+ * If connecting to an outside provider fails we default to the in-memory id factory.
+ * The expected output is to be formatted like this:
+ * <pre>
+ *  <id>
+ *      <next>1</next>
+ *      <num>1000</num>
+ *  </id>
+ * </pre>
+ * @author Graham Miller
+ * @version $Id$
+ */
+@ClassVersion("$Id$")
 public class HttpDatabaseIDFactory extends ExternalIDFactory {
-
-	URL url;
+	private URL url;
 	private DocumentBuilder parser;
 	private InMemoryIDFactory inMemoryFactory;
 	
@@ -31,7 +42,7 @@ public class HttpDatabaseIDFactory extends ExternalIDFactory {
         try {
 			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			LoggerAdapter.error("Could not initialize parser for HttpDatabaseIDFactory",e, this);
+			LoggerAdapter.error(MessageKey.ERROR_DBFACTORY_HTTP_PARSER_INIT.getLocalizedMessage(),e, this);
 		}
 	}
 
@@ -40,7 +51,7 @@ public class HttpDatabaseIDFactory extends ExternalIDFactory {
 			return;
 		}
 		if (parser == null){
-			throw new NoMoreIDsException("Missing XML parser");
+			throw new NoMoreIDsException(MessageKey.ERROR_DBFACTORY_MISSING_PARSER.getLocalizedMessage());
 		}
 		Reader inputReader = null;
 		boolean succeeded = false;
@@ -66,7 +77,9 @@ public class HttpDatabaseIDFactory extends ExternalIDFactory {
 			if (inputReader != null){
 				try {
 					inputReader.close();
-				} catch (IOException e) {}
+				} catch (IOException e) {
+                    // ignored
+                }
 			}
 			if (!succeeded){
 				try {
@@ -94,6 +107,4 @@ public class HttpDatabaseIDFactory extends ExternalIDFactory {
 			return inMemoryFactory.getNext();
 		}
 	}
-	
-
 }
