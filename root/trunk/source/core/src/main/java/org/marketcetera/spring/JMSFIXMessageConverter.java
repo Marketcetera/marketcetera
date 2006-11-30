@@ -10,6 +10,7 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageKey;
 import org.springframework.jms.support.converter.MessageConversionException;
 import org.springframework.jms.support.converter.MessageConverter;
 
@@ -43,22 +44,22 @@ public class JMSFIXMessageConverter implements MessageConverter {
             try {
 				qfMessage = new quickfix.Message(((TextMessage)message).getText());
 			} catch (InvalidMessage e) {
-				throw new MessageConversionException("Exception converting message", e);
+				throw new MessageConversionException(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage(), e);
 			}
         } else if (message instanceof BytesMessage){
             LoggerAdapter.debug("Received JMS msg: "+message, this);
-	    try {
-		BytesMessage bytesMessage = ((BytesMessage)message);
-		int length = (int)bytesMessage.getBodyLength();
-		byte [] buf = new byte[length];
-		
-		String possibleString = new String(buf, "UTF-16");
-		if (possibleString.startsWith(FIX_PREAMBLE)){
-		    qfMessage = new quickfix.Message(possibleString);
-		}
-	    } catch (Exception ex){
-		throw new MessageConversionException("Exception converting  message", ex);
-	    }
+            try {
+                BytesMessage bytesMessage = ((BytesMessage)message);
+                int length = (int)bytesMessage.getBodyLength();
+                byte [] buf = new byte[length];
+
+                String possibleString = new String(buf, "UTF-16");
+                if (possibleString.startsWith(FIX_PREAMBLE)){
+                    qfMessage = new quickfix.Message(possibleString);
+                }
+            } catch (Exception ex){
+                throw new MessageConversionException(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage(), ex);
+            }
         } else if (message instanceof ObjectMessage) {
 	    return (quickfix.Message)((ObjectMessage)message).getObject();
 	}

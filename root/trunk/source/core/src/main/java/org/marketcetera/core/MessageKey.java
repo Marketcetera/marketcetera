@@ -46,6 +46,8 @@ public enum MessageKey implements LocalizedMessage {
 
     ORDER_MODIFIER_WRONG_FIELD_FORMAT("core.init.ordermodifier.wrong_format"),
 
+    ERR0R_JMS_MESSAGE_CONVERSION("core.jms.message_conversion"),
+
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
     APP_EXIT("core.init.app_exit");
