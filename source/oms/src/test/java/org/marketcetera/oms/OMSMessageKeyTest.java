@@ -20,7 +20,7 @@ public class OMSMessageKeyTest extends TestCase {
         return new MarketceteraTestSuite(OMSMessageKeyTest.class);
     }
     public void testInstantiateAll() throws Exception {
-    	OrderManagementSystem.init();
+    	new OrderManagementSystem();
         for(OMSMessageKey key : OMSMessageKey.values()) {
             String localized = key.getLocalizedMessage();
             assertNotNull(key.toString(), localized);

@@ -14,7 +14,6 @@ import quickfix.Message;
 import quickfix.field.Price;
 import quickfix.field.Side;
 
-import java.util.Vector;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ArrayBlockingQueue;
 

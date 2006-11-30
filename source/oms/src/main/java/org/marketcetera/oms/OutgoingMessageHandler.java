@@ -1,7 +1,6 @@
 package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
-import org.marketcetera.jcyclone.MarketceteraEventHandlerException;
 import org.marketcetera.quickfix.*;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -39,7 +38,7 @@ public class OutgoingMessageHandler {
 		orderModifiers.add(new TransactionTimeInsertOrderModifier());
 	}
 	
-	public Message handleMessage(Message message) throws MarketceteraEventHandlerException {
+	public Message handleMessage(Message message) {
         Message returnVal = null;
         try {
             modifyOrder(message);

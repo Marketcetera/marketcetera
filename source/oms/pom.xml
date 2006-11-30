@@ -31,16 +31,6 @@
             <artifactId>activemq-ra</artifactId>
           <version>4.0.2</version>
         </dependency>
-        <dependency>
-            <groupId>commons-pool</groupId>
-            <artifactId>commons-pool</artifactId>
-          <version>1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.xbean</groupId>
-            <artifactId>xbean-spring</artifactId>
-          <version>2.7</version>
-        </dependency>
 
         <!-- dependency on core test code -->
         <dependency>
@@ -77,7 +67,6 @@
 						</systemProperties>
 					</configuration>
             </plugin>
-
         </plugins>
     </build>
 
