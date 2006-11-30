@@ -2,7 +2,6 @@ package org.marketcetera.orderloader;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.Field;
@@ -43,7 +42,8 @@ public class OrderLoaderTest extends TestCase
     protected void setUp() throws Exception
     {
         super.setUp();
-        mLoader = new MyOrderLoader(0, "orderloader-test", false);
+        mLoader = new MyOrderLoader(false);
+        mLoader.createApplicationContext("orderloader.xml", false);
         FIXDataDictionaryManager.loadDictionary("FIX42-orderloader-test.xml", true);
     }
 
@@ -253,8 +253,7 @@ public class OrderLoaderTest extends TestCase
 
     public void testValidMessage() throws Exception
     {
-        int id = 666;
-        MyOrderLoader myLoader =  new MyOrderLoader(id);
+        MyOrderLoader myLoader =  new MyOrderLoader(false);
         Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Field[] {new Symbol(), new Side(),
                                                        new OrderQty(), new Price(), new TimeInForce(), new Account()}));
         String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"};
@@ -272,8 +271,7 @@ public class OrderLoaderTest extends TestCase
 
     public void testWithCustomField() throws Exception
     {
-        int id = 666;
-        final MyOrderLoader myLoader =  new MyOrderLoader(id);
+        final MyOrderLoader myLoader =  new MyOrderLoader(false);
         final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Field[] {new Symbol(), new Side(),
                                                        new OrderQty(), new Price(), new CustomField(9999, null), new Account()}));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
@@ -326,14 +324,10 @@ public class OrderLoaderTest extends TestCase
     private class MyOrderLoader extends OrderLoader {
         private Message mMessage;
         private boolean mSendPassThrough = false;
-        public MyOrderLoader(int inIDStart) throws Exception
-        {
-            super(inIDStart, "orderloader-test");
-        }
 
-        public MyOrderLoader(int inIDStart, String cfgFileName, boolean fSendPassThrough) throws Exception
+        public MyOrderLoader(boolean fSendPassThrough) throws Exception
         {
-            super(inIDStart, cfgFileName);
+            super(null);
             mSendPassThrough = fSendPassThrough;
         }
 
@@ -345,32 +339,6 @@ public class OrderLoaderTest extends TestCase
             } else {
                 super.sendMessage(message);
             }
-        }
-
-        protected JMSConnector getJMSConnection(ConfigData inCfg) throws ConfigFileLoadingException, JMSException {
-            if (mSendPassThrough){
-                return super.getJMSConnection(inCfg);
-            } else {
-                return new MyJMSConnector();
-            }
-        }
-    }
-
-    private class MyJMSConnector extends JMSConnector {
-        private Vector<Message> mMsgs = new Vector<Message>();
-
-        public MyJMSConnector()
-        {
-        }
-
-        public void init(String outgoingQueueName, String contextFactoryName, String providerUrl, String connectionFactoryName) throws JMSException {
-            // do nothing
-        }
-
-        @Override
-        public void sendToQueue(Message aMessage) throws JMSException
-        {
-            mMsgs.add(aMessage);
         }
     }
 }
