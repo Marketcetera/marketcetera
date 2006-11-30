@@ -1,70 +1,51 @@
 package org.marketcetera.oms;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.ConfigFileLoadingException;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MessageBundleInfo;
-import org.marketcetera.core.MessageBundleManager;
-import org.marketcetera.core.MessageKey;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.marketcetera.core.*;
+
+import java.util.List;
+import java.util.LinkedList;
 
 /**
  * OrderManagementSystem
  * Main entrypoint for sending orders and receiving responses from a FIX engine
  *
- * <pre>
- * The OMS consists of the following JCyclone configuration:
+ * The OMS is configured using Spring, using the following modules:
+ * <ol>
+ *   <li>{@link OutgoingMessageHandler} which handles running the received
+ *      order through modifiers, sending it on and generating and returning an
+ *      immediate execution report </li>
+ *   <li>{@link QuickFIXApplication} - a wrapper for setting up a FIX application (listener/sender)</li>
+ *   <li>{@link QuickFIXSender} = actually sends the FIX messages</li>
+ * </ol>
  *
- * FIXSessionAdapterSource  ------|
- *                                |--> OrderManager ---> OutputStage
- * JMSAdapterSource         ------|
- *</pre>
  * @author gmiller
  * $Id$
  */
 @ClassVersion("$Id$")
-public class OrderManagementSystem {
+public class OrderManagementSystem extends ApplicationBase {
 
     private static final String LOGGER_NAME = OrderManagementSystem.class.getName();
     public static final MessageBundleInfo OMS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("oms", "oms_messages");
 
-    protected static OrderManagementSystem sOMS = null;
-	private static LoggerAdapter sLogger;
-
-
-    protected OrderManagementSystem()
-    {
+    protected List<MessageBundleInfo> getLocalMessageBundles() {
+        LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
+        bundles.add(OMS_MESSAGE_BUNDLE_INFO);
+        return bundles;
     }
-
-
-    public static void init()
-    {
-        MessageBundleManager.registerCoreMessageBundle();
-        MessageBundleManager.registerMessageBundle(OMS_MESSAGE_BUNDLE_INFO);
-        sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
-    }
-
-
 
 
     public static void main(String [] args) throws ConfigFileLoadingException
     {
-    	init();
         try {
-        	ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("oms.xml");
-            appCtx.registerShutdownHook();
-//            appCtx.start();
-            System.in.read();
+            OrderManagementSystem oms = new OrderManagementSystem();
+            oms.createApplicationContext("oms.xml", true);
+            oms.startWaitingForever();
+            if(LoggerAdapter.isDebugEnabled(LOGGER_NAME)) { LoggerAdapter.debug("OMS main finishing", LOGGER_NAME); }
         } catch (Exception ex) {
             LoggerAdapter.error(MessageKey.ERROR.getLocalizedMessage(), ex, LOGGER_NAME);
         } finally {
             LoggerAdapter.info(MessageKey.APP_EXIT.getLocalizedMessage(), LOGGER_NAME);
         }
     }
-
-    public static OrderManagementSystem getOMS() { return sOMS; }
-
-
-
 }
 

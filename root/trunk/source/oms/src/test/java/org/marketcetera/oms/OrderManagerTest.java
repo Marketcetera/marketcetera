@@ -2,7 +2,6 @@ package org.marketcetera.oms;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.jcyclone.core.handler.EventHandlerException;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.DefaultOrderModifier.MessageFieldType;
@@ -37,7 +36,7 @@ public class OrderManagerTest extends TestCase
 
     public static Test suite()
     {
-    	OrderManagementSystem.init();
+    	//OrderManagementSystem.init();
     	return new MarketceteraTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
     }
 
@@ -264,8 +263,6 @@ public class OrderManagerTest extends TestCase
      * @param symbol    Symbol, can contain either a share class or an exchange (or both)
      * @param   expectedExchange    Exchange we expec (or null)
      * @param   shareClass      Share class (or null)
-     * @throws EventHandlerException
-     * @throws FieldNotFound
      */
     private void orderRouterTesterHelper(OutgoingMessageHandler handler, String symbol,
                                          String expectedExchange, String shareClass)
