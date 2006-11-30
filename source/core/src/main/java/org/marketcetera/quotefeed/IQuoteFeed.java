@@ -4,14 +4,19 @@ import java.io.IOException;
 
 import org.marketcetera.core.FeedComponent;
 import org.marketcetera.core.MSymbol;
+import org.springframework.context.Lifecycle;
+import org.springframework.jms.core.JmsOperations;
 
-public interface IQuoteFeed extends FeedComponent{
-    void connect() throws IOException;
-    void disconnect();
-    public void listenLevel2(MSymbol symbol, IMessageListener list);
-    public void unlistenLevel2(MSymbol symbol, IMessageListener list);
-    public void listenQuotes(MSymbol symbol, IMessageListener list);
-    public void unlistenQuotes(MSymbol symbol, IMessageListener list);
-    public void listenTrades(MSymbol symbol, IMessageListener list);
-    public void unlistenTrades(MSymbol symbol, IMessageListener list);
+public interface IQuoteFeed extends FeedComponent, Lifecycle{
+    public void listenLevel2(MSymbol symbol);
+    public void unlistenLevel2(MSymbol symbol);
+    public void listenQuotes(MSymbol symbol);
+    public void unlistenQuotes(MSymbol symbol);
+    public void listenTrades(MSymbol symbol);
+    public void unlistenTrades(MSymbol symbol);
+    public void setQuoteJmsOperations(JmsOperations tradeOperations);
+    public JmsOperations getQuoteJmsOperations();
+    public void setTradeJmsOperations(JmsOperations tradeOperations);
+    public JmsOperations getTradeJmsOperations();
+
 }
