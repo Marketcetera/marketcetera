@@ -3,6 +3,7 @@ package org.marketcetera.spring;
 import java.io.Serializable;
 
 import javax.jms.BytesMessage;
+import javax.jms.ObjectMessage;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Session;
@@ -58,7 +59,9 @@ public class JMSFIXMessageConverter implements MessageConverter {
 	    } catch (Exception ex){
 		throw new MessageConversionException("Exception converting  message", ex);
 	    }
-        }
+        } else if (message instanceof ObjectMessage) {
+	    return (quickfix.Message)((ObjectMessage)message).getObject();
+	}
         return qfMessage;
 	}
 
