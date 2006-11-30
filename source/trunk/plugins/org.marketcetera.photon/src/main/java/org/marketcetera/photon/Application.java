@@ -12,11 +12,11 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsOperations;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
 /**
