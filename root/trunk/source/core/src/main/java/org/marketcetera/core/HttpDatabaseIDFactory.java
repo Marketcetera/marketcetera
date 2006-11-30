@@ -1,4 +1,4 @@
-package org.marketcetera.photon;
+package org.marketcetera.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -13,9 +13,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.marketcetera.core.ExternalIDFactory;
-import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.NoMoreIDsException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -34,7 +31,7 @@ public class HttpDatabaseIDFactory extends ExternalIDFactory {
         try {
 			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			PhotonPlugin.getMainConsoleLogger().error("Could not initialize parser for HttpDatabaseIDFactory",e);
+			LoggerAdapter.error("Could not initialize parser for HttpDatabaseIDFactory",e, this);
 		}
 	}
 
