@@ -3,12 +3,8 @@ package org.marketcetera.orderloader;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-
-
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.orderloader.CustomField;
-import org.marketcetera.orderloader.OrderParsingException;
 
 /**
  * @author Toli Kuznets
@@ -30,10 +26,10 @@ public class CustomFieldTest extends TestCase
     public void testParseCustomFieldValue()
     {
         CustomField cf = new CustomField(1, null);
-        assertEquals(new Integer(42), cf.parseMessageValue("42"));
+        assertEquals(42, cf.parseMessageValue("42"));
         assertEquals(Integer.class, cf.parseMessageValue("42").getClass());
 
-        assertEquals(new Double(42.24), cf.parseMessageValue("42.24"));
+        assertEquals(42.24, cf.parseMessageValue("42.24"));
         assertEquals(Double.class, cf.parseMessageValue("42.24").getClass());
 
         assertEquals("toli kuznets", cf.parseMessageValue("toli kuznets"));

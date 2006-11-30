@@ -1,10 +1,10 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.*;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
+import org.springframework.jms.core.JmsTemplate;
 import quickfix.Field;
 import quickfix.Message;
 import quickfix.StringField;
@@ -13,10 +13,9 @@ import quickfix.field.*;
 import javax.jms.JMSException;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.List;
-import java.util.Vector;
-import java.util.LinkedList;
+import java.util.*;
 import java.math.BigDecimal;
+import java.net.URL;
 
 /**
  *  Simple class to read a CSV file containing orders and load them into the
@@ -36,31 +35,37 @@ import java.math.BigDecimal;
 @ClassVersion("$Id$")
 public class OrderLoader extends ApplicationBase
 {
+    private static final String JMS_SENDER_NAME = "outgoingJmsTemplate";
+    private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
 
     protected static String MKT_PRICE = "MKT";
     protected static String TIME_LIMIT_DAY = "DAY";
-    public static final String CFG_FILE_NAME = "orderloader";
+    public static final String CFG_FILE_NAME = "orderloader.xml";
     public static final MessageBundleInfo OL_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("orderloader", "orderloader_messages");
-    protected static final int USE_DB_ID_FACTORY_STARTID = -1;
 
     private IDFactory idFactory;
-    private JMSConnector jmsConnector;
+    private JmsTemplate jmsQueueSender;
 
     protected int numProcessedOrders;
     protected int numBlankLines;
     protected int numComments;
     protected Vector<String> failedOrders;
-    protected ConfigData properties;
     public static final String COMMENT_MARKER = "#";
 
-    public OrderLoader(int inIDStart, String cfgFileName) throws Exception
+    public OrderLoader(String cfgFileName) throws Exception
     {
-        super(cfgFileName);
         numProcessedOrders = numComments = numBlankLines = 0;
         failedOrders = new Vector<String>();
-        cfgFileName = (cfgFileName==null) ? CFG_FILE_NAME : cfgFileName;
-        properties = new PropertiesConfigData(ConfigPropertiesLoader.loadProperties(cfgFileName));
-        idFactory = getIDFactory(inIDStart, properties);
+        cfgFileName = (cfgFileName == null) ? CFG_FILE_NAME : cfgFileName;
+        createApplicationContext(cfgFileName, true);
+        URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
+        idFactory = new HttpDatabaseIDFactory(idFactoryURL);
+        try {
+            idFactory.getNext();
+        } catch(NoMoreIDsException ex) {
+            // don't print the entire stacktrace, just the message
+            LoggerAdapter.error(MessageKey.ERROR_DBFACTORY_FAILED_INIT.getLocalizedMessage(idFactoryURL, ex.getMessage()), this);
+        }
     }
 
     protected void addDefaults(Message message) throws NoMoreIDsException
@@ -76,22 +81,20 @@ public class OrderLoader extends ApplicationBase
         if(LoggerAdapter.isDebugEnabled(this)) {
             LoggerAdapter.debug("Sending message: "+message, this);
         }
-        jmsConnector.sendToQueue(message);
+        jmsQueueSender.convertAndSend(message);
     }
 
     /** Prints the usage information for how to start the command and quits
      */
     protected static void usage()
     {
-        System.out.println("Usage: java OrderLoader <orderID base> <CSV input file> [cfgFile]");
+        System.out.println("Usage: java OrderLoader <CSV input file> [cfgFile]");
         System.out.println("Example file format should be: Symbol,Side,OrderQty,Price,TimeInForce,Account");
         System.exit(1);
     }
 
     protected List<MessageBundleInfo> getLocalMessageBundles() {
-        LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
-        bundles.add(OL_MESSAGE_BUNDLE_INFO);
-        return bundles;
+        return new LinkedList<MessageBundleInfo>(Arrays.asList(OL_MESSAGE_BUNDLE_INFO));
     }
 
     /**
@@ -102,14 +105,14 @@ public class OrderLoader extends ApplicationBase
      */
     public static void main(String[] args) throws Exception
     {
-        if (args.length < 2) {
+        if (args.length < 1) {
             usage();
         }
-        String cfgFileName = (args.length == 3) ? args[2] : CFG_FILE_NAME;
-        OrderLoader loader = new OrderLoader(Integer.parseInt(args[0]), cfgFileName);
-        loader.parseAndSendOrders(new FileInputStream(args[1]));
+        String cfgFileName = (args.length == 2) ? args[1] : CFG_FILE_NAME;
+        OrderLoader loader = new OrderLoader(cfgFileName);
+        loader.parseAndSendOrders(new FileInputStream(args[0]));
         loader.printReport();
-        loader.shutdown();
+        loader.getAppCtx().stop();
     }
 
 
@@ -125,29 +128,14 @@ public class OrderLoader extends ApplicationBase
             System.exit(1);
         }
         Vector<Field> headerRow = getFieldOrder(allRows.get(0));
-        jmsConnector = getJMSConnection(properties);
+        jmsQueueSender = (JmsTemplate) getAppCtx().getBean(JMS_SENDER_NAME);
+
 
         String[] headerFields = allRows.get(0);
         for (int i=1;i<allRows.size(); i++) {
             String[] oneRow = allRows.get(i);
             sendOneOrder(headerRow, headerFields, oneRow);
         }
-        jmsConnector.shutdown();
-    }
-
-    protected JMSConnector getJMSConnection(ConfigData inCfg) throws ConfigFileLoadingException, JMSException {
-        // get the confg file
-        String outgoingQueueName = inCfg.get(ConnectionConstants.JMS_OUTGOING_QUEUE_KEY, "");
-        String connectionFactory = inCfg.get(ConnectionConstants.JMS_CONNECTION_FACTORY_KEY, "");
-        String initialContextFactory = inCfg.get(ConnectionConstants.JMS_CONTEXT_FACTORY_KEY, "");
-        String providerUrl = inCfg.get(ConnectionConstants.JMS_URL_KEY, "");
-
-        JMSConnector newJMSConnector = new JMSConnector();
-
-        newJMSConnector.init(outgoingQueueName, initialContextFactory, providerUrl,
-                connectionFactory);
-
-        return newJMSConnector;
     }
 
     /** Prints the summary report of he send orders */
@@ -203,7 +191,6 @@ public class OrderLoader extends ApplicationBase
                     Util.getStringFromArray(inOrderRow),e.getMessage()), e, this);
             failedOrders.add(Util.getStringFromArray(inOrderRow) + ": " + e.getMessage());
         }
-
     }
 
     /**
@@ -327,15 +314,6 @@ public class OrderLoader extends ApplicationBase
             throw new OrderParsingException(fieldName, ex);
         }
         return theField;
-    }
-
-    protected IDFactory getIDFactory(int inIDStart, ConfigData inProps) throws Exception
-    {
-        if(inIDStart == USE_DB_ID_FACTORY_STARTID) {
-            return DatabaseIDFactory.getInstance(inProps);
-        } else {
-            return new InMemoryIDFactory(inIDStart);
-        }
     }
 
     /** Returns the values of the number of transactions processed */

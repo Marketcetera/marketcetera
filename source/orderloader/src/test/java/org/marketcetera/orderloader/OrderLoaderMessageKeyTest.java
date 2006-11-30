@@ -20,7 +20,7 @@ public class OrderLoaderMessageKeyTest extends TestCase {
         return new MarketceteraTestSuite(OrderLoaderMessageKeyTest.class);
     }
     public void testInstantiateAll() throws Exception {
-        OrderLoader loader = new OrderLoader(10, OrderLoader.CFG_FILE_NAME);
+        new OrderLoader(OrderLoader.CFG_FILE_NAME);
 
         for(OrderLoaderMessageKey key : OrderLoaderMessageKey.values()) {
             String localized = key.getLocalizedMessage();
