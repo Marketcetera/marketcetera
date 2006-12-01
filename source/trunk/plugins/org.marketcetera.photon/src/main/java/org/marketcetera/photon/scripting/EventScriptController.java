@@ -6,11 +6,14 @@ import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.marketcetera.photon.PhotonPlugin;
 
+import quickfix.Message;
 import ca.odell.glazedlists.EventList;
 
 
 public class EventScriptController {
 
+	private static final String TRADE_BEAN_NAME = "trade";
+	private static final String QUOTE_BEAN_NAME = "quote";
 	private ScriptingEventType eventType;
 
 	
@@ -18,14 +21,28 @@ public class EventScriptController {
 		this.eventType = eventType;
 	}
 	
-	public void onEvent(Object event) {
+	public void onEvent(Message event) throws BSFException {
 		ScriptRegistry scriptRegistry = PhotonPlugin.getDefault().getScriptRegistry();
 		EventList<Map.Entry<IScript,BSFManager>> scripts = scriptRegistry.getScriptList(eventType);
 
 		synchronized (scripts.getReadWriteLock()) {
+			if (eventType == ScriptingEventType.QUOTE)
+				System.out.println(Thread.currentThread().getName()+Thread.currentThread().hashCode());
 			for (Map.Entry<IScript,BSFManager> entry : scripts) {
 				IScript aScript = entry.getKey();
 				BSFManager manager = entry.getValue();
+				
+				String beanName;
+				switch (eventType){
+				case QUOTE:
+					manager.undeclareBean(QUOTE_BEAN_NAME);
+					manager.declareBean(QUOTE_BEAN_NAME, event, event.getClass());
+					break;
+				case TRADE:
+					manager.undeclareBean(TRADE_BEAN_NAME);
+					manager.declareBean(TRADE_BEAN_NAME, event, event.getClass());
+					break;
+				}
 				try {
 					aScript.exec(manager);
 				} catch (BSFException e) {

@@ -167,7 +167,9 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		errorMessageLabel.setLayoutData(gridData);
 		top.setBackground(errorMessageLabel.getBackground());
 
-		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		plugin.getPreferenceStore().addPropertyChangeListener(this);
+		quoteFeed = plugin.getQuoteFeed();
 	}
 
 	@Override
@@ -177,6 +179,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		if (quoteFeed != null) {
 			quoteFeed.unlistenLevel2(listenedSymbol);
 		}
+		quoteFeed = null;
 	}
 
 	@Override

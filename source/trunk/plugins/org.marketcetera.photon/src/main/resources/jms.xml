@@ -13,7 +13,7 @@
   </bean>
 
   <bean id="externalConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="tcp://localhost:61616"/>
+    <property name="brokerURL" value="tcp://server01:61616"/>
   </bean>
   
   <bean id="photonControllerListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">

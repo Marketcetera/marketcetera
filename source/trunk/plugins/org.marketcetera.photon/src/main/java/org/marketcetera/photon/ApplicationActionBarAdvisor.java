@@ -26,6 +26,7 @@ import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
+import org.marketcetera.photon.ui.FeedStatusLineContribution;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
 /**
@@ -110,6 +111,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private CommandStatusLineContribution commandStatusLineContribution;
 
+	private FeedStatusLineContribution jmsStatusLineContribution;
+
+	private FeedStatusLineContribution quoteFeedStatusLineContribution;
+
 	private IWorkbenchAction focusCommandAction;
 
 	private WebHelpAction webHelpAction;
@@ -134,6 +139,13 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		this.window = window;
 
 		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
+		jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", new String[] {"jms"});
+		//Application.getJMSConnector().addFeedComponentListener(jmsStatusLineContribution);
+		IQuoteFeed quoteFeed = PhotonPlugin.getDefault().getQuoteFeed();
+		String quoteFeedID = "Quote Feed";
+		if (quoteFeed != null) quoteFeedID = quoteFeed.getID();
+		quoteFeedStatusLineContribution = new FeedStatusLineContribution("quoteFeedStatus", new String[] {quoteFeedID });
+		if (quoteFeed != null) quoteFeed.addFeedComponentListener(quoteFeedStatusLineContribution);
 
 		saveAction = ActionFactory.SAVE.create(window);  register(saveAction);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
@@ -317,7 +329,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
 		statusLine.add(commandStatusLineContribution);
-
+		statusLine.add(jmsStatusLineContribution);
+		statusLine.add(quoteFeedStatusLineContribution);
 	}
 
 
