@@ -38,10 +38,12 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,
  org.marketcetera.photon.editors,
+ org.marketcetera.photon.messaging,
  org.marketcetera.photon.parser,
  org.marketcetera.photon.preferences,
  org.marketcetera.photon.quotefeed,
  org.marketcetera.photon.scripting,
  org.marketcetera.photon.ui,
+ org.marketcetera.photon.ui.validation,
  org.marketcetera.photon.views
 Eclipse-LazyStart: true

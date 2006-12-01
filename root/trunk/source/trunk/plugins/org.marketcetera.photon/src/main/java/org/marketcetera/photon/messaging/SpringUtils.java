@@ -1,14 +1,14 @@
-package org.marketcetera.photon;
+package org.marketcetera.photon.messaging;
 
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
+import javax.jms.ExceptionListener;
 import javax.jms.Topic;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.Lifecycle;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.listener.SimpleMessageListenerContainer;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.jms.support.converter.MessageConverter;
 
@@ -40,20 +40,23 @@ public class SpringUtils {
 	}
 
 	public static MessageListenerAdapter createMessageListenerAdapter(
-			String methodName, MessageConverter converter,
-			ConnectionFactory connectionFactory, Destination destination) {
+			String methodName, MessageConverter converter) {
 		MessageListenerAdapter listener;
 		listener = new MessageListenerAdapter();
 		listener.setDefaultListenerMethod(methodName);
 		listener.setMessageConverter(converter);
+		return listener;
+	}
 
+	public static SimpleMessageListenerContainer createSimpleMessageListenerContainer(ConnectionFactory connectionFactory, Object listener, Destination destination, ExceptionListener exceptionListener){
 		SimpleMessageListenerContainer container = new SimpleMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		container.setMessageListener(listener);
 		container.setDestination(destination);
+		container.setExceptionListener(exceptionListener);
 		container.afterPropertiesSet();
 		container.start();
-		return listener;
+		return container;
 	}
 
 }

@@ -4,10 +4,13 @@ import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
@@ -26,22 +29,24 @@ import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.messaging.MarketDataViewAdapter;
+import org.marketcetera.photon.messaging.ScriptEventAdapter;
+import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
+import org.marketcetera.photon.messaging.SpringUtils;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
-import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.photon.scripting.EventScriptController;
 import org.marketcetera.photon.scripting.IScript;
 import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.photon.scripting.ScriptingEventType;
+import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quotefeed.IQuoteFeed;
 import org.marketcetera.quotefeed.IQuoteFeedFactory;
-import org.marketcetera.spring.JMSFIXMessageConverter;
 import org.osgi.framework.BundleContext;
 import org.springframework.jms.core.JmsOperations;
-import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
 /**
  * The main plugin class to be used in the Photon application.
@@ -62,11 +67,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
 
-	private MessageListenerAdapter quotesMarketDataViewListener;
-
-	private MessageListenerAdapter quotesScriptListener;
-
-	private MessageListenerAdapter tradesScriptListener;
+	private List<SimpleMessageListenerContainer> messageListenerContainers = new LinkedList<SimpleMessageListenerContainer>();
 
 	private JmsOperations quoteJmsOperations;
 
@@ -79,6 +80,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private PhotonController photonController;
 
 	private IDFactory idFactory;
+
 
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
@@ -94,14 +96,20 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		BSFManager.registerScriptingEngine(IScript.RUBY_LANG_STRING,
+		
+		// This sets the internal broker to use on thread per "listener"?
+		// Needed because the version of JRuby we're using doesn't play well
+		// with mutliple threads
+        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true");
+
+        BSFManager.registerScriptingEngine(IScript.RUBY_LANG_STRING,
 				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
 		initResources();
 		initIDFactory();
 		initInternalConnectionFactory();
 		initFIXMessageHistory();
-		initQuoteFeed();
 		initMessageListeners();
+		initQuoteFeed();
 		initScriptRegistry();
 		initPhotonController();
 		
@@ -120,8 +128,9 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	}
 
 	private void initInternalConnectionFactory() {
-		internalConnectionFactory = new ActiveMQConnectionFactory();
-		((ActiveMQConnectionFactory)internalConnectionFactory).setBrokerURL("vm://it-oms?broker.persistent=false");
+		ActiveMQConnectionFactory activeMQConnectionFactory;
+		internalConnectionFactory = activeMQConnectionFactory = new ActiveMQConnectionFactory();
+		activeMQConnectionFactory.setBrokerURL("vm://it-oms?broker.persistent=false");
 	}
 
 	private void initScriptRegistry() {
@@ -138,9 +147,17 @@ public class PhotonPlugin extends AbstractUIPlugin {
 				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
 		
 		EventScriptController tradesController = new EventScriptController(ScriptingEventType.TRADE);
-		tradesScriptListener.setDelegate(tradesController);
+		createScriptListenerContainer(tradesController);
+		
 		EventScriptController quotesController = new EventScriptController(ScriptingEventType.QUOTE);
-		quotesScriptListener.setDelegate(quotesController);
+		createScriptListenerContainer(quotesController);
+	}
+
+	private void createScriptListenerContainer(EventScriptController tradesController) {
+		ScriptEventAdapter adapter = new ScriptEventAdapter();
+		adapter.setController(tradesController);
+		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(internalConnectionFactory, adapter, quotesTopic, null);
+		messageListenerContainers.add(container);
 	}
 
 	/**
@@ -154,6 +171,14 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptRegistry);
 			scriptRegistry = null;
 		}
+		stopMessageListenerContainers();
+	}
+
+	private void stopMessageListenerContainers() {
+		for (SimpleMessageListenerContainer container : messageListenerContainers) {
+			container.stop();
+		}
+		messageListenerContainers.clear();
 	}
 
 	/**
@@ -218,20 +243,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 		ConnectionFactory internalConnectionFactory = PhotonPlugin.getDefault().getInternalConnectionFactory();
 
-		quotesMarketDataViewListener = SpringUtils.createMessageListenerAdapter("onQuote",
-				new JMSFIXMessageConverter(), internalConnectionFactory ,
-				quotesTopic);
-		
-		quotesScriptListener = SpringUtils.createMessageListenerAdapter("onEvent",
-				new JMSFIXMessageConverter(), internalConnectionFactory,
-				quotesTopic);
-
-		tradesScriptListener = SpringUtils.createMessageListenerAdapter("onEvent",
-				new JMSFIXMessageConverter(), internalConnectionFactory,
-				tradesTopic);
-		
 		quoteJmsOperations = SpringUtils.createJmsTemplate(internalConnectionFactory, quotesTopic);
-
 	}
 	
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
@@ -304,13 +316,28 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	}
 
 
-	public void registerMarketDataView(IQuoteFeedAware view) {
-		quotesMarketDataViewListener.setDelegate(view);
+	public void registerMarketDataView(MarketDataView view) {
+		MarketDataViewAdapter adapter = new MarketDataViewAdapter();
+		adapter.setMarketDataView(view);
+		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(
+				internalConnectionFactory, adapter, quotesTopic, null);
 		view.setQuoteFeed(quoteFeed);
+		messageListenerContainers.add(container);
 	}
-	public void unregisterMarketDataView(IQuoteFeedAware view) {
-		quotesMarketDataViewListener.setDelegate(null);
+	
+	public void unregisterMarketDataView(MarketDataView view) {
 		view.setQuoteFeed(null);
+		for (SimpleMessageListenerContainer container : messageListenerContainers) {
+			Object messageListener = container.getMessageListener();
+			if (messageListener instanceof MarketDataViewAdapter) {
+				MarketDataViewAdapter adapter = (MarketDataViewAdapter) messageListener;
+				if (adapter.getView() == view){
+					messageListenerContainers.remove(container);
+					container.stop();
+					return;
+				}
+			}
+		}
 	}
 
 }
