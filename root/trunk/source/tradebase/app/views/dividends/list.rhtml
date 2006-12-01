@@ -14,9 +14,7 @@ for dividend in @dividends %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%= dividend.equity.m_symbol.root %></td>
     <%= show_relevant_table_columns(dividend, false) %>
-    <td><%= link_to 'Show', :action => 'show', :id => dividend %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => dividend %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => dividend }, :confirm => 'Are you sure?', :post => true %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => dividend, :controller_name => 'dividends'} %>
   </tr>
 <% end %>
 </table>

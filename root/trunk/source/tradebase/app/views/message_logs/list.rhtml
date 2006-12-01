@@ -70,11 +70,12 @@
     <td><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, leavesQty) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, avgPx) %></td>
+    <td><%= getStringFieldValueIfPresent(qf_message, avgPx)[0,9] %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, account) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
-    <td><%= link_to 'Show', :action => 'show', :id => message %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', 
+               :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'messages_log'} %>
   </tr>
 <% end %>
 </table>

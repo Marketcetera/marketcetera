@@ -1,0 +1,9 @@
+<td><%= link_to(image_tag("/images/icons/show.png", :alt=> 'Show'), 
+                :action => 'show', :id => object, :controller => controller_name) %></td>
+<% if(!skipEditDelete) %>
+<td><%= link_to(image_tag("/images/icons/pencil.png", :alt=> 'Edit'), 
+                :action => 'edit', :id => object, :controller => controller_name) %></td>
+<td><%= link_to(image_tag("/images/icons/cancel.png", :alt=>'Destroy'), 
+                { :action => 'destroy', :id => object, :controller => controller_name }, 
+                :confirm => 'Are you sure?', :post => true) %></td>
+<% end %>

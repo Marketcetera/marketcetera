@@ -13,7 +13,8 @@
   for currency in @currencies %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
   <%= show_relevant_table_columns(currency, false) %>
-    <td><%= link_to 'Show', :action => 'show', :id => currency %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', 
+               :locals=> { :object => currency, :controller_name => 'currencies', :skipEditDelete => true} %>
   </tr>
 <% end %>
 </table>

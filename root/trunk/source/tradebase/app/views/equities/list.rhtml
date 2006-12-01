@@ -18,9 +18,7 @@ for equity in @equities %>
     <% end %>
 
     <td><%= equity.description %></td>
-    <td><%= link_to 'Show', :action => 'show', :id => equity %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => equity %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => equity }, :confirm => 'Are you sure?', :post => true %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => equity, :controller_name => 'equities'} %>
   </tr>
 <% end %>
 </table>

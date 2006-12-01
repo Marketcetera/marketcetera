@@ -9,4 +9,12 @@ module PositionsHelper
               ' HAVING position != 0 ',
               date], 10)
   end
+  
+  # returns the N top accounts with the most positions
+  def get_top_positioned_accounts(num_accounts)
+    accountIDs = Position.count(:group => 'account_id', :limit => num_accounts, :order => 'count_all desc')
+    accounts = Array.new
+    accountIDs.each{ |id, n| accounts.push([Account.find(id), n]) }
+    return accounts
+  end
 end
