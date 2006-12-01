@@ -20,4 +20,11 @@ module TradesHelper
       return "Unknown: "+trade_type.to_s
     end
   end    
+  
+  # find the number of trades executed on a particular date
+  def number_trades_on_day(date)
+    return (Trade.count_by_sql(["select count(*) \
+                          from trades, journals where \
+                          trades.journal_id = journals.id and journals.post_date = ? ", date.to_s]))
+  end
 end

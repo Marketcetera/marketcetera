@@ -12,9 +12,7 @@
 for m_symbol in @m_symbols %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <%= show_relevant_table_columns(m_symbol, false) %>
-    <td><%= link_to 'Show', :action => 'show', :id => m_symbol %></td>
-    <td><%= link_to 'Edit', :action => 'edit', :id => m_symbol %></td>
-    <td><%= link_to 'Destroy', { :action => 'destroy', :id => m_symbol }, :confirm => 'Are you sure?', :post => true %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => m_symbol, :controller_name => 'm_symbols'} %>
   </tr>
 <% end %>
 </table>

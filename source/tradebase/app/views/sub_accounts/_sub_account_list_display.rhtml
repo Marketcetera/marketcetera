@@ -10,7 +10,8 @@
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%=h sub_account.description %></td>
     <td><%= link_to sub_account.account.nickname, :controller => 'accounts', :action => 'show', :id => sub_account.account %></td>
-    <td><%= link_to 'Show', :controller => 'sub_accounts', :action => 'show', :id => sub_account %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', 
+               :locals=> { :object => sub_account, :skipEditDelete => true, :controller_name => 'sub_accounts'} %>
   </tr>
 <% end %>
 </table>
