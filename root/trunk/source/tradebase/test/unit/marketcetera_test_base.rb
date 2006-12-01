@@ -62,6 +62,25 @@ class MarketceteraTestBase < Test::Unit::TestCase
     end 
   end
   
+  # Verify that show/edit/delete links are present
+  def assert_has_show_edit_delete_links(hasShow, hasEdit, hasDelete)
+    if(hasShow)
+      assert_tag :tag => 'img', :attributes => { :alt=>'Show', :src => '/images/icons/show.png?37'}
+    else 
+      assert_no_tag :tag => 'img', :attributes => { :alt=>'Show', :src => '/images/icons/show.png?37'}
+    end
+    if(hasEdit)
+      assert_tag :tag => 'img', :attributes => {:alt=>'Edit', :src => '/images/icons/pencil.png?37'}
+    else
+      assert_no_tag :tag => 'img', :attributes => {:alt=>'Edit', :src => '/images/icons/pencil.png?37'}
+    end
+    if(hasDelete)
+      assert_tag :tag => 'img', :attributes => { :alt=>'Destroy', :src => '/images/icons/cancel.png?37'}
+    else
+      assert_no_tag :tag => 'img', :attributes => { :alt=>'Destroy', :src => '/images/icons/cancel.png?37'}
+    end
+  end
+  
   # Helper function to create a trade
   def create_test_trade(qty, price, side, account, date, symbol, commission, cur)
       theTrade = Trade.new(:quantity => qty, :price_per_share => price, :side => side)

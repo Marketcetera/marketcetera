@@ -24,7 +24,6 @@ class AccountTest < MarketceteraTestBase
     
     # now do it for all
     SubAccountType::DESCRIPTIONS.each { |t| 
-      logger.debug "looking up " + t[0].to_s
       sa = a.find_sub_account_by_sat(t[1])
       assert_not_nil sa, t[1]
       assert_equal sa.description, t[1]

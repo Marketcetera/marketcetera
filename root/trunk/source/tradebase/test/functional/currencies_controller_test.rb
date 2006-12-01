@@ -27,6 +27,7 @@ class CurrenciesControllerTest < MarketceteraTestBase
     assert_template 'list'
 
     assert_not_nil assigns(:currencies)
+    assert_has_show_edit_delete_links(true, false, false)
   end
 
   def test_show
