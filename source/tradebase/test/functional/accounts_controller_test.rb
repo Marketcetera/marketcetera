@@ -29,6 +29,7 @@ class AccountsControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:accounts)
     assert_equal 3, assigns(:accounts).length
+    assert_has_show_edit_delete_links(true, true, true)
   end
 
   def test_show

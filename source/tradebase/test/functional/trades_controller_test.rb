@@ -38,6 +38,7 @@ class TradesControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:trades)
     assert_equal @allTrades.length, assigns(:trades).length
+    assert_has_show_edit_delete_links(true, true, true)
   end
 
   def test_show

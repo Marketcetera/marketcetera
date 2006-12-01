@@ -39,7 +39,6 @@ class CreateTradesControllerTest < MarketceteraTestBase
     qfMsg = Quickfix::Message.new(msg.text)
     assert_equal "GOOG", getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new)
     assert_equal 14.95.to_s, trade.total_commission.to_s, "total commission not present"
-    logger.debug(trade.to_s)
     assert_equal getStringFieldValueIfPresent(qfMsg, Quickfix::Symbol.new), trade.tradeable_m_symbol_root
 
     # need to verify accounts, etc

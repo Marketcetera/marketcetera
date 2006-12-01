@@ -32,6 +32,7 @@ class SubAccountsControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:sub_accounts)
     assert_equal 7, assigns(:sub_accounts).length
+    assert_has_show_edit_delete_links(true, false, false)
   end
 
   def test_show

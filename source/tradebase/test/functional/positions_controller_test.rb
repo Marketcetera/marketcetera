@@ -89,6 +89,7 @@ class PositionsControllerTest < MarketceteraTestBase
     get :list
     
     assert_equal 15, assigns(:num_positions)
+    assert_has_show_edit_delete_links(false, false, false)
   end
   
 end

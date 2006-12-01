@@ -11,7 +11,6 @@
 <% i=0
 for account in @accounts %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-  <tr>
     <%= show_relevant_table_columns(account, false) %>
     <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => account, :controller_name => 'accounts'} %>
   </tr>

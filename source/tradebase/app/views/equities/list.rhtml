@@ -11,7 +11,7 @@
   
 <% i=0
 for equity in @equities %>
-  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%>>
     
     <% if equity.m_symbol != nil  %>
      <td><%= equity_symbol_link(equity) %></td>

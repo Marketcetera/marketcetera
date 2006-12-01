@@ -39,7 +39,7 @@ class DividendsController < ApplicationController
           throw Exception.new
         end
       rescue => ex
-        logger.debug("exception in divident save with errors: "+@dividend.errors.length.to_s + 
+        logger.debug("exception in dividend save with errors: "+@dividend.errors.length.to_s + 
           " and ex is: "+ex.class.to_s + ":" + ex.message)
         logger.debug(ex.backtrace.join("\n"))
         render :action => 'new'

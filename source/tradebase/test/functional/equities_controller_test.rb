@@ -1,10 +1,11 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 require 'equities_controller'
 
 # Re-raise errors caught by the controller.
 class EquitiesController; def rescue_action(e) raise e end; end
 
-class EquitiesControllerTest < Test::Unit::TestCase
+class EquitiesControllerTest < MarketceteraTestBase
   fixtures :equities
 
   def setup
@@ -27,6 +28,7 @@ class EquitiesControllerTest < Test::Unit::TestCase
 
     assert_not_nil assigns(:equities)
     assert_equal 4, assigns(:equities).length
+    assert_has_show_edit_delete_links(true, true, true)
   end
 
   def test_show

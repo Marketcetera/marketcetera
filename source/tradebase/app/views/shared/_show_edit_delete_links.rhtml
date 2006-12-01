@@ -1,9 +1,9 @@
-<td><%= link_to(image_tag("/images/icons/show.png", :alt=> 'Show'), 
+<td><%= link_to(image_tag("/images/icons/show.png", :alt=> 'Show', :width => 16, :height => 16), 
                 :action => 'show', :id => object, :controller => controller_name) %></td>
-<% if(!skipEditDelete) %>
-<td><%= link_to(image_tag("/images/icons/pencil.png", :alt=> 'Edit'), 
+<% if(defined?(skipEditDelete).nil? || !skipEditDelete) %>
+<td><%= link_to(image_tag("/images/icons/pencil.png", :alt=> 'Edit', :width => 16, :height => 16), 
                 :action => 'edit', :id => object, :controller => controller_name) %></td>
-<td><%= link_to(image_tag("/images/icons/cancel.png", :alt=>'Destroy'), 
+<td><%= link_to(image_tag("/images/icons/cancel.png", :alt=>'Destroy', :width => 16, :height => 16), 
                 { :action => 'destroy', :id => object, :controller => controller_name }, 
                 :confirm => 'Are you sure?', :post => true) %></td>
 <% end %>

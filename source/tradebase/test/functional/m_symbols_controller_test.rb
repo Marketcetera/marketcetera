@@ -27,6 +27,7 @@ class MSymbolsControllerTest < MarketceteraTestBase
     assert_template 'list'
 
     assert_not_nil assigns(:m_symbols)
+    assert_has_show_edit_delete_links(true, true, true)
   end
 
   def test_show
