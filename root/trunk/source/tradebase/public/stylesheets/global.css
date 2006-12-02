@@ -411,14 +411,17 @@ body .right_column fieldset #subset_content {
 }
 
 #body .right_column .tile a {
-  display: block;
   text-decoration: none;
   color: #627176;
   font-weight: bold;
-  line-height: 50px;
+  line-height: 25px;
+  padding-top: 10px;
+  margin-bottom: 10px;
 }
 
 #body .right_column .tile a img {
+  padding: 10px 0px 0px 10px;
+  margin-bottom: 10px;
   vertical-align: middle;
 }
 
