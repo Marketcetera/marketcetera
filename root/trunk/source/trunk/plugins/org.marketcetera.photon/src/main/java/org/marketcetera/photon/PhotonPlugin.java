@@ -10,7 +10,6 @@ import java.util.List;
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.broker.BrokerFactory;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
@@ -33,6 +32,7 @@ import org.marketcetera.photon.messaging.MarketDataViewAdapter;
 import org.marketcetera.photon.messaging.ScriptEventAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.messaging.SpringUtils;
+import org.marketcetera.photon.messaging.StockOrderTicketAdapter;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
 import org.marketcetera.photon.scripting.EventScriptController;
@@ -40,6 +40,7 @@ import org.marketcetera.photon.scripting.IScript;
 import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.photon.scripting.ScriptingEventType;
 import org.marketcetera.photon.views.MarketDataView;
+import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
@@ -331,7 +332,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			Object messageListener = container.getMessageListener();
 			if (messageListener instanceof MarketDataViewAdapter) {
 				MarketDataViewAdapter adapter = (MarketDataViewAdapter) messageListener;
-				if (adapter.getView() == view){
+				if (adapter.getMarketDataView() == view){
 					messageListenerContainers.remove(container);
 					container.stop();
 					return;
@@ -340,4 +341,28 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		}
 	}
 
+	public void registerStockOrderTicket(StockOrderTicket ticket){
+		StockOrderTicketAdapter adapter = new StockOrderTicketAdapter();
+		adapter.setStockOrderTicket(ticket);
+		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(
+				internalConnectionFactory, adapter, quotesTopic, null);
+		ticket.setQuoteFeed(quoteFeed);
+		messageListenerContainers.add(container);
+	}
+
+	public void unregisterStockOrderTicket(StockOrderTicket ticket) {
+		ticket.setQuoteFeed(null);
+		for (SimpleMessageListenerContainer container : messageListenerContainers) {
+			Object messageListener = container.getMessageListener();
+			if (messageListener instanceof StockOrderTicketAdapter) {
+				StockOrderTicketAdapter adapter = (StockOrderTicketAdapter) messageListener;
+				if (adapter.getStockOrderTicket() == ticket){
+					messageListenerContainers.remove(container);
+					container.stop();
+					return;
+				}
+			}
+		}
+		
+	}
 }
