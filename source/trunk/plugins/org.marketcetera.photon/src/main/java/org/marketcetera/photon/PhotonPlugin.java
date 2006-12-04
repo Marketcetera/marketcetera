@@ -11,6 +11,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -64,6 +65,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private ConnectionFactory internalConnectionFactory;
 
+	private PooledConnectionFactory pooledInternalConnectionFactory;
+
 	private IQuoteFeed quoteFeed;
 
 	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
@@ -81,6 +84,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private PhotonController photonController;
 
 	private IDFactory idFactory;
+
 
 
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
@@ -131,6 +135,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private void initInternalConnectionFactory() {
 		ActiveMQConnectionFactory activeMQConnectionFactory;
 		internalConnectionFactory = activeMQConnectionFactory = new ActiveMQConnectionFactory();
+		pooledInternalConnectionFactory = new PooledConnectionFactory(activeMQConnectionFactory);
 		activeMQConnectionFactory.setBrokerURL("vm://it-oms?broker.persistent=false");
 	}
 
@@ -242,9 +247,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		quotesTopic = new ActiveMQTopic("quotes");
 		tradesTopic = new ActiveMQTopic("trades");
 
-		ConnectionFactory internalConnectionFactory = PhotonPlugin.getDefault().getInternalConnectionFactory();
 
-		quoteJmsOperations = SpringUtils.createJmsTemplate(internalConnectionFactory, quotesTopic);
+		quoteJmsOperations = SpringUtils.createJmsTemplate(pooledInternalConnectionFactory, quotesTopic);
 	}
 	
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
@@ -261,10 +265,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	}
 
 
-	public ConnectionFactory getInternalConnectionFactory() {
-		return internalConnectionFactory;
-	}
-	
 	/**
 	 * Accessor for the console logger singleton.  This logger writes
 	 * messages into the main console displayed to the user in the application.
