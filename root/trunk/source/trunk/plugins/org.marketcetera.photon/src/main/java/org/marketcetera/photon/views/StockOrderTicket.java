@@ -767,10 +767,12 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	public void onQuote(Message message) {
 		try {
-			String listenedSymbolString = listenedSymbol.toString();
-			if (message.isSetField(Symbol.FIELD) &&
-					listenedSymbolString.equals(message.getString(Symbol.FIELD))){
-				bookComposite.onQuote(message);
+			if (listenedSymbol!=null){
+				String listenedSymbolString = listenedSymbol.toString();
+				if (message.isSetField(Symbol.FIELD) &&
+						listenedSymbolString.equals(message.getString(Symbol.FIELD))){
+					bookComposite.onQuote(message);
+				}
 			}
 		} catch (FieldNotFound e) {
 			// Do nothing
