@@ -23,6 +23,7 @@ public interface IImageKeys {
 	public static final String BROWSER_FORWARD = "icons/silk/arrow_right.png";
 	public static final String BROWSER_GO = "icons/silk/world_go.png";
 	public static final String SHOW_HEARTBEATS = "icons/silk/heart.png";
+	public static final String OPEN_OPTIONS = "icons/silk/tab_go.png";
 	
 	
 	public static final String STATUS_OFFLINE = "icons/other/LedTransparent.gif";

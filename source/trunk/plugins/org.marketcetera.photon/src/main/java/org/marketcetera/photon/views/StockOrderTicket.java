@@ -64,6 +64,7 @@ import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.Account;
@@ -169,7 +170,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		plugin.getPreferenceStore().addPropertyChangeListener(this);
-		quoteFeed = plugin.getQuoteFeed();
+		plugin.registerStockOrderTicket(this);
 	}
 
 	@Override
@@ -179,7 +180,8 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		if (quoteFeed != null) {
 			quoteFeed.unlistenLevel2(listenedSymbol);
 		}
-		quoteFeed = null;
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		plugin.unregisterStockOrderTicket(this);
 	}
 
 	@Override
@@ -761,6 +763,18 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	public void setQuoteFeed(IQuoteFeed quoteFeed) {
 		this.quoteFeed = quoteFeed;
+	}
+
+	public void onQuote(Message message) {
+		try {
+			String listenedSymbolString = listenedSymbol.toString();
+			if (message.isSetField(Symbol.FIELD) &&
+					listenedSymbolString.equals(message.getString(Symbol.FIELD))){
+				bookComposite.onQuote(message);
+			}
+		} catch (FieldNotFound e) {
+			// Do nothing
+		}
 	}
 
 }

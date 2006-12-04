@@ -26,7 +26,7 @@ public class MarketDataViewAdapter extends DirectMessageListenerAdapter {
 		this.view = view;
 	}
 
-	public MarketDataView getView() {
+	public MarketDataView getMarketDataView() {
 		return view;
 	}
 

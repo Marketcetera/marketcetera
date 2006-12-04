@@ -26,8 +26,6 @@ public class EventScriptController {
 		EventList<Map.Entry<IScript,BSFManager>> scripts = scriptRegistry.getScriptList(eventType);
 
 		synchronized (scripts.getReadWriteLock()) {
-			if (eventType == ScriptingEventType.QUOTE)
-				System.out.println(Thread.currentThread().getName()+Thread.currentThread().hashCode());
 			for (Map.Entry<IScript,BSFManager> entry : scripts) {
 				IScript aScript = entry.getKey();
 				BSFManager manager = entry.getValue();

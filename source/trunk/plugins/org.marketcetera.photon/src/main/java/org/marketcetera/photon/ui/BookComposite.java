@@ -21,7 +21,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
-public class BookComposite extends Composite implements IMessageListener
+public class BookComposite extends Composite
 {
 
 	public enum BookColumns{
@@ -162,22 +162,5 @@ public class BookComposite extends Composite implements IMessageListener
 			}
 		);
 	}
-
-	public void onTrade(Message arg0) {
-	}
-
-
-    public void onQuotes(Message [] quotes) {
-        for (Message quoteMessage : quotes) {
-            onQuote(quoteMessage);
-        }
-    }
-
-    public void onTrades(Message [] trades) {
-        for (Message trade : trades) {
-            onTrade(trade);
-        }
-    }
-
 
 }
