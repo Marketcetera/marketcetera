@@ -4,7 +4,7 @@ Bundle-Name: JParsec Plug-in
 Bundle-SymbolicName: jfun.parsec
 Bundle-Version: 1.1
 Eclipse-LazyStart: false
-Bundle-ClassPath: lib/jparsec-1.1rc1.jar
+Bundle-ClassPath: lib/jparsec-1.1.jar
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Export-Package: jfun.parsec,
