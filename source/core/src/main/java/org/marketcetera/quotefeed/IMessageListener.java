@@ -7,6 +7,7 @@ import quickfix.Message;
  * @author graham miller
  * @version $Id$
  */
+@Deprecated
 @ClassVersion("$Id$")
 public interface IMessageListener {
     // MarketDataSnapshotFullRefresh
