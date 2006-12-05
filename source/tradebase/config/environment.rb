@@ -10,6 +10,9 @@ RAILS_GEM_VERSION = '1.1.6'
 # Bootstrap the Rails environment, frameworks, and default configuration
 require File.join(File.dirname(__FILE__), 'boot')
 
+# Number of items to list per page 
+MaxPerPage=25
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence those specified here
   

@@ -10,7 +10,7 @@ class MSymbolsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @m_symbol_pages, @m_symbols = paginate :m_symbols, :per_page => 10
+    @m_symbol_pages, @m_symbols = paginate :m_symbols, :per_page => MaxPerPage
   end
 
   def show

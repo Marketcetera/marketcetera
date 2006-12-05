@@ -13,7 +13,7 @@ class EquitiesController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @equity_pages, @equities = paginate :equities, :per_page => 10
+    @equity_pages, @equities = paginate :equities, :per_page => MaxPerPage
   end
 
   def show

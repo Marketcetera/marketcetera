@@ -1,5 +1,5 @@
-<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Reports", :top_level_controller => 'queries'} %>
-<h1>Reports</h1>
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Trade Reports", :top_level_controller => 'queries'} %>
+<h1>Trade Reports</h1>
 <p>Please choose from the following reports:</p>
     <%=  start_form_tag :action => 'by_symbol' %>
         <fieldset>
@@ -51,16 +51,3 @@
         </div>
     <%= end_form_tag %>
     
-    <div id="positions_as_of">
-        <%=  start_form_tag :controller => 'positions', :action => 'positions_as_of' %>
-            <fieldset>
-                <h2>Positions As Of Date</h2>
-                <label for="as_of">Positions as of: </label>
-                <div class="date"><%= date_select :position, :as_of, :order => [:year, :month, :day] %></div>
-            </fieldset>
-            <div>
-                <%= submit_tag 'List Positions', :class => "submit floatright"  %>
-                <div class="clear"></div>
-            </div>
-        <%= end_form_tag %>
-    </div>
