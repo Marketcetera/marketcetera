@@ -153,7 +153,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 	private void startJMS() {
 		IProgressService service = PlatformUI.getWorkbench().getProgressService();
-		ReconnectJMSAction.startJMS(service, PhotonPlugin.getDefault());
+		try {
+			ReconnectJMSAction.startJMS(service, PhotonPlugin.getDefault());
+		} catch (Throwable t){
+			PhotonPlugin.getMainConsoleLogger().error("Could not connect to message queue", t);
+		}
 	}
 
 
