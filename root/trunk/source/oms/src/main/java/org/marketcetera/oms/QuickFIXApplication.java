@@ -1,6 +1,7 @@
 package org.marketcetera.oms;
 
 import org.springframework.jms.core.JmsOperations;
+import org.marketcetera.core.ClassVersion;
 
 import quickfix.Application;
 import quickfix.DoNotSend;
@@ -12,6 +13,11 @@ import quickfix.RejectLogon;
 import quickfix.SessionID;
 import quickfix.UnsupportedMessageType;
 
+/**
+ * @author gmiller
+ * $Id$
+ */
+@ClassVersion("$Id$")
 public class QuickFIXApplication implements Application {
 
     private JmsOperations jmsOperations;

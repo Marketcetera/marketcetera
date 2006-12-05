@@ -30,7 +30,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 @ClassVersion("$Id$")
 public class OrderManagementSystemTest extends TestCase
 {
-    public static final String CONFIG_FILE = "oms-test";
     private static ClassPathXmlApplicationContext appContext;
     private static JmsTemplate jmsQueueSender;
     private static NullQuickFIXSender qfSender;
@@ -80,6 +79,15 @@ public class OrderManagementSystemTest extends TestCase
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.BUY);
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.SELL);
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.SELL_SHORT);
+    }
+
+    /** test the startup of the real OMS appContext, sleeps for 3 secs and exits
+     * Really, we just care to check that the spring config is setup correctly, nothing else. 
+     */
+    public void testRealOMSStartup() throws Exception {
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("oms.xml");
+        Thread.sleep(3000);
+        assert(appContext.isRunning());
     }
 
     /** Generates a JMS message from the fix order
