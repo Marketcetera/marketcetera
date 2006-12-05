@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 
+<!-- Spring Configuration for the QuickFIX componet of the OMS applications
+ version: $Id$
+ author: Toli Kuznets
+ -->
+
 <beans>
 
     <!-- Sets up core Spring objects for QFJ -->
@@ -46,7 +51,7 @@
                 <entry key="ResetOnDisconnect" value="Y"/>
                 <entry key="SendResetSeqNumFlag" value="Y"/>
                 <entry key="JdbcDriver" value="com.mysql.jdbc.Driver"/>
-                <entry key="JdbcURL" value="jdbc:mysql://localhost/marketcetera_rails"/>
+                <entry key="JdbcURL" value="jdbc:mysql://localhost/marketcetera"/>
                 <entry key="JdbcUser" value="marketcetera"/>
                 <entry key="JdbcPassword" value="marketcetera"/>
 			</map>
@@ -78,7 +83,7 @@
     <!-- There is no use of the standard QF configuration file -->
 
 	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" singleton="true">
-	  <property name="jmsTemplate" ref="outgoingJmsTemplate"/>
+	  <property name="jmsOperations" ref="outgoingJmsTemplate"/>
 	</bean>
 
     <bean id="socketInitiator" class="quickfix.spring.SocketInitiator">
