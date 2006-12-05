@@ -26,7 +26,7 @@ Visit http://www.marketcetera.org
    <splash
       location="org.marketcetera.photon"
       startupProgressRect="20,204,364,10"
-      startupMessageRect="225,75,100,20"
+      startupMessageRect="225,75,170,20"
       startupForegroundColor="555555" />
    <launcher name="photon">
       <macosx icon="/org.marketcetera.photon/icons/marketcetera/photon.icns"/>
@@ -103,7 +103,7 @@ Visit http://www.marketcetera.org
    </plugins>
 
    <features>
-      <feature id="org.marketcetera.photon.feature" version="0.2"/>
+      <feature id="org.marketcetera.photon.feature" version="0.1.4"/>
    </features>
 
 </product>
