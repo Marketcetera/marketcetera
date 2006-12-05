@@ -59,7 +59,7 @@ public class CustomField extends Field
      * Fields are treated as custom when the header name is not "standard" and
      * the name can be parsed as an int.
      * @param inName
-     * @return
+     * @return Custom field for the passed in key
      * @throws OrderParsingException
      */
     public static CustomField getCustomField(String inName)

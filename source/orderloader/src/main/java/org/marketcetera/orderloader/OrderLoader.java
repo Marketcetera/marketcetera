@@ -113,6 +113,7 @@ public class OrderLoader extends ApplicationBase
         loader.parseAndSendOrders(new FileInputStream(args[0]));
         loader.printReport();
         loader.getAppCtx().stop();
+        loader.getAppCtx().close();
     }
 
 
