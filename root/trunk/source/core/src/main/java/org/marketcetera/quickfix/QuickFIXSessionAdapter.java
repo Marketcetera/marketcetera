@@ -1,19 +1,14 @@
-/*
- * QuickFixSession.java
- *
- * Created on May 6, 2005, 5:08 PM
- */
-
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
 import quickfix.*;
 
 /**
- * Similar to {@see quickfix.Application} except for we "know" about the current session
+ * Similar to {@link quickfix.Application} except for we "know" about the current session
  * so we don't need to pass it around all the time
  * 
  * @author gmiller
+ * @version $Id$
  */
 @ClassVersion("$Id$")
 public interface QuickFIXSessionAdapter

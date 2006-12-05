@@ -261,7 +261,7 @@ public class FIXMessageUtil {
     }
 
     /**
-     * Creates a new ExecutionReport that with a {@link ExecType.REJECTED} type
+     * Creates a new ExecutionReport that with a {@link ExecType#REJECTED} type
      *
      * @param orderID   OrderID for the new report (can be null)
      * @param clOrderID OrderID of the original (client) order that got rejected
