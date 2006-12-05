@@ -16,7 +16,7 @@ class TradesController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @trade_pages, @trades = paginate :trades, :per_page => 10
+    @trade_pages, @trades = paginate :trades, :per_page => MaxPerPage
   end
 
   def show

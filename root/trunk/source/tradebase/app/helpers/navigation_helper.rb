@@ -9,6 +9,7 @@ module NavigationHelper
     'welcome' => 'trades',
     'message_logs' => 'trades',
     'queries' => 'reports',
+    'positions_queries' => 'reports',
     'accounts' => 'db_maintenance',
     'currencies' => 'db_maintenance',
     'equities' => 'db_maintenance',

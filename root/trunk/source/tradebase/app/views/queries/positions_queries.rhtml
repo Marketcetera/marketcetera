@@ -1,0 +1,32 @@
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Position Reports", :top_level_controller => 'positions'} %>
+<h1>Position Reports</h1>
+<p>Please choose from the following reports:</p>
+    <div id="positions_as_of">
+        <%=  start_form_tag :controller => 'positions_queries', :action => 'positions_as_of' %>
+            <fieldset>
+                <h2>Positions As Of Date</h2>
+                <label for="as_of">Positions as of: </label>
+                <div class="date"><%= date_select :position, :as_of, :order => [:year, :month, :day] %></div>
+            </fieldset>
+            <div>
+                <%= submit_tag 'List Positions', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <%= end_form_tag %>
+    </div>
+    
+    <div id="positions_by_account">
+        <%=  start_form_tag :controller => 'positions_queries', :action => 'positions_by_account' %>
+            <fieldset>
+                <h2>Positions By Account</h2>
+                <p>List all positions for a particular account</p>
+                <label for="account_nickname">Account</label>
+                <%= text_field_with_auto_complete :account, :nickname %>
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search by Account', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <%= end_form_tag %>
+    </div>    
+    

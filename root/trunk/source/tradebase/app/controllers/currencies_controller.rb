@@ -9,7 +9,7 @@ class CurrenciesController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @currency_pages, @currencies = paginate :currencies, :per_page => 10
+    @currency_pages, @currencies = paginate :currencies, :per_page => MaxPerPage
   end
 
   def show

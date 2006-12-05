@@ -10,7 +10,7 @@ class ComplexPositionsTest < MarketceteraTestBase
   fixtures :currencies, :accounts, :sub_accounts, :sub_account_types
 
   def setup
-    @controller = PositionsController.new
+    @controller = PositionsQueriesController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
   end
@@ -41,7 +41,7 @@ class ComplexPositionsTest < MarketceteraTestBase
     get :positions_as_of, { "position"=>{"as_of(1i)"=>date.year, "as_of(2i)"=>date.month, "as_of(3i)"=>date.day}}
 
     assert_response :success
-    assert_template 'list'
+    assert_template 'positions_search_output'
 
     assert_not_nil assigns(:positions)
     assert_equal numPos, assigns(:positions).length

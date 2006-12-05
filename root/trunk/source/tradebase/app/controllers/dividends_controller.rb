@@ -13,7 +13,7 @@ class DividendsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @dividend_pages, @dividends = paginate :dividends, :per_page => 10
+    @dividend_pages, @dividends = paginate :dividends, :per_page => MaxPerPage
   end
 
   def show

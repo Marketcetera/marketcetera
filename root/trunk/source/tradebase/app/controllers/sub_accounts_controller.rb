@@ -7,7 +7,7 @@ class SubAccountsController < ApplicationController
   end
 
   def list
-    @sub_account_pages, @sub_accounts = paginate :sub_accounts, :per_page => 10
+    @sub_account_pages, @sub_accounts = paginate :sub_accounts, :per_page => MaxPerPage
   end
 
   def show

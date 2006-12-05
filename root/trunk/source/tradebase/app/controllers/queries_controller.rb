@@ -7,12 +7,17 @@ class QueriesController < ApplicationController
     # display the index page   
   end
 
+  def positions
+    # display positions index page
+    render :template => 'queries/positions_queries'
+  end
+
   def by_symbol
     symbol_str = get_non_empty_string_from_two(params, :m_symbol, :root, "m_symbol_root")
     if(symbol_str.blank?) 
-      @trade_pages, @trades = paginate :trades, :per_page => 10
+      @trade_pages, @trades = paginate :trades, :per_page => MaxPerPage
     else
-      @trade_pages, @trades  = paginate :trades, :per_page => 10, :conditions => ['m_symbols.root = ? ', symbol_str], 
+      @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, :conditions => ['m_symbols.root = ? ', symbol_str], 
                            :joins => 'as t inner join ( equities inner join m_symbols on m_symbols.id=equities.m_symbol_id) on equities.id = t.tradeable_id',
                            :select => 't.*'
     end
@@ -31,7 +36,7 @@ class QueriesController < ApplicationController
     @from_date  = get_date_from_params(params, :date, "from", "from_date")
     @to_date    = get_date_from_params(params, :date, "to", "to_date")
 
-    @trade_pages, @trades  = paginate :trades, :per_page => 10, 
+    @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, 
                          :conditions => ['post_date >= ? and post_date <= ?', @from_date, @to_date], 
                          :joins => 'as t inner join journals on journals.id = t.journal_id', 
                          :select => 't.*'
@@ -44,9 +49,9 @@ class QueriesController < ApplicationController
   def by_account
     nickname = get_non_empty_string_from_two(params, :account, :nickname, "nickname")
     if(nickname.nil? || nickname.empty?) 
-      @trade_pages, @trades = paginate :trades, :per_page => 10
+      @trade_pages, @trades = paginate :trades, :per_page => MaxPerPage
     else
-      @trade_pages, @trades  = paginate :trades, :per_page => 10, :conditions => ['accounts.nickname = ? ', nickname], 
+      @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, :conditions => ['accounts.nickname = ? ', nickname], 
                            :joins => 'inner join accounts on accounts.id = account_id', 
                            :select => 'trades.*'
                            
@@ -61,5 +66,4 @@ class QueriesController < ApplicationController
     
     render :template => 'queries/queries_output'
   end
-  
 end

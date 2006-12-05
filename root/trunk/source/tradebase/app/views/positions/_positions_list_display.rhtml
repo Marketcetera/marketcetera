@@ -1,0 +1,26 @@
+<table>
+  <tr>
+    <th>Position</th>
+    <th>Symbol</th>
+    <th>Account</th>
+    <th/>
+  </tr>
+
+<% 
+i=0
+for position in @positions %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <td><%=h position.send(:position) %></td>
+    <td><%= link_to  position.tradeable.m_symbol.root, :action => 'by_symbol', :controller => 'queries', 
+                      :m_symbol_root => position.tradeable.m_symbol.root  %></td>
+    <td><%= link_to position.account.nickname, :controller => 'accounts', :action => 'show', :id => position.account %></td>
+    <td><%= link_to(image_tag("/images/icons/text_list_numbers.png", :alt => 'See all trades'), 
+                    :action => 'by_symbol', :controller => 'queries', 
+                    :m_symbol_root => position.tradeable.m_symbol.root) -%>
+        <%= link_to('See all trades', 
+                    :action => 'by_symbol', :controller => 'queries', 
+                    :m_symbol_root => position.tradeable.m_symbol.root)                    
+                     %></td>
+  </tr>
+<% end %>
+</table>
