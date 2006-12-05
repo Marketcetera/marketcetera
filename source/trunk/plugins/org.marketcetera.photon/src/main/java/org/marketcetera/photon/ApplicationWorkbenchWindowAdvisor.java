@@ -5,19 +5,29 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
+import org.eclipse.core.internal.jobs.JobStatus;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.progress.IProgressService;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.HttpDatabaseIDFactory;
+import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
 import org.marketcetera.photon.ui.MainConsole;
 import org.marketcetera.photon.views.WebBrowserView;
@@ -31,7 +41,18 @@ import org.marketcetera.photon.views.WebBrowserView;
 @ClassVersion("$Id$")
 public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
-    /**
+    @Override
+	public boolean preWindowShellClose() {
+    	try {
+    		stopJMS();
+    	} catch (Throwable t){}
+    	try {
+    		stopQuoteFeed();
+    	} catch (Throwable t){}
+    	return true;
+    }
+
+	/**
      * Simply calls superclass constructor.
      * @param configurer the configurer to pass to the superclass
      */
@@ -105,6 +126,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		mainConsoleLogger.info(
 				"Application initialized: " + new Date());
 		
+		startJMS();
+		startQuoteFeed();
+		startIDFactory();
+
 	}
 
 	/** 
@@ -112,11 +137,37 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	 * 
 	 */
 	private void initStatusLine() {
-//		statusImage = AbstractUIPlugin.imageDescriptorFromPlugin(
-//				"org.eclipsercp.hyperbola", IImageKeys.ONLINE).createImage();
 		IStatusLineManager statusline = getWindowConfigurer()
 				.getActionBarConfigurer().getStatusLineManager();
 		statusline.setMessage("Online");
+	}
+
+	private void startIDFactory(){
+		try {
+			((HttpDatabaseIDFactory)PhotonPlugin.getDefault().getIDFactory()).grabIDs();
+		} catch (NoMoreIDsException e) {
+			PhotonPlugin.getMainConsoleLogger().warn("Error connecting to web app for ID base, reverting to built in IDFactory.");
+		}
+	}
+
+
+	private void startJMS() {
+		IProgressService service = PlatformUI.getWorkbench().getProgressService();
+		ReconnectJMSAction.startJMS(service, PhotonPlugin.getDefault());
+	}
+
+
+	private void stopJMS() {
+		ReconnectJMSAction.stopJMS(PhotonPlugin.getDefault());
+	}
+	
+
+	private void startQuoteFeed() {
+    	PhotonPlugin.getDefault().getQuoteFeed().start();
+	}
+	
+	private void stopQuoteFeed() {
+    	PhotonPlugin.getDefault().getQuoteFeed().stop();
 	}
 
 }

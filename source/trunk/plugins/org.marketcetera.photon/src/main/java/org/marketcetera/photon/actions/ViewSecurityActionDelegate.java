@@ -4,9 +4,11 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IActionDelegate;
+import org.eclipse.ui.IObjectActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
@@ -31,7 +33,7 @@ import quickfix.field.Symbol;
  *
  */
 @ClassVersion("$Id$")
-public class ViewSecurityAction implements IActionDelegate {
+public class ViewSecurityActionDelegate implements IObjectActionDelegate {
 	public final static String ID = "org.marketcetera.photon.ViewSecurity";
 
 	private IStructuredSelection selection;
@@ -39,7 +41,7 @@ public class ViewSecurityAction implements IActionDelegate {
 	/**
 	 * Creates a new default ViewSecurityAction
 	 */
-	public ViewSecurityAction(){
+	public ViewSecurityActionDelegate(){
 	}
 
 
@@ -109,6 +111,10 @@ public class ViewSecurityAction implements IActionDelegate {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+
+	public void setActivePart(IAction action, IWorkbenchPart targetPart) {
 	}
 
 

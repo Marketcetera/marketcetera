@@ -13,7 +13,7 @@
   </bean>
 
   <bean id="externalConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="tcp://server01:61616"/>
+    <property name="brokerURL" ref="brokerURL"/>
   </bean>
   
   <bean id="photonControllerListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
@@ -26,7 +26,7 @@
   </bean>
   
     <!-- note that this needs to use the non-pooled connection factory -->
-  <bean id="photonControllerContainer" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+  <bean id="photonControllerContainer" class="org.marketcetera.photon.messaging.SimpleMessageListenerContainer">
     <property name="connectionFactory" ref="externalConnectionFactory"/>
     <property name="messageListener" ref="photonControllerListener"/>
     <property name="destination" ref="omsMessagesTopic"/>
