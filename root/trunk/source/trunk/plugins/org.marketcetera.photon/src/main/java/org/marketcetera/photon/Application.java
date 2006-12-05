@@ -10,12 +10,19 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.photon.actions.ReconnectJMSAction;
+import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.PhotonPage;
+import org.marketcetera.quickfix.ConnectionConstants;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 
@@ -31,10 +38,6 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 
-	private ClassPathXmlApplicationContext jmsApplicationContext;
-
-	private JmsOperations outgoingJmsOperations;
-	
 	
 	/**
 	 * This method is called by the Eclipse RCP, and therefore is the main 
@@ -53,30 +56,10 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 		
 		Display display = PlatformUI.createDisplay();
 		try {
-			new Job("Startup"){
-				@Override
-				protected IStatus run(IProgressMonitor monitor) {
-					try {
-						startJMS();
-					} catch (Exception ex) {
-						PhotonPlugin.getMainConsoleLogger().error("Exception connecting to message queue", ex);
-					}
-
-					try {
-						startQuoteFeed();
-					} catch (Exception ex) {
-						PhotonPlugin.getMainConsoleLogger().error("Exception connecting to quote feed", ex);
-					}
-					startIDFactory();
-					return JobStatus.OK_STATUS;
-				}
-			}.schedule();
 			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
 			if (returnCode == PlatformUI.RETURN_RESTART) {
 				return IPlatformRunnable.EXIT_RESTART;
 			}
-			stopJMS();
-			stopQuoteFeed();
 			return IPlatformRunnable.EXIT_OK;
 		} finally {
 			display.dispose();
@@ -84,45 +67,6 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 
 	}
 
-
-	private void startIDFactory(){
-		try {
-			((HttpDatabaseIDFactory)PhotonPlugin.getDefault().getIDFactory()).grabIDs();
-		} catch (NoMoreIDsException e) {
-			PhotonPlugin.getMainConsoleLogger().warn("Error connecting to web app for ID base, reverting to built in IDFactory.");
-		}
-	}
-
-
-	private void startJMS() {
-		try {
-			stopJMS();
-		} catch (Throwable t){
-			PhotonPlugin.getMainConsoleLogger().error("Exception disconnecting from message queue", t);
-		}
-		jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"});
-		jmsApplicationContext.start();
-		MessageListenerAdapter photonControllerListenerAdapter = (MessageListenerAdapter)jmsApplicationContext.getBean("photonControllerListener");
-		photonControllerListenerAdapter.setDelegate(PhotonPlugin.getDefault().getPhotonController());
-		outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
-		PhotonPlugin.getDefault().getPhotonController().setJmsOperations(outgoingJmsOperations);
-	}
-
-
-	private void stopJMS() {
-		if (jmsApplicationContext != null){
-			jmsApplicationContext.stop();
-		}
-	}
-	
-
-	private void startQuoteFeed() {
-    	PhotonPlugin.getDefault().getQuoteFeed().start();
-	}
-	
-	private void stopQuoteFeed() {
-    	PhotonPlugin.getDefault().getQuoteFeed().stop();
-	}
 	
 	private void changeLogLevel(String levelValue){
 		Logger logger = PhotonPlugin.getMainConsoleLogger();

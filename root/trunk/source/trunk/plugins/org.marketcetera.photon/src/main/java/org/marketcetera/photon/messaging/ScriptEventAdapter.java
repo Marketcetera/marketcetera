@@ -30,7 +30,6 @@ public class ScriptEventAdapter extends DirectMessageListenerAdapter {
 			try {
 				controller.onEvent((Message)convertedMessage);
 			} catch (BSFException e) {
-				// TODO Auto-generated catch block
 				throw new ListenerExecutionFailedException(
 						"Exception while executing script", e);
 			}

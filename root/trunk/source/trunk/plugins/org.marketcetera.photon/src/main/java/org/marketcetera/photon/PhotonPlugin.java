@@ -48,6 +48,7 @@ import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quotefeed.IQuoteFeed;
 import org.marketcetera.quotefeed.IQuoteFeedFactory;
 import org.osgi.framework.BundleContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsOperations;
 
 /**
@@ -84,6 +85,11 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private PhotonController photonController;
 
 	private IDFactory idFactory;
+
+	private ClassPathXmlApplicationContext jmsApplicationContext;
+
+	private JmsOperations outgoingJmsOperations;
+	
 
 
 
@@ -364,5 +370,19 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			}
 		}
 		
+	}
+
+	public void setJMSApplicationContext(ClassPathXmlApplicationContext jmsApplicationContext) {
+		SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
+		// XXX: photonControllerContainer.setExceptionListener(exceptionListener);
+		
+	}
+
+	public void setOutgoingJMSOperations(JmsOperations outgoingJmsOperations) {
+		this.outgoingJmsOperations = outgoingJmsOperations;
+	}
+
+	public ClassPathXmlApplicationContext getJMSApplicationContext() {
+		return this.jmsApplicationContext;
 	}
 }

@@ -214,7 +214,11 @@ public class PhotonController {
 	}
 
 	private void convertAndSend(Message fixMessage) {
-		jmsOperations.convertAndSend(fixMessage);
+		if (jmsOperations != null){
+			jmsOperations.convertAndSend(fixMessage);
+		} else {
+			internalMainLogger.error("Could not send message, not connected");
+		}
 	}
 	
 	public void setIDFactory(IDFactory fact){

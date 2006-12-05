@@ -18,7 +18,7 @@ Visit http://www.marketcetera.org
    <configIni use="custom" path="photon-config.ini"/>
 
    <launcherArgs>
-      <vmArgs>-Declipse.createRegistry=false -Dosgi.bundles=org.eclipse.equinox.registry@2:start,org.eclipse.equinox.common@2:start,org.eclipse.update.configurator@3:start,org.eclipse.core.runtime@3:start,org.marketcetera.photon.registry@4:start -Dosgi.bundles.defaultStartLevel=5</vmArgs>
+      <vmArgs>-Djava.util.logging.config.file=java.util.logging.properties -Declipse.createRegistry=false -Dosgi.bundles=org.eclipse.equinox.registry@2:start,org.eclipse.equinox.common@2:start,org.eclipse.update.configurator@3:start,org.eclipse.core.runtime@3:start,org.marketcetera.photon.registry@4:start -Dosgi.bundles.defaultStartLevel=5</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.marketcetera.photon/icons/marketcetera/photon-16x16.gif" i32="/org.marketcetera.photon/icons/marketcetera/photon-32x32.gif" i48="/org.marketcetera.photon/icons/marketcetera/photon-48x48.gif" i64="/org.marketcetera.photon/icons/marketcetera/photon-64x64.gif" i128="/org.marketcetera.photon/icons/marketcetera/photon-128x128.gif"/>
@@ -36,7 +36,6 @@ Visit http://www.marketcetera.org
          <bmp/>
       </win>
    </launcher>
-
 
    <plugins>
       <plugin id="com.ibm.icu"/>
@@ -95,9 +94,9 @@ Visit http://www.marketcetera.org
       <plugin id="org.eclipse.update.core.linux" fragment="true"/>
       <plugin id="org.eclipse.update.core.win32" fragment="true"/>
       <plugin id="org.eclipse.update.ui"/>
+      <plugin id="org.marketcetera.bogusfeed"/>
       <plugin id="org.marketcetera.core"/>
       <plugin id="org.marketcetera.photon"/>
-      <plugin id="org.marketcetera.bogusfeed"/>
       <plugin id="org.quickfixj"/>
       <plugin id="org.skife.kasparov.csv"/>
    </plugins>

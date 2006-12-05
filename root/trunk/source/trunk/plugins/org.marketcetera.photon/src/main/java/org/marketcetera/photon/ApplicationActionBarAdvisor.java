@@ -184,8 +184,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 //		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
-		reconnectJMSAction = new ReconnectJMSAction(); register(reconnectJMSAction);
-
+		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
+		
 		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
 	}
@@ -318,7 +318,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
 		toolBar.add(reconnectJMSCI);
 	}
-
+	
 	/**
 	 * Creates the structure of the main application status line.
 	 * Currently consisting of the command entry area, and the JMS
