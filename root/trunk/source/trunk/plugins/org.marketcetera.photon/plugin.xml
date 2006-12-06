@@ -126,7 +126,7 @@
                value="icons/marketcetera/logo-150x55.gif"/>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0D;&#x0A;&#x0D;&#x0A;Version: 0.2&#x0D;&#x0A;&#x0D;&#x0A;(c) Copyright Marketcetera LLC 2006.  All rights reserved.&#x0D;&#x0A;Visit http://www.marketcetera.org"/>
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 0.2&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
                value="photon-config.ini"/>
