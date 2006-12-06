@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry exported="true" kind="lib" path="lib/backport-util-concurrent-2.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activeio-core-3.0-beta3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-j2ee-management_1.0_spec-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activemq-core-4.0.2.jar" sourcepath="D:/dev/incubator-activemq-4.0.2-src/activemq-core/src/main/java"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-logging.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-pool-1.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/concurrent-1.3.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/geronimo-jms_1.1_spec-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring.jar" sourcepath="D:/dev/spring-framework-2.0/dist/spring-src.zip"/>
+	<classpathentry exported="true" kind="lib" path="lib/xbean-spring-2.7.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
