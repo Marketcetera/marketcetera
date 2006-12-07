@@ -5,6 +5,7 @@ import org.marketcetera.core.*;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
 import org.springframework.jms.core.JmsTemplate;
+import org.apache.activemq.Service;
 import quickfix.Field;
 import quickfix.Message;
 import quickfix.StringField;
@@ -37,6 +38,7 @@ public class OrderLoader extends ApplicationBase
 {
     private static final String JMS_SENDER_NAME = "outgoingJmsTemplate";
     private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
+    private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory";
 
     protected static String MKT_PRICE = "MKT";
     protected static String TIME_LIMIT_DAY = "DAY";
@@ -112,6 +114,7 @@ public class OrderLoader extends ApplicationBase
         OrderLoader loader = new OrderLoader(cfgFileName);
         loader.parseAndSendOrders(new FileInputStream(args[0]));
         loader.printReport();
+        ((Service) loader.getAppCtx().getBean(POOLED_CONNECTION_FACTORY_NAME)).stop();
         loader.getAppCtx().stop();
         loader.getAppCtx().close();
     }
