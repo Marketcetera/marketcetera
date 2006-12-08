@@ -42,6 +42,9 @@
       <ref local="pooledExternalConnectionFactory"/>
     </property>
 	<property name="defaultDestination" ref="omsCommandsQueue"/>
+	<property name="messageConverter">
+	   <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+	   </property>
   </bean>
 
 </beans>  
