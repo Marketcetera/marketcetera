@@ -57,6 +57,7 @@
     || Message Driven POJOs
     -->
 
+    <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg value="FIX.4.2"/>
         <constructor-arg value="MRKTC-DEMO-OMS"/>

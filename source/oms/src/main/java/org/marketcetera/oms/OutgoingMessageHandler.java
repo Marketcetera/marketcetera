@@ -13,6 +13,17 @@ import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * OutgoingMessageHandler is the "middle" stage that recieves an incoming order request
+ * from JMS, does some operations on it in and sends it on to the FIX sender
+ *
+ * This is essentially the "OrderManager" stage: we send an immediate "ack" to an
+ * incoming NewOrder, apply order modifiers and send it on.
+ *
+ * @author gmiller
+ * $Id$
+ */
+@ClassVersion("$Id$")
 public class OutgoingMessageHandler {
 
 	private List<OrderModifier> orderModifiers;
