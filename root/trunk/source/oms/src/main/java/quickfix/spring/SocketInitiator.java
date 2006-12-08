@@ -1,9 +1,8 @@
 package quickfix.spring;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
+import org.marketcetera.core.ClassVersion;
 
 import quickfix.Application;
 import quickfix.ConfigError;
@@ -13,6 +12,11 @@ import quickfix.MessageStoreFactory;
 import quickfix.SessionFactory;
 import quickfix.SessionSettings;
 
+/**
+ * @author gmiller
+ * $Id$
+ */
+@ClassVersion("$Id$")
 public class SocketInitiator extends quickfix.SocketInitiator implements
 		InitializingBean, DisposableBean {
 
