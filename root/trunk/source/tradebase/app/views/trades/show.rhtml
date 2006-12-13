@@ -43,6 +43,7 @@
 total_credits = BigDecimal('0')
 total_debits = BigDecimal('0')
 %>
+<h2>Accounting</h2>
 <table>
     <tr>
     <th>Sub-account</th><th>Debits</th><th>Credits</th>
@@ -60,7 +61,7 @@ total_debits = BigDecimal('0')
     %>
     <td></td>
     <%end%>
-    <td><%=h posting_quantity.abs() %> </td>
+    <td><%=h display_non_zero_value(posting_quantity.abs()) %> </td>
     <%if (accounting_account_type == :debit)
     total_debits += posting_quantity
     %>
