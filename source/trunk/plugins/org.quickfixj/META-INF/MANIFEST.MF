@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Quickfix/J Plug-in
 Bundle-SymbolicName: org.quickfixj
-Bundle-Version: 1.0.3
+Bundle-Version: 1.0.4
 Bundle-ClassPath: lib/slf4j-log4j12-1.0-rc5.jar,
  lib/mina-core-0.9.3.jar,
  lib/quickfixj-1.0.4.jar
