@@ -185,6 +185,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
+		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
+		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
 		
 		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
@@ -225,9 +227,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(deleteAction);
 		menu.add(selectAllAction);
 		menu.add(findAction);
-		menu.add(new Separator());
-		preferencesAction = ActionFactory.PREFERENCES.create(window);
-		menu.add(preferencesAction);
+		if (!PhotonConstants.isOSX){
+			menu.add(new Separator());
+			menu.add(preferencesAction);
+		}
 		menuBar.add(menu);
 
 		// Script menu
@@ -295,8 +298,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 //		menu.add(dynamicHelpAction);
 		menu.add(new Separator());
         menu.add(checkForUpdatesAction);
-        menu.add(new Separator());
-		menu.add(aboutAction);
+		if (!PhotonConstants.isOSX){
+	        menu.add(new Separator());
+			menu.add(aboutAction);
+		}
 		menuBar.add(menu);
 
 	}
@@ -317,6 +322,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolBar.add(focusCommandCI);
 		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
 		toolBar.add(reconnectJMSCI);
+		//ActionContributionItem openOptionsJMSCI = new ActionContributionItem(openOptionEditorAction);
+		//toolBar.add(openOptionsJMSCI);
 	}
 	
 	/**
