@@ -183,10 +183,12 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 //		helpSearchAction = ActionFactory.HELP_SEARCH.create(window);  register(helpSearchAction);
 //		dynamicHelpAction = ActionFactory.DYNAMIC_HELP.create(window);  register(dynamicHelpAction);
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
-		aboutAction = ActionFactory.ABOUT.create(window);  register(aboutAction);
+		aboutAction = ActionFactory.ABOUT.create(window);
+		if (!PhotonConstants.isOSX) register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
-		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
+		preferencesAction = ActionFactory.PREFERENCES.create(window); 
+		if (!PhotonConstants.isOSX) register(preferencesAction);
 		
 		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
