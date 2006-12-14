@@ -24,6 +24,10 @@ public interface IImageKeys {
 	public static final String BROWSER_GO = "icons/silk/world_go.png";
 	public static final String SHOW_HEARTBEATS = "icons/silk/heart.png";
 	public static final String OPEN_OPTIONS = "icons/silk/tab_go.png";
+	public static final String MINUS_TICK = "icons/silk/arrow_down.png";
+	public static final String ZERO_MINUS_TICK = "icons/silk/arrow_zero_down.png";
+	public static final String PLUS_TICK = "icons/silk/arrow_up.png";
+	public static final String ZERO_PLUS_TICK = "icons/silk/arrow_zero_up.png";
 	
 	
 	public static final String STATUS_OFFLINE = "icons/other/LedTransparent.gif";
