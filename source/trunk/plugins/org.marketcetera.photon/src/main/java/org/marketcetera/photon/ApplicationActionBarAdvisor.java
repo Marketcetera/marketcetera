@@ -201,8 +201,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	@SuppressWarnings("deprecation")
 	protected void fillMenuBar(IMenuManager menuBar) {
 		// File menu
-		MenuManager menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_FileMenuName);
+		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName,
+				IWorkbenchActionConstants.M_FILE);
 		menu.add(reconnectJMSAction);
 		menu.add(new Separator());
 		menu.add(saveAction);
@@ -216,7 +216,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// Edit menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_EditMenuName);
+				Messages.ApplicationActionBarAdvisor_EditMenuName,
+				IWorkbenchActionConstants.M_EDIT);
 		menu.add(undoAction);
 		menu.add(redoAction);
 		menu.add(new Separator());
@@ -236,7 +237,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		// Script menu
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_ScriptMenuName,
-				Messages.ApplicationActionBarAdvisor_ScriptMenuID);
+				PhotonConstants.M_SCRIPT);
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));  //agl necessary since the RunScript action is contributed as an editorContribution (see plugin.xml) 
 		menuBar.add(menu);
 
@@ -248,9 +249,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 				Messages.ApplicationActionBarAdvisor_WindowMenuName,
 				IWorkbenchActionConstants.M_WINDOW);
 		//menu.add(viewSecurityAction);
-		menu.add(new Separator());
-		menu.add(openNewWindowAction);
-		menu.add(newEditorAction);
 		menu.add(new Separator());
 		MenuManager perspectiveMenu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_OpenPerspectiveMenuName,
@@ -290,7 +288,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// Help menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_HelpMenuName);
+				Messages.ApplicationActionBarAdvisor_HelpMenuName,
+				IWorkbenchActionConstants.M_HELP);
 
 		menu.add(webHelpAction);
 //		menu.add(helpContentsAction);
