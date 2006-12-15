@@ -19,4 +19,9 @@ public class PhotonConstants {
 	  public static final boolean isUnix = !isWindows && !isOSX;
 
 	  public static final String    JAVA_VERSION = System.getProperty("java.version");
+
+	  /**
+	   * The ID of the script menu.
+	   */
+	  public static final String M_SCRIPT = "script";
 }
