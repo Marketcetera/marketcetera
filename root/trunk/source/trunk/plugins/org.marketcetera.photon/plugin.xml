@@ -235,4 +235,28 @@
 	         </action>
 	     </viewerContribution> 
    </extension>
+   <extension
+         point="org.eclipse.ui.actionSets">
+      <actionSet
+            id="org.marketcetera.photon.window.actionSet"
+            label="Window ActionSet"
+            visible="true">
+         <menu
+               id="org.marketcetera.photon.window.workbenchMenu"
+               label="&amp;Window"
+               path="additions">
+            <groupMarker name="content"/>
+            <separator name="additions"/>
+         </menu>
+         <action
+               class="org.marketcetera.photon.actions.TestActionDelegate"
+               icon="icons/silk/award_star_gold_3.png"
+               id="org.marketcetera.photon.window.testAction"
+               label="Test action"
+               menubarPath="org.marketcetera.photon.window.workbenchMenu/additions"
+               style="push"
+               toolbarPath="Normal/additions"
+               tooltip="Test action"/>
+      </actionSet>
+   </extension>
 </plugin>

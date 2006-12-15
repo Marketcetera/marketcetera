@@ -3,10 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Marketcetera Core Plug-in
 Bundle-SymbolicName: org.marketcetera.core
 Bundle-Version: 0.2
-Bundle-ClassPath: lib/core-0.2-SNAPSHOT.jar,
- lib/core-0.2-SNAPSHOT-sources.jar,
- lib/core-0.2-SNAPSHOT-tests.jar,
- lib/core-0.2-SNAPSHOT-test-sources.jar
+Bundle-ClassPath: src/main/resources/
 Eclipse-LazyStart: false
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
@@ -22,4 +19,5 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.quickfixj;visibility:=reexport,
  org.skife.kasparov.csv;visibility:=reexport,
  org.apache.commons.i18n;visibility:=reexport,
- org.jruby;visibility:=reexport
+ org.jruby;visibility:=reexport,
+ org.junit;resolution:=optional

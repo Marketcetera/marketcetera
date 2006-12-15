@@ -31,6 +31,7 @@ import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
 import org.marketcetera.photon.ui.MainConsole;
 import org.marketcetera.photon.views.WebBrowserView;
+import org.marketcetera.quotefeed.IQuoteFeed;
 
 /**
  * Required by the RCP platform this class is responsible for setting up the
@@ -167,11 +168,20 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	
 
 	private void startQuoteFeed() {
-    	PhotonPlugin.getDefault().getQuoteFeed().start();
+		IQuoteFeed quoteFeed = PhotonPlugin.getDefault().getQuoteFeed();
+		if (quoteFeed!=null){
+			quoteFeed.start();
+		} else {
+			PhotonPlugin.getMainConsoleLogger().warn("No quote feed available");
+		}
 	}
 	
 	private void stopQuoteFeed() {
-    	PhotonPlugin.getDefault().getQuoteFeed().stop();
+    	IQuoteFeed quoteFeed = PhotonPlugin.getDefault().getQuoteFeed();
+    	if (quoteFeed != null)
+    	{
+    		quoteFeed.stop();
+    	}
 	}
 
 }
