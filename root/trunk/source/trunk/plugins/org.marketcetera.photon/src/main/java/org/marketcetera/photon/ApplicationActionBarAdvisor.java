@@ -228,10 +228,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(deleteAction);
 		menu.add(selectAllAction);
 		menu.add(findAction);
-		if (!PhotonConstants.isOSX){
-			menu.add(new Separator());
-			menu.add(preferencesAction);
-		}
+		menu.add(new Separator());
+		menu.add(preferencesAction);
 		menuBar.add(menu);
 
 		// Script menu
@@ -283,7 +281,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(subMenu);
 		menu.add(viewMenu);
 		menu.add(new Separator(IWorkbenchActionConstants.WINDOW_EXT));
-
+		
 		menuBar.add(menu);
 
 		// Help menu
@@ -297,20 +295,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 //		menu.add(dynamicHelpAction);
 		menu.add(new Separator());
         menu.add(checkForUpdatesAction);
-		if (!PhotonConstants.isOSX){
-	        menu.add(new Separator());
-			menu.add(aboutAction);
-		}
+        menu.add(new Separator());
+		menu.add(aboutAction);
 		menuBar.add(menu);
-
-		if (PhotonConstants.isOSX){
-			menu = new MenuManager("hidden");
-			menu.add(preferencesAction);
-			menu.add(aboutAction);
-			menu.setVisible(false);
-			menuBar.add(menu);
-		}
-		
 	}
 
 	/**
