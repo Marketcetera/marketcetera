@@ -3,7 +3,8 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Marketcetera Core Plug-in
 Bundle-SymbolicName: org.marketcetera.core
 Bundle-Version: 0.2
-Bundle-ClassPath: src/main/resources/
+Bundle-ClassPath: src/main/resources/,
+ .
 Eclipse-LazyStart: false
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
