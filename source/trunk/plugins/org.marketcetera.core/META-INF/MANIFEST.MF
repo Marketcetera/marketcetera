@@ -20,5 +20,5 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.quickfixj;visibility:=reexport,
  org.skife.kasparov.csv;visibility:=reexport,
  org.apache.commons.i18n;visibility:=reexport,
- org.jruby;visibility:=reexport,
+ org.jruby.bsf;visibility:=reexport,
  org.junit;resolution:=optional
