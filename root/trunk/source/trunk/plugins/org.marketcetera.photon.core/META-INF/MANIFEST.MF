@@ -7,7 +7,7 @@ Bundle-Activator: org.marketcetera.photon.core.Activator
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime,
- java.net.dev.glazedlists;visibility:=reexport,
+ net.java.dev.glazedlists;visibility:=reexport,
  org.marketcetera.core;visibility:=reexport
 Eclipse-LazyStart: true
 Export-Package: org.marketcetera.photon.core
