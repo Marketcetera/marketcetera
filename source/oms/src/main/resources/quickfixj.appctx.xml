@@ -31,7 +31,7 @@
     </bean>
     <bean name="quickfix:FIX41:URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="targetObject" ref="quickfix:FIX41"/>
         <property name="propertyPath" value="URL"/>
     </bean>
     <bean name="quickfix:FIX42:URL"
@@ -41,12 +41,12 @@
     </bean>
     <bean name="quickfix:FIX43:URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="targetObject" ref="quickfix:FIX43"/>
         <property name="propertyPath" value="URL"/>
     </bean>
     <bean name="quickfix:FIX44:URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="targetObject" ref="quickfix:FIX44"/>
         <property name="propertyPath" value="URL"/>
     </bean>
 	<bean id="quickfix:FIX40:URLstring" factory-bean="quickfix:FIX40:URL" factory-method="toString"/>
