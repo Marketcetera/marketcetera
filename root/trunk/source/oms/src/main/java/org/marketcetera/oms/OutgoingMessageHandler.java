@@ -168,7 +168,7 @@ public class OutgoingMessageHandler {
         }
     }
     
-    /** Sets the default session that's actually created in {@link QuickFIXInitiator} */
+    /** Sets the default session  */
     public void setDefaultSessionID(SessionID inSessionID)
     {
         defaultSessionID = inSessionID;

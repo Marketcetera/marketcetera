@@ -81,7 +81,7 @@ public class OrderManagerTest extends TestCase
         FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY);
     }
 
-    /** Create a configData that creates a few default fields and verify they get placed
+    /** Create a few default fields and verify they get placed
      * into the message
      */
     public void testInsertDefaultFields() throws Exception
