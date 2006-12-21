@@ -18,6 +18,10 @@
              <property name="archiveName" value="${archiveNamePrefix}-linux.motif.x86.tar.gz"/>
              <ant antfile="${assembleScriptName}"/>
         </target>
+        <target name="assemble.org.eclipse.pde.build.container.feature.macosx.carbon.ppc">
+             <property name="archiveName" value="${archiveNamePrefix}-macosx.tar.gz"/>
+             <ant antfile="${assembleScriptName}"/>
+        </target>
 
 	<!-- ===================================================================== -->
 	<!-- ===================================================================== -->
