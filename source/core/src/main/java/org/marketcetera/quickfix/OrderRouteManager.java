@@ -1,7 +1,6 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.MarketceteraException;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -59,10 +58,6 @@ public class OrderRouteManager implements OrderModifier {
     public void setSeparateSuffix(boolean inSeparateSuffix)
     {
         separateSuffix = inSeparateSuffix;
-    }
-
-    public void init(ConfigData data) throws BackingStoreException {
-        // noop
     }
 
     protected Map<String,String> getRoutesMap() { return mRoutes; }
