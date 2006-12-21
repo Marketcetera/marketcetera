@@ -5,11 +5,9 @@ import java.util.prefs.BackingStoreException;
 import quickfix.Message;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.ConfigData;
 
 @ClassVersion("$Id$")
 public interface OrderModifier {
-    public void init(ConfigData data) throws BackingStoreException;
 
     /**
      *

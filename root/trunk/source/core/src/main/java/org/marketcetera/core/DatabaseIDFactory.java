@@ -18,21 +18,6 @@ public class DatabaseIDFactory extends ExternalIDFactory {
     private int mCacheQuantity;
     private Connection dbConnection;
 
-    public static DatabaseIDFactory getInstance(ConfigData inProps) throws Exception
-    {
-        DatabaseIDFactory factory = new DatabaseIDFactory(
-            inProps.get(ConfigPropertiesLoader.DB_URL_KEY, ""),
-            inProps.get(ConfigPropertiesLoader.DB_DRIVER_KEY, null),
-            inProps.get(ConfigPropertiesLoader.DB_USER_KEY, null),
-            inProps.get(ConfigPropertiesLoader.DB_PASS_KEY, null),
-            TABLE_NAME,
-            COL_NAME,
-            1);
-
-        factory.init();
-        return factory;
-    }
-
     protected DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
                                 String column, int quantity) {
         mCacheQuantity = quantity;

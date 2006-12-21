@@ -1,7 +1,6 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.MarketceteraException;
 
 import java.util.prefs.BackingStoreException;
@@ -24,10 +23,6 @@ public class TransactionTimeInsertOrderModifier implements OrderModifier
     // list of messages that need transactTime
     private static Set<String> applicableMsgTypes = new HashSet<String>();
     public TransactionTimeInsertOrderModifier() {
-    }
-
-    public void init(ConfigData data) throws BackingStoreException {
-        // noop
     }
 
     public boolean modifyOrder(Message order) throws MarketceteraException {

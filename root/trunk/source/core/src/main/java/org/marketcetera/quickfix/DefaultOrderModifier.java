@@ -1,7 +1,6 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.ConfigData;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
 import quickfix.FieldMap;
@@ -87,10 +86,6 @@ public class DefaultOrderModifier implements OrderModifier {
     public DefaultOrderModifier()
     {
         messageModifiers = new HashMap<String, MessageModifier>();
-    }
-
-    public void init(ConfigData data) throws BackingStoreException
-    {
     }
 
     public void setMsgFields(Map<String, String> fields) throws MarketceteraException {
