@@ -2,7 +2,6 @@ package org.marketcetera.quickfix;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.ClassVersion;
@@ -62,7 +61,13 @@ public class FIXDataDictionaryManagerTest extends TestCase {
 
 
     public void testGetDataDictionary() throws Exception {
+        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING);
+        assertEquals(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
         FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
         assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
+        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING);
+        assertEquals(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
+        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING);
+        assertEquals(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
     }
 }
