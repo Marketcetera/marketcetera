@@ -88,6 +88,7 @@ public class OrderManagementSystemTest extends TestCase
         ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("oms.xml");
         Thread.sleep(3000);
         assert(appContext.isRunning());
+        assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
     }
 
     /** Generates a JMS message from the fix order
