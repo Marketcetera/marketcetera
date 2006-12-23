@@ -21,6 +21,7 @@
         <constructor-arg value="true"/>
         <constructor-arg value="true"/>
         <constructor-arg value="true"/>
+        <constructor-arg value="false"/>
     </bean>
 
     <bean id="comboLogFactory" class="quickfix.CompositeLogFactory">
@@ -33,7 +34,7 @@
     </bean>
 
     <bean id="dataDictionary" class="quickfix.DataDictionary">
-        <constructor-arg ref="quickfix:FIX42:URLstring"/>
+        <constructor-arg ref="quickfix:FIX42:URLstring" type="java.lang.String"/>
     </bean>
 
 	<bean id="sessionSettings" class="quickfix.spring.SessionSettings">
