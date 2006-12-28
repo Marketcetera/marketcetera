@@ -12,6 +12,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.pool.PooledConnectionFactory;
+import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -36,10 +37,9 @@ import org.marketcetera.photon.messaging.SpringUtils;
 import org.marketcetera.photon.messaging.StockOrderTicketAdapter;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
-import org.marketcetera.photon.scripting.EventScriptController;
-import org.marketcetera.photon.scripting.IScript;
+import org.marketcetera.photon.scripting.Classpath;
+import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
-import org.marketcetera.photon.scripting.ScriptingEventType;
 import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -95,6 +95,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
+	private ScriptChangesAdapter scriptChangesAdapter;
+
 	/**
 	 * The constructor.
 	 */
@@ -113,7 +115,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		// with mutliple threads
         System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true");
 
-        BSFManager.registerScriptingEngine(IScript.RUBY_LANG_STRING,
+        BSFManager.registerScriptingEngine(ScriptRegistry.RUBY_LANG_STRING,
 				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
 		initResources();
 		initIDFactory();
@@ -148,26 +150,34 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private void initScriptRegistry() {
 		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
 		scriptRegistry = new ScriptRegistry();
-		scriptRegistry.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
+		Classpath classpath = new Classpath();
+		classpath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources"));
+		scriptRegistry.setAdditionalClasspath(classpath);
+		scriptChangesAdapter = new ScriptChangesAdapter();
+		scriptChangesAdapter.setRegistry(scriptRegistry);
+		scriptChangesAdapter.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
+		
 		try {
 			scriptRegistry.afterPropertiesSet();
+			scriptChangesAdapter.afterPropertiesSet();
+		} catch (BSFException e) {
+			Throwable targetException = e.getTargetException();
+			getMainConsoleLogger().error("Exception starting script engine", targetException);
 		} catch (Exception e) {
+			getMainConsoleLogger().error("Exception starting script engine", e);
 		}
-		thePreferenceStore.addPropertyChangeListener(scriptRegistry);
+		thePreferenceStore.addPropertyChangeListener(scriptChangesAdapter);
 		
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptRegistry, 
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
 				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
 		
-		EventScriptController tradesController = new EventScriptController(ScriptingEventType.TRADE);
-		createScriptListenerContainer(tradesController);
+		createScriptListenerContainer(scriptRegistry);
 		
-		EventScriptController quotesController = new EventScriptController(ScriptingEventType.QUOTE);
-		createScriptListenerContainer(quotesController);
 	}
 
-	private void createScriptListenerContainer(EventScriptController tradesController) {
+	private void createScriptListenerContainer(ScriptRegistry scriptRegistry) {
 		ScriptEventAdapter adapter = new ScriptEventAdapter();
-		adapter.setController(tradesController);
+		adapter.setRegistry(scriptRegistry);
 		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(internalConnectionFactory, adapter, quotesTopic, null);
 		messageListenerContainers.add(container);
 	}
@@ -180,7 +190,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		plugin = null;
 		
 		if (scriptRegistry != null) {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptRegistry);
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptChangesAdapter);
 			scriptRegistry = null;
 		}
 		stopMessageListenerContainers();

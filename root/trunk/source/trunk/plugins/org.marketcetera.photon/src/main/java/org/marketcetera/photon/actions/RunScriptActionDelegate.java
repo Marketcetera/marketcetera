@@ -1,15 +1,9 @@
 package org.marketcetera.photon.actions;
 
-import org.apache.bsf.BSFManager;
 import org.eclipse.jface.action.IAction;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.PlatformUI;
-import org.marketcetera.photon.scripting.IScript;
-import org.marketcetera.photon.scripting.Script;
-import org.marketcetera.photon.scripting.ScriptRunnable;
 
 
 /**
@@ -35,11 +29,7 @@ public class RunScriptActionDelegate implements IEditorActionDelegate {
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
-		//agl todo:temp
-		IScript script = new Script("puts 'sample script output'");
-		BSFManager manager = new BSFManager();
-		ScriptRunnable runnable = new ScriptRunnable(script, manager);
-		runnable.run();
+		throw new RuntimeException("Not implemented");
 	}
 
 	/* (non-Javadoc)

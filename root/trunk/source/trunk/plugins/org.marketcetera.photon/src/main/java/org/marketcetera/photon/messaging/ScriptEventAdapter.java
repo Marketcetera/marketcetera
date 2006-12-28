@@ -1,34 +1,34 @@
 package org.marketcetera.photon.messaging;
 
 import org.apache.bsf.BSFException;
-import org.marketcetera.photon.scripting.EventScriptController;
+import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.spring.JMSFIXMessageConverter;
 import org.springframework.jms.listener.adapter.ListenerExecutionFailedException;
 
 import quickfix.Message;
 
 public class ScriptEventAdapter extends DirectMessageListenerAdapter {
-	private EventScriptController controller;
+	private ScriptRegistry registry;
 
 	public ScriptEventAdapter() {
 		super();
 		this.setMessageConverter(new JMSFIXMessageConverter());
 	}
 
-	public EventScriptController getController() {
-		return controller;
+	public ScriptRegistry getRegistry() {
+		return registry;
 	}
 
-	public void setController(EventScriptController controller) {
-		this.controller = controller;
+	public void setRegistry(ScriptRegistry registry) {
+		this.registry = registry;
 	}
 
 	@Override
 	protected Object doOnMessage(Object convertedMessage) {
 		
-		if (controller != null){
+		if (registry != null){
 			try {
-				controller.onEvent((Message)convertedMessage);
+				registry.onEvent((Message)convertedMessage);
 			} catch (BSFException e) {
 				throw new ListenerExecutionFailedException(
 						"Exception while executing script", e);

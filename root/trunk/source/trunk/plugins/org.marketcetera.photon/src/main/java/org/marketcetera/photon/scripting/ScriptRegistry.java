@@ -1,14 +1,11 @@
 package org.marketcetera.photon.scripting;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.net.URI;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
+import org.apache.bsf.BSFEngine;
+import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -18,20 +15,21 @@ import org.eclipse.core.resources.IResourceDeltaVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.jruby.bsf.JRubyPlugin;
 import org.marketcetera.core.MMapEntry;
+import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.preferences.MapEditorUtil;
+import org.marketcetera.photon.preferences.ListEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.springframework.beans.factory.InitializingBean;
 
+import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.FunctionList;
 import ca.odell.glazedlists.GlazedLists;
-import ca.odell.glazedlists.matchers.Matcher;
 
 
 /**
@@ -40,223 +38,147 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author andrei@lissovski.org
  * @author gmiller
  */
-public class ScriptRegistry implements IPropertyChangeListener, IResourceChangeListener, InitializingBean {
+public class ScriptRegistry implements InitializingBean {
 
-	private BasicEventList<Entry<IScript, BSFManager>> quoteScripts = new BasicEventList<Entry<IScript, BSFManager>>();
-	private BasicEventList<Entry<IScript, BSFManager>> tradeScripts = new BasicEventList<Entry<IScript, BSFManager>>();
-	private String initialRegistryValueString;
+	private static final String MESSAGE_BEAN_NAME = "message";
+	public static final String RUBY_LANG_STRING = "ruby";
+	protected BSFManager bsfManager;
+	protected BSFEngine engine;
+	private Classpath additionalClasspath =  new Classpath();
 	
 	
-	public ScriptRegistry() {
+	static String [] JRUBY_PLUGIN_PATH = {
+		"lib/ruby/site_ruby/1.8",
+		"lib/ruby/site_ruby/1.8/java",
+		"lib/ruby/site_ruby", 
+		"lib/ruby/1.8", 
+		"lib/ruby/1.8/java",
+		"lib/active_support",
+		"lib/active_support/active_support",
+		"lib/active_support/active_support/vendor"
+	};
+	
+	static String [] JRUBY_WORKSPACE_PATH = {
+		""
+	};
+	
+	public ScriptRegistry() 
+	{
+	}
+
+	
+	private void initBSFManager() throws BSFException {
+		Classpath classpath = new Classpath();
+		classpath.addAll(additionalClasspath);
+		updateClasspath(classpath, EclipseUtils.getPluginPath(JRubyPlugin.getDefault()), JRUBY_PLUGIN_PATH);
+		updateClasspath(classpath, EclipseUtils.getWorkspacePath(), JRUBY_WORKSPACE_PATH);
+		String classpathString = classpath.toString();
+		bsfManager = new BSFManager();
+		bsfManager.setClassPath(classpathString);
+
+		engine = bsfManager.loadScriptingEngine("ruby");
+
+		Object result;
+		result = engine.eval("<java>", 1, 1, "require 'active_support/core_ext'");
+		result = engine.eval("<java>", 1, 1, "require 'active_support/dependencies'");
+		result = engine.eval("<java>", 1, 1, "require 'photon'");
 	}
 	
 
-	/**
-	 * @return <code>null</code> if script couldn't be loaded.
-	 */
-	protected Script loadScript(String scriptWorkspacePath) {
-		String path = workspacePathToAbsolutePath(scriptWorkspacePath);
-		try {
-			return new Script(readFileAsString(path), path, 1, 1);
-		} catch (IOException e) {
-			return null;
+	public void setAdditionalClasspath(List<IPath> pluginPath) {
+		additionalClasspath.addAll(pluginPath);
+	}
+
+
+	private void updateClasspath(List<IPath> pathElements, IPath pluginPath, String[] pathStrings) {
+		for (String aPath : pathStrings) {
+			pathElements.add(pluginPath.append(aPath));
 		}
 	}
 
-	private String workspacePathToAbsolutePath(String workspacePath) {
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IResource resource = workspace.getRoot().findMember(workspacePath);
-		URI resourceURI = resource.getRawLocationURI();
-
-		return resourceURI.getPath();
-	}
-
-	/**
-	 * @param filePath
-	 *            the name of the file to open. Not sure if it can accept URLs
-	 *            or just filenames. Path handling could be better, and buffer
-	 *            sizes are hardcoded
-	 */
-	private static String readFileAsString(String filePath)
-			throws java.io.IOException {
-		StringBuffer fileData = new StringBuffer(1000);
-		BufferedReader reader = null;
-		try {
-			reader = new BufferedReader(new FileReader(filePath));
-			char[] buf = new char[1024];
-			int numRead = 0;
-			while ((numRead = reader.read(buf)) != -1) {
-				String readData = String.valueOf(buf, 0, numRead);
-				fileData.append(readData);
-				buf = new char[1024];
-			}
-		} finally {
-			if (reader != null ) reader.close();
-		}
-		return fileData.toString();
-	}
-
-	public void propertyChange(PropertyChangeEvent event) {
-		if (event.getProperty().equals(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE)){
-			String newValue = event.getNewValue().toString();
-			updateScripts(newValue);
-		}
-	}
-
-
-	private void updateScripts(String registryValueString) {
-		EventList<Entry<String, String>> completeEventScriptList = MapEditorUtil.parseString(registryValueString);
-
-		FilterList<Entry<String, String>> quoteScriptList = new FilterList<Entry<String, String>>(
-				completeEventScriptList, new Matcher<Entry<String, String>>() {
-					public boolean matches(Entry<String, String> entry) {
-						return entry.getKey().equalsIgnoreCase(ScriptingEventType.QUOTE.getName());
-					}
-				});
-		unifyScriptLists(quoteScriptList, quoteScripts);
-
-		FilterList<Entry<String, String>> tradeScriptList = new FilterList<Entry<String, String>>(
-				completeEventScriptList, new Matcher<Entry<String, String>>() {
-					public boolean matches(Entry<String, String> entry) {
-						return entry.getKey().equalsIgnoreCase(ScriptingEventType.TRADE.getName());
-					}
-				});
-		unifyScriptLists(tradeScriptList, tradeScripts);
-	}
-
-	protected void unifyScriptLists(EventList<Entry<String, String>> newScripts, EventList<Entry<IScript, BSFManager>> existingScripts) {
-
-		//agl only (script path)'s
-		EventList<String> scriptList = new FunctionList<Entry<String, String>, String>(
-				newScripts,
-		new FunctionList.Function<Entry<String, String>, String>() {
-			public String evaluate(Entry<String, String> entry) {
-				return entry.getValue();
-			}
-		});
-
-		//agl actual (script)'s
-		List<Entry<IScript, BSFManager>> scripts = new FunctionList<String, Entry<IScript, BSFManager>>(
-		scriptList,
-		new FunctionList.Function<String, Entry<IScript, BSFManager>>() {
-			public Entry<IScript, BSFManager> evaluate(String scriptPath) {
-				return new KeysEqualEntry<IScript, BSFManager>(loadScript(scriptPath), new BSFManager());
-			}
-		});
-
-		synchronized (existingScripts.getReadWriteLock()){
-			EventList<Entry<IScript, BSFManager>> toDelete = GlazedLists.eventList(existingScripts);
-			toDelete.removeAll(scripts);
-	
-			EventList<Entry<IScript, BSFManager>> toAdd = GlazedLists.eventList(scripts);
-			toAdd.removeAll(existingScripts);
-			
-			if (toDelete.size() > 0)
-			{
-				existingScripts.removeAll(toDelete);
-			}
-			if (toAdd.size() > 0)
-			{
-				existingScripts.addAll(toAdd);
-			}
-		}
-	}
-	
-	public EventList<Entry<IScript, BSFManager>> getScriptList(ScriptingEventType type) {
-		switch (type) {
-		case QUOTE:
-			return quoteScripts;
-		case TRADE:
-			return tradeScripts;
-		default:
-			return null;
-		}
-	}
-
-	class KeysEqualEntry<K,V> extends MMapEntry<K,V>{
-
-
-		public KeysEqualEntry(K key, V value) {
-			super(key, value);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (obj instanceof Map.Entry) {
-				Map.Entry otherEntry = (Map.Entry) obj;
-				return this.getKey().equals(otherEntry.getKey());
-			}
-			return false;
-		}
-		
-	}
 
 	public void afterPropertiesSet() throws Exception {
-		if (initialRegistryValueString!=null && initialRegistryValueString.length()>0)
-		{
-			updateScripts(initialRegistryValueString);
-		}
+		initBSFManager();
+
+	}
+
+	public boolean isScript(IPath resourcePath) {
+		return resourcePath.getFileExtension().equalsIgnoreCase("rb");  //$NON-NLS-1$
 	}
 
 
-	public String getInitialRegistryValueString() {
-		return initialRegistryValueString;
+	/**
+	 * Note that this method expects a file name, formatted as an
+	 * argument to the Ruby "require" method.  For example, the workspace
+	 * path "/foo/bar.rb", would correspond to the require method parameter,
+	 * "foo/bar".
+	 * 
+	 * @param requireString the argument to the Ruby require method
+	 * @return
+	 * @throws BSFException
+	 */
+	public boolean isRegistered(String requireString) throws BSFException {
+		String evalString = "Photon.is_registered?('"+requireString+"')";
+		return (Boolean) bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
 	}
-
-
-	public void setInitialRegistryValueString(String initialRegistryValueString) {
-		this.initialRegistryValueString = initialRegistryValueString;
-	}
-
-	public void resourceChanged(IResourceChangeEvent event) {
-		IResourceDeltaVisitor resourceDeltaVisitor = new IResourceDeltaVisitor() {
-			public boolean visit(IResourceDelta delta) throws CoreException {
-				if (delta.getResource().getType() == IResource.FILE
-						&& (delta.getFlags() & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
-
-					String resourcePath = delta.getResource().getFullPath().toString();
-					if (isScript(resourcePath))
-					{
-						refreshScript(resourcePath, tradeScripts);
-						refreshScript(resourcePath, quoteScripts);
-					}
-
-					return false;  //agl skip children
-				}
-
-				return true;  //agl visit children
-			}
-		};
-		
-		try {
-			event.getDelta().accept(resourceDeltaVisitor);
-		} catch (CoreException e) {
-			PhotonPlugin.getMainConsoleLogger().error("Could not process resource change", e);
-		}
-	}
-
-
-	private boolean isScript(String resourcePath) {
-		return resourcePath.toLowerCase().endsWith(".rb");  //$NON-NLS-1$
+	
+	/**
+	 * Note that this method expects a file name, formatted as an
+	 * argument to the Ruby "require" method.  For example, the workspace
+	 * path "/foo/bar.rb", would correspond to the require method parameter,
+	 * "foo/bar".
+	 * 
+	 * @param requireString the argument to the Ruby require method
+	 * @return
+	 * @throws BSFException
+	 */
+	public void unregister(String fileName) throws BSFException {
+		String evalString = "Photon.unregister('"+fileName+"')";
+		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
 	}
 
 	/**
-	 * Reloads a script with the specified path if it's part of the specified list.
+	 * Note that this method expects a file name, formatted as an
+	 * argument to the Ruby "require" method.  For example, the workspace
+	 * path "/foo/bar.rb", would correspond to the require method parameter,
+	 * "foo/bar".
+	 * 
+	 * @param requireString the argument to the Ruby require method
+	 * @return
+	 * @throws BSFException
 	 */
-	private void refreshScript(String scriptWorkspacePath, BasicEventList<Entry<IScript, BSFManager>> scripts) {
-		String scriptAbsolutePath = workspacePathToAbsolutePath(scriptWorkspacePath);
-		synchronized (scripts.getReadWriteLock()) {
-			Iterator<Entry<IScript, BSFManager>> iter = scripts.iterator();
-			for (int i = 0; iter.hasNext(); i++) {
-				Entry<IScript, BSFManager> entry = iter.next();
-				if (entry.getKey().getID().equals(scriptAbsolutePath))
-				{
-					IScript newScript = loadScript(scriptWorkspacePath);
-					Entry<IScript, BSFManager> newEntry = new KeysEqualEntry<IScript, BSFManager>(newScript, new BSFManager());
-					
-					scripts.set(i, newEntry);
-				}
-			}
-		}
+	public void register(String fileName) throws BSFException {
+		String evalString = "Photon.register('"+fileName+"')";
+		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
 	}
+
+	/**
+	 * Note that this method expects a file name, formatted as an
+	 * argument to the Ruby "require" method.  For example, the workspace
+	 * path "/foo/bar.rb", would correspond to the require method parameter,
+	 * "foo/bar".
+	 * 
+	 * @param requireString the argument to the Ruby require method
+	 * @return
+	 * @throws BSFException
+	 */
+	public void scriptChanged(String fileName) throws BSFException {
+		boolean reregister = isRegistered(fileName);
+		String evalString = "Dependencies.loaded.reject! {|s| s.ends_with?('"+fileName+"')}";
+		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+		evalString = "require_dependency '"+fileName+"'";
+		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+		unregister(fileName);
+		if (reregister){
+			register(fileName);
+		}
+		
+	}
+
+	public void onEvent(Message message) throws BSFException {
+		bsfManager.undeclareBean(MESSAGE_BEAN_NAME);
+		bsfManager.declareBean(MESSAGE_BEAN_NAME, message, message.getClass());
+		bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_message($message)");
+	}
+
 }

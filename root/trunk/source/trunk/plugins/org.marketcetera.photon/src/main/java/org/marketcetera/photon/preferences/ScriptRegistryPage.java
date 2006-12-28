@@ -34,8 +34,8 @@ public class ScriptRegistryPage extends FieldEditorPreferencePage implements IWo
     @Override
 	protected void createFieldEditors() {
 		Composite fieldEditorParent = getFieldEditorParent();
-		ScriptRegistryMapEditor mapEditor = 
-			new ScriptRegistryMapEditor(SCRIPT_REGISTRY_PREFERENCE, "Registered scripts", fieldEditorParent);
+		ScriptRegistryListEditor mapEditor = 
+			new ScriptRegistryListEditor(SCRIPT_REGISTRY_PREFERENCE, "Registered scripts", fieldEditorParent);
 		addField(mapEditor);
 	}
 

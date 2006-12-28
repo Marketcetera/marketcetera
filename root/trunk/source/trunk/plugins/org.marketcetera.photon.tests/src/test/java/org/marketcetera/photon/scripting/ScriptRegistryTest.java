@@ -1,31 +1,25 @@
 package org.marketcetera.photon.scripting;
 
-import java.util.Map.Entry;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 
-import org.apache.bsf.BSFManager;
-import org.marketcetera.core.MMapEntry;
+import org.apache.bsf.BSFException;
+import org.eclipse.core.runtime.IPath;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.photon.EclipseUtils;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.PhotonTestPlugin;
 
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
+import quickfix.fix42.ExecutionReport;
 
 public class ScriptRegistryTest extends TestCase {
 
-	private final class MockScriptRegistry extends ScriptRegistry {
-		public void unifyScriptLists(EventList<Entry<String, String>> newScripts, EventList<Entry<IScript, BSFManager>> existingScripts)
-		{
-			super.unifyScriptLists(newScripts, existingScripts);
-		}
-
-		@Override
-		protected Script loadScript(String scriptWorkspacePath) {
-			return new MockScript(scriptWorkspacePath, scriptWorkspacePath);
+	class MockScriptRegistry extends ScriptRegistry {
+		public Object evalScript(String script) throws BSFException{
+			return bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, script);
 		}
 	}
-
+	
 	public ScriptRegistryTest(){
 		
 	}
@@ -36,24 +30,88 @@ public class ScriptRegistryTest extends TestCase {
         return suite;
     }
 
-	public void testUnifyLists() throws Exception {
-		MockScriptRegistry registry = new MockScriptRegistry();
+	public void testBasicScript() throws Throwable {
+		try {
+			MockScriptRegistry registry = new MockScriptRegistry();
+	
+			Classpath classpath = getClasspath();
+			registry.setAdditionalClasspath(classpath);
+			registry.afterPropertiesSet();
+	
+			registry.evalScript("$quote_count = 0");
+			registry.register("test_script");
+			assertTrue(registry.isRegistered("test_script"));
+			registry.unregister("test_script");
+			assertTrue(!registry.isRegistered("test_script"));
+			registry.register("test_script");
+			assertTrue(registry.isRegistered("test_script"));
+			registry.onEvent(new ExecutionReport());
+			Long quoteCountObj = (Long)registry.evalScript("$quote_count");
+			assertNotNull(quoteCountObj);
+			long quoteCount = (long)quoteCountObj;
+			assertEquals((long)1, quoteCount);
+		} catch (BSFException ex) {
+			throw ex.getTargetException();
+		}
 		
-		EventList<Entry<String, String>> newScripts = new BasicEventList<Entry<String,String>>();
-		EventList<Entry<IScript, BSFManager>> existingScripts = new BasicEventList<Entry<IScript, BSFManager>>();
-
-		newScripts.add(new MMapEntry<String, String>("a/b/c", "qwer"));
-		newScripts.add(new MMapEntry<String, String>("f/G/h", "poiu"));		
-		registry.unifyScriptLists(newScripts, existingScripts);
-		assertEquals(2, existingScripts.size());
-		assertEquals("qwer", existingScripts.get(0).getKey().getID());
-		assertEquals("poiu", existingScripts.get(1).getKey().getID());
-		
-		existingScripts.add(new MMapEntry<IScript, BSFManager>(new MockScript("lkjh", "kljh"), new BSFManager()));
-		registry.unifyScriptLists(newScripts, existingScripts);
-		assertEquals(2, existingScripts.size());
-		assertEquals("qwer", existingScripts.get(0).getKey().getID());
-		assertEquals("poiu", existingScripts.get(1).getKey().getID());
-
 	}
+
+	private Classpath getClasspath() {
+		Classpath classpath = new Classpath();
+
+		IPath pluginPath = EclipseUtils.getPluginPath(PhotonTestPlugin.getDefault());
+		pluginPath = pluginPath.append("lib");
+		classpath.add(pluginPath);
+
+		IPath photonPluginPath = EclipseUtils.getPluginPath(PhotonPlugin.getDefault());
+		photonPluginPath = photonPluginPath.append("src").append("main").append("resources");
+		classpath.add(photonPluginPath);
+		return classpath;
+	}
+
+	public void testSubdirScript() throws Throwable {
+		try {
+			MockScriptRegistry registry = new MockScriptRegistry();
+	
+			Classpath classpath = getClasspath();
+			registry.setAdditionalClasspath(classpath);
+			registry.afterPropertiesSet();
+	
+			registry.evalScript("$quote_count = 0");
+			registry.register("subdir/test_script");
+			assertTrue(registry.isRegistered("subdir/test_script"));
+			registry.unregister("subdir/test_script");
+			assertTrue(!registry.isRegistered("subdir/test_script"));
+			registry.register("subdir/test_script");
+			assertTrue(registry.isRegistered("subdir/test_script"));
+			registry.register("test_script");
+			assertTrue(registry.isRegistered("test_script"));
+
+			registry.onEvent(new ExecutionReport());
+			Long quoteCountObj = (Long)registry.evalScript("$quote_count");
+			assertNotNull(quoteCountObj);
+			long quoteCount = (long)quoteCountObj;
+			assertEquals((long)82, quoteCount);
+		} catch (BSFException ex) {
+			throw ex.getTargetException();
+		}
+		
+	}
+
+	public void testRequiringScript() throws Throwable {
+		try {
+			MockScriptRegistry registry = new MockScriptRegistry();
+	
+			Classpath classpath = getClasspath();
+			registry.setAdditionalClasspath(classpath);
+			registry.afterPropertiesSet();
+	
+			registry.evalScript("require 'requiring'");
+			Object result = registry.evalScript("Requiring.new.compute(0)");
+			assertEquals(2, (long)(Long)result);
+		} catch (BSFException ex) {
+			throw ex.getTargetException();
+		}
+	}
+		
 }

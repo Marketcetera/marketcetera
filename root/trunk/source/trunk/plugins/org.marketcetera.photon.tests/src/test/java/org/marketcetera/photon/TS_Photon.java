@@ -5,7 +5,9 @@ import junit.framework.TestSuite;
 
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.ParserTest;
+import org.marketcetera.photon.scripting.ClasspathTest;
 import org.marketcetera.photon.scripting.JRubyBSFTest;
+import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
 import org.marketcetera.photon.scripting.ScriptRegistryTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
@@ -23,6 +25,8 @@ public class TS_Photon {
 		suite.addTestSuite(LexerTest.class);
 		suite.addTestSuite(ScriptRegistryTest.class);
 		suite.addTestSuite(JRubyBSFTest.class);
+		suite.addTestSuite(ClasspathTest.class);
+		suite.addTestSuite(ScriptChangesAdapterTest.class);
 		return suite;
 	}
 
