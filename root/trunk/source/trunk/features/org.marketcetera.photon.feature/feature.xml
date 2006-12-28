@@ -240,7 +240,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.jruby"
+         id="org.jruby.bsf"
          download-size="0"
          install-size="0"
          version="0.0.0"
