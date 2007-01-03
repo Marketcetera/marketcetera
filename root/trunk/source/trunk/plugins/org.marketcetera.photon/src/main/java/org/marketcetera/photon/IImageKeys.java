@@ -28,7 +28,9 @@ public interface IImageKeys {
 	public static final String ZERO_MINUS_TICK = "icons/silk/arrow_zero_down.png";
 	public static final String PLUS_TICK = "icons/silk/arrow_up.png";
 	public static final String ZERO_PLUS_TICK = "icons/silk/arrow_zero_up.png";
-	
+	public static final String ADD_SYMBOL = "icons/silk/add.png";
+	public static final String DELETE_ITEM = "icons/silk.cancel.png";
+
 	
 	public static final String STATUS_OFFLINE = "icons/other/LedTransparent.gif";
 	public static final String STATUS_AVAILABLE = "icons/other/LedGreen.gif";

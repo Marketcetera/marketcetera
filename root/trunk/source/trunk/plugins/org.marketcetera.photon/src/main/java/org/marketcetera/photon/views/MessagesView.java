@@ -14,11 +14,10 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.photon.Application;
-import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.photon.ui.TableComparatorChooser;
 
@@ -28,7 +27,7 @@ import ca.odell.glazedlists.SortedList;
 public abstract class MessagesView extends ViewPart {
 
 	private Table messageTable;
-	private TableViewer messagesViewer;
+	private IndexedTableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
 	private EnumTableFormat<MessageHolder> tableFormat;
 	private TableComparatorChooser<MessageHolder> chooser;
@@ -116,8 +115,8 @@ public abstract class MessagesView extends ViewPart {
         return messageTable;
     }
     
-	protected TableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
-		TableViewer aMessagesViewer = new TableViewer(aMessageTable);
+	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
 		aMessagesViewer.setLabelProvider(new MessageListTableFormat(aMessageTable, enums, getSite()));
@@ -125,7 +124,7 @@ public abstract class MessagesView extends ViewPart {
 	}
 	
 
-	public TableViewer getMessagesViewer() {
+	public IndexedTableViewer getMessagesViewer() {
 		return messagesViewer;
 	}
 	
