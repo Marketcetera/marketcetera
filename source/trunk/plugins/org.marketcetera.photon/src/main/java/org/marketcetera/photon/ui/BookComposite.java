@@ -40,8 +40,8 @@ public class BookComposite extends Composite
 	}	
 	private Table bidTable;
 	private Table askTable;
-	private TableViewer bidViewer;
-	private TableViewer askViewer;
+	private IndexedTableViewer bidViewer;
+	private IndexedTableViewer askViewer;
 	private final FormToolkit toolkit;
 
 	public BookComposite(Composite parent, int style){
@@ -79,8 +79,8 @@ public class BookComposite extends Composite
 		super.dispose();
 	}
 
-	private TableViewer getTableViewer(Table theTable) {
-		TableViewer tableViewer = new TableViewer(theTable);
+	private IndexedTableViewer getTableViewer(Table theTable) {
+		IndexedTableViewer tableViewer = new IndexedTableViewer(theTable);
 		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values());
 		tableViewer.setContentProvider(new EventListContentProvider<Group>());
 		tableViewer.setLabelProvider(format);

@@ -21,11 +21,6 @@
             id="org.marketcetera.photon.EquityPerspective"
             name="Equity Perspective">
       </perspective>
-      <perspective
-            class="org.marketcetera.photon.ui.NullPerspectiveFactory"
-            icon="icons/silk/bug.png"
-            id="org.marketcetera.photon.DebugPerspective"
-            name="Debug Perspective"/>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -233,6 +228,18 @@
 	            icon="icons/other/RunScript.gif" 
 	            class="org.marketcetera.photon.actions.RunScriptActionDelegate"> 
 	         </action>
-	     </viewerContribution> 
+	     </viewerContribution>
+   <viewerContribution
+         id="org.marketcetera.photon.deleteItemViewerContribution"
+         targetID="org.marketcetera.photon.views.MarketDataView">
+      <action
+            class="org.marketcetera.photon.actions.DeleteItemActionDelegate"
+            enablesFor="+"
+            icon="icons/silk/cancel.png"
+            id="org.marketcetera.photon.actions.DeleteItemAction"
+            label="&amp;Delete"
+            menubarPath="additions"
+            style="push"/>
+   </viewerContribution> 
    </extension>
 </plugin>

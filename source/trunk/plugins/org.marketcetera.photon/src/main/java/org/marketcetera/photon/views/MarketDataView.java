@@ -3,20 +3,22 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
-import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.IndexedTableViewer;
+import org.marketcetera.photon.ui.MessageListTableFormat;
+import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.quotefeed.IQuoteFeed;
 
 import quickfix.FieldMap;
@@ -31,7 +33,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
-public class MarketDataView extends MessagesView implements IQuoteFeedAware {
+public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMSymbolListener {
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
 
 	private static final int LAST_NORMAL_COLUMN = 1;
@@ -54,7 +56,7 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 
 	public MarketDataView()
 	{
-		super(false);
+		super(true);
 	}
 	
 	@Override
@@ -62,9 +64,10 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 		super.createPartControl(parent);
 		PhotonPlugin.getDefault().registerMarketDataView(this);
 	    this.setInput(new BasicEventList<MessageHolder>());
-	    ensureOneAtEnd();
 	}
 
+
+	
 	@Override
 	public void dispose() {
 		PhotonPlugin.getDefault().unregisterMarketDataView(this);
@@ -83,11 +86,11 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
     }
 
 	@Override
-	protected TableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
-		TableViewer aMessagesViewer = new TableViewer(aMessageTable);
+	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
-		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(aMessageTable));
+		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(aMessageTable, getSite()));
 		
 		// Create the cell editors
 	    CellEditor[] editors = new CellEditor[MarketDataColumns.values().length];
@@ -118,22 +121,11 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 
 	@Override
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		
+		TextContributionItem textContributionItem = new TextContributionItem("");
+		theToolBarManager.add(textContributionItem);
+		theToolBarManager.add(new AddSymbolAction(textContributionItem, this));
 	}
 	
-	private void ensureOneAtEnd() {
-		EventList<MessageHolder> list = getInput();
-		if (list.size() > 0){
-			MessageHolder lastMessageHolder = list.get(list.size()-1);
-			Message lastMessage = lastMessageHolder.getMessage();
-			if (lastMessage.isSetField(Symbol.FIELD)){
-				addBlank(list);
-			}
-		} else {
-			addBlank(list);
-		}
-	}
-
 	private boolean listContains(String stringValue) {
 		if (stringValue == null){
 			return false;
@@ -171,11 +163,6 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 	}
 
 	
-	private void addBlank(EventList<MessageHolder> list) {
-		list.add(new MessageHolder(new Message()));
-		getMessagesViewer().refresh();
-	}
-
 	public void onQuote(final Message aQuote) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
@@ -221,16 +208,17 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 			TableItem tableItem = (TableItem) element;
 			MessageHolder messageHolder = (MessageHolder)tableItem.getData();
 			Message message = messageHolder.getMessage();
-			try {quoteFeed.unlistenQuotes(new MSymbol(message.getString(Symbol.FIELD))); } catch (FieldNotFound fnf){}
+			try {
+				MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
+				quoteFeed.unlistenQuotes(symbol);
+			} catch (FieldNotFound fnf){}
 			message.clear();
 			if (stringValue.length()>0){
 				message.setField(new Symbol(stringValue));
 				quoteFeed.listenQuotes(new MSymbol(stringValue));
 				getMessagesViewer().refresh();
-				ensureOneAtEnd();
 			}
 		}
-
 	}
 
 
@@ -239,11 +227,11 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 	private static final int ASK_INDEX = 4;
 	private static final int ASK_SIZE_INDEX = 5;
 	
-	class MarketDataTableFormat extends EnumTableFormat<MessageHolder>{
+	class MarketDataTableFormat extends MessageListTableFormat {
 
 
-		public MarketDataTableFormat(Table table) {
-			super(table, MarketDataColumns.values());
+		public MarketDataTableFormat(Table table, IWorkbenchPartSite site) {
+			super(table, MarketDataColumns.values(), site);
 		}
 
 		@Override
@@ -316,6 +304,15 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware {
 
 	public void setQuoteFeed(IQuoteFeed feed) {
 		quoteFeed = feed;
+	}
+
+	public void onAssertSymbol(MSymbol symbol) {
+		EventList<MessageHolder> list = getInput();
+		Message message = new Message();
+		message.setField(new Symbol(symbol.toString()));
+		list.add(new MessageHolder(message));
+		quoteFeed.listenQuotes(symbol);
+		getMessagesViewer().refresh();
 	}
 
 }

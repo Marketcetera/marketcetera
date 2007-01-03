@@ -1,23 +1,15 @@
 package org.marketcetera.photon.ui;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.Accessible;
-import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.MouseTrackListener;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -28,14 +20,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 import org.eclipse.ui.IPartListener;
-import org.eclipse.ui.IPartService;
 
 /**
  * A ControlContribution that uses a {@link org.eclipse.swt.widgets.Text} as
@@ -52,8 +42,11 @@ public class TextContributionItem extends ContributionItem {
 
 	private String initialText;
 
+	private List<KeyListener> keyListeners;
+
 	public TextContributionItem(String initText) {
 		initialText = initText;
+		keyListeners = new LinkedList<KeyListener>();
 	}
 
 	private void refresh(boolean repopulateCombo) {
@@ -80,6 +73,10 @@ public class TextContributionItem extends ContributionItem {
 
 		toolitem.setWidth(200);
 		refresh(true);
+		for (KeyListener listener : keyListeners) {
+			textField.addKeyListener(listener);
+		}
+		keyListeners = null;
 		return textField;
 	}
 
@@ -104,62 +101,13 @@ public class TextContributionItem extends ContributionItem {
 		toolitem.setControl(control);
 	}
 
-	public void addControlListener(ControlListener listener) {
-		textField.addControlListener(listener);
-	}
-
-	public void addDisposeListener(DisposeListener listener) {
-		textField.addDisposeListener(listener);
-	}
-
-	public void addFocusListener(FocusListener listener) {
-		textField.addFocusListener(listener);
-	}
-
-	public void addHelpListener(HelpListener listener) {
-		textField.addHelpListener(listener);
-	}
-
 	public void addKeyListener(KeyListener listener) {
-		textField.addKeyListener(listener);
+		if (textField != null){
+			textField.addKeyListener(listener);
+		} else {
+			keyListeners.add(listener);
+		}
 	}
-
-	public void addListener(int eventType, Listener listener) {
-		textField.addListener(eventType, listener);
-	}
-
-	public void addModifyListener(ModifyListener listener) {
-		textField.addModifyListener(listener);
-	}
-
-	public void addMouseListener(MouseListener listener) {
-		textField.addMouseListener(listener);
-	}
-
-	public void addMouseMoveListener(MouseMoveListener listener) {
-		textField.addMouseMoveListener(listener);
-	}
-
-	public void addMouseTrackListener(MouseTrackListener listener) {
-		textField.addMouseTrackListener(listener);
-	}
-
-	public void addPaintListener(PaintListener listener) {
-		textField.addPaintListener(listener);
-	}
-
-	public void addSelectionListener(SelectionListener listener) {
-		textField.addSelectionListener(listener);
-	}
-
-	public void addTraverseListener(TraverseListener listener) {
-		textField.addTraverseListener(listener);
-	}
-
-	public void addVerifyListener(VerifyListener listener) {
-		textField.addVerifyListener(listener);
-	}
-
 	public void append(String string) {
 		textField.append(string);
 	}
@@ -400,62 +348,6 @@ public class TextContributionItem extends ContributionItem {
 		textField.paste();
 	}
 
-	public void removeControlListener(ControlListener listener) {
-		textField.removeControlListener(listener);
-	}
-
-	public void removeDisposeListener(DisposeListener listener) {
-		textField.removeDisposeListener(listener);
-	}
-
-	public void removeFocusListener(FocusListener listener) {
-		textField.removeFocusListener(listener);
-	}
-
-	public void removeHelpListener(HelpListener listener) {
-		textField.removeHelpListener(listener);
-	}
-
-	public void removeKeyListener(KeyListener listener) {
-		textField.removeKeyListener(listener);
-	}
-
-	public void removeListener(int eventType, Listener listener) {
-		textField.removeListener(eventType, listener);
-	}
-
-	public void removeModifyListener(ModifyListener listener) {
-		textField.removeModifyListener(listener);
-	}
-
-	public void removeMouseListener(MouseListener listener) {
-		textField.removeMouseListener(listener);
-	}
-
-	public void removeMouseMoveListener(MouseMoveListener listener) {
-		textField.removeMouseMoveListener(listener);
-	}
-
-	public void removeMouseTrackListener(MouseTrackListener listener) {
-		textField.removeMouseTrackListener(listener);
-	}
-
-	public void removePaintListener(PaintListener listener) {
-		textField.removePaintListener(listener);
-	}
-
-	public void removeSelectionListener(SelectionListener listener) {
-		textField.removeSelectionListener(listener);
-	}
-
-	public void removeTraverseListener(TraverseListener listener) {
-		textField.removeTraverseListener(listener);
-	}
-
-	public void removeVerifyListener(VerifyListener listener) {
-		textField.removeVerifyListener(listener);
-	}
-
 	public void selectAll() {
 		textField.selectAll();
 	}
@@ -591,5 +483,6 @@ public class TextContributionItem extends ContributionItem {
 	public boolean traverse(int traversal) {
 		return textField.traverse(traversal);
 	}
+
 
 }

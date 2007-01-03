@@ -1,7 +1,6 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
 import org.marketcetera.photon.core.FIXMatcher;
@@ -9,7 +8,7 @@ import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
-import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.photon.ui.IndexedTableViewer;
 
 import quickfix.field.MsgType;
 import ca.odell.glazedlists.EventList;
@@ -85,8 +84,8 @@ public class FIXMessagesView extends HistoryMessagesView {
 	}
 	
 	@Override
-	protected TableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
-		TableViewer aMessagesViewer = new TableViewer(aMessageTable);
+	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
 		aMessagesViewer.setLabelProvider(new DirectionalMessageTableFormat(aMessageTable, enums, getSite()));
