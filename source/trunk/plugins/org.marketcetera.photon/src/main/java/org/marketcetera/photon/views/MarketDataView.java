@@ -15,6 +15,7 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
+import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
@@ -37,7 +38,7 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
 
 	private static final int LAST_NORMAL_COLUMN = 1;
-	private IQuoteFeed quoteFeed;
+	private QuoteFeedComponentAdapter quoteFeedAdapter;
 	
 	public enum MarketDataColumns
 	{
@@ -208,14 +209,17 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 			TableItem tableItem = (TableItem) element;
 			MessageHolder messageHolder = (MessageHolder)tableItem.getData();
 			Message message = messageHolder.getMessage();
+			IQuoteFeed quoteFeed = ((IQuoteFeed)quoteFeedAdapter.getDelegateFeedComponent());
 			try {
 				MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
-				quoteFeed.unlistenQuotes(symbol);
+				if (quoteFeed != null)
+					quoteFeed.unlistenQuotes(symbol);
 			} catch (FieldNotFound fnf){}
 			message.clear();
 			if (stringValue.length()>0){
 				message.setField(new Symbol(stringValue));
-				quoteFeed.listenQuotes(new MSymbol(stringValue));
+				if (quoteFeed != null)
+					quoteFeed.listenQuotes(new MSymbol(stringValue));
 				getMessagesViewer().refresh();
 			}
 		}
@@ -302,8 +306,8 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 		
 	}
 
-	public void setQuoteFeed(IQuoteFeed feed) {
-		quoteFeed = feed;
+	public void setQuoteFeedAdapter(QuoteFeedComponentAdapter feedAdapter) {
+		quoteFeedAdapter = feedAdapter;
 	}
 
 	public void onAssertSymbol(MSymbol symbol) {
@@ -311,8 +315,11 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 		Message message = new Message();
 		message.setField(new Symbol(symbol.toString()));
 		list.add(new MessageHolder(message));
-		quoteFeed.listenQuotes(symbol);
-		getMessagesViewer().refresh();
+		IQuoteFeed quoteFeed = (IQuoteFeed) quoteFeedAdapter.getDelegateFeedComponent();
+		if (quoteFeed != null){
+			quoteFeed.listenQuotes(symbol);
+			getMessagesViewer().refresh();
+		}
 	}
 
 }

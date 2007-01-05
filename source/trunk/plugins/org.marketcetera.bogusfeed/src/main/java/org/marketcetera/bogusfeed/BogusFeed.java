@@ -41,6 +41,7 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 		@Override
 		public void run() 
 		{
+			setFeedStatus(FeedStatus.AVAILABLE);
 			while (!shouldShutdown){
 				try {
 					LinkedList<MSymbol> entries;
@@ -55,7 +56,9 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 						}
 					}
 					sleep(randAmount());
-				} catch (InterruptedException ex){}
+				} catch (InterruptedException ex){
+					setFeedStatus(FeedStatus.OFFLINE);
+				}
 			}
 		}
 		private long randAmount() {

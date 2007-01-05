@@ -213,7 +213,7 @@
                 class="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
                 enablesFor="+"
                 icon="icons/silk/world_go.png"
-                id="org.marketcetera.photon.ViewSecurity"
+                id="org.marketcetera.photon.actions.ViewSecurityAction"
                 label="View Security"/>
          </objectContribution>
 		 <viewerContribution 
@@ -230,7 +230,7 @@
 	         </action>
 	     </viewerContribution>
    <viewerContribution
-         id="org.marketcetera.photon.deleteItemViewerContribution"
+         id="org.marketcetera.photon.Actions.DeleteItemActionDelegate"
          targetID="org.marketcetera.photon.views.MarketDataView">
       <action
             class="org.marketcetera.photon.actions.DeleteItemActionDelegate"

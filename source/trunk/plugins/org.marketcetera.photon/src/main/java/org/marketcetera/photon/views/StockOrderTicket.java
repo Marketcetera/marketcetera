@@ -39,7 +39,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.FeedComponent.FeedStatus;
+import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.parser.SideImage;
@@ -47,6 +47,7 @@ import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
+import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.ui.validation.AbstractFIXExtractor;
 import org.marketcetera.photon.ui.validation.CComboValidator;
@@ -149,7 +150,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	private Section bookSection;
 
-	private IQuoteFeed quoteFeed;
+	private QuoteFeedComponentAdapter quoteFeedAdapter;
 
 	@Override
 	public void createPartControl(Composite parent) {
@@ -177,6 +178,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	public void dispose() {
 		PhotonPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 		unlisten();
+		IQuoteFeed quoteFeed = (IQuoteFeed) quoteFeedAdapter.getDelegateFeedComponent();
 		if (quoteFeed != null) {
 			quoteFeed.unlistenLevel2(listenedSymbol);
 		}
@@ -380,6 +382,8 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		unlisten();
 		if (symbol != null && !"".equals(symbol)){
 			MSymbol newListenedSymbol = new MSymbol(symbol);
+			IQuoteFeed quoteFeed = (IQuoteFeed) quoteFeedAdapter.getDelegateFeedComponent();
+
 			if (quoteFeed != null
 					&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
 					&& !newListenedSymbol.equals(listenedSymbol)) {
@@ -390,6 +394,8 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	}
 
 	protected void unlisten() {
+		IQuoteFeed quoteFeed = (IQuoteFeed) quoteFeedAdapter.getDelegateFeedComponent();
+
 		if (quoteFeed != null
 				&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE) {
 			if (listenedSymbol != null) {
@@ -761,8 +767,8 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		}
 	}
 
-	public void setQuoteFeed(IQuoteFeed quoteFeed) {
-		this.quoteFeed = quoteFeed;
+	public void setQuoteFeedAdapter(QuoteFeedComponentAdapter quoteFeed) {
+		this.quoteFeedAdapter= quoteFeed;
 	}
 
 	public void onQuote(Message message) {

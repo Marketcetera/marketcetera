@@ -32,7 +32,7 @@ public interface IImageKeys {
 	public static final String DELETE_ITEM = "icons/silk.cancel.png";
 
 	
-	public static final String STATUS_OFFLINE = "icons/other/LedTransparent.gif";
-	public static final String STATUS_AVAILABLE = "icons/other/LedGreen.gif";
-	public static final String STATUS_ERROR = "icons/other/LedRed.gif";
+	public static final String STATUS_OFFLINE = "icons/other/grayled.gif";
+	public static final String STATUS_AVAILABLE = "icons/other/greenled.gif";
+	public static final String STATUS_ERROR = "icons/other/redled.gif";
 }

@@ -37,8 +37,8 @@ public class AddSymbolAction extends Action {
 		Text theText = (Text) e.widget;
 		if ('\r' == e.character) {
 			String theInputString = theText.getText();
-			listener.onAssertSymbol(new MSymbol(theInputString));
 			theText.setText("");
+			listener.onAssertSymbol(new MSymbol(theInputString));
 		}
 	}
 	

@@ -1,6 +1,5 @@
 package org.marketcetera.photon;
 
-import java.lang.reflect.Constructor;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -11,32 +10,30 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.activemq.network.jms.JmsQueueConnector;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.IExtensionRegistry;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.messaging.JMSFeedComponentAdapter;
 import org.marketcetera.photon.messaging.MarketDataViewAdapter;
 import org.marketcetera.photon.messaging.ScriptEventAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.messaging.SpringUtils;
 import org.marketcetera.photon.messaging.StockOrderTicketAdapter;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
-import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
+import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
 import org.marketcetera.photon.scripting.Classpath;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
@@ -46,7 +43,6 @@ import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quotefeed.IQuoteFeed;
-import org.marketcetera.quotefeed.IQuoteFeedFactory;
 import org.osgi.framework.BundleContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsOperations;
@@ -97,6 +93,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private ScriptChangesAdapter scriptChangesAdapter;
 
+	private List<IFeedComponent> feeds = new LinkedList<IFeedComponent>();
+
+	private JMSFeedComponentAdapter jmsFeedComponentAdapter;
+
+	private QuoteFeedComponentAdapter quoteFeedAdapter;
+
 	/**
 	 * The constructor.
 	 */
@@ -122,10 +124,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		initInternalConnectionFactory();
 		initFIXMessageHistory();
 		initMessageListeners();
-		initQuoteFeed();
+		initQuoteFeedComponentAdapter();
+		initJMSFeedComponentAdapter();
 		initScriptRegistry();
 		initPhotonController();
-		
 	}
 
 	private void initPhotonController() {
@@ -233,29 +235,16 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
 	}
 
-	private void initQuoteFeed() {
-        try {
-        	IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
-        	IExtensionPoint extensionPoint =
-        	extensionRegistry.getExtensionPoint(IQuoteFeedConstants.EXTENSION_POINT_ID);
-        	IExtension[] extensions = extensionPoint.getExtensions();
-        	if (extensions != null && extensions.length > 0)
-        	{
-        		IConfigurationElement[] configurationElements = extensions[0].getConfigurationElements();
-        		IConfigurationElement feedElement = configurationElements[0];
-        		String factoryClass = feedElement.getAttribute(IQuoteFeedConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-        		Class<IQuoteFeedFactory> clazz = (Class<IQuoteFeedFactory>) Class.forName(factoryClass);
-        		Constructor<IQuoteFeedFactory> constructor = clazz.getConstructor( new Class[0] );
-        		IQuoteFeedFactory factory = constructor.newInstance(new Object[0]);
-        		IQuoteFeed targetQuoteFeed = factory.getInstance("", "", "");
-        		if (targetQuoteFeed != null){
-        			quoteFeed = targetQuoteFeed;
-        			targetQuoteFeed.setQuoteJmsOperations(quoteJmsOperations);
-        		}
-    		}
-    	} catch (Exception ex){
-    		PhotonPlugin.getMainConsoleLogger().error("Exception starting quote feed: "+ex.getMessage());
-    	}
+	private void initQuoteFeedComponentAdapter() {
+		quoteFeedAdapter = new QuoteFeedComponentAdapter();
+		quoteFeedAdapter.setQuoteJmsOperations(quoteJmsOperations);
+		feeds.add(quoteFeedAdapter);
+	}
+
+	private void initJMSFeedComponentAdapter() {
+		jmsFeedComponentAdapter = new JMSFeedComponentAdapter();
+		jmsFeedComponentAdapter.setPhotonPlugin(this);
+		feeds.add(jmsFeedComponentAdapter);
 	}
 
 	private void initMessageListeners(){
@@ -306,8 +295,13 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	}
 
 	public IQuoteFeed getQuoteFeed() {
-		return quoteFeed;
+		return ((IQuoteFeed)quoteFeedAdapter.getDelegateFeedComponent());
 	}
+	
+	public QuoteFeedComponentAdapter getQuoteFeedComponentAdapter() {
+		return quoteFeedAdapter;
+	}
+
 
 	public ScriptRegistry getScriptRegistry() {
 		return scriptRegistry;
@@ -338,12 +332,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		adapter.setMarketDataView(view);
 		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(
 				internalConnectionFactory, adapter, quotesTopic, null);
-		view.setQuoteFeed(quoteFeed);
+		view.setQuoteFeedAdapter(quoteFeedAdapter);
 		messageListenerContainers.add(container);
 	}
 	
 	public void unregisterMarketDataView(MarketDataView view) {
-		view.setQuoteFeed(null);
+		view.setQuoteFeedAdapter(null);
 		for (SimpleMessageListenerContainer container : messageListenerContainers) {
 			Object messageListener = container.getMessageListener();
 			if (messageListener instanceof MarketDataViewAdapter) {
@@ -362,12 +356,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		adapter.setStockOrderTicket(ticket);
 		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(
 				internalConnectionFactory, adapter, quotesTopic, null);
-		ticket.setQuoteFeed(quoteFeed);
+		ticket.setQuoteFeedAdapter(quoteFeedAdapter);
 		messageListenerContainers.add(container);
 	}
 
 	public void unregisterStockOrderTicket(StockOrderTicket ticket) {
-		ticket.setQuoteFeed(null);
+		ticket.setQuoteFeedAdapter(null);
 		for (SimpleMessageListenerContainer container : messageListenerContainers) {
 			Object messageListener = container.getMessageListener();
 			if (messageListener instanceof StockOrderTicketAdapter) {
@@ -382,12 +376,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		
 	}
 
-	public void setJMSApplicationContext(ClassPathXmlApplicationContext jmsApplicationContext) {
-		SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
-		// XXX: photonControllerContainer.setExceptionListener(exceptionListener);
-		
-	}
-
 	public void setOutgoingJMSOperations(JmsOperations outgoingJmsOperations) {
 		this.outgoingJmsOperations = outgoingJmsOperations;
 	}
@@ -395,4 +383,9 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public ClassPathXmlApplicationContext getJMSApplicationContext() {
 		return this.jmsApplicationContext;
 	}
+
+	public JMSFeedComponentAdapter getJMSFeedComponentAdapter() {
+		return jmsFeedComponentAdapter;
+	}
+
 }
