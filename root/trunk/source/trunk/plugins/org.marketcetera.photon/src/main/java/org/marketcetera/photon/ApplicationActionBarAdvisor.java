@@ -111,10 +111,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private CommandStatusLineContribution commandStatusLineContribution;
 
-	private FeedStatusLineContribution jmsStatusLineContribution;
-
-	private FeedStatusLineContribution quoteFeedStatusLineContribution;
-
 	private IWorkbenchAction focusCommandAction;
 
 	private WebHelpAction webHelpAction;
@@ -138,14 +134,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	protected void makeActions(IWorkbenchWindow window) {
 		this.window = window;
 
-		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
-		jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", new String[] {"jms"});
-		//Application.getJMSConnector().addFeedComponentListener(jmsStatusLineContribution);
-		IQuoteFeed quoteFeed = PhotonPlugin.getDefault().getQuoteFeed();
-		String quoteFeedID = "Quote Feed";
-		if (quoteFeed != null) quoteFeedID = quoteFeed.getID();
-		quoteFeedStatusLineContribution = new FeedStatusLineContribution("quoteFeedStatus", new String[] {quoteFeedID });
-		if (quoteFeed != null) quoteFeed.addFeedComponentListener(quoteFeedStatusLineContribution);
 
 		saveAction = ActionFactory.SAVE.create(window);  register(saveAction);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
@@ -329,7 +317,22 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	 */
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		
+		IQuoteFeed quoteFeed = plugin.getQuoteFeed();
+		String quoteFeedID = "quoteFeedStatus";
+		if (quoteFeed != null) quoteFeedID = quoteFeed.getID();
+
+		FeedStatusLineContribution jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", "Message");
+		FeedStatusLineContribution quoteFeedStatusLineContribution = new FeedStatusLineContribution(quoteFeedID, "Quote" );
+
+		plugin.getJMSFeedComponentAdapter().addFeedComponentListener(jmsStatusLineContribution);
+		plugin.getQuoteFeedComponentAdapter().addFeedComponentListener(quoteFeedStatusLineContribution);
+
+		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
+
 		statusLine.add(commandStatusLineContribution);
+		
 		statusLine.add(jmsStatusLineContribution);
 		statusLine.add(quoteFeedStatusLineContribution);
 	}

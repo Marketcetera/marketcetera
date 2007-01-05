@@ -26,8 +26,10 @@ import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.progress.IProgressService;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
+import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
+import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
 import org.marketcetera.photon.ui.MainConsole;
 import org.marketcetera.photon.views.WebBrowserView;
@@ -155,7 +157,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	private void startJMS() {
 		IProgressService service = PlatformUI.getWorkbench().getProgressService();
 		try {
-			ReconnectJMSAction.startJMS(service, PhotonPlugin.getDefault());
+			PhotonPlugin plugin = PhotonPlugin.getDefault();
+			ReconnectJMSAction.startJMS(plugin.getJMSFeedComponentAdapter(),service, plugin);
 		} catch (Throwable t){
 			PhotonPlugin.getMainConsoleLogger().error("Could not connect to message queue", t);
 		}
@@ -163,16 +166,18 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 
 	private void stopJMS() {
-		ReconnectJMSAction.stopJMS(PhotonPlugin.getDefault());
+		ReconnectJMSAction.stopJMS(PhotonPlugin.getDefault().getJMSFeedComponentAdapter(), PhotonPlugin.getDefault());
 	}
 	
 
 	private void startQuoteFeed() {
-		IQuoteFeed quoteFeed = PhotonPlugin.getDefault().getQuoteFeed();
-		if (quoteFeed!=null){
-			quoteFeed.start();
-		} else {
-			PhotonPlugin.getMainConsoleLogger().warn("No quote feed available");
+		QuoteFeedComponentAdapter quoteFeed = PhotonPlugin.getDefault().getQuoteFeedComponentAdapter();
+		try {
+			quoteFeed.afterPropertiesSet();
+		} catch (Exception ex) {
+			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
+			mainConsoleLogger.error("Exception starting quote feed", ex);
+			mainConsoleLogger.debug(ex.toString());
 		}
 	}
 	

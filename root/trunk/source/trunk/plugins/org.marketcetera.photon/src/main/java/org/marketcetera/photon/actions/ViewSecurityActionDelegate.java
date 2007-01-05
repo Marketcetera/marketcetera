@@ -34,7 +34,7 @@ import quickfix.field.Symbol;
  */
 @ClassVersion("$Id$")
 public class ViewSecurityActionDelegate implements IObjectActionDelegate {
-	public final static String ID = "org.marketcetera.photon.ViewSecurity";
+	public final static String ID = "org.marketcetera.photon.actions.ViewSecurityActionDelegate";
 
 	private IStructuredSelection selection;
 

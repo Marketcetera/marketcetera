@@ -12,6 +12,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.messaging.JMSFeedComponentAdapter;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -60,62 +61,27 @@ public class ReconnectJMSAction extends Action implements IWorkbenchAction {
 	 */
 	public void run() {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
-		stopJMS(plugin);
-		startJMS(window.getWorkbench().getProgressService(), plugin);
+		JMSFeedComponentAdapter adapter = plugin.getJMSFeedComponentAdapter();
+		stopJMS(adapter, plugin);
+		startJMS(adapter, window.getWorkbench().getProgressService(), plugin);
 	}
 
 	
-	public static void stopJMS(PhotonPlugin plugin)
+	public static void stopJMS(JMSFeedComponentAdapter adapter, PhotonPlugin plugin)
 	{
-		ClassPathXmlApplicationContext applicationContext = plugin.getJMSApplicationContext();
-		if (applicationContext != null){
-			plugin.setJMSApplicationContext(null);
-			applicationContext.stop();
-			plugin.setOutgoingJMSOperations(null);
-		}
+		adapter.stop(plugin);
 	}
 	
-	public static void startJMS(IProgressService service, final PhotonPlugin plugin)
+	public static void startJMS(JMSFeedComponentAdapter adapter, IProgressService service, final PhotonPlugin plugin)
 	{
-		StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext();
-		final ClassPathXmlApplicationContext jmsApplicationContext;
-
-		jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerURLContext);
-
 		try {
-			service.run(true, true, new IRunnableWithProgress(){
-				public void run(IProgressMonitor monitor){
-					jmsApplicationContext.start();
-					MessageListenerAdapter photonControllerListenerAdapter = (MessageListenerAdapter)jmsApplicationContext.getBean("photonControllerListener");
-					photonControllerListenerAdapter.setDelegate(plugin.getPhotonController());
-					JmsOperations outgoingJmsOperations;
-					outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
-					plugin.getPhotonController().setJmsOperations(outgoingJmsOperations);
-					
-					plugin.setJMSApplicationContext(jmsApplicationContext);
-					plugin.setOutgoingJMSOperations(outgoingJmsOperations);
-				}
-			});
-		} catch (InvocationTargetException e) {
-			plugin.getMainLogger().error("Exception connecting to message server", e);
-		} catch (InterruptedException e) {
-			plugin.getMainLogger().error("User cancelled connection to message server");
+			adapter.setPhotonPlugin(plugin);
+			adapter.setProgressService(service);
+			adapter.afterPropertiesSet();
+		} catch (Exception e) {
+			PhotonPlugin.getMainConsoleLogger().error("Exception starting JMS connection", e);
 		}
 	}
 	
-	private static StaticApplicationContext getBrokerURLApplicationContext() {
-		String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
-		StaticApplicationContext brokerURLContext;
-		brokerURLContext = new StaticApplicationContext();
-		if (url != null){
-			RootBeanDefinition brokerURLBeanDefinition = new RootBeanDefinition(String.class);
-			ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
-			constructorArgumentValues.addGenericArgumentValue(url);
-			brokerURLBeanDefinition.setConstructorArgumentValues(constructorArgumentValues );
-			brokerURLContext.registerBeanDefinition("brokerURL", brokerURLBeanDefinition);
-		}
-		brokerURLContext.refresh();
-		return brokerURLContext;
-	}
 
 }

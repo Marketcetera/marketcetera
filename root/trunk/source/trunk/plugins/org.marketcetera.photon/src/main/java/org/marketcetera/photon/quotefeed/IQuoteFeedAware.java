@@ -4,5 +4,5 @@ import org.marketcetera.quotefeed.IQuoteFeed;
 
 public interface IQuoteFeedAware {
 
-	public void setQuoteFeed(IQuoteFeed feed);
+	public void setQuoteFeedAdapter(QuoteFeedComponentAdapter feed);
 }

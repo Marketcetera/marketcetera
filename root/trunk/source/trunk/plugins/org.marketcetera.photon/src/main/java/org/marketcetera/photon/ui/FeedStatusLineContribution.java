@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IDecoratorManager;
 import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.FeedComponent;
+import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.FeedComponent.FeedStatus;
+import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 
@@ -35,14 +35,12 @@ import org.marketcetera.photon.PhotonPlugin;
 public class FeedStatusLineContribution extends ContributionItem implements
 		IFeedComponentListener {
 
-	private Map<String, Label> labelMap;
-
-	private int numLabels = 1;
-
-	private String[] feedNames;
 
 	private static EnumMap<FeedStatus, Image> statusImageMap = new EnumMap<FeedStatus, Image>(
 			FeedStatus.class);
+	private Label imageLabel;
+	private String feedName;
+	private Image nullStatusImage;
 
 	/**
 	 * Create a new FeedStatusLineContribution with the given id.  The number of status
@@ -51,11 +49,12 @@ public class FeedStatusLineContribution extends ContributionItem implements
 	 * @param id the id of this status line contribution (used by the RCP)
 	 * @param pFeedNames the names of the feeds for which to keep status
 	 */
-	public FeedStatusLineContribution(String id, String[] pFeedNames) {
+	public FeedStatusLineContribution(String id, String name) {
 		super(id);
-		this.numLabels = pFeedNames.length;
-		this.feedNames = pFeedNames;
-		labelMap = new HashMap<String, Label>();
+		feedName = name;
+
+		ImageDescriptor descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
+		nullStatusImage = descriptor.createImage();
 	}
 
 	
@@ -65,11 +64,8 @@ public class FeedStatusLineContribution extends ContributionItem implements
 	 * @see org.eclipse.jface.action.ContributionItem#fill(org.eclipse.swt.widgets.Composite)
 	 */
 	public void fill(Composite parent) {
-		for (int i = 0; i < numLabels; i++) {
-			Label aLabel = new Label(parent, SWT.NONE);
-			labelMap.put(feedNames[i], aLabel);
-			aLabel.setImage(getStatusImage(FeedStatus.OFFLINE));
-		}
+		imageLabel = new Label(parent, SWT.NONE);
+		imageLabel.setImage(getStatusImage(FeedStatus.OFFLINE));
 	}
 
 	/**
@@ -80,7 +76,9 @@ public class FeedStatusLineContribution extends ContributionItem implements
 	 * @return the image associated with the given status
 	 */
 	protected Image getStatusImage(FeedStatus aStatus) {
-		ILabelDecorator labelDecorator = PlatformUI.getWorkbench().getDecoratorManager().getLabelDecorator("asdf");
+		if (aStatus == null){
+			return nullStatusImage;
+		}
 		Image theImage = statusImageMap.get(aStatus);
 		if (theImage == null) {
 			ImageDescriptor descriptor;
@@ -105,18 +103,19 @@ public class FeedStatusLineContribution extends ContributionItem implements
 		return theImage;
 	}
 
-	public void setStatus(final String feedName, final FeedStatus aStatus) {
-		final Label theLabel = labelMap.get(feedName);
-		if (theLabel == null)
+	public void setStatus(final FeedStatus aStatus) {
+		if (imageLabel == null)
 			return;
-			Display.getDefault().asyncExec(new Runnable() {
-				public void run() {
-					if (!theLabel.isDisposed()){
-						theLabel.setImage(getStatusImage(aStatus));
-						theLabel.setToolTipText(feedName + " " + aStatus.name());
-					}
+		Display.getDefault().asyncExec(new Runnable() {
+
+			public void run() {
+				if (!imageLabel.isDisposed()){
+					imageLabel.setImage(getStatusImage(aStatus));
+					String name = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
+					imageLabel.setToolTipText(feedName + " " + name);
 				}
-			});
+			}
+		});
 	}
 
 	/**
@@ -124,10 +123,10 @@ public class FeedStatusLineContribution extends ContributionItem implements
 	 * the values found in a changed FeedComponent.
 	 * 
 	 * @param fc the feed component that has changed
-	 * @see org.marketcetera.core.IFeedComponentListener#feedComponentChanged(org.marketcetera.core.FeedComponent)
+	 * @see org.marketcetera.core.IFeedComponentListener#feedComponentChanged(org.marketcetera.core.IFeedComponent)
 	 */
-	public void feedComponentChanged(FeedComponent fc) {
-		setStatus(fc.getID(), fc.getFeedStatus());
+	public void feedComponentChanged(IFeedComponent fc) {
+		setStatus(fc.getFeedStatus());
 	}
 
 
@@ -140,6 +139,7 @@ public class FeedStatusLineContribution extends ContributionItem implements
 		for (Image image : statusImageMap.values()) {
 			image.dispose();
 		}
+		nullStatusImage.dispose();
 		super.dispose();
 	}
 
