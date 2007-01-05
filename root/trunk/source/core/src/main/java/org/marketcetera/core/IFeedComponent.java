@@ -1,7 +1,7 @@
 package org.marketcetera.core;
 
 @ClassVersion("$Id")
-public interface FeedComponent {
+public interface IFeedComponent {
 
 	public enum FeedType {
 		LIVE, DELAYED, SIMULATED, UNKNOWN

@@ -2,12 +2,12 @@ package org.marketcetera.quotefeed;
 
 import java.io.IOException;
 
-import org.marketcetera.core.FeedComponent;
+import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MSymbol;
 import org.springframework.context.Lifecycle;
 import org.springframework.jms.core.JmsOperations;
 
-public interface IQuoteFeed extends FeedComponent, Lifecycle{
+public interface IQuoteFeed extends IFeedComponent, Lifecycle{
     public void listenLevel2(MSymbol symbol);
     public void unlistenLevel2(MSymbol symbol);
     public void listenQuotes(MSymbol symbol);
