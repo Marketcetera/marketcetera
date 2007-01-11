@@ -132,21 +132,23 @@ public class CommandStatusLineContribution extends ContributionItem {
 	protected void handleKeyReleased(KeyEvent e) {
 		Text theText = (Text) e.widget;
 		String theInputString = theText.getText();
-		try {
-			IPhotonCommand command = null;
-			if ('\r' == e.character) {
-				theText.setText("");
-				command = commandParser.parseCommand(theInputString);
-			} else if (e.keyCode == 't' && ((e.stateMask & SWT.CONTROL) != 0)) {
-				theText.setText("");
-				command = commandParser.parseCommand(theInputString);
-				command = new ShowOrderInTicketCommand(((MessageCommand)command).getMessage());
+		if (theInputString.length() > 0){
+			try {
+				IPhotonCommand command = null;
+				if ('\r' == e.character) {
+					theText.setText("");
+					command = commandParser.parseCommand(theInputString);
+				} else if (e.keyCode == 't' && ((e.stateMask & SWT.CONTROL) != 0)) {
+					theText.setText("");
+					command = commandParser.parseCommand(theInputString);
+					command = new ShowOrderInTicketCommand(((MessageCommand)command).getMessage());
+				}
+				if (command != null){
+					command.execute();
+				}
+			} catch (ParserException e1) {
+				PhotonPlugin.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
 			}
-			if (command != null){
-				command.execute();
-			}
-		} catch (ParserException e1) {
-			PhotonPlugin.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
 		}
 	}
 

@@ -1,25 +1,24 @@
 package org.marketcetera.photon.ui;
 
 import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.ILabelDecorator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.ui.IDecoratorManager;
-import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
+import org.osgi.util.tracker.ServiceTracker;
+import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 /**
  * The FeedStatusLineContribution manifests as an array of LED-like images at the
@@ -36,11 +35,36 @@ public class FeedStatusLineContribution extends ContributionItem implements
 		IFeedComponentListener {
 
 
+	private final class StatusLineServiceTracker extends ServiceTracker {
+		private StatusLineServiceTracker(BundleContext context, String clazz, ServiceTrackerCustomizer customizer) {
+			super(context, clazz, customizer);
+		}
+
+		@Override
+		public Object addingService(ServiceReference reference) {
+			Object service = context.getService(reference);
+			serviceChanged(service);
+			return service;
+		}
+
+		@Override
+		public void modifiedService(ServiceReference reference, Object service) {
+			serviceChanged(service);
+		}
+
+		@Override
+		public void removedService(ServiceReference reference, Object service) {
+			serviceChanged(service);
+		}
+	}
+
+
 	private static EnumMap<FeedStatus, Image> statusImageMap = new EnumMap<FeedStatus, Image>(
 			FeedStatus.class);
 	private Label imageLabel;
-	private String feedName;
+	private String serviceName;
 	private Image nullStatusImage;
+	private ServiceTracker serviceTracker;
 
 	/**
 	 * Create a new FeedStatusLineContribution with the given id.  The number of status
@@ -49,15 +73,27 @@ public class FeedStatusLineContribution extends ContributionItem implements
 	 * @param id the id of this status line contribution (used by the RCP)
 	 * @param pFeedNames the names of the feeds for which to keep status
 	 */
-	public FeedStatusLineContribution(String id, String name) {
+	public FeedStatusLineContribution(String id, String serviceName) {
 		super(id);
-		feedName = name;
+		this.serviceName = serviceName;
 
+		serviceTracker = new StatusLineServiceTracker(PhotonPlugin.getDefault().getBundleContext(), serviceName, null);
+		serviceTracker.open();
+		
 		ImageDescriptor descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
 		nullStatusImage = descriptor.createImage();
 	}
 
 	
+	protected void serviceChanged(Object feed) {
+		FeedStatus theStatus = FeedStatus.UNKNOWN;
+		if (feed != null && feed instanceof IFeedComponent){
+			theStatus = ((IFeedComponent)feed).getFeedStatus();
+		}
+		setStatus(theStatus);
+	}
+
+
 	/**
 	 * Puts the correct number of status indicator images into the status line.
 	 * 
@@ -112,7 +148,7 @@ public class FeedStatusLineContribution extends ContributionItem implements
 				if (!imageLabel.isDisposed()){
 					imageLabel.setImage(getStatusImage(aStatus));
 					String name = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
-					imageLabel.setToolTipText(feedName + " " + name);
+					imageLabel.setToolTipText(serviceName + " " + name);
 				}
 			}
 		});
@@ -140,6 +176,7 @@ public class FeedStatusLineContribution extends ContributionItem implements
 			image.dispose();
 		}
 		nullStatusImage.dispose();
+		serviceTracker.close();
 		super.dispose();
 	}
 

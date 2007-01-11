@@ -81,12 +81,12 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 				randAsk = getRandPrice(symbol);
 				randBid = randAsk.subtract(getRandMarketWidth(randAsk));
 			}
-			addGroup(quoteMessage, MDEntryType.BID, randBid.setScale(2, RoundingMode.HALF_UP), new BigDecimal(200), new Date(), "BGUS", quoteMessage);
-			addGroup(quoteMessage, MDEntryType.OFFER, randAsk.setScale(2, RoundingMode.HALF_UP), new BigDecimal(300), new Date(), "BGUS", quoteMessage);
+			addGroup(quoteMessage, MDEntryType.BID, randBid.setScale(2, RoundingMode.HALF_UP), new BigDecimal(200), new Date(), "BGUS");
+			addGroup(quoteMessage, MDEntryType.OFFER, randAsk.setScale(2, RoundingMode.HALF_UP), new BigDecimal(300), new Date(), "BGUS");
 			quoteMessage.setString(LastPx.FIELD,randBid.add(randAsk).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP).toPlainString());
 			return quoteMessage;	
 		}
-		private void addGroup(Message message, char side, BigDecimal price, BigDecimal quantity, Date time, String mkt, Message refreshMessage) {
+		private void addGroup(Message message, char side, BigDecimal price, BigDecimal quantity, Date time, String mkt) {
 			MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
 			group.set(new MDEntryType(side));
 			group.set(new MDEntryTime(time));

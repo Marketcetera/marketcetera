@@ -43,6 +43,7 @@ public class BookComposite extends Composite
 	private IndexedTableViewer bidViewer;
 	private IndexedTableViewer askViewer;
 	private final FormToolkit toolkit;
+	private Message currentMarketRefresh;
 
 	public BookComposite(Composite parent, int style){
 		this(parent, style, null);
@@ -110,6 +111,7 @@ public class BookComposite extends Composite
 
 
 	public void setInput(Message marketRefresh){
+		currentMarketRefresh = marketRefresh;
 		boolean hadOldInput = bidViewer.getInput()!= null;
 		if (marketRefresh == null) {
 			if (!isDisposed()) {
@@ -123,6 +125,10 @@ public class BookComposite extends Composite
 		if (!hadOldInput && marketRefresh != null){
 			packColumns();
 		}
+	}
+	
+	public Message getInput(){
+		return currentMarketRefresh;
 	}
 	
 	public EventList<Group> getBookEntryList(Message marketRefresh, char mdEntryType)

@@ -3,14 +3,11 @@ package org.marketcetera.photon;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.LinkedList;
-import java.util.List;
 
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTopic;
-import org.apache.activemq.network.jms.JmsQueueConnector;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -23,29 +20,23 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.messaging.JMSFeedComponentAdapter;
-import org.marketcetera.photon.messaging.MarketDataViewAdapter;
-import org.marketcetera.photon.messaging.ScriptEventAdapter;
+import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.messaging.SpringUtils;
-import org.marketcetera.photon.messaging.StockOrderTicketAdapter;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
-import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
 import org.marketcetera.photon.scripting.Classpath;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
-import org.marketcetera.photon.views.MarketDataView;
-import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
-import org.marketcetera.quotefeed.IQuoteFeed;
 import org.osgi.framework.BundleContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsOperations;
+import org.springframework.jms.listener.SessionAwareMessageListener;
+
+import quickfix.Message;
 
 /**
  * The main plugin class to be used in the Photon application.
@@ -64,11 +55,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private PooledConnectionFactory pooledInternalConnectionFactory;
 
-	private IQuoteFeed quoteFeed;
-
 	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
-
-	private List<SimpleMessageListenerContainer> messageListenerContainers = new LinkedList<SimpleMessageListenerContainer>();
 
 	private JmsOperations quoteJmsOperations;
 
@@ -82,9 +69,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private IDFactory idFactory;
 
-	private ClassPathXmlApplicationContext jmsApplicationContext;
-
-	private JmsOperations outgoingJmsOperations;
+	private BundleContext bundleContext;
 	
 
 
@@ -93,11 +78,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private ScriptChangesAdapter scriptChangesAdapter;
 
-	private List<IFeedComponent> feeds = new LinkedList<IFeedComponent>();
-
-	private JMSFeedComponentAdapter jmsFeedComponentAdapter;
-
-	private QuoteFeedComponentAdapter quoteFeedAdapter;
+	private SimpleMessageListenerContainer registryListener;
 
 	/**
 	 * The constructor.
@@ -111,6 +92,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		bundleContext = context;
 		
 		// This sets the internal broker to use on thread per "listener"?
 		// Needed because the version of JRuby we're using doesn't play well
@@ -124,8 +106,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		initInternalConnectionFactory();
 		initFIXMessageHistory();
 		initMessageListeners();
-		initQuoteFeedComponentAdapter();
-		initJMSFeedComponentAdapter();
 		initScriptRegistry();
 		initPhotonController();
 	}
@@ -173,16 +153,20 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
 				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
 		
-		createScriptListenerContainer(scriptRegistry);
+		registryListener = plugin.newQuoteListenerForAdapter(new DirectMessageListenerAdapter() {
+			@Override
+			protected Object doOnMessage(Object convertedMessage) {
+				try {
+					scriptRegistry.onEvent((Message) convertedMessage);
+				} catch (Exception e) {
+					logger.error("Exception in script ", e);
+				}
+				return null;
+			}
+		});
 		
 	}
 
-	private void createScriptListenerContainer(ScriptRegistry scriptRegistry) {
-		ScriptEventAdapter adapter = new ScriptEventAdapter();
-		adapter.setRegistry(scriptRegistry);
-		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(internalConnectionFactory, adapter, quotesTopic, null);
-		messageListenerContainers.add(container);
-	}
 
 	/**
 	 * This method is called when the plug-in is stopped
@@ -195,14 +179,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptChangesAdapter);
 			scriptRegistry = null;
 		}
-		stopMessageListenerContainers();
-	}
-
-	private void stopMessageListenerContainers() {
-		for (SimpleMessageListenerContainer container : messageListenerContainers) {
-			container.stop();
-		}
-		messageListenerContainers.clear();
+		if (registryListener != null)
+			registryListener.stop();
 	}
 
 	/**
@@ -233,18 +211,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		MessageBundleManager.registerCoreMessageBundle();
 		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
-	}
-
-	private void initQuoteFeedComponentAdapter() {
-		quoteFeedAdapter = new QuoteFeedComponentAdapter();
-		quoteFeedAdapter.setQuoteJmsOperations(quoteJmsOperations);
-		feeds.add(quoteFeedAdapter);
-	}
-
-	private void initJMSFeedComponentAdapter() {
-		jmsFeedComponentAdapter = new JMSFeedComponentAdapter();
-		jmsFeedComponentAdapter.setPhotonPlugin(this);
-		feeds.add(jmsFeedComponentAdapter);
 	}
 
 	private void initMessageListeners(){
@@ -294,15 +260,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return fixMessageHistory;
 	}
 
-	public IQuoteFeed getQuoteFeed() {
-		return ((IQuoteFeed)quoteFeedAdapter.getDelegateFeedComponent());
-	}
-	
-	public QuoteFeedComponentAdapter getQuoteFeedComponentAdapter() {
-		return quoteFeedAdapter;
-	}
-
-
 	public ScriptRegistry getScriptRegistry() {
 		return scriptRegistry;
 	}
@@ -326,66 +283,20 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return idFactory;
 	}
 
-
-	public void registerMarketDataView(MarketDataView view) {
-		MarketDataViewAdapter adapter = new MarketDataViewAdapter();
-		adapter.setMarketDataView(view);
-		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(
-				internalConnectionFactory, adapter, quotesTopic, null);
-		view.setQuoteFeedAdapter(quoteFeedAdapter);
-		messageListenerContainers.add(container);
-	}
-	
-	public void unregisterMarketDataView(MarketDataView view) {
-		view.setQuoteFeedAdapter(null);
-		for (SimpleMessageListenerContainer container : messageListenerContainers) {
-			Object messageListener = container.getMessageListener();
-			if (messageListener instanceof MarketDataViewAdapter) {
-				MarketDataViewAdapter adapter = (MarketDataViewAdapter) messageListener;
-				if (adapter.getMarketDataView() == view){
-					messageListenerContainers.remove(container);
-					container.stop();
-					return;
-				}
-			}
-		}
+	public BundleContext getBundleContext() {
+		return bundleContext;
 	}
 
-	public void registerStockOrderTicket(StockOrderTicket ticket){
-		StockOrderTicketAdapter adapter = new StockOrderTicketAdapter();
-		adapter.setStockOrderTicket(ticket);
-		SimpleMessageListenerContainer container = SpringUtils.createSimpleMessageListenerContainer(
-				internalConnectionFactory, adapter, quotesTopic, null);
-		ticket.setQuoteFeedAdapter(quoteFeedAdapter);
-		messageListenerContainers.add(container);
+	public JmsOperations getQuoteJmsOperations() {
+		return quoteJmsOperations;
 	}
 
-	public void unregisterStockOrderTicket(StockOrderTicket ticket) {
-		ticket.setQuoteFeedAdapter(null);
-		for (SimpleMessageListenerContainer container : messageListenerContainers) {
-			Object messageListener = container.getMessageListener();
-			if (messageListener instanceof StockOrderTicketAdapter) {
-				StockOrderTicketAdapter adapter = (StockOrderTicketAdapter) messageListener;
-				if (adapter.getStockOrderTicket() == ticket){
-					messageListenerContainers.remove(container);
-					container.stop();
-					return;
-				}
-			}
-		}
-		
-	}
 
-	public void setOutgoingJMSOperations(JmsOperations outgoingJmsOperations) {
-		this.outgoingJmsOperations = outgoingJmsOperations;
+	public SimpleMessageListenerContainer newQuoteListenerForAdapter(SessionAwareMessageListener adapter)
+	{
+		SimpleMessageListenerContainer container = 
+			SpringUtils.createSimpleMessageListenerContainer(
+					internalConnectionFactory, adapter, quotesTopic, null);
+		return container;
 	}
-
-	public ClassPathXmlApplicationContext getJMSApplicationContext() {
-		return this.jmsApplicationContext;
-	}
-
-	public JMSFeedComponentAdapter getJMSFeedComponentAdapter() {
-		return jmsFeedComponentAdapter;
-	}
-
 }
