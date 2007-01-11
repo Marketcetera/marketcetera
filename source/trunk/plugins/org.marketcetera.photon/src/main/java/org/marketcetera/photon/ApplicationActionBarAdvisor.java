@@ -25,6 +25,8 @@ import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.WebHelpAction;
+import org.marketcetera.photon.messaging.JMSFeedService;
+import org.marketcetera.photon.quotefeed.QuoteFeedService;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
 import org.marketcetera.photon.ui.FeedStatusLineContribution;
 import org.marketcetera.quotefeed.IQuoteFeed;
@@ -317,17 +319,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	 */
 	@Override
 	protected void fillStatusLine(IStatusLineManager statusLine) {
-		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		
-		IQuoteFeed quoteFeed = plugin.getQuoteFeed();
-		String quoteFeedID = "quoteFeedStatus";
-		if (quoteFeed != null) quoteFeedID = quoteFeed.getID();
 
-		FeedStatusLineContribution jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", "Message");
-		FeedStatusLineContribution quoteFeedStatusLineContribution = new FeedStatusLineContribution(quoteFeedID, "Quote" );
-
-		plugin.getJMSFeedComponentAdapter().addFeedComponentListener(jmsStatusLineContribution);
-		plugin.getQuoteFeedComponentAdapter().addFeedComponentListener(quoteFeedStatusLineContribution);
+		FeedStatusLineContribution jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", JMSFeedService.class.getName());
+		FeedStatusLineContribution quoteFeedStatusLineContribution = new FeedStatusLineContribution("quoteFeedStatus", QuoteFeedService.class.getName());
 
 		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
 

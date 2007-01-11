@@ -7,10 +7,11 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.jms.core.JmsOperations;
-import org.springframework.jms.core.JmsTemplate;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -42,8 +43,7 @@ public class PhotonController {
 
 	private IDFactory idFactory;
 	
-	private JmsOperations jmsOperations;
-
+	ServiceTracker jmsServiceTracker;
 
 	/** Creates a new instance of OrderManager with the specified {@link IDFactory}--
 	 * used to create new order id's among other things,
@@ -54,7 +54,9 @@ public class PhotonController {
 	 * 
 	 */
 	public PhotonController(){
-		
+		jmsServiceTracker = new ServiceTracker(PhotonPlugin.getDefault().getBundleContext(),
+				JMSFeedService.class.getName(), null);
+		jmsServiceTracker.open();
 	}
 
 	public void setMessageHistory(FIXMessageHistory fixMessageHistory) 
@@ -214,7 +216,9 @@ public class PhotonController {
 	}
 
 	private void convertAndSend(Message fixMessage) {
-		if (jmsOperations != null){
+		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
+		JmsOperations jmsOperations;
+		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
 			jmsOperations.convertAndSend(fixMessage);
 		} else {
 			internalMainLogger.error("Could not send message, not connected");
@@ -239,12 +243,5 @@ public class PhotonController {
 		this.internalMainLogger = mainConsoleLogger;
 	}
 
-	public JmsOperations getJmsOperations() {
-		return jmsOperations;
-	}
-
-	public void setJmsOperations(JmsOperations jmsOperations) {
-		this.jmsOperations = jmsOperations;
-	}
 
 }

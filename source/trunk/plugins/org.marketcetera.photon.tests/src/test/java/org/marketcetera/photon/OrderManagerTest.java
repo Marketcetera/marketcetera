@@ -82,7 +82,6 @@ public class OrderManagerTest extends TestCase {
 		photonController = new ImmediatePhotonController();
 		photonController.setMessageHistory(messageHistory);
 		photonController.setIDFactory(idFactory);
-		photonController.setJmsOperations(new NullJmsOperations());
 	}
 
 	

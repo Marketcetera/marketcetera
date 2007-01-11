@@ -12,6 +12,7 @@ import org.marketcetera.photon.scripting.ScriptRegistryTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
+import org.marketcetera.photon.views.MarketDataViewTest;
 import org.marketcetera.photon.views.StockOrderTicketViewTest;
 
 public class TS_Photon {
@@ -27,6 +28,7 @@ public class TS_Photon {
 		suite.addTestSuite(JRubyBSFTest.class);
 		suite.addTestSuite(ClasspathTest.class);
 		suite.addTestSuite(ScriptChangesAdapterTest.class);
+		suite.addTestSuite(MarketDataViewTest.class);
 		return suite;
 	}
 

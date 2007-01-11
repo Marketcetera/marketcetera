@@ -1,39 +1,25 @@
 package org.marketcetera.photon;
 
-import java.io.IOException;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.SimpleLayout;
-import org.eclipse.core.internal.jobs.JobStatus;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
-import org.eclipse.ui.progress.IProgressService;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
-import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.actions.ReconnectJMSAction;
-import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
+import org.marketcetera.photon.actions.ReconnectJMSJob;
+import org.marketcetera.photon.actions.ReconnectQuoteFeedJob;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
 import org.marketcetera.photon.ui.MainConsole;
-import org.marketcetera.photon.views.WebBrowserView;
-import org.marketcetera.quotefeed.IQuoteFeed;
 
 /**
  * Required by the RCP platform this class is responsible for setting up the
@@ -155,38 +141,32 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 
 	private void startJMS() {
-		IProgressService service = PlatformUI.getWorkbench().getProgressService();
-		try {
-			PhotonPlugin plugin = PhotonPlugin.getDefault();
-			ReconnectJMSAction.startJMS(plugin.getJMSFeedComponentAdapter(),service, plugin);
-		} catch (Throwable t){
-			PhotonPlugin.getMainConsoleLogger().error("Could not connect to message queue", t);
-		}
+		ReconnectJMSJob job = new ReconnectJMSJob("Reconnect message server");
+		job.schedule();
 	}
 
 
 	private void stopJMS() {
-		ReconnectJMSAction.stopJMS(PhotonPlugin.getDefault().getJMSFeedComponentAdapter(), PhotonPlugin.getDefault());
+		try {
+			ReconnectJMSJob job = new ReconnectJMSJob("Disconnect");
+			job.disconnect();
+		} catch (Throwable t){
+			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);
+		}
 	}
 	
 
 	private void startQuoteFeed() {
-		QuoteFeedComponentAdapter quoteFeed = PhotonPlugin.getDefault().getQuoteFeedComponentAdapter();
-		try {
-			quoteFeed.afterPropertiesSet();
-		} catch (Exception ex) {
-			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
-			mainConsoleLogger.error("Exception starting quote feed", ex);
-			mainConsoleLogger.debug(ex.toString());
-		}
+		ReconnectQuoteFeedJob job = new ReconnectQuoteFeedJob("Reconnect quote feed");
+		job.schedule();
 	}
 	
 	private void stopQuoteFeed() {
-    	IQuoteFeed quoteFeed = PhotonPlugin.getDefault().getQuoteFeed();
-    	if (quoteFeed != null)
-    	{
-    		quoteFeed.stop();
-    	}
+		try {
+			ReconnectQuoteFeedJob job = new ReconnectQuoteFeedJob("Disconnect");
+			job.disconnect();
+		} catch (Throwable t){
+			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);
+		}
 	}
-
 }

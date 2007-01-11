@@ -14,13 +14,15 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.quotefeed.IQuoteFeedAware;
-import org.marketcetera.photon.quotefeed.QuoteFeedComponentAdapter;
+import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
+import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
+import org.marketcetera.photon.quotefeed.QuoteFeedService;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.quotefeed.IQuoteFeed;
+import org.osgi.util.tracker.ServiceTracker;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -34,11 +36,10 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
-public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMSymbolListener {
+public class MarketDataView extends MessagesView implements IMSymbolListener {
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
 
 	private static final int LAST_NORMAL_COLUMN = 1;
-	private QuoteFeedComponentAdapter quoteFeedAdapter;
 	
 	public enum MarketDataColumns
 	{
@@ -53,17 +54,35 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 		public String toString() {
 			return mName;
 		}
-	};
+	}
+
+	private ServiceTracker quoteFeedTracker;
+
+	private SimpleMessageListenerContainer quoteListener;
 
 	public MarketDataView()
 	{
 		super(true);
+		quoteFeedTracker = new ServiceTracker(
+				PhotonPlugin.getDefault().getBundleContext(),
+				QuoteFeedService.class.getName(),
+				null);
+		quoteFeedTracker.open();
+		
+		quoteListener = PhotonPlugin.getDefault().newQuoteListenerForAdapter(new DirectMessageListenerAdapter()
+		{
+			@Override
+			protected Object doOnMessage(Object convertedMessage) {
+				MarketDataView.this.onQuote((Message) convertedMessage);
+				return null;
+			}
+		});
+		quoteListener.afterPropertiesSet();
 	}
 	
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
-		PhotonPlugin.getDefault().registerMarketDataView(this);
 	    this.setInput(new BasicEventList<MessageHolder>());
 	}
 
@@ -71,7 +90,8 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 	
 	@Override
 	public void dispose() {
-		PhotonPlugin.getDefault().unregisterMarketDataView(this);
+		quoteListener.stop();
+		quoteFeedTracker.close();
 		super.dispose();
 	}
 	
@@ -167,7 +187,8 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 	public void onQuote(final Message aQuote) {
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				updateQuote(aQuote);
+				if (!getMessagesViewer().getTable().isDisposed())
+					updateQuote(aQuote);
 			}
 		});
 	}
@@ -202,6 +223,12 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 		}
 
 		public void modify(Object element, String property, Object value) {
+			IQuoteFeed quoteFeed = getQuoteFeed();
+			if (quoteFeed == null){
+				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+				return;
+			}
+
 			String stringValue = value.toString();
 			if (listContains(stringValue)){
 				return;
@@ -209,7 +236,7 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 			TableItem tableItem = (TableItem) element;
 			MessageHolder messageHolder = (MessageHolder)tableItem.getData();
 			Message message = messageHolder.getMessage();
-			IQuoteFeed quoteFeed = ((IQuoteFeed)quoteFeedAdapter.getDelegateFeedComponent());
+			
 			try {
 				MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
 				if (quoteFeed != null)
@@ -306,20 +333,33 @@ public class MarketDataView extends MessagesView implements IQuoteFeedAware, IMS
 		
 	}
 
-	public void setQuoteFeedAdapter(QuoteFeedComponentAdapter feedAdapter) {
-		quoteFeedAdapter = feedAdapter;
+	
+	public void onAssertSymbol(MSymbol symbol) {
+		addSymbol(symbol);
 	}
 
-	public void onAssertSymbol(MSymbol symbol) {
+	/**
+	 * @param symbol
+	 */
+	public void addSymbol(MSymbol symbol) {
+		IQuoteFeed quoteFeed = getQuoteFeed();
+		if (quoteFeed == null){
+			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			return;
+		}
+
 		EventList<MessageHolder> list = getInput();
 		Message message = new Message();
 		message.setField(new Symbol(symbol.toString()));
 		list.add(new MessageHolder(message));
-		IQuoteFeed quoteFeed = (IQuoteFeed) quoteFeedAdapter.getDelegateFeedComponent();
-		if (quoteFeed != null){
-			quoteFeed.listenQuotes(symbol);
-			getMessagesViewer().refresh();
-		}
-	}
 
+		quoteFeed.listenQuotes(symbol);
+		getMessagesViewer().refresh();
+	}
+	
+	private IQuoteFeed getQuoteFeed() {
+		QuoteFeedService service = (QuoteFeedService) quoteFeedTracker.getService();
+		return (IQuoteFeed) (service == null ? null : service.getQuoteFeed());
+	}
+	
 }
