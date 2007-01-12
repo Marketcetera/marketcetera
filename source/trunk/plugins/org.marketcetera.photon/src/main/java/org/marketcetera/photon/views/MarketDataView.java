@@ -194,14 +194,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	}
 
 
-	public void onTrade(Message arg0) {
-		//do nothing
-	}
-
-	public void onTrades(Message[] messageArray) {
-		//do nothing
-	}
-
 	class MarketDataCellModifier implements ICellModifier
 	{
 		private final MarketDataView view;
@@ -357,9 +349,49 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		getMessagesViewer().refresh();
 	}
 	
+	
+	
 	private IQuoteFeed getQuoteFeed() {
 		QuoteFeedService service = (QuoteFeedService) quoteFeedTracker.getService();
 		return (IQuoteFeed) (service == null ? null : service.getQuoteFeed());
+	}
+
+	public void removeItem(MessageHolder holder){
+		IQuoteFeed quoteFeed = getQuoteFeed();
+		if (quoteFeed == null){
+			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			return;
+		}
+		try {
+			quoteFeed.unlistenQuotes(new MSymbol(holder.getMessage().getString(Symbol.FIELD)));
+		} catch (FieldNotFound e) {
+		}
+		getInput().remove(holder);
+		
+	}
+	
+	public void removeSymbol(MSymbol symbol) {
+		IQuoteFeed quoteFeed = getQuoteFeed();
+		if (quoteFeed == null){
+			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			return;
+		}
+
+		quoteFeed.unlistenQuotes(symbol);
+
+		EventList<MessageHolder> list = getInput();
+		for (MessageHolder holder : list) {
+			try {
+				String messageSymbolString = holder.getMessage().getString(Symbol.FIELD);
+				if (messageSymbolString.equals(symbol.toString())){
+					list.remove(holder);
+					break;
+				}
+			} catch (FieldNotFound e) {
+			}
+		}
+		getMessagesViewer().refresh();
+		
 	}
 	
 }

@@ -45,6 +45,7 @@ public class ScriptRegistry implements InitializingBean {
 	protected BSFManager bsfManager;
 	protected BSFEngine engine;
 	private Classpath additionalClasspath =  new Classpath();
+	private Classpath currentClasspath;
 	
 	
 	static String [] JRUBY_PLUGIN_PATH = {
@@ -68,11 +69,11 @@ public class ScriptRegistry implements InitializingBean {
 
 	
 	private void initBSFManager() throws BSFException {
-		Classpath classpath = new Classpath();
-		classpath.addAll(additionalClasspath);
-		updateClasspath(classpath, EclipseUtils.getPluginPath(JRubyPlugin.getDefault()), JRUBY_PLUGIN_PATH);
-		updateClasspath(classpath, EclipseUtils.getWorkspacePath(), JRUBY_WORKSPACE_PATH);
-		String classpathString = classpath.toString();
+		currentClasspath = new Classpath();
+		currentClasspath.addAll(additionalClasspath);
+		updateClasspath(currentClasspath, EclipseUtils.getPluginPath(JRubyPlugin.getDefault()), JRUBY_PLUGIN_PATH);
+		updateClasspath(currentClasspath, EclipseUtils.getWorkspacePath(), JRUBY_WORKSPACE_PATH);
+		String classpathString = currentClasspath.toString();
 		bsfManager = new BSFManager();
 		bsfManager.setClassPath(classpathString);
 
@@ -181,4 +182,16 @@ public class ScriptRegistry implements InitializingBean {
 		bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_message($message)");
 	}
 
+	public void projectAdded(String absolutePath) {
+		currentClasspath.add(0, absolutePath);
+		bsfManager.setClassPath(currentClasspath.toString());
+	}
+
+
+	public void projectRemoved(String absolutePath) {
+		currentClasspath.remove(absolutePath);
+		bsfManager.setClassPath(currentClasspath.toString());
+	}
+
+		
 }
