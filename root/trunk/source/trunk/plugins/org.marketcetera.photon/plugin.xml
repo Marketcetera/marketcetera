@@ -242,4 +242,34 @@
             style="push"/>
    </viewerContribution> 
    </extension>
+   
+   <extension
+         point="org.eclipse.ui.menus">
+      <group
+            id="org.marketcetera.photon.ui.photonTrimGroup">
+         <location>
+            <bar type="trim"/>
+            <order position="before" relativeTo="status"/>
+         </location>
+      </group>
+      <widget class="org.marketcetera.photon.ui.CommandLineTrimWidget" 
+      		  id="org.marketcetera.photon.ui.commandLineTrimWidget">
+         <location>
+            <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
+         </location>
+      </widget>
+      <widget class="org.marketcetera.photon.ui.StatusImageTrimWidget" 
+      		  id="org.marketcetera.photon.ui.statusImageTrimWidget:quoteFeedStatus">
+         <location>
+            <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
+         </location>
+      </widget>
+      <widget class="org.marketcetera.photon.ui.StatusImageTrimWidget" 
+      		  id="org.marketcetera.photon.ui.statusImageTrimWidget:jmsStatus">
+         <location>
+            <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
+         </location>
+      </widget>
+   </extension>
+   
 </plugin>
