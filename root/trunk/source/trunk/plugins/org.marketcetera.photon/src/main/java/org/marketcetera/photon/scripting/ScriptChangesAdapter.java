@@ -95,30 +95,47 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 	}
 
 
-	public void resourceChanged(IResourceChangeEvent event) {
-		IResourceDeltaVisitor resourceDeltaVisitor = new IResourceDeltaVisitor() {
-			public boolean visit(IResourceDelta delta) throws CoreException {
-				if (delta.getResource().getType() == IResource.FILE
-						&& (delta.getFlags() & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
-
-					IPath resourcePath = delta.getResource().getFullPath();
-					if (isScript(resourcePath))
-					{
-						
-						try {
-							registry.scriptChanged(normalizeName(resourcePath.toString()));
-						} catch (BSFException bsfe) {
+ 	public void resourceChanged(IResourceChangeEvent event) {
+ 		IResourceDeltaVisitor resourceDeltaVisitor = new IResourceDeltaVisitor() {
+ 			public boolean visit(IResourceDelta delta) throws CoreException {
+				IResource resource = delta.getResource();
+				int resourceType = resource.getType();
+				int resourceFlags = delta.getFlags();
+				IPath resourcePath = resource.getFullPath();
+				if (resourceType == IResource.FILE
+						&& (resourceFlags & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
+ 
+ 					if (isScript(resourcePath))
+ 					{
+ 						try {
+ 							registry.scriptChanged(
+ 									normalizeName(getProjectRelativePath(resourcePath))
+ 									);
+ 						} catch (BSFException bsfe) {
 							// why oh wy didn't they just allow a cause parameter
 							// to the CoreException constructor?
 							CoreException ex = new CausedCoreException(Status.CANCEL_STATUS, bsfe);
 							throw ex;
 						}
+ 					}
+ 					 
+ 					return false;  //agl skip children
+				} else if (resourceType == IResource.FILE && resourcePath.lastSegment().equals(".project")){
+					String absolutePath = resource.getLocation().removeLastSegments(1).toOSString();
+					if ((resourceFlags & (IResourceDelta.ADDED))!=0) 
+					{
+						// project added
+						registry.projectAdded(absolutePath);
 					}
-
-					return false;  //agl skip children
-				}
-
-				return true;  //agl visit children
+					else if ((resourceFlags & IResourceDelta.REMOVED)!=0)
+					{
+						// project removed
+						registry.projectRemoved(absolutePath);
+					}
+					return false;  //gjm skip children
+ 				}
+ 
+ 				return true;  //agl visit children
 			}
 
 		};
@@ -135,6 +152,10 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 			}
 		}
 	}
+ 	
+ 	String getProjectRelativePath(IPath path){
+ 		return path.removeFirstSegments(1).toString();
+ 	}
 
 	protected String normalizeName(String string) {
 		if (string.endsWith(".rb")){

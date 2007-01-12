@@ -18,6 +18,7 @@ import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
 import org.marketcetera.photon.actions.ReconnectQuoteFeedJob;
+import org.marketcetera.photon.actions.StartScriptRegistryJob;
 import org.marketcetera.photon.ui.CommandStatusLineContribution;
 import org.marketcetera.photon.ui.MainConsole;
 
@@ -117,10 +118,12 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 				"Application initialized: " + new Date());
 
 		plugin.startScriptRegistry();
+		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
+		job.schedule();
 		startJMS();
 		startQuoteFeed();
 		startIDFactory();
-
+		
 	}
 
 	/** 

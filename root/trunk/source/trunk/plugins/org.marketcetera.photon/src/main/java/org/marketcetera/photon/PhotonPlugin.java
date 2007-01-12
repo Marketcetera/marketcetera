@@ -12,8 +12,11 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -131,13 +134,28 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private void initScriptRegistry() {
 		scriptRegistry = new ScriptRegistry();
-		Classpath classpath = new Classpath();
+		final Classpath classpath = new Classpath();
 		classpath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources"));
+		try {
+			ResourcesPlugin.getWorkspace().getRoot().accept(new IResourceVisitor(){
+				public boolean visit(IResource resource) throws CoreException {
+					if (resource.getType() == IResource.PROJECT)
+					{
+						classpath.add(resource.getLocation().toString());
+						return false;
+					}
+					return true;
+				}
+				
+			});
+		} catch (CoreException e) {
+		}
 		scriptRegistry.setAdditionalClasspath(classpath);
 		scriptChangesAdapter = new ScriptChangesAdapter();
 		scriptChangesAdapter.setRegistry(scriptRegistry);
 		
 	}
+
 
 
 	/**
@@ -207,11 +225,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	}
 
-	public void startScriptRegistry(){
+	public void startScriptRegistry() {
 		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
 		try {
 			scriptChangesAdapter.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
-
 			scriptRegistry.afterPropertiesSet();
 			scriptChangesAdapter.afterPropertiesSet();
 		} catch (BSFException e) {
@@ -236,9 +253,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 				return null;
 			}
 		});
-
 	}
-	
 
 	/**
 	 * Accessor for the console logger singleton.  This logger writes

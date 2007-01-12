@@ -1,11 +1,14 @@
 package org.marketcetera.photon.actions;
 
+import java.util.Iterator;
+
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.MarketDataView;
 
@@ -50,7 +53,7 @@ public class DeleteItemActionDelegate implements IViewActionDelegate {
 		boolean shouldEnable = false;
 		if (incoming instanceof IStructuredSelection) {
 			selection = (IStructuredSelection) incoming;
-			if (selection.size() == 1){
+			if (selection.size() >= 1){
 				Object firstElement = selection.getFirstElement();
 				Message theMessage = null;
 				if (firstElement instanceof Message) {
@@ -67,8 +70,10 @@ public class DeleteItemActionDelegate implements IViewActionDelegate {
 	}
 
 	public void run(IAction action) {
-		Object item = selection.getFirstElement();
-		view.getInput().remove(item);
+		Iterator iter = selection.iterator();
+		while (iter.hasNext()) {
+			view.removeItem((MessageHolder) iter.next());
+		}
 	}
 
 

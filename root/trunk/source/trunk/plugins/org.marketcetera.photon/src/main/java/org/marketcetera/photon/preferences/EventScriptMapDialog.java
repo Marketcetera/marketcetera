@@ -74,7 +74,7 @@ public class EventScriptMapDialog extends Dialog {
 						if (dialog.open() == Window.OK) {
 							Object[] elements = dialog.getResult();
 							IFile rubyScriptFile = (IFile) elements[0];  //agl we're guaranteed a single element which is a ruby file
-							scriptText.setText(rubyScriptFile.getFullPath().toString());  //agl IPath.toString() has a well-defined contract and appears to be the only way to grab a string representation of the relative workspace path
+							scriptText.setText(rubyScriptFile.getFullPath().removeFirstSegments(1).toString());  //agl IPath.toString() has a well-defined contract and appears to be the only way to grab a string representation of the relative workspace path
 							
 							getButton(IDialogConstants.OK_ID).setEnabled(true);
 						}
