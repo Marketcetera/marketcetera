@@ -11,8 +11,10 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -99,14 +101,16 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 				if (delta.getResource().getType() == IResource.FILE
 						&& (delta.getFlags() & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
 
-					IPath resourcePath = delta.getResource().getLocation();
+					IPath resourcePath = delta.getResource().getFullPath();
 					if (isScript(resourcePath))
 					{
 						
 						try {
-							registry.scriptChanged(normalizeName(resourcePath.toOSString()));
-						} catch (BSFException e) {
-							CoreException ex = new CoreException(Status.CANCEL_STATUS);
+							registry.scriptChanged(normalizeName(resourcePath.toString()));
+						} catch (BSFException bsfe) {
+							// why oh wy didn't they just allow a cause parameter
+							// to the CoreException constructor?
+							CoreException ex = new CausedCoreException(Status.CANCEL_STATUS, bsfe);
 							throw ex;
 						}
 					}
@@ -122,7 +126,13 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 		try {
 			event.getDelta().accept(resourceDeltaVisitor);
 		} catch (CoreException e) {
-			PhotonPlugin.getMainConsoleLogger().error("Could not process resource change", e);
+			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
+			mainConsoleLogger.error("Could not process resource change", e);
+			Throwable cause = e.getCause();
+			if (cause instanceof BSFException) {
+				BSFException bsfe = (BSFException) cause;
+				ScriptLoggingUtil.error(mainConsoleLogger, bsfe);
+			}
 		}
 	}
 
@@ -154,6 +164,28 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 		this.registry = registry;
 	}
 
+	class CausedCoreException extends CoreException{
+
+		private Throwable mCause;
+
+		public CausedCoreException(IStatus status, Throwable cause) {
+			super(status);
+			mCause = cause;
+		}
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 9043840065856991021L;
+
+		@Override
+		public Throwable getCause() {
+			return mCause;
+		}
+
+		
+		
+	}
 
 
 	

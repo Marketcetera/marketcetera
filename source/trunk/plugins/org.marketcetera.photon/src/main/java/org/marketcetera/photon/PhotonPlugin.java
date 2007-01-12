@@ -130,40 +130,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	}
 
 	private void initScriptRegistry() {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
 		scriptRegistry = new ScriptRegistry();
 		Classpath classpath = new Classpath();
 		classpath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources"));
 		scriptRegistry.setAdditionalClasspath(classpath);
 		scriptChangesAdapter = new ScriptChangesAdapter();
 		scriptChangesAdapter.setRegistry(scriptRegistry);
-		scriptChangesAdapter.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
-		
-		try {
-			scriptRegistry.afterPropertiesSet();
-			scriptChangesAdapter.afterPropertiesSet();
-		} catch (BSFException e) {
-			Throwable targetException = e.getTargetException();
-			getMainConsoleLogger().error("Exception starting script engine", targetException);
-		} catch (Exception e) {
-			getMainConsoleLogger().error("Exception starting script engine", e);
-		}
-		thePreferenceStore.addPropertyChangeListener(scriptChangesAdapter);
-		
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
-				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
-		
-		registryListener = plugin.newQuoteListenerForAdapter(new DirectMessageListenerAdapter() {
-			@Override
-			protected Object doOnMessage(Object convertedMessage) {
-				try {
-					scriptRegistry.onEvent((Message) convertedMessage);
-				} catch (Exception e) {
-					logger.error("Exception in script ", e);
-				}
-				return null;
-			}
-		});
 		
 	}
 
@@ -235,6 +207,38 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	}
 
+	public void startScriptRegistry(){
+		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
+		try {
+			scriptChangesAdapter.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
+
+			scriptRegistry.afterPropertiesSet();
+			scriptChangesAdapter.afterPropertiesSet();
+		} catch (BSFException e) {
+			Throwable targetException = e.getTargetException();
+			getMainConsoleLogger().error("Exception starting script engine", targetException);
+		} catch (Exception e) {
+			getMainConsoleLogger().error("Exception starting script engine", e);
+		}
+		thePreferenceStore.addPropertyChangeListener(scriptChangesAdapter);
+		
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
+				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
+		
+		registryListener = plugin.newQuoteListenerForAdapter(new DirectMessageListenerAdapter() {
+			@Override
+			protected Object doOnMessage(Object convertedMessage) {
+				try {
+					scriptRegistry.onEvent((Message) convertedMessage);
+				} catch (Exception e) {
+					logger.error("Exception in script ", e);
+				}
+				return null;
+			}
+		});
+
+	}
+	
 
 	/**
 	 * Accessor for the console logger singleton.  This logger writes

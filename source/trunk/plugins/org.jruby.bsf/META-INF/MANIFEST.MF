@@ -7,6 +7,7 @@ Bundle-Activator: org.jruby.bsf.JRubyPlugin
 Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime
+Eclipse-BuddyPolicy: registered
 Eclipse-LazyStart: true
 Bundle-ClassPath: lib/bsf.jar,
  lib/jruby.jar,

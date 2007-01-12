@@ -107,14 +107,16 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
 
 		
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		if (item instanceof CommandStatusLineContribution) {
 			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
-			cslc.setIDFactory(PhotonPlugin.getDefault().getIDFactory());
+			cslc.setIDFactory(plugin.getIDFactory());
 		}
 
 		mainConsoleLogger.info(
 				"Application initialized: " + new Date());
-		
+
+		plugin.startScriptRegistry();
 		startJMS();
 		startQuoteFeed();
 		startIDFactory();

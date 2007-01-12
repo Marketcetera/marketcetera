@@ -8,6 +8,7 @@ Bundle-ClassPath: lib/slf4j-log4j12-1.0-rc5.jar,
  lib/quickfixj-1.0.4.jar
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
+Eclipse-RegisterBuddy: org.jruby.bsf
 Export-Package: .,
  quickfix,
  quickfix.codegen,
@@ -28,4 +29,5 @@ Export-Package: .,
  quickfix.mina.acceptor,
  quickfix.mina.initiator,
  quickfix.mina.message
-Require-Bundle: org.apache.log4j
+Require-Bundle: org.apache.log4j,
+ org.jruby.bsf;resolution:=optional
