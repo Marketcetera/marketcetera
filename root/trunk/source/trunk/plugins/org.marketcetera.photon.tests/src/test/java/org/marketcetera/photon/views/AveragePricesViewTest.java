@@ -2,11 +2,11 @@ package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.photon.ui.IndexedTableViewer;
 
 import quickfix.Message;
 import quickfix.field.AvgPx;
@@ -52,7 +52,7 @@ public class AveragePricesViewTest extends ViewTestBase {
 		fill.setField(new LastShares(91));
 		hist.addIncomingMessage(fill);
 		delay(1);
-		TableViewer tableViewer = view.getMessagesViewer();
+		IndexedTableViewer tableViewer = view.getMessagesViewer();
 		Table table = tableViewer.getTable();
 		assertEquals(1, table.getItemCount());
 		

@@ -57,8 +57,8 @@ public class OrderManagerTest extends TestCase {
     
     static {
             try {
-                    THE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("1974-12-24");
-                    THE_TRANSACT_TIME = new SimpleDateFormat("yyyy-MM-dd").parse("2006-10-04");
+                THE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("1974-12-24");
+                THE_TRANSACT_TIME = new SimpleDateFormat("yyyy-MM-dd").parse("2006-10-04");
             } catch (ParseException e) {
             }
     }
