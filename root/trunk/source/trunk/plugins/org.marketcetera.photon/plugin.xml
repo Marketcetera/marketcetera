@@ -258,13 +258,13 @@
             <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
          </location>
       </widget>
-      <widget class="org.marketcetera.photon.ui.StatusImageTrimWidget" 
+      <widget class="org.marketcetera.photon.ui.StatusImageTrimWidget:org.marketcetera.photon.quotefeed.QuoteFeedService" 
       		  id="org.marketcetera.photon.ui.statusImageTrimWidget:quoteFeedStatus">
          <location>
             <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
          </location>
       </widget>
-      <widget class="org.marketcetera.photon.ui.StatusImageTrimWidget" 
+      <widget class="org.marketcetera.photon.ui.StatusImageTrimWidget:org.marketcetera.photon.messaging.JMSFeedService" 
       		  id="org.marketcetera.photon.ui.statusImageTrimWidget:jmsStatus">
          <location>
             <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>

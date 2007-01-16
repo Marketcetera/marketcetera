@@ -2,6 +2,9 @@ package org.marketcetera.photon.actions;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.ISelectionListener;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -9,7 +12,7 @@ import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.ui.CommandStatusLineContribution;
+import org.marketcetera.photon.ui.CommandLineTrimWidget;
 
 /**
  * FocusCommandAction is the action responsible for putting the
@@ -24,9 +27,8 @@ import org.marketcetera.photon.ui.CommandStatusLineContribution;
 public class FocusCommandAction extends Action implements ISelectionListener,
 		IWorkbenchAction {
 	public final static String ID = "org.marketcetera.photon.FocusCommand";
+	private IWorkbenchWindow window;
 
-	CommandStatusLineContribution commandInput;
-	
 	/**
 	 * Create a new FocusCommandAction with the default Id, ActionDefinitionId, Text
 	 * ToolTipText, and ImageDescriptor, and the specified {@link IWorkbenchWindow}
@@ -36,13 +38,13 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 	 * @param window the application window
 	 * @param commandInput the command input area as a CommandStatusLineContribution
 	 */
-	public FocusCommandAction(IWorkbenchWindow window, CommandStatusLineContribution commandInput) {
+	public FocusCommandAction(IWorkbenchWindow window) {
+		this.window = window;
 		setId(ID);
 		setActionDefinitionId(ID);
 		setText("Goto &command input area");
 		setToolTipText("Put the cursor in the command input area");
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.LIGHTNING));
-		this.commandInput = commandInput;
 	}
 
 	/**
@@ -60,13 +62,25 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 	}
 
 	/**
-	 * Sets the application focus to be the command input area by calling
-	 * {@link CommandStatusLineContribution#setFocus()}.
+	 * Sets the application focus to be the command input area by rooting
+	 * around in the composite hierarchy starting with the top-level shell...
 	 * 
 	 * @see org.eclipse.jface.action.Action#run()
 	 */
 	public void run() {
-		commandInput.setFocus();
+		Control[] children = window.getShell().getChildren();
+		for (Control control : children) {
+			if (control instanceof Composite) {
+				Composite innerControl = (Composite) control;
+				Control [] innerChildren = innerControl.getChildren();
+				for (Control innerChild : innerChildren) {
+					Object innerChildData = innerChild.getData();
+					if (innerChild instanceof Composite && innerChildData != null && innerChildData instanceof CommandLineTrimWidget) {
+						((CommandLineTrimWidget)innerChildData).setFocus();
+					}
+				}
+			}
+		}
 	}
 
 }
