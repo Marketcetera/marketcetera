@@ -6,7 +6,6 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.ICoolBarManager;
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -25,11 +24,6 @@ import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.WebHelpAction;
-import org.marketcetera.photon.messaging.JMSFeedService;
-import org.marketcetera.photon.quotefeed.QuoteFeedService;
-import org.marketcetera.photon.ui.CommandStatusLineContribution;
-import org.marketcetera.photon.ui.FeedStatusLineContribution;
-import org.marketcetera.quotefeed.IQuoteFeed;
 
 /**
  * This class contains the initialization code for the main application
@@ -111,8 +105,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private IWorkbenchAction reconnectJMSAction;
 
-	private CommandStatusLineContribution commandStatusLineContribution;
-
 	private IWorkbenchAction focusCommandAction;
 
 	private WebHelpAction webHelpAction;
@@ -179,7 +171,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
 		
 		//viewSecurityAction = new ViewSecurityAction(window);
-		focusCommandAction = new FocusCommandAction(window, commandStatusLineContribution);  register(focusCommandAction);
+		focusCommandAction = new FocusCommandAction(window);  register(focusCommandAction);
 	}
 
 	/**
@@ -310,27 +302,4 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		//toolBar.add(openOptionsJMSCI);
 	}
 	
-	/**
-	 * Creates the structure of the main application status line.
-	 * Currently consisting of the command entry area, and the JMS
-	 * feed status indicator.
-	 *
-	 * @see org.eclipse.ui.application.ActionBarAdvisor#fillStatusLine(org.eclipse.jface.action.IStatusLineManager)
-	 */
-	@Override
-	protected void fillStatusLine(IStatusLineManager statusLine) {
-		
-
-		FeedStatusLineContribution jmsStatusLineContribution = new FeedStatusLineContribution("jmsStatus", JMSFeedService.class.getName());
-		FeedStatusLineContribution quoteFeedStatusLineContribution = new FeedStatusLineContribution("quoteFeedStatus", QuoteFeedService.class.getName());
-
-		commandStatusLineContribution = new CommandStatusLineContribution(CommandStatusLineContribution.ID);
-
-		statusLine.add(commandStatusLineContribution);
-		
-		statusLine.add(jmsStatusLineContribution);
-		statusLine.add(quoteFeedStatusLineContribution);
-	}
-
-
 }

@@ -20,6 +20,7 @@ import org.marketcetera.photon.quotefeed.QuoteFeedService;
 import org.marketcetera.quotefeed.IQuoteFeed;
 import org.marketcetera.quotefeed.IQuoteFeedFactory;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
 public class ReconnectQuoteFeedJob extends Job {
@@ -59,12 +60,14 @@ public class ReconnectQuoteFeedJob extends Job {
 	    		IQuoteFeedFactory factory = constructor.newInstance(new Object[0]);
 	    		IQuoteFeed targetQuoteFeed = factory.getInstance("", "", "");
 	    		targetQuoteFeed.setQuoteJmsOperations(PhotonPlugin.getDefault().getQuoteJmsOperations());
-	    		targetQuoteFeed.start();
 	    		if (targetQuoteFeed != null
 	    				&& targetQuoteFeed.getFeedStatus() != FeedStatus.ERROR){
 		    		QuoteFeedService feedService = new QuoteFeedService();
 		    		feedService.setQuoteFeed(targetQuoteFeed);
-	    			bundleContext.registerService(QuoteFeedService.class.getName(), feedService, null);
+		    		feedService.afterPropertiesSet();
+	    			ServiceRegistration registration = bundleContext.registerService(QuoteFeedService.class.getName(), feedService, null);
+	    			feedService.setServiceRegistration(registration);
+	    			targetQuoteFeed.start();
 	    			succeeded = true;
 	    		}
 			}

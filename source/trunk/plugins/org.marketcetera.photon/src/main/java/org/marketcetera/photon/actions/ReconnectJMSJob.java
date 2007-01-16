@@ -16,6 +16,7 @@ import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -78,7 +79,8 @@ public class ReconnectJMSJob extends Job {
 
 			feedObject.setJmsOperations(outgoingJmsOperations);
 			feedObject.afterPropertiesSet();
-			bundleContext.registerService(JMSFeedService.class.getName(), feedObject, null);
+			ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedObject, null);
+			feedObject.setServiceRegistration(registration);
 			monitor.worked(1);
 
 		} catch (Throwable t){

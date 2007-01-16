@@ -7,6 +7,7 @@ import javax.jms.JMSException;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.marketcetera.photon.FeedComponentAdapterBase;
 import org.marketcetera.photon.PhotonPlugin;
+import org.osgi.framework.ServiceRegistration;
 import org.springframework.jms.core.JmsOperations;
 
 public class JMSFeedService extends FeedComponentAdapterBase implements ExceptionListener {
@@ -14,6 +15,7 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 	JmsOperations jmsOperations;
 	ClassPathXmlApplicationContext applicationContext;
 	private boolean hasException = false;
+	private ServiceRegistration serviceRegistration;
 	
 	public FeedStatus getFeedStatus() {
 		return hasException ? FeedStatus.ERROR : FeedStatus.AVAILABLE;
@@ -50,6 +52,15 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 		this.jmsOperations = jmsOperations;
 	}
 
+	public void setServiceRegistration(ServiceRegistration serviceRegistration){
+		this.serviceRegistration = serviceRegistration;
+	}
+
+	@Override
+	protected void fireFeedComponentChanged() {
+		if (serviceRegistration != null)
+			serviceRegistration.setProperties(null);
+	}
 
 
 }

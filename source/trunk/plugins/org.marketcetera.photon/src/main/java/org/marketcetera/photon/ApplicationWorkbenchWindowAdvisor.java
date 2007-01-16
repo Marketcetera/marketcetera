@@ -19,7 +19,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
 import org.marketcetera.photon.actions.ReconnectQuoteFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
-import org.marketcetera.photon.ui.CommandStatusLineContribution;
+import org.marketcetera.photon.ui.CommandLineTrimWidget;
 import org.marketcetera.photon.ui.MainConsole;
 
 /**
@@ -88,7 +88,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	@Override
 	public void postWindowOpen() {
 
-		initStatusLine();
 
 		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager()
 				.getConsoles();
@@ -102,22 +101,11 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 				mainConsoleLogger.addAppender(appender);
 			}
 		} 
-				
 
-		IStatusLineManager statusLineManager = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
-		IContributionItem item = statusLineManager.find(CommandStatusLineContribution.ID);
-
-		
-		PhotonPlugin plugin = PhotonPlugin.getDefault();
-		if (item instanceof CommandStatusLineContribution) {
-			CommandStatusLineContribution cslc = (CommandStatusLineContribution) item;
-			cslc.setIDFactory(plugin.getIDFactory());
-		}
 
 		mainConsoleLogger.info(
-				"Application initialized: " + new Date());
+				"Application initializing: " + new Date());
 
-		plugin.startScriptRegistry();
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
 		job.schedule();
 		startJMS();
