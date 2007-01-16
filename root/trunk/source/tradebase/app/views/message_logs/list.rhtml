@@ -75,7 +75,7 @@
     <td><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
     <%= render :partial => 'shared/show_edit_delete_links', 
-               :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'messages_log'} %>
+               :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'message_logs'} %>
   </tr>
 <% end %>
 </table>
