@@ -1,8 +1,11 @@
 package org.marketcetera.photon;
 
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.ThrowableInformation;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
@@ -20,6 +23,8 @@ import org.marketcetera.photon.ui.MainConsole;
  */
 @ClassVersion("$Id$")
 class PhotonConsoleAppender extends AppenderSkeleton {
+	private static final String LAYOUT_PATTERN = "%d{ABSOLUTE} %5p - %m";
+	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
 	private MainConsole console;
 	private Display display;
 
@@ -32,6 +37,9 @@ class PhotonConsoleAppender extends AppenderSkeleton {
 	PhotonConsoleAppender(MainConsole pConsole) {
     	console = pConsole;
     	display = Display.getDefault();
+    	PatternLayout patternLayout = new PatternLayout(LAYOUT_PATTERN);
+    	setLayout(patternLayout);
+    	
     }
 
     /**
@@ -58,7 +66,18 @@ class PhotonConsoleAppender extends AppenderSkeleton {
     	}
         display.asyncExec(new Runnable() {
             public void run() {
-                stream.println(loggingEvent.getRenderedMessage());
+            	String loggableMessage = "";
+            	Layout theLayout = getLayout();
+				if (theLayout != null){
+            		loggableMessage = theLayout.format(loggingEvent);
+            	} else {
+            		loggableMessage = loggingEvent.getRenderedMessage();
+            	}
+                stream.println(loggableMessage);
+                ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
+                if (throwableInformation != null){
+					stream.println(throwableInformation.getThrowable().getMessage());
+                }
             }
         });
     }
@@ -67,7 +86,7 @@ class PhotonConsoleAppender extends AppenderSkeleton {
      * @see org.apache.log4j.AppenderSkeleton#requiresLayout()
      */
     public boolean requiresLayout() {
-        return false;
+        return true;
     }
 
     /**
@@ -78,5 +97,13 @@ class PhotonConsoleAppender extends AppenderSkeleton {
     public void close() {
         // do nothing
     }
+
+	@Override
+	public void setLayout(Layout arg0) {
+		// TODO Auto-generated method stub
+		super.setLayout(arg0);
+	}
+    
+    
 
 }

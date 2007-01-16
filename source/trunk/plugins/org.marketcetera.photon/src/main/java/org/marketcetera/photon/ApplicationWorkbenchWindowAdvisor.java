@@ -97,7 +97,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 				MainConsole mainConsole = (MainConsole) console;
 				PhotonConsoleAppender appender = new PhotonConsoleAppender(
 						mainConsole);
-				appender.setLayout(new SimpleLayout());
 				mainConsoleLogger.addAppender(appender);
 			}
 		} 

@@ -129,7 +129,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		ActiveMQConnectionFactory activeMQConnectionFactory;
 		internalConnectionFactory = activeMQConnectionFactory = new ActiveMQConnectionFactory();
 		pooledInternalConnectionFactory = new PooledConnectionFactory(activeMQConnectionFactory);
-		activeMQConnectionFactory.setBrokerURL("vm://it-oms?broker.persistent=false");
+		activeMQConnectionFactory.setBrokerURL("vm://it-oms?broker.persistent=false&broker.useJmx=false");
 	}
 
 	private void initScriptRegistry() {

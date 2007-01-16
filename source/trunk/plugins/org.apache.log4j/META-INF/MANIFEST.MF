@@ -7,6 +7,7 @@ Bundle-ClassPath: lib/log4j-1.2.9.jar
 Eclipse-LazyStart: false
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
+Eclipse-BuddyPolicy: registered
 Export-Package: org.apache.log4j,
  org.apache.log4j.chainsaw,
  org.apache.log4j.config,

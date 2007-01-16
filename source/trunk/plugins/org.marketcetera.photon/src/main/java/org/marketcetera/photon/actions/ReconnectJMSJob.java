@@ -5,6 +5,8 @@ package org.marketcetera.photon.actions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.jms.JMSException;
+
 import org.apache.log4j.Logger;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -18,9 +20,11 @@ import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsOperations;
 
 /**
@@ -58,8 +62,9 @@ public class ReconnectJMSJob extends Job {
 			logger.info("Exception disconnecting from JMS", ex);
 		}
 		
+		JMSFeedService feedObject = new JMSFeedService();
+		ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedObject, null);
 		try {
-			JMSFeedService feedObject = new JMSFeedService();
 
 			StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext();
 			final ClassPathXmlApplicationContext jmsApplicationContext;
@@ -79,14 +84,19 @@ public class ReconnectJMSJob extends Job {
 
 			feedObject.setJmsOperations(outgoingJmsOperations);
 			feedObject.afterPropertiesSet();
-			ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedObject, null);
 			feedObject.setServiceRegistration(registration);
 			monitor.worked(1);
 
+		} catch (BeanCreationException bce){
+			Throwable toLog = bce.getCause();
+			if (toLog instanceof UncategorizedJmsException)
+				toLog = toLog.getCause();
+			logger.error("Error connecting to message server", toLog);
 		} catch (Throwable t){
 			logger.error("Error connecting to message server", t);
 		} finally {
 			reconnectInProgress.set(false);
+			registration.setProperties(null);
 		}
 		return Status.OK_STATUS;
 	}
