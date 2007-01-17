@@ -14,15 +14,15 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 
 	JmsOperations jmsOperations;
 	ClassPathXmlApplicationContext applicationContext;
-	private boolean hasException = false;
+	private boolean exceptionOccurred = false;
 	private ServiceRegistration serviceRegistration;
 	
 	public FeedStatus getFeedStatus() {
-		return hasException ? FeedStatus.ERROR : FeedStatus.AVAILABLE;
+		return exceptionOccurred ? FeedStatus.ERROR : FeedStatus.AVAILABLE;
 	}
 
 	public void afterPropertiesSet() throws Exception {
-		hasException = false;
+		exceptionOccurred = false;
 	}
 
 	public String getID() {
@@ -31,8 +31,9 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 
 
 	public void onException(JMSException ex) {
-		hasException = true;
+		exceptionOccurred = true;
 		PhotonPlugin.getMainConsoleLogger().error("Message server exception", ex);
+		fireFeedComponentChanged();
 	}
 
 	public ClassPathXmlApplicationContext getApplicationContext() {
@@ -60,6 +61,14 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 	protected void fireFeedComponentChanged() {
 		if (serviceRegistration != null)
 			serviceRegistration.setProperties(null);
+	}
+
+	public boolean hasExceptionOccurred() {
+		return exceptionOccurred;
+	}
+
+	public void setExceptionOccurred(boolean exceptionOccurred) {
+		this.exceptionOccurred = exceptionOccurred;
 	}
 
 

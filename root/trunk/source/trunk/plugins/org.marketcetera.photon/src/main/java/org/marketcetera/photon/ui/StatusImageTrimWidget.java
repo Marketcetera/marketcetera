@@ -1,6 +1,7 @@
 package org.marketcetera.photon.ui;
 
 import java.util.EnumMap;
+import java.util.Map;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -36,10 +37,12 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 
 	private Image nullStatusImage;
 	
-	private static EnumMap<FeedStatus, Image> statusImageMap = new EnumMap<FeedStatus, Image>(
+	private EnumMap<FeedStatus, Image> statusImageMap = new EnumMap<FeedStatus, Image>(
 			FeedStatus.class);
 	private String serviceName;
 	private ServiceTracker serviceTracker;
+	private char idChar;
+	private String name;
 
 	/**
 	 * Create a new FeedStatusLineContribution with the given id.  The number of status
@@ -48,17 +51,55 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	 */
 	public StatusImageTrimWidget() {
 
-		ImageDescriptor descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
-		nullStatusImage = descriptor.createImage();
 	}
 
 	@Override
 	public void init(IWorkbenchWindow workbenchWindow) {
 		super.init(workbenchWindow);
 
+		ImageDescriptor overlayDescriptor = PhotonPlugin.getImageDescriptor("icons/overlay/"+idChar+"-template.gif");
+
+		for (FeedStatus aStatus : FeedStatus.values()) {
+				ImageDescriptor descriptor;
+				switch (aStatus) {
+				case AVAILABLE:
+					descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_AVAILABLE);
+					break;
+				case ERROR:
+					descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_ERROR);
+					break;
+
+				case OFFLINE:
+				case UNKNOWN:
+				default:
+					descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
+					break;
+				}
+
+				Image newImage = createImageWithOverlay(descriptor, overlayDescriptor);
+				statusImageMap.put(aStatus, newImage);
+		}		
+		ImageDescriptor nullDescriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
+		nullStatusImage = createImageWithOverlay(nullDescriptor, overlayDescriptor);
+
 		serviceTracker = new StatusLineServiceTracker(PhotonPlugin.getDefault().getBundleContext(), serviceName, null);
 		serviceTracker.open();
 
+	}
+
+	private Image createImageWithOverlay(ImageDescriptor baseDescriptor, ImageDescriptor overlayDescriptor) {
+		ImageDescriptor[][] overlayDescriptors = new ImageDescriptor[2][2];
+		overlayDescriptors[1][1] = overlayDescriptor;
+		Image baseImage = null;
+	
+		baseImage = baseDescriptor.createImage();
+		ImageOverlayIcon overlay = new ImageOverlayIcon(baseImage, 
+				overlayDescriptors
+				);
+		Image toReturn = overlay.createImage();
+		baseImage.dispose();
+
+		return toReturn;
 	}
 
 	/* (non-Javadoc)
@@ -128,26 +169,6 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 			return nullStatusImage;
 		}
 		Image theImage = statusImageMap.get(aStatus);
-		if (theImage == null) {
-			ImageDescriptor descriptor;
-			switch (aStatus) {
-			case AVAILABLE:
-				descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_AVAILABLE);
-				break;
-			case ERROR:
-				descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_ERROR);
-				break;
-
-			case OFFLINE:
-			case UNKNOWN:
-			default:
-				descriptor = PhotonPlugin.getImageDescriptor(IImageKeys.STATUS_OFFLINE);
-				break;
-			}
-
-			theImage = descriptor.createImage();
-			statusImageMap.put(aStatus, theImage);
-		}
 		return theImage;
 	}
 
@@ -159,8 +180,8 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 			public void run() {
 				if (!imageLabel.isDisposed()){
 					imageLabel.setImage(getStatusImage(aStatus));
-					String name = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
-					imageLabel.setToolTipText(serviceName + " " + name);
+					String statusString = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
+					imageLabel.setToolTipText(name + " " + statusString);
 				}
 			}
 		});
@@ -194,8 +215,18 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 
 
 	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-		String dataString = data.toString();
-		setServiceName(dataString);
+		if ("class".equals(propertyName) && data != null && data instanceof Map){
+			Map<String, String> dataMap = (Map<String, String>) data;
+			for (String aKey : dataMap.keySet()) {
+				if ("service".equals(aKey)){
+					setServiceName(dataMap.get(aKey));
+				} else if ("idChar".equals(aKey)){
+					idChar = dataMap.get(aKey).toLowerCase().charAt(0);
+				} else if ("name".equals(aKey)){
+					name = dataMap.get(aKey);
+				}
+			}
+		}
 	}
 
 	public String getServiceName() {

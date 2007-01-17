@@ -62,8 +62,9 @@ public class ReconnectJMSJob extends Job {
 			logger.info("Exception disconnecting from JMS", ex);
 		}
 		
-		JMSFeedService feedObject = new JMSFeedService();
-		ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedObject, null);
+		boolean succeeded = false;
+		JMSFeedService feedService = new JMSFeedService();
+		ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedService, null);
 		try {
 
 			StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext();
@@ -72,21 +73,22 @@ public class ReconnectJMSJob extends Job {
 			jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerURLContext);
 	
 			SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
-			photonControllerContainer.setExceptionListener(feedObject);
+			photonControllerContainer.setExceptionListener(feedService);
 			
 			monitor.beginTask("Connect message server", 2);
 			jmsApplicationContext.start();
-			feedObject.setApplicationContext(jmsApplicationContext);
+			feedService.setApplicationContext(jmsApplicationContext);
 			monitor.worked(1);
 			
 			JmsOperations outgoingJmsOperations;
 			outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
 
-			feedObject.setJmsOperations(outgoingJmsOperations);
-			feedObject.afterPropertiesSet();
-			feedObject.setServiceRegistration(registration);
+			feedService.setJmsOperations(outgoingJmsOperations);
+			feedService.afterPropertiesSet();
+			feedService.setServiceRegistration(registration);
 			monitor.worked(1);
 
+			succeeded = true;
 		} catch (BeanCreationException bce){
 			Throwable toLog = bce.getCause();
 			if (toLog instanceof UncategorizedJmsException)
@@ -96,6 +98,7 @@ public class ReconnectJMSJob extends Job {
 			logger.error("Error connecting to message server", t);
 		} finally {
 			reconnectInProgress.set(false);
+			feedService.setExceptionOccurred(!succeeded);
 			registration.setProperties(null);
 		}
 		return Status.OK_STATUS;
