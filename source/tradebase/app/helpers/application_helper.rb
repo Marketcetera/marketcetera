@@ -104,7 +104,7 @@ module ApplicationHelper
     end
     
     if(theString.length > maxLen)
-      halfLen = (maxLen / 2.0).ceil - 1 
+      halfLen = (maxLen/2.0).ceil - 1 
       theString = theString[0, halfLen]+".."+theString[-halfLen, halfLen]
     end
     
