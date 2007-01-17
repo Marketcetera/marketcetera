@@ -7,7 +7,7 @@
         <div class="form_left">
             <% for column in Currency.content_columns %>
               <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
-              <div id="<%= column.name %>" class="data view_data"><%=h @currency.send(column.name) %></div>
+              <div id="<%= column.name %>" class="data view_data"><%=df @currency.send(column.name) %></div>
             </p>
             <% end %>
         </div>

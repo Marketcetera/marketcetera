@@ -7,7 +7,7 @@
         <div class="form_left">
             <% for column in SubAccount.content_columns %>
                 <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
-                <div id="<%= column.name %>" class="data view_data"><%=h @sub_account.send(column.name) %></div>
+                <div id="<%= column.name %>" class="data view_data"><%=df @sub_account.send(column.name) %></div>
             <% end %>
             <label for="parent_account" class="view_background">Parent Account</label>
             <div id="parent_account" class="data view_data">
