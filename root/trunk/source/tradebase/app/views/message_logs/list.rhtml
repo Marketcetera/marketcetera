@@ -15,6 +15,7 @@
             <label for="end_date">End date</label>
             <div class="date"><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></div>
         </div>
+        <div class="clear"></div>
        <%= radio_button_tag('search_type', 'a', true,  
             {:id => 'all', :class => 'radio', :checked => 'true'} )%>
        <label for="all">All</label>

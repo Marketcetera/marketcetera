@@ -20,7 +20,7 @@ module ApplicationHelper
     end
   
   end
-  
+
   # displays the passed in value if it's non-zero
   def display_non_zero_value(value)
     if(value == 0) 

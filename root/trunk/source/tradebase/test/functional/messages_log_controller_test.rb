@@ -49,7 +49,18 @@ class MessagesLogControllerTest < MarketceteraTestBase
     assert_response :success
     assert_template 'list'
     assert_equal 2, assigns(:exec_report_pages).length
-                              
-                            
+  end
+
+  # test if the account is empty we still display an &nbsp
+  # this is essentially a test for the display_heper::df function, but since
+  # the h() function is not loaded in unit test we can't test it directly.'
+  def test_empty_account_name_results_in_space
+      # get goog_20 message
+      get :show, :id => 20
+
+      assert_response :success
+      assert_template 'show'
+
+      assert_tag :tag => "div", :attributes => { :id => "account", :class => "data view_data" }, :content => "&nbsp;"
   end
 end

@@ -6,29 +6,29 @@
     <fieldset>
         <div class="form_left">
             <label for="amount" class="view_background">Amount</label>
-            <div id="amount" class="data view_data"><%=h @dividend.amount %></div>
+            <div id="amount" class="data view_data"><%=df @dividend.amount %></div>
 
             <label for="status" class="view_background">Status</label>
-            <div "status" class="data view_data"><%=h @dividend.status %></div>
+            <div "status" class="data view_data"><%=df @dividend.status %></div>
 
             <label for="description" class="view_background">Description</label>
-            <div id="description" class="data view_data"><%=h @dividend.description %></div>
+            <div id="description" class="data view_data"><%=df @dividend.description %></div>
 
             <label for="created_on" class="view_background">Created On</label>
-            <div id="created_on" class="data view_data"><%=h @dividend.created_on %></div>
+            <div id="created_on" class="data view_data"><%=df @dividend.created_on %></div>
         </div>
         <div class="form_right">
             <label for="amount" class="view_background">Announce Date</label>
-            <div id="amount" class="data view_data"><%=h @dividend.announce_date %></div>
+            <div id="amount" class="data view_data"><%=df @dividend.announce_date %></div>
 
             <label for="ex_date" class="view_background">Ex Date</label>
-            <div "ex_date" class="data view_data"><%=h @dividend.ex_date %></div>
+            <div "ex_date" class="data view_data"><%=df @dividend.ex_date %></div>
 
             <label for="payable_date" class="view_background">Payable Date</label>
-            <div id="payable_date" class="data view_data"><%=h @dividend.payable_date %></div>
+            <div id="payable_date" class="data view_data"><%=df @dividend.payable_date %></div>
 
             <label for="updated_on" class="view_background">Updated On</label>
-            <div id="updated_on" class="data view_data"><%=h @dividend.updated_on %></div>
+            <div id="updated_on" class="data view_data"><%=df @dividend.updated_on %></div>
         </div>
         <div class="clear"></div>
     </fieldset>

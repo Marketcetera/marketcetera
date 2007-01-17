@@ -8,34 +8,34 @@
     <fieldset>
         <div class="form_left">
             <label for="m_symbol_root" class="view_background">Symbol</label>
-            <div id="m_symbol_root" class="data view_data"><%= @trade.tradeable_m_symbol_root %></div>
+            <div id="m_symbol_root" class="data view_data"><%=df @trade.tradeable_m_symbol_root %></div>
 
             <label for="trade_quantity" class="view_background">Quantity</label>
-            <div id="trade_quantity" class="data view_data"><%=h @trade.send('quantity') %></div>
+            <div id="trade_quantity" class="data view_data"><%=df @trade.send('quantity') %></div>
             
             <label for="price_per_share" class="view_background">Price Per Share</label>
-            <div id="price_per_share" class="data view_data"><%=h @trade.price_per_share.to_s %></div>
+            <div id="price_per_share" class="data view_data"><%=df @trade.price_per_share.to_s %></div>
 
             <label for="trade_trade_type" class="view_background">Trade type</label>
-            <div id="trade_trade_type" class="data view_data"><%=h get_human_trade_type(@trade.trade_type) %></div>
+            <div id="trade_trade_type" class="data view_data"><%=df get_human_trade_type(@trade.trade_type) %></div>
         </div>
         
         <div class="form_right">
             <label for="side" class="view_background">Side</label>
-            <div id="side" class="data view_data"><%=h Side.get_human_side(@trade.side.to_s) %></div>
+            <div id="side" class="data view_data"><%=df Side.get_human_side(@trade.side.to_s) %></div>
             
             <label for="trade_date" class="view_background">Trade Date</label>
-            <div id="trade_date" class="data view_data"><%=h @trade.journal.post_date %></div>
+            <div id="trade_date" class="data view_data"><%=df @trade.journal.post_date %></div>
             
             <label for="total_commission" class="view_background">Total Commission</label>
-            <div id="total_commission" class="data view_data"><%=h @trade.send('total_commission') %></div>
+            <div id="total_commission" class="data view_data"><%=df @trade.send('total_commission') %></div>
             
             <label for="asset_type" class="view_background">Asset Type</label>
-            <div id="asset_type" class="data view_data"><%=h @trade.tradeable.class %></div>
+            <div id="asset_type" class="data view_data"><%=df @trade.tradeable.class %></div>
         </div>
         <div class="clear"></div>
         <label for="view_trade_comment" class="view_background">Comment</label>
-        <div id="view_trade_comment" class="data view_data"><%=h @trade.send('comment') %></div>
+        <div id="view_trade_comment" class="data view_data"><%=df @trade.send('comment') %></div>
     </fieldset>
 </form>
 
@@ -55,23 +55,23 @@ total_debits = BigDecimal('0')
      %>
     <tr>
     <td><%= (accounting_account_type == :credit ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '' ) %>
-    <%=h posting.sub_account.sub_account_type.description %> </td>
+    <%=df posting.sub_account.sub_account_type.description %> </td>
     <%if (accounting_account_type == :credit)
     total_credits += posting_quantity
     %>
     <td></td>
     <%end%>
-    <td><%=h display_non_zero_value(posting_quantity.abs()) %> </td>
+    <td><%=df display_non_zero_value(posting_quantity.abs()) %> </td>
     <%if (accounting_account_type == :debit)
     total_debits += posting_quantity
     %>
     <td></td>
     <%end%>
-    <td><%=h posting.currency.alpha_code%></td>
+    <td><%=df posting.currency.alpha_code%></td>
     </tr>
 <% end %>
     <tr>
-    <td><em>Totals</em></td><td><%=h total_debits.abs()%></td><td><%=h total_credits.abs()%></td>
+    <td><em>Totals</em></td><td><%=df total_debits.abs()%></td><td><%=df total_credits.abs()%></td>
     <td/>
     </tr>
 </table>

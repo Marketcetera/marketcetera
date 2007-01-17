@@ -5,8 +5,8 @@
     <fieldset>
         <div class="form_left">
             <% for column in MSymbol.content_columns %>
-                <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label> 
-                <div id="<%= column.name %>" class="data view_data"><%=h @m_symbol.send(column.name) %></div>
+                <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
+                <div id="<%= column.name %>" class="data view_data"><%=df @m_symbol.send(column.name) %></div>
             <% end %>
         </div>
         <div class="clear"></div>
