@@ -3,8 +3,6 @@ package org.marketcetera.photon;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.SimpleLayout;
-import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.ui.application.ActionBarAdvisor;
@@ -13,13 +11,13 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
 import org.marketcetera.photon.actions.ReconnectQuoteFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
-import org.marketcetera.photon.ui.CommandLineTrimWidget;
 import org.marketcetera.photon.ui.MainConsole;
 
 /**
@@ -105,6 +103,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		mainConsoleLogger.info(
 				"Application initializing: " + new Date());
 
+		PhotonPlugin.getDefault().ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
 		job.schedule();
 		startJMS();

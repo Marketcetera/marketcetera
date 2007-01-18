@@ -12,6 +12,7 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
+import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -70,6 +71,10 @@ public class ScriptRegistry implements InitializingBean {
 	
 	private void initBSFManager() throws BSFException {
 		currentClasspath = new Classpath();
+		currentClasspath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources"));
+		currentClasspath.add(ResourcesPlugin.getWorkspace().getRoot().getProject(PhotonPlugin.DEFAULT_PROJECT_NAME).getLocation());
+
+		
 		currentClasspath.addAll(additionalClasspath);
 		updateClasspath(currentClasspath, EclipseUtils.getPluginPath(JRubyPlugin.getDefault()), JRUBY_PLUGIN_PATH);
 		updateClasspath(currentClasspath, EclipseUtils.getWorkspacePath(), JRUBY_WORKSPACE_PATH);
