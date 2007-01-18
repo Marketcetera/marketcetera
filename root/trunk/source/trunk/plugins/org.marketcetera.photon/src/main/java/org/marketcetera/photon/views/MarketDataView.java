@@ -35,6 +35,8 @@ import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.matchers.Matcher;
 
 public class MarketDataView extends MessagesView implements IMSymbolListener {
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
@@ -340,17 +342,36 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			return;
 		}
 
-		EventList<MessageHolder> list = getInput();
-		Message message = new Message();
-		message.setField(new Symbol(symbol.toString()));
-		list.add(new MessageHolder(message));
+		if (!hasSymbol(symbol)) {
+			EventList<MessageHolder> list = getInput();
 
-		quoteFeed.listenQuotes(symbol);
-		getMessagesViewer().refresh();
+			Message message = new Message();
+			message.setField(new Symbol(symbol.toString()));
+			list.add(new MessageHolder(message));
+
+			quoteFeed.listenQuotes(symbol);
+			getMessagesViewer().refresh();
+		}
 	}
 	
-	
-	
+	private boolean hasSymbol(final MSymbol symbol) {
+		EventList<MessageHolder> list = getInput();
+			
+		FilterList<MessageHolder> matches = new FilterList<MessageHolder>(list, 
+				new Matcher<MessageHolder>() {
+					public boolean matches(MessageHolder listItem) {
+						try {
+							String listSymbol = listItem.getMessage().getString(Symbol.FIELD).trim().toLowerCase();
+							return listSymbol.equals(symbol.getFullSymbol().trim().toLowerCase());
+						} catch (FieldNotFound e) {
+							return false;
+						}
+					}
+				});
+		boolean rv = !matches.isEmpty();
+		return rv;
+	}
+
 	private IQuoteFeed getQuoteFeed() {
 		QuoteFeedService service = (QuoteFeedService) quoteFeedTracker.getService();
 		return (IQuoteFeed) (service == null ? null : service.getQuoteFeed());
