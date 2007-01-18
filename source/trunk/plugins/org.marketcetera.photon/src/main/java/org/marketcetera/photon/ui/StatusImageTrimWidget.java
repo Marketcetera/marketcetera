@@ -26,8 +26,9 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
 
 /**
- * Bare-bones new status image widget for the status line.
+ * Status image widget for the status line.
  * 
+ * @author gmiller
  * @author andrei@lissovski.org
  */
 public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implements IExecutableExtension {
@@ -44,13 +45,8 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	private char idChar;
 	private String name;
 
-	/**
-	 * Create a new FeedStatusLineContribution with the given id.  The number of status
-	 * indicators is determined by the size of the pFeedNames array parameter.
-	 * 
-	 */
-	public StatusImageTrimWidget() {
 
+	public StatusImageTrimWidget() {
 	}
 
 	@Override
@@ -84,7 +80,6 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 
 		serviceTracker = new StatusLineServiceTracker(PhotonPlugin.getDefault().getBundleContext(), serviceName, null);
 		serviceTracker.open();
-
 	}
 
 	private Image createImageWithOverlay(ImageDescriptor baseDescriptor, ImageDescriptor overlayDescriptor) {
@@ -106,7 +101,6 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	 * @see org.eclipse.jface.menus.AbstractTrimWidget#fill(org.eclipse.swt.widgets.Composite, int, int)
 	 */
 	public void fill(Composite parent, int oldSide, int newSide) {
-		
 		composite = new Composite(parent, SWT.NONE);
 		
 		FillLayout layout = new FillLayout();
@@ -116,6 +110,8 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 		
 		imageLabel = new Label(composite, SWT.NONE);
 		imageLabel.setImage(nullStatusImage);
+
+		updateStatus();
 	}
 
 	/* (non-Javadoc)
@@ -125,7 +121,6 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 		if (composite != null && !composite.isDisposed())
 			composite.dispose();
 		composite = null;
-
 	}
 	
 	/**
@@ -149,12 +144,17 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 		super.finalize();
 	}
 
-	protected void serviceChanged(Object feed) {
+	protected void serviceChanged(Object service) {
+		FeedStatus theStatus = getServiceStatus(service);
+		updateStatus(theStatus);
+	}
+
+	private FeedStatus getServiceStatus(Object service) {
 		FeedStatus theStatus = FeedStatus.UNKNOWN;
-		if (feed != null && feed instanceof IFeedComponent){
-			theStatus = ((IFeedComponent)feed).getFeedStatus();
+		if (service != null && service instanceof IFeedComponent){
+			theStatus = ((IFeedComponent)service).getFeedStatus();
 		}
-		setStatus(theStatus);
+		return theStatus;
 	}
 
 	/**
@@ -172,11 +172,16 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 		return theImage;
 	}
 
-	public void setStatus(final FeedStatus aStatus) {
+	private void updateStatus() {
+		FeedStatus feedStatus = getServiceStatus(serviceTracker.getService());
+		updateStatus(feedStatus);
+	}
+	
+	private void updateStatus(final FeedStatus aStatus) {
 		if (imageLabel == null)
 			return;
-		Display.getDefault().asyncExec(new Runnable() {
 
+		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
 				if (!imageLabel.isDisposed()){
 					imageLabel.setImage(getStatusImage(aStatus));
@@ -235,7 +240,6 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
-
 	}
 
 }
