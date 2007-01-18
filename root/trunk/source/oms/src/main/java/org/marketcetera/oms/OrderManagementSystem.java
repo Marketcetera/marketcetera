@@ -4,7 +4,6 @@ import org.marketcetera.core.*;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
 import java.lang.management.ManagementFactory;
 
 //import org.quickfixj.jmx.JmxExporter;
@@ -17,7 +16,6 @@ import javax.management.JMException;
 
 import quickfix.Session;
 import quickfix.SocketInitiator;
-import quickfix.mina.SessionConnector;
 
 /**
  * OrderManagementSystem
@@ -75,10 +73,7 @@ public class OrderManagementSystem extends ApplicationBase {
             ApplicationContext appCtx = oms.createApplicationContext("oms.xml", true);
 
             SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class);
-            AccessViolator violator = new AccessViolator(SessionConnector.class);
-            Map allSessions = (Map) violator.getField("sessions", initiator);
-            Session[] sessionArr = (Session[]) allSessions.values().toArray(new Session[0]);
-            OMSAdmin adminBean = new OMSAdmin(sessionArr[0]);
+            OMSAdmin adminBean = new OMSAdmin((Session)initiator.getManagedSessions().get(0));
             oms.registerMBean(adminBean, true);
 /*
             JmxExporter exporter = new JmxExporter();

@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.marketcetera</groupId>
         <artifactId>platform</artifactId>
-        <version>0.2-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.marketcetera</groupId>
@@ -52,10 +52,16 @@
 							  <key>java.util.logging.config.file</key>   
 							  <value>java.util.logging.properties</value>
 							</systemProperty>
+							<systemProperty><key>com.sun.management.jmxremote</key></systemProperty>
 						</systemProperties>
 					</configuration>
             </plugin>
         </plugins>
     </build>
-
+    <pluginRepositories>
+       <pluginRepository>
+           <id>maven-snapshots</id>
+           <url>http://snapshots.repository.codehaus.org</url>
+       </pluginRepository>
+    </pluginRepositories>
 </project>
