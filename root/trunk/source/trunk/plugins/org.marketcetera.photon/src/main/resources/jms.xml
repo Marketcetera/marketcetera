@@ -16,9 +16,8 @@
     <property name="brokerURL" ref="brokerURL"/>
   </bean>
   
-  <bean id="photonControllerListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
-    <!--property name="delegate" ref="photonController"/-->
-    <property name="defaultListenerMethod" value="handleMessage"/>
+  <bean id="photonControllerListener" class="org.marketcetera.photon.messaging.PhotonControllerListenerAdapter">
+    <!--property name="photonController" ref="photonController"/-->
     <property name="defaultResponseDestination" ref="omsCommandsQueue"/>
 	<property name="messageConverter">
 		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>

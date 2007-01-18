@@ -12,11 +12,16 @@ import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Logger;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceVisitor;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -36,6 +41,7 @@ import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.osgi.framework.BundleContext;
+import org.rubypeople.rdt.core.RubyCore;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 
@@ -78,6 +84,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
+
+	private static final String DEFAULT_PROJECT_NAME = null;
+
+	private static final String RUBY_NATURE_ID = ".rubynature";
 
 	private ScriptChangesAdapter scriptChangesAdapter;
 
@@ -317,5 +327,38 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			SpringUtils.createSimpleMessageListenerContainer(
 					internalConnectionFactory, adapter, quotesTopic, null);
 		return container;
+	}
+	
+	public void ensureDefaultProject(IProgressMonitor monitor){
+		monitor.beginTask("Ensure default project", 2);
+		
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IProject newProject = workspace.getRoot().getProject(
+                DEFAULT_PROJECT_NAME);
+		IProjectDescription description = workspace.newProjectDescription(newProject.getName());
+
+		try {
+
+			if (!newProject.exists()) {
+					newProject.create(description, new SubProgressMonitor(monitor, 1));
+			}
+	
+			try {
+				if (!newProject.hasNature(RUBY_NATURE_ID)){
+					try {
+						RubyCore.addRubyNature(newProject, new SubProgressMonitor(monitor, 1));
+					} catch (Throwable t){
+						// RDT possibly not included...
+					}
+				}
+			} catch (CoreException e) {
+				if (mainConsoleLogger.isDebugEnabled())
+					mainConsoleLogger.debug("Exception trying to determine nature of default project.", e);
+			}
+		} catch (CoreException e) {
+			mainConsoleLogger.error("Exception creating default scripting project", e);
+		}
+			
+		monitor.done();
 	}
 }

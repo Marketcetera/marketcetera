@@ -57,6 +57,10 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 		this.serviceRegistration = serviceRegistration;
 	}
 
+	public ServiceRegistration getServiceRegistration() {
+		return serviceRegistration;
+	}
+
 	@Override
 	protected void fireFeedComponentChanged() {
 		if (serviceRegistration != null)

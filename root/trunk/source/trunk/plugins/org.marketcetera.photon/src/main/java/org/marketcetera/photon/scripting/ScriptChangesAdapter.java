@@ -100,10 +100,12 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
  			public boolean visit(IResourceDelta delta) throws CoreException {
 				IResource resource = delta.getResource();
 				int resourceType = resource.getType();
-				int resourceFlags = delta.getFlags();
+				int deltaFlags = delta.getFlags(); // this gets you the status "anded" with ~0xff
+				int deltaKind = delta.getKind(); // this gets you the status "anded" with 0xff
 				IPath resourcePath = resource.getFullPath();
 				if (resourceType == IResource.FILE
-						&& (resourceFlags & (IResourceDelta.CONTENT | IResourceDelta.CHANGED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
+						&& ((deltaKind & IResourceDelta.CHANGED) != 0 )
+						&& (deltaFlags & (IResourceDelta.CONTENT | IResourceDelta.REPLACED)) != 0) {  //agl the framework can fire off several resource change events for a single modification to a file (for example, a separate event for marker changes). we are only interested in the content changes here.
  
  					if (isScript(resourcePath))
  					{
@@ -120,14 +122,14 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
  					}
  					 
  					return false;  //agl skip children
-				} else if (resourceType == IResource.FILE && resourcePath.lastSegment().equals(".project")){
-					String absolutePath = resource.getLocation().removeLastSegments(1).toOSString();
-					if ((resourceFlags & (IResourceDelta.ADDED))!=0) 
+				} else if (resourceType == IResource.PROJECT ){
+					String absolutePath = resource.getLocation().toOSString();
+					if ((deltaKind & IResourceDelta.ADDED)!=0) 
 					{
 						// project added
 						registry.projectAdded(absolutePath);
 					}
-					else if ((resourceFlags & IResourceDelta.REMOVED)!=0)
+					else if ((deltaKind & IResourceDelta.REMOVED)!=0)
 					{
 						// project removed
 						registry.projectRemoved(absolutePath);
@@ -141,7 +143,7 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 		};
 		
 		try {
-			event.getDelta().accept(resourceDeltaVisitor);
+			event.getDelta().accept(resourceDeltaVisitor, IResourceDelta.CONTENT | IResourceDelta.REMOVED | IResourceDelta.ADDED | IResourceDelta.CHANGED);
 		} catch (CoreException e) {
 			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
 			mainConsoleLogger.error("Could not process resource change", e);

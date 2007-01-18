@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.JMSFeedService;
+import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
@@ -63,10 +64,24 @@ public class ReconnectJMSJob extends Job {
 		}
 		
 		boolean succeeded = false;
+		// get rid of the old one...
+		try {
+			JMSFeedService oldService = (JMSFeedService) jmsFeedTracker.getService();
+			ServiceRegistration serviceRegistration;
+			if (oldService != null && ((serviceRegistration = oldService.getServiceRegistration())!=null)){
+				serviceRegistration.unregister();
+			}
+		} catch (Throwable t) {
+			if (logger.isDebugEnabled())
+				logger.debug("Exception unregistering "+JMSFeedService.class);
+		}
+		
 		JMSFeedService feedService = new JMSFeedService();
 		ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedService, null);
+		feedService.setServiceRegistration(registration);
 		try {
 
+			monitor.beginTask("Connect message server", 3);
 			StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext();
 			final ClassPathXmlApplicationContext jmsApplicationContext;
 		
@@ -75,17 +90,19 @@ public class ReconnectJMSJob extends Job {
 			SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
 			photonControllerContainer.setExceptionListener(feedService);
 			
-			monitor.beginTask("Connect message server", 2);
+			PhotonControllerListenerAdapter photonControllerAdapter = (PhotonControllerListenerAdapter) jmsApplicationContext.getBean("photonControllerListener");
+			photonControllerAdapter.setPhotonController(PhotonPlugin.getDefault().getPhotonController());
+
+			monitor.worked(1);
+			
 			jmsApplicationContext.start();
 			feedService.setApplicationContext(jmsApplicationContext);
-			monitor.worked(1);
 			
 			JmsOperations outgoingJmsOperations;
 			outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
 
 			feedService.setJmsOperations(outgoingJmsOperations);
 			feedService.afterPropertiesSet();
-			feedService.setServiceRegistration(registration);
 			monitor.worked(1);
 
 			succeeded = true;
@@ -100,6 +117,7 @@ public class ReconnectJMSJob extends Job {
 			reconnectInProgress.set(false);
 			feedService.setExceptionOccurred(!succeeded);
 			registration.setProperties(null);
+			monitor.done();
 		}
 		return Status.OK_STATUS;
 	}

@@ -14,7 +14,14 @@ public class StartScriptRegistryJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		PhotonPlugin.getDefault().startScriptRegistry();
+		monitor.beginTask("Start script registry", 2);
+		try {
+			monitor.worked(1);
+			PhotonPlugin.getDefault().startScriptRegistry();
+			monitor.worked(1);
+		} finally {
+			monitor.done();
+		}
 		return Status.OK_STATUS;
 	}
 
