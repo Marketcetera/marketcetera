@@ -38,14 +38,20 @@ public class AddSymbolAction extends Action {
 		if ('\r' == e.character) {
 			String theInputString = theText.getText();
 			theText.setText("");
-			if (theInputString!= null && theInputString.length()>0)
+			if (isValidInput(theInputString))
 				listener.onAssertSymbol(new MSymbol(theInputString));
 		}
+	}
+
+	private boolean isValidInput(String inputString) {
+		return inputString!= null && inputString.trim().length()>0;
 	}
 	
 	@Override
 	public void run() {
-		listener.onAssertSymbol(new MSymbol(text.getText()));
+		String theInputString = text.getText();
+		if (isValidInput(theInputString))
+			listener.onAssertSymbol(new MSymbol(text.getText()));
 		text.setText("");
 	}
 	
