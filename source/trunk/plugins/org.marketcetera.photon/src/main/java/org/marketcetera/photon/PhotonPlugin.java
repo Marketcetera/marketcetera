@@ -18,6 +18,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -85,7 +86,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
-	private static final String DEFAULT_PROJECT_NAME = null;
+	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts";
 
 	private static final String RUBY_NATURE_ID = ".rubynature";
 
@@ -144,23 +145,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private void initScriptRegistry() {
 		scriptRegistry = new ScriptRegistry();
-		final Classpath classpath = new Classpath();
-		classpath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources"));
-		try {
-			ResourcesPlugin.getWorkspace().getRoot().accept(new IResourceVisitor(){
-				public boolean visit(IResource resource) throws CoreException {
-					if (resource.getType() == IResource.PROJECT)
-					{
-						classpath.add(resource.getLocation().toString());
-						return false;
-					}
-					return true;
-				}
-				
-			});
-		} catch (CoreException e) {
-		}
-		scriptRegistry.setAdditionalClasspath(classpath);
 		scriptChangesAdapter = new ScriptChangesAdapter();
 		scriptChangesAdapter.setRegistry(scriptRegistry);
 		
@@ -332,15 +316,19 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public void ensureDefaultProject(IProgressMonitor monitor){
 		monitor.beginTask("Ensure default project", 2);
 		
-		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IProject newProject = workspace.getRoot().getProject(
-                DEFAULT_PROJECT_NAME);
-		IProjectDescription description = workspace.newProjectDescription(newProject.getName());
 
 		try {
+			IWorkspace workspace = ResourcesPlugin.getWorkspace();
+			IWorkspaceRoot root = workspace.getRoot();
+			IProject newProject = root.getProject(
+	                DEFAULT_PROJECT_NAME);
+			IProjectDescription description = workspace.newProjectDescription(newProject.getName());
 
 			if (!newProject.exists()) {
 					newProject.create(description, new SubProgressMonitor(monitor, 1));
+			}
+			if (!newProject.isOpen()){
+				newProject.open(monitor);
 			}
 	
 			try {
@@ -355,8 +343,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 				if (mainConsoleLogger.isDebugEnabled())
 					mainConsoleLogger.debug("Exception trying to determine nature of default project.", e);
 			}
-		} catch (CoreException e) {
-			mainConsoleLogger.error("Exception creating default scripting project", e);
+		} catch (Throwable t){
+			mainConsoleLogger.error("Exception creating default scripting project", t);
 		}
 			
 		monitor.done();
