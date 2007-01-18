@@ -36,14 +36,14 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 	private Text textArea;
 
 	private String text = ""; //$NON-NLS-1$
-	private int widthHint = -1;
+	private int charWidth = -1;
 
-	private int heightHint = -1;
+	private double heightFactor = 1;
 
 	private String tooltip;
 
 	private CommandParser commandParser;
-	public final static int DEFAULT_CHAR_WIDTH = 8;
+	public final static int DEFAULT_CHAR_WIDTH = 25;
 	public static final String ID = "org.marketcetera.photon.ui.commandLineTrimWidget";
 
 	
@@ -53,7 +53,7 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 	
 	
 	public CommandLineTrimWidget(int charWidth) {
-		this.widthHint = charWidth;
+		this.charWidth = charWidth;
 		commandParser = new CommandParser();
 		setIDFactory(PhotonPlugin.getDefault().getIDFactory());
 	}
@@ -84,13 +84,14 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 		gc.setFont(composite.getFont());
 		FontMetrics fm = gc.getFontMetrics();
 		Point extent = gc.textExtent(text);
-		if (widthHint > 0) {
+		int widthHint = 0;
+		if (charWidth > 0) {
 			int averageCharWidth = fm.getAverageCharWidth();
-			widthHint = averageCharWidth * widthHint;
+			widthHint = averageCharWidth * charWidth;
 		} else {
 			widthHint = extent.x;
 		}
-		heightHint = (int) (fm.getHeight() * .75);
+		int heightHint = (int) (fm.getHeight() * heightFactor);
 		gc.dispose();
 
 		RowData rowData = new RowData();
