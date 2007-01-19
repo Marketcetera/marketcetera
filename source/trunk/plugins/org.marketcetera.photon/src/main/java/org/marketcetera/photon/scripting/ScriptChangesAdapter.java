@@ -128,13 +128,14 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 					{
 						// project added
 						registry.projectAdded(absolutePath);
+						return false;
 					}
 					else if ((deltaKind & IResourceDelta.REMOVED)!=0)
 					{
 						// project removed
 						registry.projectRemoved(absolutePath);
+						return false;
 					}
-					return false;  //gjm skip children
  				}
  
  				return true;  //agl visit children
