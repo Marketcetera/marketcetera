@@ -52,24 +52,10 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 	}
 
 	
-	private void changeLogLevel(String levelValue){
-		Logger logger = PhotonPlugin.getMainConsoleLogger();
-		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)){
-			logger.setLevel(Level.ERROR);
-		} else if (PhotonPage.LOG_LEVEL_VALUE_WARN.equals(levelValue)){
-			logger.setLevel(Level.WARN);
-		} else if (PhotonPage.LOG_LEVEL_VALUE_INFO.equals(levelValue)){
-			logger.setLevel(Level.INFO);
-		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)){
-			logger.setLevel(Level.DEBUG);
-		}
-		logger.info("Changed log level to '"+levelValue+"'");
-
-	}
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(PhotonPage.LOG_LEVEL_KEY)){
-			changeLogLevel(""+event.getNewValue());
+			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue());
 		}
 	}
 

@@ -11,6 +11,7 @@ import org.apache.activemq.command.ActiveMQTopic;
 import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
@@ -23,6 +24,7 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
+import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -34,6 +36,7 @@ import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.messaging.SpringUtils;
+import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.Classpath;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
@@ -42,6 +45,7 @@ import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.osgi.framework.BundleContext;
+import org.osgi.service.prefs.Preferences;
 import org.rubypeople.rdt.core.RubyCore;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.listener.SessionAwareMessageListener;
@@ -107,6 +111,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		bundleContext = context;
+		
+		Preferences preferences = new ConfigurationScope().getNode(PhotonPlugin.ID);
+		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
+		changeLogLevel(level == null ? PhotonPage.LOG_LEVEL_VALUE_INFO : level);
 		
 		// This sets the internal broker to use on thread per "listener"?
 		// Needed because the version of JRuby we're using doesn't play well
@@ -349,4 +357,18 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			
 		monitor.done();
 	}
+	
+	public void changeLogLevel(String levelValue){
+		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)){
+			mainConsoleLogger.setLevel(Level.ERROR);
+		} else if (PhotonPage.LOG_LEVEL_VALUE_WARN.equals(levelValue)){
+			mainConsoleLogger.setLevel(Level.WARN);
+		} else if (PhotonPage.LOG_LEVEL_VALUE_INFO.equals(levelValue)){
+			mainConsoleLogger.setLevel(Level.INFO);
+		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)){
+			mainConsoleLogger.setLevel(Level.DEBUG);
+		}
+		mainConsoleLogger.info("Changed log level to '"+levelValue+"'");
+	}
+
 }

@@ -76,7 +76,9 @@ public class ScriptRegistry implements InitializingBean {
 
 		
 		currentClasspath.addAll(additionalClasspath);
-		updateClasspath(currentClasspath, EclipseUtils.getPluginPath(JRubyPlugin.getDefault()), JRUBY_PLUGIN_PATH);
+		IPath jrubyPluginPath = EclipseUtils.getPluginPath(JRubyPlugin.getDefault());
+		PhotonPlugin.getMainConsoleLogger().debug("Using base path of JRuby plugin: "+jrubyPluginPath.toString());
+		updateClasspath(currentClasspath, jrubyPluginPath, JRUBY_PLUGIN_PATH);
 		updateClasspath(currentClasspath, EclipseUtils.getWorkspacePath(), JRUBY_WORKSPACE_PATH);
 		String classpathString = currentClasspath.toString();
 		bsfManager = new BSFManager();
