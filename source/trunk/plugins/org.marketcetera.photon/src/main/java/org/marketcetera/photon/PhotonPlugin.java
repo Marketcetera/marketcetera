@@ -40,6 +40,7 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.Classpath;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
+import org.marketcetera.photon.scripting.ScriptLoggingUtil;
 import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -249,6 +250,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			protected Object doOnMessage(Object convertedMessage) {
 				try {
 					scriptRegistry.onEvent((Message) convertedMessage);
+				} catch (BSFException e) {
+					ScriptLoggingUtil.error(logger, e);
 				} catch (Exception e) {
 					logger.error("Exception in script ", e);
 				}
