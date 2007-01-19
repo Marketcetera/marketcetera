@@ -3,7 +3,17 @@ package org.marketcetera.photon.preferences;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
+/**
+ * Static helper methods for string preference value encoding/decoding to be used in conjunction with
+ * <code>ListEditor</code>.
+ *  
+ * @author gmiller 
+ * @author andrei@lissovski.org
+ */
 public class ListEditorUtil {
 	private static final String UTF_8 = "UTF-8";  //$NON-NLS-1$
 
@@ -64,6 +74,25 @@ public class ListEditorUtil {
 		}
 		return buf.toString();
 
+	}
+	
+	/**
+	 * Removes a specified item from an encoded list.
+	 * 
+	 * @param encodedList an encoded list
+	 * @param itemToRemove an item to remove
+	 * @return an encoded list with the same order of items as the original list, with the specified item removed 
+	 */
+	public static String removeFromEncodedList(String encodedList, String itemToRemove) {
+		String[] parsedList = parseString(encodedList);
+		
+		List<String> list = new LinkedList<String>(Arrays.asList(parsedList));  // asList()'s list doesn't support remove()
+		list.remove(itemToRemove);
+		
+		String[] parsedListItemRemoved = (String[]) list.toArray(new String[list.size()]);
+		
+		String encodedListItemRemoved = encodeList(parsedListItemRemoved);
+		return encodedListItemRemoved;
 	}
 
 }
