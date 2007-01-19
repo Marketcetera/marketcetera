@@ -1,5 +1,6 @@
 package org.marketcetera.photon.scripting;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,13 +12,13 @@ import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IResourceChangeListener;
 import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.ListEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
@@ -56,27 +57,49 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 		toDelete.removeAll(Arrays.asList(registryStringArray));
 		
 		Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
-		for (String aScript : toDelete) {
-			aScript = normalizeName(aScript);
-			currentScripts.remove(aScript);
+		for (String scriptName : toDelete) {
+			String normalizedScriptName = normalizeName(scriptName);
+			currentScripts.remove(normalizedScriptName);
 			try {
-				registry.unregister(aScript);
+				registry.unregister(normalizedScriptName);
 			} catch (BSFException e) {
-				mainConsoleLogger.error("Error unregistering script "+aScript, e);
+				mainConsoleLogger.error("Error unregistering script "+scriptName, e);
 			}
 		}
-		for (String aScript : toAdd) {
-			aScript = normalizeName(aScript);
-			currentScripts.add(aScript);
+		for (String scriptName : toAdd) {
+			String normalizedScriptName = normalizeName(scriptName);
 			try {
-				registry.register(aScript);
+				registry.register(normalizedScriptName);
+				currentScripts.add(normalizedScriptName);
 			} catch (BSFException e) {
-				mainConsoleLogger.error("Error registering script "+aScript);
+				mainConsoleLogger.error("Error registering script "+scriptName);
 				ScriptLoggingUtil.error(mainConsoleLogger, e);
+				mainConsoleLogger.error("Unregistering script "+scriptName+" due to the previous error");
+				
+				unregisterScriptOnError(scriptName);
 			}
 		}
 	}
 
+	/**
+	 * Unregisters a faulty script by directly removing it from the preferences.
+	 * 
+	 * @param scriptName the name of the script to unregister
+	 */
+	private void unregisterScriptOnError(String scriptName) {
+		ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
+		String registeredScriptsPrefValue = preferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE);
+		String updatedRegisteredScriptsPrefValue = 
+			ListEditorUtil.removeFromEncodedList(registeredScriptsPrefValue, scriptName);
+		preferenceStore.setValue(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE, updatedRegisteredScriptsPrefValue);
+		try {
+			preferenceStore.save();  // persist to disk
+		} catch (IOException e) {
+			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
+			mainConsoleLogger.error("Couldn't save script registration preferences while attempting to unregister script "
+					+scriptName);
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
