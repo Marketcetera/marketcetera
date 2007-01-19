@@ -20,6 +20,10 @@ public class ListEditorUtil {
 	 * @see #createList
 	 */
 	public static String[] parseString(String stringList) {
+		stringList = stringList.trim();
+		if (stringList.length() == 0){
+			return new String[0];
+		}
 		String [] pieces = stringList.split("&");
 		String [] decodedPieces = new String[pieces.length];
 		int i = 0;
