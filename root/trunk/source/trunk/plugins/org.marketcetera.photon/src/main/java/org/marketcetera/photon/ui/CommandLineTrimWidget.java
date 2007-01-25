@@ -3,12 +3,9 @@ package org.marketcetera.photon.ui;
 import jfun.parsec.Parser;
 import jfun.parsec.ParserException;
 
-import org.eclipse.jface.action.StatusLineLayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
@@ -17,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.menus.AbstractWorkbenchTrimWidget;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -80,23 +78,12 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 		command.setText(Messages.CommandStatusLineContribution_CommandLabel);
 		textArea = new Text(composite, SWT.BORDER);
 
-		GC gc = new GC(composite);
-		gc.setFont(composite.getFont());
-		FontMetrics fm = gc.getFontMetrics();
-		Point extent = gc.textExtent(text);
-		int widthHint = 0;
-		if (charWidth > 0) {
-			int averageCharWidth = fm.getAverageCharWidth();
-			widthHint = averageCharWidth * charWidth;
-		} else {
-			widthHint = extent.x;
-		}
-		int heightHint = (int) (fm.getHeight() * heightFactor);
-		gc.dispose();
+		
+		Point sizeHint = EclipseUtils.getTextAreaSize(composite, text, charWidth, heightFactor);
 
 		RowData rowData = new RowData();
-		rowData.width = widthHint;
-		rowData.height = heightHint;
+		rowData.width = sizeHint.x;
+		rowData.height = sizeHint.y;
 		textArea.setLayoutData(rowData);
 		textArea.setText(text);
 		textArea.addKeyListener(new KeyAdapter() {
@@ -108,6 +95,8 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 			textArea.setToolTipText(tooltip);
 		}
 	}
+
+
 	/**
 	 * The callback for a key release event. Checks to see if the key that was
 	 * released was "Enter". If so, (@link #parseAndFireCommandEvent(String,
