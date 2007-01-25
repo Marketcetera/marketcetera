@@ -17,6 +17,7 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -40,6 +41,7 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
+import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
@@ -344,6 +346,14 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		quantityBorderComposite.setLayout(gridLayout);
 		quantityText = getFormToolkit().createText(quantityBorderComposite,
 				null, SWT.SINGLE | SWT.BORDER);
+		
+		Point sizeHint = EclipseUtils.getTextAreaSize(quantityBorderComposite, null, 10, 1.0);
+
+		GridData quantityTextGridData = new GridData();
+		quantityTextGridData.heightHint = sizeHint.y;
+		quantityTextGridData.widthHint = sizeHint.x;
+		quantityText.setLayoutData(quantityTextGridData);
+		
 		quantityText.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -446,6 +456,14 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		priceBorderComposite.setLayout(gridLayout);
 		priceText = getFormToolkit().createText(priceBorderComposite, null,
 				SWT.SINGLE | SWT.BORDER);
+		
+		Point sizeHint = EclipseUtils.getTextAreaSize(priceBorderComposite, null, 10, 1.0);
+
+		GridData quantityTextGridData = new GridData();
+		quantityTextGridData.heightHint = sizeHint.y;
+		quantityTextGridData.widthHint = sizeHint.x;
+		priceText.setLayoutData(quantityTextGridData);
+
 		priceText.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
