@@ -13,7 +13,6 @@ import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -49,7 +48,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
      */
     private Table table;
     
-    private TableViewer tableViewer;
+    private IndexedTableViewer tableViewer;
 
     /**
      * The button box containing the Add, Remove, Up, and Down buttons;
@@ -348,7 +347,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 	 */
 	private void createTableViewer() {
 
-		tableViewer = new TableViewer(table);
+		tableViewer = new IndexedTableViewer(table);
 		tableViewer.setUseHashlookup(true);
 		
 		tableViewer.setColumnProperties(columnNames);
