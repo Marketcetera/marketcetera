@@ -59,7 +59,7 @@ public class OrderLoader extends ApplicationBase
         numProcessedOrders = numComments = numBlankLines = 0;
         failedOrders = new Vector<String>();
         cfgFileName = (cfgFileName == null) ? CFG_FILE_NAME : cfgFileName;
-        createApplicationContext(cfgFileName, true);
+        createApplicationContext(new String[] {cfgFileName}, true);
         URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
         idFactory = new HttpDatabaseIDFactory(idFactoryURL);
         try {

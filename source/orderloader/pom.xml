@@ -62,4 +62,10 @@
             </plugin>
         </plugins>
     </build>
+    <pluginRepositories>
+       <pluginRepository>
+           <id>maven-snapshots</id>
+           <url>http://snapshots.repository.codehaus.org</url>
+       </pluginRepository>
+    </pluginRepositories>
 </project>
