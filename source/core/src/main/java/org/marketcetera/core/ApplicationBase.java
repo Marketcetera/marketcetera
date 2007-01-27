@@ -2,9 +2,14 @@ package org.marketcetera.core;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.ApplicationContext;
+import org.marketcetera.quickfix.SessionAdmin;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.JMException;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.lang.management.ManagementFactory;
 
 /**
  * Abstract superclass to all applications
@@ -30,9 +35,9 @@ public abstract class ApplicationBase implements Clock {
         sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
     }
 
-    public ApplicationContext createApplicationContext(String ctxFileName, boolean registerShutdownHook)
+    public ApplicationContext createApplicationContext(String[] ctxFileNames, boolean registerShutdownHook)
     {
-        appCtx = new ClassPathXmlApplicationContext(ctxFileName) {
+        appCtx = new ClassPathXmlApplicationContext(ctxFileNames) {
             protected void onClose() {
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("in shutdown hook", this); }
                 super.onClose();
@@ -82,5 +87,26 @@ public abstract class ApplicationBase implements Clock {
     /** Returns a pointer to the Spring application context that started this app */
     public ClassPathXmlApplicationContext getAppCtx() {
         return appCtx;
+    }
+
+    /**
+     * register the OMS mean
+     * should be superseded by functionality provided by QuickfixJ
+     * @param fExitOnFail
+     * @deprecated
+     */
+    protected void registerMBean(SessionAdmin adminBean, boolean fExitOnFail)
+    {
+        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
+
+        try {
+            String pkgName = this.getClass().getPackage().toString();
+            String className = adminBean.getClass().getSimpleName();
+            ObjectName name = new ObjectName(pkgName +":type="+className);
+            mbs.registerMBean(adminBean, name);
+        } catch (JMException ex) {
+            LoggerAdapter.error(MessageKey.JMX_BEAN_FAILURE.getLocalizedMessage(), ex, this);
+            if(fExitOnFail) {System.exit(-1); }
+        }
     }
 }

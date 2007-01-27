@@ -23,6 +23,7 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_EXCHANGE_DNE("core.error_exchange_not_found"),
 
     CONFIG_ERROR("core.error.config"),
+    CONFIG_ERROR_REASON("core.error.config_reason"),
     CONFIG_FILE_DNE("core.error.config_file_dne"),
     CONFIG_FILE_OPEN("core.error.config_file_open"),
     ERROR("core.error.error"),
