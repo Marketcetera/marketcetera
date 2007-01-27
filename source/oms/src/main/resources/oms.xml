@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- START SNIPPET: spring -->
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans>
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
     <!--
     || ActiveMQ Broker
     -->
@@ -60,12 +61,12 @@
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg value="FIX.4.2"/>
-        <constructor-arg value="MRKTC-DEMO-OMS"/>
+        <constructor-arg value="MRKTC-OMS"/>
         <constructor-arg value="MRKTC-EXCH"/>
     </bean>
 
     <!-- a thread safe non-pooled MessageListener -->
-    <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" singleton="false">
+    <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="orderModifiers">
@@ -74,11 +75,4 @@
             </list>
         </property>
     </bean>
-
-    <!-- Sets up core Spring objects for QFJ -->
-    <import resource="classpath:quickfixj.xml"/>
-    <!-- Sets up the order modifiers and order routing -->
-    <import resource="classpath:order-modifiers.xml"/>
 </beans>
-
-        <!-- END SNIPPET: spring -->

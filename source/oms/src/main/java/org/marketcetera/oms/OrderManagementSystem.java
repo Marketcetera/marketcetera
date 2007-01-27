@@ -1,6 +1,7 @@
 package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
+import org.marketcetera.quickfix.SessionAdmin;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -38,6 +39,7 @@ public class OrderManagementSystem extends ApplicationBase {
 
     private static final String LOGGER_NAME = OrderManagementSystem.class.getName();
     public static final MessageBundleInfo OMS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("oms", "oms_messages");
+    private static final String[] APP_CONTEXT_CONFIG_FILES = {"quickfixj.xml", "order-modifiers.xml", "quickfixj.appctx.xml", "oms.xml"};
 
     protected List<MessageBundleInfo> getLocalMessageBundles() {
         LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
@@ -45,35 +47,14 @@ public class OrderManagementSystem extends ApplicationBase {
         return bundles;
     }
 
-    /**
-     * register the OMS mean
-     * should be superseded by functionality provided by QuickfixJ
-     * @param fExitOnFail
-     * @deprecated
-     */
-    protected void registerMBean(OMSAdmin adminBean, boolean fExitOnFail)
-    {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
-        try {
-            String pkgName = this.getClass().getPackage().toString();
-            String className = adminBean.getClass().getSimpleName();
-            ObjectName name = new ObjectName(pkgName +":type="+className);
-            mbs.registerMBean(adminBean, name);
-        } catch (JMException ex) {
-            LoggerAdapter.error(MessageKey.JMX_BEAN_FAILURE.getLocalizedMessage(), ex, this);
-            if(fExitOnFail) {System.exit(-1); }
-        }
-    }
-
     public static void main(String [] args) throws ConfigFileLoadingException
     {
         try {
             OrderManagementSystem oms = new OrderManagementSystem();
-            ApplicationContext appCtx = oms.createApplicationContext("oms.xml", true);
+            ApplicationContext appCtx = oms.createApplicationContext(APP_CONTEXT_CONFIG_FILES, true);
 
             SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class);
-            OMSAdmin adminBean = new OMSAdmin((Session)initiator.getManagedSessions().get(0));
+            SessionAdmin adminBean = new SessionAdmin((Session)initiator.getManagedSessions().get(0));
             oms.registerMBean(adminBean, true);
 /*
             JmxExporter exporter = new JmxExporter();

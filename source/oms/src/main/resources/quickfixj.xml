@@ -1,16 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<!-- Spring Configuration for the QuickFIX componet of the OMS applications
+<!-- Spring Configuration for the QuickFIX component of the OMS applications
  version: $Id$
  author: Toli Kuznets
  -->
 
-<beans>
-
-    <!-- Sets up core Spring objects for QFJ -->
-    <import resource="classpath:quickfixj.appctx.xml"/>
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
     <bean id="jdbcLogFactory" class="quickfix.JdbcLogFactory">
         <constructor-arg>
             <ref bean="sessionSettings"/>
@@ -34,7 +33,7 @@
     </bean>
 
     <bean id="dataDictionary" class="quickfix.DataDictionary">
-        <constructor-arg ref="quickfix:FIX42:URLstring" type="java.lang.String"/>
+        <constructor-arg ref="quickfix_FIX42_URLstring" type="java.lang.String"/>
     </bean>
 
 	<bean id="sessionSettings" class="quickfix.spring.SessionSettings">
@@ -45,7 +44,7 @@
                 <entry key="FileStorePath" value="store"/>
                 <entry key="StartTime" value="00:00:00"/>
                 <entry key="EndTime" value="00:00:00"/>
-                <entry><key><value>DataDictionary</value></key><ref bean="quickfix:FIX42:URL" /></entry>
+                <entry><key><value>DataDictionary</value></key><ref bean="quickfix_FIX42_URL" /></entry>
                 <entry key="UseDataDictionary" value="Y"/>
                 <entry key="ReconnectInterval" value="15"/>
                 <entry key="ResetOnLogout" value="Y"/>
@@ -63,7 +62,7 @@
 					<property name="sessionID" ref="defaultSessionID"/>
 					<property name="settings">
 						<map>
-							<entry key="SocketConnectHost" value="exchange.marketcetera.com"/>
+							<entry key="SocketConnectHost" value="localhost"/>
 							<entry key="SocketConnectPort" value="7001"/>
 						</map>
 					</property>
@@ -83,7 +82,7 @@
     <!-- Sessions are configured directly in the Spring configuration -->
     <!-- There is no use of the standard QF configuration file -->
 
-	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" singleton="true">
+	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
 	  <property name="jmsOperations" ref="outgoingJmsTemplate"/>
 	</bean>
 
@@ -94,8 +93,5 @@
 		<constructor-arg ref="comboLogFactory"/>
 		<constructor-arg ref="messageFactory"/>
     </bean>
-
-
-
 </beans>
 
