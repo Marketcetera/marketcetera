@@ -1,59 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
-
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
     <!-- TODO Document as available -->
-    <bean id="quickfix:FIX40" class="org.springframework.core.io.ClassPathResource">
+    <bean id="quickfix_FIX40" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg value="FIX40.xml"/>
     </bean>
     <!-- TODO Document as available -->
-    <bean id="quickfix:FIX41" class="org.springframework.core.io.ClassPathResource">
+    <bean id="quickfix_FIX41" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg value="FIX41.xml"/>
     </bean>
     <!-- TODO Document as available -->
-    <bean id="quickfix:FIX42" class="org.springframework.core.io.ClassPathResource">
+    <bean id="quickfix_FIX42" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg value="FIX42.xml"/>
     </bean>
     <!-- TODO Document as available -->
-    <bean id="quickfix:FIX43" class="org.springframework.core.io.ClassPathResource">
+    <bean id="quickfix_FIX43" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg value="FIX43.xml"/>
     </bean>
     <!-- TODO Document as available -->
-    <bean id="quickfix:FIX44" class="org.springframework.core.io.ClassPathResource">
+    <bean id="quickfix_FIX44" class="org.springframework.core.io.ClassPathResource">
         <constructor-arg value="FIX44.xml"/>
     </bean>
 
-    <bean name="quickfix:FIX40:URL"
+    <bean name="quickfix_FIX40_URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="targetObject" ref="quickfix_FIX40"/>
         <property name="propertyPath" value="URL"/>
     </bean>
-    <bean name="quickfix:FIX41:URL"
+    <bean name="quickfix_FIX41_URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX41"/>
+        <property name="targetObject" ref="quickfix_FIX41"/>
         <property name="propertyPath" value="URL"/>
     </bean>
-    <bean name="quickfix:FIX42:URL"
+    <bean name="quickfix_FIX42_URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX40"/>
+        <property name="targetObject" ref="quickfix_FIX40"/>
         <property name="propertyPath" value="URL"/>
     </bean>
-    <bean name="quickfix:FIX43:URL"
+    <bean name="quickfix_FIX43_URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX43"/>
+        <property name="targetObject" ref="quickfix_FIX43"/>
         <property name="propertyPath" value="URL"/>
     </bean>
-    <bean name="quickfix:FIX44:URL"
+    <bean name="quickfix_FIX44_URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix:FIX44"/>
+        <property name="targetObject" ref="quickfix_FIX44"/>
         <property name="propertyPath" value="URL"/>
     </bean>
-	<bean id="quickfix:FIX40:URLstring" factory-bean="quickfix:FIX40:URL" factory-method="toString"/>
-	<bean id="quickfix:FIX41:URLstring" factory-bean="quickfix:FIX41:URL" factory-method="toString"/>
-	<bean id="quickfix:FIX42:URLstring" factory-bean="quickfix:FIX42:URL" factory-method="toString"/>
-	<bean id="quickfix:FIX43:URLstring" factory-bean="quickfix:FIX43:URL" factory-method="toString"/>
-	<bean id="quickfix:FIX44:URLstring" factory-bean="quickfix:FIX44:URL" factory-method="toString"/>
+	<bean id="quickfix_FIX40_URLstring" factory-bean="quickfix_FIX40_URL" factory-method="toString"/>
+	<bean id="quickfix_FIX41_URLstring" factory-bean="quickfix_FIX41_URL" factory-method="toString"/>
+	<bean id="quickfix_FIX42_URLstring" factory-bean="quickfix_FIX42_URL" factory-method="toString"/>
+	<bean id="quickfix_FIX43_URLstring" factory-bean="quickfix_FIX43_URL" factory-method="toString"/>
+	<bean id="quickfix_FIX44_URLstring" factory-bean="quickfix_FIX44_URL" factory-method="toString"/>
 
 
 
