@@ -43,7 +43,7 @@ public class OrderLoaderTest extends TestCase
     {
         super.setUp();
         mLoader = new MyOrderLoader(false);
-        mLoader.createApplicationContext("orderloader.xml", false);
+        mLoader.createApplicationContext(new String[]{"orderloader.xml"}, false);
         FIXDataDictionaryManager.loadDictionary("FIX42-orderloader-test.xml", true);
     }
 
@@ -254,8 +254,8 @@ public class OrderLoaderTest extends TestCase
     public void testValidMessage() throws Exception
     {
         MyOrderLoader myLoader =  new MyOrderLoader(false);
-        Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Field[] {new Symbol(), new Side(),
-                                                       new OrderQty(), new Price(), new TimeInForce(), new Account()}));
+        Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
+                new OrderQty(), new Price(), new TimeInForce(), new Account()));
         String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"};
         myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","DAY","123-ASDF-234"});
 
@@ -272,8 +272,8 @@ public class OrderLoaderTest extends TestCase
     public void testWithCustomField() throws Exception
     {
         final MyOrderLoader myLoader =  new MyOrderLoader(false);
-        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Field[] {new Symbol(), new Side(),
-                                                       new OrderQty(), new Price(), new CustomField(9999, null), new Account()}));
+        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
+                new OrderQty(), new Price(), new CustomField(9999, null), new Account()));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
         myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
         assertNull(myLoader.mMessage);
