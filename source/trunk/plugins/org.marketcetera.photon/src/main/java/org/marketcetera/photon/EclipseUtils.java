@@ -11,12 +11,40 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Plugin;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Control;
 
 public class EclipseUtils {
+	
+	private static String swtPlatform;
+	private static boolean IS_WINDOWS;
+	private static boolean IS_MAC;
+	private static boolean IS_GTK;
+
+	static {
+		String swtPlatform = SWT.getPlatform();
+		if ("win32".equals(swtPlatform)) {
+			IS_WINDOWS = true;
+		} else if ("carbon".equals(swtPlatform)) {
+			IS_MAC=true;
+		} else if ("gtk".equals(swtPlatform)){
+			IS_GTK=true;
+		}
+	}
+	
+	public static boolean isMacSWT(){
+		return IS_MAC;
+	}
+
+	public static boolean isWindowsSWT(){
+		return IS_WINDOWS;
+	}
+	public static boolean isGTKSWT(){
+		return IS_GTK;
+	}
 	
 	public static IPath getWorkspacePath()
 	{
@@ -53,6 +81,10 @@ public class EclipseUtils {
 	 * @return
 	 */
 	public static Point getTextAreaSize(Control aComposite, String defaultString, int charWidthHint, double heightFactorHint) {
+		if (EclipseUtils.IS_MAC){
+			heightFactorHint *= 1.2;
+		}
+		
 		Point sizeHint = new Point(0,0);
 		GC gc = new GC(aComposite);
 		gc.setFont(aComposite.getFont());

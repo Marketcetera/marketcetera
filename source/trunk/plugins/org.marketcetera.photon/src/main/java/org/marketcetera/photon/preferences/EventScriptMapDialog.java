@@ -60,7 +60,7 @@ public class EventScriptMapDialog extends Dialog {
         scriptText = new Text(composite, SWT.BORDER);
         GridData scriptTextGridData = new GridData(GridData.FILL, GridData.FILL,
 		                                              true, false);
-        Point sizeHint = EclipseUtils.getTextAreaSize(composite, null, 25, 1.2);
+        Point sizeHint = EclipseUtils.getTextAreaSize(composite, null, 25, 1.0);
         scriptTextGridData.widthHint = sizeHint.x;
         scriptTextGridData.heightHint = sizeHint.y;
         scriptText.setLayoutData(scriptTextGridData);
