@@ -81,7 +81,7 @@ public class EclipseUtils {
 	 * @return
 	 */
 	public static Point getTextAreaSize(Control aComposite, String defaultString, int charWidthHint, double heightFactorHint) {
-		if (EclipseUtils.IS_MAC){
+		if (isMacSWT()){
 			heightFactorHint *= 1.2;
 		}
 		
