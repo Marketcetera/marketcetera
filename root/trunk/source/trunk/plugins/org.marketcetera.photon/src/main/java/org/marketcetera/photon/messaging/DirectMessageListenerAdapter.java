@@ -47,9 +47,6 @@ import org.springframework.util.Assert;
 public abstract class DirectMessageListenerAdapter implements SessionAwareMessageListener {
 
 
-	/** Logger available to subclasses */
-	protected final Logger logger = LoggerAdapter.getLogger(this.getClass());
-
 	private Object defaultResponseDestination;
 
 	private DestinationResolver destinationResolver = new DynamicDestinationResolver();
@@ -171,7 +168,8 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 			handleResult(result, message, session);
 		}
 		else {
-			logger.debug("No result object given - no result to handle");
+			if (LoggerAdapter.isDebugEnabled(this))
+				LoggerAdapter.debug("No result object given - no result to handle", this);
 		}
 	}
 
@@ -197,7 +195,7 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 	 * @see #onMessage(javax.jms.Message)
 	 */
 	protected void handleListenerException(Throwable ex) {
-		logger.error("Listener execution failed", ex);
+		LoggerAdapter.error("Listener execution failed", ex, this);
 	}
 
 	/**
@@ -230,9 +228,9 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 	 */
 	protected void handleResult(Object result, Message request, Session session) throws JMSException {
 		if (session != null) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Listener method returned result [" + result +
-						"] - generating response message for it");
+			if (LoggerAdapter.isDebugEnabled(this)) {
+				LoggerAdapter.debug("Listener method returned result [" + result +
+						"] - generating response message for it", this);
 			}
 			Message response = buildMessage(session, result);
 			postProcessResponse(request, response);
@@ -240,9 +238,9 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 			sendResponse(session, destination,  response);
 		}
 		else {
-			if (logger.isDebugEnabled()) {
-				logger.debug("Listener method returned result [" + result +
-						"]: not generating response message for it because of no JMS Session given");
+			if (LoggerAdapter.isDebugEnabled(this)) {
+				LoggerAdapter.debug("Listener method returned result [" + result +
+						"]: not generating response message for it because of no JMS Session given",this);
 			}
 		}
 	}

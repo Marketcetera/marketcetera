@@ -82,7 +82,8 @@ public class ReconnectJMSJob extends Job {
 		try {
 
 			monitor.beginTask("Connect message server", 3);
-			StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext();
+			String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
+			StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext(url);
 			final ClassPathXmlApplicationContext jmsApplicationContext;
 		
 			jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerURLContext);
@@ -106,6 +107,7 @@ public class ReconnectJMSJob extends Job {
 			monitor.worked(1);
 
 			succeeded = true;
+			logger.info("Message queue connected ("+url+")");
 		} catch (BeanCreationException bce){
 			Throwable toLog = bce.getCause();
 			if (toLog instanceof UncategorizedJmsException)
@@ -121,8 +123,7 @@ public class ReconnectJMSJob extends Job {
 		}
 		return Status.OK_STATUS;
 	}
-	private static StaticApplicationContext getBrokerURLApplicationContext() {
-		String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
+	private static StaticApplicationContext getBrokerURLApplicationContext(String url) {
 		StaticApplicationContext brokerURLContext;
 		brokerURLContext = new StaticApplicationContext();
 		if (url != null){

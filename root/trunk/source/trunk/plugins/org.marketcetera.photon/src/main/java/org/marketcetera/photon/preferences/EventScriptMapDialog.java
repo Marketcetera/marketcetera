@@ -5,6 +5,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -15,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.marketcetera.photon.EclipseUtils;
 
 
 /**
@@ -56,14 +58,18 @@ public class EventScriptMapDialog extends Dialog {
                                               false, false));
 
         scriptText = new Text(composite, SWT.BORDER);
-        scriptText.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
-                                              true, false));
+        GridData scriptTextGridData = new GridData(GridData.FILL, GridData.FILL,
+		                                              true, false);
+        Point sizeHint = EclipseUtils.getTextAreaSize(composite, null, 25, 1.2);
+        scriptTextGridData.widthHint = sizeHint.x;
+        scriptTextGridData.heightHint = sizeHint.y;
+        scriptText.setLayoutData(scriptTextGridData);
         scriptText.setEditable(false);
 
         browseButton = new Button(composite, SWT.PUSH);
         browseButton.setText(BROWSE_PROMPT);
         GridData browseButtonGridData = new GridData(GridData.FILL, GridData.FILL,
-		        										true, false);
+                true, false);
         browseButtonGridData.grabExcessHorizontalSpace = false;
 		browseButton.setLayoutData(browseButtonGridData);
         browseButton.addListener(SWT.Selection, 
