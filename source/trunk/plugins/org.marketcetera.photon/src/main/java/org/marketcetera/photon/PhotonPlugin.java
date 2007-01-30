@@ -15,9 +15,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceVisitor;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -31,6 +29,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
@@ -38,7 +37,6 @@ import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.messaging.SpringUtils;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
-import org.marketcetera.photon.scripting.Classpath;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptLoggingUtil;
 import org.marketcetera.photon.scripting.ScriptRegistry;
@@ -251,9 +249,9 @@ public class PhotonPlugin extends AbstractUIPlugin {
 				try {
 					scriptRegistry.onEvent((Message) convertedMessage);
 				} catch (BSFException e) {
-					ScriptLoggingUtil.error(logger, e);
+					ScriptLoggingUtil.error(LoggerAdapter.getLogger(this.getClass()), e);
 				} catch (Exception e) {
-					logger.error("Exception in script ", e);
+					LoggerAdapter.error("Exception in script ", e, this);
 				}
 				return null;
 			}

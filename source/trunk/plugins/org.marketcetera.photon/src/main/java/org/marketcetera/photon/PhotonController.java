@@ -1,5 +1,7 @@
 package org.marketcetera.photon;
 
+import javax.jms.JMSException;
+
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
@@ -219,7 +221,11 @@ public class PhotonController {
 		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
 		JmsOperations jmsOperations;
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
-			jmsOperations.convertAndSend(fixMessage);
+			try {
+				jmsOperations.convertAndSend(fixMessage);
+			} catch (Exception ex){
+				service.onException(ex);
+			}
 		} else {
 			internalMainLogger.error("Could not send message, not connected");
 		}

@@ -31,6 +31,10 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 
 
 	public void onException(JMSException ex) {
+		onException((Exception)ex);
+	}
+	public void onException(Exception ex)
+	{
 		exceptionOccurred = true;
 		PhotonPlugin.getMainConsoleLogger().error("Message server exception", ex);
 		fireFeedComponentChanged();
