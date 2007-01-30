@@ -350,7 +350,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		Point sizeHint = EclipseUtils.getTextAreaSize(quantityBorderComposite, null, 10, 1.0);
 
 		GridData quantityTextGridData = new GridData();
-		quantityTextGridData.heightHint = sizeHint.y;
+		//quantityTextGridData.heightHint = sizeHint.y;
 		quantityTextGridData.widthHint = sizeHint.x;
 		quantityText.setLayoutData(quantityTextGridData);
 		
@@ -460,7 +460,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		Point sizeHint = EclipseUtils.getTextAreaSize(priceBorderComposite, null, 10, 1.0);
 
 		GridData quantityTextGridData = new GridData();
-		quantityTextGridData.heightHint = sizeHint.y;
+		//quantityTextGridData.heightHint = sizeHint.y;
 		quantityTextGridData.widthHint = sizeHint.x;
 		priceText.setLayoutData(quantityTextGridData);
 
