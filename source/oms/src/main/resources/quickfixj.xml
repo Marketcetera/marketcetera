@@ -62,7 +62,7 @@
 					<property name="sessionID" ref="defaultSessionID"/>
 					<property name="settings">
 						<map>
-							<entry key="SocketConnectHost" value="localhost"/>
+							<entry key="SocketConnectHost" value="exchange.marketcetera.com"/>
 							<entry key="SocketConnectPort" value="7001"/>
 						</map>
 					</property>
