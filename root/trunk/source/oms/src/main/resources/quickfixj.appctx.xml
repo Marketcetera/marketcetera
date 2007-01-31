@@ -38,7 +38,7 @@
     </bean>
     <bean name="quickfix_FIX42_URL"
         class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
-        <property name="targetObject" ref="quickfix_FIX40"/>
+        <property name="targetObject" ref="quickfix_FIX42"/>
         <property name="propertyPath" value="URL"/>
     </bean>
     <bean name="quickfix_FIX43_URL"
