@@ -2,9 +2,9 @@
     :locals=> { :top_level => "Accounts", :action_name => "Update Account", :top_level_controller => @controller.controller_name } %>
 <h1>Update Account</h1>
 
-<%= start_form_tag :action => 'update', :id => @account %>
+<% form_tag :action => 'update', :id => @account do -%>
   <%= render :partial => 'form' %>
   <%= submit_tag 'Update', :class => "submit floatright" %>
-<%= end_form_tag %>
+<% end -%>
 
 <%= button_to 'Cancel', {:action => 'show', :id => @account}, {:class => "reset floatright"} %>

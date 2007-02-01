@@ -120,7 +120,7 @@ class TradeTest < MarketceteraTestBase
     nTrades = Trade.count
     test_create_equity_trade
     assert_equal nTrades+1, Trade.count, "new trade wasn't created"
-    trade = Trade.find_all[Trade.count-1]
+    trade = Trade.find(:all)[Trade.count-1]
     oldEquity = Equity.find(trade.tradeable.id)
     
     nEquities = Equity.count    

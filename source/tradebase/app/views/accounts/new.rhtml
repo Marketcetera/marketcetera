@@ -2,7 +2,7 @@
     :locals=> { :top_level => "Accounts", :action_name => "New Account", :top_level_controller => @controller.controller_name } %>
 <h1>New Account</h1>
 
-<%= start_form_tag :action => 'create' %>
+<% form_tag :action => 'create' do -%>
   <%= render :partial => 'form' %>
   <%= render :partial => '/shared/clear_create_form_buttons' %>
-<%= end_form_tag %>
+<% end -%>

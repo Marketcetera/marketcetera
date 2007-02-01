@@ -11,6 +11,6 @@ class SubAccountType < ActiveRecord::Base
   }
   
   def SubAccountType.preloaded 
-    SubAccountType.find_all
+    SubAccountType.find(:all)
   end 
 end

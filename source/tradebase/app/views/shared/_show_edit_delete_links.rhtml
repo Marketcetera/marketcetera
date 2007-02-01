@@ -5,5 +5,5 @@
                 :action => 'edit', :id => object, :controller => controller_name) %></td>
 <td><%= link_to(image_tag("/images/icons/cancel.png", :alt=>'Destroy', :width => 16, :height => 16), 
                 { :action => 'destroy', :id => object, :controller => controller_name }, 
-                :confirm => 'Are you sure?', :post => true) %></td>
+                :confirm => 'Are you sure?', :method => "post") %></td>
 <% end %>

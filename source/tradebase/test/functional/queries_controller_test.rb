@@ -17,7 +17,7 @@ class QueriesControllerTest < MarketceteraTestBase
     create_test_trade(300, 400, Side::QF_SIDE_CODE[:buy], "acct3", Date.civil(2006, 7, 14), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "acct2", Date.civil(2006, 8, 1), "DRIFLI", "4.53", "ZAI")
     create_test_trade(500, 400, Side::QF_SIDE_CODE[:sellShort], "acct1", Date.civil(2006, 9, 19), "IFLI", "4.53", "ZAI")
-    @all_trades = Trade.find_all
+    @all_trades = Trade.find(:all)
   end
 
   def test_by_symbol_none_specified

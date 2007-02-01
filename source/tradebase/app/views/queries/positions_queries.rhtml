@@ -2,7 +2,7 @@
 <h1>Position Reports</h1>
 <p>Please choose from the following reports:</p>
     <div id="positions_as_of">
-        <%=  start_form_tag :controller => 'positions_queries', :action => 'positions_as_of' %>
+        <% form_tag :controller => 'positions_queries', :action => 'positions_as_of' do -%>
             <fieldset>
                 <h2>Positions As Of Date</h2>
                 <label for="as_of">Positions as of: </label>
@@ -12,11 +12,11 @@
                 <%= submit_tag 'List Positions', :class => "submit floatright"  %>
                 <div class="clear"></div>
             </div>
-        <%= end_form_tag %>
+        <% end -%>
     </div>
     
     <div id="positions_by_account">
-        <%=  start_form_tag :controller => 'positions_queries', :action => 'positions_by_account' %>
+        <% form_tag :controller => 'positions_queries', :action => 'positions_by_account' do -%>
             <fieldset>
                 <h2>Positions By Account</h2>
                 <p>List all positions for a particular account</p>
@@ -27,6 +27,6 @@
                 <%= submit_tag 'Search by Account', :class => "submit floatright"  %>
                 <div class="clear"></div>
             </div>
-        <%= end_form_tag %>
+        <% end -%>
     </div>    
     

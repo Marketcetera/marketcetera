@@ -19,7 +19,7 @@ class TradesControllerTest < MarketceteraTestBase
     creator = CreateTradesController.new
     [20,21].each { |id| creator.create_one_trade(id) }
     assert_equal 2, Trade.count
-    @allTrades = Trade.find_all
+    @allTrades = Trade.find(:all)
     
     assert_nil Account.find_by_nickname("noSuchAccount"), "[noSuchAccount] exists before tests started"
   end
