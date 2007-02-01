@@ -658,7 +658,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		bookSection.setClient(bookComposite);
 	}
 
-	protected void handleSend() {
+	public void handleSend() {
 		try {
 			validator.validateAll();
 			Message aMessage;
