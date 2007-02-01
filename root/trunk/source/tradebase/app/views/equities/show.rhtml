@@ -5,7 +5,7 @@
     <fieldset>
         <div class="form_left">
             <label for="symbol" class="view_background">Symbol</label>
-            <div id="symbol" class="data view_data"><%=df @equity.m_symbol == nil ? '' : equity_symbol_link(@equity) %></div>
+            <div id="symbol" class="data view_data"><%= @equity.m_symbol == nil ? '' : equity_symbol_link(@equity) %></div>
             
             <label for="description" class="view_background">Description</label>
             <div id="description" class="data view_data"><%=df @equity.description %></div>

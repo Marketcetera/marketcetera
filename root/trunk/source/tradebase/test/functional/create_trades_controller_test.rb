@@ -52,7 +52,7 @@ class CreateTradesControllerTest < MarketceteraTestBase
   end
   
   def test_create_trades
-    assert_equal 0, Trade.find_all.length
+    assert_equal 0, Trade.find(:all).length
     # setup 3 trades to be created: 20, 21, 23
     post :create_trades, :trades => { 20 => "1", 21 => "1", 23 => "1", 24 => 0}  
   
@@ -66,7 +66,7 @@ class CreateTradesControllerTest < MarketceteraTestBase
     # process some trades
     test_create_trades
 
-    assert_equal 3, Trade.find_all.length
+    assert_equal 3, Trade.find(:all).length
     # setup 3 trades to be created: 20, 21, 23
     post :create_trades, :trades => { 20 => "1", 21 => "1", 23 => "1", 24 => 0, 27 => "1"}  
   

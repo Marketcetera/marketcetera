@@ -136,7 +136,7 @@ class DividendsControllerTest < MarketceteraTestBase
     assert_redirected_to :action => 'list'
 
     assert_equal num_dividends + 1, Dividend.count
-    ifli = Dividend.find_all[Dividend.count-1]
+    ifli = Dividend.find(:all)[Dividend.count-1]
     
     verify_dividend_value(ifli, "IFLI", "ZAI", 23, Date.civil(2006, 9, 10), Date.civil(2006, 11, 12),  
                           Date.civil(2006, 7, 8), "E", "ifli rocks")

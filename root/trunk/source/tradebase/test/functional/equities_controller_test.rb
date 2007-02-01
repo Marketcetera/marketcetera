@@ -40,8 +40,8 @@ class EquitiesControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:equity)
     assert assigns(:equity).valid?
     
-    assert_tag :content => Equity.find(1).m_symbol_root
-    assert_tag :content => Equity.find(1).description
+    assert_select "fieldset div a", Equity.find(1).m_symbol_root
+    assert_select "fieldset div div", Equity.find(1).description
   end
 
   def test_new
@@ -74,7 +74,7 @@ class EquitiesControllerTest < MarketceteraTestBase
     assert_template 'new'
     assert_equal 1, assigns(:equity).errors.length, "number of validation errors"
     assert_not_nil assigns(:equity).errors[:m_symbol_id]
-    assert_tag :content => "Symbol cannot be empty"
+    assert_select "form div ul li", /[a-zA-Z ]*Symbol cannot be empty/
 
     assert_equal num_equities, Equity.count
   end
@@ -87,7 +87,9 @@ class EquitiesControllerTest < MarketceteraTestBase
     assert_template 'new'
     assert_equal 1, assigns(:equity).errors.length, "number of validation errors"
     assert_not_nil assigns(:equity).errors[:m_symbol_id]
-    assert_tag :content => "Equity with that symbol already exists"
+    assert_equal "Equity with that symbol already exists", assigns(:equity).errors[:m_symbol_id]
+    assert_has_error_box
+    assert_select "form div ul li", /[a-zA-Z ]*Equity with that symbol already exists/
 
     assert_equal num_equities, Equity.count
   end
@@ -162,7 +164,7 @@ class EquitiesControllerTest < MarketceteraTestBase
     assert_template 'edit'
     assert_equal 1, assigns(:equity).errors.length, "number of validation errors"
     assert_not_nil assigns(:equity).errors[:m_symbol_id]
-    assert_tag :content => "Symbol cannot be empty"
+    assert_select "form div ul li", /[a-zA-Z ]*Symbol cannot be empty/
   end
   def test_update_duplicate
     orig = Equity.find(1)
@@ -171,7 +173,7 @@ class EquitiesControllerTest < MarketceteraTestBase
     assert_template 'edit'
     assert_equal 1, assigns(:equity).errors.length, "number of validation errors"
     assert_not_nil assigns(:equity).errors[:m_symbol_id]
-    assert_tag :content => "Equity with that symbol already exists"
+    assert_select "form div ul li", /[a-zA-Z ]*Equity with that symbol already exists/
   end
 
   def test_destroy

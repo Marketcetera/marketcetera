@@ -1,7 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/marketcetera_test_base'
 
-class PositionssHelperTest < MarketceteraTestBase
+class PositionsHelperTest < MarketceteraTestBase
   fixtures :currencies
   include PositionsHelper
 

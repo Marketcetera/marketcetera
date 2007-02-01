@@ -2,18 +2,23 @@
     :locals=> { :top_level => "Trades", :action_name => "Import Trades", :top_level_controller => 'trades' } %>
 <h1>Import Trades</h1>
 
-<%= start_form_tag({:action => 'list'}, { :id => 'dateRange' }) %>
+<% form_tag({:action => 'list'}, { :id => 'dateRange' }) do -%>
     <fieldset>
+        <div class="clear"></div>
         <label for="search_type">Select Date Range</label>
+        <div class="clear"></div>
         <%= radio_button_tag('search_type', 's', false,  
             { :id => 'subset',  :class => 'radio' })%>
         <label for="subset">Subset</label>
+        <div class="clear"></div>
         <div id="subset_content">
+            <div class="clear"></div>
             <label for="start_date">Start date</label>
             <div class="date"><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></div>
             <div class="clear"></div>
             <label for="end_date">End date</label>
             <div class="date"><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></div>
+            <div class="clear"></div>
         </div>
         <div class="clear"></div>
        <%= radio_button_tag('search_type', 'a', true,  
@@ -23,9 +28,9 @@
     </fieldset>
   <%= submit_tag 'Search', :class => "submit floatright" %>
   <div class="clear"></div>
-<%= end_form_tag %>
+<% end -%>
 
-<%= start_form_tag( {:action => 'create_trades', :controller => 'create_trades'},  {:id => "selectTrades"}) %>
+<% form_tag( {:action => 'create_trades', :controller => 'create_trades'},  {:id => "selectTrades"}) do -%>
 <table>
   <tr>
     <th/>
@@ -78,13 +83,13 @@
     <%= render :partial => 'shared/show_edit_delete_links', 
                :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'message_logs'} %>
   </tr>
-<% end %>
+    <% end %>
 </table>
 <p/>
 Select: <a href="javascript:toggleCheckboxes('selectTrades', 1);">All</a> <a href="javascript:toggleCheckboxes('selectTrades', 0);">None</a>
 <p/>
 <%= submit_tag 'Import Trades', :class => "submit floatright" %>
-<%= end_form_tag %>
+<% end -%>
 <p/>
 <%= link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous %>
 <%= link_to 'Next page', { :page => @paginator.current.next } if @paginator.current.next %> 
