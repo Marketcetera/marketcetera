@@ -26,6 +26,9 @@ class PositionsControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:positions)
     assert_equal 1, assigns(:positions).length
     assert_nums_equal -300, assigns(:positions)[0].position
+    
+    # verify the visible position number doesn't have many trailing zeros
+    assert_select "table tr td", "-300.0"
   end
 
 

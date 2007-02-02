@@ -1,8 +1,8 @@
 # Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
-goog_div:
+toli_div:
   id: 1
   amount: 20
-  description: "google dividend"
+  description: "toli dividend"
   currency_id: 1
   equity_id: 3
 
