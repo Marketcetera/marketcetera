@@ -142,7 +142,7 @@ public class PhotonController {
 			
 			String rejectMsg = "Order rejected " + orderID + " "
 					+ aMessage.getString(Symbol.FIELD) + rejectReason;
-			internalMainLogger.info(rejectMsg);
+			internalMainLogger.error(rejectMsg);
 		}
 	}
 
