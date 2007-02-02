@@ -230,16 +230,16 @@ class TradesControllerTest < MarketceteraTestBase
   end
 
   def test_edit_verify_fields_prefilled
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShort], "TOLI", 4.99, 11, "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, '', "ZAI", 7.37, Date.civil(2006, 10,10))
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, '', '', 7.37, Date.civil(2006, 10,10))
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, '', nil, 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShort], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", "4.99000", "11.00000", '', "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", "4.99000", "11.00000", '', '', 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", "4.99000", "11.00000", '', nil, 7.37, Date.civil(2006, 10,10))
   end
   
   def test_edit_verify_side_selected_correctly
-    prefilled_test_helper( Side::QF_SIDE_CODE[:buy], "TOLI", 4.99, 11, "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShortExempt], "TOLI", 4.99, 11, "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", 4.99, 11, nil, "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:buy], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShortExempt], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", "4.99000", "11.00000", nil, "ZAI", 7.37, Date.civil(2006, 10,10))
   end
   
   def test_update_no_actual_edits
@@ -470,6 +470,7 @@ class TradesControllerTest < MarketceteraTestBase
     # verify the symbol edit box shows up 
     cur = cur.blank? ? "USD" : cur
     account = account.blank? ? Account::UNASSIGNED_NAME : account
+    
     assert_tag :input, :attributes => { :id => 'currency_alpha_code', :value => cur }
     assert_tag :input, :attributes => { :id => 'account_nickname', :value => account }
     assert_tag :input, :attributes => { :id => 'trade_price_per_share', :value => price }

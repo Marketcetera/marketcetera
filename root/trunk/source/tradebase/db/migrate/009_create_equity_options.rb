@@ -7,7 +7,7 @@ class CreateEquityOptions < ActiveRecord::Migration
     create_table :equity_options do |t|
       t.column :m_symbol_id, :integer
       t.column :expiration_date, :date
-      t.column :strike_price, :float
+      t.column :strike_price, :decimal, :precision => 15, :scale => 5
       t.column :call_put, :string, :limit=>1, :null => false
       t.column :exercise_type, :string, :limit=>1
       t.column :equity_option_series_id, :integer, :null => false

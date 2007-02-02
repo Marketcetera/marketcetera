@@ -5,7 +5,7 @@ class CreateDividends < ActiveRecord::Migration
   
   def self.up
     create_table :dividends do |t|
-      t.column :amount, :float
+      t.column :amount, :decimal, :precision => 15, :scale => 5
       t.column :announce_date, :date
       t.column :ex_date, :date
       t.column :payable_date, :date

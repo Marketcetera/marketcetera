@@ -5,7 +5,7 @@ class CreateEquityOptionUnderlyings < ActiveRecord::Migration
 
   def self.up
     create_table :equity_option_underlyings do |t|
-      t.column :quantity, :float
+      t.column :quantity, :decimal, :precision => 15, :scale => 5
       t.column :equity_option_series_id, :integer, :null => false
       t.column :underlying_m_symbol_id, :integer, :null => false
       t.column :created_on, :datetime
