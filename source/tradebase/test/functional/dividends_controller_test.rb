@@ -39,6 +39,12 @@ class DividendsControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:dividend)
     assert assigns(:dividend).valid?
+    
+    assert_select "body h1", /[a-zA-Z ]*TOLI/
+    assert_tag  :tag => 'div', :attributes => {:id => 'description', :class => "data view_data"}, :content=> 'toli dividend'
+    assert_tag  :tag => "div", :attributes => {:id => "amount"}, :content=> "20.0"
+    assert_tag  :tag => "div", :attributes => {:id => "currency"}, :content=>'USD'
+    
   end
 
   def test_new
@@ -123,6 +129,25 @@ class DividendsControllerTest < MarketceteraTestBase
     assert_equal num_dividends, Dividend.count
   end
 
+  def test_create_invalid_currency_fails
+    num_dividends = Dividend.count
+    assert_nil Currency.find_by_alpha_code("XXX")
+    
+    post :create, {"m_symbol"=>{"root"=>"abc"}, 
+         :dividend =>{:status=>"", :amount => "23", "payable_date(1i)"=>"2006", "announce_date(1i)"=>"2006", "announce_date(2i)"=>"10", 
+                       "payable_date(2i)"=>"10", "ex_date(1i)"=>"2006", "payable_date(3i)"=>"24", "announce_date(3i)"=>"24", 
+                       "ex_date(2i)"=>"10", "ex_date(3i)"=>"24", "description"=>""}, 
+         "currency"=>{"alpha_code"=>"XXX"}}
+
+    assert_template 'new'
+    assert_has_error_box
+    
+    assert_equal 1, assigns(:dividend).errors.length, "number of validation errors: " + 
+                                                      collect_errors_into_string(assigns(:dividend).errors)
+    assert_not_nil assigns(:dividend).errors[:currency]
+    assert_equal num_dividends, Dividend.count
+  end
+
   def test_create_successful
     num_dividends = Dividend.count
 
@@ -162,7 +187,7 @@ class DividendsControllerTest < MarketceteraTestBase
   end
 
   def test_update_no_actual_edits
-    origDiv = dividends(:goog_div)
+    origDiv = dividends(:toli_div)
     post :update, { :id =>  origDiv.id, 
                     :m_symbol =>{ :root=> origDiv.equity_m_symbol_root }, 
                     :currency =>{ :alpha_code => origDiv.currency_alpha_code}, 
@@ -176,7 +201,7 @@ class DividendsControllerTest < MarketceteraTestBase
   end
 
   def test_update_amount
-    origDiv = dividends(:goog_div)
+    origDiv = dividends(:toli_div)
     post :update, { :id =>  origDiv.id, 
                     :m_symbol =>{ :root=> origDiv.equity_m_symbol_root }, 
                     :currency =>{ :alpha_code => origDiv.currency_alpha_code}, 
@@ -190,7 +215,7 @@ class DividendsControllerTest < MarketceteraTestBase
   end
 
   def test_update_everything
-    origDiv = dividends(:goog_div)
+    origDiv = dividends(:toli_div)
     post :update, { :id =>  origDiv.id, 
                     :m_symbol =>{ :root=> "ABC" }, 
                     :currency =>{ :alpha_code => "ZAI"}, 
