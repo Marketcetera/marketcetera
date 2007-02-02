@@ -5,7 +5,7 @@ class CreateEquityOptionSeries < ActiveRecord::Migration
 
   def self.up
     create_table :equity_option_series do |t|
-      t.column :cash_deliverable, :float
+      t.column :cash_deliverable, :decimal, :precision => 15, :scale => 5
       t.column :m_symbol_id, :integer
       t.column :cash_deliverable_currency_id, :integer
       t.column :created_on, :datetime

@@ -197,7 +197,7 @@ class TradeTest < MarketceteraTestBase
     t.total_commission = 14.99
     t.price_per_share = 25
     t.quantity = 200
-    assert_equal 14.99, t.total_commission
+    assert_equal BigDecimal.new("14.99"), t.total_commission
     assert_equal 200, t.quantity
     assert_equal 200*25, t.total_price
     assert_equal 25, t.price_per_share

@@ -5,9 +5,9 @@ class CreateTrades < ActiveRecord::Migration
 
   def self.up
     create_table :trades do |t|
-      t.column :quantity, :float
-      t.column :position_qty, :float
-      t.column :price_per_share, :float
+      t.column :quantity, :decimal, :precision => 15, :scale => 5
+      t.column :position_qty, :decimal, :precision => 15, :scale => 5
+      t.column :price_per_share, :decimal, :precision => 15, :scale => 5
       t.column :side, :integer
       t.column :trade_type, :string, :limit=>1
       t.column :journal_id, :integer
