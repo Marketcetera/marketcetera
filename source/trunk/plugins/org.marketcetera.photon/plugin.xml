@@ -78,6 +78,10 @@
          <perspectiveShortcut
                id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
       </perspectiveExtension>
+      <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
+         <perspectiveShortcut
+               id="org.marketcetera.photon.EquityPerspective"/>
+      </perspectiveExtension>
       <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
          <view
                id="org.eclipse.ui.console.ConsoleView"
