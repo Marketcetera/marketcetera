@@ -1,17 +1,12 @@
 package org.marketcetera.oms;
 
-import org.springframework.jms.core.JmsOperations;
 import org.marketcetera.core.ClassVersion;
-
+import org.marketcetera.core.LoggerAdapter;
+import org.springframework.jms.core.JmsOperations;
 import quickfix.Application;
 import quickfix.DoNotSend;
-import quickfix.FieldNotFound;
-import quickfix.IncorrectDataFormat;
-import quickfix.IncorrectTagValue;
 import quickfix.Message;
-import quickfix.RejectLogon;
 import quickfix.SessionID;
-import quickfix.UnsupportedMessageType;
 
 /**
  * @author gmiller
@@ -25,16 +20,24 @@ public class QuickFIXApplication implements Application {
 	public QuickFIXApplication() {
 	}
 	
-	public void fromAdmin(Message message, SessionID session) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, RejectLogon {
+	public void fromAdmin(Message message, SessionID session)  {
 		if (jmsOperations != null){
-			jmsOperations.convertAndSend(message);
-		}
+            try {
+                jmsOperations.convertAndSend(message);
+            } catch (Exception ex) {
+                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
+            }
+        }
 	}
 
-	public void fromApp(Message message, SessionID session) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
+	public void fromApp(Message message, SessionID session) {
 		if (jmsOperations != null){
-			jmsOperations.convertAndSend(message);
-		}
+            try {
+                jmsOperations.convertAndSend(message);
+            } catch (Exception ex) {
+                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
+            }
+        }
 	}
 
 	public void onCreate(SessionID session) {
