@@ -76,7 +76,7 @@
     <td><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, leavesQty) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, avgPx)[0,9] %></td>
+    <td><%= formatBigDecimal(BigDecimal(getStringFieldValueIfPresent(qf_message, avgPx))) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, account) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
