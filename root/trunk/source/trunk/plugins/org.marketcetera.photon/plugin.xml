@@ -112,6 +112,12 @@
             class="org.marketcetera.photon.preferences.ScriptRegistryPage"
             id="org.marketcetera.photon.preferences.scriptregistry"
             name="Script Registry"/>
+      <page
+            name="Hot Keys"
+            class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
+            id="org.eclipse.ui.preferencePages.Keys">
+      </page>
+            
    </extension>
    <extension
          id="Photon"
