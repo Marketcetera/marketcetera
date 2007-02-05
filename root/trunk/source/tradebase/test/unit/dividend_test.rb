@@ -34,16 +34,26 @@ class DividendTest < Test::Unit::TestCase
   def test_validation
     div = Dividend.new
     assert !div.valid?
-    assert_equal 2, div.errors.length, "doesn't contain amount and symbol validation"
+    assert_equal 3, div.errors.length, "doesn't contain amount and symbol and currency validation"
     assert_not_nil div.errors[:symbol]
+    assert_not_nil div.errors[:amount]
+    assert_not_nil div.errors[:currency]
     
     div.equity = @ifli
     assert !div.valid?
-    assert_equal 1, div.errors.length
+    assert_equal 2, div.errors.length
     assert_nil div.errors[:symbol]
+    assert_not_nil div.errors[:amount]
+    assert_not_nil div.errors[:currency]
     
     div.amount = 23
+    assert !div.valid?
+    assert_equal 1, div.errors.length
+    assert_not_nil div.errors[:currency]
+
+    div.currency = Currency.find(1)
     assert div.valid?
+    assert_nil div.errors[:currency]
   end
   
   def test_symbol_presense_validation
