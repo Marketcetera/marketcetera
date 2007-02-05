@@ -172,11 +172,11 @@ public class ScriptRegistry implements InitializingBean {
 	 */
 	public void scriptChanged(String fileName) throws BSFException {
 		boolean reregister = isRegistered(fileName);
+		unregister(fileName);
 		String evalString = "Dependencies.loaded.reject! {|s| s.ends_with?('"+fileName+"')}";
 		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
 		evalString = "require_dependency '"+fileName+"'";
 		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-		unregister(fileName);
 		if (reregister){
 			register(fileName);
 		}

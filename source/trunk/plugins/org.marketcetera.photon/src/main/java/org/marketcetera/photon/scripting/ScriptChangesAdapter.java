@@ -132,11 +132,13 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
  
  					if (isScript(resourcePath))
  					{
+						String normalizedName = normalizeName(getProjectRelativePath(resourcePath));
  						try {
- 							registry.scriptChanged(
- 									normalizeName(getProjectRelativePath(resourcePath))
+							registry.scriptChanged(
+ 									normalizedName
  									);
  						} catch (BSFException bsfe) {
+ 							unregisterScriptOnError(normalizedName+".rb");
 							// why oh wy didn't they just allow a cause parameter
 							// to the CoreException constructor?
 							CoreException ex = new CausedCoreException(Status.CANCEL_STATUS, bsfe);
