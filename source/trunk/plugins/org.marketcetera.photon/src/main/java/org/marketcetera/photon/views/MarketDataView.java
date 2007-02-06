@@ -342,7 +342,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			return;
 		}
 
-		if (!hasSymbol(symbol)) {
+		if (hasSymbol(symbol)) {
+			PhotonPlugin.getMainConsoleLogger().warn("Duplicate symbol added to view: " +symbol);
+		} else {
 			EventList<MessageHolder> list = getInput();
 
 			Message message = new Message();
