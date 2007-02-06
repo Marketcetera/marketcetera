@@ -41,7 +41,13 @@ public class RubyScriptSelectionDialog extends ElementTreeSelectionDialog {
 	private static class TreeElementFilter extends ViewerFilter {
 		public boolean select(Viewer viewer, Object parent, Object element) {
 			if (element instanceof IProject) {
-				return true;
+				String activeScriptsPath = ("/"+PhotonPlugin.DEFAULT_PROJECT_NAME);
+				String currentProjectPathString = ((IProject)element).getFullPath().toOSString();
+				if (activeScriptsPath.equals(currentProjectPathString))
+				{
+					return true;
+				}
+				return false;
 			}
 			else if (element instanceof IFolder) {
 				return true;
