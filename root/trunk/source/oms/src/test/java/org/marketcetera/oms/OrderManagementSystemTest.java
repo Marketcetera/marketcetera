@@ -84,10 +84,10 @@ public class OrderManagementSystemTest extends TestCase
     /** test the startup of the real OMS appContext, sleeps for 3 secs and exits
      * Really, we just care to check that the spring config is setup correctly, nothing else. 
      */
-    public void disabled_testRealOMSStartup() throws Exception {
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext("oms.xml");
+    public void testRealOMSStartup() throws Exception {
+        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(OrderManagementSystem.APP_CONTEXT_CONFIG_FILES);
         Thread.sleep(3000);
-        assert(appContext.isRunning());
+        assertTrue(appContext.isRunning());
         assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
     }
 
