@@ -194,7 +194,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(new Separator());
 		menu.add(quitAction);
 
-		menuBar.add(menu);
+		//menuBar.add(menu);
 
 		// Edit menu
 		menu = new MenuManager(
@@ -214,6 +214,11 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(preferencesAction);
 		menuBar.add(menu);
 
+		// navigate - testing
+		menu = new MenuManager(Messages.ApplicationActionBarAdvisor_NavigationMenuName, IWorkbenchActionConstants.M_NAVIGATE);
+		menu.add(undoAction);
+		menuBar.add(menu);
+		
 		// Script menu
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_ScriptMenuName,
