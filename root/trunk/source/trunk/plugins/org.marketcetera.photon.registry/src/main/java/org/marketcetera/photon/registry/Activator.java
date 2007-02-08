@@ -65,6 +65,9 @@ public class Activator implements BundleActivator {
 
 	private ServiceRegistration registryRegistration;
 
+	public Activator() {
+		System.out.println("in Activator constructor");
+	}
 	
 	/*
 	 * (non-Javadoc)
@@ -73,6 +76,7 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
 		
+		System.out.println("in Activator start");
 		RegistryProperties.setContext(context);
 		
 		createRegistry();
