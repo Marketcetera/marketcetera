@@ -379,18 +379,13 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		return (IQuoteFeed) (service == null ? null : service.getQuoteFeed());
 	}
 
-	public void removeItem(MessageHolder holder){
-		IQuoteFeed quoteFeed = getQuoteFeed();
-		if (quoteFeed == null){
-			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
-			return;
-		}
+	public void removeItem(MessageHolder holder) {
 		try {
-			quoteFeed.unlistenQuotes(new MSymbol(holder.getMessage().getString(Symbol.FIELD)));
+			MSymbol symbol = new MSymbol(holder.getMessage().getString(Symbol.FIELD));
+			removeSymbol(symbol);
 		} catch (FieldNotFound e) {
+			// do nothing
 		}
-		getInput().remove(holder);
-		
 	}
 	
 	public void removeSymbol(MSymbol symbol) {
