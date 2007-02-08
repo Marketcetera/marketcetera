@@ -217,7 +217,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		// navigate - testing
 		menu = new MenuManager(Messages.ApplicationActionBarAdvisor_NavigationMenuName, IWorkbenchActionConstants.M_NAVIGATE);
 		menu.add(undoAction);
-		menuBar.add(menu);
+		//menuBar.add(menu);
 		
 		// Script menu
 		menu = new MenuManager(
