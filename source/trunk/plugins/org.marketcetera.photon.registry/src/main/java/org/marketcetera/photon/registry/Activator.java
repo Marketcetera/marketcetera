@@ -89,7 +89,9 @@ public class Activator implements BundleActivator {
 
 	private void removeUnwantedExtensions() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-
+		
+		System.out.println("in removeUnwantedExceptions code");
+		
 		for (String xtId : UNWANTED_EXTENSIONS) {
 			IExtension xt = findExtension(xtId);
 			if (xt != null)
