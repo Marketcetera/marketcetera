@@ -56,6 +56,7 @@ public class Activator implements BundleActivator {
 		"org.eclipse.search.preferences.SearchPreferencePage",  //$NON-NLS-1$
 		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter",  //$NON-NLS-1$
 		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageEvaluationExpressions",  //$NON-NLS-1$
+		"org.rubypeople.rdt.ui", // tk - working on bug #39
 		"org.eclipse.ui.WorkingSetActionSet",  //$NON-NLS-1$
 		"org.eclipse.ui.edit.text.actionSet.annotationNavigation",  //$NON-NLS-1$
 		"org.eclipse.debug.ui.contextualLaunch.debug"  //$NON-NLS-1$
