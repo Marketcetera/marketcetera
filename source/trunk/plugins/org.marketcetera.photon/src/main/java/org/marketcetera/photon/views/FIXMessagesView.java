@@ -2,6 +2,9 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
 import org.marketcetera.photon.core.FIXMatcher;
 import org.marketcetera.photon.core.FIXMessageHistory;
@@ -15,11 +18,19 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
 
+/**
+ * FIX Messages view.
+ * 
+ * @author gmiller
+ * @author andrei@lissovski.org
+ */
 public class FIXMessagesView extends HistoryMessagesView {
-
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
 	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT, false);
+
+	private ShowHeartbeatsAction showHeartbeatsAction;
+	private static final String SHOW_HEARTBEATS_SAVED_STATE_KEY = "SHOW_HEARTBEATS";
 
 	
 	/**
@@ -53,9 +64,34 @@ public class FIXMessagesView extends HistoryMessagesView {
 		return MessageColumns.values();
 	}
 
-    protected void initializeToolBar(IToolBarManager theToolBarManager) {
-    	//theToolBarManager.add(new TextContributionItem(""));
-    	theToolBarManager.add(new ShowHeartbeatsAction(this));
+    /* (non-Javadoc)
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+
+		showHeartbeatsAction = new ShowHeartbeatsAction(this);
+		
+		if (memento != null  // can be null if there is no previous saved state
+			&& memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY) != null) 
+		{
+			showHeartbeatsAction.setChecked(memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY).intValue() != 0);
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+		memento.putInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY, showHeartbeatsAction.isChecked() ? 1 : 0);
+	}
+
+	protected void initializeToolBar(IToolBarManager theToolBarManager) {
+		//theToolBarManager.add(new TextContributionItem(""));
+    	theToolBarManager.add(showHeartbeatsAction);
     }
 
 	@Override
