@@ -106,6 +106,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
         messageTable.setHeaderVisible(true);
 
+		for (int i = 0; i < messageTable.getColumnCount(); i++) {
+			messageTable.getColumn(i).setMoveable(true);
+		}
     }
 
 	@Override
