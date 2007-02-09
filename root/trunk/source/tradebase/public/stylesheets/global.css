@@ -359,7 +359,7 @@ body {
 }
 
 body .right_column fieldset #subset_content {
-  margin-left: 50px;
+  padding-left: 50px;
 }
 
 #body .right_column .submit {
