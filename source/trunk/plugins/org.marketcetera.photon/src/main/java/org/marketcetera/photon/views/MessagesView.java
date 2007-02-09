@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.layout.GridData;
@@ -57,6 +56,9 @@ public abstract class MessagesView extends ViewPart {
 
         messageTable.setHeaderVisible(true);
 
+		for (int i = 0; i < messageTable.getColumnCount(); i++) {
+			messageTable.getColumn(i).setMoveable(true);
+		}
     }
 
 	@Override
