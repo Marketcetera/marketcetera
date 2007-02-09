@@ -56,10 +56,10 @@ public class Activator implements BundleActivator {
 		"org.eclipse.search.preferences.SearchPreferencePage",  //$NON-NLS-1$
 		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageRubyInterpreter",  //$NON-NLS-1$
 		"org.rubypeople.rdt.debug.ui.preferences.PreferencePageEvaluationExpressions",  //$NON-NLS-1$
-		"org.rubypeople.rdt.ui", // tk - working on bug #39
 		"org.eclipse.ui.WorkingSetActionSet",  //$NON-NLS-1$
 		"org.eclipse.ui.edit.text.actionSet.annotationNavigation",  //$NON-NLS-1$
-		"org.eclipse.debug.ui.contextualLaunch.debug"  //$NON-NLS-1$
+		"org.eclipse.debug.ui.contextualLaunch.debug",  //$NON-NLS-1$
+		"org.eclipse.search.searchActionSet"	// tk - removing search menu to fix bug #39
 	};
 
 	private RegistryProviderOSGI registryProvider;
@@ -67,7 +67,6 @@ public class Activator implements BundleActivator {
 	private ServiceRegistration registryRegistration;
 
 	public Activator() {
-		System.out.println("in Activator constructor");
 	}
 	
 	/*
@@ -77,7 +76,6 @@ public class Activator implements BundleActivator {
 	public void start(BundleContext context) throws Exception {
 		this.context = context;
 		
-		System.out.println("in Activator start");
 		RegistryProperties.setContext(context);
 		
 		createRegistry();
@@ -94,8 +92,6 @@ public class Activator implements BundleActivator {
 
 	private void removeUnwantedExtensions() {
 		IExtensionRegistry registry = Platform.getExtensionRegistry();
-		
-		System.out.println("in removeUnwantedExceptions code");
 		
 		for (String xtId : UNWANTED_EXTENSIONS) {
 			IExtension xt = findExtension(xtId);
