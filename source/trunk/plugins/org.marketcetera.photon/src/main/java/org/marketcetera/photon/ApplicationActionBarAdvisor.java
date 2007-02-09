@@ -23,6 +23,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
+import org.marketcetera.photon.actions.ReconnectQuoteFeedAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 
 /**
@@ -111,6 +112,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
     private IAction checkForUpdatesAction;
 
+	private ReconnectQuoteFeedAction reconnectQuoteFeedAction;
+
 
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -167,6 +170,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
+		reconnectQuoteFeedAction = new ReconnectQuoteFeedAction(window); register(reconnectQuoteFeedAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
 		
@@ -186,6 +190,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName,
 				IWorkbenchActionConstants.M_FILE);
 		menu.add(reconnectJMSAction);
+		menu.add(reconnectQuoteFeedAction);
 		menu.add(new Separator());
 		menu.add(saveAction);
 		menu.add(new Separator());
@@ -194,7 +199,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(new Separator());
 		menu.add(quitAction);
 
-		//menuBar.add(menu);
+		menuBar.add(menu);
 
 		// Edit menu
 		menu = new MenuManager(
@@ -216,7 +221,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// navigate - testing
 		menu = new MenuManager(Messages.ApplicationActionBarAdvisor_NavigationMenuName, IWorkbenchActionConstants.M_NAVIGATE);
-		menu.add(undoAction);
 		//menuBar.add(menu);
 		
 		// Script menu
