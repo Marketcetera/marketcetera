@@ -16,6 +16,7 @@
         </constructor-arg>
     </bean>
 
+    <!-- Currently unused but there if you want to swap out SLF4j -->
     <bean id="screenLogFactory" class="quickfix.ScreenLogFactory">
         <constructor-arg value="true"/>
         <constructor-arg value="true"/>
@@ -23,11 +24,17 @@
         <constructor-arg value="false"/>
     </bean>
 
+    <bean id="slf4jLogFactory" class="quickfix.SLF4JLogFactory">
+        <constructor-arg>
+            <ref bean="sessionSettings"/>
+        </constructor-arg>
+    </bean>
+
     <bean id="comboLogFactory" class="quickfix.CompositeLogFactory">
         <constructor-arg>
             <list>
                 <ref bean="jdbcLogFactory"/>
-                <ref bean="screenLogFactory"/>
+                <ref bean="slf4jLogFactory"/>
             </list>
         </constructor-arg>
     </bean>
