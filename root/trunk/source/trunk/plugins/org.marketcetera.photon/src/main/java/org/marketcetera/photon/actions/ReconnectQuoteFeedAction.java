@@ -30,6 +30,7 @@ public class ReconnectQuoteFeedAction extends Action implements IWorkbenchAction
 		setId(ID);
 		setText("&Reconnect quote feed");
 		setToolTipText("Reconnect to the quote feed");
+		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED));
 	}
 	/**
 	 *  
