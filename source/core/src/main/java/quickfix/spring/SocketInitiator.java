@@ -13,6 +13,8 @@ import quickfix.SessionFactory;
 import quickfix.SessionSettings;
 
 /**
+ * Straight subclass of {@link quickfix.SocketInitiator} to be used from Spring config files
+ * that adds the {@link InitializingBean} and {@link DisposableBean} behaviour.
  * @author gmiller
  * $Id$
  */
@@ -20,19 +22,22 @@ import quickfix.SessionSettings;
 public class SocketInitiator extends quickfix.SocketInitiator implements
 		InitializingBean, DisposableBean {
 
-	public SocketInitiator(Application arg0, MessageStoreFactory arg1, SessionSettings arg2, LogFactory arg3, MessageFactory arg4) throws ConfigError {
-		super(arg0, arg1, arg2, arg3, arg4);
+    public SocketInitiator(Application application, MessageStoreFactory messageStoreFactory,
+            SessionSettings settings, LogFactory logFactory, MessageFactory messageFactory)
+            throws ConfigError {
+		super(application, messageStoreFactory, settings, logFactory, messageFactory);
 	}
 
-	public SocketInitiator(Application arg0, MessageStoreFactory arg1, SessionSettings arg2, MessageFactory arg3) throws ConfigError {
-		super(arg0, arg1, arg2, arg3);
-	}
+    public SocketInitiator(Application application, MessageStoreFactory messageStoreFactory,
+                           SessionSettings settings, MessageFactory messageFactory) throws ConfigError {
+        super(application, messageStoreFactory, settings, messageFactory);
+    }
 
-	public SocketInitiator(SessionFactory arg0, SessionSettings arg1) throws ConfigError {
-		super(arg0, arg1);
-	}
+    public SocketInitiator(SessionFactory sessionFactory, SessionSettings settings) throws ConfigError {
+        super(sessionFactory, settings);
+    }
 
-	public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() throws Exception {
 		start();
 	}
 
