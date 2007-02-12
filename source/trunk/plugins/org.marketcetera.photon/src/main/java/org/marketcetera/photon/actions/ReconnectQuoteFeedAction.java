@@ -28,7 +28,7 @@ public class ReconnectQuoteFeedAction extends Action implements IWorkbenchAction
 	public ReconnectQuoteFeedAction(IWorkbenchWindow window){
 		this.window = window;
 		setId(ID);
-		setText("&Reconnect quote feed");
+		setText("Reconnect &Quote Feed");
 		setToolTipText("Reconnect to the quote feed");
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED));
 	}
@@ -39,7 +39,6 @@ public class ReconnectQuoteFeedAction extends Action implements IWorkbenchAction
 	 * @see org.eclipse.ui.actions.ActionFactory$IWorkbenchAction#dispose()
 	 */
 	public void dispose() {
-		// TODO Auto-generated method stub
 	}
 
 	/**

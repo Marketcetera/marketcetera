@@ -303,6 +303,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolBar.add(focusCommandCI);
 		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
 		toolBar.add(reconnectJMSCI);
+		ActionContributionItem reconnectQuoteFeedCI = new ActionContributionItem(reconnectQuoteFeedAction);
+		toolBar.add(reconnectQuoteFeedCI);
 		//ActionContributionItem openOptionsJMSCI = new ActionContributionItem(openOptionEditorAction);
 		//toolBar.add(openOptionsJMSCI);
 	}
