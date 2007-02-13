@@ -11,10 +11,6 @@ import java.lang.management.ManagementFactory;
 //import org.quickfixj.jmx.mbean.connector.ConnectorJmxExporter;
 import org.springframework.context.ApplicationContext;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
-
 import quickfix.Session;
 import quickfix.SocketInitiator;
 
@@ -52,6 +48,11 @@ public class OrderManagementSystem extends ApplicationBase {
         try {
             OrderManagementSystem oms = new OrderManagementSystem();
             ApplicationContext appCtx = oms.createApplicationContext(APP_CONTEXT_CONFIG_FILES, true);
+            if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
+                String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);
+                String connectPort = (String) appCtx.getBean("socketConnectPortValue", String.class);
+                LoggerAdapter.info(OMSMessageKey.CONNECTING_TO.getLocalizedMessage(connectHost, connectPort), LOGGER_NAME);
+            }
 
             SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class);
             SessionAdmin adminBean = new SessionAdmin((Session)initiator.getManagedSessions().get(0));
