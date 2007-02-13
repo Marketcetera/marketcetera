@@ -54,17 +54,7 @@
         </property>
         <property name="defaultDestination" ref="replyTopic"/>
     </bean>
-    <!--
-    || Message Driven POJOs
-    -->
-
-    <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
-    <bean id="defaultSessionID" class="quickfix.SessionID">
-        <constructor-arg value="FIX.4.2"/>
-        <constructor-arg value="MRKTC-OMS"/>
-        <constructor-arg value="MRKTC-EXCH"/>
-    </bean>
-
+        
     <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
         <property name="defaultSessionID" ref="defaultSessionID"/>
@@ -74,5 +64,24 @@
                 <ref bean="defaultOrderModifier"/>
             </list>
         </property>
+    </bean>
+
+    <!--
+     | User-configurable session and senderCompID variables |
+    -->
+
+    <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
+    <bean id="defaultSessionID" class="quickfix.SessionID">
+        <constructor-arg value="FIX.4.2"/>
+        <constructor-arg value="MRKTC-OMS"/>
+        <constructor-arg value="MRKTC-EXCH"/>
+    </bean>
+
+    <!-- Location (host/port) of the FIX reciever we are connecting to -->
+    <bean id="socketConnectHostValue" class="java.lang.String">
+        <constructor-arg value="exchange.marketcetera.com"/>
+    </bean>
+    <bean id="socketConnectPortValue" class="java.lang.String">
+        <constructor-arg value="7001"/>
     </bean>
 </beans>

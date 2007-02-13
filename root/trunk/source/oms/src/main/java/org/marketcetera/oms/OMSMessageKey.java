@@ -15,6 +15,7 @@ public enum OMSMessageKey implements LocalizedMessage {
     ERROR_DECODING_MESSAGE("oms.error_decoding_message"),
     ERROR_SENDING_QF_MESSAGE("oms.error.send_qf_message"),
     ERROR_SENDING_JMS_MESSAGE("oms.error.send_jms_message"),
+    CONNECTING_TO("oms.connecting_to"),
     MESSAGE_EXCEPTION("oms.message.error.generic");
 
     private OMSMessageKey(String inKey) {
