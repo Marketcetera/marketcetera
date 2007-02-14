@@ -17,10 +17,24 @@
         <target name="assemble.org.eclipse.pde.build.container.feature.linux.gtk.x86">
              <property name="archiveName" value="${archiveNamePrefix}-linux.gtk.x86.tar.gz"/>
              <ant antfile="${assembleScriptName}"/>
+			 <exec executable="tar" dir="tmp">
+			   <arg value="-zcf"/>
+			   <arg value="../I.${buildId}/${archiveNamePrefix}-linux.gtk.x86.tar.gz"/>
+			   <arg value="photon"/>
+			 </exec>
+			 <!--tar compression="gzip" basedir="tmp" 
+			      destfile="I.${buildId}/${archiveNamePrefix}-linux.gtk.x86.tar.gz"/-->
         </target>
         <target name="assemble.org.eclipse.pde.build.container.feature.linux.motif.x86">
              <property name="archiveName" value="${archiveNamePrefix}-linux.motif.x86.tar.gz"/>
              <ant antfile="${assembleScriptName}"/>
+			 <exec executable="tar" dir="tmp">
+			   <arg value="-zcvf"/>
+			   <arg value="../I.${buildId}/${archiveNamePrefix}-linux.motif.x86.tar.gz"/>
+			   <arg value="photon"/>
+			 </exec>
+			 <!--tar compression="gzip" basedir="tmp" 
+			      destfile="I.${buildId}/${archiveNamePrefix}-linux.motif.x86.tar.gz"/-->
         </target>
         <target name="assemble.org.eclipse.pde.build.container.feature.macosx.carbon.ppc">
              <property name="archiveName" value="${archiveNamePrefix}-macosx.carbon.tar.gz"/>
