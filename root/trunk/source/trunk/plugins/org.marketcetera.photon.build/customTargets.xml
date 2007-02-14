@@ -25,7 +25,57 @@
         <target name="assemble.org.eclipse.pde.build.container.feature.macosx.carbon.ppc">
              <property name="archiveName" value="${archiveNamePrefix}-macosx.carbon.tar.gz"/>
              <ant antfile="${assembleScriptName}"/>
+			 <!-- the following is a fix for bug #91 where photon.ini 
+			      is not copied correclty on a mac -->
+			 <antcall target="manuallyAdd_photon.ini"/>
+			 <touch file="I.${buildId}/secondPass"/>
         </target>
+
+		<!-- Manually re-add the photon.ini file 
+		  This is a workaround for bug #91
+		  The way it works is this: the above assemble.xxx.macos target gets called twice
+		  We only want to be invoked on the second call, so we set the 'secondPass' flag
+		  after the first run.
+		  Essentially, we copy the "needed" photon.ini into the same path structure, 
+		  then concat the other useful MacOS-related info to it, and then we want to 
+		  tar it into the existing archive.
+		  Since the tarball is actually gzipped already, we need to gunzip it, 
+		  update the tarball, then gzip it again and cleanup.
+		-->
+		<target name="secondPass.check">
+		  <condition property="secondPass">
+		     <available file="I.${buildId}/secondPass"/>
+		  </condition>
+		</target>
+
+		<target name="manuallyAdd_photon.ini" depends="secondPass.check" if="secondPass"
+		   description="Manually add the photon.ini file while building the macos cilent">
+		     <echo message="Manually copying photon.ini to mac build"/>
+			 <property name="buildDir" value="I.${buildId}"/>
+			 <copy file="${basedir}/features/org.eclipse.pde.build.container.feature/productRootFiles/macosx.carbon.ppc/photon.app/Contents/MacOS/photon.ini" 
+			 			 tofile="${buildDir}/photon/photon.app/Contents/MacOS/photon.ini"/>
+			<concat destfile="${buildDir}/photon/photon.app/Contents/MacOS/photon.ini" append="yes">-Xdock:icon=../Resources/photon.icns
+-XstartOnFirstThread
+-Xbootclasspath/p:../../../plugins/org.eclipse.jdt.debug_3.2.1.r321_v20060731/jdi.jar
+-Xms40m
+-Xmx256m
+-Dorg.eclipse.swt.internal.carbon.smallFonts
+-Dorg.eclipse.swt.internal.carbon.noFocusRing</concat>
+			 <!-- first unzip existing, then tar in new and re-zip -->
+			 <gunzip src="${buildDir}/${archiveNamePrefix}-macosx.carbon.tar.gz"
+			         dest="${buildDir}"/>
+			 <exec dir="${buildDir}" executable="tar">
+			    <arg line="-uf"/>
+				<arg line="${archiveNamePrefix}-macosx.carbon.tar"/>
+				<arg line="photon/photon.app/Contents/MacOS/photon.ini"/>
+			 </exec>
+			 <gzip src="${buildDir}/${archiveNamePrefix}-macosx.carbon.tar" 
+			       destfile="${buildDir}/${archiveNamePrefix}-macosx.carbon.tar.gz"/>
+		     <!-- cleanup -->
+			 <delete dir="${buildDir}/photon"/>
+			 <delete dir="${buildDir}/secondPass"/>
+			 <delete dir="${buildDir}/${archiveNamePrefix}-macosx.carbon.tar"/>
+		</target>
 
 	<!-- ===================================================================== -->
 	<!-- ===================================================================== -->
