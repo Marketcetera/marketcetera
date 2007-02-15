@@ -14,6 +14,8 @@ import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 
 import quickfix.field.MsgType;
+import quickfix.field.RefSeqNum;
+import quickfix.field.SessionRejectReason;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
@@ -47,7 +49,7 @@ public class FIXMessagesView extends HistoryMessagesView {
 				"CumQty"), LEAVESQTY("LeavesQty"), ORDTYPE("OrdType"), Price("Price"), AVGPX(
 				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
 				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID"), ORDERID(
-				"OrderID");
+				"OrderID"), SESSION_REJECT_REASON("SessionRejectReason"), REF_SEQ_NUM("RefSeqNum");
 
 		private String mName;
 
