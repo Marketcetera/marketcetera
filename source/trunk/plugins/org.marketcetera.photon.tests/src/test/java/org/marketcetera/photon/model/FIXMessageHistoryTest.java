@@ -27,14 +27,20 @@ import quickfix.field.ExecType;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
+import quickfix.field.Price;
 import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
+import quickfix.fix42.ExecutionReport;
+import quickfix.fix42.NewOrderSingle;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
@@ -358,6 +364,31 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals(Side.BUY, returnedMessage.getChar(Side.FIELD));
 		assertEquals( 12.4, returnedAvgPrice.doubleValue(), .0001);
 		assertTrue( new BigDecimal("900").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
+
+
+		
+		orderID1 = new InternalID("6");
+		clOrderID1 = new InternalID("7");
+		execID = "305";
+		lastQty = new BigDecimal(900);
+		lastPrice = new BigDecimal("12.4");
+		cumQty = new BigDecimal(900);
+		avgPrice = new BigDecimal("12.4");
+		side = Side.SELL_SHORT;
+		
+		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		messageHistory.addIncomingMessage(message);
+
+		assertEquals(2, messageHistory.getAveragePricesList().size());
+		holder = (IncomingMessageHolder) averagePriceList.get(1);
+		returnedMessage = holder.getMessage();
+		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
+
+		returnedAvgPrice = new BigDecimal(returnedMessage.getString(AvgPx.FIELD));
+		assertEquals(Side.SELL_SHORT, returnedMessage.getChar(Side.FIELD));
+		assertEquals( ((12.3*100)+(12.4*900)+(12.4*(900)))/1900, returnedAvgPrice.doubleValue(), .0001);
+		assertTrue( new BigDecimal("1900").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
+
 	}
 
 	public void testExecutionReportOrder() throws FieldNotFound
@@ -425,5 +456,20 @@ public class FIXMessageHistoryTest extends TestCase {
 		history.addIncomingMessage(message2);
 		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
-}
+	}
+	public void testStrandedOpenOrder() throws Exception {
+		Message m1 = new NewOrderSingle();
+		m1.setField(new TransactTime(new Date(2007,2,14,18,55,29))); m1.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m1.setField(new Side(Side.BUY)); m1.setField(new Symbol("R")); m1.setField(new OrderQty(10)); m1.setField(new OrdType(OrdType.LIMIT));  m1.setField(new Price(10)); 
+		Message m2 = new ExecutionReport();
+		m2.setField(new TransactTime(new Date(2007,2,14,18,54,29))); m2.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m2.setField(new OrdStatus(OrdStatus.NEW)); m2.setField(new Side(Side.BUY)); m2.setField(new Symbol("R")); m2.setField(new OrderQty(10)); m2.setField(new CumQty(0)); m2.setField(new LeavesQty(10));  m2.setField(new Price(10)); m2.setField(new AvgPx(0)); m2.setField(new LastShares(0)); m2.setField(new LastPx(0)); m2.setField(new ExecID("12037")); m2.setField(new OrderID("7324"));
+		Message m3 = new ExecutionReport();
+		m3.setField(new TransactTime(new Date(2007,2,14,18,55,29))); m3.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m3.setField(new OrdStatus(OrdStatus.FILLED)); m3.setField(new Side(Side.BUY)); m3.setField(new Symbol("R")); m3.setField(new OrderQty(10)); m3.setField(new CumQty(10)); m3.setField(new LeavesQty(0));  m3.setField(new Price(10)); m3.setField(new AvgPx(10)); m3.setField(new LastShares(10)); m3.setField(new LastPx(10)); m3.setField(new ExecID("12041")); m3.setField(new OrderID("7324"));
+		
+		FIXMessageHistory history = new FIXMessageHistory();
+		history.addOutgoingMessage(m1);
+		history.addIncomingMessage(m2);
+		history.addIncomingMessage(m3);
+		assertEquals("12041", history.getOpenOrdersList().get(0).getMessage().getString(ExecID.FIELD));
+		assertEquals(0, history.getOpenOrdersList().size());
+	}
 }
