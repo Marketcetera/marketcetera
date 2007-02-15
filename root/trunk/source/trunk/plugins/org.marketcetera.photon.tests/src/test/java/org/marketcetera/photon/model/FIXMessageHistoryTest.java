@@ -457,6 +457,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 	}
+	
 	public void testStrandedOpenOrder() throws Exception {
 		Message m1 = new NewOrderSingle();
 		m1.setField(new TransactTime(new Date(2007,2,14,18,55,29))); m1.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m1.setField(new Side(Side.BUY)); m1.setField(new Symbol("R")); m1.setField(new OrderQty(10)); m1.setField(new OrdType(OrdType.LIMIT));  m1.setField(new Price(10)); 
