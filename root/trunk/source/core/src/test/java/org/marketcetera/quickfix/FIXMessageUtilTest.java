@@ -122,7 +122,7 @@ public class FIXMessageUtilTest extends TestCase {
     /** Verifies that the message is a "virgin" executionReport (no half-fills, etc) for a given symbol/side */
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side, BigDecimal leavesQty,
                                              BigDecimal lastQty, BigDecimal cumQty, BigDecimal lastPrice,
-                                             BigDecimal avgPrice, char ordStatus, char execType) throws Exception {
+                                             BigDecimal avgPrice, char ordStatus, char execType, char execTransType) throws Exception {
         assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD));
         assertEquals("side", side, inExecReport.getChar(Side.FIELD));
         assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
@@ -135,6 +135,7 @@ public class FIXMessageUtilTest extends TestCase {
 
         assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
         assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
+        assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
     }
 
 
@@ -142,7 +143,7 @@ public class FIXMessageUtilTest extends TestCase {
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side) throws Exception
     {
         verifyExecutionReport(inExecReport, qty, symbol, side, new BigDecimal(qty), BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW);
+                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW, ExecTransType.NEW);
     }
 
 
