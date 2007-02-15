@@ -460,11 +460,50 @@ public class FIXMessageHistoryTest extends TestCase {
 	
 	public void testStrandedOpenOrder() throws Exception {
 		Message m1 = new NewOrderSingle();
-		m1.setField(new TransactTime(new Date(2007,2,14,18,55,29))); m1.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m1.setField(new Side(Side.BUY)); m1.setField(new Symbol("R")); m1.setField(new OrderQty(10)); m1.setField(new OrdType(OrdType.LIMIT));  m1.setField(new Price(10)); 
+		Date m1Date = new Date(2007,2,14,18,55,29);
+		m1.setField(new TransactTime(m1Date));
+		m1.getHeader().setField(new SendingTime(m1Date));
+		m1.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); 
+		m1.setField(new Side(Side.BUY)); 
+		m1.setField(new Symbol("R")); 
+		m1.setField(new OrderQty(10)); 
+		m1.setField(new OrdType(OrdType.LIMIT));  
+		m1.setField(new Price(10));
+		
 		Message m2 = new ExecutionReport();
-		m2.setField(new TransactTime(new Date(2007,2,14,18,54,29))); m2.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m2.setField(new OrdStatus(OrdStatus.NEW)); m2.setField(new Side(Side.BUY)); m2.setField(new Symbol("R")); m2.setField(new OrderQty(10)); m2.setField(new CumQty(0)); m2.setField(new LeavesQty(10));  m2.setField(new Price(10)); m2.setField(new AvgPx(0)); m2.setField(new LastShares(0)); m2.setField(new LastPx(0)); m2.setField(new ExecID("12037")); m2.setField(new OrderID("7324"));
+		Date m2Date = new Date(2007,2,14,18,54,29);
+		m2.setField(new TransactTime(m2Date)); 
+		m2.getHeader().setField(new SendingTime(m2Date));
+		m2.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); 
+		m2.setField(new OrdStatus(OrdStatus.NEW)); 
+		m2.setField(new Side(Side.BUY)); 
+		m2.setField(new Symbol("R")); 
+		m2.setField(new OrderQty(10)); 
+		m2.setField(new CumQty(0)); 
+		m2.setField(new LeavesQty(10));  
+		m2.setField(new Price(10)); 
+		m2.setField(new AvgPx(0)); 
+		m2.setField(new LastShares(0)); 
+		m2.setField(new LastPx(0)); 
+		m2.setField(new ExecID("12037")); 
+		m2.setField(new OrderID("7324"));
+		
 		Message m3 = new ExecutionReport();
-		m3.setField(new TransactTime(new Date(2007,2,14,18,55,29))); m3.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); m3.setField(new OrdStatus(OrdStatus.FILLED)); m3.setField(new Side(Side.BUY)); m3.setField(new Symbol("R")); m3.setField(new OrderQty(10)); m3.setField(new CumQty(10)); m3.setField(new LeavesQty(0));  m3.setField(new Price(10)); m3.setField(new AvgPx(10)); m3.setField(new LastShares(10)); m3.setField(new LastPx(10)); m3.setField(new ExecID("12041")); m3.setField(new OrderID("7324"));
+		m3.setField(new TransactTime(m1Date)); 
+		m3.getHeader().setField(new SendingTime(m1Date));
+		m3.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); 
+		m3.setField(new OrdStatus(OrdStatus.FILLED)); 
+		m3.setField(new Side(Side.BUY)); 
+		m3.setField(new Symbol("R")); 
+		m3.setField(new OrderQty(10)); 
+		m3.setField(new CumQty(10)); 
+		m3.setField(new LeavesQty(0));  
+		m3.setField(new Price(10)); 
+		m3.setField(new AvgPx(10)); 
+		m3.setField(new LastShares(10)); 
+		m3.setField(new LastPx(10)); 
+		m3.setField(new ExecID("12041")); 
+		m3.setField(new OrderID("7324"));
 		
 		FIXMessageHistory history = new FIXMessageHistory();
 		history.addOutgoingMessage(m1);
