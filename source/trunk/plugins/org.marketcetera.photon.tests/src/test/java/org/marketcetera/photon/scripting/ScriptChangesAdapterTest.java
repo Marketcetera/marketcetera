@@ -131,13 +131,11 @@ public class ScriptChangesAdapterTest extends TestCase {
 				}
 
 				public void accept(IResourceDeltaVisitor visitor, boolean includePhantoms) throws CoreException {
-					// TODO Auto-generated method stub
-					
+					numVisited++;
 				}
 
 				public void accept(IResourceDeltaVisitor visitor, int memberFlags) throws CoreException {
-					// TODO Auto-generated method stub
-					
+					numVisited++;
 				}
 
 				public IResourceDelta findMember(IPath path) {

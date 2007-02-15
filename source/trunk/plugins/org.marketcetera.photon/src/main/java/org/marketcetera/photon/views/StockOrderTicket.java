@@ -790,8 +790,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 					if (dictionary.isHeaderField(fieldNumber)) {
 						insertFieldIfMissing(fieldNumber, value, message
 								.getHeader());
-					}
-					if (dictionary.isTrailerField(fieldNumber)) {
+					} else if (dictionary.isTrailerField(fieldNumber)) {
 						insertFieldIfMissing(fieldNumber, value, message
 								.getTrailer());
 					} else if (dictionary.isField(fieldNumber)) {

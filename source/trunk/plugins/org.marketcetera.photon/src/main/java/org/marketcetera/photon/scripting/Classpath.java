@@ -15,11 +15,22 @@ public class Classpath implements List<IPath> {
 	List<IPath> innerList = new ArrayList<IPath>();
 
 	public boolean add(String path){
-		return innerList.add(Path.fromOSString(path));
+		if (path == null){
+			return false;
+		}
+		IPath iPath = Path.fromOSString(path);
+		if (iPath == null)
+			throw new NullPointerException();
+		return innerList.add(iPath);
 	}
 
 	public void add(int index, String path){
-		innerList.add(index, Path.fromOSString(path));
+		if (path != null){
+			IPath iPath = Path.fromOSString(path);
+			if (iPath == null)
+				throw new NullPointerException();
+			innerList.add(index, iPath);
+		}
 	}
 	
 	/* (non-Javadoc)
@@ -44,17 +55,21 @@ public class Classpath implements List<IPath> {
 	 * @param element
 	 * @see java.util.List#add(int, java.lang.Object)
 	 */
-	public void add(int index, IPath element) {
-		innerList.add(index, element);
+	public void add(int index, IPath iPath) {
+		if (iPath == null)
+			throw new NullPointerException();
+		innerList.add(index, iPath);
 	}
 
 	/**
-	 * @param o
+	 * @param iPath
 	 * @return
 	 * @see java.util.List#add(java.lang.Object)
 	 */
-	public boolean add(IPath o) {
-		return innerList.add(o);
+	public boolean add(IPath iPath) {
+		if (iPath == null)
+			throw new NullPointerException();
+		return innerList.add(iPath);
 	}
 
 	/**
@@ -221,8 +236,10 @@ public class Classpath implements List<IPath> {
 	 * @return
 	 * @see java.util.List#set(int, java.lang.Object)
 	 */
-	public IPath set(int index, IPath element) {
-		return innerList.set(index, element);
+	public IPath set(int index, IPath iPath) {
+		if (iPath == null)
+			throw new NullPointerException();
+		return innerList.set(index, iPath);
 	}
 
 	/**
