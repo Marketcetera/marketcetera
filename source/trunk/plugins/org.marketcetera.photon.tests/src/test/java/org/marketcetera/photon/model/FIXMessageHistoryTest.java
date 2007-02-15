@@ -470,7 +470,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		history.addOutgoingMessage(m1);
 		history.addIncomingMessage(m2);
 		history.addIncomingMessage(m3);
-		assertEquals("12041", history.getOpenOrdersList().get(0).getMessage().getString(ExecID.FIELD));
+		//assertEquals("12041", history.getOpenOrdersList().get(0).getMessage().getString(ExecID.FIELD));
 		assertEquals(0, history.getOpenOrdersList().size());
 	}
 }
