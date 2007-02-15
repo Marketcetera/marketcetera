@@ -41,7 +41,15 @@ public class ClOrdIDComparator implements Comparator<MessageHolder>, Serializabl
 			Message message1 = msg1.getMessage();
 	
 			if (!message0.isSetField(ClOrdID.FIELD) || !message1.isSetField(ClOrdID.FIELD)){
-				return message0.isSetField(ClOrdID.FIELD) ? 1 : 0;
+				if (message0.isSetField(ClOrdID.FIELD))
+				{
+					return 1;
+				}
+				if (message1.isSetField(ClOrdID.FIELD))
+				{
+					return -1;
+				}
+				return 0;
 			}
 			String ordID0 = message0.getString(ClOrdID.FIELD);
 			String ordID1 = message1.getString(ClOrdID.FIELD);

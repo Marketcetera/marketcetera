@@ -42,6 +42,7 @@ import quickfix.field.TransactTime;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 
@@ -457,59 +458,59 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 	}
-	
+
+	String [] messageStrings = {
+		"8=FIX.4.29=14135=86=011=1171508063701-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=R60=20070215-02:54:27150=0151=1010=237",
+		"8=FIX.4.29=16235=D34=449=sender-2026-OMS52=20070215-02:54:27.29156=MRKTC-EXCH11=1171508063701-server02/127.0.0.121=338=1040=244=1054=155=R59=060=20070215-02:54:2910=058",
+		"8=FIX.4.29=20635=834=449=MRKTC-EXCH52=20070215-02:54:29.43056=sender-2026-OMS6=011=1171508063701-server02/127.0.0.114=017=1203720=331=032=037=732438=1039=044=1054=155=R60=20070215-02:54:29150=0151=1010=196",
+		"8=FIX.4.29=6835=034=549=MRKTC-EXCH52=20070215-02:54:59.62656=sender-2026-OMS10=078",
+		"8=FIX.4.29=6835=034=549=sender-2026-OMS52=20070215-02:54:57.61456=MRKTC-EXCH10=073",
+		"8=FIX.4.29=14335=86=011=1171508063702-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1239=044=10.154=155=R60=20070215-02:55:06150=0151=1210=081",
+		"8=FIX.4.29=17235=D34=649=sender-2026-OMS50=asdf52=20070215-02:55:06.97456=MRKTC-EXCH11=1171508063702-server02/127.0.0.121=338=1240=244=10.154=155=R59=060=20070215-02:55:0910=229",
+		"8=FIX.4.29=20835=834=649=MRKTC-EXCH52=20070215-02:55:09.08456=sender-2026-OMS6=011=1171508063702-server02/127.0.0.114=017=1203820=331=032=037=732538=1239=044=10.154=155=R60=20070215-02:55:09150=0151=1210=049",
+		"8=FIX.4.29=13535=86=011=1171508063703-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=2239=054=555=R60=20070215-02:55:27150=0151=2210=246",
+		"8=FIX.4.29=15635=D34=749=sender-2026-OMS52=20070215-02:55:27.24656=MRKTC-EXCH11=1171508063703-server02/127.0.0.121=338=2240=154=555=R59=060=20070215-02:55:2910=067",
+		"8=FIX.4.29=21535=834=749=MRKTC-EXCH52=20070215-02:55:29.37856=sender-2026-OMS6=10.111=1171508063702-server02/127.0.0.114=1217=1203920=331=10.132=1237=732538=1239=244=10.154=155=R60=20070215-02:55:29150=2151=010=146",
+		"8=FIX.4.29=20835=834=849=MRKTC-EXCH52=20070215-02:55:29.37956=sender-2026-OMS6=10.111=1171508063703-server02/127.0.0.114=1217=1204020=331=10.132=1237=732638=2239=154=555=R60=20070215-02:55:29150=1151=1010=094",
+		"8=FIX.4.29=20935=834=949=MRKTC-EXCH52=20070215-02:55:29.38056=sender-2026-OMS6=1011=1171508063701-server02/127.0.0.114=1017=1204120=331=1032=1037=732438=1039=244=1054=155=R60=20070215-02:55:29150=2151=010=100",
+		"8=FIX.4.29=23735=834=1049=MRKTC-EXCH52=20070215-02:55:29.38156=sender-2026-OMS6=10.0545454545454545454545454545454511=1171508063703-server02/127.0.0.114=2217=1204220=331=1032=1037=732638=2239=254=555=R60=20070215-02:55:29150=2151=010=080",
+		"8=FIX.4.29=17935=F34=849=sender-2026-OMS52=20070215-02:55:44.63056=MRKTC-EXCH11=1171508063704-server02/127.0.0.137=732441=1171508063701-server02/127.0.0.154=155=R60=20070215-02:54:2910=112",
+		"8=FIX.4.29=20935=934=1149=MRKTC-EXCH52=20070215-02:55:46.85856=sender-2026-OMS11=1171508063704-server02/127.0.0.137=732439=841=1171508063701-server02/127.0.0.158=Unable to cancel non-existing orderID [7324].434=110=208",
+		"8=FIX.4.29=6835=034=949=sender-2026-OMS52=20070215-02:56:15.18856=MRKTC-EXCH10=079",
+		"8=FIX.4.29=6935=034=1249=MRKTC-EXCH52=20070215-02:56:17.29856=sender-2026-OMS10=126",
+		"8=FIX.4.29=6935=034=1049=sender-2026-OMS52=20070215-02:56:45.19856=MRKTC-EXCH10=124",
+		"8=FIX.4.29=6935=034=1349=MRKTC-EXCH52=20070215-02:56:47.32456=sender-2026-OMS10=120",
+		"8=FIX.4.29=6935=034=1149=sender-2026-OMS52=20070215-02:57:15.19856=MRKTC-EXCH10=123",
+		"8=FIX.4.29=6935=034=1449=MRKTC-EXCH52=20070215-02:57:17.62456=sender-2026-OMS10=122",
+		"8=FIX.4.29=6935=034=1249=sender-2026-OMS52=20070215-02:57:46.18756=MRKTC-EXCH10=126",
+		"8=FIX.4.29=6935=034=1549=MRKTC-EXCH52=20070215-02:57:48.34756=sender-2026-OMS10=129",
+		"8=FIX.4.29=14135=86=011=1171508063705-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=T60=20070215-02:57:58150=0151=1010=250",
+		"8=FIX.4.29=16335=D34=1349=sender-2026-OMS52=20070215-02:57:58.79456=MRKTC-EXCH11=1171508063705-server02/127.0.0.121=338=1040=244=1054=155=T59=060=20070215-02:58:0010=121",
+		"8=FIX.4.29=20735=834=1649=MRKTC-EXCH52=20070215-02:58:00.93056=sender-2026-OMS6=011=1171508063705-server02/127.0.0.114=017=1204320=331=032=037=732738=1039=044=1054=155=T60=20070215-02:58:00150=0151=1010=245",
+		"8=FIX.4.29=18035=F34=1449=sender-2026-OMS52=20070215-02:58:07.26556=MRKTC-EXCH11=1171508063706-server02/127.0.0.137=732741=1171508063705-server02/127.0.0.154=155=T60=20070215-02:58:0010=159",
+		"8=FIX.4.29=20635=834=1749=MRKTC-EXCH52=20070215-02:58:09.39356=sender-2026-OMS6=011=1171508063705-server02/127.0.0.114=017=1204420=331=032=037=732738=1039=444=1054=155=T60=20070215-02:58:09150=4151=010=226"
+	};
 	public void testStrandedOpenOrder() throws Exception {
-		Message m1 = new NewOrderSingle();
-		Date m1Date = new Date(2007,2,14,18,55,29);
-		m1.setField(new TransactTime(m1Date));
-		m1.getHeader().setField(new SendingTime(m1Date));
-		m1.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); 
-		m1.setField(new Side(Side.BUY)); 
-		m1.setField(new Symbol("R")); 
-		m1.setField(new OrderQty(10)); 
-		m1.setField(new OrdType(OrdType.LIMIT));  
-		m1.setField(new Price(10));
-		
-		Message m2 = new ExecutionReport();
-		Date m2Date = new Date(2007,2,14,18,54,29);
-		m2.setField(new TransactTime(m2Date)); 
-		m2.getHeader().setField(new SendingTime(m2Date));
-		m2.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); 
-		m2.setField(new OrdStatus(OrdStatus.NEW)); 
-		m2.setField(new Side(Side.BUY)); 
-		m2.setField(new Symbol("R")); 
-		m2.setField(new OrderQty(10)); 
-		m2.setField(new CumQty(0)); 
-		m2.setField(new LeavesQty(10));  
-		m2.setField(new Price(10)); 
-		m2.setField(new AvgPx(0)); 
-		m2.setField(new LastShares(0)); 
-		m2.setField(new LastPx(0)); 
-		m2.setField(new ExecID("12037")); 
-		m2.setField(new OrderID("7324"));
-		
-		Message m3 = new ExecutionReport();
-		m3.setField(new TransactTime(m1Date)); 
-		m3.getHeader().setField(new SendingTime(m1Date));
-		m3.setField(new ClOrdID("1171508063701-server02/127.0.0.1")); 
-		m3.setField(new OrdStatus(OrdStatus.FILLED)); 
-		m3.setField(new Side(Side.BUY)); 
-		m3.setField(new Symbol("R")); 
-		m3.setField(new OrderQty(10)); 
-		m3.setField(new CumQty(10)); 
-		m3.setField(new LeavesQty(0));  
-		m3.setField(new Price(10)); 
-		m3.setField(new AvgPx(10)); 
-		m3.setField(new LastShares(10)); 
-		m3.setField(new LastPx(10)); 
-		m3.setField(new ExecID("12041")); 
-		m3.setField(new OrderID("7324"));
-		
 		FIXMessageHistory history = new FIXMessageHistory();
-		history.addOutgoingMessage(m1);
-		history.addIncomingMessage(m2);
-		history.addIncomingMessage(m3);
-		//assertEquals("12041", history.getOpenOrdersList().get(0).getMessage().getString(ExecID.FIELD));
-		assertEquals(0, history.getOpenOrdersList().size());
+		for (String aMessageString : messageStrings) {
+			Message aMessage = new Message(aMessageString);
+			String msgType = aMessage.getHeader().getString(MsgType.FIELD);
+			if ("8".equals(msgType)){
+				history.addIncomingMessage(aMessage);
+			} else if ("D".equals(msgType)){
+				history.addOutgoingMessage(aMessage);
+			} else if ("F".equals(msgType)){
+				history.addOutgoingMessage(aMessage);
+			} else if ("9".equals(msgType)){
+				history.addIncomingMessage(aMessage);
+			} else if ("0".equals(msgType)){
+				history.addIncomingMessage(aMessage);
+			} else {
+				fail();
+			}
+		}
+		
+		FilterList<MessageHolder> openOrdersList = history.getOpenOrdersList();
+		assertEquals(0, openOrdersList.size());
 	}
 }
