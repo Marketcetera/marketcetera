@@ -66,7 +66,7 @@ public class LatestMessageFunction implements
 	 * @param messageHolder2 the second message to consider
 	 * @return true if messageHolder1 occurred after messageHolder2, false otherwise
 	 */
-	protected boolean isLater(MessageHolder messageHolder1, MessageHolder messageHolder2) throws FieldNotFound{
+	protected boolean isLater(MessageHolder messageHolder1, MessageHolder messageHolder2) throws FieldNotFound {
 		// compare by transact time and 
 		Date date1;
 		Date date2;

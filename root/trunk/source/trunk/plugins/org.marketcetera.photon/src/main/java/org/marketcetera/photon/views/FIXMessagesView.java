@@ -43,7 +43,7 @@ public class FIXMessagesView extends HistoryMessagesView {
 	 *
 	 */
 	public enum MessageColumns {
-		DIRECTION("D"), TRANSACTTIME("TransactTime"), MSGTYPE("MsgType"), CLORDID(
+		DIRECTION("D"), TRANSACTTIME("TransactTime"), SENDINGTIME("SendingTime"), MSGTYPE("MsgType"), CLORDID(
 				"ClOrdID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
 				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
 				"CumQty"), LEAVESQTY("LeavesQty"), ORDTYPE("OrdType"), Price("Price"), AVGPX(
