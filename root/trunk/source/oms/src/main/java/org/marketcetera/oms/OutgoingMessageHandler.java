@@ -142,7 +142,7 @@ public class OutgoingMessageHandler {
                     null,
                     new InternalID(clOrdId),
                     "ZZ-INTERNAL",
-                    '\0',
+                    ExecTransType.NEW,
                     ExecType.NEW,
                     OrdStatus.NEW,
                     side,

@@ -135,7 +135,7 @@ public class OrderManagerTest extends TestCase
         Message cancelOrder = FIXMessageUtil.newCancel(new InternalID("bob"), new InternalID("bob"),
                                                     Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty");
 
-        List<Message> orderList = Arrays.asList(new Message [] {newOrder, cancelOrder});
+        List<Message> orderList = Arrays.asList(newOrder, cancelOrder);
         List<Message> responses = new LinkedList<Message>();
         for (Message message : orderList) {
             responses.add(handler.handleMessage(message));
