@@ -5,6 +5,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.DataDictionary;
+import quickfix.Message.Header;
 import quickfix.field.*;
 import quickfix.fix42.OrderCancelReplaceRequest;
 import quickfix.fix42.MarketDataRequest;
@@ -32,13 +33,18 @@ public class FIXMessageUtil {
     }
 
     private static boolean msgTypeHelper(Message fixMessage, String msgType) {
-        try {
-            MsgType msgTypeField = new MsgType();
-            fixMessage.getHeader().getField(msgTypeField);
-            return msgType.equals(msgTypeField.getValue());
-        } catch (Exception exception) {
-            return false;
-        }
+    	if (fixMessage != null){
+	    	try {
+	            MsgType msgTypeField = new MsgType();
+	            Header header = fixMessage.getHeader();
+				if (header.isSetField(msgTypeField)){
+	            	header.getField(msgTypeField);
+	            	return msgType.equals(msgTypeField.getValue());
+	            }
+	        } catch (Exception exception) {
+	        }
+    	}
+        return false;
     }
 
     /** Currently, we are hardcoding version 4.2
