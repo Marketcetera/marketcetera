@@ -186,6 +186,13 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			fail();
 		}
 		try {
+			String value = sentMessage.getString(DeliverToCompID.FIELD);
+			//shouldn't be in the body.
+			fail();
+		} catch (FieldNotFound e) {
+			//expected result
+		}
+		try {
 			String value = sentMessage.getString(PrevClosePx.FIELD);  // body field
 			assertEquals("EFGH", value);  //$NON-NLS-1$
 		} catch (FieldNotFound e) {

@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 
 import org.apache.bsf.BSFException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
@@ -21,7 +22,7 @@ public class ScriptRegistryTest extends TestCase {
 	}
 	
 	public ScriptRegistryTest(){
-		
+		PhotonPlugin.getDefault().ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 	}
 	
 	public static Test suite()
