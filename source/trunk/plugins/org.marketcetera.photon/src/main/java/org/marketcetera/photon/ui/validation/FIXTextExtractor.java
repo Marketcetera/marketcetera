@@ -14,7 +14,9 @@ public class FIXTextExtractor extends AbstractFIXExtractor {
 	}
 
 	public void modifyOrder(Message aMessage){
-		insertString(aMessage, field.getText());
+		String text = field.getText();
+		if (text != null && text.length() >0)
+			insertString(aMessage, text);
 	}
 
 	@Override
