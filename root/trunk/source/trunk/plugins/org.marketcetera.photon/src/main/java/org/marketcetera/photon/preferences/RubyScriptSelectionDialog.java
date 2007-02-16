@@ -24,6 +24,8 @@ import org.marketcetera.photon.PhotonPlugin;
  */
 public class RubyScriptSelectionDialog extends ElementTreeSelectionDialog {
 
+	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+
 	public RubyScriptSelectionDialog(Shell parent) {
 		super(parent, new WorkbenchLabelProvider(), new WorkbenchContentProvider());
 		setTitle("Ruby script selection");
@@ -41,7 +43,7 @@ public class RubyScriptSelectionDialog extends ElementTreeSelectionDialog {
 	private static class TreeElementFilter extends ViewerFilter {
 		public boolean select(Viewer viewer, Object parent, Object element) {
 			if (element instanceof IProject) {
-				String activeScriptsPath = ("/"+PhotonPlugin.DEFAULT_PROJECT_NAME);
+				String activeScriptsPath = (FILE_SEPARATOR+PhotonPlugin.DEFAULT_PROJECT_NAME);
 				String currentProjectPathString = ((IProject)element).getFullPath().toOSString();
 				if (activeScriptsPath.equals(currentProjectPathString))
 				{
