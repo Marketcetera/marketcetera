@@ -1,0 +1,500 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+
+
+
+
+
+
+
+
+<html>
+  <head>
+    <title>Apache MINA - Frequently Asked Questions</title>
+    <style type="text/css" media="all">
+      @import url("./css/maven-base.css");
+      @import url("./css/maven-theme.css");
+      @import url("./css/site.css");
+    </style>
+    <link rel="stylesheet" href="./css/print.css" type="text/css" media="print" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+      </head>
+  <body class="composite">
+    <div id="banner">
+                    <span id="bannerLeft">
+    
+                                    <img src="http://directory.apache.org/images/apache-directory-logo.png" alt="" />
+    
+            </span>
+                          <span id="bannerRight">
+    
+            MINA
+    
+            </span>
+            <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="breadcrumbs">
+          
+  
+
+  
+    
+  
+  
+            <div class="xleft">
+        Last Published: 10/02/2006
+                      </div>
+            <div class="xright">      <a href="http://directory.apache.org/subprojects/apacheds/index.html">ApacheDS</a>
+          |
+          <a href="http://directory.apache.org/projects/naming/index.html">Naming</a>
+          |
+          <a href="index.html">MINA (Network Layer)</a>
+          |
+          <a href="http://directory.apache.org/index.html">Directory</a>
+          
+  
+
+  
+    
+  
+  
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+    <div id="leftColumn">
+      <div id="navcolumn">
+           
+  
+
+  
+    
+  
+  
+                   <h5>MINA</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="index.html">Overview</a>
+        </li>
+              
+    <li class="none">
+              <a href="features.html">Features</a>
+        </li>
+              
+    <li class="none">
+              <a href="testimonials.html">Testimonials</a>
+        </li>
+              
+    <li class="none">
+              <a href="getting_started.html">Getting Started</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://www.apache.org/dyn/closer.cgi/directory/mina/">Downloads</a>
+        </li>
+              
+    <li class="none">
+              <strong>F.A.Q</strong>
+        </li>
+              
+    <li class="none">
+              <a href="roadmap.html">Roadmap</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://issues.apache.org/jira/browse/DIRMINA?report=com.atlassian.jira.plugin.system.project:changelog-panel&subset=-1">Changes</a>
+        </li>
+              
+    <li class="none">
+              <a href="history.html">History</a>
+        </li>
+          </ul>
+          <h5>MINA Community</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="mail-lists.html">Mailing List</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://issues.apache.org/jira/browse/DIRMINA">Issue Tracker</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://wiki.apache.org/directory/MinaHome">Wiki Pages</a>
+        </li>
+          </ul>
+          <h5>MINA References</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="apidocs/index.html">JavaDocs</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://svn.apache.org/viewvc/directory/trunks/mina/examples/src/main/java/org/apache/mina/examples/">Examples</a>
+        </li>
+              
+    <li class="none">
+              <a href="http://svn.apache.org/viewvc/directory/trunks/mina/">Source code</a>
+        </li>
+          </ul>
+          <h5>Older Releases</h5>
+        <ul>
+              
+    <li class="none">
+              <a href="branches/0.8/index.html">0.8</a>
+        </li>
+          </ul>
+          <h5>Project Documentation</h5>
+        <ul>
+              
+                
+              
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+            
+      
+              
+        <li class="collapsed">
+              <a href="project-info.html">Project Information</a>
+              </li>
+          </ul>
+                                       <a href="http://maven.apache.org/" title="Built by Maven" id="poweredBy">
+            <img alt="Built by Maven" src="./images/logos/maven-feather.png"></img>
+          </a>
+                       
+  
+
+  
+    
+  
+  
+        </div>
+    </div>
+    <div id="bodyColumn">
+      <div id="contentBox">
+        <div class="section"><h2><a name="top">Frequently Asked Questions</a></h2><p><b>General</b></p><ol type="1"><li><a href="#definition">What does MINA mean?</a></li><li><a href="#versions">Which version of MINA should I use?</a></li><li><a href="#requirements">What is required to build/run MINA?</a></li><li><a href="#support">How can I get help?</a></li><li><a href="#contribution">How / What can I contribute?</a></li></ol><b>Can MINA ...?</b><ol type="1"><li><a href="#client-api">
+        Can I use MINA to create client applications?
+      </a></li><li><a href="#text-protocols">
+        Can MINA handle text protocols such as HTTP?
+      </a></li><li><a href="#binary-protocols">
+        Can MINA handle complex binary protocols such as LDAP?
+      </a></li><li><a href="#keep-alive">
+        Can I implement protocols that keeps connection alive with MINA?
+      </a></li><li><a href="#tls-and-sasl">
+        Does MINA support TLS and SASL out-of-the-box?
+      </a></li><li><a href="#handler-synchronization">
+        Do I need to make my IoHandler thread-safe?
+      </a></li><li><a href="#other-transport-types">
+        What transport types can MINA support except TCP/IP and UDP/IP?
+      </a></li><li><a href="#multicast">
+        Does MINA support multicast?
+      </a></li></ol><b>How do I ...?</b><ol type="1"><li><a href="#per-session-data">
+        How can I store session-specific information?
+      </a></li><li><a href="#demuxing-messages">
+        How can I separate an event handler into multiple handlers when I
+        implement complex business logic?
+      </a></li><li><a href="#reconnect-to-server">
+        How can I reconnect to server after my client session is closed.
+      </a></li><li><a href="#when-use-filter">
+        When should I implement my protocol handler using filters?
+      </a></li><li><a href="#message-timeout">
+        How can I detect when the remote peer doesn't send a response message
+        for my request message?
+      </a></li><li><a href="#adding-filters-per-session">
+        How can I add filters to a specific session or port?
+      </a></li><li><a href="#logging-framework">
+        How can I let MINA log messages using my favorite logging framework (i.e. Log4J)?
+      </a></li></ol><b>Troubleshooting</b><ol type="1"><li><a href="#connection-reset">
+        I get response timeout and connection reset under heavy load.
+      </a></li><li><a href="#no-data-written">
+        No data is writtin out to the session even if the buffer is not empty.
+      </a></li><li><a href="#ssl-client-hangs">
+        I created an SSL client with MINA, but it doesn't initiate any handshake
+        after the session is open.
+      </a></li></ol></div><div class="section"><h2>General</h2><dl><dt><a name="definition">What does MINA mean?</a></dt><dd>
+        <p>
+          MINA is:
+          <ul>
+            <li>an acronym for 'Multipurporse Infrastructure for Network
+                Applications'</li>
+            <li>A girl's name</li>
+            <li>'South' in Japanese</li>
+            <li>'Mine' (as in mineshaft) in Spanish and Portuguese</li>
+         </ul>
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="versions">Which version of MINA should I use?</a></dt><dd>
+        <p>
+          MINA uses Linux-like version numbers. This means that even numbers, such as 0.8, will guarantee
+          API stability between releases in the series. With 0.9, you may have to modify your code when moving
+          from 0.9.x to 0.9.y. In practice, the 0.9 series is stablizing and changes shouldn't be too drastic.
+       </p>
+        <p>
+          Here are the general rules for choosing an appropriate release:
+          <ul>
+            <li>Prefer the latest release with even version numbers to with
+                odd ones.</li>
+            <li>Try the latest release with odd version numbers if there are
+                missing features in the stable release.</li>
+         </ul>
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="requirements">What is required to build/run MINA?</a></dt><dd>
+        <p>
+          JDK 1.5 or above is required to build MINA.  But MINA runs perfect
+          with JDK 1.4 only if you don't use SSLFilter which uses Java 5
+          SSLEngine.  This means JDK 1.5 or above is required for you to
+          use SSL with MINA.
+       </p>
+        <p>
+          MINA depends on <a href="http://www.slf4j.org">SLF4J (Simple Logging
+          Facade for Java)</a>, a logging framework from the author of
+          <a href="http://logging.apache.org/log4j/docs/index.html">Log4J</a>.
+          SLF4J is very similar to
+          <a href="http://jakarta.apache.org/commons/logging/">Commons-Logging</a>,
+          but it doesn't cause any class loader issues at all.  SLF4J provides
+          bindings for Log4J, JDK 1.4 logging API, and NLog4J.  Please put an
+          appropriate SLF4J JAR file which corresponds to your favorite logging
+          framework to the classpath as SLF4J documentation explains.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="support">How can I get help?</a></dt><dd>
+        <p>
+          The primary source to get help is the documentation.  Please
+          take a look at <a href="getting_started.html">Getting Started</a>
+          section.
+       </p>
+        <p>
+          You can also contact us via <a href="mail-lists.html">the mailing 
+          list</a> or <a href="http://gleamynode.net/dev/forum/list.php?1">the
+          support forum</a> to ask questions on MINA or to contribute to it.
+          Please do not send messages to the authors directly.
+       </p>
+        <p>
+          If you've found some problem in MINA, please report the bug using
+          <a href="http://issues.apache.org/jira/browse/DIRMINA">our bug
+          reporting system</a>.  A step-by-step instruction to reproduce the bug
+          or JUnit test case code is appreciated.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="contribution">How / What can I contribute?</a></dt><dd>
+        <p>
+          You can contribute anything related with MINA; examples, useful
+          codecs for existing protocols, tutorials, feature improvements,
+          bug fixes, benchmarks, and whatever.  Please contact us via
+          <a href="mail-lists.html">the mailing list</a> or
+          <a href="http://gleamynode.net/dev/forum/list.php?1">the support 
+          forum</a>.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div><div class="section"><h2>Can MINA ...?</h2><dl><dt><a name="client-api">
+        Can I use MINA to create client applications?
+      </a></dt><dd>
+        <p>
+          Yes.  You can create both client and server applications with MINA.
+          Please take a look at <tt>IoConnector</tt> and
+          <tt>ProtocolConnector</tt>.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="text-protocols">
+        Can MINA handle text protocols such as HTTP?
+      </a></dt><dd>
+        <p>
+          Yes.  Please take a look at <a target="classFrame" href="xref-examples/org/apache/mina/examples/reverser/package-summary.html">Reverser</a> and <a target="classFrame" href="xref-examples/org/apache/mina/examples/httpserver/package-summary.html">HTTP server</a> example.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="binary-protocols">
+        Can MINA handle complex binary protocols such as LDAP?
+      </a></dt><dd>
+        <p>
+          Yes.  Please take a look at <a target="classFrame" href="xref-examples/org/apache/mina/examples/sumup/package-summary.html">SumUp</a> example.
+          There is no full ASN.1 support yet, but we will implement it someday and you can contribute to make it available sooner.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="keep-alive">
+        Can I implement protocols that keeps connection alive with MINA?
+      </a></dt><dd>
+        <p>
+          Yes.  MINA doesn't close any connections unless you called
+          <tt>Session.close()</tt> or connection is closed by the remote peer.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="tls-and-sasl">
+        Does MINA support TLS and SASL out-of-the-box?
+      </a></dt><dd>
+        <p>
+          Not yet.  We're going to provide an easy way to implement TLS
+          and SASL in version 0.9.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="handler-synchronization">
+        Do I need to make my IoHandler thread-safe?
+      </a></dt><dd>
+        <p>
+          It depends on your implementation.  If you access the resource
+          which is shared across multiple sessions, you have to make it
+          thread-safe.  If the resource is not shared at all and accessed
+          by only one session (e.g. storing context information as a session
+          attribute), then you don't need to make it thread-safe.  It is
+          because all events generated by MINA are transmitted to your
+          handler in order, and the newer event is not processed if the
+          event handler method for the older event for the same session didn't
+          return yet because MINA uses leader-followers thread pool by default.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="other-transport-types">
+        What transport types can MINA support except TCP/IP and UDP/IP?
+      </a></dt><dd>
+        <p>
+          Virtually all kind of transport types.  MINA API is designed to be
+          transport-independent.  You can implement any transport type support
+          only if you can conform to MINA API.  Support for Pre-1.4 I/O (aka BIO),
+          reliable multicast, Java Communications API, and file I/O is planned.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="multicast">
+        Does MINA support multicast?
+      </a></dt><dd>
+        <p>
+          Not yet.  Java NIO doesn't support multicast yet.  Multicast for NIO
+          will be available in Java SE 7, Dolphin.  We are seriously considering
+          to implement multicasts using pre-1.4 Java API.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div><div class="section"><h2>How do I ...?</h2><dl><dt><a name="per-session-data">
+        How can I store session-specific information?
+      </a></dt><dd>
+        <p>
+          Sessions are capable of custom attributes that users can add or
+          remove at any time.  These custom attributes are not shared between
+          sessions; it is designed to store session specific information.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="demuxing-messages">
+        How can I separate an event handler into multiple handlers when I
+        implement complex business logic?
+      </a></dt><dd>
+        <p>
+          Please refer to DemuxingIoHandler (or DemuxingProtocolHandler).
+          <a target="classFrame" href="xref-examples/org/apache/mina/examples/sumup/package-summary.html">SumUp</a> example
+          demonstrates the usage.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="reconnect-to-server">
+        How can I reconnect to server after my client session is closed.
+      </a></dt><dd>
+        <p>
+          Here is an example code:
+<div class="source"><pre>
+public void sessionClosed( ProtocolSession session ) throws Exception
+{
+    // Wait for five seconds before reconnecting; you'll have to perform
+    // reconnection in other thread if you're using MINA 0.7 or 0.8.
+    // (You don't need to do if you're using MINA 0.9 or above.)
+    Thread.sleep( 5000 ); 
+    
+    // Reconnect.
+    connector.connect( session.getRemoteAddress(), this );
+}
+</pre></div>
+       </p>
+        <p>
+          Possibly it would be better to extract this code to a method like
+          'reconnect()' so that it can reusable in more than one place.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="when-use-filter">
+        When should I implement my protocol handler using filters?
+      </a></dt><dd>
+        <p>
+          Filters (both <tt>IoFilter</tt> and <tt>ProtocolFilter</tt>) are
+          usually considered reusable just like we think Servlet filters.
+          Please implement commonly used business logic such as authorization
+          and logging as a filter.  In case you implement just complex
+          multi-layer protocols like Kerberos, you could consider
+          <a href="http://jakarta.apache.org/commons/chain/">Apache Jakarta
+          Commons Chain</a> as an alternative.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="message-timeout">
+        How can I detect when the remote peer doesn't send a response message
+        for my request message?
+      </a></dt><dd>
+        You can't use <tt>sessionIdle</tt> event simply here.  You'll have to
+        use <tt>java.util.Timer</tt> and <tt>java.util.TimerTask</tt> (or 
+        <a href="http://www.opensymphony.com/quartz/">OpenSymphony Quartz</a>
+        as an alternative).  Schedule a timeout task to be executed on timeout
+        situation for each request message, and cancel it when you receive the
+        corresponding response message.
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="adding-filters-per-session">
+        How can I add filters to a specific session or port?
+      </a></dt><dd>
+        There is <tt>IoSession.getFilterChain()</tt> and
+        <tt>ProtocolSession.getFilterChain()</tt> that returns
+        <tt>IoFilterChain</tt> and <tt>ProtocolFilterChain</tt> respectively.
+        You can add any session-specific filters using the returned chain.
+        But you cannot add port-specific filters right now.  You'll have to
+        create more than one <tt>IoAcceptor</tt> or <tt>ProtocolAcceptor</tt>
+        because each acceptors have one filter chain you can adjust.
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="logging-framework">
+        How can I let MINA log messages using my favorite logging framework (i.e. Log4J)?
+      </a></dt><dd>
+        MINA depends on <a href="http://www.slf4j.org">SLF4J (Simple Logging
+        Facade for Java)</a>, a logging framework from the author of
+        <a href="http://logging.apache.org/log4j/docs/index.html">Log4J</a>.
+        SLF4J is very similar to
+        <a href="http://jakarta.apache.org/commons/logging/">Commons-Logging</a>,
+        but it doesn't cause any class loader issues at all.  SLF4J provides
+        bindings for Log4J, JDK 1.4 logging API, and NLog4J.  Please put an
+        appropriate SLF4J JAR file which corresponds to your favorite logging
+        framework to the classpath as SLF4J documentation explains.
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div><div class="section"><h2>Troubleshooting</h2><dl><dt><a name="connection-reset">
+        I get response timeout and connection reset under heavy load.
+      </a></dt><dd>
+        <p>
+          JVM might have ran out of direct memory.  Please try increasing
+          maximum direct memory size using <tt>-XX:MaxDirectMemorySize</tt>
+          option (e.g. <tt>-XX:MaxDirectMemorySize=128M</tt>)
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="no-data-written">
+        No data is writtin out to the session even if the buffer is not empty.
+      </a></dt><dd>
+        <p>
+          Please check if you called <tt>ByteBuffer.flip()</tt> to flip
+          the buffer before writing the buffer out?  It is a common mistake
+          NIO beginners make.
+       </p>
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table><hr /></dd><dt><a name="ssl-client-hangs">
+        I created an SSL client with MINA, but it doesn't initiate any handshake
+        after the session is open.
+      </a></dt><dd>
+        Please make sure you called <tt>SSLFilter.setUseClientMode(true)</tt>
+        before you initiate a connection.  Server developers will also have to
+        disconnect users who doesn't initiate SSL handshake.
+      <table border="0"><tr><td align="right"><a href="#top">[top]</a></td></tr></table></dd></dl></div>
+      </div>
+    </div>
+    <div class="clear">
+      <hr/>
+    </div>
+    <div id="footer">
+      <div class="xright">&#169;  
+          2004-2006
+    
+          
+  
+
+  
+    
+  
+  
+  </div>
+      <div class="clear">
+        <hr/>
+      </div>
+    </div>
+  </body>
+</html>
