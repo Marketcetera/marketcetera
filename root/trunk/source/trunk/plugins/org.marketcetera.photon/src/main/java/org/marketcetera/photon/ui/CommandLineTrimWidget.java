@@ -180,7 +180,6 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 
 	/**
 	 * Sets the {@link IDFactory} for the {@link Parser} member.
-	 * @see org.marketcetera.photon.parser.Parser#init(org.marketcetera.core.IDFactory)
 	 */
 	public void setIDFactory(IDFactory factory) {
 		commandParser.setIDFactory(factory);

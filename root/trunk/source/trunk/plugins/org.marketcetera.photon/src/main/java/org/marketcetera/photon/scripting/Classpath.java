@@ -63,7 +63,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param iPath
-	 * @return
+	 * @return whether the path was successfully added.
 	 * @see java.util.List#add(java.lang.Object)
 	 */
 	public boolean add(IPath iPath) {
@@ -74,7 +74,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param c
-	 * @return
+	 * @return whether the elements were successfully added
 	 * @see java.util.List#addAll(java.util.Collection)
 	 */
 	public boolean addAll(Collection<? extends IPath> c) {
@@ -84,7 +84,7 @@ public class Classpath implements List<IPath> {
 	/**
 	 * @param index
 	 * @param c
-	 * @return
+	 * @return whether the elements of the collection were successfully added.
 	 * @see java.util.List#addAll(int, java.util.Collection)
 	 */
 	public boolean addAll(int index, Collection<? extends IPath> c) {
@@ -101,7 +101,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param o
-	 * @return
+	 * @return true if the classpath contans element o
 	 * @see java.util.List#contains(java.lang.Object)
 	 */
 	public boolean contains(Object o) {
@@ -110,7 +110,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param c
-	 * @return
+	 * @return true if the classpath contains all of the elements in c
 	 * @see java.util.List#containsAll(java.util.Collection)
 	 */
 	public boolean containsAll(Collection<?> c) {
@@ -119,7 +119,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param o
-	 * @return
+	 * @return true if this classpath equals o
 	 * @see java.util.List#equals(java.lang.Object)
 	 */
 	public boolean equals(Object o) {
@@ -128,7 +128,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param index
-	 * @return
+	 * @return the path element at index
 	 * @see java.util.List#get(int)
 	 */
 	public IPath get(int index) {
@@ -136,7 +136,7 @@ public class Classpath implements List<IPath> {
 	}
 
 	/**
-	 * @return
+	 * @return the hashcode for this Classpath
 	 * @see java.util.List#hashCode()
 	 */
 	public int hashCode() {
@@ -145,7 +145,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param o
-	 * @return
+	 * @return the first index at which o is found.
 	 * @see java.util.List#indexOf(java.lang.Object)
 	 */
 	public int indexOf(Object o) {
@@ -153,7 +153,7 @@ public class Classpath implements List<IPath> {
 	}
 
 	/**
-	 * @return
+	 * @return true if the classpath is empty
 	 * @see java.util.List#isEmpty()
 	 */
 	public boolean isEmpty() {
@@ -161,7 +161,7 @@ public class Classpath implements List<IPath> {
 	}
 
 	/**
-	 * @return
+	 * @return an iterator for the elements of this classpath
 	 * @see java.util.List#iterator()
 	 */
 	public Iterator<IPath> iterator() {
@@ -170,7 +170,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param o
-	 * @return
+	 * @return the last index at which o is found.
 	 * @see java.util.List#lastIndexOf(java.lang.Object)
 	 */
 	public int lastIndexOf(Object o) {
@@ -178,7 +178,7 @@ public class Classpath implements List<IPath> {
 	}
 
 	/**
-	 * @return
+	 * @return a ListIterator for this classpath
 	 * @see java.util.List#listIterator()
 	 */
 	public ListIterator<IPath> listIterator() {
@@ -187,7 +187,8 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param index
-	 * @return
+	 * @return a ListIterator for this classpath starting at the element
+	 * specified by index.
 	 * @see java.util.List#listIterator(int)
 	 */
 	public ListIterator<IPath> listIterator(int index) {
@@ -196,7 +197,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param index
-	 * @return
+	 * @return the element found at index
 	 * @see java.util.List#remove(int)
 	 */
 	public IPath remove(int index) {
@@ -205,7 +206,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param o
-	 * @return
+	 * @return true if the element was successfully removed
 	 * @see java.util.List#remove(java.lang.Object)
 	 */
 	public boolean remove(Object o) {
@@ -214,7 +215,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param c
-	 * @return
+	 * @return true if the list was changed as a result of this call
 	 * @see java.util.List#removeAll(java.util.Collection)
 	 */
 	public boolean removeAll(Collection<?> c) {
@@ -223,7 +224,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param c
-	 * @return
+	 * @return true if the list was changed as a result of this call
 	 * @see java.util.List#retainAll(java.util.Collection)
 	 */
 	public boolean retainAll(Collection<?> c) {
@@ -243,7 +244,7 @@ public class Classpath implements List<IPath> {
 	}
 
 	/**
-	 * @return
+	 * @return the size of this classpath in list elements
 	 * @see java.util.List#size()
 	 */
 	public int size() {
@@ -253,7 +254,7 @@ public class Classpath implements List<IPath> {
 	/**
 	 * @param fromIndex
 	 * @param toIndex
-	 * @return
+	 * @return the sub list
 	 * @see java.util.List#subList(int, int)
 	 */
 	public List<IPath> subList(int fromIndex, int toIndex) {
@@ -261,7 +262,7 @@ public class Classpath implements List<IPath> {
 	}
 
 	/**
-	 * @return
+	 * @return an array representation of this classpath
 	 * @see java.util.List#toArray()
 	 */
 	public Object[] toArray() {
@@ -271,7 +272,7 @@ public class Classpath implements List<IPath> {
 	/**
 	 * @param <T>
 	 * @param a
-	 * @return
+	 * @return an array representation of this classpath
 	 * @see java.util.List#toArray(T[])
 	 */
 	public <T> T[] toArray(T[] a) {

@@ -13,7 +13,7 @@ import org.marketcetera.photon.PhotonPlugin;
  * application's connection to the JMS server.
  * 
  * @author gmiller
- * @see Application#initJMSConnector()
+ * @see ReconnectQuoteFeedJob#schedule()
  */
 @ClassVersion("$Id: ReconnectJMSAction.java 677 2007-01-05 01:21:20Z gmiller $")
 public class ReconnectQuoteFeedAction extends Action implements IWorkbenchAction {

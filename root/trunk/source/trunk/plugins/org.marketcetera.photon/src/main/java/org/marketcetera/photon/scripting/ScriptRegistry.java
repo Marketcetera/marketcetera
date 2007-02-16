@@ -122,7 +122,7 @@ public class ScriptRegistry implements InitializingBean {
 	 * "foo/bar".
 	 * 
 	 * @param requireString the argument to the Ruby require method
-	 * @return
+	 * @return true if the script is already registered
 	 * @throws BSFException
 	 */
 	public boolean isRegistered(String requireString) throws BSFException {
@@ -136,8 +136,7 @@ public class ScriptRegistry implements InitializingBean {
 	 * path "/foo/bar.rb", would correspond to the require method parameter,
 	 * "foo/bar".
 	 * 
-	 * @param requireString the argument to the Ruby require method
-	 * @return
+	 * @param fileName the argument to the Ruby require method
 	 * @throws BSFException
 	 */
 	public void unregister(String fileName) throws BSFException {
@@ -152,7 +151,6 @@ public class ScriptRegistry implements InitializingBean {
 	 * "foo/bar".
 	 * 
 	 * @param requireString the argument to the Ruby require method
-	 * @return
 	 * @throws BSFException
 	 */
 	public void register(String fileName) throws BSFException {
@@ -166,8 +164,7 @@ public class ScriptRegistry implements InitializingBean {
 	 * path "/foo/bar.rb", would correspond to the require method parameter,
 	 * "foo/bar".
 	 * 
-	 * @param requireString the argument to the Ruby require method
-	 * @return
+	 * @param fileName the argument to the Ruby require method
 	 * @throws BSFException
 	 */
 	public void scriptChanged(String fileName) throws BSFException {

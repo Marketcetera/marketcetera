@@ -78,7 +78,7 @@ public class EclipseUtils {
 	 * @param defaultString
 	 * @param charWidthHint
 	 * @param heightFactorHint
-	 * @return
+	 * @return A point where the x and y values are the width and height of the text area
 	 */
 	public static Point getTextAreaSize(Control aComposite, String defaultString, int charWidthHint, double heightFactorHint) {
 		if (isMacSWT()){

@@ -47,13 +47,8 @@ public class PhotonController {
 	
 	ServiceTracker jmsServiceTracker;
 
-	/** Creates a new instance of OrderManager with the specified {@link IDFactory}--
-	 * used to create new order id's among other things,
-	 * and the specified {@link FIXMessageHistory} into which all fix messages
-	 * will be placed for later use in the UI.
-	 * @param idFactory the id factory for generating order ids and other FIX ids
-	 * @param fixMessageHistory the message history object for storing histories of FIX messages
-	 * 
+	/** Creates a new instance of OrderManager.  Also gets a reference to
+	 *  the JMS service using a {@link ServiceTracker}
 	 */
 	public PhotonController(){
 		jmsServiceTracker = new ServiceTracker(PhotonPlugin.getDefault().getBundleContext(),
