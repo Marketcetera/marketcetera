@@ -32,11 +32,8 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 	/**
 	 * Create a new FocusCommandAction with the default Id, ActionDefinitionId, Text
 	 * ToolTipText, and ImageDescriptor, and the specified {@link IWorkbenchWindow}
-	 * and the {@link CommandStatusLineContribution} that represents the command
-	 * entry area itself.
 	 * 
 	 * @param window the application window
-	 * @param commandInput the command input area as a CommandStatusLineContribution
 	 */
 	public FocusCommandAction(IWorkbenchWindow window) {
 		this.window = window;

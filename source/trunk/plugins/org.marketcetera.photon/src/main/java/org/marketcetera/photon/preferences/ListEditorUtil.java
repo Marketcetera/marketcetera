@@ -27,7 +27,7 @@ public class ListEditorUtil {
 	 * @param stringList
 	 *            the string
 	 * @return an array of <code>String</code>
-	 * @see #createList
+	 * @see #encodeList
 	 */
 	public static String[] parseString(String stringList) {
 		stringList = stringList.trim();

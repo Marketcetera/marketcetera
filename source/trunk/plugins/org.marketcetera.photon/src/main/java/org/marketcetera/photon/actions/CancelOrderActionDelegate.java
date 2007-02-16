@@ -46,7 +46,6 @@ public class CancelOrderActionDelegate extends ActionDelegate {
 	 * object.  Also gets the Application's OrderManager and stores
 	 * it in an instance variable.
 	 * @see org.eclipse.ui.actions.ActionDelegate#init(org.eclipse.jface.action.IAction)
-	 * @see Application#getOrderManager()
 	 */
 	public void init(IAction arg0) {
 		this.manager = PhotonPlugin.getDefault().getPhotonController();
