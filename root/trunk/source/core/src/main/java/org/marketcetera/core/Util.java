@@ -47,10 +47,8 @@ public class Util
         if((inFileName == null) || ("".equals(inFileName)))  return null;
 
         URL resource = inObj.getClass().getResource(inFileName);
-        if(resource == null) {
-            if(!inFileName.startsWith("/")) {
-                resource = inObj.getClass().getResource("/"+inFileName);
-            }
+        if((resource == null) && !inFileName.startsWith("/")) {
+            resource = inObj.getClass().getResource("/"+inFileName);
         }
         return resource;
     }

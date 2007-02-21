@@ -12,7 +12,6 @@ import quickfix.field.MsgType;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.prefs.BackingStoreException;
 
 /**
  * Takes in a collection of message/header/trailer fields to always

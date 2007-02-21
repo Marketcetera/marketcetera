@@ -3,8 +3,6 @@ package org.marketcetera.core;
 import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
 
-import java.util.List;
-
 /**
  * @author Graham Miller
  * @version $Id$

@@ -8,7 +8,6 @@ import quickfix.field.*;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.prefs.BackingStoreException;
 
 /**
  * $Id$

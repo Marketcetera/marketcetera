@@ -6,8 +6,6 @@ import quickfix.SessionID;
 import quickfix.SessionNotFound;
 import quickfix.Session;
 
-import java.util.Vector;
-
 /**
  * Marker class for objects that send out FIX messages
  * Essentially used for classes that need to be subclassed in unit tests
