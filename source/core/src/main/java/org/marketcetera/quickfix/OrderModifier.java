@@ -1,7 +1,5 @@
 package org.marketcetera.quickfix;
 
-import java.util.prefs.BackingStoreException;
-
 import quickfix.Message;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;

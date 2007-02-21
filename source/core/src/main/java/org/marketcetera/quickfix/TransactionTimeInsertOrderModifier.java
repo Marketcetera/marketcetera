@@ -3,7 +3,6 @@ package org.marketcetera.quickfix;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
 
-import java.util.prefs.BackingStoreException;
 import java.util.Set;
 import java.util.HashSet;
 

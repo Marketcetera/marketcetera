@@ -1,7 +1,5 @@
 package org.marketcetera.quotefeed;
 
-import java.io.IOException;
-
 import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MSymbol;
 import org.springframework.context.Lifecycle;
