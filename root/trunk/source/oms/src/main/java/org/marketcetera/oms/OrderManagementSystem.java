@@ -5,7 +5,6 @@ import org.marketcetera.quickfix.SessionAdmin;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.lang.management.ManagementFactory;
 
 //import org.quickfixj.jmx.JmxExporter;
 //import org.quickfixj.jmx.mbean.connector.ConnectorJmxExporter;
