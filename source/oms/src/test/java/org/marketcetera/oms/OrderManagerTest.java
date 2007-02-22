@@ -24,10 +24,10 @@ public class OrderManagerTest extends TestCase
 
 	/* a bunch of random made-up header/trailer/field values */
     public static final String HEADER_57_VAL = "CERT";
-    public static final String HEADER_12_VAL = "12-gauge";
+    public static final String HEADER_12_VAL = "12.24";
     public static final String TRAILER_2_VAL = "2-trailer";
     public static final String FIELDS_37_VAL = "37-regField";
-    public static final String FIELDS_14_VAL = "14-regField";
+    public static final String FIELDS_14_VAL = "37";
 
     public OrderManagerTest(String inName)
    {
@@ -47,6 +47,8 @@ public class OrderManagerTest extends TestCase
     	Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, new AccountID("bob"));
         Message execReport = handler.executionReportFromNewOrder(newOrder);
+        // put an orderID in since immediate execReport doesn't have one and we need one for validation
+        execReport.setField(new OrderID("fake-order-id"));
         verifyExecutionReport(execReport);
         // verify the acount id is present
         assertEquals("bob", execReport.getString(Account.FIELD));
@@ -67,6 +69,8 @@ public class OrderManagerTest extends TestCase
         newOrder.removeField(Account.FIELD);
 
         final Message execReport = handler.executionReportFromNewOrder(newOrder);
+        // put an orderID in since immediate execReport doesn't have one and we need one for validation
+        execReport.setField(new OrderID("fake-order-id"));
         verifyExecutionReport(execReport);
         // verify the acount id is not present
         (new ExpectedTestFailure(FieldNotFound.class) {
@@ -110,6 +114,15 @@ public class OrderManagerTest extends TestCase
 
         // verify that transaction date is set as well, but it'd be set anyway b/c new order sets it
         assertNotNull(modifiedMessage.getString(TransactTime.FIELD));
+
+        // field 14 and 37 doesn't really belong in NOS so get rid of it before verification, same with field 2 in trailer
+        modifiedMessage.removeField(14);
+        modifiedMessage.removeField(37);
+        modifiedMessage.getTrailer().removeField(2);
+        FIXDataDictionaryManager.getDictionary().validate(modifiedMessage);
+        // put an orderID in since immediate execReport doesn't have one and we need one for validation
+        response.setField(new OrderID("fake-order-id"));
+        FIXDataDictionaryManager.getDictionary().validate(response);
     }
 
     /** Send a generic event and a single-order event.
@@ -150,6 +163,8 @@ public class OrderManagerTest extends TestCase
         assertEquals("3rd event should be cancel order", cancelOrder,
                 quickFIXSender.getCapturedMessages().get(1));
 
+        // put an orderID in since immediate execReport doesn't have one and we need one for validation
+        responses.get(0).setField(new OrderID("fake-order-id"));
         verifyExecutionReport(responses.get(0));
     }
 

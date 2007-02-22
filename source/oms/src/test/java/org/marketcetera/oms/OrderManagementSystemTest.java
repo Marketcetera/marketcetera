@@ -13,6 +13,7 @@ import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import quickfix.Message;
 import quickfix.field.Price;
 import quickfix.field.Side;
+import quickfix.field.OrderID;
 
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -118,6 +119,8 @@ public class OrderManagementSystemTest extends TestCase
 
         // verify we have 1 exec report
         Message execReport = topicMsgs.take();
+        // put an orderID in since immediate execReport doesn't have one and we need one for validation
+        execReport.setField(new OrderID("fake-order-id"));
         FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide);
         assertEquals("12.34", execReport.getString(Price.FIELD));
     }
