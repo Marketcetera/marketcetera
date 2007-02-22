@@ -41,8 +41,9 @@ public class FIXMessageUtil {
 	            	header.getField(msgTypeField);
 	            	return msgType.equals(msgTypeField.getValue());
 	            }
-	        } catch (Exception exception) {
-	        }
+	        } catch (Exception ignored) {
+                // ignored
+            }
     	}
         return false;
     }
