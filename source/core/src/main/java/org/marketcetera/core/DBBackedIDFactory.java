@@ -17,7 +17,7 @@ public abstract class DBBackedIDFactory extends ExternalIDFactory {
     }
 
     /** Lock the table to prevent concurrent access with {@link java.sql.ResultSet#CONCUR_UPDATABLE} */
-    protected void grabIDs() throws NoMoreIDsException {
+    public void grabIDs() throws NoMoreIDsException {
         if (inMemoryFactory != null){
             return;
         }
