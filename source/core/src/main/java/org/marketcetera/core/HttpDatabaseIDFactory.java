@@ -3,10 +3,8 @@ package org.marketcetera.core;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.UnknownHostException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,13 +29,12 @@ import org.xml.sax.SAXException;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class HttpDatabaseIDFactory extends ExternalIDFactory {
+public class HttpDatabaseIDFactory extends DBBackedIDFactory {
 	private URL url;
 	private DocumentBuilder parser;
-	private InMemoryIDFactory inMemoryFactory;
-	
-	
-	public HttpDatabaseIDFactory(URL url) {
+    private Reader inputReader = null;
+
+    public HttpDatabaseIDFactory(URL url) {
 		this.url = url;
         try {
 			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -46,65 +43,41 @@ public class HttpDatabaseIDFactory extends ExternalIDFactory {
 		}
 	}
 
-	public void grabIDs() throws NoMoreIDsException {
-		if (inMemoryFactory != null){
-			return;
-		}
-		if (parser == null){
-			throw new NoMoreIDsException(MessageKey.ERROR_DBFACTORY_MISSING_PARSER.getLocalizedMessage());
-		}
-		Reader inputReader = null;
-		boolean succeeded = false;
-		try {
-	        // Connect to the remote host and read in the data
-			
-	        inputReader = getInputReader();
-			Document document = parser.parse(new InputSource(inputReader));
-	        Node nextIDNode = document.getElementsByTagName("next").item(0);
-	        int nextID = Integer.parseInt(nextIDNode.getTextContent());
-	        Node numAllowedNode = document.getElementsByTagName("num").item(0);
-	        int numAllowed = Integer.parseInt(numAllowedNode.getTextContent());
-	        setNextID(nextID);
-	        setMaxAllowedID(nextID + numAllowed);
-	        succeeded = true;
-	    } catch (IOException ioe) {
-	    	throw new NoMoreIDsException(ioe);
-	    } catch (SAXException e) {
-	    	throw new NoMoreIDsException(e);
-	    } catch (Throwable t){
-	    	throw new NoMoreIDsException(t);
-	    } finally {
-			if (inputReader != null){
-				try {
-					inputReader.close();
-				} catch (IOException e) {
-                    // ignored
-                }
-			}
-			if (!succeeded){
-				try {
-					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+InetAddress.getLocalHost().toString());
-				} catch (UnknownHostException e) {
-					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis());
-				}
-			}
-		}
-	}
+    protected void performIDRequest() throws IOException, SAXException, NoMoreIDsException {
+        // Connect to the remote host and read in the data
 
-	protected Reader getInputReader() throws IOException {
+        inputReader = getInputReader();
+        Document document = parser.parse(new InputSource(inputReader));
+        Node nextIDNode = document.getElementsByTagName("next").item(0);
+        int nextID = Integer.parseInt(nextIDNode.getTextContent());
+        Node numAllowedNode = document.getElementsByTagName("num").item(0);
+        int numAllowed = Integer.parseInt(numAllowedNode.getTextContent());
+        setNextID(nextID);
+        setMaxAllowedID(nextID + numAllowed);
+    }
+
+    /** Close the input reader */
+    protected void postRequestCleanup() {
+        if (inputReader != null){
+            try {
+                inputReader.close();
+            } catch (IOException e) {
+                // ignored
+            }
+        }
+    }
+
+    protected void factoryValidityCheck() throws NoMoreIDsException {
+        if (parser == null){
+            throw new NoMoreIDsException(MessageKey.ERROR_DBFACTORY_MISSING_PARSER.getLocalizedMessage());
+        }
+    }
+
+    protected Reader getInputReader() throws IOException {
 		InputStreamReader inputReader;
 		URLConnection connection = url.openConnection();
 
 		inputReader = new InputStreamReader(connection.getInputStream());
 		return inputReader;
-	}
-
-	@Override
-	public String getNext() throws NoMoreIDsException {
-		if (inMemoryFactory == null){
-			return super.getNext();
-		} else {
-			return inMemoryFactory.getNext();
-		}
 	}
 }

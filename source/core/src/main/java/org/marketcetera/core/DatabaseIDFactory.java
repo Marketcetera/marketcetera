@@ -4,7 +4,7 @@ package org.marketcetera.core;
 import java.sql.*;
 
 @ClassVersion("$Id$")
-public class DatabaseIDFactory extends ExternalIDFactory {
+public class DatabaseIDFactory extends DBBackedIDFactory {
 
     public static final String TABLE_NAME = "id_repository";
     public static final String COL_NAME = "nextAllowedID";
@@ -17,6 +17,7 @@ public class DatabaseIDFactory extends ExternalIDFactory {
     private String dbPassword;
     private int mCacheQuantity;
     private Connection dbConnection;
+    static final int NUM_IDS_GRABBED = 1000;
 
     protected DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
                                 String column, int quantity) {
@@ -30,7 +31,7 @@ public class DatabaseIDFactory extends ExternalIDFactory {
         dbPassword = password;
     }
 
-    public void init() throws SQLException, ClassNotFoundException, NoMoreIDsException {
+    public final void init() throws SQLException, ClassNotFoundException, NoMoreIDsException {
         Class.forName(dbDriver);
 
         dbConnection = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
@@ -39,28 +40,29 @@ public class DatabaseIDFactory extends ExternalIDFactory {
     }
 
 
-    /** Lock the table to prevent concurrent access with {@link ResultSet#CONCUR_UPDATABLE} */
-    protected void grabIDs() throws NoMoreIDsException {
-        try {
-            Statement stmt = dbConnection.createStatement(
-                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
-            ResultSet set = null;
-                set = stmt.executeQuery("SELECT [" + dbColumn + "] FROM ["
-                                                  + dbTable + "]");
-            if (!set.next()) {
-                set.insertRow();
-                set.updateInt(dbColumn, 1000);
-            }
-            int nextID = set.getInt(dbColumn);
-            int upTo = nextID + mCacheQuantity;
-            set.updateInt(dbColumn, upTo);
-            set.updateRow();
-            stmt.close();
-            setMaxAllowedID(upTo);
-            setNextID(nextID);
-        } catch (SQLException e) {
-            throw new NoMoreIDsException(e);
+    /** Helper function intended to be overwritten by subclasses.
+     * Thsi is where the real requiest for IDs happens
+     * It is wrapped by a try/catch block higher up, so that we can
+     * fall back onto an inMemory id factory if the request fails.
+     */
+    protected void performIDRequest() throws Exception {
+        Statement stmt = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        ResultSet set = null;
+        set = stmt.executeQuery("SELECT id, " + dbColumn + " FROM " + dbTable);
+        if (!set.next()) {
+            set.moveToInsertRow();
+            set.insertRow();
+            set.updateInt(dbColumn, NUM_IDS_GRABBED);
+            set.moveToCurrentRow();
+            set.next();
         }
+        int nextID = set.getInt(dbColumn);
+        int upTo = nextID + mCacheQuantity;
+        set.updateInt(dbColumn, upTo);
+        set.updateRow();
+        stmt.close();
+        setMaxAllowedID(upTo);
+        setNextID(nextID);
     }
 
 }
