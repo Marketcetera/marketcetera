@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -29,6 +30,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
@@ -156,6 +160,10 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	private ServiceTracker quoteFeedTracker;
 
 	private SimpleMessageListenerContainer quoteListener;
+
+	private IMemento viewStateMemento;
+	private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
+	
 
 	public StockOrderTicket() {
 		quoteFeedTracker = new ServiceTracker(PhotonPlugin.getDefault().getBundleContext(),
@@ -291,6 +299,22 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 		updateCustomFields(PhotonPlugin.getDefault().getPreferenceStore()
 				.getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
+		restoreCustomFieldStates();
+	}
+
+	private void restoreCustomFieldStates() {
+		if (viewStateMemento == null)
+			return;
+		
+		TableItem[] items = customFieldsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			TableItem item = items[i];
+			String key = CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX + item.getText(1);
+			if (viewStateMemento.getInteger(key) != null) {
+				boolean itemChecked = (viewStateMemento.getInteger(key).intValue() != 0);
+				item.setChecked(itemChecked);
+			}
+		}
 	}
 
 	/**
@@ -809,6 +833,25 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 			throw new MarketceteraException("Field "+fieldNumber+" is already set in message.");
 		} else {
 			fieldMap.setField(new StringField(fieldNumber, value));
+		}
+	}
+
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+		
+		this.viewStateMemento = memento;
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+		
+		TableItem[] items = customFieldsTable.getItems();
+		for (int i = 0; i < items.length; i++) {
+			TableItem item = items[i];
+			String key = CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX + item.getText(1);
+			memento.putInteger(key, (item.getChecked() ? 1 : 0));
 		}
 	}
 
