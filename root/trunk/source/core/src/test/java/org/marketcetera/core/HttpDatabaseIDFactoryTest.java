@@ -1,6 +1,5 @@
 package org.marketcetera.core;
 
-import org.marketcetera.core.MarketceteraTestSuite;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
@@ -34,6 +33,7 @@ public class HttpDatabaseIDFactoryTest extends TestCase {
         }
     }
 
+    /** Verify that when a DB is inaccessible we still get an in-memory set of ids */
     public void testInvalidURL() throws Exception
     {
         URL url = new URL("http://www.bogus.example.com/no/such/url");
