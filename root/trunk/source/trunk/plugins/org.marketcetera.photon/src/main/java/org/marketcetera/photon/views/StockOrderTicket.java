@@ -704,7 +704,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				extractor.modifyOrder(aMessage);
 			}
 			addCustomFields(aMessage);
-			PhotonPlugin.getDefault().getPhotonController().handleMessage(aMessage);
+			PhotonPlugin.getDefault().getPhotonController().handleInternalMessage(aMessage);
 			clear();
 		} catch (Exception e) {
 			PhotonPlugin.getMainConsoleLogger().error(

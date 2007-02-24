@@ -15,7 +15,7 @@ public class SendOrderToOrderManagerCommand extends MessageCommand {
 
 	public void execute() {
 		try {
-			PhotonPlugin.getDefault().getPhotonController().handleMessage(getMessage());
+			PhotonPlugin.getDefault().getPhotonController().handleInternalMessage(getMessage());
 		} catch (Exception ex){
 			PhotonPlugin.getMainConsoleLogger().error("Exception sending order", ex);
 		}

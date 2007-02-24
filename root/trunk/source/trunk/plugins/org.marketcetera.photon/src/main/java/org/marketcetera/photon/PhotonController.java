@@ -61,16 +61,7 @@ public class PhotonController {
 		this.fixMessageHistory = fixMessageHistory;
 	}
 	
-	public void handleMessage(Message aMessage) {
-		if (aMessage.getHeader().isSetField(SenderCompID.FIELD))
-		{
-			handleCounterpartyMessage(aMessage);
-		} else {
-			handleInternalMessage(aMessage);
-		}
-	}
-
-	protected void handleCounterpartyMessage(final Message aMessage) {
+	public void handleCounterpartyMessage(final Message aMessage) {
 		asyncExec(
 			new Runnable() {
 				public void run() {
@@ -100,7 +91,7 @@ public class PhotonController {
 		Display.getDefault().asyncExec(runnable);
 	}
 
-	protected void handleInternalMessage(Message aMessage) {
+	public void handleInternalMessage(Message aMessage) {
 	
 		try {
 			if (FIXMessageUtil.isOrderSingle(aMessage)) {
