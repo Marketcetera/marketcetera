@@ -93,8 +93,7 @@ public class OrderManagerTest extends TestCase {
 		messages[0] = getTestableExecutionReport();
 		messages[1] = getTestableExecutionReport();
 		for (Message aMessage : messages) {
-			photonController.handleMessage(aMessage);
-			
+			photonController.handleCounterpartyMessage(aMessage);
 		}
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(2, historyList.size());
@@ -114,7 +113,7 @@ public class OrderManagerTest extends TestCase {
 		messages[0] = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		messages[1] = FIXMessageUtil.newCancel(new InternalID("AQWE"), new InternalID("ASDF"), Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
 		for (Message message : messages) {
-			photonController.handleMessage(message);
+			photonController.handleInternalMessage(message);
 		}
 		assertNotNull(messageHistory.getLatestMessage("ASDF"));
 		historyList = messageHistory.getAllMessagesList();
