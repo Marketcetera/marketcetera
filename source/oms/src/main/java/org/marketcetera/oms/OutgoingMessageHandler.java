@@ -2,9 +2,7 @@ package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.SessionID;
+import quickfix.*;
 import quickfix.field.*;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.OrderCancelReject;
@@ -30,10 +28,21 @@ public class OutgoingMessageHandler {
     private OrderRouteManager routeMgr;
     private SessionID defaultSessionID;         // used to store the SessionID so that FIX sender can find it
     private IQuickFIXSender quickFIXSender = new QuickFIXSender();
+    private DatabaseIDFactory idFactory;
     
-	public OutgoingMessageHandler() {
+    public OutgoingMessageHandler(SessionSettings settings) throws ConfigError, FieldConvertError {
         setOrderModifiers(new LinkedList<OrderModifier>());
         setOrderRouteManager(new OrderRouteManager());
+        idFactory = new DatabaseIDFactory(settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL),
+                settings.getString(JdbcSetting.SETTING_JDBC_DRIVER), settings.getString(JdbcSetting.SETTING_JDBC_USER),
+                settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD), DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME,
+                DatabaseIDFactory.NUM_IDS_GRABBED);
+        try {
+            idFactory.init();
+        } catch (Exception ex) {
+            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error initializing the ID factory", ex, this); }
+            // ignore the exception - should get the in-memory id factory instead
+        }
     }
 
     public void setOrderRouteManager(OrderRouteManager inMgr)
@@ -50,6 +59,11 @@ public class OutgoingMessageHandler {
 	}
 	
 	public Message handleMessage(Message message) {
+        if(message == null) {
+            LoggerAdapter.error(OMSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
+            return null;
+        }
+
         Message returnVal = null;
         try {
             modifyOrder(message);
@@ -96,6 +110,12 @@ public class OutgoingMessageHandler {
             rejection = new OrderCancelReject();
         } else {
             rejection = new ExecutionReport();
+            rejection.setField(getNextExecId());
+            // we are rejecting it, so leaves is 0
+            rejection.setField(new LeavesQty(0));
+            rejection.setField(new AvgPx(0));
+            rejection.setField(new CumQty(0));
+            rejection.setField(new ExecTransType(ExecTransType.STATUS));
         }
 
         rejection.setField(new OrdStatus(OrdStatus.REJECTED));
@@ -141,7 +161,7 @@ public class OutgoingMessageHandler {
             return FIXMessageUtil.newExecutionReport(
                     null,
                     new InternalID(clOrdId),
-                    "ZZ-INTERNAL",
+                    getNextExecId().getValue(),
                     ExecTransType.NEW,
                     ExecType.NEW,
                     OrdStatus.NEW,
@@ -187,5 +207,17 @@ public class OutgoingMessageHandler {
 	}
 
 
+    /** Returns the next ExecID from the factory, or a hardcoded ZZ-internal if we have
+     * problems creating an execID
+     * @return
+     */
+    private ExecID getNextExecId() {
+        try {
+            return new ExecID(idFactory.getNext());
+        } catch(NoMoreIDsException ex) {
+            LoggerAdapter.error(OMSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
+            return new ExecID("ZZ-internal");
+        }
+    }
 
 }

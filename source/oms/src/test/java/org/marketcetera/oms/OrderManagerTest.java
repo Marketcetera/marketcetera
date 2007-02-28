@@ -5,16 +5,17 @@ import junit.framework.TestCase;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.DefaultOrderModifier.MessageFieldType;
-import quickfix.FieldNotFound;
-import quickfix.Message;
+import quickfix.*;
 import quickfix.field.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.net.InetAddress;
 
 /**
+ * Tests the code coming out of {@link OutgoingMessageHandler} class
  * @author Toli Kuznets
  * @version $Id$
  */
@@ -36,13 +37,12 @@ public class OrderManagerTest extends TestCase
 
     public static Test suite()
     {
-    	//OrderManagementSystem.init();
     	return new MarketceteraTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
     }
 
     public void testNewExecutionReportFromOrder() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler();
+    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
     	Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, new AccountID("bob"));
@@ -56,12 +56,15 @@ public class OrderManagerTest extends TestCase
         // on a non-single order should get back null
         assertNull(handler.executionReportFromNewOrder(FIXMessageUtil.newCancel(new InternalID("bob"), new InternalID("bob"),
                                                                   Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty")));
+
+        assertTrue("should be using in-memory id factory",
+                    execReport.getString(ExecID.FIELD).contains(InetAddress.getLocalHost().toString()));
     }
 
     // test one w/out incoming account
     public void testNewExecutionReportFromOrder_noAccount() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler();
+    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
         Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, new AccountID("bob"));
@@ -91,7 +94,7 @@ public class OrderManagerTest extends TestCase
     public void testInsertDefaultFields() throws Exception
     {
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler();
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
         handler.setOrderModifiers(getOrderModifiers());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
@@ -138,7 +141,7 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleEvents() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler();
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -168,23 +171,30 @@ public class OrderManagerTest extends TestCase
         verifyExecutionReport(responses.get(0));
     }
 
-    /** verify that sendign a malformed buy order (ie missing Side) results in a reject exectuionReport */
+    /** verify that sending a malformed buy order (ie missing Side) results in a reject exectuionReport */
     public void testHandleMalformedEvent() throws Exception {
         Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY);
         buyOrder.removeField(Side.FIELD);
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler();
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-		Message result = handler.handleMessage(buyOrder);
+		final Message result = handler.handleMessage(buyOrder);
 		assertNotNull(result);
 		assertEquals(0, quickFIXSender.getCapturedMessages().size());
 		assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT,
                      result.getHeader().getString(MsgType.FIELD));
         assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
         assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        
+        // validation will fail b/c we didn't send a side in to begin with
+        new ExpectedTestFailure(RuntimeException.class, "field="+Side.FIELD) {
+            protected void execute() throws Throwable {
+                FIXDataDictionaryManager.getDictionary().validate(result);
+            }
+        }.run();
     }
 
     /** Basically, this is a test for bug #15 where any error in the internal code
@@ -192,7 +202,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testMalformedPrice() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler();
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -215,7 +225,7 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleFIXMessages() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler();
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -230,8 +240,9 @@ public class OrderManagerTest extends TestCase
         assertEquals("not enough events on the OM quickfix sink", 2, quickFIXSender.getCapturedMessages().size());
         assertEquals("1st event should be original buy order", newOrder,
         		quickFIXSender.getCapturedMessages().get(0));
-        assertEquals("2st event should be cancel order", cancelOrder,
+        assertEquals("2nd event should be cancel order", cancelOrder,
         		quickFIXSender.getCapturedMessages().get(1));
+        FIXDataDictionaryManager.getDictionary().validate(quickFIXSender.getCapturedMessages().get(1));
     }
 
     /** Create props with a route manager entry, and make sure the FIX message is
@@ -239,7 +250,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testWithOrderRouteManager() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler();
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
         OrderRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
         handler.setOrderRouteManager(orm);
 
@@ -271,6 +282,11 @@ public class OrderManagerTest extends TestCase
         orderRouterTesterHelper(handler, "BRK/A", null, "A");
         orderRouterTesterHelper(handler, "IFLI.IM", "Milan", null);
         orderRouterTesterHelper(handler, "BRK/A.N", "SIGMA", "A");
+    }
+
+    public void testIncomingNullMessage() throws Exception {
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        assertNull(handler.handleMessage(null));        
     }
 
     /** Helper method that takes an OrderManager, the stock symbol and the expect exchange
@@ -328,4 +344,13 @@ public class OrderManagerTest extends TestCase
     	return orderModifiers;
     }
 
+    private SessionSettings getDummySessionSettings()
+    {
+        SessionSettings settings = new SessionSettings();
+        settings.setString(JdbcSetting.SETTING_JDBC_CONNECTION_URL, "jdbc:mysql://localhost/junit");
+        settings.setString(JdbcSetting.SETTING_JDBC_DRIVER, "com.mysql.jdbc.Driver");
+        settings.setString(JdbcSetting.SETTING_JDBC_USER, "");
+        settings.setString(JdbcSetting.SETTING_JDBC_PASSWORD, "");
+        return settings;
+    }
 }

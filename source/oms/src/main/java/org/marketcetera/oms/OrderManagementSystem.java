@@ -2,6 +2,7 @@ package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.SessionAdmin;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -47,6 +48,8 @@ public class OrderManagementSystem extends ApplicationBase {
         try {
             OrderManagementSystem oms = new OrderManagementSystem();
             ApplicationContext appCtx = oms.createApplicationContext(APP_CONTEXT_CONFIG_FILES, true);
+            FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+            
             if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
                 String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);
                 String connectPort = (String) appCtx.getBean("socketConnectPortValue", String.class);

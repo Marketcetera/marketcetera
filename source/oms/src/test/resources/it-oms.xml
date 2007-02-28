@@ -80,8 +80,22 @@
 	<constructor-arg value="test-target"/>
   </bean>
 
+    <bean id="sessionSettings" class="quickfix.spring.SessionSettings">
+        <property name="defaults">
+            <map>
+                <entry key="JdbcDriver" value="com.mysql.jdbc.Driver"/>
+                <entry key="JdbcURL" value="jdbc:mysql://localhost/test"/>
+                <entry key="JdbcUser" value="test"/>
+                <entry key="JdbcPassword" value="test"/>
+            </map>
+        </property>
+    </bean>
+
   <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
+        <constructor-arg>
+            <ref bean="sessionSettings"/>
+        </constructor-arg>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="quickFIXSender" ref="quickfixSender"/>
     </bean>

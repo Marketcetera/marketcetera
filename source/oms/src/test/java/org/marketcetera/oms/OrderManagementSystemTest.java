@@ -82,16 +82,6 @@ public class OrderManagementSystemTest extends TestCase
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.SELL_SHORT);
     }
 
-    /** test the startup of the real OMS appContext, sleeps for 3 secs and exits
-     * Really, we just care to check that the spring config is setup correctly, nothing else. 
-     */
-    public void testRealOMSStartup() throws Exception {
-        ClassPathXmlApplicationContext appContext = new ClassPathXmlApplicationContext(OrderManagementSystem.APP_CONTEXT_CONFIG_FILES);
-        Thread.sleep(3000);
-        assertTrue(appContext.isRunning());
-        assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-    }
-
     /** Generates a JMS message from the fix order
      *  Sends it on the jsm-commands queue
      * Verifies that an auto-generated report comes through the system
