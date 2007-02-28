@@ -136,7 +136,7 @@ public class FIXMessageUtilTest extends TestCase {
         assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
         assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
         assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
-        FIXDataDictionaryManager.getDictionary().validate(inExecReport);
+        FIXDataDictionaryManager.getDictionary().validate(inExecReport, true);
     }
 
 

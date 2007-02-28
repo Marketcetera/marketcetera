@@ -8,6 +8,7 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
 
     public static final String TABLE_NAME = "id_repository";
     public static final String COL_NAME = "nextAllowedID";
+    public static final int NUM_IDS_GRABBED = 1000;
 
     private String dbURL;
     private String dbDriver;
@@ -17,9 +18,8 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
     private String dbPassword;
     private int mCacheQuantity;
     private Connection dbConnection;
-    static final int NUM_IDS_GRABBED = 1000;
 
-    protected DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
+    public DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
                                 String column, int quantity) {
         mCacheQuantity = quantity;
         dbColumn = column;
@@ -31,12 +31,20 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
         dbPassword = password;
     }
 
-    public final void init() throws SQLException, ClassNotFoundException, NoMoreIDsException {
+    public final void init() throws ClassNotFoundException, NoMoreIDsException {
         Class.forName(dbDriver);
 
-        dbConnection = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
-        dbConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-        grabIDs();
+        try {
+            dbConnection = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
+            dbConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+        } catch(Exception ex) {
+            if(LoggerAdapter.isInfoEnabled(this)) {
+                LoggerAdapter.info(MessageKey.ERROR_DB_ID_FACTORY_INIT.getLocalizedMessage(ex.getMessage()), this);
+            }
+            throw new NoMoreIDsException(ex);
+        } finally {
+            grabIDs();
+        }
     }
 
 
@@ -46,6 +54,10 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
      * fall back onto an inMemory id factory if the request fails.
      */
     protected void performIDRequest() throws Exception {
+        if(dbConnection == null) {
+            throw new NoMoreIDsException(MessageKey.ERROR_DB_ID_FACTORY_DB_CONN_ERROR.getLocalizedMessage());
+        }
+        
         Statement stmt = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
         ResultSet set = null;
         set = stmt.executeQuery("SELECT id, " + dbColumn + " FROM " + dbTable);

@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 public abstract class DBBackedIDFactory extends ExternalIDFactory {
     protected InMemoryIDFactory inMemoryFactory;
 
-    public DBBackedIDFactory() {
+    protected DBBackedIDFactory() {
     }
 
     /** Lock the table to prevent concurrent access with {@link java.sql.ResultSet#CONCUR_UPDATABLE} */

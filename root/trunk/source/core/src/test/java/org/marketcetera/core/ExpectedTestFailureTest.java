@@ -52,4 +52,19 @@ public class ExpectedTestFailureTest extends TestCase
 
     }
 
+    /** Check the case when the exception has a message (toString()) but getMessage() returns null */
+    public void testExceptinoHasNoMessageButHasString() throws Exception {
+        final Exception ex = new Exception() {
+            public String toString() {
+                return "internal message 32";
+            }
+        };
+
+        assertEquals(ex, new ExpectedTestFailure(Exception.class, "message 32") {
+            protected void execute() throws Throwable {
+                throw ex;
+            }
+        }.run());
+    }
+
 }
