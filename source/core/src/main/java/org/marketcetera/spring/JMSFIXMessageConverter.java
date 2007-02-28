@@ -20,7 +20,8 @@ public class JMSFIXMessageConverter implements MessageConverter {
     private static final String FIX_PREAMBLE = "8=FIX";
 
     boolean serializeToString = true;
-    
+    public static final String BYTES_MESSAGE_CHARSET = "UTF-16";
+
     public JMSFIXMessageConverter() {
 	}
     
@@ -52,8 +53,9 @@ public class JMSFIXMessageConverter implements MessageConverter {
                 BytesMessage bytesMessage = ((BytesMessage)message);
                 int length = (int)bytesMessage.getBodyLength();
                 byte [] buf = new byte[length];
+                bytesMessage.readBytes(buf);
 
-                String possibleString = new String(buf, "UTF-16");
+                String possibleString = new String(buf, BYTES_MESSAGE_CHARSET);
                 if (possibleString.startsWith(FIX_PREAMBLE)){
                     qfMessage = new quickfix.Message(possibleString);
                 }
@@ -61,12 +63,13 @@ public class JMSFIXMessageConverter implements MessageConverter {
                 throw new MessageConversionException(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage(), ex);
             }
         } else if (message instanceof ObjectMessage) {
-	    return (quickfix.Message)((ObjectMessage)message).getObject();
-	}
+	        return (quickfix.Message)((ObjectMessage)message).getObject();
+	    }
         return qfMessage;
 	}
 
-	public Message toMessage(Object message, Session session) throws JMSException, MessageConversionException {
+    /** Converts from the OMS to the JMS queue format - ie from a FIX Message -> JMS message */
+    public Message toMessage(Object message, Session session) throws JMSException, MessageConversionException {
 		javax.jms.Message jmsMessage = null;
 		if (serializeToString){
 			jmsMessage = session.createTextMessage(message.toString());

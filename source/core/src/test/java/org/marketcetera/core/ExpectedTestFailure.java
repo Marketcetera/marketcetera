@@ -56,6 +56,10 @@ public abstract class ExpectedTestFailure
      * The message of the passed in trowable is validated againt the expected message
      * if there is one
      *
+     * If we are expecting a message but the incoming exception.getMessage() doesn't contain it, 
+     * also check exception.toString() as well - for the case of exceptions that aren't
+     * constructed correctly
+     *
      * @param inError throwable to validate
      */
     protected void validateError(Throwable inError)
@@ -66,9 +70,11 @@ public abstract class ExpectedTestFailure
                         inError.getClass()+": "+inError);
         }
         if ((mContains!=null) &&
-            ((inError.getMessage()==null) ||
-             (inError.getMessage().indexOf(mContains)==-1))) {
+            (((inError.getMessage()==null) ||
+             (inError.getMessage().indexOf(mContains)==-1))) &&
+            (inError.toString().indexOf(mContains) == -1)) {
             Assert.fail("Thrown throwable contained incorrect message: "+
                         inError.getMessage()+": "+inError);
-        }    }
+        }
+    }
 }

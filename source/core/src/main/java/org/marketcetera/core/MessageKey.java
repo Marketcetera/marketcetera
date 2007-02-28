@@ -49,6 +49,8 @@ public enum MessageKey implements LocalizedMessage {
 
     ERR0R_JMS_MESSAGE_CONVERSION("core.jms.message_conversion"),
 
+    ERROR_DB_ID_FACTORY_INIT("core.db_id_factory.init.error"), 
+    ERROR_DB_ID_FACTORY_DB_CONN_ERROR("core.db_id_factory.db_conn.error"),
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
     APP_EXIT("core.init.app_exit");
