@@ -57,6 +57,9 @@
         
     <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
+        <constructor-arg>
+            <ref   bean="sessionSettings"/>
+        </constructor-arg>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="orderModifiers">
@@ -73,7 +76,10 @@
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg value="FIX.4.2"/>
+<!--
         <constructor-arg value="MRKTC-OMS"/>
+-->
+        <constructor-arg value="sender-1308-OMS"/>
         <constructor-arg value="MRKTC-EXCH"/>
     </bean>
 
