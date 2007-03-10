@@ -74,8 +74,12 @@
     || Message Driven POJOs
     -->
 
+    <bean id="fixVersion" class="java.lang.String">
+        <constructor-arg value="FIX.4.2"/>
+    </bean>
+
   <bean id="defaultSessionID" class="quickfix.SessionID">
-	<constructor-arg value="FIX.4.2" />
+	<constructor-arg ref="fixVersion" />
 	<constructor-arg value="test-sender"/>
 	<constructor-arg value="test-target"/>
   </bean>
@@ -93,9 +97,8 @@
 
   <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
-        <constructor-arg>
-            <ref bean="sessionSettings"/>
-        </constructor-arg>
+        <constructor-arg ref="sessionSettings"/>
+        <constructor-arg ref="fixVersion"/>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="quickFIXSender" ref="quickfixSender"/>
     </bean>

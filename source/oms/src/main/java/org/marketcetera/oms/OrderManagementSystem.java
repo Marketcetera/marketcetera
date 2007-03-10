@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 
 import quickfix.Session;
 import quickfix.SocketInitiator;
+import quickfix.SessionID;
 
 /**
  * OrderManagementSystem
@@ -48,7 +49,8 @@ public class OrderManagementSystem extends ApplicationBase {
         try {
             OrderManagementSystem oms = new OrderManagementSystem();
             ApplicationContext appCtx = oms.createApplicationContext(APP_CONTEXT_CONFIG_FILES, true);
-            FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+            SessionID theSessionID = (SessionID) appCtx.getBean("defaultSessionID");
+            FIXDataDictionaryManager.setFIXVersion(theSessionID.getBeginString());
             
             if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
                 String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);

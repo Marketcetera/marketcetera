@@ -22,6 +22,8 @@ import java.net.InetAddress;
 @ClassVersion("$Id$")
 public class OrderManagerTest extends TestCase
 {
+    private FIXVersion fixVersion = FIXVersion.FIX42;
+    private FIXMessageFactory msgFactory = fixVersion.getMessageFactory();
 
 	/* a bunch of random made-up header/trailer/field values */
     public static final String HEADER_57_VAL = "CERT";
@@ -42,10 +44,10 @@ public class OrderManagerTest extends TestCase
 
     public void testNewExecutionReportFromOrder() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX42.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
-    	Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, new AccountID("bob"));
+    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
+                                                      TimeInForce.DAY, "bob");
         Message execReport = handler.executionReportFromNewOrder(newOrder);
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
         execReport.setField(new OrderID("fake-order-id"));
@@ -54,7 +56,7 @@ public class OrderManagerTest extends TestCase
         assertEquals("bob", execReport.getString(Account.FIELD));
 
         // on a non-single order should get back null
-        assertNull(handler.executionReportFromNewOrder(FIXMessageUtil.newCancel(new InternalID("bob"), new InternalID("bob"),
+        assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob",
                                                                   Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty")));
 
         assertTrue("should be using in-memory id factory",
@@ -64,10 +66,10 @@ public class OrderManagerTest extends TestCase
     // test one w/out incoming account
     public void testNewExecutionReportFromOrder_noAccount() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
-        Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, new AccountID("bob"));
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
+                                                      TimeInForce.DAY, "bob");
         // remove account ID
         newOrder.removeField(Account.FIELD);
 
@@ -94,14 +96,14 @@ public class OrderManagerTest extends TestCase
     public void testInsertDefaultFields() throws Exception
     {
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
         handler.setOrderModifiers(getOrderModifiers());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-        Message msg = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, new AccountID("bob"));
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
+                                                      TimeInForce.DAY, "bob");
         Message response = handler.handleMessage(msg);
 
         assertNotNull(response);
@@ -141,14 +143,14 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleEvents() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-		Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, new AccountID("bob"));
-        Message cancelOrder = FIXMessageUtil.newCancel(new InternalID("bob"), new InternalID("bob"),
+		Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
+                                                      TimeInForce.DAY, "bob");
+        Message cancelOrder = msgFactory.newCancel("bob", "bob",
                                                     Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty");
 
         List<Message> orderList = Arrays.asList(newOrder, cancelOrder);
@@ -176,7 +178,7 @@ public class OrderManagerTest extends TestCase
         Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY);
         buyOrder.removeField(Side.FIELD);
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -202,7 +204,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testMalformedPrice() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -225,14 +227,14 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleFIXMessages() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-		Message newOrder = FIXMessageUtil.newCancelReplaceShares(new InternalID("bob"), new InternalID("orig"), new BigDecimal(100));
+		Message newOrder = msgFactory.newCancelReplaceShares("bob", "orig", new BigDecimal(100));
 		newOrder.setField(new Symbol("ASDF"));
-		Message cancelOrder = FIXMessageUtil.newCancel(new InternalID("bob"), new InternalID("bob"),
+		Message cancelOrder = msgFactory.newCancel("bob", "bob",
                                                     Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty");
         handler.handleMessage(newOrder);
         handler.handleMessage(cancelOrder);
@@ -250,7 +252,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testWithOrderRouteManager() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         OrderRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
         handler.setOrderRouteManager(orm);
 
@@ -259,8 +261,8 @@ public class OrderManagerTest extends TestCase
 
     	
         // 1. create a "incoming JMS buy" order and verify that it doesn't have routing in it
-        final Message newOrder = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, new AccountID("bob"));
+        final Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
+                                                      TimeInForce.DAY, "bob");
         // verify there's no route info
         new ExpectedTestFailure(FieldNotFound.class) {
             protected void execute() throws Throwable {
@@ -285,8 +287,28 @@ public class OrderManagerTest extends TestCase
     }
 
     public void testIncomingNullMessage() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
         assertNull(handler.handleMessage(null));        
+    }
+
+    /** verify the OMS sends back a rejection when it receives a message of incompatible or unknown verison */
+    public void testIncompatibleFIXVersions() throws Exception {
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX40.toString());
+        Message msg = new quickfix.fix41.Message();
+        Message reject = handler.handleMessage(msg);
+        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));
+        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", reject.getString(OrdStatus.FIELD));
+        assertEquals("didn't get a right reason",
+                OMSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(FIXVersion.FIX40.toString(), FIXVersion.FIX41.toString()),
+                reject.getString(Text.FIELD));
+
+        // now test it with no fix version at all
+        reject = handler.handleMessage(new Message());
+        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));
+        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", reject.getString(OrdStatus.FIELD));
+        assertEquals("didn't get a right reason",
+                OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION.getLocalizedMessage(),
+                reject.getString(Text.FIELD));
     }
 
     /** Helper method that takes an OrderManager, the stock symbol and the expect exchange
@@ -298,8 +320,8 @@ public class OrderManagerTest extends TestCase
     private void orderRouterTesterHelper(OutgoingMessageHandler handler, String symbol,
                                          String expectedExchange, String shareClass)
             throws Exception {
-        final Message qfMsg = FIXMessageUtil.newMarketOrder(new InternalID("bob"), Side.BUY, new BigDecimal(100),
-                new MSymbol(symbol),  TimeInForce.DAY, new AccountID("bob"));
+        final Message qfMsg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100),
+                new MSymbol(symbol),  TimeInForce.DAY, "bob");
         NullQuickFIXSender nullQuickFIXSender = ((NullQuickFIXSender)handler.getQuickFIXSender());
 		nullQuickFIXSender.getCapturedMessages().clear();
         Message result = handler.handleMessage(qfMsg);
