@@ -2,12 +2,13 @@ package org.marketcetera.quickfix;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.core.*;
-import quickfix.Message;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraTestSuite;
 import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.Group;
 import quickfix.field.*;
-import quickfix.fix42.MarketDataRequest;
-import quickfix.fix42.NewOrderSingle;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -20,6 +21,8 @@ import java.util.List;
  */
 @ClassVersion("$Id$")
 public class FIXMessageUtilTest extends TestCase {
+    private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
     public FIXMessageUtilTest(String inName) {
         super(inName);
     }
@@ -29,20 +32,19 @@ public class FIXMessageUtilTest extends TestCase {
     }
 
     public void testNewLimitOrder() throws Exception {
-        InternalID orderID = new InternalID("asdf");
+        String orderID = "asdf";
         char side = Side.BUY;
         String  quantity = "200";
         String symbol = "IBM";
         String priceString = "123.45";
         char timeInForce = TimeInForce.DAY;
-        AccountID accountID = null;
-        Message aMessage = FIXMessageUtil.newLimitOrder(orderID, side, new BigDecimal(quantity),
-                                                 new MSymbol(symbol), new BigDecimal(priceString), timeInForce, accountID);
+        Message aMessage = msgFactory.newLimitOrder(orderID, side, new BigDecimal(quantity),
+                                                 new MSymbol(symbol), new BigDecimal(priceString), timeInForce, null);
 
         assertEquals(MsgType.ORDER_SINGLE, aMessage.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdType.LIMIT, aMessage.getChar(OrdType.FIELD));
         assertEquals(priceString, aMessage.getString(Price.FIELD));
-        assertEquals(orderID.toString(), aMessage.getString(ClOrdID.FIELD));
+        assertEquals(orderID, aMessage.getString(ClOrdID.FIELD));
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
         assertEquals(side, aMessage.getChar(Side.FIELD));
         assertEquals(quantity, aMessage.getString(OrderQty.FIELD));
@@ -51,33 +53,34 @@ public class FIXMessageUtilTest extends TestCase {
 
     /** want to test the case where price is specified or NULL (market orders) */
     public void testNewExecutionReport() throws Exception {
-        InternalID clOrderID = new InternalID("asdf");
+        String clOrderID = "asdf";
+        String orderID = "bob";
         char side = Side.BUY;
         BigDecimal  quantity = new BigDecimal("200");
         String symbol = "IBM";
         BigDecimal price = new BigDecimal("123.45");
-        Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("bob"), clOrderID, "execID",
+        Message aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
                 ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, side, quantity, price,
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"),
-                new AccountID("accountName"));
+                "accountName");
 
         assertEquals(MsgType.EXECUTION_REPORT, aMessage.getHeader().getString(MsgType.FIELD));
         assertEquals(price.toPlainString(), aMessage.getString(Price.FIELD));
-        assertEquals(clOrderID.toString(), aMessage.getString(ClOrdID.FIELD));
+        assertEquals(clOrderID, aMessage.getString(ClOrdID.FIELD));
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
         assertEquals(side, aMessage.getChar(Side.FIELD));
         assertEquals(quantity.toPlainString(), aMessage.getString(OrderQty.FIELD));
         assertEquals("accountName", aMessage.getString(Account.FIELD));
 
         // now send in a market order with null price
-        aMessage = FIXMessageUtil.newExecutionReport(clOrderID, new InternalID("bob"), "execID",
+        aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
                 ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, side, quantity, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), new AccountID("accountName"));
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), "accountName");
         assertFalse(aMessage.isSetField(Price.FIELD));
 
         // now send an order w/out account name
         try {
-            aMessage = FIXMessageUtil.newExecutionReport(clOrderID, new InternalID("bob"), "execID",
+            aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
                     ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, side, quantity, null,
                     BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), null);
             aMessage.getString(Account.FIELD);
@@ -87,10 +90,10 @@ public class FIXMessageUtilTest extends TestCase {
         }
     }
 
-    /** Creates a {@link quickfix.fix42.NewOrderSingle} */
-    public static NewOrderSingle createNOS(String symbol, double price, double qty, char side)
+    /** Creates a NewOrderSingle */
+    public static Message createNOS(String symbol, double price, double qty, char side)
     {
-        NewOrderSingle newSingle = createNOSHelper(symbol, qty, side, new OrdType(OrdType.LIMIT));
+        Message newSingle = createNOSHelper(symbol, qty, side, new OrdType(OrdType.LIMIT));
         newSingle.setField(new Price(price));
 
         return newSingle;
@@ -99,17 +102,21 @@ public class FIXMessageUtilTest extends TestCase {
     /** This actually creats a NewOrderSingle with a *set* OrderID - which isn't how
      * it comes in through FIX connection originallY
      */
-    public static NewOrderSingle createMarketNOS(String symbol, double qty, char side)
+    public static Message createMarketNOS(String symbol, double qty, char side)
     {
         return createNOSHelper(symbol, qty, side, new OrdType(OrdType.MARKET));
     }
 
-    /** This needs to be modeled off {@link FIXMessageUtil#newOrderHelper} */
-    public static NewOrderSingle createNOSHelper(String symbol, double qty, char side, OrdType ordType)
+    /** This needs to be modeled off {@link FIXMessageFactory#newOrderHelper} */
+    public static Message createNOSHelper(String symbol, double qty, char side, OrdType ordType)
     {
         long suffix = System.currentTimeMillis();
-        NewOrderSingle newSingle = new NewOrderSingle(new ClOrdID("123-"+suffix), new HandlInst(), new Symbol(symbol),
-                new Side(side), new TransactTime(), ordType);
+        Message newSingle = msgFactory.createNewMessage();
+        newSingle.setField(new ClOrdID("123-"+suffix));
+        newSingle.setField(new Symbol(symbol));
+        newSingle.setField(new Side(side));
+        newSingle.setField(new TransactTime());
+        newSingle.setField(ordType);
         // technically, the OrderID is set by the exchange but for tests we'll set it too b/c OrderProgress expects it
         newSingle.setField(new OrderID("456"+suffix));
         newSingle.setField(new OrderQty(qty));
@@ -136,7 +143,8 @@ public class FIXMessageUtilTest extends TestCase {
         assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
         assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
         assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
-        FIXDataDictionaryManager.getDictionary().validate(inExecReport, true);
+        // todo: switch this to use validate(inExecReport, true) to only validate the body
+        FIXDataDictionaryManager.getDictionary().validate(inExecReport); 
     }
 
 
@@ -149,12 +157,12 @@ public class FIXMessageUtilTest extends TestCase {
 
 
     public void testMarketDataRequst_ALL() throws Exception {
-        MarketDataRequest req = FIXMessageUtil.newMarketDataRequest("toliID", new ArrayList<MSymbol>(0));
+        Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<MSymbol>(0));
         assertEquals("sending 0 numSymbols doesn't work", 0, req.getInt(NoRelatedSym.FIELD));
         assertEquals("toliID", req.getString(MDReqID.FIELD));
         assertEquals(SubscriptionRequestType.SNAPSHOT, req.getChar(SubscriptionRequestType.FIELD));
         assertEquals(2, req.getInt(NoMDEntryTypes.FIELD));
-        MarketDataRequest.NoMDEntryTypes entryTypeGroup =  new MarketDataRequest.NoMDEntryTypes();
+        Group entryTypeGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
         req.getGroup(1, entryTypeGroup);
         assertEquals(MDEntryType.BID, entryTypeGroup.getChar(MDEntryType.FIELD));
         req.getGroup(2, entryTypeGroup);
@@ -163,10 +171,10 @@ public class FIXMessageUtilTest extends TestCase {
 
     public void testMDR_oneSymbol() throws Exception {
         List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"));
-        MarketDataRequest req = FIXMessageUtil.newMarketDataRequest("toliID", list);
+        Message req = msgFactory.newMarketDataRequest("toliID", list);
         assertEquals("sending 1 numSymbols doesn't work", 1, req.getInt(NoRelatedSym.FIELD));
         for(int i=0;i<list.size(); i++) {
-            MarketDataRequest.NoRelatedSym symbolGroup =  new MarketDataRequest.NoRelatedSym();
+            Group symbolGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
             req.getGroup(i+1, symbolGroup);
             assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD));
         }
@@ -174,10 +182,10 @@ public class FIXMessageUtilTest extends TestCase {
 
     public void testMDR_ManySymbols() throws Exception {
         List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"), new MSymbol("GRAHAM"), new MSymbol("LENA"));
-        MarketDataRequest req = FIXMessageUtil.newMarketDataRequest("toliID", list);
+        Message req = msgFactory.newMarketDataRequest("toliID", list);
         assertEquals("sending 1 numSymbols doesn't work", list.size(), req.getInt(NoRelatedSym.FIELD));
         for(int i=0;i<list.size(); i++) {
-            MarketDataRequest.NoRelatedSym symbolGroup =  new MarketDataRequest.NoRelatedSym();
+            Group symbolGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
             req.getGroup(i+1, symbolGroup);
             assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD));
         }

@@ -4,8 +4,8 @@ import org.marketcetera.core.ClassVersion;
 import quickfix.IntField;
 
 /**
- * This is a custom field to be part of the {@link quickfix.fix42.MarketDataSnapshotFullRefresh}
- * message that we enter to specify the number of remaining
+ * This is a custom field to be part of the MarketDataSnapshotFullRefresh
+ * message that we enter to specify the number of remaining snapshots to come.
  * @author Toli Kuznets
  * @version $Id$
  */

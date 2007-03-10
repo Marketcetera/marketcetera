@@ -19,6 +19,7 @@ import java.util.prefs.BackingStoreException;
 @ClassVersion("$Id$")
 public class OrderRouteManagerTest extends TestCase
 {
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
     public OrderRouteManagerTest(String name)
     {
         super(name);
@@ -32,8 +33,7 @@ public class OrderRouteManagerTest extends TestCase
     {
         OrderRouteManager routeManager = getORMWithOrderRouting();
 
-        Message message =FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12345),
+        Message message =msgFactory.newLimitOrder("12345",
             Side.BUY,
             new BigDecimal(1000),
             new MSymbol("BRK/A.N"),
@@ -51,8 +51,7 @@ public class OrderRouteManagerTest extends TestCase
         assertEquals("SIGMA", message.getField(new ExDestination()).getValue());
 
 
-        message = FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12346),
+        message =msgFactory.newLimitOrder("12346",
             Side.SELL,
             new BigDecimal(100),
             new MSymbol("BRK/B"),
@@ -74,8 +73,7 @@ public class OrderRouteManagerTest extends TestCase
             }
         }.run();
 
-        message = FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12347),
+        message = message =msgFactory.newLimitOrder("12347",
             Side.SELL_SHORT,
             new BigDecimal(2000),
             new MSymbol("VOD/.LN"),
@@ -111,8 +109,7 @@ public class OrderRouteManagerTest extends TestCase
         routeManager.addOneRoute("N", "SIGMA");
         routeManager.setRouteMethod(OrderRouteManager.FIELD_100_METHOD);
 
-        Message message =FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12345),
+        Message message =msgFactory.newLimitOrder("12345",
             Side.BUY,
             new BigDecimal(1000),
             new MSymbol("BRK/A.N"),
@@ -135,8 +132,7 @@ public class OrderRouteManagerTest extends TestCase
         assertEquals("SIGMA", message.getField(new ExDestination()).getValue());
 
 
-        message =FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12346),
+        message =msgFactory.newLimitOrder("12346",
             Side.SELL,
             new BigDecimal(100),
             new MSymbol("BRK/B"),
@@ -162,8 +158,7 @@ public class OrderRouteManagerTest extends TestCase
             }
         }.run();
 
-        message = FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12347),
+        message =msgFactory.newLimitOrder("12347",
             Side.SELL_SHORT,
             new BigDecimal(2000),
             new MSymbol("IBM"),
@@ -189,8 +184,7 @@ public class OrderRouteManagerTest extends TestCase
             }
         }.run();
 
-        message = FIXMessageUtil.newLimitOrder(
-            new InternalID(""+12347),
+        message =msgFactory.newLimitOrder("12347",
             Side.SELL_SHORT,
             new BigDecimal(2000),
             new MSymbol("VOD/"),

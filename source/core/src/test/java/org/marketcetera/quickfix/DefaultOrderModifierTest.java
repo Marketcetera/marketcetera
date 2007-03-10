@@ -23,6 +23,8 @@ public class DefaultOrderModifierTest extends TestCase {
     private static final String TRAILER_28_VAL = "ppp";
     private static final String FIELD_42_VAL = "123456789101112";
 
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
     public DefaultOrderModifierTest(String inName) {
         super(inName);
     }
@@ -36,7 +38,7 @@ public class DefaultOrderModifierTest extends TestCase {
         DefaultOrderModifier modifier = new DefaultOrderModifier();
         modifier.addDefaultField(111, testValue, DefaultOrderModifier.MessageFieldType.MESSAGE);
 
-        Message aMessage = FIXMessageUtil.createNewMessage();
+        Message aMessage = msgFactory.createNewMessage();
 
         modifier.modifyOrder(aMessage);
         StringField outField = new StringField(111);
@@ -68,7 +70,7 @@ public class DefaultOrderModifierTest extends TestCase {
         modifier.addDefaultField(111, replacementValue, DefaultOrderModifier.MessageFieldType.MESSAGE);
 
         String originalValue = "Original value";
-        Message aMessage = FIXMessageUtil.createNewMessage();
+        Message aMessage = msgFactory.createNewMessage();
         aMessage.setField(new StringField(111, originalValue));
 
         modifier.modifyOrder(aMessage);
@@ -83,13 +85,13 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}}));
 
-        Message heartbeat = FIXMessageUtil.createNewMessage();
+        Message heartbeat = msgFactory.createNewMessage();
         heartbeat.getHeader().setField(new MsgType(MsgType.HEARTBEAT));
 
-        Message newOrderSingle = FIXMessageUtil.createNewMessage();
+        Message newOrderSingle = msgFactory.createNewMessage();
         newOrderSingle.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
 
-        Message logon = FIXMessageUtil.createNewMessage();
+        Message logon = msgFactory.createNewMessage();
         logon.getHeader().setField(new MsgType(MsgType.LOGON));
 
         assertTrue(mod.modifyOrder(heartbeat));
@@ -124,7 +126,7 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setMsgFields(createFieldsMap(new String[][]{{"21", FIELD_21_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}}));
 
-        Message msg = FIXMessageUtil.createNewMessage();
+        Message msg = msgFactory.createNewMessage();
         assertTrue(mod.modifyOrder(msg));
         assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, msg.getString(21));
