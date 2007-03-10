@@ -32,5 +32,9 @@
     <bean id="idFactoryURL" class="java.lang.String">
         <constructor-arg value="http://localhost:3000/id_repository/get_next_batch"/>
     </bean>
+
+    <bean id="fixVersion" class="java.lang.String">
+        <constructor-arg value="FIX.4.2"/>
+    </bean>
 </beans>
 <!-- END SNIPPET: spring -->

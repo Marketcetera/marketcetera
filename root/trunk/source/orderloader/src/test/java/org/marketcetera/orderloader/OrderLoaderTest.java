@@ -327,7 +327,7 @@ public class OrderLoaderTest extends TestCase
 
         public MyOrderLoader(boolean fSendPassThrough) throws Exception
         {
-            super(null);
+            super();
             mSendPassThrough = fSendPassThrough;
         }
 

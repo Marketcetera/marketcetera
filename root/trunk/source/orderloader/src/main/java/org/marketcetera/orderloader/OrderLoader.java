@@ -1,6 +1,8 @@
 package org.marketcetera.orderloader;
 
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.core.*;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
@@ -38,6 +40,7 @@ public class OrderLoader extends ApplicationBase
 {
     private static final String JMS_SENDER_NAME = "outgoingJmsTemplate";
     private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
+    private static final String FIX_VERSION_NAME = "fixVersion";
     private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory";
 
     protected static String MKT_PRICE = "MKT";
@@ -47,6 +50,7 @@ public class OrderLoader extends ApplicationBase
 
     private IDFactory idFactory;
     private JmsTemplate jmsQueueSender;
+    private FIXMessageFactory msgFactory;
 
     protected int numProcessedOrders;
     protected int numBlankLines;
@@ -54,14 +58,15 @@ public class OrderLoader extends ApplicationBase
     protected Vector<String> failedOrders;
     public static final String COMMENT_MARKER = "#";
 
-    public OrderLoader(String cfgFileName) throws Exception
+    public OrderLoader() throws Exception
     {
         numProcessedOrders = numComments = numBlankLines = 0;
         failedOrders = new Vector<String>();
-        cfgFileName = (cfgFileName == null) ? CFG_FILE_NAME : cfgFileName;
-        createApplicationContext(new String[] {cfgFileName}, true);
+        createApplicationContext(new String[] {CFG_FILE_NAME}, true);
         URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
         idFactory = new HttpDatabaseIDFactory(idFactoryURL);
+        String fixVersion = (String)getAppCtx().getBean(FIX_VERSION_NAME);
+        msgFactory = FIXVersion.getFIXVersion(fixVersion).getMessageFactory();
         try {
             idFactory.getNext();
         } catch(NoMoreIDsException ex) {
@@ -90,7 +95,7 @@ public class OrderLoader extends ApplicationBase
      */
     protected static void usage()
     {
-        System.out.println("Usage: java OrderLoader <CSV input file> [cfgFile]");
+        System.out.println("Usage: java OrderLoader <CSV input file>");
         System.out.println("Example file format should be: Symbol,Side,OrderQty,Price,TimeInForce,Account");
         System.exit(1);
     }
@@ -110,8 +115,7 @@ public class OrderLoader extends ApplicationBase
         if (args.length < 1) {
             usage();
         }
-        String cfgFileName = (args.length == 2) ? args[1] : CFG_FILE_NAME;
-        OrderLoader loader = new OrderLoader(cfgFileName);
+        OrderLoader loader = new OrderLoader();
         loader.parseAndSendOrders(new FileInputStream(args[0]));
         loader.printReport();
         ((Service) loader.getAppCtx().getBean(POOLED_CONNECTION_FACTORY_NAME)).stop();
@@ -162,7 +166,7 @@ public class OrderLoader extends ApplicationBase
         if(LoggerAdapter.isDebugEnabled(this)) {
             LoggerAdapter.debug("processing row "+Util.getStringFromArray(inOrderRow), this);
         }
-        Message message = new quickfix.fix42.Message();
+        Message message = msgFactory.createNewMessage();
         // set defaults first b/c they may be overridden for MKT orders
         addDefaults(message);
         try {
