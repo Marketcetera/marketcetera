@@ -1,21 +1,19 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.*;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageKey;
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.StringField;
-import quickfix.DataDictionary;
 import quickfix.Message.Header;
-import quickfix.field.*;
-import quickfix.fix42.OrderCancelReplaceRequest;
-import quickfix.fix42.MarketDataRequest;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import quickfix.StringField;
+import quickfix.field.ExecType;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
 
 /**
- * Collection of utilities to create new JMSFIX messages
+ * Collection of utilities to create work with FIX messages
  *
  * @author gmiller
  *         $Id$
@@ -46,20 +44,6 @@ public class FIXMessageUtil {
             }
     	}
         return false;
-    }
-
-    /** Currently, we are hardcoding version 4.2
-     * this is a static function that needs to be used *everywhere*
-     * in the code where we create a new quickfix message
-     * Ultimately we'll have a factory method that knows which version
-     * of FIX the app is using and will be able to fill the missing fields
-     * if there's not enough data
-     * @return  Currently hardcoded to return FIX42 message
-     */
-    public static Message createNewMessage() {
-        Message msg = new quickfix.fix42.Message();
-        msg.setField(new TransactTime(new Date()));
-        return msg;
     }
 
     /**
@@ -117,187 +101,6 @@ public class FIXMessageUtil {
         return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
     }
 
-    public static Message newLimitOrder(
-            InternalID orderID,
-            char side,
-            BigDecimal quantity,
-            MSymbol symbol,
-            BigDecimal price,
-            char timeInForce,
-            AccountID account
-    ) {
-
-        Message newMessage = newOrderHelper(orderID, side, quantity, symbol, timeInForce, account);
-        newMessage.setField(new OrdType(OrdType.LIMIT));
-        newMessage.setField(new StringField(Price.FIELD, price.toString()));
-
-        return newMessage;
-    }
-
-    public static Message newMarketOrder(
-            InternalID orderID,
-            char side,
-            BigDecimal quantity,
-            MSymbol symbol,
-            char timeInForce,
-            AccountID account
-    ) {
-        Message newMessage = newOrderHelper(orderID, side, quantity, symbol, timeInForce, account);
-        newMessage.setField(new OrdType(OrdType.MARKET));
-        return newMessage;
-    }
-
-    /**
-     * Creates a new FIX order
-     *
-     * @param orderID     Internally generated orderID that will become the {@link ClOrdID} that
-     *                    uniquely identifies this orderlater
-     * @param side        Buy/Sell side
-     * @param quantity    # of shares being bought/sold
-     * @param symbol      Stock symbol
-     * @param timeInForce How long the order is in effect
-     * @param account     Account ID
-     * @return Message representing this new order
-     */
-    public static Message newOrderHelper(
-            InternalID orderID,
-            char side,
-            BigDecimal quantity,
-            MSymbol symbol,
-            char timeInForce,
-            AccountID account) {
-        Message aMessage = createNewMessage();
-        aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
-
-        aMessage.setField(new ClOrdID(orderID.toString()));
-        aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
-        aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        aMessage.setField(new Side(side));
-
-        aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
-        aMessage.setField(new TimeInForce(timeInForce));
-        if (account != null) {
-            aMessage.setField(new Account(account.toString()));
-        }
-        return aMessage;
-    }
-
-    /**
-     * Helps create a cancel order for an existing cancel request
-     *
-     * @param clOrderId        Newly generated OrderID for this cancel request
-     * @param origClOrderID    our original clOrderID of the existing order we are trying to cancel
-     * that we gave to it the first time we ack'ed
-     * @param side           Buy/Sell side of the initial order
-     * @param quantity       Initial quantity
-     * @param symbol         Stock symbol of initial order
-     * @param counterpartyOrderID The counterpartyOrderID. can be null. this is the ID given to this order
-     * by the "counterparty" financial institution
-     * @return Message representing the new order
-     */
-    public static Message newCancel(
-            InternalID clOrderId,
-            InternalID origClOrderID,
-            char side,
-            BigDecimal quantity,
-            MSymbol symbol,
-            String counterpartyOrderID
-    ) {
-        Message aMessage = createNewMessage();
-        aMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
-
-        aMessage.setField(new ClOrdID(clOrderId.toString()));
-        aMessage.setField(new OrigClOrdID(origClOrderID.toString()));
-        aMessage.setField(new Side(side));
-        aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
-        if (counterpartyOrderID != null) {
-            aMessage.setField(new OrderID(counterpartyOrderID));
-        }
-        return aMessage;
-    }
-
-    /** Incoming price may be null for MARKET orders
-     * @param inAccount Account name of the institution that's sending the order. may be null
-     * @param orderQty  Original order qty
-     * @param orderPrice    Original order price
-     * */
-    public static Message newExecutionReport(
-            InternalID orderID,
-            InternalID clOrderID,
-            String execID,
-            char execTransType,
-            char execType,
-            char ordStatus,
-            char side,
-            BigDecimal orderQty,
-            BigDecimal orderPrice,
-            BigDecimal lastShares,
-            BigDecimal lastPrice,
-            BigDecimal leavesQty,
-            BigDecimal cumQty,
-            BigDecimal avgPrice,
-            MSymbol symbol,
-            AccountID inAccount) {
-        Message aMessage = createNewMessage();
-
-        aMessage.getHeader().setField(new MsgType(MsgType.EXECUTION_REPORT));
-
-        if (orderID != null) aMessage.setField(new OrderID(orderID.toString()));
-        aMessage.setField(new ClOrdID(clOrderID.toString()));
-        aMessage.setField(new ExecID(execID));
-        aMessage.setField(new ExecTransType(execTransType));
-        aMessage.setField(new ExecType(execType));
-        aMessage.setField(new OrdStatus(ordStatus));
-        aMessage.setField(new Side(side));
-        aMessage.setField(new StringField(OrderQty.FIELD, orderQty.toPlainString()));
-        if(orderPrice != null) {
-            aMessage.setField(new StringField(Price.FIELD, orderPrice.toPlainString()));
-        }
-        if (lastShares != null) aMessage.setField(new StringField(LastShares.FIELD, lastShares.toPlainString()));
-        if (lastPrice != null) aMessage.setField(new StringField(LastPx.FIELD, lastPrice.toPlainString()));
-        aMessage.setField(new StringField(LeavesQty.FIELD, leavesQty.toPlainString()));
-        aMessage.setField(new StringField(CumQty.FIELD, cumQty.toPlainString()));
-        aMessage.setField(new StringField(AvgPx.FIELD, avgPrice.toPlainString()));
-        aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        if(inAccount != null) {
-            aMessage.setField(new Account(inAccount.toString()));
-        }
-        return aMessage;
-
-    }
-
-    /**
-     * Creates a new ExecutionReport that with a {@link ExecType#REJECTED} type
-     *
-     * @param orderID   OrderID for the new report (can be null)
-     * @param clOrderID OrderID of the original (client) order that got rejected
-     * @param execID    Execution ID for this order (can be null)
-     * @param side      {@link Side} of the transaction
-     * @param orderQty  Original order quantity
-     * @param cumQty    Cumuluative order qty       (can be 0)
-     * @param avgPrice  Average price for the order (can be 0)
-     * @param symbol    Stock symbol for the order
-     * @return A new {@link Message} signifying a reject
-     */
-    public static Message newRejectExecutionReport(
-            InternalID orderID,
-            InternalID clOrderID,
-            String execID,
-            char side,
-            BigDecimal orderQty,
-            BigDecimal cumQty,
-            BigDecimal avgPrice,
-            MSymbol symbol,
-            OrdRejReason rejReason,
-            AccountID inAccount
-    ) {
-        Message execReport = newExecutionReport(orderID, clOrderID, execID, ExecTransType.NEW, ExecType.REJECTED,
-                OrdStatus.REJECTED, side, orderQty, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, cumQty, avgPrice, symbol, inAccount);
-        execReport.setField(rejReason);
-        return execReport;
-    }
 
     /** Helper method to extract all useful fields from an existing message into another message
      * This is usually called when the "existing" message is malformed and is missing some fields,
@@ -334,75 +137,5 @@ public class FIXMessageUtil {
         }
     }
 
-    public static Message newCancelReplaceShares(
-            InternalID orderID,
-            InternalID origOrderID,
-            BigDecimal quantity
-    ) {
-        Message aMessage = createNewMessage();
-        aMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REPLACE_REQUEST));
-        aMessage.setField(new ClOrdID(orderID.toString()));
-        aMessage.setField(new OrigClOrdID(origOrderID.toString()));
-        aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
-        aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
-        return aMessage;
-    }
 
-    public static Message newCancelReplacePrice(
-            InternalID orderID,
-            InternalID origOrderID,
-            BigDecimal price
-    ) {
-        Message aMessage = createNewMessage();
-        aMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REPLACE_REQUEST));
-        aMessage.setField(new ClOrdID(orderID.toString()));
-        aMessage.setField(new OrigClOrdID(origOrderID.toString()));
-        aMessage.setField(new StringField(Price.FIELD, price.toPlainString()));
-        aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
-        return aMessage;
-    }
-
-	public static Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound
-	{
-		Message cancelReplaceMessage = new OrderCancelReplaceRequest();
-		cancelReplaceMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
-		fillFieldsFromExistingMessage(cancelReplaceMessage, oldMessage);
-		if (oldMessage.isSetField(Price.FIELD)){
-			cancelReplaceMessage.setField(oldMessage.getField(new Price()));
-		}
-		if (oldMessage.isSetField(OrderQty.FIELD)){
-			cancelReplaceMessage.setField(oldMessage.getField(new OrderQty()));
-		}
-		return cancelReplaceMessage;
-
-	}
-
-    private static final int TOP_OF_BOOK_DEPTH = 1;
-
-    /** Creates a new {@link MarketDataRequest} for the specified symbols.
-     * Setting the incoming symbols array to empty results in a "get all" request
-     * @param reqID request id to assign to this
-     * @param symbols   List of symbols, or an empty list to get all available
-     * @return Message corresponding to the market data request
-     */
-    public static MarketDataRequest newMarketDataRequest(String reqID, List<MSymbol> symbols) {
-        MarketDataRequest request = new MarketDataRequest();
-        request.setField(new MarketDepth(TOP_OF_BOOK_DEPTH));
-        request.setField(new MDReqID(reqID));
-        request.setChar(SubscriptionRequestType.FIELD, SubscriptionRequestType.SNAPSHOT);
-        request.setInt(NoMDEntryTypes.FIELD, 2);
-        MarketDataRequest.NoMDEntryTypes entryTypeGroup =  new MarketDataRequest.NoMDEntryTypes();
-        entryTypeGroup.set(new MDEntryType(MDEntryType.BID));
-        request.addGroup(entryTypeGroup);
-        entryTypeGroup.set(new MDEntryType(MDEntryType.OFFER));
-        request.addGroup(entryTypeGroup);
-
-        request.setInt(NoRelatedSym.FIELD, symbols.size());
-        for (MSymbol oneSymbol : symbols) {
-            MarketDataRequest.NoRelatedSym symbolGroup =  new MarketDataRequest.NoRelatedSym();
-            symbolGroup.setField(new Symbol(oneSymbol.getFullSymbol()));
-            request.addGroup(symbolGroup);
-        }
-        return request;
-    }
 }
