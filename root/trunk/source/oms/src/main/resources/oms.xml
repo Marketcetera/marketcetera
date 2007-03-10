@@ -57,9 +57,8 @@
         
     <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
-        <constructor-arg>
-            <ref   bean="sessionSettings"/>
-        </constructor-arg>
+        <constructor-arg ref="sessionSettings"/>
+        <constructor-arg ref="fixVersion"/>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="orderModifiers">
@@ -75,13 +74,18 @@
 
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
-        <constructor-arg value="FIX.4.2"/>
+        <constructor-arg ref="fixVersion"/>
 <!--
         <constructor-arg value="MRKTC-OMS"/>
 -->
         <constructor-arg value="sender-1308-OMS"/>
         <constructor-arg value="MRKTC-EXCH"/>
     </bean>
+
+    <bean id="fixVersion" class="java.lang.String">
+        <constructor-arg value="FIX.4.2"/>
+    </bean>
+
 
     <!-- Location (host/port) of the FIX reciever we are connecting to -->
     <bean id="socketConnectHostValue" class="java.lang.String">

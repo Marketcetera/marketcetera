@@ -12,7 +12,6 @@
  
     <transportConnectors>
       <transportConnector uri="tcp://localhost:61616"/>
-      <transportConnector uri="stomp://localhost:61613"/>
     </transportConnectors>
   </broker>
   

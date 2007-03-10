@@ -4,8 +4,6 @@ import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import quickfix.*;
 import quickfix.field.*;
-import quickfix.fix42.ExecutionReport;
-import quickfix.fix42.OrderCancelReject;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
@@ -29,10 +27,13 @@ public class OutgoingMessageHandler {
     private SessionID defaultSessionID;         // used to store the SessionID so that FIX sender can find it
     private IQuickFIXSender quickFIXSender = new QuickFIXSender();
     private DatabaseIDFactory idFactory;
+    private FIXMessageFactory msgFactory;
     
-    public OutgoingMessageHandler(SessionSettings settings) throws ConfigError, FieldConvertError {
+    public OutgoingMessageHandler(SessionSettings settings, String version)
+            throws ConfigError, FieldConvertError, MarketceteraException {
         setOrderModifiers(new LinkedList<OrderModifier>());
         setOrderRouteManager(new OrderRouteManager());
+        msgFactory = FIXVersion.getFIXVersion(version).getMessageFactory();
         idFactory = new DatabaseIDFactory(settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL),
                 settings.getString(JdbcSetting.SETTING_JDBC_DRIVER), settings.getString(JdbcSetting.SETTING_JDBC_USER),
                 settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD), DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME,
@@ -58,10 +59,21 @@ public class OutgoingMessageHandler {
 		orderModifiers.add(new TransactionTimeInsertOrderModifier());
 	}
 	
-	public Message handleMessage(Message message) {
+	public Message handleMessage(Message message) throws MarketceteraException {
         if(message == null) {
             LoggerAdapter.error(OMSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
             return null;
+        }
+
+        try {
+            String version = message.getHeader().getField(new BeginString()).getValue();
+            if(!msgFactory.getBeginString().equals(version)) {
+                return createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(
+                                                    msgFactory.getBeginString(), version)), message);
+            }
+        } catch (FieldNotFound fieldNotFound) {
+            return createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION.getLocalizedMessage()),
+                    message);
         }
 
         Message returnVal = null;
@@ -107,9 +119,9 @@ public class OutgoingMessageHandler {
         if(FIXMessageUtil.isCancelReplaceRequest(existingOrder) ||
            FIXMessageUtil.isCancelRequest(existingOrder) )
         {
-            rejection = new OrderCancelReject();
+            rejection = msgFactory.newOrderCancelReject();
         } else {
-            rejection = new ExecutionReport();
+            rejection = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
             rejection.setField(getNextExecId());
             // we are rejecting it, so leaves is 0
             rejection.setField(new LeavesQty(0));
@@ -151,16 +163,16 @@ public class OutgoingMessageHandler {
                 // leave as null
             }
 
-            AccountID inAccountID = null;
+            String inAccount = null;
             try {
-                inAccountID = new AccountID(newOrder.getString(Account.FIELD));
+                inAccount = newOrder.getString(Account.FIELD);
             } catch (FieldNotFound ex) {
                 // only set the Account field if it's there
             }
 
-            return FIXMessageUtil.newExecutionReport(
+            return msgFactory.newExecutionReport(
                     null,
-                    new InternalID(clOrdId),
+                    clOrdId,
                     getNextExecId().getValue(),
                     ExecTransType.NEW,
                     ExecType.NEW,
@@ -174,7 +186,7 @@ public class OutgoingMessageHandler {
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
                     new MSymbol(symbol),
-                    inAccountID);
+                    inAccount);
         } else {
             return null;
         }
