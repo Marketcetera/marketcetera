@@ -41,7 +41,6 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
@@ -686,10 +685,11 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		try {
 			validator.validateAll();
 			Message aMessage;
+			PhotonPlugin plugin = PhotonPlugin.getDefault();
 			if (targetOrder == null) {
-				String orderID = PhotonPlugin.getDefault().getIDFactory().getNext();
-				aMessage = FIXMessageUtil
-						.newLimitOrder(new InternalID(orderID), Side.BUY,
+				String orderID = plugin.getIDFactory().getNext();
+				aMessage = plugin.getMessageFactory()
+						.newLimitOrder(orderID, Side.BUY,
 								BigDecimal.ZERO, new MSymbol(""),
 								BigDecimal.ZERO, TimeInForce.DAY, null);
 				aMessage.removeField(Side.FIELD);
@@ -704,7 +704,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				extractor.modifyOrder(aMessage);
 			}
 			addCustomFields(aMessage);
-			PhotonPlugin.getDefault().getPhotonController().handleInternalMessage(aMessage);
+			plugin.getPhotonController().handleInternalMessage(aMessage);
 			clear();
 		} catch (Exception e) {
 			PhotonPlugin.getMainConsoleLogger().error(

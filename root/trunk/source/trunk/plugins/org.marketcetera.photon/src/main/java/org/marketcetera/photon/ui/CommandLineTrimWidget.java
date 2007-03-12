@@ -53,7 +53,10 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 	public CommandLineTrimWidget(int charWidth) {
 		this.charWidth = charWidth;
 		commandParser = new CommandParser();
-		setIDFactory(PhotonPlugin.getDefault().getIDFactory());
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		commandParser.setIDFactory(plugin.getIDFactory());
+		commandParser.setMessageFactory(plugin.getMessageFactory());
+		
 	}
 
 
@@ -178,11 +181,5 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 		return textArea.setFocus();
 	}
 
-	/**
-	 * Sets the {@link IDFactory} for the {@link Parser} member.
-	 */
-	public void setIDFactory(IDFactory factory) {
-		commandParser.setIDFactory(factory);
-	}
 
 }

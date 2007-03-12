@@ -12,6 +12,7 @@ import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -36,6 +37,8 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 
 	private PhotonController controller;
 
+	private FIXMessageFactory messageFactory;
+
 	/**
 	 * Create a new {@link CancelReplaceOrderActionDelegate}
 	 */
@@ -49,7 +52,9 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 	 * @see org.eclipse.ui.actions.ActionDelegate#init(org.eclipse.jface.action.IAction)
 	 */
 	public void init(IAction arg0) {
-		this.controller = PhotonPlugin.getDefault().getPhotonController();
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		this.controller = plugin.getPhotonController();
+		this.messageFactory = plugin.getMessageFactory();
 	}
 
 	/**
@@ -107,7 +112,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 		}
 		if (oldMessage != null){
 			try {
-				Message cancelReplaceMessage = FIXMessageUtil.newCancelReplaceFromMessage(oldMessage);
+				Message cancelReplaceMessage = messageFactory.newCancelReplaceFromMessage(oldMessage);
 				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin.getDefault().getIDFactory().getNext()));
 				StockOrderTicket.getDefault().showOrder(cancelReplaceMessage);
 			} catch (NoMoreIDsException e) {	

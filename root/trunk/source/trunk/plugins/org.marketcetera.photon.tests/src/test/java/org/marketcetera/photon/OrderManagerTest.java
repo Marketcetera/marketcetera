@@ -45,7 +45,7 @@ public class OrderManagerTest extends TestCase {
     private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
     public static Message getTestableExecutionReport() {
-            Message aMessage = msgFactory.newExecutionReport("1", CL_ORD_ID, "987", ExecTransType.STATUS,
+            Message aMessage = msgFactory.newExecutionReport("456", CL_ORD_ID, "987", ExecTransType.STATUS,
                             ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
                             new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL, null);
             aMessage.setUtcTimeStamp(TransactTime.FIELD, THE_TRANSACT_TIME);
@@ -108,8 +108,8 @@ public class OrderManagerTest extends TestCase {
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(0, historyList.size());
 		Message[] messages = new Message[2];
-		messages[0] = msgFactory.newLimitOrder("1", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
-		messages[1] = msgFactory.newCancel("1", "1", Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
+		messages[0] = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		messages[1] = msgFactory.newCancel("AQWE", "ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
 		for (Message message : messages) {
 			photonController.handleInternalMessage(message);
 		}
@@ -138,7 +138,7 @@ public class OrderManagerTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessage(Message)'
 	 */
 	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException {
-		Message message = msgFactory.newLimitOrder("1", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		Message message = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(1, historyList.size());
