@@ -20,7 +20,6 @@ import jfun.parsec.tokens.TokenType;
 import jfun.parsec.tokens.Tokenizers;
 import jfun.parsec.tokens.TypedToken;
 
-import org.marketcetera.core.AccountID;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
@@ -30,6 +29,7 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
+import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
@@ -115,9 +115,9 @@ public class CommandParser {
 		}
 	});
 
-	final Parser<AccountID> accountParser = Parsers.token("accountIDParser", new FromToken<AccountID>(){
-		public AccountID fromToken(Tok tok) {
-			return new AccountID(((TypedToken)tok.getToken()).getText());
+	final Parser<String> accountParser = Parsers.token("accountIDParser", new FromToken<String>(){
+		public String fromToken(Tok tok) {
+			return ((TypedToken)tok.getToken()).getText();
 		}
 	});
 
@@ -131,18 +131,18 @@ public class CommandParser {
 					String symbol = (String) vals[i++];
 					PriceImage priceObject = (PriceImage) vals[i++];
 					TimeInForceImage timeInForce = TimeInForceImage.DAY;
-					AccountID accountID = null;
+					String accountID = null;
 					if (vals.length >= i && vals[i] !=null)
 						timeInForce = (TimeInForceImage) vals[i++];
 					if (vals.length >= i && vals[i] !=null)
-						accountID = (AccountID) vals[i++];
+						accountID = (String) vals[i++];
 
 					Message message=null;
 					try {
 						if (PriceImage.MKT.equals(priceObject))	{
-							message = FIXMessageUtil.newMarketOrder(new InternalID(factory.getNext()), sideImage.getFIXValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
+							message = messageFactory.newMarketOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
 						} else {
-							message = FIXMessageUtil.newLimitOrder(new InternalID(factory.getNext()), sideImage.getFIXValue(), quantity, new MSymbol(symbol), new BigDecimal(priceObject.getImage()), timeInForce.getFIXValue(), accountID);
+							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), new BigDecimal(priceObject.getImage()), timeInForce.getFIXValue(), accountID);
 						}
 					} catch (NoMoreIDsException e) {
 						PhotonPlugin.getMainConsoleLogger().error(this, e);
@@ -174,7 +174,9 @@ public class CommandParser {
 				Parsers.token(new IsReserved(theImage)), "module1").seq(suffixParser));
 	}
 
-	private IDFactory factory;
+	private IDFactory idFactory;
+
+	private FIXMessageFactory messageFactory;
 
 	public MessageCommand parseNewOrder(String theInputString) {
 		SendOrderToOrderManagerCommand result = (SendOrderToOrderManagerCommand)Parsers.runParser(theInputString, newOrderCommandParser,
@@ -191,7 +193,11 @@ public class CommandParser {
 		return Parsers.runParser(theInputString, mainLexeme, "lex only");
 	}
 	public void setIDFactory(IDFactory factory) {
-		this.factory = factory;
+		this.idFactory = factory;
 	}
-	
+
+	public void setMessageFactory(FIXMessageFactory factory) {
+		this.messageFactory = factory;
+	}
+
 }

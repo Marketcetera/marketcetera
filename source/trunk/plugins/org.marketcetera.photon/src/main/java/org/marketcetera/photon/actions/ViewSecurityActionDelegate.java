@@ -16,7 +16,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.WebBrowserView;
-import org.marketcetera.quickfix.QuickFIXDescriptor;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;

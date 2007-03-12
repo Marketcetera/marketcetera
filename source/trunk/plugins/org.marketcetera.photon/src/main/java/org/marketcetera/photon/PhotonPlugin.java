@@ -43,6 +43,8 @@ import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.service.prefs.Preferences;
 import org.rubypeople.rdt.core.RubyCore;
@@ -97,6 +99,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private SimpleMessageListenerContainer registryListener;
 
+	private FIXMessageFactory messageFactory;
+
 	/**
 	 * The constructor.
 	 */
@@ -123,6 +127,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
         BSFManager.registerScriptingEngine(ScriptRegistry.RUBY_LANG_STRING,
 				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
 		initResources();
+		initMessageFactory();
 		initIDFactory();
 		initInternalConnectionFactory();
 		initFIXMessageHistory();
@@ -224,6 +229,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		);
 		idFactory = new HttpDatabaseIDFactory(url);
 
+	}
+	
+	private void initMessageFactory() {
+	    messageFactory = FIXVersion.FIX42.getMessageFactory();
 	}
 
 	public void startScriptRegistry() {
@@ -370,6 +379,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			mainConsoleLogger.setLevel(Level.DEBUG);
 		}
 		mainConsoleLogger.info("Changed log level to '"+levelValue+"'");
+	}
+
+	public FIXMessageFactory getMessageFactory() {
+		return messageFactory;
 	}
 
 }

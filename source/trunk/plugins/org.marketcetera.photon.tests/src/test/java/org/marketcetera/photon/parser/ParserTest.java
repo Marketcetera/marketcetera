@@ -13,6 +13,7 @@ import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -41,6 +42,7 @@ public class ParserTest extends TestCase {
     public void testNewOrder() throws NoMoreIDsException, FieldNotFound {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
+    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
     	String order;  
     	order = "B 100 IBM 1.";
     	MessageCommand command = aParser.parseNewOrder(order);
@@ -113,6 +115,7 @@ public class ParserTest extends TestCase {
             	String innerOrder = "A 100 IBM 94.8 DAY AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
             	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
             	innerParser.parseNewOrder(innerOrder);
             }
         }).run();
@@ -123,6 +126,7 @@ public class ParserTest extends TestCase {
             	String innerOrder = "SS A IBM 94.8 DAY AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
             	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
             	innerParser.parseNewOrder(innerOrder);
             }
         }).run();
@@ -133,6 +137,7 @@ public class ParserTest extends TestCase {
             	String innerOrder = "SS 100 IBM XXX DAY AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
             	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
             	innerParser.parseNewOrder(innerOrder);
             }
         }).run();
@@ -143,6 +148,7 @@ public class ParserTest extends TestCase {
             	String innerOrder = "SS 100 IBM 123.45 ASDF AAA?A/a-A";
             	CommandParser innerParser = new CommandParser();
             	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
             	innerParser.parseNewOrder(innerOrder);
             }
         }).run();
@@ -153,6 +159,7 @@ public class ParserTest extends TestCase {
             	String innerOrder = "SS 100 IBM ";
             	CommandParser innerParser = new CommandParser();
             	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
             	innerParser.parseNewOrder(innerOrder);
             }
         }).run();
@@ -163,6 +170,7 @@ public class ParserTest extends TestCase {
             	String innerOrder = "SS 100.0 IBM 123.45";
             	CommandParser innerParser = new CommandParser();
             	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
             	innerParser.parseNewOrder(innerOrder);
             }
         }).run();
@@ -187,6 +195,7 @@ public class ParserTest extends TestCase {
     public void testFullOrder() throws FieldNotFound{
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
+    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
     	String order;
     	order = "O B 100 IBM 1.";
     	MessageCommand command = (MessageCommand) aParser.parseCommand(order);
@@ -198,6 +207,7 @@ public class ParserTest extends TestCase {
     public void testCancelOrder() throws NoMoreIDsException, FieldNotFound{
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
+    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
 
     	String command;
 
