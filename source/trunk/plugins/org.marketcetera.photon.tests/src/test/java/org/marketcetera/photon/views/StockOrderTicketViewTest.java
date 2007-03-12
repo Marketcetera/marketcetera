@@ -11,14 +11,14 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.AccessViolator;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.quotefeed.QuoteFeedService;
 import org.marketcetera.photon.ui.BookComposite;
-import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -51,7 +51,9 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  */
 public class StockOrderTicketViewTest extends ViewTestBase {
 
-	@Override
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
+    @Override
 	protected void setUp() throws Exception {
 		
 		super.setUp();
@@ -63,7 +65,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 	public void testShowOrder() throws NoSuchFieldException, IllegalAccessException {
 		StockOrderTicket ticket = (StockOrderTicket) getTestView();
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID("asdf"),
+		Message message = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
 				TimeInForce.DAY, null);
 		ticket.showOrder(message);
@@ -82,7 +84,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		Message orderMessage = FIXMessageUtil.newLimitOrder(new InternalID("asdf"),
+		Message orderMessage = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol("MRKT"), BigDecimal.ONE,
 				TimeInForce.DAY, null);
 		view.showOrder(orderMessage);
@@ -169,7 +171,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		TableItem item1 = customFieldsTable.getItem(1);
 		item1.setChecked(true);
 
-		Message newMessage = FIXMessageUtil.newLimitOrder(new InternalID("asdf"),  //$NON-NLS-1$
+		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
 		view.showOrder(newMessage);
@@ -219,7 +221,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		TableItem item1 = customFieldsTable.getItem(1);
 		item1.setChecked(false);
 		
-		Message newMessage = FIXMessageUtil.newLimitOrder(new InternalID("asdf"),  //$NON-NLS-1$
+		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
 		view.showOrder(newMessage);

@@ -6,14 +6,13 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.AccessViolator;
-import org.marketcetera.core.AccountID;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.core.OutgoingMessageHolder;
-import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -27,20 +26,14 @@ import quickfix.field.ExecType;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LastShares;
-import quickfix.field.LeavesQty;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
-import quickfix.field.Price;
 import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
-import quickfix.fix42.ExecutionReport;
-import quickfix.fix42.NewOrderSingle;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
@@ -48,7 +41,8 @@ import ca.odell.glazedlists.event.ListEventListener;
 
 public class FIXMessageHistoryTest extends TestCase {
 
-	
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
 	protected FIXMessageHistory getMessageHistory(){
 		return new FIXMessageHistory();
 	}
@@ -58,8 +52,8 @@ public class FIXMessageHistoryTest extends TestCase {
 	 */
 	public void testAddIncomingMessage() throws FieldNotFound {
 		FIXMessageHistory history = getMessageHistory();
-		InternalID orderID1 = new InternalID("1");
-		InternalID clOrderID1 = new InternalID("2");
+		String orderID1 = "1";
+		String clOrderID1 = "2";
 		String execID = "3";
 		char execTransType = ExecTransType.STATUS;
 		char execType = ExecType.PARTIAL_FILL;
@@ -75,7 +69,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		MSymbol symbol = new MSymbol("ASDF");
 		
 
-		Message message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		Message message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 
 		{
 			history.addIncomingMessage(message);
@@ -100,9 +94,9 @@ public class FIXMessageHistoryTest extends TestCase {
 		}		
 
 		{
-			InternalID orderID2 = new InternalID("1001");
-			InternalID clOrderID2 = new InternalID("1002");
-			Message message2 = FIXMessageUtil.newExecutionReport(orderID2, clOrderID2, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+			String orderID2 = "1001";
+			String clOrderID2 = "1";
+			Message message2 = msgFactory.newExecutionReport(orderID2, clOrderID2, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 			history.addIncomingMessage(message2);
 			EventList<MessageHolder> historyList = history.getAllMessagesList();
 			assertEquals(2, historyList.size());
@@ -130,13 +124,13 @@ public class FIXMessageHistoryTest extends TestCase {
 	 */
 	public void testAddOutgoingMessage() throws FieldNotFound {
 		FIXMessageHistory history = getMessageHistory();
-		InternalID orderID = new InternalID("1");
+		String orderID = "1";
 		char side = Side.SELL_SHORT_EXEMPT;
 		BigDecimal quantity = new BigDecimal("2000");
 		MSymbol symbol = new MSymbol("QWER");
 		char timeInForce = TimeInForce.DAY;
-		AccountID account = new AccountID("ACCT");
-		Message message = FIXMessageUtil.newMarketOrder(orderID, side, quantity, symbol, timeInForce, account);
+		String account = "ACCT";
+		Message message = msgFactory.newMarketOrder(orderID, side, quantity, symbol, timeInForce, account);
 		history.addOutgoingMessage(message);
 
 		EventList<MessageHolder> historyList = history.getAllMessagesList();
@@ -159,13 +153,13 @@ public class FIXMessageHistoryTest extends TestCase {
 	public void testGetLatestExecutionReports() throws FieldNotFound {
 		long currentTime = System.currentTimeMillis();
 		FIXMessageHistory history = getMessageHistory();
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1", "1", "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
 		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
-		Message order2 = FIXMessageUtil.newLimitOrder(new InternalID("3"), Side.SELL, new BigDecimal(2000), new MSymbol("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, new AccountID("ACCT"));
-		Message executionReportForOrder2 = FIXMessageUtil.newExecutionReport(new InternalID("1003"), new InternalID("3"), "2003", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, new BigDecimal(2000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("QWER"), null);
+		Message order2 = msgFactory.newLimitOrder("1", Side.SELL, new BigDecimal(2000), new MSymbol("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, "1");
+		Message executionReportForOrder2 = msgFactory.newExecutionReport("1", "1", "2003", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, new BigDecimal(2000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("QWER"), null);
 		executionReportForOrder2.getHeader().setField(new SendingTime(new Date(currentTime - 8000)));
-		Message secondExecutionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2004", ExecTransType.STATUS, ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(900), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"), null);
+		Message secondExecutionReportForOrder1 = msgFactory.newExecutionReport("1", "1", "2004", ExecTransType.STATUS, ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(900), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"), null);
 		secondExecutionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 7000)));
 
 		history.addOutgoingMessage(order1);
@@ -200,8 +194,8 @@ public class FIXMessageHistoryTest extends TestCase {
 	public void testAddFIXMessageListener() throws NoSuchFieldException, IllegalAccessException {
 		FIXMessageHistory history = getMessageHistory();
 		
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1", "1", "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
 
 		ListEventListener<MessageHolder> fixMessageListener = new ListEventListener<MessageHolder>() {
 			public int numIncomingMessages = 0;
@@ -254,8 +248,8 @@ public class FIXMessageHistoryTest extends TestCase {
 	public void testRemovePortfolioListener() throws NoSuchFieldException, IllegalAccessException {
 		FIXMessageHistory history = getMessageHistory();
 		
-		Message order1 = FIXMessageUtil.newMarketOrder(new InternalID("1"), Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, new AccountID("ACCT"));
-		Message executionReportForOrder1 = FIXMessageUtil.newExecutionReport(new InternalID("1001"), new InternalID("1"), "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1", "1", "2001", ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, new BigDecimal(1000), BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
 
 		ListEventListener<MessageHolder> fixMessageListener = new ListEventListener<MessageHolder>() {
 			public int numIncomingMessages = 0;
@@ -301,8 +295,8 @@ public class FIXMessageHistoryTest extends TestCase {
 	
 	public void testAveragePriceList() throws Exception {
 		FIXMessageHistory messageHistory = getMessageHistory();
-		InternalID orderID1 = new InternalID("1");
-		InternalID clOrderID1 = new InternalID("2");
+		String orderID1 = "1";
+		String clOrderID1 = "1";
 		String execID = "300";
 		char execTransType = ExecTransType.STATUS;
 		char execType = ExecType.PARTIAL_FILL;
@@ -317,18 +311,18 @@ public class FIXMessageHistoryTest extends TestCase {
 		BigDecimal avgPrice = new BigDecimal("12.3");
 		MSymbol symbol = new MSymbol("ASDF");
 
-		Message message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		Message message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		messageHistory.addIncomingMessage(message);
 		
-		orderID1 = new InternalID("3");
-		clOrderID1 = new InternalID("4");
+		orderID1 = "1";
+		clOrderID1 = "1";
 		execID = "301";
 		lastQty = new BigDecimal(900);
 		lastPrice = new BigDecimal("12.4");
 		cumQty = new BigDecimal(900);
 		avgPrice = new BigDecimal("12.4");
 
-		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		messageHistory.addIncomingMessage(message);
 		
 		EventList<MessageHolder> averagePriceList = messageHistory.getAveragePricesList();
@@ -344,8 +338,8 @@ public class FIXMessageHistoryTest extends TestCase {
 		assertEquals( ((12.3*100)+(12.4*900))/1000, returnedAvgPrice.doubleValue(), .0001);
 		
 		
-		orderID1 = new InternalID("4");
-		clOrderID1 = new InternalID("5");
+		orderID1 = "1";
+		clOrderID1 = "1";
 		execID = "302";
 		lastQty = new BigDecimal(900);
 		lastPrice = new BigDecimal("12.4");
@@ -353,7 +347,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		avgPrice = new BigDecimal("12.4");
 		side = Side.BUY;
 		
-		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		messageHistory.addIncomingMessage(message);
 
 		assertEquals(2, messageHistory.getAveragePricesList().size());
@@ -368,8 +362,8 @@ public class FIXMessageHistoryTest extends TestCase {
 
 
 		
-		orderID1 = new InternalID("6");
-		clOrderID1 = new InternalID("7");
+		orderID1 = "1";
+		clOrderID1 = "1";
 		execID = "305";
 		lastQty = new BigDecimal(900);
 		lastPrice = new BigDecimal("12.4");
@@ -377,7 +371,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		avgPrice = new BigDecimal("12.4");
 		side = Side.SELL_SHORT;
 		
-		message = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		message = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		messageHistory.addIncomingMessage(message);
 
 		assertEquals(2, messageHistory.getAveragePricesList().size());
@@ -394,8 +388,8 @@ public class FIXMessageHistoryTest extends TestCase {
 
 	public void testExecutionReportOrder() throws FieldNotFound
 	{
-		InternalID orderID1 = new InternalID("1");
-		InternalID clOrderID1 = new InternalID("2");
+		String orderID1 = "1";
+		String clOrderID1 = "1";
 		String execID = "3";
 		char execTransType = ExecTransType.STATUS;
 		char execType = ExecType.PARTIAL_FILL;
@@ -413,15 +407,15 @@ public class FIXMessageHistoryTest extends TestCase {
 		SendingTime stField = new SendingTime(new Date(10000000));
 		SendingTime stFieldLater = new SendingTime(new Date(10010000));
 		
-		Message message1 = FIXMessageUtil.newExecutionReport(null, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		Message message1 = msgFactory.newExecutionReport(null, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		message1.getHeader().setField(stField);
 		
 		lastQty = new BigDecimal(200);
-		Message message2 = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		Message message2 = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		message2.getHeader().setField(stField);
 
 		lastQty = new BigDecimal(300);
-		Message message3 = FIXMessageUtil.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
+		Message message3 = msgFactory.newExecutionReport(orderID1, clOrderID1, execID, execTransType, execType, ordStatus, side, orderQty, orderPrice, lastQty, lastPrice, leavesQty, cumQty, avgPrice, symbol, null);
 		message3.getHeader().setField(stFieldLater);
 		
 		FIXMessageHistory history = getMessageHistory();

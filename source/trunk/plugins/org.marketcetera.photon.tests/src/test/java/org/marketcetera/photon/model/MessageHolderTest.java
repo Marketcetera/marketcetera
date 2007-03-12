@@ -4,37 +4,36 @@ import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.core.AccountID;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.core.OutgoingMessageHolder;
-import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Message;
 import quickfix.field.Side;
 
 public class MessageHolderTest extends TestCase 
 {
-
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	public void testIncomingMessageHolder()
 	{
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID("asdf"), Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', new AccountID("asd"));
+		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd");
 		IncomingMessageHolder holder = new IncomingMessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}
 
 	public void testOutgoingMessageHolder()
 	{
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID("asdf"), Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', new AccountID("asd"));
+		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd");
 		OutgoingMessageHolder holder = new OutgoingMessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}
 
 	public void testMessageHolder()
 	{
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID("asdf"), Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', new AccountID("asd"));
+		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd");
 		MessageHolder holder = new MessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}
