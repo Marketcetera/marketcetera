@@ -6,10 +6,10 @@ import junit.framework.TestCase;
 
 import org.eclipse.ui.model.IWorkbenchAdapter;
 import org.marketcetera.core.AccountID;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Message;
 import quickfix.field.ExecTransType;
@@ -20,7 +20,9 @@ import quickfix.field.TransactTime;
 
 public class PhotonAdapterFactoryTest extends TestCase {
 
-	/*
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
+    /*
 	 * Test method for 'org.marketcetera.photon.PhotonAdapterFactory.getAdapterList()'
 	 */
 	public void testGetAdapterList() {
@@ -33,7 +35,7 @@ public class PhotonAdapterFactoryTest extends TestCase {
 	
 	public void testMessageAdapter() {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), OrderManagerTest.CL_ORD_ID, "987", ExecTransType.STATUS,
+		Message aMessage = msgFactory.newExecutionReport("456", OrderManagerTest.CL_ORD_ID, "987", ExecTransType.STATUS,
 				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
 				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL, null);
 		aMessage.setUtcTimeStamp(TransactTime.FIELD, OrderManagerTest.THE_TRANSACT_TIME);

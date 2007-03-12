@@ -8,7 +8,6 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.core.FIXMessageHistory;
@@ -16,7 +15,8 @@ import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.core.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.IncorrectTagValue;
@@ -39,14 +39,13 @@ import ca.odell.glazedlists.EventList;
 public class OrderManagerTest extends TestCase {
 
     public static Date THE_TRANSACT_TIME;
-    private static Date THE_DATE;
     public static MSymbol SYMBOL = new MSymbol("SYMB");
-    public static InternalID CL_ORD_ID = new InternalID("CLORDID");
+    public static String CL_ORD_ID = "CLORDID";
    
-    
-    	 	
+    private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
     public static Message getTestableExecutionReport() {
-            Message aMessage = FIXMessageUtil.newExecutionReport(new InternalID("456"), CL_ORD_ID, "987", ExecTransType.STATUS,
+            Message aMessage = msgFactory.newExecutionReport("1", CL_ORD_ID, "987", ExecTransType.STATUS,
                             ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
                             new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL, null);
             aMessage.setUtcTimeStamp(TransactTime.FIELD, THE_TRANSACT_TIME);
@@ -56,11 +55,10 @@ public class OrderManagerTest extends TestCase {
     }
     
     static {
-            try {
-                THE_DATE = new SimpleDateFormat("yyyy-MM-dd").parse("1974-12-24");
-                THE_TRANSACT_TIME = new SimpleDateFormat("yyyy-MM-dd").parse("2006-10-04");
-            } catch (ParseException e) {
-            }
+        try {
+            THE_TRANSACT_TIME = new SimpleDateFormat("yyyy-MM-dd").parse("2006-10-04");
+        } catch (ParseException e) {
+        }
     }
 	
 	
@@ -110,8 +108,8 @@ public class OrderManagerTest extends TestCase {
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(0, historyList.size());
 		Message[] messages = new Message[2];
-		messages[0] = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
-		messages[1] = FIXMessageUtil.newCancel(new InternalID("AQWE"), new InternalID("ASDF"), Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
+		messages[0] = msgFactory.newLimitOrder("1", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		messages[1] = msgFactory.newCancel("1", "1", Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
 		for (Message message : messages) {
 			photonController.handleInternalMessage(message);
 		}
@@ -140,7 +138,7 @@ public class OrderManagerTest extends TestCase {
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessage(Message)'
 	 */
 	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException {
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID("ASDF"), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		Message message = msgFactory.newLimitOrder("1", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(1, historyList.size());
@@ -154,12 +152,12 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testCancelReplaceOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newLimitOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		Message message = msgFactory.newLimitOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
 		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
 		assertEquals(1, history.size());
 
-		Message cancelReplaceMessage = FIXMessageUtil.newCancelReplaceFromMessage(message);
+		Message cancelReplaceMessage = msgFactory.newCancelReplaceFromMessage(message);
 		cancelReplaceMessage.setField(new OrigClOrdID(myClOrdID));
 
 		photonController.handleInternalMessage(cancelReplaceMessage);
@@ -179,7 +177,7 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
+		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
 		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
 		assertEquals(1, history.size());
@@ -207,7 +205,7 @@ public class OrderManagerTest extends TestCase {
 	 */
 	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
 		String myClOrdID = "MyClOrdID";
-		Message message = FIXMessageUtil.newMarketOrder(new InternalID(myClOrdID), Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
+		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
 		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
 		assertEquals(1, history.size());
