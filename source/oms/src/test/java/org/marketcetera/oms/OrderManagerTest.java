@@ -44,7 +44,7 @@ public class OrderManagerTest extends TestCase
 
     public void testNewExecutionReportFromOrder() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX42.toString());
+    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX42.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
     	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
@@ -66,7 +66,7 @@ public class OrderManagerTest extends TestCase
     // test one w/out incoming account
     public void testNewExecutionReportFromOrder_noAccount() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
@@ -96,7 +96,7 @@ public class OrderManagerTest extends TestCase
     public void testInsertDefaultFields() throws Exception
     {
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         handler.setOrderModifiers(getOrderModifiers());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
@@ -143,7 +143,7 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleEvents() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -178,7 +178,7 @@ public class OrderManagerTest extends TestCase
         Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY);
         buyOrder.removeField(Side.FIELD);
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -204,7 +204,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testMalformedPrice() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -227,7 +227,7 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleFIXMessages() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -252,7 +252,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testWithOrderRouteManager() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         OrderRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
         handler.setOrderRouteManager(orm);
 
@@ -287,13 +287,13 @@ public class OrderManagerTest extends TestCase
     }
 
     public void testIncomingNullMessage() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         assertNull(handler.handleMessage(null));        
     }
 
     /** verify the OMS sends back a rejection when it receives a message of incompatible or unknown verison */
     public void testIncompatibleFIXVersions() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX40.toString());
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX40.getMessageFactory());
         Message msg = new quickfix.fix41.Message();
         Message reject = handler.handleMessage(msg);
         assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));

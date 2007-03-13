@@ -54,7 +54,7 @@ public class OrderManagementSystemTest extends TestCase
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
         } catch (Exception e) {
             LoggerAdapter.error("Unable to initialize OMS", e, OrderManagementSystemTest.class.getName());
-            fail("Unable to init OMS");
+            fail("Unable to init OMS: "+e.getMessage());
         }
 	}
 
