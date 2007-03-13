@@ -299,6 +299,26 @@ public class FIXMessageFactory {
         return execReport;
     }
 
+    /** Creates a {@link MsgType#ORDER_CANCEL_REJECT} message
+     * @param rejectReasonText  Text explanation for why reject is sent
+     */
+    public Message newOrderCancelReject(OrderID orderID, ClOrdID clOrdID, OrigClOrdID origClOrdID,
+                                         String rejectReasonText, CxlRejReason cxlRejReason)
+    {
+        Message reject = newOrderCancelReject();
+        reject.setField(orderID);
+        reject.setField(clOrdID);
+        reject.setField(origClOrdID);
+        reject.setField(new OrdStatus(OrdStatus.REJECTED));
+        reject.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
+        reject.setString(Text.FIELD, rejectReasonText);
+        if(cxlRejReason!=null) {
+            reject.setField(cxlRejReason);
+        }
+
+        return reject;
+    }
+
     /** Creates a new order message and poopulates it with current {@link TransactTime}
      * @return  new order single
      */
@@ -323,5 +343,13 @@ public class FIXMessageFactory {
     public String getBeginString()
     {
         return beginString;
+    }
+
+    /** Returns the underlying Quickfix/J {@link MessageFactory} that is used
+     * to create all messages.
+     */
+    public MessageFactory getUnderlyingMessageFactory()
+    {
+        return msgFactory;
     }
 }
