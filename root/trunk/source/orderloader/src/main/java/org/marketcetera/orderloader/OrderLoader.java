@@ -1,8 +1,6 @@
 package org.marketcetera.orderloader;
 
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.core.*;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
@@ -40,7 +38,6 @@ public class OrderLoader extends ApplicationBase
 {
     private static final String JMS_SENDER_NAME = "outgoingJmsTemplate";
     private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
-    private static final String FIX_VERSION_NAME = "fixVersion";
     private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory";
 
     protected static String MKT_PRICE = "MKT";
@@ -50,7 +47,6 @@ public class OrderLoader extends ApplicationBase
 
     private IDFactory idFactory;
     private JmsTemplate jmsQueueSender;
-    private FIXMessageFactory msgFactory;
 
     protected int numProcessedOrders;
     protected int numBlankLines;
@@ -65,8 +61,6 @@ public class OrderLoader extends ApplicationBase
         createApplicationContext(new String[] {CFG_FILE_NAME}, true);
         URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
         idFactory = new HttpDatabaseIDFactory(idFactoryURL);
-        String fixVersion = (String)getAppCtx().getBean(FIX_VERSION_NAME);
-        msgFactory = FIXVersion.getFIXVersion(fixVersion).getMessageFactory();
         try {
             idFactory.getNext();
         } catch(NoMoreIDsException ex) {

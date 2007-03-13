@@ -33,8 +33,11 @@
         <constructor-arg value="http://localhost:3000/id_repository/get_next_batch"/>
     </bean>
 
-    <bean id="fixVersion" class="java.lang.String">
-        <constructor-arg value="FIX.4.2"/>
+    <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
+    <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
+
+    <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+      <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
     </bean>
 </beans>
 <!-- END SNIPPET: spring -->
