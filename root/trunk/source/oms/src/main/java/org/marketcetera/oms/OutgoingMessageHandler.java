@@ -29,11 +29,11 @@ public class OutgoingMessageHandler {
     private DatabaseIDFactory idFactory;
     private FIXMessageFactory msgFactory;
     
-    public OutgoingMessageHandler(SessionSettings settings, String version)
+    public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
             throws ConfigError, FieldConvertError, MarketceteraException {
         setOrderModifiers(new LinkedList<OrderModifier>());
         setOrderRouteManager(new OrderRouteManager());
-        msgFactory = FIXVersion.getFIXVersion(version).getMessageFactory();
+        msgFactory = inFactory;
         idFactory = new DatabaseIDFactory(settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL),
                 settings.getString(JdbcSetting.SETTING_JDBC_DRIVER), settings.getString(JdbcSetting.SETTING_JDBC_USER),
                 settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD), DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME,

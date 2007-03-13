@@ -74,8 +74,11 @@
     || Message Driven POJOs
     -->
 
-    <bean id="fixVersion" class="java.lang.String">
-        <constructor-arg value="FIX.4.2"/>
+    <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
+    <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
+
+    <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+      <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
     </bean>
 
   <bean id="defaultSessionID" class="quickfix.SessionID">
@@ -98,7 +101,7 @@
   <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
         <constructor-arg ref="sessionSettings"/>
-        <constructor-arg ref="fixVersion"/>
+        <constructor-arg ref="fixMessageFactory"/>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="quickFIXSender" ref="quickfixSender"/>
     </bean>
