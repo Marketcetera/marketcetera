@@ -781,11 +781,28 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	}
 
 	private void updateCustomFields(String preferenceString) {
+		// Save previous enabled checkbox state
+		final int keyColumnNum = 1;
+		HashMap<String, Boolean> existingEnabledMap = new HashMap<String, Boolean>(); 
+		TableItem[] existingItems = customFieldsTable.getItems();
+		for(TableItem existingItem : existingItems) {
+			String key = existingItem.getText(keyColumnNum);
+			boolean checkedState = existingItem.getChecked();
+			existingEnabledMap.put(key, checkedState);
+		}
+		
 		customFieldsTable.setItemCount(0);
 		EventList<Entry<String, String>> fields = MapEditorUtil.parseString(preferenceString);
 		for (Entry<String, String> entry : fields) {
 			TableItem item = new TableItem(customFieldsTable, SWT.NONE);
-			item.setText(new String[]{"", entry.getKey(), entry.getValue()});
+			String key = entry.getKey();
+			// Column order must match column numbers used above
+			String[] itemText = new String[]{"", key, entry.getValue()};
+			item.setText(itemText);
+			if( existingEnabledMap.containsKey(key)) {
+				boolean previousEnabledValue = existingEnabledMap.get(key);
+				item.setChecked(previousEnabledValue);
+			} 
 		}
 		TableColumn[] columns = customFieldsTable.getColumns();
 		for (TableColumn column : columns) {
