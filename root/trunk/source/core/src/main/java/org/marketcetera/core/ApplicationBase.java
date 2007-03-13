@@ -3,6 +3,8 @@ package org.marketcetera.core;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.marketcetera.quickfix.SessionAdmin;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -22,6 +24,9 @@ public abstract class ApplicationBase implements Clock {
 
     protected static LoggerAdapter sLogger;
     private ClassPathXmlApplicationContext appCtx;
+    protected FIXMessageFactory msgFactory;
+    protected FIXVersion fixVersion;
+    private static final String FIX_VERSION_NAME = "fixVersionEnum";
 
     public ApplicationBase()
     {
@@ -35,8 +40,7 @@ public abstract class ApplicationBase implements Clock {
         sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
     }
 
-    public ApplicationContext createApplicationContext(String[] ctxFileNames, boolean registerShutdownHook)
-    {
+    public ApplicationContext createApplicationContext(String[] ctxFileNames, boolean registerShutdownHook) throws MarketceteraException {
         appCtx = new ClassPathXmlApplicationContext(ctxFileNames) {
             protected void onClose() {
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("in shutdown hook", this); }
@@ -47,6 +51,8 @@ public abstract class ApplicationBase implements Clock {
         if(registerShutdownHook) {
             appCtx.registerShutdownHook();
         }
+        fixVersion = (FIXVersion) appCtx.getBean(FIX_VERSION_NAME);
+        msgFactory = fixVersion.getMessageFactory();
         return appCtx;
     }
 
@@ -62,6 +68,12 @@ public abstract class ApplicationBase implements Clock {
         } catch (InterruptedException e) {
             LoggerAdapter.debug("Exception in sema wait", e, this);
         }
+    }
+
+    /** Get the FIX version associated with this application */
+    public FIXVersion getFIXVersion()
+    {
+        return fixVersion;
     }
 
     /* (non-Javadoc)
