@@ -8,8 +8,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
@@ -25,6 +28,9 @@ import ca.odell.glazedlists.SortedList;
 
 public abstract class MessagesView extends ViewPart {
 
+	public static final String COLUMN_ORDER_KEY = "COLUMN_ORDER";  //$NON-NLS-1$
+	public static final String COLUMN_ORDER_DELIMITER = ",";  //$NON-NLS-1$
+	
 	private Table messageTable;
 	private IndexedTableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
@@ -34,6 +40,7 @@ public abstract class MessagesView extends ViewPart {
 	private CopyMessagesAction copyMessagesAction;
 	private EventList<MessageHolder> rawInputList;
 	private final boolean sortableColumns;
+	private IMemento viewStateMemento; 
 
 	public MessagesView()
 	{
@@ -73,8 +80,9 @@ public abstract class MessagesView extends ViewPart {
 		
 		tableFormat = (EnumTableFormat<MessageHolder>)messagesViewer.getLabelProvider();
 		formatTable(messageTable);
-
 		packColumns(messageTable);
+		restoreColumnOrder(viewStateMemento);
+		
         toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		initializeToolBar(toolBarManager);
 		
@@ -104,6 +112,69 @@ public abstract class MessagesView extends ViewPart {
 		}
 	}
 
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+		
+		this.viewStateMemento = memento;
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+		
+		saveColumnOrder(memento);
+	}
+
+	protected String serializeColumnOrder(int[] columnOrder) {
+		StringBuilder sb = new StringBuilder();
+		for(int columnNumber : columnOrder) {
+			sb.append(columnNumber);
+			sb.append(COLUMN_ORDER_DELIMITER);
+		}
+		return sb.toString();
+	}
+	
+	protected int[] deserializeColumnOrder(String delimitedValue) {
+		if (delimitedValue == null) {
+			return new int[0];
+		}
+		String[] columnNumbers = delimitedValue.split(COLUMN_ORDER_DELIMITER);
+		if (columnNumbers == null || columnNumbers.length == 0) {
+			return new int[0];
+		}
+		int[] columnOrder = new int[columnNumbers.length];
+		for(int index = 0; index < columnOrder.length; ++index)  {
+			try {
+				columnOrder[index] = Integer.parseInt(columnNumbers[index]);
+			}
+			catch(Exception anyException) {
+				// TODO Log?
+				// org.marketcetera.photon.PhotonPlugin.getMainConsoleLogger().warn("Failed to load column order.", anyException);
+				return new int[0];
+			}
+		}
+		return columnOrder;
+	}
+	
+	protected void saveColumnOrder(IMemento memento) {
+		if (memento == null) 
+			return;
+		int[] columnOrder = messageTable.getColumnOrder();
+		String serializedColumnOrder = serializeColumnOrder(columnOrder);
+		memento.putString(COLUMN_ORDER_KEY, serializedColumnOrder);
+	}
+	
+	protected void restoreColumnOrder(IMemento memento) {
+		if (memento == null)
+			return;
+		String delimitedColumnOrder = memento.getString(COLUMN_ORDER_KEY);
+		int[] columnOrder = deserializeColumnOrder(delimitedColumnOrder);
+		if(columnOrder != null && columnOrder.length > 0) {
+			messageTable.setColumnOrder(columnOrder);
+		}
+	}
+			
     protected Table createMessageTable(Composite parent) {
         Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
         GridData messageTableLayout = new GridData();
