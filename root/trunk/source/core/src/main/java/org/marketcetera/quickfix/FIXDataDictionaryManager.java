@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageKey;
 
 /**
  * Converts the standard FIX field (integers) to their english names
@@ -18,6 +20,8 @@ import org.marketcetera.core.ClassVersion;
  */
 @ClassVersion("$Id$")
 public class FIXDataDictionaryManager {
+    private static String LOGGER_NAME = FIXDataDictionaryManager.class.getName();
+
     public static final String FIX_4_0_BEGIN_STRING = "FIX.4.0";
     public static final String FIX_4_1_BEGIN_STRING = "FIX.4.1";
     public static final String FIX_4_2_BEGIN_STRING = "FIX.4.2";
@@ -124,7 +128,10 @@ public class FIXDataDictionaryManager {
         }
         DataDictionary dict = dictionaryMap.get(inVersion);
         if(dict == null) {
-            throw new FIXFieldConverterNotAvailable("No converter for version "+inVersion);
+            throw new FIXFieldConverterNotAvailable(MessageKey.FIX_VERSION_UNSUPPORTED.getLocalizedMessage(inVersion));
+        }
+        if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
+            LoggerAdapter.info(MessageKey.FIX_DICTIONARY_SET.getLocalizedMessage(inVersion), LOGGER_NAME);
         }
         sCurrent = dict;
     }
