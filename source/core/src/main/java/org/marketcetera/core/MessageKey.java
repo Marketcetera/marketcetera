@@ -19,6 +19,7 @@ public enum MessageKey implements LocalizedMessage {
     FIX_OUTGOING_NO_MSGTYPE("core.error.fix.outgoing_no_msgtype"),
     FIX_UNEXPECTED_MSGTYPE("core.error.fix.unexpected_msgtype"),
     FIX_VERSION_UNSUPPORTED("core.error.fix.version_unsuppported"),
+    FIX_DICTIONARY_SET("core.fix.dictionary_set"),
 
     ERROR_EXCHANGES_INIT("core.error.exchanges_init"),
     ERROR_EXCHANGE_DNE("core.error_exchange_not_found"),
@@ -54,7 +55,8 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_DB_ID_FACTORY_DB_CONN_ERROR("core.db_id_factory.db_conn.error"),
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
-    APP_EXIT("core.init.app_exit");
+    APP_EXIT("core.init.app_exit"),
+    SESSION_NOT_FOUND("core.error.fix.session_not_found");
 
     private MessageKey(String inKey) {
         key = inKey;
