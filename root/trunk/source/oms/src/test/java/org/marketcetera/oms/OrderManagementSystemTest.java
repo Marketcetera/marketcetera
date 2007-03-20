@@ -49,7 +49,7 @@ public class OrderManagementSystemTest extends TestCase
 
 	protected void setUp() throws Exception {
         try {
-        	appContext = new ClassPathXmlApplicationContext("it-oms.xml");
+        	appContext = new ClassPathXmlApplicationContext(new String[]{"order-modifiers.xml", "oms-shared.xml", "it-oms.xml"});
 			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
         } catch (Exception e) {

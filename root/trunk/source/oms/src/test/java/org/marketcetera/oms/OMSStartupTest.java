@@ -1,10 +1,8 @@
 package org.marketcetera.oms;
 
-import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigFileLoadingException;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

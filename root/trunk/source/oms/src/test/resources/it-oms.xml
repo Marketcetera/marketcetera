@@ -23,26 +23,6 @@
     <property name="brokerURL" value="vm://it-oms?broker.persistent=false"/>
   </bean>
 
-  <bean id="listener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
-    <property name="delegate" ref="outgoingMessageHandler"/>
-    <property name="defaultListenerMethod" value="handleMessage"/>
-    <property name="defaultResponseDestination" ref="replyTopic"/>
-	<property name="messageConverter">
-		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
-	</property>
-  </bean>
-
-  <!-- note that this needs to use the non-pooled connection factory -->
-  <bean id="container" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-    <property name="connectionFactory" ref="connectionFactory"/>
-    <property name="messageListener" ref="listener"/>
-    <property name="destination" ref="requestQueue"/>
-  </bean>
-
-  <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
-    <property name="connectionFactory" ref="connectionFactory"/>
-  </bean>
-
     <!-- Reply Topic listener -->
     <bean id="replyListener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
       <property name="defaultListenerMethod" value="onMessage"/>
@@ -63,23 +43,16 @@
   <!-- Spring JMS Template for sending orders on the request queue -->
   <bean id="outgoingJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
     <property name="connectionFactory">
-      <ref local="pooledConnectionFactory"/>
+      <ref bean="pooledConnectionFactory"/>
     </property>
 	<property name="messageConverter">
 		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
-	</property>		
+	</property>
     <property name="defaultDestination" ref="requestQueue"/>
   </bean>
   <!--
     || Message Driven POJOs
     -->
-
-    <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
-    <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
-
-    <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-      <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
-    </bean>
 
   <bean id="defaultSessionID" class="quickfix.SessionID">
 	<constructor-arg ref="fixVersion" />
@@ -98,20 +71,10 @@
         </property>
     </bean>
 
-  <!-- a thread safe non-pooled MessageListener -->
-    <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
-        <constructor-arg ref="sessionSettings"/>
-        <constructor-arg ref="fixMessageFactory"/>
-        <property name="defaultSessionID" ref="defaultSessionID"/>
-        <property name="quickFIXSender" ref="quickfixSender"/>
-    </bean>
-
     <bean id="incomingTopicHandler" class="org.marketcetera.oms.TopicListener" scope="prototype">
     </bean>
 
-    <bean id="quickfixSender" class="org.marketcetera.oms.NullQuickFIXSender">
-
-    </bean>
+    <bean id="quickfixSender" class="org.marketcetera.oms.NullQuickFIXSender"/>
 </beans>
 
         <!-- END SNIPPET: spring -->

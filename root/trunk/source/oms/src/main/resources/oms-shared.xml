@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+    <bean id="listener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+        <property name="delegate" ref="outgoingMessageHandler"/>
+        <property name="defaultListenerMethod" value="handleMessage"/>
+        <property name="defaultResponseDestination" ref="replyTopic"/>
+        <property name="messageConverter">
+            <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+        </property>
+    </bean>
+
+    <!-- note that this needs to use the non-pooled connection factory -->
+    <bean id="container" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="connectionFactory" ref="connectionFactory"/>
+        <property name="messageListener" ref="listener"/>
+        <property name="destination" ref="requestQueue"/>
+    </bean>
+
+    <bean id="pooledConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+        <property name="connectionFactory" ref="connectionFactory"/>
+    </bean>
+        
+    <!-- a thread safe non-pooled MessageListener -->
+    <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
+        <constructor-arg ref="sessionSettings"/>
+        <constructor-arg ref="fixMessageFactory"/>
+        <property name="defaultSessionID" ref="defaultSessionID"/>
+        <property name="orderRouteManager" ref="orderRouting"/>
+        <property name="orderModifiers">
+            <list>
+                <ref bean="defaultOrderModifier"/>
+            </list>
+        </property>
+        <property name="quickFIXSender" ref="quickfixSender"/>
+    </bean>
+
+    <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
+    <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
+
+    <!-- *******************************************************
+        | User-configurable session and senderCompID variables |
+        *******************************************************  -->
+
+    <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
+      <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
+    </bean>
+</beans>
