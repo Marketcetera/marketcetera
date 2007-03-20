@@ -19,7 +19,7 @@
     </dependency>
       <!-- dependency on core test code -->
       <dependency>
-          <groupId>org.marketcetera</groupId>
+          <groupId>${project.groupId}</groupId>
           <artifactId>core</artifactId>
           <type>test-jar</type>
           <scope>test</scope>
