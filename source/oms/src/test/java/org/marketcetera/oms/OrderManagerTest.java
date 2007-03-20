@@ -247,6 +247,26 @@ public class OrderManagerTest extends TestCase
         FIXDataDictionaryManager.getDictionary().validate(quickFIXSender.getCapturedMessages().get(1));
     }
 
+    public void testInvalidSessionID() throws Exception {
+        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        handler.setOrderRouteManager(new OrderRouteManager());
+        SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target");
+        handler.setDefaultSessionID(sessionID);
+        QuickFIXSender quickFIXSender = new QuickFIXSender();
+		handler.setQuickFIXSender(quickFIXSender);
+
+	    Message newOrder = msgFactory.newMarketOrder("123", Side.BUY, new BigDecimal(100), new MSymbol("SUNW"),
+                TimeInForce.DAY, "dummyaccount");
+
+        // verify we got an execReport that's a rejection with the sessionNotfound error message
+        Message result = handler.handleMessage(newOrder);
+        assertEquals("output should be outgoing execReport", MsgType.EXECUTION_REPORT,
+        		result.getHeader().getString(MsgType.FIELD));
+        assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
+        assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        assertEquals("error message incorrect", MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(sessionID), result.getString(Text.FIELD));
+    }
+
     /** Create props with a route manager entry, and make sure the FIX message is
      * modified but the other ones are not
      * @throws Exception

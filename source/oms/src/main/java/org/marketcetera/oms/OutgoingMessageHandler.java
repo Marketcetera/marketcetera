@@ -97,6 +97,9 @@ public class OutgoingMessageHandler {
         } catch (FieldNotFound fnfEx) {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
             returnVal = createRejectionMessage(mfix, message);
+        } catch(SessionNotFound snf) {
+            MarketceteraException ex = new MarketceteraException(MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(defaultSessionID), snf);
+            returnVal = createRejectionMessage(ex, message);
         } catch (MarketceteraException e) {
         	returnVal = createRejectionMessage(e, message);
         } catch(Exception ex) {
@@ -228,7 +231,7 @@ public class OutgoingMessageHandler {
             return new ExecID(idFactory.getNext());
         } catch(NoMoreIDsException ex) {
             LoggerAdapter.error(OMSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
-            return new ExecID("ZZ-internal");
+            return new ExecID("ZZ-INTERNAL");
         }
     }
 
