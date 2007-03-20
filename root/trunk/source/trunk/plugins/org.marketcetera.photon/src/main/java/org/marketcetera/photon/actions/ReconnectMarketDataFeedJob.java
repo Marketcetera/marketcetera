@@ -13,28 +13,28 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.marketcetera.core.IFeedComponent.FeedStatus;
+import org.marketcetera.marketdata.IMarketDataFeed;
+import org.marketcetera.marketdata.IMarketDataFeedFactory;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.quotefeed.IQuoteFeedConstants;
-import org.marketcetera.photon.quotefeed.QuoteFeedService;
-import org.marketcetera.quotefeed.IQuoteFeed;
-import org.marketcetera.quotefeed.IQuoteFeedFactory;
+import org.marketcetera.photon.marketdata.IMarketDataConstants;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 
-public class ReconnectQuoteFeedJob extends Job {
+public class ReconnectMarketDataFeedJob extends Job {
 
 	private static AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
 	private BundleContext bundleContext;
-	ServiceTracker quoteFeedTracker;
+	MarketDataFeedTracker marketDataFeedTracker;
 
 	
-	public ReconnectQuoteFeedJob(String name) {
+	public ReconnectMarketDataFeedJob(String name) {
 		super(name);
 		bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		quoteFeedTracker = new ServiceTracker(bundleContext, QuoteFeedService.class.getName(), null);
-		quoteFeedTracker.open();
+		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
+		marketDataFeedTracker.open();
 
 	}
 
@@ -48,28 +48,20 @@ public class ReconnectQuoteFeedJob extends Job {
 		try {
 			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
 	    	IExtensionPoint extensionPoint =
-	    	extensionRegistry.getExtensionPoint(IQuoteFeedConstants.EXTENSION_POINT_ID);
+	    	extensionRegistry.getExtensionPoint(IMarketDataConstants.EXTENSION_POINT_ID);
 	    	IExtension[] extensions = extensionPoint.getExtensions();
 	    	if (extensions != null && extensions.length > 0)
 	    	{
 	    		IConfigurationElement[] configurationElements = extensions[0].getConfigurationElements();
 	    		IConfigurationElement feedElement = configurationElements[0];
-	    		String factoryClass = feedElement.getAttribute(IQuoteFeedConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-	    		Class<IQuoteFeedFactory> clazz = (Class<IQuoteFeedFactory>) Class.forName(factoryClass);
-	    		Constructor<IQuoteFeedFactory> constructor = clazz.getConstructor( new Class[0] );
-	    		IQuoteFeedFactory factory = constructor.newInstance(new Object[0]);
-	    		IQuoteFeed targetQuoteFeed = factory.getInstance("", "", "");
-	    		targetQuoteFeed.setQuoteJmsOperations(PhotonPlugin.getDefault().getQuoteJmsOperations());
-	    		if (targetQuoteFeed != null
-	    				&& targetQuoteFeed.getFeedStatus() != FeedStatus.ERROR){
-		    		QuoteFeedService feedService = new QuoteFeedService();
-		    		feedService.setQuoteFeed(targetQuoteFeed);
-		    		feedService.afterPropertiesSet();
-	    			ServiceRegistration registration = bundleContext.registerService(QuoteFeedService.class.getName(), feedService, null);
-	    			feedService.setServiceRegistration(registration);
-	    			targetQuoteFeed.start();
-	    			succeeded = true;
-	    		}
+	    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
+	    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
+	    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
+	    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
+	    		IMarketDataFeed targetQuoteFeed = factory.getInstance("", "", "");
+    			ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), new MarketDataFeedService(targetQuoteFeed), null);
+    			targetQuoteFeed.start();
+    			succeeded = true;
 			}
 	
 		} catch (Exception e) {
@@ -86,11 +78,11 @@ public class ReconnectQuoteFeedJob extends Job {
 	}
 
 	public void disconnect() {
-		QuoteFeedService feed = (QuoteFeedService) quoteFeedTracker.getService();
+		MarketDataFeedService service = (MarketDataFeedService) marketDataFeedTracker.getMarketDataFeedService();
 		RuntimeException caughtException = null;
-		if (feed != null){
+		if (service != null){
 			try {
-				feed.getQuoteFeed().stop();
+				service.stop();
 			} catch (RuntimeException e) {
 				caughtException = e;
 			}
@@ -102,7 +94,7 @@ public class ReconnectQuoteFeedJob extends Job {
 	
 	@Override
 	protected void finalize() throws Throwable {
-		quoteFeedTracker.close();
+		marketDataFeedTracker.close();
 	}
 
 

@@ -11,18 +11,17 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.IMarketDataListener;
+import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
-import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
-import org.marketcetera.photon.quotefeed.QuoteFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.quotefeed.IQuoteFeed;
-import org.osgi.util.tracker.ServiceTracker;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -39,6 +38,8 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
 
 public class MarketDataView extends MessagesView implements IMSymbolListener {
+
+
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
 
 	private static final int LAST_NORMAL_COLUMN = 1;
@@ -58,28 +59,18 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		}
 	}
 
-	private ServiceTracker quoteFeedTracker;
+	private MarketDataFeedTracker marketDataTracker;
 
-	private SimpleMessageListenerContainer quoteListener;
 
 	public MarketDataView()
 	{
 		super(true);
-		quoteFeedTracker = new ServiceTracker(
-				PhotonPlugin.getDefault().getBundleContext(),
-				QuoteFeedService.class.getName(),
-				null);
-		quoteFeedTracker.open();
-		
-		quoteListener = PhotonPlugin.getDefault().newQuoteListenerForAdapter(new DirectMessageListenerAdapter()
-		{
-			@Override
-			protected Object doOnMessage(Object convertedMessage) {
-				MarketDataView.this.onQuote((Message) convertedMessage);
-				return null;
-			}
-		});
-		quoteListener.afterPropertiesSet();
+		marketDataTracker = new MarketDataFeedTracker(
+				PhotonPlugin.getDefault().getBundleContext());
+		marketDataTracker.open();
+
+		marketDataListener = new MDVMarketDataListener();
+		marketDataTracker.setMarketDataListener(marketDataListener);
 	}
 	
 	@Override
@@ -92,8 +83,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 	@Override
 	public void dispose() {
-		quoteListener.stop();
-		quoteFeedTracker.close();
+		marketDataTracker.setMarketDataListener(null);
+		marketDataTracker.close();
+		
 		super.dispose();
 	}
 	
@@ -190,12 +182,17 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	
 	public void onQuote(final Message aQuote) {
-		Display.getDefault().asyncExec(new Runnable() {
-			public void run() {
-				if (!getMessagesViewer().getTable().isDisposed())
-					updateQuote(aQuote);
-			}
-		});
+		Display theDisplay = Display.getDefault();
+		if (theDisplay.getThread() == Thread.currentThread()){
+			updateQuote(aQuote);
+		} else {			
+			theDisplay.asyncExec(new Runnable() {
+				public void run() {
+					if (!getMessagesViewer().getTable().isDisposed())
+						updateQuote(aQuote);
+				}
+			});
+		}
 	}
 
 
@@ -220,13 +217,14 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		}
 
 		public void modify(Object element, String property, Object value) {
-			IQuoteFeed quoteFeed = getQuoteFeed();
-			if (quoteFeed == null){
+			MarketDataFeedService service = (MarketDataFeedService) marketDataTracker.getMarketDataFeedService();
+			if (service == null){
 				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
 				return;
 			}
+			MSymbol newSymbol = service.symbolFromString(value.toString());
 
-			String stringValue = value.toString();
+			String stringValue = newSymbol.toString();
 			if (listContains(stringValue)){
 				return;
 			}
@@ -235,15 +233,14 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			Message message = messageHolder.getMessage();
 			
 			try {
-				MSymbol symbol = new MSymbol(message.getString(Symbol.FIELD));
-				if (quoteFeed != null)
-					quoteFeed.unlistenQuotes(symbol);
+				MSymbol symbol = service.symbolFromString(message.getString(Symbol.FIELD));
+				marketDataTracker.simpleUnsubscribe(symbol);
 			} catch (FieldNotFound fnf){}
 			message.clear();
 			if (stringValue.length()>0){
+				MSymbol mSymbol = service.symbolFromString(stringValue);
 				message.setField(new Symbol(stringValue));
-				if (quoteFeed != null)
-					quoteFeed.listenQuotes(new MSymbol(stringValue));
+				marketDataTracker.simpleSubscribe(mSymbol);
 				getMessagesViewer().refresh();
 			}
 		}
@@ -254,6 +251,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	private static final int BID_INDEX = 3;
 	private static final int ASK_INDEX = 4;
 	private static final int ASK_SIZE_INDEX = 5;
+
+	private MDVMarketDataListener marketDataListener;
 	
 	class MarketDataTableFormat extends MessageListTableFormat {
 
@@ -339,11 +338,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	 * @param symbol
 	 */
 	public void addSymbol(MSymbol symbol) {
-		IQuoteFeed quoteFeed = getQuoteFeed();
-		if (quoteFeed == null){
-			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
-			return;
-		}
 
 		if (hasSymbol(symbol)) {
 			PhotonPlugin.getMainConsoleLogger().warn("Duplicate symbol added to view: " +symbol);
@@ -354,7 +348,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			message.setField(new Symbol(symbol.toString()));
 			list.add(new MessageHolder(message));
 
-			quoteFeed.listenQuotes(symbol);
+			marketDataTracker.simpleSubscribe(symbol);
 			getMessagesViewer().refresh();
 		}
 	}
@@ -377,28 +371,23 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		return rv;
 	}
 
-	private IQuoteFeed getQuoteFeed() {
-		QuoteFeedService service = (QuoteFeedService) quoteFeedTracker.getService();
-		return (IQuoteFeed) (service == null ? null : service.getQuoteFeed());
-	}
-
-	public void removeItem(MessageHolder holder) {
+	public void removeItem(MessageHolder holder){
+		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker.getService();
+		if (service == null){
+			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			return;
+		}
 		try {
-			MSymbol symbol = new MSymbol(holder.getMessage().getString(Symbol.FIELD));
-			removeSymbol(symbol);
+			MSymbol mSymbol = service.symbolFromString(holder.getMessage().getString(Symbol.FIELD));
+			marketDataTracker.simpleUnsubscribe(mSymbol);
 		} catch (FieldNotFound e) {
 			// do nothing
 		}
 	}
 	
 	public void removeSymbol(MSymbol symbol) {
-		IQuoteFeed quoteFeed = getQuoteFeed();
-		if (quoteFeed == null){
-			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
-			return;
-		}
 
-		quoteFeed.unlistenQuotes(symbol);
+		marketDataTracker.simpleUnsubscribe(symbol);
 
 		EventList<MessageHolder> list = getInput();
 		for (MessageHolder holder : list) {
@@ -415,4 +404,17 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		
 	}
 	
+
+	public class MDVMarketDataListener extends MarketDataListener {
+
+		public void onLevel2Quote(Message aQuote) {}
+
+		public void onQuote(Message aQuote) {
+			MarketDataView.this.onQuote(aQuote);
+		}
+
+		public void onTrade(Message aTrade) {}
+
+	}
+
 }

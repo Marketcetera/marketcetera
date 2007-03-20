@@ -3,6 +3,7 @@ package org.marketcetera.photon;
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
+import org.marketcetera.bogusfeed.BogusFeedTest;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.ParserTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
@@ -13,6 +14,7 @@ import org.marketcetera.photon.scripting.ScriptRegistryTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
+import org.marketcetera.photon.views.MarketDataViewTest;
 import org.marketcetera.photon.views.StockOrderTicketViewTest;
 
 public class TS_Photon {
@@ -29,6 +31,8 @@ public class TS_Photon {
 		suite.addTestSuite(ClasspathTest.class);
 		suite.addTestSuite(ScriptChangesAdapterTest.class);
 		suite.addTestSuite(QuickFIXTest.class);
+		suite.addTestSuite(MarketDataViewTest.class);
+		suite.addTestSuite(BogusFeedTest.class);
 		return suite;
 	}
 

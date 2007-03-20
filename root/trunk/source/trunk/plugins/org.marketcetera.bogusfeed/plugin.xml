@@ -4,7 +4,7 @@
    <extension
          point="org.marketcetera.photon.quotefeed">
       <feed
-            feedFactoryClass="org.marketcetera.bogusfeed.BogusQuoteFeedFactory"/>
+            feedFactoryClass="org.marketcetera.bogusfeed.BogusFeedFactory"/>
    </extension>
 
 </plugin>

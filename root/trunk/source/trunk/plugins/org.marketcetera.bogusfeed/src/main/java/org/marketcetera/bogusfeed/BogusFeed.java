@@ -4,15 +4,21 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.quotefeed.IQuoteFeed;
-import org.springframework.jms.core.JmsOperations;
-import org.springframework.jms.core.JmsTemplate;
+import org.marketcetera.marketdata.ConjunctionMessageSelector;
+import org.marketcetera.marketdata.IMarketDataListener;
+import org.marketcetera.marketdata.IMessageSelector;
+import org.marketcetera.marketdata.MarketDataFeedBase;
+import org.marketcetera.marketdata.MessageTypeSelector;
+import org.marketcetera.marketdata.SymbolMessageSelector;
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -25,7 +31,9 @@ import quickfix.field.MDMkt;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
-public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
+public class BogusFeed extends MarketDataFeedBase {
+
+	protected List<SymbolMessageSelector> subscriptions = new LinkedList<SymbolMessageSelector>();
 
 	private QuoteGeneratorThread quoteGeneratorThread;
 	AtomicBoolean isRunning = new AtomicBoolean(false);
@@ -44,15 +52,21 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 			setFeedStatus(FeedStatus.AVAILABLE);
 			while (!shouldShutdown){
 				try {
-					LinkedList<MSymbol> entries;
-					synchronized (listenedSymbols){
-						entries = new LinkedList<MSymbol>(listenedSymbols);
+					LinkedList<SymbolMessageSelector> theSubscriptions;
+					synchronized (subscriptions){
+						theSubscriptions = new LinkedList<SymbolMessageSelector>(subscriptions);
 					}
-					for (MSymbol symbol : entries) {
+					Set<MSymbol> symbolSet = new HashSet<MSymbol>();
+					for (SymbolMessageSelector selector : theSubscriptions) {
+						MSymbol symbol = selector.getExactSymbol();
+						symbolSet.add(symbol);
+					}
+					
+					for (MSymbol symbol : symbolSet){
 						Message quote = generateQuote(symbol);
-						JmsOperations quoteJmsOperations = getQuoteJmsOperations();
-						if (quoteJmsOperations != null){
-							quoteJmsOperations.convertAndSend(quote);
+						IMarketDataListener listener = BogusFeed.this.getMarketDataListener();
+						if (listener != null ) {
+							listener.onMessage(quote);
 						}
 					}
 					sleep(randAmount());
@@ -144,6 +158,44 @@ public class BogusFeed extends AbstractQuoteFeedBase implements IQuoteFeed {
 
 	public boolean isRunning() {
 		return isRunning.get();
+	}
+
+	public void subscribe(IMessageSelector selector) {
+		SymbolMessageSelector toAdd = null;
+		boolean error = false;
+		if (selector instanceof SymbolMessageSelector) {
+			toAdd = (SymbolMessageSelector) selector;
+		} else if (selector instanceof ConjunctionMessageSelector){
+			for (IMessageSelector aSelector : ((ConjunctionMessageSelector)selector)) {
+				if (aSelector instanceof SymbolMessageSelector) {
+					toAdd = (SymbolMessageSelector) aSelector;
+				} else if (aSelector instanceof MessageTypeSelector) {
+					if (!((MessageTypeSelector)aSelector).isQuotes() && 
+							!((MessageTypeSelector)aSelector).isLevel2()	) {
+						error = true;
+					}
+				} else {
+					error = true;
+				}
+			}
+		}
+		if (toAdd != null && !error){
+			synchronized (subscriptions) {
+				subscriptions.add((SymbolMessageSelector) toAdd);
+			}
+		} else {
+			throw new IllegalArgumentException("Unsupported IMessageSelector: "+selector);
+		}
+	}
+
+	public MSymbol symbolFromString(String symbolString) {
+		return new MSymbol(symbolString);
+	}
+
+	public boolean unsubscribe(IMessageSelector selector) {
+		synchronized (subscriptions) {
+			return subscriptions.remove(selector);
+		}
 	}
 
 }
