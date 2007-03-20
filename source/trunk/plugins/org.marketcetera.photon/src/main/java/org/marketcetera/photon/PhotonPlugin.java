@@ -66,17 +66,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private FIXMessageHistory fixMessageHistory;
 
-	private ConnectionFactory internalConnectionFactory;
-
-	private PooledConnectionFactory pooledInternalConnectionFactory;
-
 	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
-
-	private JmsOperations quoteJmsOperations;
-
-	private ActiveMQTopic tradesTopic;
-
-	private ActiveMQTopic quotesTopic;
 
 	private ScriptRegistry scriptRegistry;
 
@@ -129,9 +119,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		initResources();
 		initMessageFactory();
 		initIDFactory();
-		initInternalConnectionFactory();
 		initFIXMessageHistory();
-		initMessageListeners();
 		initScriptRegistry();
 		initPhotonController();
 	}
@@ -146,13 +134,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private void initFIXMessageHistory() {
 		fixMessageHistory = new FIXMessageHistory();
-	}
-
-	private void initInternalConnectionFactory() {
-		ActiveMQConnectionFactory activeMQConnectionFactory;
-		internalConnectionFactory = activeMQConnectionFactory = new ActiveMQConnectionFactory();
-		pooledInternalConnectionFactory = new PooledConnectionFactory(activeMQConnectionFactory);
-		activeMQConnectionFactory.setBrokerURL("vm://it-oms?broker.persistent=false&broker.useJmx=false");
 	}
 
 	private void initScriptRegistry() {
@@ -209,15 +190,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
 	}
 
-	private void initMessageListeners(){
-		
-		quotesTopic = new ActiveMQTopic("quotes");
-		tradesTopic = new ActiveMQTopic("trades");
-
-
-		quoteJmsOperations = SpringUtils.createJmsTemplate(pooledInternalConnectionFactory, quotesTopic);
-	}
-	
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
 	{
 		ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
@@ -252,19 +224,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
 				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
 		
-		registryListener = plugin.newQuoteListenerForAdapter(new DirectMessageListenerAdapter() {
-			@Override
-			protected Object doOnMessage(Object convertedMessage) {
-				try {
-					scriptRegistry.onEvent((Message) convertedMessage);
-				} catch (BSFException e) {
-					ScriptLoggingUtil.error(LoggerAdapter.getLogger(this.getClass()), e);
-				} catch (Exception e) {
-					LoggerAdapter.error("Exception in script ", e, this);
-				}
-				return null;
-			}
-		});
 	}
 
 	/**
@@ -318,19 +277,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return bundleContext;
 	}
 
-	public JmsOperations getQuoteJmsOperations() {
-		return quoteJmsOperations;
-	}
 
-
-	public SimpleMessageListenerContainer newQuoteListenerForAdapter(SessionAwareMessageListener adapter)
-	{
-		SimpleMessageListenerContainer container = 
-			SpringUtils.createSimpleMessageListenerContainer(
-					internalConnectionFactory, adapter, quotesTopic, null);
-		return container;
-	}
-	
 	public void ensureDefaultProject(IProgressMonitor monitor){
 		monitor.beginTask("Ensure default project", 2);
 		

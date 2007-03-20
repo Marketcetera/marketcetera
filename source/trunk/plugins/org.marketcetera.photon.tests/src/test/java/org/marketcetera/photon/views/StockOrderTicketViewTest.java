@@ -13,10 +13,11 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
-import org.marketcetera.photon.quotefeed.QuoteFeedService;
 import org.marketcetera.photon.ui.BookComposite;
+import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
@@ -79,8 +80,8 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	
 	public void testShowQuote() throws Exception {
 		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		QuoteFeedService quoteFeed = MarketDataViewTest.getNullQuoteFeedService();
-		bundleContext.registerService(QuoteFeedService.class.getName(), quoteFeed, null);
+		MarketDataFeedService marketDataFeed = MarketDataViewTest.getNullQuoteFeedService();
+		bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeed, null);
 		
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
@@ -90,7 +91,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		view.showOrder(orderMessage);
 
 		
-		JmsOperations jmsOperations = PhotonPlugin.getDefault().getQuoteJmsOperations();
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol("MRKT"));
 		
@@ -98,16 +98,23 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 		
-		jmsOperations.convertAndSend(quoteMessageToSend);
-		
-		// TODO: fix me...
-		delay(10000);
-		
+		MyMarketDataFeed feed = (MarketDataViewTest.MyMarketDataFeed)marketDataFeed.getMarketDataFeed();
+		feed.sendMessage(quoteMessageToSend);
+				
 		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
 
 		BookComposite bookComposite = (BookComposite) violator.getField("bookComposite", view);
-		Message returnedMessage = bookComposite.getInput();
 
+		Message returnedMessage = null;
+		for (int i = 0; i < 10; i ++){
+			returnedMessage = bookComposite.getInput();
+			if (returnedMessage == null){
+				this.waitForJobs();
+				Thread.sleep(100 * i);
+			} else {
+				break;
+			}
+		}
 		assertEquals("MRKT", returnedMessage.getString(Symbol.FIELD));
 		int noEntries = returnedMessage.getInt(NoMDEntries.FIELD);
 		for (int i = 1; i < noEntries+1; i++){

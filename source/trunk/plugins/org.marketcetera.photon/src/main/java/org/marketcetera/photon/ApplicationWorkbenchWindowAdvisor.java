@@ -16,7 +16,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
-import org.marketcetera.photon.actions.ReconnectQuoteFeedJob;
+import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
 import org.marketcetera.photon.ui.MainConsole;
 
@@ -148,13 +148,13 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	
 
 	private void startQuoteFeed() {
-		ReconnectQuoteFeedJob job = new ReconnectQuoteFeedJob("Reconnect quote feed");
+		ReconnectMarketDataFeedJob job = new ReconnectMarketDataFeedJob("Reconnect quote feed");
 		job.schedule();
 	}
 	
 	private void stopQuoteFeed() {
 		try {
-			ReconnectQuoteFeedJob job = new ReconnectQuoteFeedJob("Disconnect");
+			ReconnectMarketDataFeedJob job = new ReconnectMarketDataFeedJob("Disconnect");
 			job.disconnect();
 		} catch (Throwable t){
 			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);

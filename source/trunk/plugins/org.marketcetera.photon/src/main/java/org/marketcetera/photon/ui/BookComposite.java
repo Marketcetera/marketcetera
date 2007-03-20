@@ -1,7 +1,6 @@
 package org.marketcetera.photon.ui;
 
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -10,7 +9,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.marketcetera.quotefeed.IMessageListener;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -159,14 +157,19 @@ public class BookComposite extends Composite
 	}
 
 	public void onQuote(final Message aMarketRefresh) {
-		Display.getDefault().asyncExec(
-			new Runnable(){
-				public void run()
-				{
-					setInput(aMarketRefresh);
+		Display theDisplay = Display.getDefault();
+		if (theDisplay.getThread() == Thread.currentThread()){
+			setInput(aMarketRefresh);
+		} else {
+			theDisplay.asyncExec(
+				new Runnable(){
+					public void run()
+					{
+						setInput(aMarketRefresh);
+					}
 				}
-			}
-		);
+			);
+		}
 	}
 
 }

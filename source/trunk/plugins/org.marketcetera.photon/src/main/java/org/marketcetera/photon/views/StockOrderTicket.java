@@ -11,7 +11,6 @@ import java.util.Map.Entry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
-import org.eclipse.osgi.util.NLS;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -43,16 +42,18 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.IFeedComponent.FeedStatus;
+import org.marketcetera.marketdata.ConjunctionMessageSelector;
+import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.MessageTypeSelector;
+import org.marketcetera.marketdata.SymbolMessageSelector;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
-import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.preferences.MapEditorUtil;
-import org.marketcetera.photon.quotefeed.QuoteFeedService;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.ui.validation.AbstractFIXExtractor;
 import org.marketcetera.photon.ui.validation.CComboValidator;
@@ -66,8 +67,6 @@ import org.marketcetera.photon.ui.validation.PriceTextValidator;
 import org.marketcetera.photon.ui.validation.TextValidator;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quotefeed.IQuoteFeed;
-import org.osgi.util.tracker.ServiceTracker;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -156,31 +155,20 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	private Section bookSection;
 
-	private ServiceTracker quoteFeedTracker;
-
-	private SimpleMessageListenerContainer quoteListener;
+	private MarketDataFeedTracker marketDataTracker;
 
 	private IMemento viewStateMemento;
 	private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
+
+	private MarketDataListener marketDataListener;
+
+	private ConjunctionMessageSelector currentSubscription;
 	
 
 	public StockOrderTicket() {
-		quoteFeedTracker = new ServiceTracker(PhotonPlugin.getDefault().getBundleContext(),
-				QuoteFeedService.class.getName(),
-				null
-				);
-		quoteFeedTracker.open();
+		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault().getBundleContext());
+		marketDataTracker.open();
 		
-		quoteListener = PhotonPlugin.getDefault().newQuoteListenerForAdapter(new DirectMessageListenerAdapter()
-		{
-			@Override
-			protected Object doOnMessage(Object convertedMessage) {
-				StockOrderTicket.this.onQuote((Message) convertedMessage);
-				return null;
-			}
-		});
-		quoteListener.afterPropertiesSet();
-
 	}
 
 	@Override
@@ -202,24 +190,31 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		plugin.getPreferenceStore().addPropertyChangeListener(this);
+		
+		marketDataListener = new MarketDataListener(){
+					public void onLevel2Quote(Message aQuote) {
+						StockOrderTicket.this.onQuote(aQuote);
+					}
+		
+					public void onQuote(Message aQuote) {
+						StockOrderTicket.this.onQuote(aQuote);
+					}
+		
+					public void onTrade(Message aTrade) {
+					}
+					
+				};
+		marketDataTracker.setMarketDataListener(marketDataListener);
+
 	}
 
 	@Override
 	public void dispose() {
-		quoteListener.stop();
-		quoteFeedTracker.close();
+		marketDataTracker.setMarketDataListener(null);
+		marketDataTracker.close();
 		PhotonPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
-		unlisten();
-		IQuoteFeed quoteFeed = getQuoteFeed();
-		if (quoteFeed != null) {
-			quoteFeed.unlistenLevel2(listenedSymbol);
-		}
+		
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
-	}
-
-	private IQuoteFeed getQuoteFeed() {
-		QuoteFeedService service = (QuoteFeedService) quoteFeedTracker.getService();
-		return (IQuoteFeed) (service == null ? null : service.getQuoteFeed());
 	}
 
 	@Override
@@ -442,24 +437,29 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		unlisten();
 		if (symbol != null && !"".equals(symbol)){
 			MSymbol newListenedSymbol = new MSymbol(symbol);
-			IQuoteFeed quoteFeed = (IQuoteFeed) getQuoteFeed();
-
-			if (quoteFeed != null
-					&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE
+			MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+			
+			if (service != null
 					&& !newListenedSymbol.equals(listenedSymbol)) {
-				quoteFeed.listenLevel2(newListenedSymbol);
+				ConjunctionMessageSelector subscription = new ConjunctionMessageSelector(
+												new SymbolMessageSelector(newListenedSymbol),
+												new MessageTypeSelector(false, false, true));
+				service.subscribe(subscription);
 				listenedSymbol = newListenedSymbol;
+				currentSubscription = subscription;
 			}
 		}
 	}
 
 	protected void unlisten() {
-		IQuoteFeed quoteFeed = (IQuoteFeed) getQuoteFeed();
+		MarketDataFeedService service = marketDataTracker
+				.getMarketDataFeedService();
 
-		if (quoteFeed != null
-				&& quoteFeed.getFeedStatus() == FeedStatus.AVAILABLE) {
-			if (listenedSymbol != null) {
-				quoteFeed.unlistenLevel2(listenedSymbol);
+		if (service != null) {
+			if (currentSubscription != null) {
+				service.unsubscribe(currentSubscription);
+				listenedSymbol = null;
+				currentSubscription = null;
 			}
 		}
 		bookComposite.setInput(null);

@@ -5,14 +5,14 @@ import java.util.Date;
 
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.IMarketDataFeed;
+import org.marketcetera.marketdata.IMarketDataListener;
+import org.marketcetera.marketdata.IMessageSelector;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.quotefeed.QuoteFeedService;
-import org.marketcetera.quotefeed.IQuoteFeed;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.osgi.framework.BundleContext;
 import org.springframework.jms.core.JmsOperations;
-
-import ca.odell.glazedlists.EventList;
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -25,9 +25,11 @@ import quickfix.field.MDMkt;
 import quickfix.field.NoMDEntries;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
+import ca.odell.glazedlists.EventList;
 
 
 public class MarketDataViewTest extends ViewTestBase {
+
 
 	public MarketDataViewTest(String name) {
 		super(name);
@@ -35,8 +37,8 @@ public class MarketDataViewTest extends ViewTestBase {
 
 	public void testShowQuote() throws Exception {
 		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		QuoteFeedService quoteFeed = getNullQuoteFeedService();
-		bundleContext.registerService(QuoteFeedService.class.getName(), quoteFeed, null);
+		MarketDataFeedService marketDataFeedService = getNullQuoteFeedService();
+		bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
 		
 		
 		MarketDataView view = (MarketDataView) getTestView();
@@ -44,7 +46,6 @@ public class MarketDataViewTest extends ViewTestBase {
 		EventList<MessageHolder> input = view.getInput();
 		assertEquals(1, input.size());
 
-		JmsOperations jmsOperations = PhotonPlugin.getDefault().getQuoteJmsOperations();
 		MarketDataSnapshotFullRefresh fixMessage = new MarketDataSnapshotFullRefresh();
 		fixMessage.set(new Symbol("MRKT"));
 		
@@ -52,10 +53,10 @@ public class MarketDataViewTest extends ViewTestBase {
 		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		fixMessage.setString(LastPx.FIELD,"123.4");
 		
-		jmsOperations.convertAndSend(fixMessage);
+		((MyMarketDataFeed)marketDataFeedService.getMarketDataFeed()).sendMessage(fixMessage);
 		
 		// TODO: fix me...
-		delay(10000);
+		//delay(10000);
 		
 		MessageHolder messageHolder = input.get(0);
 		Message message = messageHolder.getMessage();
@@ -76,71 +77,8 @@ public class MarketDataViewTest extends ViewTestBase {
 		}
 	}
 	
-	public static QuoteFeedService getNullQuoteFeedService() {
-		QuoteFeedService feedService = new QuoteFeedService();
-		feedService.setQuoteFeed(new IQuoteFeed() {
-
-			public JmsOperations getQuoteJmsOperations() {
-				return null;
-			}
-
-			public JmsOperations getTradeJmsOperations() {
-				return null;
-			}
-
-			public void listenLevel2(MSymbol symbol) {
-			}
-
-			public void listenQuotes(MSymbol symbol) {
-			}
-
-			public void listenTrades(MSymbol symbol) {
-			}
-
-			public void setQuoteJmsOperations(JmsOperations tradeOperations) {
-			}
-
-			public void setTradeJmsOperations(JmsOperations tradeOperations) {
-			}
-
-			public void unlistenLevel2(MSymbol symbol) {
-			}
-
-			public void unlistenQuotes(MSymbol symbol) {
-			}
-
-			public void unlistenTrades(MSymbol symbol) {
-			}
-
-			public void addFeedComponentListener(IFeedComponentListener listener) {
-			}
-
-			public FeedStatus getFeedStatus() {
-				return FeedStatus.AVAILABLE;
-			}
-
-			public FeedType getFeedType() {
-				return FeedType.SIMULATED;
-			}
-
-			public String getID() {
-				return "";
-			}
-
-			public void removeFeedComponentListener(IFeedComponentListener listener) {
-			}
-
-			public boolean isRunning() {
-				return true;
-			}
-
-			public void start() {
-			}
-
-			public void stop() {
-			}
-			
-		});
+	public static MarketDataFeedService getNullQuoteFeedService() {
+		MarketDataFeedService feedService = new MarketDataFeedService(new MyMarketDataFeed());
 		return feedService;
 	}
 
@@ -159,4 +97,62 @@ public class MarketDataViewTest extends ViewTestBase {
 		return MarketDataView.ID;
 	}
 
+	public static final class MyMarketDataFeed implements IMarketDataFeed {
+		private IMarketDataListener marketDataListener;
+
+		public void addFeedComponentListener(IFeedComponentListener listener) {
+		}
+
+		public FeedStatus getFeedStatus() {
+			return FeedStatus.AVAILABLE;
+		}
+
+		public FeedType getFeedType() {
+			return FeedType.SIMULATED;
+		}
+
+		public String getID() {
+			return "";
+		}
+
+		public void removeFeedComponentListener(IFeedComponentListener listener) {
+		}
+
+		public boolean isRunning() {
+			return true;
+		}
+
+		public void start() {
+		}
+
+		public void stop() {
+		}
+
+		public IMarketDataListener getMarketDataListener() {
+			return marketDataListener;
+		}
+
+		public void setMarketDataListener(IMarketDataListener listener) {
+			marketDataListener = listener;
+		}
+
+		public void subscribe(IMessageSelector selector) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public MSymbol symbolFromString(String symbolString) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public boolean unsubscribe(IMessageSelector selector) {
+			// TODO Auto-generated method stub
+			return false;
+		}
+
+		public void sendMessage(Message aMessage) {
+			marketDataListener.onMessage(aMessage);
+		}
+	}
 }
