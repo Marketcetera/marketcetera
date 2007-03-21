@@ -2,17 +2,12 @@ package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.SessionAdmin;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-
-import java.util.List;
-import java.util.LinkedList;
-
-//import org.quickfixj.jmx.JmxExporter;
-//import org.quickfixj.jmx.mbean.connector.ConnectorJmxExporter;
 import org.springframework.context.ApplicationContext;
-
 import quickfix.Session;
 import quickfix.SocketInitiator;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * OrderManagementSystem
@@ -36,7 +31,7 @@ public class OrderManagementSystem extends ApplicationBase {
     private static final String LOGGER_NAME = OrderManagementSystem.class.getName();
     public static final MessageBundleInfo OMS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("oms", "oms_messages");
     public static final String[] APP_CONTEXT_CONFIG_FILES = {"quickfixj.xml", "order-modifiers.xml",
-            "quickfixj.appctx.xml", "oms.xml", "oms-shared.xml"};
+            "oms.xml", "oms-shared.xml"};
 
     protected List<MessageBundleInfo> getLocalMessageBundles() {
         LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
@@ -49,8 +44,7 @@ public class OrderManagementSystem extends ApplicationBase {
         try {
             OrderManagementSystem oms = new OrderManagementSystem();
             ApplicationContext appCtx = oms.createApplicationContext(APP_CONTEXT_CONFIG_FILES, true);
-            FIXDataDictionaryManager.setFIXVersion(oms.getFIXVersion().toString());
-            
+
             if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
                 String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);
                 String connectPort = (String) appCtx.getBean("socketConnectPortValue", String.class);

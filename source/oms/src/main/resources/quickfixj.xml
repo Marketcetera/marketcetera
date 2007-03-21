@@ -39,10 +39,6 @@
         </constructor-arg>
     </bean>
 
-    <bean id="dataDictionary" class="quickfix.DataDictionary">
-        <constructor-arg ref="quickfix_FIX42_URLstring" type="java.lang.String"/>
-    </bean>
-
 	<bean id="sessionSettings" class="quickfix.spring.SessionSettings">
 		<property name="defaults">
 			<map>
@@ -51,7 +47,7 @@
                 <entry key="FileStorePath" value="store"/>
                 <entry key="StartTime" value="00:00:00"/>
                 <entry key="EndTime" value="00:00:00"/>
-                <entry><key><value>DataDictionary</value></key><ref bean="quickfix_FIX42_URL" /></entry>
+                <entry><key><value>DataDictionary</value></key><ref bean="fixDictionaryPath" /></entry>
                 <entry key="UseDataDictionary" value="Y"/>
                 <entry key="ReconnectInterval" value="15"/>
                 <entry key="ResetOnLogout" value="Y"/>

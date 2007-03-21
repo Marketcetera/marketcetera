@@ -55,6 +55,8 @@
       <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
     </bean>
 
+    <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>
+
     <!-- Location (host/port) of the FIX reciever we are connecting to -->
     <bean id="socketConnectHostValue" class="java.lang.String">
         <constructor-arg value="exchange.marketcetera.com"/>
