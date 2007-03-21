@@ -175,6 +175,17 @@ public class ParserTest extends TestCase {
             }
         }).run();
 
+    	(new ExpectedTestFailure(ParserException.class) {
+            protected void execute() throws Throwable
+            {
+            	String innerOrder = "s 15 toli mkt bob errtok";
+            	CommandParser innerParser = new CommandParser();
+            	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+            	MessageCommand aCommand = innerParser.parseNewOrder(innerOrder);
+            	System.out.println(""+aCommand);
+            }
+        }).run();
     }
     
     void verifyNewOrder(Message message, char side, BigDecimal quantity,
