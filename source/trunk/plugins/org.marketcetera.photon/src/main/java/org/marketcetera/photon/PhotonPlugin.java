@@ -4,11 +4,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import javax.jms.ConnectionFactory;
-
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.apache.activemq.command.ActiveMQTopic;
-import org.apache.activemq.pool.PooledConnectionFactory;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Level;
@@ -22,23 +17,18 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.messaging.DirectMessageListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
-import org.marketcetera.photon.messaging.SpringUtils;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
-import org.marketcetera.photon.scripting.ScriptLoggingUtil;
 import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -46,12 +36,7 @@ import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.prefs.Preferences;
 import org.rubypeople.rdt.core.RubyCore;
-import org.springframework.jms.core.JmsOperations;
-import org.springframework.jms.listener.SessionAwareMessageListener;
-
-import quickfix.Message;
 
 /**
  * The main plugin class to be used in the Photon application.
@@ -105,7 +90,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		super.start(context);
 		bundleContext = context;
 		
-		Preferences preferences = new ConfigurationScope().getNode(PhotonPlugin.ID);
 		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
 		changeLogLevel(level == null ? PhotonPage.LOG_LEVEL_VALUE_INFO : level);
 		
@@ -187,7 +171,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	{
 		MessageBundleManager.registerCoreMessageBundle();
 		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
-		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+		FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
 	}
 
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
