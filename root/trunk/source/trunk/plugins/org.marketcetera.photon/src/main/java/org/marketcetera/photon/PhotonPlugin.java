@@ -185,9 +185,9 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private void initResources() throws FIXFieldConverterNotAvailable
 	{
-		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 		MessageBundleManager.registerCoreMessageBundle();
 		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
+		FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
 	}
 
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
