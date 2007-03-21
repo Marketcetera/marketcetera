@@ -35,4 +35,14 @@ public class AccessViolatorTest extends TestCase {
             }
         }.run();
     }
+
+    public void testSetter() throws Exception {
+        AccessViolator violator = new AccessViolator(ViolatedClass.class);
+        ViolatedClass violated = new ViolatedClass();
+        assertEquals(ViolatedClass.HIDDEN_VALUE, violator.getField("hidden", violated));
+
+        // now set it
+        violator.setField("hidden", violated, "violated");
+        assertEquals("violated", violator.getField("hidden", violated));
+    }
 }

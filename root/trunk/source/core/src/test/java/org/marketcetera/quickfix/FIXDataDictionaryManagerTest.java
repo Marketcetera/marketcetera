@@ -2,11 +2,10 @@ package org.marketcetera.quickfix;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.ClassVersion;
-import quickfix.field.Side;
+import org.marketcetera.core.MarketceteraTestSuite;
 import quickfix.field.ExecType;
+import quickfix.field.Side;
 
 /**
  * @author Toli Kuznets
@@ -24,20 +23,13 @@ public class FIXDataDictionaryManagerTest extends TestCase {
     }
 
     public void testDictionaryInit() throws Exception {
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
-
-
-        new ExpectedTestFailure(FIXFieldConverterNotAvailable.class) {
-            protected void execute() throws Throwable {
-                FIXDataDictionaryManager.setFIXVersion("version DNE");
-            }
-        }.run();
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
 
         // lookup some fields
         assertEquals("OrderID", FIXDataDictionaryManager.getHumanFieldName(37));
         assertEquals("OrderID", FIXDataDictionaryManager.getHumanFieldName(37));
 
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING);
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
         assertEquals("OrderID", FIXDataDictionaryManager.getHumanFieldName(37));
         assertEquals("CollAction", FIXDataDictionaryManager.getHumanFieldName(944));
 
@@ -45,7 +37,7 @@ public class FIXDataDictionaryManagerTest extends TestCase {
     }
 
     public void testValueGetting() throws Exception {
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
 
         assertEquals("BUY", FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+Side.BUY));
         assertEquals("SELL", FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+Side.SELL));
@@ -61,13 +53,13 @@ public class FIXDataDictionaryManagerTest extends TestCase {
 
 
     public void testGetDataDictionary() throws Exception {
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING);
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX41.getDataDictionaryURL());
         assertEquals(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
         assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING);
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX43.getDataDictionaryURL());
         assertEquals(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-        FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING);
+        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
         assertEquals(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
     }
 }
