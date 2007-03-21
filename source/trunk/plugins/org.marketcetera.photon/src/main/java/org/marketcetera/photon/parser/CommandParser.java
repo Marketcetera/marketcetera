@@ -132,11 +132,14 @@ public class CommandParser {
 					PriceImage priceObject = (PriceImage) vals[i++];
 					TimeInForceImage timeInForce = TimeInForceImage.DAY;
 					String accountID = null;
-					if (vals.length >= i && vals[i] !=null)
-						timeInForce = (TimeInForceImage) vals[i++];
-					if (vals.length >= i && vals[i] !=null)
-						accountID = (String) vals[i++];
-
+					if (vals.length > i && vals[i] != null) {
+						timeInForce = (TimeInForceImage) vals[i];
+						i++;
+						if (vals.length >= i && vals[i] !=null)
+							accountID = (String) vals[i];
+					} else if (vals.length > i+1 && vals[i+1] != null){
+						throw new jfun.parsec.UserException("Missing time-in-force");
+					}
 					Message message=null;
 					try {
 						if (PriceImage.MKT.equals(priceObject))	{
