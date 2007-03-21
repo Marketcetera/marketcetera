@@ -33,4 +33,11 @@ public class AccessViolator {
         return theMethod.invoke(reference, args);
     }
 
+    /** Sets the speicified field to the passed-in value */
+    public void setField(String fieldName, Object reference, Object value)
+            throws NoSuchFieldException, IllegalAccessException {
+        Field theField = violatedClass.getDeclaredField(fieldName);
+        theField.setAccessible(true);
+        theField.set(reference, value);
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.context.ApplicationContext;
 import org.marketcetera.quickfix.SessionAdmin;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -52,6 +53,7 @@ public abstract class ApplicationBase implements Clock {
             appCtx.registerShutdownHook();
         }
         fixVersion = (FIXVersion) appCtx.getBean(FIX_VERSION_NAME);
+        FIXDataDictionaryManager.setDataDictionary(fixVersion.getDataDictionaryURL());
         msgFactory = fixVersion.getMessageFactory();
         return appCtx;
     }

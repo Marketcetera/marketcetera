@@ -3,14 +3,16 @@ package org.marketcetera.quickfix;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraTestSuite;
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.Account;
+import quickfix.field.HandlInst;
+import quickfix.field.Side;
+import quickfix.field.TimeInForce;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 /**
  * @author toli
@@ -28,17 +30,17 @@ public class FIXVersionsTest extends TestCase {
     }
 
     public void testNOS() throws Exception {
-        DataDictionary dict0 = FIXDataDictionaryManager.getDataDictionary(FIXDataDictionaryManager.FIX_4_0_BEGIN_STRING);
-        DataDictionary dict1 = FIXDataDictionaryManager.getDataDictionary(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING);
-        DataDictionary dict2 = FIXDataDictionaryManager.getDataDictionary(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
-        DataDictionary dict3 = FIXDataDictionaryManager.getDataDictionary(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING);
-        DataDictionary dict4 = FIXDataDictionaryManager.getDataDictionary(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING);
+        DataDictionary dict0 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX40);
+        DataDictionary dict1 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX41);
+        DataDictionary dict2 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX42);
+        DataDictionary dict3 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX43);
+        DataDictionary dict4 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX44);
 
-        dict0.validate(createNOSHelper(FIXVersion.FIX40, "toli", 33, Side.BUY/*, true*/));
-        dict1.validate(createNOSHelper(FIXVersion.FIX41, "toli", 33, Side.BUY/*, true*/));
-        dict2.validate(createNOSHelper(FIXVersion.FIX42, "toli", 33, Side.BUY/*, true*/));
-        dict3.validate(createNOSHelper(FIXVersion.FIX43, "toli", 33, Side.BUY/*, true*/));
-        dict4.validate(createNOSHelper(FIXVersion.FIX44, "toli", 33, Side.BUY/*, true*/));
+        dict0.validate(createNOSHelper(FIXVersion.FIX40, "toli", 33, Side.BUY));
+        dict1.validate(createNOSHelper(FIXVersion.FIX41, "toli", 33, Side.BUY));
+        dict2.validate(createNOSHelper(FIXVersion.FIX42, "toli", 33, Side.BUY));
+        dict3.validate(createNOSHelper(FIXVersion.FIX43, "toli", 33, Side.BUY));
+        dict4.validate(createNOSHelper(FIXVersion.FIX44, "toli", 33, Side.BUY));
 
 
     }

@@ -18,15 +18,15 @@ import java.util.HashMap;
 @ClassVersion("$Id$")
 public enum FIXVersion {
     // todo: later when QFJ is ready we get rid of MyMessageFactory and just create a straight QFJ quickfix.fix4x.MessageFactory
-    FIX40(FIXDataDictionaryManager.FIX_4_0_BEGIN_STRING,
+    FIX40(FIXDataDictionaryManager.FIX_4_0_BEGIN_STRING, "FIX40.xml",
           new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_0_BEGIN_STRING, new MessageFactory40(), new NoOpFIXMessageAugmentor())),
-    FIX41(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING,
+    FIX41(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, "FIX41.xml",
             new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, new MessageFactory41(), new NoOpFIXMessageAugmentor())),
-    FIX42(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING,
+    FIX42(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, "FIX42.xml",
             new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, new MessageFactory42(), new FIXMessageAugmentor_42())),
-    FIX43(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING,
+    FIX43(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, "FIX43.xml",
             new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, new MessageFactory43(), new FIXMessageAugmentor_43())),
-    FIX44(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING,
+    FIX44(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, "FIX44.xml",
             new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, new MessageFactory44(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
@@ -53,14 +53,16 @@ public enum FIXVersion {
     }
 
 
-    private FIXVersion (String inVersion, FIXMessageFactory inFactory) {
+    private FIXVersion (String inVersion, String inDDURL, FIXMessageFactory inFactory) {
         version = inVersion;
         msgFactory = inFactory;
+        dataDictionaryURL = inDDURL;
     }
 
 
     private FIXMessageFactory msgFactory;
     private final String version;
+    private final String dataDictionaryURL;
 
     public String toString() {
         return version;
@@ -70,4 +72,8 @@ public enum FIXVersion {
         return msgFactory;
     }
 
+    /** Returns the path to the file representing the DataDictionary */
+    public String getDataDictionaryURL() {
+        return dataDictionaryURL;
+    }
 }

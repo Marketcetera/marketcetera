@@ -1,14 +1,10 @@
 package org.marketcetera.quickfix;
 
+import org.marketcetera.core.ClassVersion;
 import quickfix.ConfigError;
 import quickfix.DataDictionary;
 
 import java.io.InputStream;
-import java.util.HashMap;
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MessageKey;
 
 /**
  * Converts the standard FIX field (integers) to their english names
@@ -20,33 +16,13 @@ import org.marketcetera.core.MessageKey;
  */
 @ClassVersion("$Id$")
 public class FIXDataDictionaryManager {
-    private static String LOGGER_NAME = FIXDataDictionaryManager.class.getName();
-
     public static final String FIX_4_0_BEGIN_STRING = "FIX.4.0";
     public static final String FIX_4_1_BEGIN_STRING = "FIX.4.1";
     public static final String FIX_4_2_BEGIN_STRING = "FIX.4.2";
     public static final String FIX_4_3_BEGIN_STRING = "FIX.4.3";
     public static final String FIX_4_4_BEGIN_STRING = "FIX.4.4";
 
-    private final static String[][] dictNames = {
-            {FIX_4_0_BEGIN_STRING, "FIX40.xml"},
-            {FIX_4_1_BEGIN_STRING, "FIX41.xml"},
-            {FIX_4_2_BEGIN_STRING, "FIX42.xml"},
-            {FIX_4_3_BEGIN_STRING, "FIX43.xml"},
-            {FIX_4_4_BEGIN_STRING, "FIX44.xml"}
-    };
-
     private static DataDictionary sCurrent;
-    private static HashMap<String, DataDictionary> dictionaryMap;
-
-    private static void init() throws FIXFieldConverterNotAvailable {
-        dictionaryMap = new HashMap<String, DataDictionary>(dictNames.length);
-        for (String[] converterInfo : dictNames) {
-            loadDictionary(converterInfo[1], false);
-        }
-    }
-
-
 
     public static String getHumanFieldName(int fieldNumber)
     {
@@ -66,75 +42,48 @@ public class FIXDataDictionaryManager {
         return (result == null) ? result : result.replace('_', ' ');
     }
 
-    public static DataDictionary getDictionary(){
-        if(sCurrent == null) {
-            sCurrent = getDataDictionary(FIX_4_2_BEGIN_STRING);
-        }
+    public static DataDictionary getDictionary() {
         return sCurrent;
     }
 
+    public static DataDictionary getDataDictionary(FIXVersion version) throws FIXFieldConverterNotAvailable {
+        return loadDictionary(version.getDataDictionaryURL(), false);
+    }
+
     /**
+     * Set the default version of FIX to use in the rest of the methods on this class
+     * @param fixDataDictionaryPath  Path to the location of the data dictionary file
+     * @throws FIXFieldConverterNotAvailable
+     */
+    public static void setDataDictionary(String fixDataDictionaryPath) throws FIXFieldConverterNotAvailable
+    {
+        loadDictionary(fixDataDictionaryPath, true);
+    }
+
+        /**
      * Load a DataDictionary from the specified resource, optionally making it the default
      * dictionary.
      *
-     * @param dictName The name of the resource from which to load a QuickFIX DataDictionary
+     * @param fixDataDictionaryPath  Path to the location of the data dictionary file
      * @param makeDefault if true make the version of FIX specified in the data dictionary the default version
      * @throws FIXFieldConverterNotAvailable
      */
-    public static void loadDictionary(String dictName, boolean makeDefault)
+    public static DataDictionary loadDictionary(String fixDataDictionaryPath, boolean makeDefault)
             throws  FIXFieldConverterNotAvailable
     {
-        if (dictionaryMap == null){
-            init();
-        }
         DataDictionary theDict;
-        InputStream input = FIXDataDictionaryManager.class.getClassLoader().getResourceAsStream(dictName);
+        InputStream input = FIXDataDictionaryManager.class.getClassLoader().getResourceAsStream(fixDataDictionaryPath);
         try {
             theDict = new DataDictionary(input);
         } catch (ConfigError configError) {
             throw new FIXFieldConverterNotAvailable(configError.getMessage(), configError);
         }
-        dictionaryMap.put(theDict.getVersion(), theDict);
+
         if (makeDefault){
-            setFIXVersion(theDict.getVersion());
+            sCurrent = theDict;
         }
+        return theDict;
    }
-
-    /**
-     * Get the QuickFIX DataDictionary for the given version of FIX
-     * @param version  The string representing the version of fix you're interested in.
-     * @return the data dictionary
-     */
-    public static DataDictionary getDataDictionary(String version){
-        if (dictionaryMap == null){
-            try {
-                init();
-            } catch (FIXFieldConverterNotAvailable fixFieldConverterNotAvailable) {
-                return null;
-            }
-        }
-        return dictionaryMap.get(version);
-    }
-
-    /**
-     * Set the default version of FIX to use in the rest of the methods on this class
-     * @param inVersion  The string representing the new default version of fix.  See the constants defined in this class.
-     * @throws FIXFieldConverterNotAvailable
-     */
-    public static void setFIXVersion(String inVersion) throws FIXFieldConverterNotAvailable
-    {
-        if (dictionaryMap == null){
-           init();
-        }
-        DataDictionary dict = dictionaryMap.get(inVersion);
-        if(dict == null) {
-            throw new FIXFieldConverterNotAvailable(MessageKey.FIX_VERSION_UNSUPPORTED.getLocalizedMessage(inVersion));
-        }
-        if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
-            LoggerAdapter.info(MessageKey.FIX_DICTIONARY_SET.getLocalizedMessage(inVersion), LOGGER_NAME);
-        }
-        sCurrent = dict;
-    }
 
     public static boolean isAdminMessageType42(String msgType) {
         if (msgType.length() == 1) {
