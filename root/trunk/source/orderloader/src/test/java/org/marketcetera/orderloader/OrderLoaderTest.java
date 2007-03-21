@@ -20,7 +20,7 @@ import java.util.Vector;
 @ClassVersion("$Id$")
 public class OrderLoaderTest extends TestCase
 {
-    private OrderLoader mLoader;
+    private MyOrderLoader mLoader;
 
     public OrderLoaderTest(String inName)
     {
@@ -43,7 +43,6 @@ public class OrderLoaderTest extends TestCase
     {
         super.setUp();
         mLoader = new MyOrderLoader(false);
-        mLoader.createApplicationContext(new String[]{"orderloader.xml"}, false);
         FIXDataDictionaryManager.loadDictionary("FIX42-orderloader-test.xml", true);
     }
 
@@ -271,33 +270,32 @@ public class OrderLoaderTest extends TestCase
 
     public void testWithCustomField() throws Exception
     {
-        final MyOrderLoader myLoader =  new MyOrderLoader(false);
         final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
                 new OrderQty(), new Price(), new CustomField(9999, null), new Account()));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
-        myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
-        assertNull(myLoader.mMessage);
-        assertEquals(1, myLoader.getFailedOrders().size());
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
+        assertNull(mLoader.mMessage);
+        assertEquals(1, mLoader.getFailedOrders().size());
 
         // manually construct message: {55=IBM, 40=2, 38=100, 21=3, 11=666, 1=123-ASDF-234, 54=5, 59=0, 44=12.22}
-        myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","123","123-ASDF-234"});
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","123","123-ASDF-234"});
 
-        assertEquals("IBM", myLoader.mMessage.getString(Symbol.FIELD) );
-        assertEquals(Side.SELL_SHORT, myLoader.mMessage.getChar(Side.FIELD) );
-        assertEquals("100", myLoader.mMessage.getString(OrderQty.FIELD) );
-        assertEquals("12.22", myLoader.mMessage.getString(Price.FIELD) );
-        assertEquals("123", myLoader.mMessage.getString(9999) );
-        assertEquals("123-ASDF-234", myLoader.mMessage.getString(Account.FIELD) );
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
+        assertEquals("123", mLoader.mMessage.getString(9999) );
+        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
 
         // integer, id+1
         // manually construct message: {55=IBM, 40=2, 38=100, 21=3, 11=666, 1=123-ASDF-234, 54=5, 59=0, 44=12.22}
-        myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","12345","123-ASDF-234"});
-        assertEquals("IBM", myLoader.mMessage.getString(Symbol.FIELD) );
-        assertEquals(Side.SELL_SHORT, myLoader.mMessage.getChar(Side.FIELD) );
-        assertEquals("100", myLoader.mMessage.getString(OrderQty.FIELD) );
-        assertEquals("12.22", myLoader.mMessage.getString(Price.FIELD) );
-        assertEquals("12345", myLoader.mMessage.getString(9999) );
-        assertEquals("123-ASDF-234", myLoader.mMessage.getString(Account.FIELD) );
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","12345","123-ASDF-234"});
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
+        assertEquals("12345", mLoader.mMessage.getString(9999) );
+        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
 
 
         // strategy directive: custom fields are 5900,9623,5084,5083
@@ -309,16 +307,16 @@ public class OrderLoaderTest extends TestCase
 //        String[] headerNames2 = new String[]{"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account",
 //                "5900", "9623", "5084", "5083"};
 //        // manually construct message: TWX,BUY,1500,18.11,DAY,TOLI,NCentsWide,0.01,200,5
-//        myLoader.sendOneOrder(headerFields2, headerNames2, new String[] {"TWX","B","1500","18.11","DAY","TOLI",
+//        mLoader.sendOneOrder(headerFields2, headerNames2, new String[] {"TWX","B","1500","18.11","DAY","TOLI",
 //                                    "NCentsWide","0.01","200","5"});
-//        assertEquals("TWX", myLoader.mMessage.getString(Symbol.FIELD) );
-//        assertEquals(Side.BUY, myLoader.mMessage.getChar(Side.FIELD) );
-//        assertEquals("1500", myLoader.mMessage.getString(OrderQty.FIELD) );
-//        assertEquals("18.11", myLoader.mMessage.getString(Price.FIELD) );
-//        assertEquals(TimeInForce.DAY, myLoader.mMessage.getString(TimeInForce.FIELD) );
-//        assertEquals("123-ASDF-234", myLoader.mMessage.getString(Account.FIELD) );
+//        assertEquals("TWX", mLoader.mMessage.getString(Symbol.FIELD) );
+//        assertEquals(Side.BUY, mLoader.mMessage.getChar(Side.FIELD) );
+//        assertEquals("1500", mLoader.mMessage.getString(OrderQty.FIELD) );
+//        assertEquals("18.11", mLoader.mMessage.getString(Price.FIELD) );
+//        assertEquals(TimeInForce.DAY, mLoader.mMessage.getString(TimeInForce.FIELD) );
+//        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
 //        assertEquals("[40=2, 55=TWX, 11=669, 5083=5, 9623=0.01, 54=1, 44=18.11, 59=0, 5900=NCentsWide, 21=3, 38=1500, 1=TOLI, 5084=200]",
-//                     myLoader.mMessage.toString());
+//                     mLoader.mMessage.toString());
     }
 
     private class MyOrderLoader extends OrderLoader {
