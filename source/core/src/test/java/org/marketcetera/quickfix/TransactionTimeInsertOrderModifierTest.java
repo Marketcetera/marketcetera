@@ -1,10 +1,10 @@
 package org.marketcetera.quickfix;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.MsgType;
@@ -15,41 +15,39 @@ import quickfix.field.TransactTime;
  * @version $Id
  */
 @ClassVersion("Id")
-public class TransactionTimeInsertOrderModifierTest extends TestCase {
-    public TransactionTimeInsertOrderModifierTest(String inName) {
-        super(inName);
+public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase {
+    public TransactionTimeInsertOrderModifierTest(String inName, FIXVersion version) {
+        super(inName, version);
     }
 
     public static Test suite() {
-        return new MarketceteraTestSuite(TransactionTimeInsertOrderModifierTest.class);
+        return new FIXVersionTestSuite(TransactionTimeInsertOrderModifierTest.class, FIXVersionTestSuite.ALL_VERSIONS);
     }
 
-    public void testApplicability() throws Exception {
+    public void testTTNotSetOnUnapplicable() throws Exception {
         TransactionTimeInsertOrderModifier mod = new TransactionTimeInsertOrderModifier();
-        Message msg = new Message();
+        final Message msg = new Message();
+        msg.getHeader().setField(new MsgType(MsgType.DERIVATIVE_SECURITY_LIST));
 
-        String[] notApplicable = new String[] { MsgType.DERIVATIVE_SECURITY_LIST,
-                                                MsgType.BID_REQUEST};
+        new ExpectedTestFailure(FieldNotFound.class) {
+            protected void execute() throws Throwable {
+                msg.getString(TransactTime.FIELD);
+            }
+        }.run();
 
-        for (String code : notApplicable) {
-            msg = new Message();
-            msg.getHeader().setField(new MsgType(code));
-            assertFalse(mod.needsTransactTime(msg));
-        }
-
-        for (String code : TransactionTimeInsertOrderModifier.applicableMsgTypeCodes) {
-            msg = new Message();
-            msg.getHeader().setField(new MsgType(code));
-
-            assertTrue(mod.needsTransactTime(msg));
-        }
+        mod.modifyOrder(msg, msgFactory.getMsgAugmentor());
+        new ExpectedTestFailure(FieldNotFound.class) {
+            protected void execute() throws Throwable {
+                msg.getString(TransactTime.FIELD);
+            }
+        }.run();
     }
 
     public void testTTSet() throws Exception {
         TransactionTimeInsertOrderModifier mod = new TransactionTimeInsertOrderModifier();
         final Message msg = new Message();
 
-        msg.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REJECT));
+        msg.getHeader().setField(new MsgType(MsgType.EXECUTION_REPORT));
 
         new ExpectedTestFailure(FieldNotFound.class) {
             protected void execute() throws Throwable {
@@ -58,8 +56,8 @@ public class TransactionTimeInsertOrderModifierTest extends TestCase {
         }.run();
 
 
-        mod.modifyOrder(msg);
+        mod.modifyOrder(msg, msgFactory.getMsgAugmentor());
 
-        assertNotNull(msg.getString(TransactTime.FIELD));
+        assertNotNull("TransactTime was not set", msg.getString(TransactTime.FIELD));
     }
 }

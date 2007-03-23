@@ -42,7 +42,7 @@ public class FIXMessageFactory {
     public Message newOrderCancelReject()
     {
         Message msg = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REJECT);
-        msg.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(msg);
         return msg;
     }
 
@@ -53,14 +53,14 @@ public class FIXMessageFactory {
     public Message newOrderCancelReplaceRequest()
     {
         Message msg = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
-        msg.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(msg);
         return msg;
     }
 
     public Message newCancelReplaceShares(String orderID, String origOrderID, BigDecimal quantity) 
     {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
-        aMessage.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
         aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
@@ -74,7 +74,7 @@ public class FIXMessageFactory {
             BigDecimal price
     ) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
-        aMessage.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
         aMessage.setField(new StringField(Price.FIELD, price.toPlainString()));
@@ -206,7 +206,7 @@ public class FIXMessageFactory {
     ) {
         Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
 
-        aMessage.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(clOrderId));
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
@@ -215,6 +215,7 @@ public class FIXMessageFactory {
         if (counterpartyOrderID != null) {
             aMessage.setField(new OrderID(counterpartyOrderID));
         }
+        msgAugmentor.cancelRequestAugment(aMessage);
         return aMessage;
     }
 
@@ -227,26 +228,21 @@ public class FIXMessageFactory {
             String orderID,
             String clOrderID,
             String execID,
-            char execTransType,
-            char execType,
             char ordStatus,
             char side,
             BigDecimal orderQty,
             BigDecimal orderPrice,
             BigDecimal lastShares,
             BigDecimal lastPrice,
-            BigDecimal leavesQty,
             BigDecimal cumQty,
             BigDecimal avgPrice,
             MSymbol symbol,
-            String inAccount) {
+            String inAccount) throws FieldNotFound {
         Message aMessage = msgFactory.create(beginString, MsgType.EXECUTION_REPORT);
-        aMessage.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(aMessage);
         if (orderID != null) aMessage.setField(new OrderID(orderID));
         aMessage.setField(new ClOrdID(clOrderID));
         aMessage.setField(new ExecID(execID));
-        aMessage.setField(new ExecTransType(execTransType));
-        aMessage.setField(new ExecType(execType));
         aMessage.setField(new OrdStatus(ordStatus));
         aMessage.setField(new Side(side));
         aMessage.setField(new StringField(OrderQty.FIELD, orderQty.toPlainString()));
@@ -255,19 +251,19 @@ public class FIXMessageFactory {
         }
         if (lastShares != null) aMessage.setField(new StringField(LastShares.FIELD, lastShares.toPlainString()));
         if (lastPrice != null) aMessage.setField(new StringField(LastPx.FIELD, lastPrice.toPlainString()));
-        aMessage.setField(new StringField(LeavesQty.FIELD, leavesQty.toPlainString()));
         aMessage.setField(new StringField(CumQty.FIELD, cumQty.toPlainString()));
         aMessage.setField(new StringField(AvgPx.FIELD, avgPrice.toPlainString()));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
         if(inAccount != null) {
             aMessage.setField(new Account(inAccount));
         }
+        msgAugmentor.executionReportAugment(aMessage);
         return aMessage;
 
     }
 
     /**
-     * Creates a new ExecutionReport that with a {@link ExecType#REJECTED} type
+     * Creates a new ExecutionReport that with a {@link OrdStatus#REJECTED} type
      *
      * @param orderID   OrderID for the new report (can be null)
      * @param clOrderID OrderID of the original (client) order that got rejected
@@ -290,11 +286,11 @@ public class FIXMessageFactory {
             MSymbol symbol,
             OrdRejReason rejReason,
             String inAccount
-    ) {
-        Message execReport = newExecutionReport(orderID, clOrderID, execID, ExecTransType.NEW, ExecType.REJECTED,
+    ) throws FieldNotFound {
+        Message execReport = newExecutionReport(orderID, clOrderID, execID,
                 OrdStatus.REJECTED, side, orderQty, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO, cumQty, avgPrice, symbol, inAccount);
-        execReport.setField(new TransactTime(new Date()));
+                cumQty, avgPrice, symbol, inAccount);
+        addTransactionTimeIfNeeded(execReport);
         execReport.setField(rejReason);
         return execReport;
     }
@@ -324,7 +320,7 @@ public class FIXMessageFactory {
      */
     public Message createNewMessage() {
         Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
-        msg.setField(new TransactTime(new Date()));
+        addTransactionTimeIfNeeded(msg);
         return msg;
     }
 
@@ -337,7 +333,9 @@ public class FIXMessageFactory {
     /** Creates a message baed on the specified message type */
     public Message createMessage(String msgType)
     {
-        return msgFactory.create(beginString, msgType);
+        Message msg = msgFactory.create(beginString, msgType);
+        addTransactionTimeIfNeeded(msg);
+        return msg;
     }
 
     public String getBeginString()
@@ -351,5 +349,17 @@ public class FIXMessageFactory {
     public MessageFactory getUnderlyingMessageFactory()
     {
         return msgFactory;
+    }
+
+    public FIXMessageAugmentor getMsgAugmentor() {
+        return msgAugmentor;
+    }
+
+    /** Only add the transaction time if it's necessary for this message */
+    protected void addTransactionTimeIfNeeded(Message msg)
+    {
+        if(msgAugmentor.needsTransactTime(msg)) {
+            msg.setField(new TransactTime(new Date()));
+        }
     }
 }

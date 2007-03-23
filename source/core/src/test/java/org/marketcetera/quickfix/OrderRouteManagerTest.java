@@ -41,7 +41,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
@@ -59,7 +59,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
@@ -81,7 +81,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.AT_THE_OPENING,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
@@ -117,7 +117,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
@@ -140,7 +140,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
@@ -166,7 +166,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.AT_THE_OPENING,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
@@ -192,7 +192,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.AT_THE_OPENING,
             null
             );
-        routeManager.modifyOrder(message);
+        routeManager.modifyOrder(message, null);
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());

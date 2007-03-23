@@ -15,4 +15,7 @@ public interface IDFactory {
      * @return the next unique identifier as a string
      */
     public String getNext() throws NoMoreIDsException;
+
+    /** Do your init thing, you factory, you! */
+    public void init() throws ClassNotFoundException, NoMoreIDsException ;
 }

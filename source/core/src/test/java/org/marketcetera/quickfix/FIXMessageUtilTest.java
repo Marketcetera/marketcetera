@@ -1,10 +1,7 @@
 package org.marketcetera.quickfix;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.*;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.Group;
@@ -14,21 +11,25 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.HashSet;
 
 /**
  * @author Graham Miller
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class FIXMessageUtilTest extends TestCase {
-    private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
-
-    public FIXMessageUtilTest(String inName) {
-        super(inName);
+public class FIXMessageUtilTest extends FIXVersionedTestCase {
+    public FIXMessageUtilTest(String inName, FIXVersion version) {
+        super(inName, version);
     }
 
     public static Test suite() {
-        return new MarketceteraTestSuite(FIXMessageUtilTest.class);
+        HashSet<String> set = new HashSet<String>();
+        set.add("testMarketDataRequst_ALL");
+        set.add("testMDR_oneSymbol");
+        set.add("testMDR_ManySymbols");
+        return new FIXVersionTestSuite(FIXMessageUtilTest.class, FIXVersionTestSuite.ALL_VERSIONS,
+                set, FIXVersionTestSuite.FIX42_PLUS_VERSIONS);
     }
 
     public void testNewLimitOrder() throws Exception {
@@ -60,8 +61,8 @@ public class FIXMessageUtilTest extends TestCase {
         String symbol = "IBM";
         BigDecimal price = new BigDecimal("123.45");
         Message aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
-                ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, side, quantity, price,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"),
+                OrdStatus.NEW, side, quantity, price,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"),
                 "accountName");
 
         assertEquals(MsgType.EXECUTION_REPORT, aMessage.getHeader().getString(MsgType.FIELD));
@@ -74,15 +75,15 @@ public class FIXMessageUtilTest extends TestCase {
 
         // now send in a market order with null price
         aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
-                ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, side, quantity, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), "accountName");
+                OrdStatus.NEW, side, quantity, null,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), "accountName");
         assertFalse(aMessage.isSetField(Price.FIELD));
 
         // now send an order w/out account name
         try {
             aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
-                    ExecTransType.NEW, ExecType.NEW, OrdStatus.NEW, side, quantity, null,
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), null);
+                    OrdStatus.NEW, side, quantity, null,
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), null);
             aMessage.getString(Account.FIELD);
 
         } catch (FieldNotFound ex) {
@@ -91,9 +92,9 @@ public class FIXMessageUtilTest extends TestCase {
     }
 
     /** Creates a NewOrderSingle */
-    public static Message createNOS(String symbol, double price, double qty, char side)
+    public static Message createNOS(String symbol, double price, double qty, char side, FIXMessageFactory msgFactory)
     {
-        Message newSingle = createNOSHelper(symbol, qty, side, new OrdType(OrdType.LIMIT));
+        Message newSingle = createNOSHelper(symbol, qty, side, new OrdType(OrdType.LIMIT), msgFactory);
         newSingle.setField(new Price(price));
 
         return newSingle;
@@ -102,13 +103,13 @@ public class FIXMessageUtilTest extends TestCase {
     /** This actually creats a NewOrderSingle with a *set* OrderID - which isn't how
      * it comes in through FIX connection originallY
      */
-    public static Message createMarketNOS(String symbol, double qty, char side)
+    public static Message createMarketNOS(String symbol, double qty, char side, FIXMessageFactory msgFactory)
     {
-        return createNOSHelper(symbol, qty, side, new OrdType(OrdType.MARKET));
+        return createNOSHelper(symbol, qty, side, new OrdType(OrdType.MARKET), msgFactory);
     }
 
     /** This needs to be modeled off {@link FIXMessageFactory#newOrderHelper} */
-    public static Message createNOSHelper(String symbol, double qty, char side, OrdType ordType)
+    public static Message createNOSHelper(String symbol, double qty, char side, OrdType ordType, FIXMessageFactory msgFactory)
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = msgFactory.createNewMessage();
@@ -129,30 +130,38 @@ public class FIXMessageUtilTest extends TestCase {
     /** Verifies that the message is a "virgin" executionReport (no half-fills, etc) for a given symbol/side */
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side, BigDecimal leavesQty,
                                              BigDecimal lastQty, BigDecimal cumQty, BigDecimal lastPrice,
-                                             BigDecimal avgPrice, char ordStatus, char execType, char execTransType) throws Exception {
+                                             BigDecimal avgPrice, char ordStatus, char execType, char execTransType,
+                                             FIXMessageFactory msgFactory) throws Exception {
         assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD));
         assertEquals("side", side, inExecReport.getChar(Side.FIELD));
         assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
-        assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
+        }
         assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
         assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getDouble(CumQty.FIELD)));
         assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
-        assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
+        }
         assertNotNull(inExecReport.getString(TransactTime.FIELD));
 
         assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
         assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
-        assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
+        if(version42orBelow(msgFactory)) {
+            assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
+        }
         // todo: switch this to use validate(inExecReport, true) to only validate the body
-        FIXDataDictionaryManager.getDictionary().validate(inExecReport); 
+        FIXDataDictionaryManager.getDictionary().validate(inExecReport);
     }
 
 
     /** Useful for verifying execReports for new orders - assumes nothing is filled */
-    public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side) throws Exception
+    public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side,
+                                             FIXMessageFactory msgFactory) throws Exception
     {
         verifyExecutionReport(inExecReport, qty, symbol, side, new BigDecimal(qty), BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW, ExecTransType.NEW);
+                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW, ExecTransType.NEW, msgFactory);
     }
 
 
@@ -196,9 +205,11 @@ public class FIXMessageUtilTest extends TestCase {
      * @throws Exception
      */
     public void testFillFieldsFromExistingMessage() throws Exception {
-        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY);
+        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
         buy.removeField(Side.FIELD);
-        buy.setString(LeavesQty.FIELD, "33");
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            buy.setString(LeavesQty.FIELD, "33");
+        }
         buy.setChar(ExecTransType.FIELD, ExecTransType.NEW);
         buy.setChar(OrdStatus.FIELD, OrdStatus.NEW);
         buy.setString(ClOrdID.FIELD, "someClOrd");
@@ -206,15 +217,19 @@ public class FIXMessageUtilTest extends TestCase {
 
         Message execReport = new Message();
         execReport.getHeader().setString(MsgType.FIELD, MsgType.EXECUTION_REPORT);
-        execReport.setField(new ExecType(ExecType.REJECTED));
         execReport.setString(Text.FIELD, "dummyMessage");
 
         FIXMessageUtil.fillFieldsFromExistingMessage(execReport, buy);
         assertFalse(execReport.isSetField(Side.FIELD));
-        assertEquals("33", execReport.getString(LeavesQty.FIELD));
+        // no LeavesQty in fix40
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("33", execReport.getString(LeavesQty.FIELD));
+        }
         assertEquals("GAP", execReport.getString(Symbol.FIELD));
         assertEquals("dummyMessage", execReport.getString(Text.FIELD));
-        assertTrue(execReport.isSetField(ExecTransType.FIELD));
+        if(version42orBelow(msgFactory)) {
+            assertTrue(execReport.isSetField(ExecTransType.FIELD));
+        }
         assertTrue(execReport.isSetField(OrdStatus.FIELD));
         assertFalse("clOrdID is not required so should not be transferred", execReport.isSetField(ClOrdID.FIELD));
         assertTrue(execReport.isSetField(OrderID.FIELD));
