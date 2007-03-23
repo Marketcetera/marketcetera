@@ -1,22 +1,23 @@
 package org.marketcetera.oms;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
+import org.marketcetera.quickfix.FIXVersion;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import quickfix.Message;
+import quickfix.field.OrderID;
 import quickfix.field.Price;
 import quickfix.field.Side;
-import quickfix.field.OrderID;
 
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Semaphore;
 
 /**
  * Setup an OMS through Sring configuration.
@@ -29,7 +30,7 @@ import java.util.concurrent.ArrayBlockingQueue;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class OrderManagementSystemTest extends TestCase
+public class OrderManagementSystemTest extends FIXVersionedTestCase
 {
     private static ClassPathXmlApplicationContext appContext;
     private static JmsTemplate jmsQueueSender;
@@ -37,13 +38,12 @@ public class OrderManagementSystemTest extends TestCase
 
     public OrderManagementSystemTest(String inName)
     {
-        super(inName);
+        super(inName, FIXVersion.FIX42);
     }
 
     public static Test suite()
     {
-
-        return new  MarketceteraTestSuite(OrderManagementSystemTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
+        return new MarketceteraTestSuite(OrderManagementSystemTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
     }
 
 
@@ -95,7 +95,7 @@ public class OrderManagementSystemTest extends TestCase
         }
 
         // generate and send a buy order on JMS queue
-        Message buyOrder = FIXMessageUtilTest.createNOS("TOLI", 12.34, 32, inSide);
+        Message buyOrder = FIXMessageUtilTest.createNOS("TOLI", 12.34, 32, inSide, msgFactory);
         qfSender.getCapturedMessages().clear();
         topicMsgs.clear();
         jmsQueueSender.convertAndSend(buyOrder);
@@ -111,7 +111,7 @@ public class OrderManagementSystemTest extends TestCase
         Message execReport = topicMsgs.take();
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
         execReport.setField(new OrderID("fake-order-id"));
-        FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide);
+        FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide, msgFactory);
         assertEquals("12.34", execReport.getString(Price.FIELD));
     }
 
