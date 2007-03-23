@@ -49,7 +49,11 @@ public abstract class DBBackedIDFactory extends ExternalIDFactory {
             return inMemoryFactory.getNext();
         }
     }
-    
+
+    public void init() throws ClassNotFoundException, NoMoreIDsException {
+        // no-op
+    }
+
     /** Intended to be overwritten by subclasses
      * Extra validity check before performing the request.
      * Checks the factory state, if inconsistent, throws an exception

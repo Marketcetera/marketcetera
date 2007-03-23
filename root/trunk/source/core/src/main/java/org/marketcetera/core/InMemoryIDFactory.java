@@ -48,4 +48,8 @@ public class InMemoryIDFactory implements IDFactory {
         return retVal+suffix;
     }
 
+
+    public void init() {
+        // no-op
+    }
 }

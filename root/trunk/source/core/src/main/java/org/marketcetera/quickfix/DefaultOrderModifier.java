@@ -3,6 +3,7 @@ package org.marketcetera.quickfix;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -99,7 +100,7 @@ public class DefaultOrderModifier implements OrderModifier {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
-    public boolean modifyOrder(Message order) throws MarketceteraException {
+    public boolean modifyOrder(Message order, FIXMessageAugmentor augmentor) throws MarketceteraException {
         String msgType = null;
         boolean modified = false;
 

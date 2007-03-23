@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -61,7 +62,7 @@ public class OrderRouteManager implements OrderModifier {
 
     protected Map<String,String> getRoutesMap() { return mRoutes; }
 
-    public boolean modifyOrder(Message anOrder) throws MarketceteraException {
+    public boolean modifyOrder(Message anOrder, FIXMessageAugmentor augmentor) throws MarketceteraException {
         try {
             boolean isModified = false;
 

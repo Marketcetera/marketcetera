@@ -8,9 +8,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.Message.Header;
 import quickfix.StringField;
-import quickfix.field.ExecType;
 import quickfix.field.MsgType;
-import quickfix.field.OrdStatus;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -43,29 +41,6 @@ public class FIXMessageUtil {
                 // ignored
             }
     	}
-        return false;
-    }
-
-    /**
-     * Checks to see if the {@link OrdStatus} and the {@link ExecType} fields
-     * are equal in the execution report
-     *
-     * @param jmsMessage
-     * @return boolean signifying whehther the {@link OrdStatus} and the
-     *         {@link ExecType} fields are the same
-     */
-    public static boolean isStateChangingExecutionReport(Message jmsMessage) {
-        if (isExecutionReport(jmsMessage)) {
-            try {
-                OrdStatus ordStatus = new OrdStatus();
-                jmsMessage.getField(ordStatus);
-                ExecType execType = new ExecType();
-                jmsMessage.getField(execType);
-                return ordStatus.getValue() == execType.getValue();
-            } catch (FieldNotFound exception) {
-                return false;
-            }
-        }
         return false;
     }
 

@@ -1,6 +1,7 @@
 package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
+import quickfix.FieldNotFound;
 import quickfix.Message;
 
 /**
@@ -15,11 +16,23 @@ public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
         return inMessage;
     }
 
+    public Message executionReportAugment(Message inMessage) throws FieldNotFound {
+        return inMessage;
+    }
+
     public Message cancelRejectAugment(Message inMessage) {
         return inMessage;
     }
 
-    public Message cancelReplaceRequestAugment(Message inMessage) {
+    public Message cancelRequestAugment(Message inMessage) {
         return inMessage;
     }
+
+
+    public boolean needsTransactTime(Message inMsg)
+    {
+        return false;
+    }
+
+
 }

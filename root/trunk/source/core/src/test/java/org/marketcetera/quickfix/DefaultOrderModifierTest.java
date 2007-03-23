@@ -40,7 +40,7 @@ public class DefaultOrderModifierTest extends TestCase {
 
         Message aMessage = msgFactory.createNewMessage();
 
-        modifier.modifyOrder(aMessage);
+        modifier.modifyOrder(aMessage, null);
         StringField outField = new StringField(111);
         assertEquals(testValue, aMessage.getField(outField).getValue());
         final Message outerMessage = aMessage;
@@ -73,7 +73,7 @@ public class DefaultOrderModifierTest extends TestCase {
         Message aMessage = msgFactory.createNewMessage();
         aMessage.setField(new StringField(111, originalValue));
 
-        modifier.modifyOrder(aMessage);
+        modifier.modifyOrder(aMessage, null);
         StringField outField = new StringField(111);
         assertEquals(originalValue, aMessage.getField(outField).getValue());
 
@@ -94,9 +94,9 @@ public class DefaultOrderModifierTest extends TestCase {
         Message logon = msgFactory.createNewMessage();
         logon.getHeader().setField(new MsgType(MsgType.LOGON));
 
-        assertTrue(mod.modifyOrder(heartbeat));
-        assertTrue(mod.modifyOrder(newOrderSingle));
-        assertTrue(mod.modifyOrder(logon));
+        assertTrue(mod.modifyOrder(heartbeat, null));
+        assertTrue(mod.modifyOrder(newOrderSingle, null));
+        assertTrue(mod.modifyOrder(logon, null));
 
         assertEquals(HEADER_57_VAL, heartbeat.getHeader().getString(57));
         assertFalse(heartbeat.isSetField(21));
@@ -127,7 +127,7 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}}));
 
         Message msg = msgFactory.createNewMessage();
-        assertTrue(mod.modifyOrder(msg));
+        assertTrue(mod.modifyOrder(msg, null));
         assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, msg.getString(21));
         assertEquals(TRAILER_28_VAL, msg.getTrailer().getString(28));
