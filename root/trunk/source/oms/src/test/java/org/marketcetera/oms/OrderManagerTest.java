@@ -1,7 +1,6 @@
 package org.marketcetera.oms;
 
 import junit.framework.Test;
-import junit.framework.TestCase;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.DefaultOrderModifier.MessageFieldType;
@@ -12,7 +11,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.net.InetAddress;
 
 /**
  * Tests the code coming out of {@link OutgoingMessageHandler} class
@@ -20,11 +18,8 @@ import java.net.InetAddress;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class OrderManagerTest extends TestCase
+public class OrderManagerTest extends FIXVersionedTestCase
 {
-    private FIXVersion fixVersion = FIXVersion.FIX42;
-    private FIXMessageFactory msgFactory = fixVersion.getMessageFactory();
-
 	/* a bunch of random made-up header/trailer/field values */
     public static final String HEADER_57_VAL = "CERT";
     public static final String HEADER_12_VAL = "12.24";
@@ -32,19 +27,25 @@ public class OrderManagerTest extends TestCase
     public static final String FIELDS_37_VAL = "37-regField";
     public static final String FIELDS_14_VAL = "37";
 
-    public OrderManagerTest(String inName)
-   {
-       super(inName);
-   }
+    public OrderManagerTest(String inName, FIXVersion version) {
+        super(inName, version);
+    }
 
     public static Test suite()
     {
-    	return new MarketceteraTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
+/*
+        MarketceteraTestSuite suite = new MarketceteraTestSuite();
+        suite.addTest(new OrderManagerTest("testHandleFIXMessages", FIXVersion.FIX40));
+        suite.init(new MessageBundleInfo[]{OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO});
+        return suite;
+/*/
+        return new FIXVersionTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
+                FIXVersionTestSuite.ALL_VERSIONS);
     }
 
     public void testNewExecutionReportFromOrder() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX42.getMessageFactory());
+    	OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
     	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
@@ -58,15 +59,12 @@ public class OrderManagerTest extends TestCase
         // on a non-single order should get back null
         assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob",
                                                                   Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty")));
-
-        assertTrue("should be using in-memory id factory",
-                    execReport.getString(ExecID.FIELD).contains(InetAddress.getLocalHost().toString()));
     }
 
     // test one w/out incoming account
     public void testNewExecutionReportFromOrder_noAccount() throws Exception
     {
-    	OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+    	OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
         Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
@@ -87,7 +85,7 @@ public class OrderManagerTest extends TestCase
 
     private void verifyExecutionReport(Message inExecReport) throws Exception
     {
-        FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY);
+        FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY, msgFactory);
     }
 
     /** Create a few default fields and verify they get placed
@@ -96,7 +94,7 @@ public class OrderManagerTest extends TestCase
     public void testInsertDefaultFields() throws Exception
     {
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
         handler.setOrderModifiers(getOrderModifiers());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
@@ -117,9 +115,11 @@ public class OrderManagerTest extends TestCase
         assertEquals(FIELDS_37_VAL, modifiedMessage.getString(37));
         assertEquals(FIELDS_14_VAL, modifiedMessage.getString(14));
 
-        // verify that transaction date is set as well, but it'd be set anyway b/c new order sets it
-        assertNotNull(modifiedMessage.getString(TransactTime.FIELD));
-
+        if(msgFactory.getMsgAugmentor().needsTransactTime(modifiedMessage)) {
+            // verify that transaction date is set as well, but it'd be set anyway b/c new order sets it
+            assertNotNull(modifiedMessage.getString(TransactTime.FIELD));
+        }
+        
         // field 14 and 37 doesn't really belong in NOS so get rid of it before verification, same with field 2 in trailer
         modifiedMessage.removeField(14);
         modifiedMessage.removeField(37);
@@ -143,7 +143,7 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleEvents() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -175,10 +175,10 @@ public class OrderManagerTest extends TestCase
 
     /** verify that sending a malformed buy order (ie missing Side) results in a reject exectuionReport */
     public void testHandleMalformedEvent() throws Exception {
-        Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY);
+        Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY, msgFactory);
         buyOrder.removeField(Side.FIELD);
 
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -189,8 +189,10 @@ public class OrderManagerTest extends TestCase
 		assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT,
                      result.getHeader().getString(MsgType.FIELD));
         assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
-        assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
-        
+        assertTrue("Error message should say field Side was missing", result.getString(Text.FIELD).contains("field Side"));
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        }
         // validation will fail b/c we didn't send a side in to begin with
         new ExpectedTestFailure(RuntimeException.class, "field="+Side.FIELD) {
             protected void execute() throws Throwable {
@@ -204,12 +206,12 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testMalformedPrice() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-    	Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY);
+    	Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY, msgFactory);
         buyOrder.setString(Price.FIELD, "23.23.3");
 
         assertNotNull(buyOrder.getString(ClOrdID.FIELD));
@@ -218,7 +220,9 @@ public class OrderManagerTest extends TestCase
         assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT,
         		result.getHeader().getString(MsgType.FIELD));
         assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
-        assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        }
         assertNotNull("rejectExecReport doesn't have a ClOrdID set", result.getString(ClOrdID.FIELD));
         assertNotNull("no useful rejection message", result.getString(Text.FIELD));
     }
@@ -227,7 +231,7 @@ public class OrderManagerTest extends TestCase
     @SuppressWarnings("unchecked")
     public void testHandleFIXMessages() throws Exception
     {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
@@ -248,7 +252,7 @@ public class OrderManagerTest extends TestCase
     }
 
     public void testInvalidSessionID() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
         SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target");
         handler.setDefaultSessionID(sessionID);
@@ -263,7 +267,9 @@ public class OrderManagerTest extends TestCase
         assertEquals("output should be outgoing execReport", MsgType.EXECUTION_REPORT,
         		result.getHeader().getString(MsgType.FIELD));
         assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
-        assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+        }
         assertEquals("error message incorrect", MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(sessionID), result.getString(Text.FIELD));
     }
 
@@ -272,7 +278,7 @@ public class OrderManagerTest extends TestCase
      * @throws Exception
      */
     public void testWithOrderRouteManager() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         OrderRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
         handler.setOrderRouteManager(orm);
 
@@ -307,13 +313,13 @@ public class OrderManagerTest extends TestCase
     }
 
     public void testIncomingNullMessage() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         assertNull(handler.handleMessage(null));        
     }
 
     /** verify the OMS sends back a rejection when it receives a message of incompatible or unknown verison */
     public void testIncompatibleFIXVersions() throws Exception {
-        OutgoingMessageHandler handler = new OutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX40.getMessageFactory());
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX40.getMessageFactory());
         Message msg = new quickfix.fix41.Message();
         Message reject = handler.handleMessage(msg);
         assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));
@@ -394,5 +400,19 @@ public class OrderManagerTest extends TestCase
         settings.setString(JdbcSetting.SETTING_JDBC_USER, "");
         settings.setString(JdbcSetting.SETTING_JDBC_PASSWORD, "");
         return settings;
+    }
+
+    public static class MyOutgoingMessageHandler extends OutgoingMessageHandler {
+
+        private static int factoryStart = (int) Math.round((Math.random() * 1000));
+
+        public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
+                throws ConfigError, FieldConvertError, MarketceteraException {
+            super(settings, inFactory);
+        }
+
+        protected IDFactory createDatabaseIDFactory(SessionSettings settings) throws ConfigError, FieldConvertError {
+            return new InMemoryIDFactory(factoryStart);
+        }
     }
 }

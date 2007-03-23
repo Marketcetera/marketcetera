@@ -26,7 +26,7 @@ public class OutgoingMessageHandler {
     private OrderRouteManager routeMgr;
     private SessionID defaultSessionID;         // used to store the SessionID so that FIX sender can find it
     private IQuickFIXSender quickFIXSender = new QuickFIXSender();
-    private DatabaseIDFactory idFactory;
+    private IDFactory idFactory;
     private FIXMessageFactory msgFactory;
     
     public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
@@ -34,10 +34,7 @@ public class OutgoingMessageHandler {
         setOrderModifiers(new LinkedList<OrderModifier>());
         setOrderRouteManager(new OrderRouteManager());
         msgFactory = inFactory;
-        idFactory = new DatabaseIDFactory(settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL),
-                settings.getString(JdbcSetting.SETTING_JDBC_DRIVER), settings.getString(JdbcSetting.SETTING_JDBC_USER),
-                settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD), DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME,
-                DatabaseIDFactory.NUM_IDS_GRABBED);
+        idFactory = createDatabaseIDFactory(settings);
         try {
             idFactory.init();
         } catch (Exception ex) {
@@ -88,7 +85,7 @@ public class OutgoingMessageHandler {
                 }
 				returnVal = outReport;
             }
-            routeMgr.modifyOrder(message);
+            routeMgr.modifyOrder(message, msgFactory.getMsgAugmentor());
             if (defaultSessionID != null)
             	quickFIXSender.sendToTarget(message, defaultSessionID);
             else 
@@ -126,29 +123,33 @@ public class OutgoingMessageHandler {
         } else {
             rejection = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
             rejection.setField(getNextExecId());
-            // we are rejecting it, so leaves is 0
-            rejection.setField(new LeavesQty(0));
             rejection.setField(new AvgPx(0));
             rejection.setField(new CumQty(0));
+            rejection.setField(new LastShares(0));
+            rejection.setField(new LastPx(0));
             rejection.setField(new ExecTransType(ExecTransType.STATUS));
         }
 
         rejection.setField(new OrdStatus(OrdStatus.REJECTED));
-        rejection.setField(new ExecType(ExecType.REJECTED));
         FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  existingOrder);
         
         
         String msg = (causeEx.getMessage() == null) ? causeEx.toString() : causeEx.getMessage();
         LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, existingOrder), causeEx, this);
         rejection.setString(Text.FIELD, msg);
-        FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  existingOrder);
         // manually set the ClOrdID since it's not required in the dictionary but is for electronic orders
         try {
             rejection.setField(new ClOrdID(existingOrder.getString(ClOrdID.FIELD)));
         } catch(FieldNotFound ignored) {
             // don't set it if it's not there
         }
-
+        try {
+            msgFactory.getMsgAugmentor().executionReportAugment(rejection);
+        } catch (FieldNotFound fieldNotFound) {
+            MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fieldNotFound);
+            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(mfix.getLocalizedMessage(), fieldNotFound, this); }
+            // ignore the exception since we are already sending a reject
+        }
         return rejection;
     }
 
@@ -177,15 +178,12 @@ public class OutgoingMessageHandler {
                     null,
                     clOrdId,
                     getNextExecId().getValue(),
-                    ExecTransType.NEW,
-                    ExecType.NEW,
                     OrdStatus.NEW,
                     side,
                     orderQty,
                     orderPrice,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
-                    orderQty,
                     BigDecimal.ZERO,
                     BigDecimal.ZERO,
                     new MSymbol(symbol),
@@ -199,7 +197,7 @@ public class OutgoingMessageHandler {
     protected void modifyOrder(Message inOrder) throws MarketceteraException
     {
         for (OrderModifier oneModifier : orderModifiers) {
-            oneModifier.modifyOrder(inOrder);
+            oneModifier.modifyOrder(inOrder, msgFactory.getMsgAugmentor());
         }
     }
     
@@ -220,6 +218,13 @@ public class OutgoingMessageHandler {
 	public void setQuickFIXSender(IQuickFIXSender quickFIXSender) {
 		this.quickFIXSender = quickFIXSender;
 	}
+
+    protected IDFactory createDatabaseIDFactory(SessionSettings settings) throws ConfigError, FieldConvertError {
+        return new DatabaseIDFactory(settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL),
+                settings.getString(JdbcSetting.SETTING_JDBC_DRIVER), settings.getString(JdbcSetting.SETTING_JDBC_USER),
+                settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD), DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME,
+                DatabaseIDFactory.NUM_IDS_GRABBED);
+    }
 
 
     /** Returns the next ExecID from the factory, or a hardcoded ZZ-internal if we have
