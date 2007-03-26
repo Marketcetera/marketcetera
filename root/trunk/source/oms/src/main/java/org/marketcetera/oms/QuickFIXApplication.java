@@ -25,7 +25,8 @@ public class QuickFIXApplication implements Application {
             try {
                 jmsOperations.convertAndSend(message);
             } catch (Exception ex) {
-                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
+                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
+                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
             }
         }
 	}
@@ -35,7 +36,8 @@ public class QuickFIXApplication implements Application {
             try {
                 jmsOperations.convertAndSend(message);
             } catch (Exception ex) {
-                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
+                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
+                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
             }
         }
 	}

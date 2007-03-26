@@ -135,7 +135,8 @@ public class OutgoingMessageHandler {
         
         
         String msg = (causeEx.getMessage() == null) ? causeEx.toString() : causeEx.getMessage();
-        LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, existingOrder), causeEx, this);
+        LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, existingOrder), this);
+        if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Reason for above rejection: "+msg, causeEx, this); }
         rejection.setString(Text.FIELD, msg);
         // manually set the ClOrdID since it's not required in the dictionary but is for electronic orders
         try {

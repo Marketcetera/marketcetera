@@ -37,7 +37,7 @@ public class QuickFIXApplicationTest extends TestCase {
         JmsOperations ops = new JmsTemplate() {
 
             public void convertAndSend(Object message) throws JmsException {
-                throw new UncategorizedJmsException("we always throw an exception");
+                throw new UncategorizedJmsException("testing exception handling: we always throw an exception");
             }
         };
         qfApp.setJmsOperations(ops);
