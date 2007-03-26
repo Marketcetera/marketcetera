@@ -44,10 +44,9 @@ public class OrderManagerTest extends TestCase {
    
     private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
-    public static Message getTestableExecutionReport() {
-            Message aMessage = msgFactory.newExecutionReport("456", CL_ORD_ID, "987", ExecTransType.STATUS,
-                            ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
-                            new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL, null);
+    public static Message getTestableExecutionReport() throws FieldNotFound {
+            Message aMessage = msgFactory.newExecutionReport("456", CL_ORD_ID, "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
+                            new BigDecimal("12.3"), new BigDecimal(500), new BigDecimal("12.3"), SYMBOL, null);
             aMessage.setUtcTimeStamp(TransactTime.FIELD, THE_TRANSACT_TIME);
             aMessage.getHeader().setField(new SenderCompID("send-dude"));
             aMessage.getHeader().setField(new TargetCompID("target-dude"));
@@ -66,14 +65,6 @@ public class OrderManagerTest extends TestCase {
 	private FIXMessageHistory messageHistory;
 	private ImmediatePhotonController photonController;
 
-	static {
-		try {
-			FIXDataDictionaryManager.setFIXVersion(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING);
-		} catch (Throwable th) {
-			th.printStackTrace();
-		}
-	}
-	
 	protected void setUp() throws Exception {
 		idFactory = new InMemoryIDFactory(999);
 		messageHistory = new FIXMessageHistory();
