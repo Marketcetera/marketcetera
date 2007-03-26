@@ -11,6 +11,7 @@ import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
@@ -33,11 +34,11 @@ public class PhotonAdapterFactoryTest extends TestCase {
 	}
 	
 	
-	public void testMessageAdapter() {
+	public void testMessageAdapter() throws FieldNotFound {
 		PhotonAdapterFactory fact = new PhotonAdapterFactory();
-		Message aMessage = msgFactory.newExecutionReport("456", OrderManagerTest.CL_ORD_ID, "987", ExecTransType.STATUS,
-				ExecType.PARTIAL_FILL, OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
-				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL, null);
+		Message aMessage = msgFactory.newExecutionReport("456", OrderManagerTest.CL_ORD_ID, "987", 
+				OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(100), 
+				new BigDecimal("12.3"), new BigDecimal(100), new BigDecimal("12.3"), OrderManagerTest.SYMBOL, null);
 		aMessage.setUtcTimeStamp(TransactTime.FIELD, OrderManagerTest.THE_TRANSACT_TIME);
 		IncomingMessageHolder holder = new IncomingMessageHolder(aMessage);
 		
