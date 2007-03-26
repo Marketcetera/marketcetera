@@ -190,7 +190,7 @@ public class OrderLoader extends ApplicationBase
             }
         } catch (Exception e) {
             LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(
-                    Util.getStringFromArray(inOrderRow),e.getMessage()), e, this);
+                    Util.getStringFromArray(inOrderRow),e.getMessage()), this);
             failedOrders.add(Util.getStringFromArray(inOrderRow) + ": " + e.getMessage());
         }
     }
