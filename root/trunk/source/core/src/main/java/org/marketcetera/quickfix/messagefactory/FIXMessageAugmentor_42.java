@@ -32,9 +32,4 @@ public class FIXMessageAugmentor_42 extends FIXMessageAugmentor_41 {
     public FIXMessageAugmentor_42() {
         applicableMsgTypes.addAll(Arrays.asList(TT_APPLICABLE_MESSAGE_CODES));
     }
-
-    public Message newOrderSingleAugment(Message inMessage) {
-        inMessage.setField(new TransactTime());
-        return super.newOrderSingleAugment(inMessage);
-    }
 }

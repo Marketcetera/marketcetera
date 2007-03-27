@@ -169,7 +169,6 @@ public class FIXMessageFactory {
     public Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, MSymbol symbol,
                                   char timeInForce, String account) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
-        msgAugmentor.newOrderSingleAugment(aMessage);
         aMessage.setField(new ClOrdID(clOrderID));
         aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
@@ -180,6 +179,8 @@ public class FIXMessageFactory {
         if (account != null) {
             aMessage.setField(new Account(account));
         }
+        addTransactionTimeIfNeeded(aMessage);
+        msgAugmentor.newOrderSingleAugment(aMessage);
         return aMessage;
     }
 
