@@ -68,8 +68,14 @@ public class ReconnectJMSJob extends Job {
 		try {
 			JMSFeedService oldService = (JMSFeedService) jmsFeedTracker.getService();
 			ServiceRegistration serviceRegistration;
-			if (oldService != null && ((serviceRegistration = oldService.getServiceRegistration())!=null)){
-				serviceRegistration.unregister();
+			if (oldService != null ){
+				ClassPathXmlApplicationContext oldContext = oldService.getApplicationContext();
+				if (oldContext != null){
+					oldContext.close();
+				}
+				if (((serviceRegistration = oldService.getServiceRegistration())!=null)){
+					serviceRegistration.unregister();
+				}
 			}
 		} catch (Throwable t) {
 			if (logger.isDebugEnabled())

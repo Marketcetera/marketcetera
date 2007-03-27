@@ -1,4 +1,4 @@
-package org.marketcetera.photon.ui.validation;
+package org.marketcetera.photon.ui.validation.fix;
 
 import java.util.HashMap;
 import java.util.Map;

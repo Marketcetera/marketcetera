@@ -1,7 +1,9 @@
-package org.marketcetera.photon.ui.validation;
+package org.marketcetera.photon.ui.validation.fix;
 
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.parser.PriceImage;
+import org.marketcetera.photon.ui.validation.NumericTextValidator;
+import org.marketcetera.photon.ui.validation.ValidationException;
 
 public class PriceTextValidator extends NumericTextValidator {
 

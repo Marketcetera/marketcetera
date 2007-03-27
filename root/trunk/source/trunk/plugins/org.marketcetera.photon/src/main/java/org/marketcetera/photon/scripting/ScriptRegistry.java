@@ -110,10 +110,6 @@ public class ScriptRegistry implements InitializingBean {
 
 	}
 
-	public boolean isScript(IPath resourcePath) {
-		return resourcePath.getFileExtension().equalsIgnoreCase("rb");  //$NON-NLS-1$
-	}
-
 
 	/**
 	 * Note that this method expects a file name, formatted as an
