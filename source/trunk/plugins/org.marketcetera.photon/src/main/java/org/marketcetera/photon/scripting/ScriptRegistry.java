@@ -1,36 +1,23 @@
 package org.marketcetera.photon.scripting;
 
-import java.net.URI;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IResourceChangeListener;
-import org.eclipse.core.resources.IResourceDelta;
-import org.eclipse.core.resources.IResourceDeltaVisitor;
-import org.eclipse.core.resources.IResourceVisitor;
-import org.eclipse.core.resources.IWorkspace;
+import org.apache.log4j.Logger;
 import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.jruby.bsf.JRubyPlugin;
-import org.marketcetera.core.MMapEntry;
+import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.preferences.ListEditorUtil;
-import org.marketcetera.photon.preferences.ScriptRegistryPage;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.InitializingBean;
 
 import quickfix.Message;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.GlazedLists;
 
 
 /**
@@ -63,9 +50,42 @@ public class ScriptRegistry implements InitializingBean {
 	static String [] JRUBY_WORKSPACE_PATH = {
 		""
 	};
+	private MarketDataFeedTracker marketDataFeedTracker;
 	
 	public ScriptRegistry() 
 	{
+		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
+		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
+		marketDataFeedTracker.open();
+		marketDataFeedTracker.setMarketDataListener(new MarketDataListener() {
+
+			private Logger logger = PhotonPlugin.getMainConsoleLogger();
+
+			public void onLevel2Quote(Message aQuote) {
+				try {
+					onEvent(aQuote);
+				} catch (BSFException e) {
+					ScriptLoggingUtil.error(logger , e);
+				}
+			}
+
+			public void onQuote(Message aQuote) {
+				try {
+					onEvent(aQuote);
+				} catch (BSFException e) {
+					ScriptLoggingUtil.error(logger, e);
+				}
+			}
+
+			public void onTrade(Message aTrade) {
+				try {
+					onEvent(aTrade);
+				} catch (BSFException e) {
+					ScriptLoggingUtil.error(logger, e);
+				}
+			}
+			
+		});
 	}
 
 	
