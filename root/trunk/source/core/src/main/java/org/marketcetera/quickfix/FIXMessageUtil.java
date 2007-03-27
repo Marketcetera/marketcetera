@@ -68,12 +68,12 @@ public class FIXMessageUtil {
         return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REQUEST);
     }
 
-    public static boolean isReplaceRequest(Message jmsMessage) {
+    public static boolean isCancelReplaceRequest(Message jmsMessage) {
         return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
     }
 
-    public static boolean isCancelReplaceRequest(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+    public static boolean isOrderList(Message jmsMessage) {
+        return msgTypeHelper(jmsMessage, MsgType.ORDER_LIST);
     }
 
 
