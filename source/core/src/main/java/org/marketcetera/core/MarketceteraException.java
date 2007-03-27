@@ -41,20 +41,18 @@ public class MarketceteraException extends Exception
     @Override
     public String getMessage(){
 	String superMessage = super.getMessage();
-	if (superMessage == null && nestedException != null)
-	    {
+	if (superMessage == null && nestedException != null) {
 		return nestedException.getMessage();
-	    }
+    }
 	return superMessage;
     }
 
     @Override
     public String getLocalizedMessage(){
 	String superMessage = super.getMessage();
-	if (superMessage == null && nestedException != null)
-	    {
+	if (superMessage == null && nestedException != null) {
 		return nestedException.getMessage();
-	    }
+	}
 	return superMessage;
     }
 }
