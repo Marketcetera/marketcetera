@@ -759,7 +759,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	
 	private void updateTitle()
 	{
-		if (FIXMessageUtil.isReplaceRequest(targetOrder)){
+		if (FIXMessageUtil.isCancelReplaceRequest(targetOrder)){
 			form.setText(REPLACE_EQUITY_ORDER);
 		} else {
 			form.setText(NEW_EQUITY_ORDER);
