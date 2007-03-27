@@ -31,7 +31,7 @@ public class OrderManagementSystem extends ApplicationBase {
     private static final String LOGGER_NAME = OrderManagementSystem.class.getName();
     public static final MessageBundleInfo OMS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("oms", "oms_messages");
     public static final String[] APP_CONTEXT_CONFIG_FILES = {"quickfixj.xml", "order-modifiers.xml",
-            "oms.xml", "oms-shared.xml"};
+            "order-limits.xml", "oms.xml", "oms-shared.xml"};
 
     protected List<MessageBundleInfo> getLocalMessageBundles() {
         LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();

@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.HashSet;
 
 /**
  * Tests the code coming out of {@link OutgoingMessageHandler} class
@@ -35,12 +36,14 @@ public class OrderManagerTest extends FIXVersionedTestCase
     {
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
-        suite.addTest(new OrderManagerTest("testHandleFIXMessages", FIXVersion.FIX40));
+        suite.addTest(new OrderManagerTest("testOrderLimits_NewListRejected", FIXVersion.FIX40));
         suite.init(new MessageBundleInfo[]{OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO});
         return suite;
 /*/
         return new FIXVersionTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
-                FIXVersionTestSuite.ALL_VERSIONS);
+                FIXVersionTestSuite.ALL_VERSIONS,
+                new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")),
+                new FIXVersion[]{FIXVersion.FIX40});
     }
 
     public void testNewExecutionReportFromOrder() throws Exception
@@ -264,13 +267,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         // verify we got an execReport that's a rejection with the sessionNotfound error message
         Message result = handler.handleMessage(newOrder);
-        assertEquals("output should be outgoing execReport", MsgType.EXECUTION_REPORT,
-        		result.getHeader().getString(MsgType.FIELD));
-        assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
-        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
-        }
-        assertEquals("error message incorrect", MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(sessionID), result.getString(Text.FIELD));
+        verifyRejection(result, msgFactory, MessageKey.SESSION_NOT_FOUND, sessionID);
     }
 
     /** Create props with a route manager entry, and make sure the FIX message is
@@ -317,7 +314,8 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertNull(handler.handleMessage(null));        
     }
 
-    /** verify the OMS sends back a rejection when it receives a message of incompatible or unknown verison */
+    /** verify the OMS sends back a rejection when it receives a message of incompatible or unknown verison
+     * this test is hardcoded with OMS at fix40 so exclude it from multi-version tests */
     public void testIncompatibleFIXVersions() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), FIXVersion.FIX40.getMessageFactory());
         Message msg = new quickfix.fix41.Message();
@@ -330,11 +328,18 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         // now test it with no fix version at all
         reject = handler.handleMessage(new Message());
-        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));
-        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", reject.getString(OrdStatus.FIELD));
-        assertEquals("didn't get a right reason",
-                OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION.getLocalizedMessage(),
-                reject.getString(Text.FIELD));
+        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
+    }
+
+    /** we test the order limits in {@link OrderLimitsTest} so here we just need to verify
+     * that having one limit be setup incorrectly will fail
+     */
+    public void testOrderListNotSupported() throws Exception {
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
+        Message orderList = msgFactory.createMessage(MsgType.ORDER_LIST);
+        orderList.setField(new Symbol("TOLI"));
+        Message reject = handler.handleMessage(orderList);
+        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_ORDER_LIST_UNSUPPORTED);
     }
 
     /** Helper method that takes an OrderManager, the stock symbol and the expect exchange
@@ -392,6 +397,19 @@ public class OrderManagerTest extends FIXVersionedTestCase
     	return orderModifiers;
     }
 
+    public static void verifyRejection(Message inMsg, FIXMessageFactory msgFactory, LocalizedMessage msgKey, Object ... args) throws Exception
+    {
+        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, inMsg.getHeader().getString(MsgType.FIELD));
+        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", inMsg.getString(OrdStatus.FIELD));
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("execType should be a reject", ExecType.REJECTED, inMsg.getChar(ExecType.FIELD));
+        }
+        assertEquals("didn't get a right reason",
+                msgKey.getLocalizedMessage(args),
+                inMsg.getString(Text.FIELD));
+
+    }
+
     private SessionSettings getDummySessionSettings()
     {
         SessionSettings settings = new SessionSettings();
@@ -408,7 +426,11 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-            super(settings, inFactory);
+            super(settings, inFactory, OrderLimitsTest.createBasicOrderLimits());
+        }
+        public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits limits)
+                throws ConfigError, FieldConvertError, MarketceteraException {
+            super(settings, inFactory, limits);
         }
 
         protected IDFactory createDatabaseIDFactory(SessionSettings settings) throws ConfigError, FieldConvertError {

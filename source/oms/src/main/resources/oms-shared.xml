@@ -30,6 +30,7 @@
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
         <constructor-arg ref="sessionSettings"/>
         <constructor-arg ref="fixMessageFactory"/>
+        <constructor-arg ref="orderLimits"/>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="orderModifiers">

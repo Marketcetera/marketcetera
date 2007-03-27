@@ -28,13 +28,15 @@ public class OutgoingMessageHandler {
     private IQuickFIXSender quickFIXSender = new QuickFIXSender();
     private IDFactory idFactory;
     private FIXMessageFactory msgFactory;
+    private OrderLimits orderLimits;
     
-    public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
+    public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits inLimits)
             throws ConfigError, FieldConvertError, MarketceteraException {
         setOrderModifiers(new LinkedList<OrderModifier>());
         setOrderRouteManager(new OrderRouteManager());
         msgFactory = inFactory;
         idFactory = createDatabaseIDFactory(settings);
+        orderLimits = inLimits;
         try {
             idFactory.init();
         } catch (Exception ex) {
@@ -75,7 +77,12 @@ public class OutgoingMessageHandler {
 
         Message returnVal = null;
         try {
+            if(FIXMessageUtil.isOrderList(message)) {
+                throw new MarketceteraException(OMSMessageKey.ERROR_ORDER_LIST_UNSUPPORTED.getLocalizedMessage());
+            }
+            
             modifyOrder(message);
+            orderLimits.verifyOrderLimits(message);
             // if single, pre-create an executionReport and send it back
             if (FIXMessageUtil.isOrderSingle(message))
             {
@@ -154,7 +161,7 @@ public class OutgoingMessageHandler {
         return rejection;
     }
 
-    public Message executionReportFromNewOrder(Message newOrder) throws FieldNotFound {
+    protected Message executionReportFromNewOrder(Message newOrder) throws FieldNotFound {
         if (FIXMessageUtil.isOrderSingle(newOrder)){
             String clOrdId = newOrder.getString(ClOrdID.FIELD);
             char side = newOrder.getChar(Side.FIELD);
@@ -201,7 +208,7 @@ public class OutgoingMessageHandler {
             oneModifier.modifyOrder(inOrder, msgFactory.getMsgAugmentor());
         }
     }
-    
+
     /** Sets the default session  */
     public void setDefaultSessionID(SessionID inSessionID)
     {
