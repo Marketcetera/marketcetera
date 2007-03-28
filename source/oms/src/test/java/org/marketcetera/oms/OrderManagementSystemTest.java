@@ -53,6 +53,9 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
                     "oms-shared.xml", "it-oms.xml"});
 			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
+            // simulate logon
+            QuickFIXApplication qfApp = (QuickFIXApplication) appContext.getBean("qfApplication");
+            qfApp.onLogon(null);
         } catch (Exception e) {
             LoggerAdapter.error("Unable to initialize OMS", e, OrderManagementSystemTest.class.getName());
             fail("Unable to init OMS: "+e.getMessage());

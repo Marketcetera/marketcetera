@@ -21,6 +21,7 @@ public enum OMSMessageKey implements LocalizedMessage {
     ERROR_ORDER_LIMIT_UNINIT("oms.error.order_limits.uninitialized"),
     ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION("oms.error.message_malformed_no_fix_version"),
     ERROR_ORDER_LIST_UNSUPPORTED("oms.error.order_list_unsupported"),
+    ERROR_NO_DESTINATION_CONNECTION("oms.error.no_destination_connection"),
 
     // order limits
     ERROR_OL_MAX_QTY("oms.error.ol.max_qty"),
