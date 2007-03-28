@@ -36,7 +36,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     {
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
-        suite.addTest(new OrderManagerTest("testOrderLimits_NewListRejected", FIXVersion.FIX40));
+        suite.addTest(new OrderManagerTest("testMessageRejectedLoggedOutOMS", FIXVersion.FIX41));
         suite.init(new MessageBundleInfo[]{OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO});
         return suite;
 /*/
@@ -44,7 +44,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
                 FIXVersionTestSuite.ALL_VERSIONS,
                 new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")),
                 new FIXVersion[]{FIXVersion.FIX40});
-    }
+   }
 
     public void testNewExecutionReportFromOrder() throws Exception
     {
@@ -342,6 +342,33 @@ public class OrderManagerTest extends FIXVersionedTestCase
         verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_ORDER_LIST_UNSUPPORTED);
     }
 
+
+    /** verify that OMS rejects messages if it's not connected to a FIX destination */
+    public void testMessageRejectedLoggedOutOMS() throws Exception {
+        MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
+        NullQuickFIXSender sender = new NullQuickFIXSender();
+        handler.setQuickFIXSender(sender);
+        Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
+        assertEquals(1, sender.capturedMessages.size());
+        assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
+        assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
+
+        // now set it to be logged out and verify a reject
+        sender.capturedMessages.clear();
+        handler.getQFApp().onLogout(null);
+        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
+        assertEquals(0, sender.capturedMessages.size());
+        verifyRejection(execReport, msgFactory, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
+
+        // verify goes through again after log on
+        sender.capturedMessages.clear();
+        handler.getQFApp().onLogon(null);
+        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
+        assertEquals(1, sender.capturedMessages.size());
+        assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
+        assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
+    }
+
     /** Helper method that takes an OrderManager, the stock symbol and the expect exchange
      * and verifies that the route parsing comes back correct
      * @param symbol    Symbol, can contain either a share class or an exchange (or both)
@@ -426,15 +453,21 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-            super(settings, inFactory, OrderLimitsTest.createBasicOrderLimits());
+            super(settings, inFactory, OrderLimitsTest.createBasicOrderLimits(), new QuickFIXApplication());
+            // simulate logon
+            qfApp.onLogon(null);
         }
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits limits)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-            super(settings, inFactory, limits);
+            super(settings, inFactory, limits, new QuickFIXApplication());
+            // simulate logon
+            qfApp.onLogon(null);
         }
 
         protected IDFactory createDatabaseIDFactory(SessionSettings settings) throws ConfigError, FieldConvertError {
             return new InMemoryIDFactory(factoryStart);
         }
+
+        public QuickFIXApplication getQFApp() { return qfApp; }
     }
 }

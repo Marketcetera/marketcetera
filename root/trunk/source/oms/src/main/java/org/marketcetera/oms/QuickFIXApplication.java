@@ -16,9 +16,11 @@ import quickfix.SessionID;
 public class QuickFIXApplication implements Application {
 
     private JmsOperations jmsOperations;
+    private boolean fLoggedOn;
 
-	public QuickFIXApplication() {
-	}
+    public QuickFIXApplication() {
+        fLoggedOn = false;
+    }
 	
 	public void fromAdmin(Message message, SessionID session)  {
 		if (jmsOperations != null){
@@ -46,10 +48,12 @@ public class QuickFIXApplication implements Application {
 	}
 
 	public void onLogon(SessionID session) {
-	}
+        fLoggedOn = true;
+    }
 
 	public void onLogout(SessionID session) {
-	}
+        fLoggedOn = false;
+    }
 
 	public void toAdmin(Message message, SessionID session) {
 	}
@@ -65,4 +69,8 @@ public class QuickFIXApplication implements Application {
 		this.jmsOperations = jmsOperations;
 	}
 
+
+    public boolean isLoggedOn() {
+        return fLoggedOn;
+    }
 }

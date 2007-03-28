@@ -29,14 +29,19 @@ public class OutgoingMessageHandler {
     private IDFactory idFactory;
     private FIXMessageFactory msgFactory;
     private OrderLimits orderLimits;
+
+    // this is temporary, until we have much better JMX visibility
+    protected QuickFIXApplication qfApp;
     
-    public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits inLimits)
+    public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits inLimits,
+                                  QuickFIXApplication inQFApp)
             throws ConfigError, FieldConvertError, MarketceteraException {
         setOrderModifiers(new LinkedList<OrderModifier>());
         setOrderRouteManager(new OrderRouteManager());
         msgFactory = inFactory;
         idFactory = createDatabaseIDFactory(settings);
         orderLimits = inLimits;
+        qfApp = inQFApp;
         try {
             idFactory.init();
         } catch (Exception ex) {
@@ -63,6 +68,12 @@ public class OutgoingMessageHandler {
             LoggerAdapter.error(OMSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
             return null;
         }
+
+        if(!qfApp.isLoggedOn()) {
+            return createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
+                    message);
+        }
+
 
         try {
             String version = message.getHeader().getField(new BeginString()).getValue();
