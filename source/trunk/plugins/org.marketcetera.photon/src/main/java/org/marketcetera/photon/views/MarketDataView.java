@@ -380,6 +380,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		try {
 			MSymbol mSymbol = service.symbolFromString(holder.getMessage().getString(Symbol.FIELD));
 			marketDataTracker.simpleUnsubscribe(mSymbol);
+			removeSymbol(mSymbol);
 		} catch (FieldNotFound e) {
 			// do nothing
 		}
