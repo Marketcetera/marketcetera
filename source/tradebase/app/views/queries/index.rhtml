@@ -14,6 +14,24 @@
         </div>
     <% end -%>
 
+    <% form_tag :action => 'on_date' do -%>
+        <fieldset>
+            <h2>Trades On Date</h2>
+            <p>List all trades posting on specified date.</p>
+            
+            <div class="form_left">
+                <label for="on_date">On Date</label>
+                <div class="date">
+                    <%= date_select 'date', 'on', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                </div>
+            </div>
+        </fieldset>
+        <div>
+            <%= submit_tag 'Search by Date', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
+    <% end -%>
+
     <% form_tag :action => 'by_date' do -%>
         <fieldset>
             <h2>Trades By Date</h2>

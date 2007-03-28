@@ -32,20 +32,17 @@ class QueriesController < ApplicationController
     render :template => 'queries/queries_output'
   end
   
-  def by_date
-    @from_date  = get_date_from_params(params, :date, "from", "from_date")
-    @to_date    = get_date_from_params(params, :date, "to", "to_date")
-
-    @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, 
-                         :conditions => ['post_date >= ? and post_date <= ?', @from_date, @to_date], 
-                         :joins => 'as t inner join journals on journals.id = t.journal_id', 
-                         :select => 't.*'
-
-    if(@trades.empty?)
-      flash.now[:error] = "No trades were found in range  [#{@from_date} to #{@to_date}]"                                       
-    end
+  def on_date
+    @on_date = get_date_from_params(params, :date, "on", "on_date") 
+    by_date_helper(@on_date, @on_date)
   end
   
+  def by_date
+    @from_date = get_date_from_params(params, :date, "from", "from_date")
+    @to_date = get_date_from_params(params, :date, "to", "to_date")
+    by_date_helper(@from_date, @to_date)
+  end
+
   def by_account
     nickname = get_non_empty_string_from_two(params, :account, :nickname, "nickname")
     if(nickname.nil? || nickname.empty?) 
@@ -65,5 +62,17 @@ class QueriesController < ApplicationController
     @query_type = "Account"
     
     render :template => 'queries/queries_output'
+  end
+  
+  private
+  def by_date_helper(from_date, to_date)
+      @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, 
+                         :conditions => ['post_date >= ? and post_date <= ?', from_date, to_date], 
+                         :joins => 'as t inner join journals on journals.id = t.journal_id', 
+                         :select => 't.*'
+
+    if(@trades.empty?)
+      flash.now[:error] = "No trades were found in range  [#{from_date} to #{to_date}]"                                       
+    end
   end
 end

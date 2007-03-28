@@ -104,6 +104,17 @@ class QueriesControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:trades)
     assert_equal 0, assigns(:trades).length
   end
+
+  def test_on_date_no_params
+    post :on_date
+    
+    assert_response :success
+    assert_template 'on_date'
+    
+    assert_not_nil assigns(:trades)
+    assert_equal 0, assigns(:trades).length
+  end
+  
   
   def test_by_date_wide_range
     post :by_date, {"date"=>{ "from(1i)"=>"2006", "from(2i)"=>"7", "from(3i)"=>"1", 
@@ -144,6 +155,18 @@ class QueriesControllerTest < MarketceteraTestBase
     
     assert_not_nil assigns(:trades)
     assert_equal 0, assigns(:trades).length
+  end
+  
+  def test_on_date_has_trade
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2008, 7, 11), "IFLI", "4.53", "ZAI")
+    post :on_date, {"date"=> { "on(1i)"=>"2008", "on(2i)"=>"7", "on(3i)"=>"11" }}
+    
+    assert_response :success
+    assert_template 'on_date'
+    
+    assert_not_nil assigns(:trades)
+    assert_equal 1, assigns(:trades).length
+    assert_equal(Date.civil(2008, 7, 11), assigns(:on_date))
   end
   
 end
