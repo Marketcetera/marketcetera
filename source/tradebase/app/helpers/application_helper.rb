@@ -1,6 +1,8 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
 
+  RJUST_NUMBER_CLASS_STR = " class='number'"
+  
   def auto_complete_for_currency_alpha_code
     auto_complete_responder_for_currency_alpha_code params[:currency][:alpha_code]
   end
@@ -64,7 +66,13 @@ module ApplicationHelper
       if(column.name != "created_on" && column.name != "updated_on")
           if(isHeader) 
             outStr += "<th>" + column.human_name+"</th>"
-          else outStr += "<td>" + inObject.send(column.name).to_s + "</td>"
+          else 
+            if(column.number?) 
+              tdStr = "<td"+RJUST_NUMBER_CLASS_STR+">"
+            else 
+              tdStr = "<td>"
+            end
+            outStr += tdStr + inObject.send(column.name).to_s + "</td>"
           end
       end
     end

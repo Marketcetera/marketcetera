@@ -73,13 +73,13 @@
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
     <td><%= Side.get_human_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, symbol) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, leavesQty) %></td>
-    <td><%= formatBigDecimal(BigDecimal(getStringFieldValueIfPresent(qf_message, avgPx))) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, leavesQty) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= formatBigDecimal(BigDecimal(getStringFieldValueIfPresent(qf_message, avgPx))) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, account) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
-    <td><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
     <%= render :partial => 'shared/show_edit_delete_links', 
                :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'message_logs'} %>
   </tr>
