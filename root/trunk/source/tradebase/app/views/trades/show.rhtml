@@ -61,7 +61,7 @@ total_debits = BigDecimal('0')
     %>
     <td></td>
     <%end%>
-    <td><%=df display_non_zero_value(posting_quantity.abs()) %> </td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df display_non_zero_value(posting_quantity.abs()) %> </td>
     <%if (accounting_account_type == :debit)
     total_debits += posting_quantity
     %>
@@ -71,7 +71,9 @@ total_debits = BigDecimal('0')
     </tr>
 <% end %>
     <tr>
-    <td><em>Totals</em></td><td><%=df total_debits.abs()%></td><td><%=df total_credits.abs()%></td>
+        <td><em>Totals</em></td>
+        <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df total_debits.abs()%></td>
+        <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df total_credits.abs()%></td>
     <td/>
     </tr>
 </table>

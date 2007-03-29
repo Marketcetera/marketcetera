@@ -10,7 +10,7 @@
 i=0
 for position in @positions %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-    <td><%=h BigDecimal.new(position.position).to_s   %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h BigDecimal.new(position.position).to_s   %></td>
     <td><%= link_to  position.tradeable.m_symbol.root, :action => 'by_symbol', :controller => 'queries', 
                       :m_symbol_root => position.tradeable.m_symbol.root  %></td>
     <td><%= link_to position.account.nickname, :controller => 'accounts', :action => 'show', :id => position.account %></td>

@@ -252,6 +252,15 @@ body {
   color: #000000;
 }
 
+/** Right-justify numbers */
+#body .right_column table tr td.number {
+  padding: 5px;
+  border: 1px solid #aaaaaa;
+  text-align: right;
+  color: #000000;
+}
+
+
 #body .right_column .pagination {
   list-style-type: none;
 }
