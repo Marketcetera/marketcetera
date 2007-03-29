@@ -2,15 +2,15 @@ package org.marketcetera.photon.preferences;
 
 import java.io.IOException;
 
-import org.eclipse.core.runtime.preferences.ConfigurationScope;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.ConnectionConstants;
 
@@ -40,6 +40,22 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
     }
 
     /**
+     * Adds labels to the field editor describing the FIX version. 
+     */
+    private void createFIXVersionLabels() {
+    	String fixVersionStr = PhotonPlugin.getDefault().getMessageFactory().getBeginString();
+    	if (fixVersionStr != null && fixVersionStr.length() > 0)
+    	{
+    		Label descriptionLabel = new Label(getFieldEditorParent(), SWT.NONE);
+    		descriptionLabel.setText("FIX Version");
+    		Label versionLabel = new Label(getFieldEditorParent(), SWT.NONE);
+    		versionLabel.setText(fixVersionStr);
+    		versionLabel.setToolTipText("The FIX version can be changed in photon-config.ini. " 
+    				+ "You must restart Photon for changes to photon-config.ini to take effect.");
+    	}
+    }
+    
+    /**
 	 * Creates the field editor components associated with the vaious connections.
 	 * 
 	 * @see org.eclipse.jface.preference.FieldEditorPreferencePage#createFieldEditors()
@@ -50,6 +66,8 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 	 */
 
     protected void createFieldEditors() {
+        createFIXVersionLabels();
+        
         jmsServerUrlEditor = new UrlFieldEditor(
                 ConnectionConstants.JMS_URL_KEY, "JMS Server URL",
                 getFieldEditorParent()
