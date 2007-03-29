@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
@@ -14,8 +15,6 @@ import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 
 import quickfix.field.MsgType;
-import quickfix.field.RefSeqNum;
-import quickfix.field.SessionRejectReason;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
@@ -29,7 +28,7 @@ import ca.odell.glazedlists.matchers.Matcher;
 public class FIXMessagesView extends HistoryMessagesView {
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
-	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT, false);
+	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT, false);  // filters out heartbeat messages
 
 	private ShowHeartbeatsAction showHeartbeatsAction;
 	private static final String SHOW_HEARTBEATS_SAVED_STATE_KEY = "SHOW_HEARTBEATS";
@@ -66,7 +65,13 @@ public class FIXMessagesView extends HistoryMessagesView {
 		return MessageColumns.values();
 	}
 
-    /* (non-Javadoc)
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		setShowHeartbeats(showHeartbeatsAction.isChecked());  // doing it here and using the state from the action since the message list is not yet available by the time init() is called		
+	}
+
+	/* (non-Javadoc)
 	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
 	 */
 	@Override
@@ -75,11 +80,13 @@ public class FIXMessagesView extends HistoryMessagesView {
 
 		showHeartbeatsAction = new ShowHeartbeatsAction(this);
 		
+		boolean showHeartbeats = false;  // filter out the heartbeats by default
 		if (memento != null  // can be null if there is no previous saved state
 			&& memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY) != null) 
 		{
-			showHeartbeatsAction.setChecked(memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY).intValue() != 0);
-		}
+			showHeartbeats = memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY).intValue() != 0;
+		} 
+		showHeartbeatsAction.setChecked(showHeartbeats);
 	}
 
 	/* (non-Javadoc)
@@ -114,9 +121,9 @@ public class FIXMessagesView extends HistoryMessagesView {
 	public void setShowHeartbeats(boolean shouldShow){
 		FilterList<MessageHolder> list = getFilterList();
 		if (shouldShow){
-			list.setMatcher(HEARTBEAT_MATCHER);
+			list.setMatcher(null);  // no filtering
 		} else {
-			list.setMatcher(null);
+			list.setMatcher(HEARTBEAT_MATCHER);  // filter out heartbeats
 		}
 		getMessagesViewer().refresh();
 	}
