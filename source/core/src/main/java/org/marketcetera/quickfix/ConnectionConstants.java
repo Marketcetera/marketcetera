@@ -11,13 +11,6 @@ import org.marketcetera.core.ClassVersion;
 @ClassVersion("$Id$")
 public class ConnectionConstants
 {
-    // FIX related
-    public static final String FIX_VERSION_KEY = "fix.version";
-    public final static String FIX_SENDER_COMP_ID = "fix.sendercompid";
-    public final static String FIX_TARGET_COMP_ID = "fix.targetcompid";
-    public final static String FIX_SERVER_PORT = "fix.server.port";
-    public final static String FIX_SERVER_ADDRESS = "fix.server.address";
-
     // JMS connection setup
     public static final String JMS_INCOMING_QUEUE_KEY = "jms.incoming.queue";
     public static final String JMS_OUTGOING_QUEUE_KEY = "jms.outgoing.queue";
