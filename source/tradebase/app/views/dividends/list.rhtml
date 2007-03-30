@@ -13,7 +13,12 @@
 for dividend in @dividends %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%= dividend.equity.m_symbol.root %></td>
-    <%= show_relevant_table_columns(dividend, false) %>
+    <td class="number"><%= dividend.amount%></td>
+    <td><%=h dividend.announce_date %></td>
+    <td><%=h dividend.ex_date %></td>
+    <td><%=h dividend.payable_date %></td>
+    <td><%=h dividend.status %></td>
+    <td><%=h shorten_string(dividend.description) %></td>
     <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => dividend, :controller_name => 'dividends'} %>
   </tr>
 <% end %>

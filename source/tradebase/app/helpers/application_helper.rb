@@ -96,9 +96,9 @@ module ApplicationHelper
   end
   
   # If a string is longer than (2x+1), contracts it by grabbing the first and last X chars
-  # for example, for maxLen 10, does 4..4
+  # for example, for maxLen 10, does 4...4
   # for example:
-  # contract_string("zaporozhets", 10) ==> zapo..hets
+  # contract_string("zaporozhets", 10) ==> zapo...hets
   # NOTE: for odd length, it's actually possible that we'll get an outgoing string that's longer than 
   # the incoming. oh well.
   def contract_string(theString, maxLen)
@@ -108,12 +108,36 @@ module ApplicationHelper
     
     if(theString.length > maxLen)
       halfLen = (maxLen/2.0).ceil - 1 
-      theString = theString[0, halfLen]+".."+theString[-halfLen, halfLen]
+      theString = theString[0, halfLen]+"..."+theString[-halfLen, halfLen]
     end
     
     theString
   end
   
+  # similar to contract_string, but just chops off the end and leaves the ellipsis
+  TRADE_COMMENT_LENGTH = 25
+  ACCOUNT_LENGTH = 12
+  def shorten_string(theString, maxLen = TRADE_COMMENT_LENGTH)
+    if(theString.blank?)
+      return theString
+    end
+    
+    if(theString.length > (maxLen-3))
+      # remember the off-by-one since we start at 0
+      return theString[0..(maxLen-3-1)]+"..." 
+    end
+    theString
+  end
+  
+  # Replaces spaces with &nbsp; - to be used for Account and Symbol names
+  # this effectively makes spaces "hard" so they won't wrap.
+  # Keep in mind that we need to call h() on the incoming string before this function is called 
+  def make_spaces_hard(str)
+    if(str.blank?) 
+      return str 
+    end
+    str.gsub(" ", "&nbsp;")
+  end
 
   private
   def auto_complete_responder_for_currency_alpha_code(value)
