@@ -33,4 +33,11 @@ class Side
     if(inCode.blank?) then return '' end
     DataDictionaryMgr.get_value_name(Quickfix::Side.new, inCode.to_s)
   end
+  
+  def Side.get_short_side(code)
+    if(code.instance_of?(String))
+      code = code.to_i
+    end
+    Side::SIDE_SHORT_CODE[code] 
+  end
 end

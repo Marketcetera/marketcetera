@@ -15,7 +15,7 @@ class TradesControllerTest < MarketceteraTestBase
     
     # create the trades from the messages 
     # trade20: B 100 GOOG 408.18
-    # trade21: SSE GOOG 4000 408.18
+    # trade21: SS GOOG 4000 408.18
     creator = CreateTradesController.new
     [20,21].each { |id| creator.create_one_trade(id) }
     assert_equal 2, Trade.count
@@ -39,6 +39,8 @@ class TradesControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:trades)
     assert_equal @allTrades.length, assigns(:trades).length
     assert_has_show_edit_delete_links(true, true, true)
+    
+    assert_tag :tag => "td", :content => "SS"
   end
 
   def test_show

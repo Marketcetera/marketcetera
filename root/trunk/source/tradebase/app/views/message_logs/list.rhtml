@@ -71,12 +71,11 @@
     <td><%= DateTime.parse(getHeaderStringFieldValueIfPresent(qf_message, sendingTime)).to_s %></td>
     <td><%= contract_string(getStringFieldValueIfPresent(qf_message, clOrdID), 10) %></td>
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
-    <td><%= Side.get_human_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
+    <td><%= Side.get_short_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, symbol) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, orderQty), 2, true) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, cumQty), 2, true) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, leavesQty), 2, true) %></td>
-<!--    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= formatBigDecimal(BigDecimal(getStringFieldValueIfPresent(qf_message, avgPx))) %></td>-->
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, avgPx), 4) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, account) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, lastShares), 2, true) %></td>
