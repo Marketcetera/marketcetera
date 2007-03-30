@@ -58,6 +58,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         verifyExecutionReport(execReport);
         // verify the acount id is present
         assertEquals("bob", execReport.getString(Account.FIELD));
+        assertTrue("sendingTime not set", execReport.getHeader().isSetField(SendingTime.FIELD));
 
         // on a non-single order should get back null
         assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob",
