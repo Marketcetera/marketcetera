@@ -193,20 +193,22 @@ public class OutgoingMessageHandler {
                 // only set the Account field if it's there
             }
 
-            return msgFactory.newExecutionReport(
-                    null,
-                    clOrdId,
-                    getNextExecId().getValue(),
-                    OrdStatus.NEW,
-                    side,
-                    orderQty,
-                    orderPrice,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    BigDecimal.ZERO,
-                    new MSymbol(symbol),
-                    inAccount);
+            Message execReport = msgFactory.newExecutionReport(
+                        null,
+                        clOrdId,
+                        getNextExecId().getValue(),
+                        OrdStatus.NEW,
+                        side,
+                        orderQty,
+                        orderPrice,
+                        BigDecimal.ZERO,
+                        BigDecimal.ZERO,
+                        BigDecimal.ZERO,
+                        BigDecimal.ZERO,
+                        new MSymbol(symbol),
+                        inAccount);
+            execReport.getHeader().setField(new SendingTime());
+            return execReport;
         } else {
             return null;
         }
