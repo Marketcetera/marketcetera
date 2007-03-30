@@ -16,7 +16,7 @@ public interface MyMessageFactory extends quickfix.MessageFactory {
      *
      * Example: to create a {@link quickfix.fix42.MarketDataRequest.NoMDEntryTypes}
      * you need to call
-     *       create({@link quickfix.field.MsgType#MARKET_DATA_REQUEST, {@link quickfix.field.NoMDEntries#FIELD})
+     *       create({@link quickfix.field.MsgType#MARKET_DATA_REQUEST}, {@link quickfix.field.NoMDEntries#FIELD})
      *
      * @param msgType   Message type of the enclosing message
      * @param correspondingFieldID  the fieldID of the field in the group
