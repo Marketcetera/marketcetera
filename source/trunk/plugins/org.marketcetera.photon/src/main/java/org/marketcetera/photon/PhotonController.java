@@ -12,6 +12,7 @@ import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.jms.core.JmsOperations;
 

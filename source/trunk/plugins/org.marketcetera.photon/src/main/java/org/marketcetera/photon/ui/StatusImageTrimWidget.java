@@ -19,6 +19,8 @@ import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.messaging.JMSFeedService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;

@@ -59,7 +59,11 @@ public class ReconnectMarketDataFeedJob extends Job {
 	    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
 	    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
 	    		IMarketDataFeed targetQuoteFeed = factory.getInstance("", "", "");
-    			ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), new MarketDataFeedService(targetQuoteFeed), null);
+    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
+				ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
+    			marketDataFeedService.setServiceRegistration(registration);
+    			marketDataFeedService.afterPropertiesSet();
+    			
     			targetQuoteFeed.start();
     			succeeded = true;
 			}
@@ -77,8 +81,16 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	}
 
-	public void disconnect() {
+	public static void disconnect(MarketDataFeedTracker marketDataFeedTracker) {
+
 		MarketDataFeedService service = (MarketDataFeedService) marketDataFeedTracker.getMarketDataFeedService();
+		if (service != null){
+			ServiceRegistration serviceRegistration = service.getServiceRegistration();
+			if (serviceRegistration != null){
+				serviceRegistration.unregister();
+			}
+		}
+
 		RuntimeException caughtException = null;
 		if (service != null){
 			try {
@@ -92,10 +104,6 @@ public class ReconnectMarketDataFeedJob extends Job {
 		}
 	}
 	
-	@Override
-	protected void finalize() throws Throwable {
-		marketDataFeedTracker.close();
-	}
 
 
 }
