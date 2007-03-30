@@ -3,11 +3,11 @@
     <th>Symbol</th>
     <th>Quantity</th>
     <th>Side</th>
-    <th>Price per Share</th>
+    <th>Price</th>
     <th>Trade Type</th>
     <th>Trade Date</th>
     <th>Account</th>
-    <th>Total Commission</th>
+    <th>Commission</th>
     <th>Comment</th>
     <th colspan="3"/>
   </tr>
@@ -16,13 +16,13 @@
 for trade in @trades %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
       <td><%= trade.tradeable_m_symbol_root %></td>
-      <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h trade.quantity %></td>
+      <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.quantity, 2, true) %></td>
       <td><%=h Side.get_human_side(trade.side.to_s) %></td>
-      <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h trade.price_per_share %></td>
+      <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.price_per_share, 2) %></td>
       <td><%=h get_human_trade_type(trade.trade_type) %></td>
       <td><%=h trade.journal.post_date %></td>
       <td><%=h trade.account.nickname %></td>
-      <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h trade.total_commission %></td>
+      <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.total_commission, 2) %></td>
       <td><%=h trade.comment %></td>
       <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => trade, :controller_name => 'trades'} %>
   </tr>

@@ -73,13 +73,14 @@
     <td><%= getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
     <td><%= Side.get_human_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, symbol) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, orderQty) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, cumQty) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, leavesQty) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= formatBigDecimal(BigDecimal(getStringFieldValueIfPresent(qf_message, avgPx))) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, orderQty), 2, true) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, cumQty), 2, true) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, leavesQty), 2, true) %></td>
+<!--    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= formatBigDecimal(BigDecimal(getStringFieldValueIfPresent(qf_message, avgPx))) %></td>-->
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, avgPx), 4) %></td>
     <td><%= getStringFieldValueIfPresent(qf_message, account) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, lastShares) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= getStringFieldValueIfPresent(qf_message, lastPx) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, lastShares), 2, true) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, lastPx), 2) %></td>
     <%= render :partial => 'shared/show_edit_delete_links', 
                :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'message_logs'} %>
   </tr>
