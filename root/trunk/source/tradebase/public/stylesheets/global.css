@@ -247,17 +247,14 @@ body {
 }
 
 #body .right_column table tr td {
-  padding: 5px;
+  padding: 0px 3px 0px 3px;
   border: 1px solid #aaaaaa;
   color: #000000;
 }
 
 /** Right-justify numbers */
 #body .right_column table tr td.number {
-  padding: 5px;
-  border: 1px solid #aaaaaa;
   text-align: right;
-  color: #000000;
 }
 
 

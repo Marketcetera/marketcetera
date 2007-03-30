@@ -27,8 +27,20 @@ class MessagesLogControllerTest < MarketceteraTestBase
     assert_template 'list'
 
     assert_not_nil assigns("exec_report_pages")
-    assert_equal 7, assigns("exec_report_pages").length
+    assert_equal 8, assigns("exec_report_pages").length
     assert_has_show_edit_delete_links(true, false, false)
+  end
+
+  # make sure the symbol/account columns have spaces substituted for &nbsp;
+  def test_list_formatting
+    get :list
+
+    assert_response :success
+    assert_template 'list'
+
+    # verify the formatting for the 'goog_long_22' message
+    assert_tag :tag => "td", :content => "GOOG&nbsp;Long&nbsp;Equity"   # symbol
+    assert_tag :tag => "td", :content => "TOLI&nbsp;...paces"
   end
 
   def test_show

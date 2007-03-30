@@ -42,6 +42,29 @@ class TradesControllerTest < MarketceteraTestBase
     
     assert_tag :tag => "td", :content => "SS"
   end
+  
+  # verify that the formatting for long strings in Symbol/Account/Comments is handled
+  def test_list_account_symbol_comment_formatting
+    Trade.delete_all
+    t = Trade.new(:quantity => 10, :comment => "very long comment with spaces",
+                   :trade_type => "T", :side => Side::QF_SIDE_CODE[:buy], 
+                       :price_per_share => "50.12")
+    t.create_equity_trade(t.quantity, "SYMBOL WITH SPACES", t.price_per_share, 19.99,  "USD", 
+                          "A COUNT WITH SPACES", Date.new)
+    t.save
+    
+    get :list
+    assert_response :success
+    assert_template 'list'
+
+    assert_not_nil assigns(:trades)
+    assert_equal 1, assigns(:trades).length
+    
+    # now verify the symbol is contracted
+    assert_tag :tag => "td", :content => "SYMBOL&nbsp;WITH&nbsp;SPACES"
+    assert_tag :tag => "td", :content => "very long comment with..."
+    assert_tag :tag => "td", :content => "A&nbsp;COU...PACES"
+  end
 
   def test_show
     get :show, :id => @allTrades[0].id
