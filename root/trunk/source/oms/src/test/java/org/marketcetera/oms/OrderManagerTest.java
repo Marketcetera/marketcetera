@@ -435,6 +435,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals("didn't get a right reason",
                 msgKey.getLocalizedMessage(args),
                 inMsg.getString(Text.FIELD));
+        assertTrue("rejects should have sending time in them too", inMsg.getHeader().isSetField(SendingTime.FIELD));
 
     }
 

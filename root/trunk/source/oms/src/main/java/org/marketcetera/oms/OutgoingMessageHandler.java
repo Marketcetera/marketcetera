@@ -169,6 +169,7 @@ public class OutgoingMessageHandler {
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(mfix.getLocalizedMessage(), fieldNotFound, this); }
             // ignore the exception since we are already sending a reject
         }
+        rejection.getHeader().setField(new SendingTime());
         return rejection;
     }
 
