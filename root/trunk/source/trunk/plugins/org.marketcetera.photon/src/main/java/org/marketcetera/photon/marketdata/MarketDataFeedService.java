@@ -4,18 +4,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.marketcetera.core.IFeedComponent;
+import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.core.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.IMessageSelector;
-import org.marketcetera.photon.DelegatingFeedComponentAdapter;
 import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;
 
-public class MarketDataFeedService extends FeedComponentAdapterBase {
+public class MarketDataFeedService implements IFeedComponentListener, IFeedComponent {
 	IMarketDataFeed feed;
 	private DelegatingListener delegatingListener;
 	private ServiceRegistration serviceRegistration;
@@ -35,15 +35,24 @@ public class MarketDataFeedService extends FeedComponentAdapterBase {
 	}
 
 	public final FeedStatus getFeedStatus() {
-		return feed.getFeedStatus();
+		if (feed == null)
+			return FeedStatus.UNKNOWN;
+		else
+			return feed.getFeedStatus();
 	}
 
 	public final FeedType getFeedType() {
-		return feed.getFeedType();
+		if (feed == null)
+			return FeedType.UNKNOWN;
+		else
+			return feed.getFeedType();
 	}
 
 	public final String getID() {
-		return feed.getID();
+		if (feed == null)
+			return "";
+		else
+			return feed.getID();
 	}
 
 	public final boolean isRunning() {
@@ -135,6 +144,20 @@ public class MarketDataFeedService extends FeedComponentAdapterBase {
 		public void onTrade(Message aTrade) {}
 		public void onTrades(Message[] trades) {}
 		
+	}
+
+
+
+	
+	public void afterPropertiesSet() throws Exception {
+		feed.addFeedComponentListener(this);
+	}
+
+	public void feedComponentChanged(IFeedComponent component) {
+		if (serviceRegistration != null)
+		{
+			serviceRegistration.setProperties(null);
+		}
 	}
 
 
