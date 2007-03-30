@@ -25,11 +25,4 @@ class ApplicationHelperTest < MarketceteraTestBase
     assert_equal "al..ba", contract_string("alibaba", 5)
     assert_equal "zapo..hets", contract_string("zaporozhets", 10)  
   end
-  
-  def test_display_non_zero_value
-    assert_equal("", display_non_zero_value(0))
-    assert_equal("", display_non_zero_value(0.0))
-    assert_equal("bob", display_non_zero_value("bob"))
-    assert_equal(23.45, display_non_zero_value(23.45))
-  end
 end

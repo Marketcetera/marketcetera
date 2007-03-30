@@ -1,6 +1,7 @@
 # Methods added to this helper will be available to all templates in the application.
 module ApplicationHelper
-
+  include NumberFormatHelper
+  
   RJUST_NUMBER_CLASS_STR = " class='number'"
   
   def auto_complete_for_currency_alpha_code
@@ -23,14 +24,6 @@ module ApplicationHelper
   
   end
 
-  # displays the passed in value if it's non-zero
-  def display_non_zero_value(value)
-    if(value == 0) 
-      return ""
-    end
-    value
-  end
-  
   # Designed to create a date from something that may look like this:
   # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
   # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
@@ -69,10 +62,12 @@ module ApplicationHelper
           else 
             if(column.number?) 
               tdStr = "<td"+RJUST_NUMBER_CLASS_STR+">"
+              value = fn(inObject.send(column.name), 2)
             else 
               tdStr = "<td>"
+              value = inObject.send(column.name).to_s
             end
-            outStr += tdStr + inObject.send(column.name).to_s + "</td>"
+            outStr += tdStr + value + "</td>"
           end
       end
     end

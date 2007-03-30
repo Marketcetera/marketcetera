@@ -49,6 +49,9 @@ class TradesControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:trade)
     assert assigns(:trade).valid?
+    
+    # also verify the transaction display
+    assert_tag :tag => "td", :attributes => {:class => "number"}, :content => "&nbsp; "
   end
 
   def test_new
