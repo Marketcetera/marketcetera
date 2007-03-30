@@ -19,6 +19,7 @@ import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.beans.factory.BeanCreationException;
@@ -34,19 +35,20 @@ import org.springframework.jms.core.JmsOperations;
  */
 public class ReconnectJMSJob extends Job {
 
-	ServiceTracker jmsFeedTracker;
 	
 
 	private static AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
-	private BundleContext bundleContext;
+	private final boolean disconnectOnly;
 
 	public ReconnectJMSJob(String name) {
-		super(name);
-		bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		jmsFeedTracker = new ServiceTracker(bundleContext, JMSFeedService.class.getName(), null);
-		jmsFeedTracker.open();
+		this(name, false);
 	}
 	
+	public ReconnectJMSJob(String name, boolean disconnectOnly) {
+		super(name);
+		this.disconnectOnly = disconnectOnly;
+	}
+
 	/* (non-Javadoc)
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
@@ -54,78 +56,78 @@ public class ReconnectJMSJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		if (reconnectInProgress.getAndSet(true))
 			return Status.CANCEL_STATUS;
-		Logger logger = PhotonPlugin.getDefault().getMainLogger();
-		
+
+		ServiceTracker jmsFeedTracker = null;
+		BundleContext bundleContext;
+
 		try {
-			monitor.beginTask("Disconnect message server", 2);
-			disconnect();
-		} catch (Exception ex){
-			logger.info("Exception disconnecting from JMS", ex);
-		}
+	
+			bundleContext = PhotonPlugin.getDefault().getBundleContext();
+			jmsFeedTracker = new ServiceTracker(bundleContext, JMSFeedService.class.getName(), null);
+			jmsFeedTracker.open();
+	
+			Logger logger = PhotonPlugin.getDefault().getMainLogger();
+			
+			try {
+				monitor.beginTask("Disconnect message server", 2);
+				disconnect(jmsFeedTracker);
+			} catch (Exception ex){
+				logger.info("Exception disconnecting from JMS", ex);
+			}
+			
+			if (!disconnectOnly){
+				boolean succeeded = false;
 		
-		boolean succeeded = false;
-		// get rid of the old one...
-		try {
-			JMSFeedService oldService = (JMSFeedService) jmsFeedTracker.getService();
-			ServiceRegistration serviceRegistration;
-			if (oldService != null ){
-				ClassPathXmlApplicationContext oldContext = oldService.getApplicationContext();
-				if (oldContext != null){
-					oldContext.close();
-				}
-				if (((serviceRegistration = oldService.getServiceRegistration())!=null)){
-					serviceRegistration.unregister();
+				JMSFeedService feedService = new JMSFeedService();
+				ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedService, null);
+				feedService.setServiceRegistration(registration);
+		
+				try {
+					monitor.beginTask("Connect message server", 3);
+					String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
+					StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext(url);
+					final ClassPathXmlApplicationContext jmsApplicationContext;
+				
+					jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerURLContext);
+			
+					SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
+					photonControllerContainer.setExceptionListener(feedService);
+					
+					PhotonControllerListenerAdapter photonControllerAdapter = (PhotonControllerListenerAdapter) jmsApplicationContext.getBean("photonControllerListener");
+					photonControllerAdapter.setPhotonController(PhotonPlugin.getDefault().getPhotonController());
+		
+					monitor.worked(1);
+					
+					jmsApplicationContext.start();
+					feedService.setApplicationContext(jmsApplicationContext);
+					
+					JmsOperations outgoingJmsOperations;
+					outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
+		
+					feedService.setJmsOperations(outgoingJmsOperations);
+					feedService.afterPropertiesSet();
+					monitor.worked(1);
+		
+					succeeded = true;
+					logger.info("Message queue connected ("+url+")");
+				} catch (BeanCreationException bce){
+					Throwable toLog = bce.getCause();
+					if (toLog instanceof UncategorizedJmsException)
+						toLog = toLog.getCause();
+					logger.error("Error connecting to message server", toLog);
+				} catch (Throwable t){
+					logger.error("Error connecting to message server", t);
+				} finally {
+					reconnectInProgress.set(false);
+					feedService.setExceptionOccurred(!succeeded);
+					registration.setProperties(null);
+					monitor.done();
 				}
 			}
-		} catch (Throwable t) {
-			if (logger.isDebugEnabled())
-				logger.debug("Exception unregistering "+JMSFeedService.class);
-		}
-		
-		JMSFeedService feedService = new JMSFeedService();
-		ServiceRegistration registration = bundleContext.registerService(JMSFeedService.class.getName(), feedService, null);
-		feedService.setServiceRegistration(registration);
-		try {
-
-			monitor.beginTask("Connect message server", 3);
-			String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
-			StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext(url);
-			final ClassPathXmlApplicationContext jmsApplicationContext;
-		
-			jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerURLContext);
-	
-			SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
-			photonControllerContainer.setExceptionListener(feedService);
-			
-			PhotonControllerListenerAdapter photonControllerAdapter = (PhotonControllerListenerAdapter) jmsApplicationContext.getBean("photonControllerListener");
-			photonControllerAdapter.setPhotonController(PhotonPlugin.getDefault().getPhotonController());
-
-			monitor.worked(1);
-			
-			jmsApplicationContext.start();
-			feedService.setApplicationContext(jmsApplicationContext);
-			
-			JmsOperations outgoingJmsOperations;
-			outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
-
-			feedService.setJmsOperations(outgoingJmsOperations);
-			feedService.afterPropertiesSet();
-			monitor.worked(1);
-
-			succeeded = true;
-			logger.info("Message queue connected ("+url+")");
-		} catch (BeanCreationException bce){
-			Throwable toLog = bce.getCause();
-			if (toLog instanceof UncategorizedJmsException)
-				toLog = toLog.getCause();
-			logger.error("Error connecting to message server", toLog);
-		} catch (Throwable t){
-			logger.error("Error connecting to message server", t);
 		} finally {
-			reconnectInProgress.set(false);
-			feedService.setExceptionOccurred(!succeeded);
-			registration.setProperties(null);
-			monitor.done();
+			if (jmsFeedTracker != null) {
+				jmsFeedTracker.close();
+			}
 		}
 		return Status.OK_STATUS;
 	}
@@ -143,28 +145,35 @@ public class ReconnectJMSJob extends Job {
 		return brokerURLContext;
 	}
 
-	public void disconnect()
+	public static void disconnect(ServiceTracker jmsFeedTracker)
 	{
 		JMSFeedService feed = (JMSFeedService) jmsFeedTracker.getService();
-		try {
-			SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) feed.getApplicationContext().getBean("photonControllerContainer");
-			photonControllerContainer.setExceptionListener(null);
-		} catch (Exception e) {
-		}
-		RuntimeException caughtException = null;
+
 		if (feed != null){
-			ClassPathXmlApplicationContext applicationContext = feed.getApplicationContext();
-			if (applicationContext != null){
-				try {
-					applicationContext.stop();
-				} catch (RuntimeException ex){
-					caughtException = ex;
-				}
-				jmsFeedTracker.remove(jmsFeedTracker.getServiceReference());
+			ServiceRegistration serviceRegistration;
+			if (((serviceRegistration = feed.getServiceRegistration())!=null)){
+				serviceRegistration.unregister();
 			}
-		}
-		if (caughtException != null){
-			throw caughtException;
+	
+			try {
+				SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) feed.getApplicationContext().getBean("photonControllerContainer");
+				photonControllerContainer.setExceptionListener(null);
+			} catch (Exception e) {
+			}
+			RuntimeException caughtException = null;
+			if (feed != null){
+				ClassPathXmlApplicationContext applicationContext = feed.getApplicationContext();
+				if (applicationContext != null){
+					try {
+						applicationContext.stop();
+					} catch (RuntimeException ex){
+						caughtException = ex;
+					}
+				}
+			}
+			if (caughtException != null){
+				throw caughtException;
+			}
 		}
 	}
 
@@ -176,11 +185,6 @@ public class ReconnectJMSJob extends Job {
 	@Override
 	public boolean shouldSchedule() {
 		return !reconnectInProgress.get();
-	}
-
-	@Override
-	protected void finalize() throws Throwable {
-		jmsFeedTracker.close();
 	}
 
 	

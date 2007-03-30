@@ -18,7 +18,12 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
 import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.ui.MainConsole;
+import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * Required by the RCP platform this class is responsible for setting up the
@@ -35,7 +40,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
     		stopJMS();
     	} catch (Throwable t){}
     	try {
-    		stopQuoteFeed();
+    		stopMarketDataFeed();
     	} catch (Throwable t){}
     	return true;
     }
@@ -107,7 +112,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
 		job.schedule();
 		startJMS();
-		startQuoteFeed();
+		startMarketDataFeed();
 		startIDFactory();
 		
 	}
@@ -138,24 +143,33 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 
 	private void stopJMS() {
+		ReconnectJMSJob job = null;
 		try {
-			ReconnectJMSJob job = new ReconnectJMSJob("Disconnect");
-			job.disconnect();
+			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
+			ServiceTracker jmsFeedTracker = new ServiceTracker(bundleContext, JMSFeedService.class.getName(), null);
+			jmsFeedTracker.open();
+
+			ReconnectJMSJob.disconnect(jmsFeedTracker);
 		} catch (Throwable t){
 			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);
 		}
 	}
 	
 
-	private void startQuoteFeed() {
-		ReconnectMarketDataFeedJob job = new ReconnectMarketDataFeedJob("Reconnect quote feed");
+	private void startMarketDataFeed() {
+		ReconnectMarketDataFeedJob job = null;
+		job = new ReconnectMarketDataFeedJob("Reconnect quote feed");
 		job.schedule();
 	}
 	
-	private void stopQuoteFeed() {
+	private void stopMarketDataFeed() {
+		ReconnectMarketDataFeedJob job = null;
 		try {
-			ReconnectMarketDataFeedJob job = new ReconnectMarketDataFeedJob("Disconnect");
-			job.disconnect();
+			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
+			MarketDataFeedTracker marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
+			marketDataFeedTracker.open();
+
+			ReconnectMarketDataFeedJob.disconnect(marketDataFeedTracker);
 		} catch (Throwable t){
 			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);
 		}

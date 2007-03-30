@@ -23,7 +23,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
-import org.marketcetera.photon.actions.ReconnectQuoteFeedAction;
+import org.marketcetera.photon.actions.ReconnectMarketDataFeedAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 
 /**
@@ -112,7 +112,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
     private IAction checkForUpdatesAction;
 
-	private ReconnectQuoteFeedAction reconnectQuoteFeedAction;
+	private ReconnectMarketDataFeedAction reconnectQuoteFeedAction;
 
 
 
@@ -170,7 +170,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
-		reconnectQuoteFeedAction = new ReconnectQuoteFeedAction(window); register(reconnectQuoteFeedAction);
+		reconnectQuoteFeedAction = new ReconnectMarketDataFeedAction(window); register(reconnectQuoteFeedAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
 		

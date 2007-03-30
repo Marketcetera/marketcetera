@@ -3,19 +3,22 @@ package org.marketcetera.photon.marketdata;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.core.IFeedComponentListener;
+import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.core.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.IMessageSelector;
+import org.marketcetera.photon.DelegatingFeedComponentAdapter;
+import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;
 
-public class MarketDataFeedService {
+public class MarketDataFeedService extends FeedComponentAdapterBase {
 	IMarketDataFeed feed;
 	private DelegatingListener delegatingListener;
+	private ServiceRegistration serviceRegistration;
 
 	public MarketDataFeedService(IMarketDataFeed aFeed){
 		feed = aFeed;
@@ -25,6 +28,10 @@ public class MarketDataFeedService {
 
 	public final void addFeedComponentListener(IFeedComponentListener listener) {
 		feed.addFeedComponentListener(listener);
+	}
+
+	public final void removeFeedComponentListener(IFeedComponentListener listener) {
+		feed.removeFeedComponentListener(listener);
 	}
 
 	public final FeedStatus getFeedStatus() {
@@ -43,9 +50,6 @@ public class MarketDataFeedService {
 		return feed.isRunning();
 	}
 
-	public final void removeFeedComponentListener(IFeedComponentListener listener) {
-		feed.removeFeedComponentListener(listener);
-	}
 
 	public final void start() {
 		feed.start();
@@ -71,7 +75,7 @@ public class MarketDataFeedService {
 	{
 		return feed;
 	}
-	
+
 	public void addMarketDataListener(IMarketDataListener listener)
 	{
 		if (listener == null)
@@ -85,6 +89,15 @@ public class MarketDataFeedService {
 			throw new NullPointerException();
 		delegatingListener.removeMarketDataListener(listener);
 	}
+	
+	public void setServiceRegistration(ServiceRegistration serviceRegistration){
+		this.serviceRegistration = serviceRegistration;
+	}
+
+	public ServiceRegistration getServiceRegistration() {
+		return serviceRegistration;
+	}
+
 
 	class DelegatingListener implements IMarketDataListener {
 
@@ -124,6 +137,6 @@ public class MarketDataFeedService {
 		
 	}
 
-	
+
 
 }

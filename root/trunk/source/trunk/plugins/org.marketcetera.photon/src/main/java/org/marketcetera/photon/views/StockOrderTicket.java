@@ -20,6 +20,7 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -650,6 +651,13 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		otherComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		Label accountLabel = getFormToolkit().createLabel(otherComposite, "Account:");
 		accountText = getFormToolkit().createText(otherComposite, "");
+		Point sizeHint = EclipseUtils.getTextAreaSize(quantityBorderComposite, null, 10, 1.0); 
+	 	
+		RowData accountTextRowData = new RowData(); 
+	 	accountTextRowData.height = sizeHint.y; 
+	 	accountTextRowData.width = sizeHint.x; 
+	 	accountText.setLayoutData(accountTextRowData); 
+	 	
 		getFormToolkit().paintBordersFor(otherComposite);
 		otherExpandableComposite.setClient(otherComposite);
 		FIXTextExtractor extractor = new FIXTextExtractor(accountText,Account.FIELD, FIXDataDictionaryManager.getDictionary());
