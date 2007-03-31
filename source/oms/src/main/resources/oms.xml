@@ -44,10 +44,7 @@
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg ref="fixVersion"/>
-<!--
         <constructor-arg value="MRKTC-OMS"/>
--->
-        <constructor-arg value="sender-1308-OMS"/>
         <constructor-arg value="MRKTC-EXCH"/>
     </bean>
 
