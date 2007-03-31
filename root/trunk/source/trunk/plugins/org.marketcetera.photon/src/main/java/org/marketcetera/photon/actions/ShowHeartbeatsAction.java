@@ -21,7 +21,7 @@ public class ShowHeartbeatsAction extends Action {
 
 	@Override
 	public void run() {
-		view.setShowHeartbeats(!isChecked());
+		view.setShowHeartbeats(isChecked());
 	}
 
 }
