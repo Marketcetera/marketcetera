@@ -19,6 +19,8 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
                                                                 IWorkbenchPreferencePage {
 
 	public static final String ID = "org.marketcetera.photon.preferences.connections";
+
+	public static final String FIX_VERSION_PREFERENCE = "fix.version";
 	
 	private UrlFieldEditor jmsServerUrlEditor;
 
