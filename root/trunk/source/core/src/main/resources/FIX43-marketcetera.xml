@@ -502,6 +502,7 @@
       <field name="TotalVolumeTradedDate" required="N" />
       <field name="TotalVolumeTradedTime" required="N" />
       <field name="NetChgPrevDay" required="N" />
+      <field name="NoMarketDataSnapshots" required="N"/>
       <group name="NoMDEntries" required="Y">
         <field name="MDEntryType" required="Y" />
         <field name="MDEntryPx" required="N" />
