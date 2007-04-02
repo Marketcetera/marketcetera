@@ -775,6 +775,7 @@
     <field name="FinancialStatus" required="N"/>
     <field name="CorporateAction" required="N"/>
     <field name="NetChgPrevDay" required="N"/>
+    <field name="NoMarketDataSnapshots" required="N"/>
     <group name="NoMDEntries" required="Y">
       <field name="MDEntryType" required="Y"/>
       <field name="MDEntryPx" required="N"/>

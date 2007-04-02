@@ -72,9 +72,15 @@ public class FIXDataDictionaryManager {
             throws  FIXFieldConverterNotAvailable
     {
         DataDictionary theDict;
-        InputStream input = FIXDataDictionaryManager.class.getClassLoader().getResourceAsStream(fixDataDictionaryPath);
         try {
-            theDict = new DataDictionary(input);
+            theDict = new DataDictionary(fixDataDictionaryPath);
+        } catch (DataDictionary.Exception ddex) {
+            InputStream input = FIXDataDictionaryManager.class.getClassLoader().getResourceAsStream(fixDataDictionaryPath);
+            try {
+                theDict = new DataDictionary(input);
+            } catch (ConfigError configError1) {
+                throw new FIXFieldConverterNotAvailable(ddex.getMessage(), ddex);
+            }
         } catch (ConfigError configError) {
             throw new FIXFieldConverterNotAvailable(configError.getMessage(), configError);
         }
