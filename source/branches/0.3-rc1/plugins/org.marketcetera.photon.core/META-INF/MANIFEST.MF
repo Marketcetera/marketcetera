@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Core Plug-in
 Bundle-SymbolicName: org.marketcetera.photon.core
-Bundle-Version: 0.2.1
+Bundle-Version: 0.3.0
 Bundle-Activator: org.marketcetera.photon.core.Activator
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
