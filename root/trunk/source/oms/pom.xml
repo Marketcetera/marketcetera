@@ -10,7 +10,7 @@
     <artifactId>oms</artifactId>
     <packaging>jar</packaging>
     <name>Marketcetera OMS</name>
-    <url>http://maven.apache.org</url>
+    <url>http://trac.marketcetera.org</url>
     <dependencies>
         <dependency>
             <groupId>org.marketcetera</groupId>

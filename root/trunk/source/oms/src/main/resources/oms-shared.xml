@@ -48,8 +48,4 @@
     <!-- *******************************************************
         | User-configurable session and senderCompID variables |
         *******************************************************  -->
-
-    <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
-      <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
-    </bean>
 </beans>

@@ -80,7 +80,8 @@
         </constructor-arg>		
     </bean>
 
-    <bean id="messageFactory" class="quickfix.fix42.MessageFactory"/>
+    <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory" />
+    <bean id="messageFactory" factory-bean="fixMessageFactory" factory-method="getUnderlyingMessageFactory" />
 
     <!-- Sessions are configured directly in the Spring configuration -->
     <!-- There is no use of the standard QF configuration file -->
