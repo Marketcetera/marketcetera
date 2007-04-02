@@ -4,7 +4,7 @@ Bundle-Name: Photon Plug-in
 Bundle-SymbolicName: org.marketcetera.photon; singleton:=true
 Bundle-Version: 0.3.0
 Bundle-Activator: org.marketcetera.photon.PhotonPlugin
-Bundle-Vendor: Marketcetera LLC
+Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n, org.apache.activemq
 Eclipse-BuddyPolicy: registered
