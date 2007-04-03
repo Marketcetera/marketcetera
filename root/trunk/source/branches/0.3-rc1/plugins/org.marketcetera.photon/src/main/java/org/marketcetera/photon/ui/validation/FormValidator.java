@@ -74,7 +74,7 @@ public class FormValidator {
 		}
 	}
 
-	public void validateAll(){
+	public boolean validateAll(){
 		String warning = null;
 		List<ValidationException> exceptions = new LinkedList<ValidationException>();
 		for (Control aControl : controls) {
@@ -97,5 +97,6 @@ public class FormValidator {
 			}
 		}
 		updateUI(warning, exceptions);
+		return (exceptions.size() ==0);
 	}
 }
