@@ -1,7 +1,5 @@
 package org.marketcetera.photon;
 
-import javax.jms.JMSException;
-
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
@@ -10,9 +8,9 @@ import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.messaging.JMSFeedService;
+import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
-import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.jms.core.JmsOperations;
 
@@ -25,7 +23,6 @@ import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
-import quickfix.field.SenderCompID;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
 
@@ -48,6 +45,8 @@ public class PhotonController {
 	
 	ServiceTracker jmsServiceTracker;
 
+	private FIXMessageFactory messageFactory;
+
 	/** Creates a new instance of OrderManager.  Also gets a reference to
 	 *  the JMS service using a {@link ServiceTracker}
 	 */
@@ -62,6 +61,10 @@ public class PhotonController {
 		this.fixMessageHistory = fixMessageHistory;
 	}
 	
+	public void setMessageFactory(FIXMessageFactory messageFactory) {
+		this.messageFactory = messageFactory;
+	}
+
 	public void handleCounterpartyMessage(final Message aMessage) {
 		asyncExec(
 			new Runnable() {
@@ -185,23 +188,24 @@ public class PhotonController {
 			}
 		}
 		try { LoggerAdapter.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD), this); } catch (FieldNotFound e1) {	}
-		final Message cancelMessage = new quickfix.fix42.Message();
-		cancelMessage.getHeader().setString(MsgType.FIELD, MsgType.ORDER_CANCEL_REQUEST);
-		cancelMessage.setField(new OrigClOrdID(clOrdID));
-		cancelMessage.setField(new ClOrdID(idFactory.getNext()));
 		try {
-			cancelMessage.setField(new OrderID(latestMessage.getString(OrderID.FIELD)));
-		} catch (FieldNotFound e) {
-			// do nothing
-		}
-		FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, latestMessage);
-
-		asyncExec(new Runnable() {
-			public void run() {
-				fixMessageHistory.addOutgoingMessage(cancelMessage);
+			final Message cancelMessage = messageFactory.newCancelFromMessage(latestMessage);
+			cancelMessage.setField(new ClOrdID(idFactory.getNext()));
+			try {
+				cancelMessage.setField(new OrderID(latestMessage.getString(OrderID.FIELD)));
+			} catch (FieldNotFound e) {
+				// do nothing
 			}
-		});
-		convertAndSend(cancelMessage);
+			FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, latestMessage);
+			asyncExec(new Runnable() {
+				public void run() {
+					fixMessageHistory.addOutgoingMessage(cancelMessage);
+				}
+			});
+			convertAndSend(cancelMessage);
+		} catch (FieldNotFound fnf){
+			LoggerAdapter.error("Could not send cancel for message "+latestMessage.toString(), fnf, this);
+		}
 	}
 
 	private void convertAndSend(Message fixMessage) {

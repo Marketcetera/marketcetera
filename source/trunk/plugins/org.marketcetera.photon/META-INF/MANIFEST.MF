@@ -45,5 +45,6 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.scripting,
  org.marketcetera.photon.ui,
  org.marketcetera.photon.ui.validation,
+ org.marketcetera.photon.ui.validation.fix,
  org.marketcetera.photon.views
 Eclipse-LazyStart: true
