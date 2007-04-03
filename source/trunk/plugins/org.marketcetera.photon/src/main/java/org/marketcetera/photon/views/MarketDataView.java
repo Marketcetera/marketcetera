@@ -8,6 +8,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
@@ -42,17 +43,22 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author gmiller
  * @author caroline.leung@softwaregoodness.com
  * @author andrei.lissovski@softwaregoodness.com
+ * @author michael.lossos@softwaregoodness.com
  */
 public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
 
-	private static final int LAST_NORMAL_COLUMN = 1;
+	private static final int ZERO_WIDTH_COLUMN_INDEX = 0;
+	private static final int SYMBOL_COLUMN_INDEX = 1;
+	private static final int LASTPX_COLUMN_INDEX = 2;
+	private static final int LAST_NORMAL_COLUMN_INDEX = LASTPX_COLUMN_INDEX;
+	
 	
 	public enum MarketDataColumns
 	{
-		SYMBOL("Symbol"), LASTPX("LastPx"), BIDSZ("BidSize"), BID("BidPx"), ASK("OfferPx"), ASKSZ("OfferSize");
+		ZEROWIDTH(""), SYMBOL("Symbol"), LASTPX("LastPx"), BIDSZ("BidSize"), BID("BidPx"), ASK("OfferPx"), ASKSZ("OfferSize");
 		
 		private String mName;
 
@@ -105,9 +111,35 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
         messageTable.setHeaderVisible(true);
 
 		for (int i = 0; i < messageTable.getColumnCount(); i++) {
-			messageTable.getColumn(i).setMoveable(true);
+			boolean moveable = true;
+			if (i == 0) {
+				moveable = false;
+			}
+			messageTable.getColumn(i).setMoveable(moveable);
 		}
     }
+
+	@Override
+	protected void packColumns(Table table) {
+		super.packColumns(table);
+		
+		// The following is required to work around the root cause of #132 ""Dirt" rendered in Market Data view 
+		// row selection".
+		//
+		// There is no way to remove the extra spacing in the first TableColumn of an SWT Table on Windows.
+		// This extra spacing is what causes the visible gap on a selected row.
+		// It has nothing to do with the TextCellEditor or TableViewer -- the problem can be 
+		// reproduced using just an SWT Table with text in the TableItems. The first column always has extra space.
+		//
+		// The best that can be done to get rid of the visible gap in a selected row
+		// is to create an unmovable zero width first column. 
+		TableColumn zeroFirstColumn = table.getColumn(ZERO_WIDTH_COLUMN_INDEX);
+		zeroFirstColumn.setWidth(0);
+		zeroFirstColumn.setResizable(false);
+		zeroFirstColumn.setMoveable(false);
+		zeroFirstColumn.setText("");
+		zeroFirstColumn.setImage(null);
+	}
 
 	@Override
 	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
@@ -120,16 +152,12 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	    CellEditor[] editors = new CellEditor[MarketDataColumns.values().length];
 
 	    // Column 1 : Completed (Checkbox)
-	    editors[0] = new TextCellEditor(aMessageTable);
-	    for (int i = 1; i < MarketDataColumns.values().length; i++)
-	    {
-	    	editors[i] = null;
-	    }
+	    editors[SYMBOL_COLUMN_INDEX] = new TextCellEditor(aMessageTable);
 
 	    // Assign the cell editors to the viewer 
 	    aMessagesViewer.setCellEditors(editors);
 	    String[] columnProperties = new String[MarketDataColumns.values().length];
-	    columnProperties[0] = MarketDataColumns.SYMBOL.toString();
+	    columnProperties[SYMBOL_COLUMN_INDEX] = MarketDataColumns.SYMBOL.toString();
 	    aMessagesViewer.setColumnProperties(columnProperties);
 	    
 	    // Set the cell modifier for the viewer
@@ -253,10 +281,10 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	}
 
 
-	private static final int BID_SIZE_INDEX = 2;
-	private static final int BID_INDEX = 3;
-	private static final int ASK_INDEX = 4;
-	private static final int ASK_SIZE_INDEX = 5;
+	private static final int BID_SIZE_INDEX = LAST_NORMAL_COLUMN_INDEX + 1;
+	private static final int BID_INDEX = LAST_NORMAL_COLUMN_INDEX + 2;
+	private static final int ASK_INDEX = LAST_NORMAL_COLUMN_INDEX + 3;
+	private static final int ASK_SIZE_INDEX = LAST_NORMAL_COLUMN_INDEX + 4;
 
 	private MDVMarketDataListener marketDataListener;
 	
@@ -269,7 +297,10 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 		@Override
 		public String getColumnName(int index) {
-			if (index <= LAST_NORMAL_COLUMN){
+			if (index == ZERO_WIDTH_COLUMN_INDEX) {
+				return "";  //$NON-NLS-1$
+			}
+			if (index <= LAST_NORMAL_COLUMN_INDEX){
 				return super.getColumnName(index);
 			}
 			switch(index){
@@ -288,7 +319,10 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 		@Override
 		public String getColumnText(Object element, int index) {
-			if (index <= LAST_NORMAL_COLUMN) {
+			if (index == ZERO_WIDTH_COLUMN_INDEX) {
+				return "";  //$NON-NLS-1$
+			}
+			if (index <= LAST_NORMAL_COLUMN_INDEX) {
 				return super.getColumnText(element, index);
 			}
 			MessageHolder messageHolder = (MessageHolder) element;
