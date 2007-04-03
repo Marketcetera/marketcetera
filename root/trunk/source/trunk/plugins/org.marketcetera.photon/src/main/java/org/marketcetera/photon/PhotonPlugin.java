@@ -114,6 +114,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		photonController.setMessageHistory(fixMessageHistory);
 		photonController.setMainConsoleLogger(getMainConsoleLogger());
 		photonController.setIDFactory(idFactory);
+		photonController.setMessageFactory(messageFactory);
 
 	}
 
@@ -190,7 +191,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
 		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
 		String versionString = thePreferenceStore.getString(ConnectionsPreferencePage.FIX_VERSION_PREFERENCE);
-		FIXVersion version = FIXVersion.valueOf(versionString);
+		FIXVersion version = FIXVersion.FIX42;
+		try {
+			version = FIXVersion.valueOf(versionString);
+		} catch (IllegalArgumentException iae) {
+			// just use version 4.2
+		}
 		messageFactory = version.getMessageFactory();
 		FIXDataDictionaryManager.setDataDictionary(version.getDataDictionaryURL());
 	}
