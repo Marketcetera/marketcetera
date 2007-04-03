@@ -691,29 +691,30 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	public void handleSend() {
 		try {
-			validator.validateAll();
-			Message aMessage;
-			PhotonPlugin plugin = PhotonPlugin.getDefault();
-			if (targetOrder == null) {
-				String orderID = plugin.getIDFactory().getNext();
-				aMessage = plugin.getMessageFactory()
-						.newLimitOrder(orderID, Side.BUY,
-								BigDecimal.ZERO, new MSymbol(""),
-								BigDecimal.ZERO, TimeInForce.DAY, null);
-				aMessage.removeField(Side.FIELD);
-				aMessage.removeField(OrderQty.FIELD);
-				aMessage.removeField(Symbol.FIELD);
-				aMessage.removeField(Price.FIELD);
-				aMessage.removeField(TimeInForce.FIELD);
-			} else {
-				aMessage = targetOrder;
+			if (validator.validateAll()) {
+				Message aMessage;
+				PhotonPlugin plugin = PhotonPlugin.getDefault();
+				if (targetOrder == null) {
+					String orderID = plugin.getIDFactory().getNext();
+					aMessage = plugin.getMessageFactory()
+							.newLimitOrder(orderID, Side.BUY,
+									BigDecimal.ZERO, new MSymbol(""),
+									BigDecimal.ZERO, TimeInForce.DAY, null);
+					aMessage.removeField(Side.FIELD);
+					aMessage.removeField(OrderQty.FIELD);
+					aMessage.removeField(Symbol.FIELD);
+					aMessage.removeField(Price.FIELD);
+					aMessage.removeField(TimeInForce.FIELD);
+				} else {
+					aMessage = targetOrder;
+				}
+				for (AbstractFIXExtractor extractor : extractors) {
+					extractor.modifyOrder(aMessage);
+				}
+				addCustomFields(aMessage);
+				plugin.getPhotonController().handleInternalMessage(aMessage);
+				clear();
 			}
-			for (AbstractFIXExtractor extractor : extractors) {
-				extractor.modifyOrder(aMessage);
-			}
-			addCustomFields(aMessage);
-			plugin.getPhotonController().handleInternalMessage(aMessage);
-			clear();
 		} catch (Exception e) {
 			PhotonPlugin.getMainConsoleLogger().error(
 					"Error sending order: " + e.getMessage(), e);

@@ -26,6 +26,7 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
+import org.marketcetera.photon.preferences.ConnectionsPreferencePage;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
@@ -113,6 +114,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		photonController.setMessageHistory(fixMessageHistory);
 		photonController.setMainConsoleLogger(getMainConsoleLogger());
 		photonController.setIDFactory(idFactory);
+		photonController.setMessageFactory(messageFactory);
 
 	}
 
@@ -171,7 +173,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	{
 		MessageBundleManager.registerCoreMessageBundle();
 		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
-		FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
 	}
 
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
@@ -187,8 +188,17 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	}
 	
-	private void initMessageFactory() {
-	    messageFactory = FIXVersion.FIX42.getMessageFactory();
+	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
+		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
+		String versionString = thePreferenceStore.getString(ConnectionsPreferencePage.FIX_VERSION_PREFERENCE);
+		FIXVersion version = FIXVersion.FIX42;
+		try {
+			version = FIXVersion.valueOf(versionString);
+		} catch (IllegalArgumentException iae) {
+			// just use version 4.2
+		}
+		messageFactory = version.getMessageFactory();
+		FIXDataDictionaryManager.setDataDictionary(version.getDataDictionaryURL());
 	}
 
 	public void startScriptRegistry() {
