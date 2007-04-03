@@ -11,7 +11,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
@@ -37,6 +36,13 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
 
+/**
+ * Market data view.
+ * 
+ * @author gmiller
+ * @author caroline.leung@softwaregoodness.com
+ * @author andrei.lissovski@softwaregoodness.com
+ */
 public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 
@@ -46,7 +52,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 	public enum MarketDataColumns
 	{
-		SYMBOL("Symbol"), LASTPX("LastPx"), BIDSZ("BidSz"),BID("Bid"),ASK("Ask"),ASKSZ("AskSz");
+		SYMBOL("Symbol"), LASTPX("LastPx"), BIDSZ("BidSize"), BID("BidPx"), ASK("OfferPx"), ASKSZ("OfferSize");
 		
 		private String mName;
 
@@ -325,6 +331,35 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			return new Message();
 		}
 
+		@Override
+		public Object fieldValueFromMap(FieldMap map, Integer fieldID) {
+			Object value = super.fieldValueFromMap(map, fieldID);
+			if (value == null) {
+				try {
+					Message castedMap = (Message) map;
+					switch (fieldID) {
+
+					case quickfix.field.BidSize.FIELD:
+						return getGroup(castedMap, MDEntryType.BID).getDouble(
+								MDEntrySize.FIELD);
+					case quickfix.field.BidPx.FIELD:
+						return getGroup(castedMap, MDEntryType.BID).getDouble(
+								MDEntryPx.FIELD);
+					case quickfix.field.OfferPx.FIELD:
+						return getGroup(castedMap, MDEntryType.OFFER)
+								.getDouble(MDEntryPx.FIELD);
+					case quickfix.field.OfferSize.FIELD:
+						return getGroup(castedMap, MDEntryType.OFFER)
+								.getDouble(MDEntrySize.FIELD);
+					default:
+						return "";
+					}
+				} catch (FieldNotFound e) {
+					return "";
+				}
+			}
+			return value;
+		}
 		
 		
 	}
