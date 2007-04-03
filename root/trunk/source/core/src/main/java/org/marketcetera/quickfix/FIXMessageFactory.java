@@ -1,15 +1,49 @@
 package org.marketcetera.quickfix;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.quickfix.messagefactory.MyMessageFactory;
-import quickfix.*;
-import quickfix.field.*;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import quickfix.FieldNotFound;
+import quickfix.Group;
+import quickfix.Message;
+import quickfix.MessageFactory;
+import quickfix.StringField;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.CxlRejReason;
+import quickfix.field.CxlRejResponseTo;
+import quickfix.field.ExecID;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.MDEntryType;
+import quickfix.field.MDReqID;
+import quickfix.field.MarketDepth;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.OrdRejReason;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.SendingTime;
+import quickfix.field.Side;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.Text;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 
 /**
  * Factory class that creates a particular beginString of the FIX message
@@ -46,17 +80,6 @@ public class FIXMessageFactory {
         return msg;
     }
 
-    /**
-     * Creates a message representing an ExecutionReport (type {@link MsgType#ORDER_CANCEL_REPLACE_REQUEST}
-     * @return  appropriately versioned message object
-     */
-    public Message newOrderCancelReplaceRequest()
-    {
-        Message msg = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
-        addTransactionTimeIfNeeded(msg);
-        return msg;
-    }
-
     public Message newCancelReplaceShares(String orderID, String origOrderID, BigDecimal quantity) 
     {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
@@ -81,18 +104,30 @@ public class FIXMessageFactory {
         aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
         return aMessage;
     }
+    
+    public Message newCancelFromMessage(Message oldMessage) throws FieldNotFound {
+    	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage);
+    }
 
 	public Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound {
-		Message cancelReplaceMessage = newOrderCancelReplaceRequest();
-		cancelReplaceMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
-		FIXMessageUtil.fillFieldsFromExistingMessage(cancelReplaceMessage, oldMessage);
+    	Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST, oldMessage);
 		if (oldMessage.isSetField(Price.FIELD)){
-			cancelReplaceMessage.setField(oldMessage.getField(new Price()));
+			cancelMessage.setField(oldMessage.getField(new Price()));
 		}
+        cancelMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+		return cancelMessage;
+	}
+	
+	public Message newCancelHelper(String msgType, Message oldMessage) throws FieldNotFound {
+        Message cancelMessage = msgFactory.create(beginString, msgType);
+		cancelMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
+		FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, oldMessage);
 		if (oldMessage.isSetField(OrderQty.FIELD)){
-			cancelReplaceMessage.setField(oldMessage.getField(new OrderQty()));
+			cancelMessage.setField(oldMessage.getField(new OrderQty()));
 		}
-		return cancelReplaceMessage;
+        addTransactionTimeIfNeeded(cancelMessage);
+        cancelMessage.getHeader().setField(new SendingTime());
+		return cancelMessage;
 
 	}
 
