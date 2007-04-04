@@ -368,7 +368,12 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		@Override
 		public Object fieldValueFromMap(FieldMap map, Integer fieldID) {
 			Object value = super.fieldValueFromMap(map, fieldID);
-			if (value == null) {
+			if (value == null && (map instanceof Message) 
+				&& (fieldID == quickfix.field.BidSize.FIELD
+					|| fieldID == quickfix.field.BidPx.FIELD
+					|| fieldID == quickfix.field.OfferPx.FIELD 
+					|| fieldID == quickfix.field.OfferSize.FIELD)) 
+			{
 				try {
 					Message castedMap = (Message) map;
 					switch (fieldID) {
@@ -386,15 +391,14 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 						return getGroup(castedMap, MDEntryType.OFFER)
 								.getDouble(MDEntrySize.FIELD);
 					default:
-						return "";
+						return 0d;
 					}
 				} catch (FieldNotFound e) {
-					return "";
+					return 0d;
 				}
 			}
 			return value;
 		}
-		
 		
 	}
 
