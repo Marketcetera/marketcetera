@@ -30,7 +30,9 @@ public abstract class MessagesView extends ViewPart {
 
 	public static final String COLUMN_ORDER_KEY = "COLUMN_ORDER";  //$NON-NLS-1$
 	public static final String COLUMN_ORDER_DELIMITER = ",";  //$NON-NLS-1$
-	
+
+	public static final String SORT_BY_COLUMN_KEY = "SORT_BY_COLUMN";  //$NON-NLS-1$
+
 	private Table messageTable;
 	private IndexedTableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
@@ -124,6 +126,7 @@ public abstract class MessagesView extends ViewPart {
 		super.saveState(memento);
 		
 		saveColumnOrder(memento);
+		saveSortByColumn(memento);
 	}
 
 	protected String serializeColumnOrder(int[] columnOrder) {
@@ -174,6 +177,24 @@ public abstract class MessagesView extends ViewPart {
 			messageTable.setColumnOrder(columnOrder);
 		}
 	}
+
+	
+	protected void restoreSortByColumn(IMemento memento) {
+		if (memento == null)
+			return;
+		String sortByColumn = memento.getString(SORT_BY_COLUMN_KEY);
+		if (sortByColumn != null && sortByColumn.length() > 0 && chooser != null)
+		{
+			chooser.fromString(sortByColumn);
+		}
+	}
+
+	protected void saveSortByColumn(IMemento memento) {
+		if (memento == null) 
+			return;
+		memento.putString(SORT_BY_COLUMN_KEY, chooser.toString());
+	}
+	
 			
     protected Table createMessageTable(Composite parent) {
         Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
@@ -215,6 +236,7 @@ public abstract class MessagesView extends ViewPart {
 								messageTable, 
 								tableFormat,
 								extractedList, false);
+			restoreSortByColumn(viewStateMemento);
 		}
 		messagesViewer.setInput(extractedList);
 	}
