@@ -47,7 +47,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		int i = 0;
         for (Enum aColumn : columns) {
 			TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
-			String localizedName = FIXFieldLocalizer.getLocalizedMessage(columns[i++].toString());
+			String localizedName = FIXFieldLocalizer.getLocalizedMessage(getColumnName(i++));
 			tableColumn.setText(localizedName);
 		}
 	}
