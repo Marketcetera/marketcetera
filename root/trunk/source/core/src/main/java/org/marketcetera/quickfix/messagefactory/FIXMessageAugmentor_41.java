@@ -48,8 +48,8 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
                 break;
             default:
                 // calculate the LeavesQty = IniitialQty - CumQty
-                BigDecimal initial = new BigDecimal(inMessage.getField(new OrderQty()).getValue());
-                BigDecimal cumQty = new BigDecimal(inMessage.getField(new CumQty()).getValue());
+                BigDecimal initial = new BigDecimal(inMessage.getString(OrderQty.FIELD));
+                BigDecimal cumQty = new BigDecimal(inMessage.getString(CumQty.FIELD));
                 inMessage.setField(new StringField(LeavesQty.FIELD, initial.subtract(cumQty).toPlainString()));
                 break;
         }

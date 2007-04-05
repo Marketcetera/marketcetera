@@ -42,6 +42,15 @@ public class FIXMessageAugmentor_41Test extends TestCase {
 
     }
 
+    public void testExecReportAugmentor_decimalQtyAndPrice() throws Exception {
+        FIXMessageAugmentor_41 augmentor = new FIXMessageAugmentor_41();
+        Message msg = augmentor.executionReportAugment(createNOS(new BigDecimal("100.10"), new BigDecimal("30.50")));
+        assertEquals("69.60", msg.getString(LeavesQty.FIELD));
+
+        msg = augmentor.executionReportAugment(createNOS(new BigDecimal("300.3"), BigDecimal.ZERO));
+        assertEquals("300.3", msg.getString(LeavesQty.FIELD));
+    }
+
     public void testExecutionReportAugmentor_leavesQty_setToZeroOnRejections() throws Exception {
         FIXMessageAugmentor_41 augmentor = new FIXMessageAugmentor_41();
         Message nos = createNOS(new BigDecimal(100), new BigDecimal(30));
