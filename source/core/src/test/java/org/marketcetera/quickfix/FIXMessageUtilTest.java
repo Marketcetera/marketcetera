@@ -139,7 +139,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
             assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
         }
         assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
-        assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getDouble(CumQty.FIELD)));
+        assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getString(CumQty.FIELD)));
         assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
             assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
