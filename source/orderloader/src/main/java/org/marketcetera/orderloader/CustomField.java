@@ -3,6 +3,8 @@ package org.marketcetera.orderloader;
 import org.marketcetera.core.ClassVersion;
 import quickfix.Field;
 
+import java.math.BigDecimal;
+
 /**
  * Represents "custom" fields (ie non-predetermined fields) that can show up in
  * the list of orders
@@ -23,7 +25,7 @@ public class CustomField extends Field
 
     /** Custom field interprets the message the following way:
      * 1. if it parses as an int, return an int
-     * 2. if it parses as a double, return a double
+     * 2. if it parses as a {@link BigDecimal}, return a {@link BigDecimal}
      * 3. else, return a String
      * @param inValue Field value we are interpreting
      * @return Int, Double or String
@@ -34,7 +36,7 @@ public class CustomField extends Field
             return Integer.valueOf(inValue);
         } catch(NumberFormatException ex) {
             try {
-                return Double.valueOf(inValue);
+                return new BigDecimal(inValue);
             } catch(NumberFormatException ex2) {
                 return inValue;
             }

@@ -183,7 +183,7 @@ public class OrderLoader extends ApplicationBase
                     }
                 }
 
-                FIXDataDictionaryManager.getDictionary().validate(message);
+                FIXDataDictionaryManager.getDictionary().validate(message, true);
 
                 sendMessage(message);
                 numProcessedOrders++;

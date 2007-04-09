@@ -6,6 +6,8 @@ import junit.framework.TestSuite;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 
+import java.math.BigDecimal;
+
 /**
  * @author Toli Kuznets
  * @version $Id$
@@ -29,8 +31,8 @@ public class CustomFieldTest extends TestCase
         assertEquals(42, cf.parseMessageValue("42"));
         assertEquals(Integer.class, cf.parseMessageValue("42").getClass());
 
-        assertEquals(42.24, cf.parseMessageValue("42.24"));
-        assertEquals(Double.class, cf.parseMessageValue("42.24").getClass());
+        assertEquals(new BigDecimal("42.24"), cf.parseMessageValue("42.24"));
+        assertEquals(BigDecimal.class, cf.parseMessageValue("42.24").getClass());
 
         assertEquals("toli kuznets", cf.parseMessageValue("toli kuznets"));
     }
