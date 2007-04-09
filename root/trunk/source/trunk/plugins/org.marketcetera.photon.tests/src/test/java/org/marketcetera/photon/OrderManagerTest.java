@@ -66,11 +66,13 @@ public class OrderManagerTest extends TestCase {
 	private ImmediatePhotonController photonController;
 
 	protected void setUp() throws Exception {
+		super.setUp();
 		idFactory = new InMemoryIDFactory(999);
 		messageHistory = new FIXMessageHistory();
 		photonController = new ImmediatePhotonController();
 		photonController.setMessageHistory(messageHistory);
 		photonController.setIDFactory(idFactory);
+		photonController.setMessageFactory(msgFactory);
 	}
 
 	
