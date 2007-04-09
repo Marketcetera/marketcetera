@@ -16,7 +16,6 @@ import org.springframework.jms.core.JmsOperations;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.Message.Header;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
 import quickfix.field.ExecID;
@@ -24,7 +23,6 @@ import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
-import quickfix.field.SendingTime;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
 
@@ -211,12 +209,6 @@ public class PhotonController {
 	}
 
 	private void convertAndSend(Message fixMessage) {
-		
-		Header header = fixMessage.getHeader();
-		if (!header.isSetField(SendingTime.FIELD)){
-			header.setField(new SendingTime());
-		}
-		
 		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
 		JmsOperations jmsOperations;
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
