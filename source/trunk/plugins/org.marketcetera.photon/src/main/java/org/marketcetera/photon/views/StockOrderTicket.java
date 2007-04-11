@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,8 +14,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,16 +38,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.eclipse.ui.part.ViewPart;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.marketdata.ConjunctionMessageSelector;
-import org.marketcetera.marketdata.MarketDataListener;
-import org.marketcetera.marketdata.MessageTypeSelector;
-import org.marketcetera.marketdata.SymbolMessageSelector;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
@@ -70,19 +60,15 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
-import quickfix.FieldMap;
-import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.Account;
 import quickfix.field.OrderQty;
-import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
 
-public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPropertyChangeListener {
+public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPropertyChangeListener, IStockOrderTicket {
 
 	private static final String NEW_EQUITY_ORDER = "New Equity Order";
 
@@ -138,8 +124,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	private FormValidator validator = new FormValidator(this);
 
-	private MSymbol listenedSymbol = null;
-
 	List<AbstractFIXExtractor> extractors = new LinkedList<AbstractFIXExtractor>();
 
 	private Button sendButton;
@@ -148,27 +132,18 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	private BookComposite bookComposite;
 
-	private Message targetOrder;
-
 	private Section otherExpandableComposite;
 
 	private Text accountText;
 
 	private Section bookSection;
 
-	private MarketDataFeedTracker marketDataTracker;
-
 	private IMemento viewStateMemento;
+	
 	private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
 
-	private MarketDataListener marketDataListener;
-
-	private ConjunctionMessageSelector currentSubscription;
-	
 
 	public StockOrderTicket() {
-		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault().getBundleContext());
-		marketDataTracker.open();
 		
 	}
 
@@ -192,30 +167,13 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		plugin.getPreferenceStore().addPropertyChangeListener(this);
 		
-		marketDataListener = new MarketDataListener(){
-					public void onLevel2Quote(Message aQuote) {
-						StockOrderTicket.this.onQuote(aQuote);
-					}
-		
-					public void onQuote(Message aQuote) {
-						StockOrderTicket.this.onQuote(aQuote);
-					}
-		
-					public void onTrade(Message aTrade) {
-					}
-					
-				};
-		marketDataTracker.setMarketDataListener(marketDataListener);
 
 	}
 
 	@Override
 	public void dispose() {
-		marketDataTracker.setMarketDataListener(null);
-		marketDataTracker.close();
 		PhotonPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
 		
-		PhotonPlugin plugin = PhotonPlugin.getDefault();
 	}
 
 	@Override
@@ -277,16 +235,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				SWT.PUSH);
 		cancelButton = getFormToolkit().createButton(okCancelComposite,
 				"Cancel", SWT.PUSH);
-		cancelButton.addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
-				handleCancel();
-			}
-		});
-		sendButton.addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
-				handleSend();
-			}
-		});
 
 		createCustomFieldsExpandableComposite();
 		createOtherExpandableComposite();
@@ -414,17 +362,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		symbolText = getFormToolkit().createText(symbolBorderComposite, null,
 				SWT.SINGLE | SWT.BORDER);
 		symbolText.setLayoutData(symbolTextGridData);
-		symbolText.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				((Text) e.widget).selectAll();
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				listenMarketData(((Text) e.widget).getText());
-			}
-		});
 		TextValidator textValidator = new TextValidator(symbolText, "Symbol",
 				false);
 		ParentColorHighlighter highlighter = new ParentColorHighlighter(
@@ -434,37 +371,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		extractors.add(extractor);
 	}
 
-	protected void listenMarketData(String symbol) {
-		unlisten();
-		if (symbol != null && !"".equals(symbol)){
-			MSymbol newListenedSymbol = new MSymbol(symbol);
-			MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
-			
-			if (service != null
-					&& !newListenedSymbol.equals(listenedSymbol)) {
-				ConjunctionMessageSelector subscription = new ConjunctionMessageSelector(
-												new SymbolMessageSelector(newListenedSymbol),
-												new MessageTypeSelector(false, false, true));
-				service.subscribe(subscription);
-				listenedSymbol = newListenedSymbol;
-				currentSubscription = subscription;
-			}
-		}
-	}
-
-	protected void unlisten() {
-		MarketDataFeedService service = marketDataTracker
-				.getMarketDataFeedService();
-
-		if (service != null) {
-			if (currentSubscription != null) {
-				service.unsubscribe(currentSubscription);
-				listenedSymbol = null;
-				currentSubscription = null;
-			}
-		}
-		bookComposite.setInput(null);
-	}
 
 	/**
 	 * This method initializes priceBorderComposite
@@ -689,53 +595,23 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		bookSection.setClient(bookComposite);
 	}
 
-	public void handleSend() {
-		try {
-			if (validator.validateAll()) {
-				Message aMessage;
-				PhotonPlugin plugin = PhotonPlugin.getDefault();
-				if (targetOrder == null) {
-					String orderID = plugin.getIDFactory().getNext();
-					aMessage = plugin.getMessageFactory()
-							.newLimitOrder(orderID, Side.BUY,
-									BigDecimal.ZERO, new MSymbol(""),
-									BigDecimal.ZERO, TimeInForce.DAY, null);
-					aMessage.removeField(Side.FIELD);
-					aMessage.removeField(OrderQty.FIELD);
-					aMessage.removeField(Symbol.FIELD);
-					aMessage.removeField(Price.FIELD);
-					aMessage.removeField(TimeInForce.FIELD);
-				} else {
-					aMessage = targetOrder;
-				}
-				for (AbstractFIXExtractor extractor : extractors) {
-					extractor.modifyOrder(aMessage);
-				}
-				addCustomFields(aMessage);
-				plugin.getPhotonController().handleInternalMessage(aMessage);
-				clear();
-			}
-		} catch (Exception e) {
-			PhotonPlugin.getMainConsoleLogger().error(
-					"Error sending order: " + e.getMessage(), e);
-		}
-	}
 
-
-	protected void handleCancel() {
-		clear();
-	}
-
-	private void clear() {
+	public void clear() {
 		for (AbstractFIXExtractor extractor : extractors) {
 			extractor.clearUI();
 		}
-		unlisten();
-		targetOrder = null;
-		updateTitle();
+		updateTitle(null);
 		symbolText.setEnabled(true);
 	}
 
+	public void updateMessage(Message aMessage) throws MarketceteraException
+	{
+		for (AbstractFIXExtractor extractor : extractors) {
+			extractor.modifyOrder(aMessage);
+		}
+		addCustomFields(aMessage);
+	}
+	
 	public void clearMessage() {
 		errorMessageLabel.setText("");
 	}
@@ -756,22 +632,20 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		}
 	}
 
-	public void showOrder(Message order) {
+	public void showMessage(Message order) {
 		for (AbstractFIXExtractor extractor : extractors) {
 			extractor.updateUI(order);
 		}
 		symbolText.setEnabled(FIXMessageUtil.isOrderSingle(order));
-		targetOrder = order;
-		updateTitle();
-		listenMarketData(symbolText.getText());
+		updateTitle(order);
 	}
 	
-	private void updateTitle()
+	private void updateTitle(Message targetOrder)
 	{
-		if (FIXMessageUtil.isCancelReplaceRequest(targetOrder)){
-			form.setText(REPLACE_EQUITY_ORDER);
-		} else {
+		if (targetOrder == null || !FIXMessageUtil.isCancelReplaceRequest(targetOrder)){
 			form.setText(NEW_EQUITY_ORDER);
+		} else {
+			form.setText(REPLACE_EQUITY_ORDER);
 		}
 	}
 
@@ -819,7 +693,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		}
 	}
 
-	private void addCustomFields(Message message) throws MarketceteraException {
+	void addCustomFields(Message message) throws MarketceteraException {
 		TableItem[] items = customFieldsTable.getItems();
 		DataDictionary dictionary = FIXDataDictionaryManager.getDictionary();
 		for (TableItem item : items) {
@@ -838,27 +712,19 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				}
 				if (fieldNumber > 0) {
 					if (dictionary.isHeaderField(fieldNumber)) {
-						insertFieldIfMissing(fieldNumber, value, message
+						FIXMessageUtil.insertFieldIfMissing(fieldNumber, value, message
 								.getHeader());
 					} else if (dictionary.isTrailerField(fieldNumber)) {
-						insertFieldIfMissing(fieldNumber, value, message
+						FIXMessageUtil.insertFieldIfMissing(fieldNumber, value, message
 								.getTrailer());
 					} else if (dictionary.isField(fieldNumber)) {
-						insertFieldIfMissing(fieldNumber, value, message);
+						FIXMessageUtil.insertFieldIfMissing(fieldNumber, value, message);
 					}
 				} else {
 					throw new MarketceteraException("Could not find field "
 							+ key);
 				}
 			}
-		}
-	}
-
-	private void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
-		if (fieldMap.isSetField(fieldNumber)){
-			throw new MarketceteraException("Field "+fieldNumber+" is already set in message.");
-		} else {
-			fieldMap.setField(new StringField(fieldNumber, value));
 		}
 	}
 
@@ -881,18 +747,93 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		}
 	}
 
-	public void onQuote(Message message) {
-		try {
-			if (listenedSymbol!=null){
-				String listenedSymbolString = listenedSymbol.toString();
-				if (message.isSetField(Symbol.FIELD) &&
-						listenedSymbolString.equals(message.getString(Symbol.FIELD))){
-					bookComposite.onQuote(message);
-				}
-			}
-		} catch (FieldNotFound e) {
-			// Do nothing
-		}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getAccountText()
+	 */
+	public Text getAccountText() {
+		return accountText;
 	}
 
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getBookComposite()
+	 */
+	public BookComposite getBookComposite() {
+		return bookComposite;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getCancelButton()
+	 */
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getCustomFieldsTable()
+	 */
+	public Table getCustomFieldsTable() {
+		return customFieldsTable;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getErrorMessageLabel()
+	 */
+	public Label getErrorMessageLabel() {
+		return errorMessageLabel;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getPriceText()
+	 */
+	public Text getPriceText() {
+		return priceText;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getQuantityText()
+	 */
+	public Text getQuantityText() {
+		return quantityText;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getSendButton()
+	 */
+	public Button getSendButton() {
+		return sendButton;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getSideCCombo()
+	 */
+	public CCombo getSideCCombo() {
+		return sideCCombo;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getSymbolText()
+	 */
+	public Text getSymbolText() {
+		return symbolText;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getTableViewer()
+	 */
+	public CheckboxTableViewer getTableViewer() {
+		return tableViewer;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.views.IStockOrderTicket#getTifCCombo()
+	 */
+	public CCombo getTifCCombo() {
+		return tifCCombo;
+	}
+
+	public boolean validateAll(){
+		return validator.validateAll();
+	}
+	
 }

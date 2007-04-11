@@ -114,7 +114,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 			try {
 				Message cancelReplaceMessage = messageFactory.newCancelReplaceFromMessage(oldMessage);
 				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin.getDefault().getIDFactory().getNext()));
-				StockOrderTicket.getDefault().showOrder(cancelReplaceMessage);
+				PhotonPlugin.getDefault().getStockOrderTicketController().showMessage(cancelReplaceMessage);
 			} catch (NoMoreIDsException e) {	
 				PhotonPlugin.getMainConsoleLogger().error("Ran out of order ID's");
 			} catch (FieldNotFound e) {
