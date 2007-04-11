@@ -1,6 +1,7 @@
 package org.marketcetera.core;
 
 import junit.framework.TestCase;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -16,6 +17,7 @@ import org.marketcetera.quickfix.FIXVersion;
 public abstract class FIXVersionedTestCase extends TestCase {
     protected FIXMessageFactory msgFactory;
     protected FIXVersion fixVersion;
+    protected FIXDataDictionary fixDD;
 
     public FIXVersionedTestCase(String inName, FIXVersion version) {
         super(inName);
@@ -26,7 +28,8 @@ public abstract class FIXVersionedTestCase extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        FIXDataDictionaryManager.setDataDictionary(fixVersion.getDataDictionaryURL());
+        fixDD = FIXDataDictionaryManager.getFIXDatDictionary(fixVersion);
+        FIXDataDictionaryManager.setCurrentFIXDataDictionary(fixDD);
     }
 
     public String getName() {

@@ -116,7 +116,7 @@ public class DefaultOrderModifier implements OrderModifier {
             if (mod != null){
                 modified = mod.modifyOrder(order) || modified;
             }
-            if (FIXDataDictionaryManager.isAdminMessageType42(msgType)){
+            if (FIXDataDictionary.isAdminMessageType42(msgType)){
                 mod = messageModifiers.get(ADMIN_MODIFIER_KEY);
                 if (mod != null){
                     modified = mod.modifyOrder(order) || modified;

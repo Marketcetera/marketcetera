@@ -3,7 +3,7 @@ package org.marketcetera.quickfix;
 import org.marketcetera.core.MarketceteraException;
 
 /**
- * Throws when the {@link FIXDataDictionaryManager} is not found for
+ * Throws when the {@link FIXDataDictionary} is not found for
  * the specified version of FIX Protocol
  * @author Toli Kuznets
  * @version $Id$

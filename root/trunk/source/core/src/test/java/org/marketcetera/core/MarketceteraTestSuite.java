@@ -1,7 +1,7 @@
 package org.marketcetera.core;
 
 import junit.framework.TestSuite;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
 
 /**
@@ -40,7 +40,7 @@ public class MarketceteraTestSuite extends TestSuite {
         MessageBundleManager.registerCoreMessageBundle();
         LoggerAdapter.initializeLogger("test");
         try {
-            FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+            FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
         } catch (Exception ex) {
             LoggerAdapter.error("Error initializing suite", ex, this);
             System.exit(1);

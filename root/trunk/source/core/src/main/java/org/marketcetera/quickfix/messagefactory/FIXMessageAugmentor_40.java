@@ -4,13 +4,13 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.CxlType;
 import quickfix.field.ExecTransType;
 import quickfix.field.MsgType;
-import quickfix.field.CxlType;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.Arrays;
 
 /**
  * @author toli
@@ -42,7 +42,7 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
     /** If the {@link CxlType} field is defined then set it */
     public Message cancelRequestAugment(Message inMessage) {
         super.cancelRequestAugment(inMessage);
-        if(FIXDataDictionaryManager.getDictionary().isField(CxlType.FIELD)) {
+        if(FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().isField(CxlType.FIELD)) {
             inMessage.setField(new CxlType(CxlType.FULL_REMAINING_QUANTITY));
         }
         return inMessage;

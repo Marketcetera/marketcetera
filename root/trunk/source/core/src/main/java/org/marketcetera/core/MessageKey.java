@@ -20,6 +20,8 @@ public enum MessageKey implements LocalizedMessage {
     FIX_UNEXPECTED_MSGTYPE("core.error.fix.unexpected_msgtype"),
     FIX_VERSION_UNSUPPORTED("core.error.fix.version_unsuppported"),
     FIX_DICTIONARY_SET("core.fix.dictionary_set"),
+    ERROR_FIX_DICT_ALREADY_INITIALIZED("core.fix.dictionary_already_set"),
+    ERROR_FIX_DICT_NOT_INITIALIZED("core.fix.dictionary_not_set"),
 
     ERROR_EXCHANGES_INIT("core.error.exchanges_init"),
     ERROR_EXCHANGE_DNE("core.error_exchange_not_found"),

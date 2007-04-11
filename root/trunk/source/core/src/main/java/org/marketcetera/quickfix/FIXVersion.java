@@ -11,6 +11,7 @@ import quickfix.field.BeginString;
 import java.util.HashMap;
 
 /**
+ * An euym for all the supported FIX versions, with the default URL for the data dictionary file.
  * @author toli
  * @version $Id$
  */
@@ -18,16 +19,16 @@ import java.util.HashMap;
 @ClassVersion("$Id$")
 public enum FIXVersion {
     // todo: later when QFJ is ready we get rid of MyMessageFactory and just create a straight QFJ quickfix.fix4x.MessageFactory
-    FIX40(FIXDataDictionaryManager.FIX_4_0_BEGIN_STRING, "FIX40.xml",
-          new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_0_BEGIN_STRING, new MessageFactory40(), new FIXMessageAugmentor_40())),
-    FIX41(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, "FIX41.xml",
-            new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, new MessageFactory41(), new FIXMessageAugmentor_41())),
-    FIX42(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, "FIX42.xml",
-            new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, new MessageFactory42(), new FIXMessageAugmentor_42())),
-    FIX43(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, "FIX43.xml",
-            new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, new MessageFactory43(), new FIXMessageAugmentor_43())),
-    FIX44(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, "FIX44.xml",
-            new FIXMessageFactory(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, new MessageFactory44(), new FIXMessageAugmentor_44()));
+    FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, "FIX40.xml",
+          new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING, new MessageFactory40(), new FIXMessageAugmentor_40())),
+    FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING, "FIX41.xml",
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_1_BEGIN_STRING, new MessageFactory41(), new FIXMessageAugmentor_41())),
+    FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING, "FIX42.xml",
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING, new MessageFactory42(), new FIXMessageAugmentor_42())),
+    FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, "FIX43.xml",
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new MessageFactory43(), new FIXMessageAugmentor_43())),
+    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, "FIX44.xml",
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new MessageFactory44(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
 

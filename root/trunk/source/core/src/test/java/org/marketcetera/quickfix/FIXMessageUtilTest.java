@@ -24,12 +24,16 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
-        HashSet<String> set = new HashSet<String>();
-        set.add("testMarketDataRequst_ALL");
-        set.add("testMDR_oneSymbol");
-        set.add("testMDR_ManySymbols");
+/*
+        MarketceteraTestSuite suite = new MarketceteraTestSuite();
+        suite.addTest(new FIXMessageUtilTest("testFillFieldsFromExistingMessage", FIXVersion.FIX40));
+        suite.addTest(new FIXMessageUtilTest("testFillFieldsFromExistingMessage", FIXVersion.FIX41));
+        suite.addTest(new FIXMessageUtilTest("testFillFieldsFromExistingMessage", FIXVersion.FIX42));
+        return suite;
+/*/
         return new FIXVersionTestSuite(FIXMessageUtilTest.class, FIXVersionTestSuite.ALL_VERSIONS,
-                set, FIXVersionTestSuite.FIX42_PLUS_VERSIONS);
+                new HashSet<String>(Arrays.asList("testMarketDataRequst_ALL", "testMDR_oneSymbol", "testMDR_ManySymbols")),
+                FIXVersionTestSuite.FIX42_PLUS_VERSIONS);
     }
 
     public void testNewLimitOrder() throws Exception {
@@ -131,7 +135,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side, BigDecimal leavesQty,
                                              BigDecimal lastQty, BigDecimal cumQty, BigDecimal lastPrice,
                                              BigDecimal avgPrice, char ordStatus, char execType, char execTransType,
-                                             FIXMessageFactory msgFactory) throws Exception {
+                                             FIXMessageFactory msgFactory, FIXDataDictionary fixDD) throws Exception {
         assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD));
         assertEquals("side", side, inExecReport.getChar(Side.FIELD));
         assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
@@ -151,17 +155,16 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         if(version42orBelow(msgFactory)) {
             assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
         }
-        // todo: switch this to use validate(inExecReport, true) to only validate the body
-        FIXDataDictionaryManager.getDictionary().validate(inExecReport);
+        fixDD.getDictionary().validate(inExecReport, true);
     }
 
 
     /** Useful for verifying execReports for new orders - assumes nothing is filled */
     public static void verifyExecutionReport(Message inExecReport, String qty, String symbol, char side,
-                                             FIXMessageFactory msgFactory) throws Exception
+                                             FIXMessageFactory msgFactory, FIXDataDictionary fixDD) throws Exception
     {
         verifyExecutionReport(inExecReport, qty, symbol, side, new BigDecimal(qty), BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW, ExecTransType.NEW, msgFactory);
+                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW, ExecTransType.NEW, msgFactory, fixDD);
     }
 
 

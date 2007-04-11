@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata;
 
-import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntries;
@@ -27,27 +26,27 @@ public abstract class MarketDataListener implements IMarketDataListener {
 	}
 
 	public void onMessages(Message[] messages) {
-		for (int i = 0; i < messages.length; i++) {
-			onMessage(messages[i]);
-		}
-	}
+        for (Message message : messages) {
+            onMessage(message);
+        }
+    }
 
 	public void onQuotes(Message[] messages) {
-		for (int i = 0; i < messages.length; i++) {
-			onQuote(messages[i]);
-		}
-	}
+        for (Message message : messages) {
+            onQuote(message);
+        }
+    }
 
 	public void onTrades(Message[] trades) {
-		for (int i = 0; i < trades.length; i++) {
-			onTrade(trades[i]);
-		}
-	}
+        for (Message trade : trades) {
+            onTrade(trade);
+        }
+    }
 
 	public void onLevel2Quotes(Message[] quotes) {
-		for (int i = 0; i < quotes.length; i++) {
-			onLevel2Quote(quotes[i]);
-		}
-	}
+        for (Message quote : quotes) {
+            onLevel2Quote(quote);
+        }
+    }
 
 }
