@@ -45,11 +45,18 @@
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
     <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
 
+    <!-- You can create a mapping between custom dictionary files and versions.
+         When using a single version constructor sets that as the "current" FIXDataDictionary -->
     <bean id="fixDataDictionaryMgr" class="org.marketcetera.quickfix.FIXDataDictionaryManager" scope="singleton">
+<!--
+    To create multiple FIX mappings, use the following constructor
         <constructor-arg>
             <map>
                 <entry key-ref="fixVersionEnum" value-ref="fixDictionaryPath"/>
             </map>
         </constructor-arg>
+-->
+        <constructor-arg ref="fixVersionEnum"/>
+        <constructor-arg ref="fixDictionaryPath"/>
     </bean>
 </beans>
