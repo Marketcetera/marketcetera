@@ -53,29 +53,37 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 public class StockOrderTicketViewTest extends ViewTestBase {
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
-
-    @Override
-	protected void setUp() throws Exception {
-		
-		super.setUp();
-	}
+	private StockOrderTicketController controller;
 
 	public StockOrderTicketViewTest(String name) {
 		super(name);
 	}
 
+    @Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
+		controller = new StockOrderTicketController(ticket);
+	}
+
+    @Override
+	protected void tearDown() throws Exception {
+		super.tearDown();
+		controller.dispose();
+	}
+
+
 	public void testShowOrder() throws NoSuchFieldException, IllegalAccessException {
-		StockOrderTicket ticket = (StockOrderTicket) getTestView();
+		IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
 		Message message = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
 				TimeInForce.DAY, null);
-		ticket.showOrder(message);
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		assertEquals("10", ((Text)violator.getField("quantityText", ticket)).getText());
-		assertEquals("B", ((CCombo)violator.getField("sideCCombo", ticket)).getText());
-		assertEquals("1", ((Text)violator.getField("priceText", ticket)).getText());
-		assertEquals("QWER", ((Text)violator.getField("symbolText", ticket)).getText());
-		assertEquals("DAY", ((CCombo)violator.getField("tifCCombo", ticket)).getText());
+		controller.showMessage(message);
+		assertEquals("10", ticket.getQuantityText().getText());
+		assertEquals("B", ticket.getSideCCombo().getText());
+		assertEquals("1", ticket.getPriceText().getText());
+		assertEquals("QWER", ticket.getSymbolText().getText());
+		assertEquals("DAY", ticket.getTifCCombo().getText());
 	}
 	
 	public void testShowQuote() throws Exception {
@@ -88,7 +96,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		Message orderMessage = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol("MRKT"), BigDecimal.ONE,
 				TimeInForce.DAY, null);
-		view.showOrder(orderMessage);
+		controller.showMessage(orderMessage);
 
 		
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
@@ -171,6 +179,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		setUpJMSFeedService(mockJmsOperations);
 
 		StockOrderTicket view = (StockOrderTicket) getTestView();
+
 		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
 		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
 		TableItem item0 = customFieldsTable.getItem(0);
@@ -181,9 +190,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
-		view.showOrder(newMessage);
+		controller.showMessage(newMessage);
 
-		view.handleSend();
+		controller.handleSend();
 
 		delay(1);
 		
@@ -231,9 +240,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
-		view.showOrder(newMessage);
+		controller.showMessage(newMessage);
 		
-		view.handleSend();
+		controller.handleSend();
 		
 		delay(1);
 
