@@ -4,10 +4,5 @@
 	<classpathentry excluding="**/.svn/" kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="/Applications/DevApps/eclipse/plugins/org.eclipse.ui.carbon_3.2.0.I20060605-1400.jar" sourcepath="/Applications/DevApps/eclipse/plugins/org.eclipse.platform.source.macosx.carbon.ppc_3.2.1.r321_v20060921-b_XVA-INSQSyMtx/src/org.eclipse.ui.carbon_3.2.0.I20060605-1400/src.zip"/>
-	<classpathentry kind="src" path="agitar/test"/>
-	<classpathentry kind="var" path="JUNIT_HOME/junit.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.1/src/org.junit_3.8.1/junitsrc.zip"/>
-	<classpathentry kind="var" path="AGITAR_MOCK_OBJECTS"/>
-	<classpathentry kind="var" path="AGITAR_TEST_LIB"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
