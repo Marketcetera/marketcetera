@@ -35,9 +35,18 @@
 
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
     <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
+    <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>
 
     <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
       <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
+    </bean>
+
+    <bean id="fixDataDictionaryMgr" class="org.marketcetera.quickfix.FIXDataDictionaryManager" scope="singleton">
+        <constructor-arg>
+            <map>
+                <entry key-ref="fixVersionEnum" value-ref="fixDictionaryPath"/>
+            </map>
+        </constructor-arg>
     </bean>
 </beans>
 <!-- END SNIPPET: spring -->
