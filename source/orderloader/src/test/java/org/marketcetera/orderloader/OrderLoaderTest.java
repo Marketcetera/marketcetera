@@ -2,8 +2,11 @@ package org.marketcetera.orderloader;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.core.*;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXVersion;
 import quickfix.Field;
 import quickfix.Message;
 import quickfix.field.*;
@@ -12,6 +15,7 @@ import javax.jms.JMSException;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Vector;
+import java.util.HashMap;
 
 /**
  * @author Toli Kuznets
@@ -31,7 +35,6 @@ public class OrderLoaderTest extends TestCase
     {
 /*
         TestSuite suite = new TestSuite();
-        suite.addTest(new OrderLoaderTest("testEndToEndCustom"));
         suite.addTest(new OrderLoaderTest("testWithCustomField"));
         return suite;
 */
@@ -43,7 +46,10 @@ public class OrderLoaderTest extends TestCase
     {
         super.setUp();
         mLoader = new MyOrderLoader(false);
-        FIXDataDictionaryManager.loadDictionary("FIX42-orderloader-test.xml", true);
+        HashMap<FIXVersion,  String> map = new HashMap<FIXVersion, String>();
+        map.put(FIXVersion.FIX42, "FIX42-orderloader-test.xml");
+        /*waste result*/ new FIXDataDictionaryManager(map);
+        FIXDataDictionaryManager.setCurrentFIXDataDictionary(FIXDataDictionaryManager.getFIXDatDictionary(FIXVersion.FIX42));
     }
 
     public void testGetSide()
@@ -274,12 +280,13 @@ public class OrderLoaderTest extends TestCase
                 new OrderQty(), new Price(), new CustomField(9999, null), new Account()));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
-        assertNull(mLoader.mMessage);
+        assertNull("message with malformed custom field went through", mLoader.mMessage);
         assertEquals(1, mLoader.getFailedOrders().size());
 
         // manually construct message: {55=IBM, 40=2, 38=100, 21=3, 11=666, 1=123-ASDF-234, 54=5, 59=0, 44=12.22}
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","123","123-ASDF-234"});
 
+        assertNotNull("message didn't go through", mLoader.mMessage);
         assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
         assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
         assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
@@ -337,6 +344,11 @@ public class OrderLoaderTest extends TestCase
             } else {
                 super.sendMessage(message);
             }
+        }
+
+
+        protected String getConfigName() {
+            return "orderloader-test.xml";
         }
     }
 }

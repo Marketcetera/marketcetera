@@ -1,6 +1,5 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.core.*;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
@@ -58,7 +57,7 @@ public class OrderLoader extends ApplicationBase
     {
         numProcessedOrders = numComments = numBlankLines = 0;
         failedOrders = new Vector<String>();
-        createApplicationContext(new String[] {CFG_FILE_NAME}, true);
+        createApplicationContext(new String[] {getConfigName()}, true);
         URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
         idFactory = new HttpDatabaseIDFactory(idFactoryURL);
         try {
@@ -183,8 +182,7 @@ public class OrderLoader extends ApplicationBase
                     }
                 }
 
-                //FIXDataDictionaryManager.getDictionary().validate(message, true);
-                FIXDataDictionaryManager.getDictionary().validate(message);
+                fixDD.getDictionary().validate(message, true);
 
                 sendMessage(message);
                 numProcessedOrders++;
@@ -192,6 +190,7 @@ public class OrderLoader extends ApplicationBase
         } catch (Exception e) {
             LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(
                     Util.getStringFromArray(inOrderRow),e.getMessage()), this);
+            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(e.getMessage(), e, this); }
             failedOrders.add(Util.getStringFromArray(inOrderRow) + ": " + e.getMessage());
         }
     }
@@ -329,4 +328,6 @@ public class OrderLoader extends ApplicationBase
     {
         return failedOrders;
     }
+
+    protected String getConfigName()    { return CFG_FILE_NAME; }
 }
