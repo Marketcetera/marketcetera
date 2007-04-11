@@ -1,16 +1,8 @@
 package org.marketcetera.oms;
 
 import quickfix.Message;
-import quickfix.field.Side;
 
-import java.util.Vector;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.ArrayBlockingQueue;
-
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.spring.JMSFIXMessageConverter;
-import junit.framework.Assert;
 
 /**
  * Dummy listener on a topic and a blocking queue that keeps track of all the received messages

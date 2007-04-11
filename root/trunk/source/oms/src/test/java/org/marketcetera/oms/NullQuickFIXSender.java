@@ -1,16 +1,15 @@
 package org.marketcetera.oms;
 
-import quickfix.Message;
-import quickfix.SessionNotFound;
-import quickfix.SessionID;
+import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.SessionID;
+import quickfix.SessionNotFound;
 import quickfix.field.Side;
 
 import java.util.LinkedList;
 import java.util.concurrent.Semaphore;
-
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 /**
  * Dummy implementation of a QuickfixSender that captures all the messages
@@ -66,7 +65,7 @@ public class NullQuickFIXSender implements IQuickFIXSender {
             if(LoggerAdapter.isDebugEnabled(this)) {
                 String humanSide = null;
                 try {
-                    humanSide = FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD,
+                    humanSide = FIXDataDictionaryManager.getCurrentFixDataDictionary().getHumanFieldValue(Side.FIELD,
                         ""+message.getChar(Side.FIELD));
                 } catch (FieldNotFound fieldNotFound) {
                     //ignore

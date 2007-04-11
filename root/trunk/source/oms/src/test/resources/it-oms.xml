@@ -80,6 +80,8 @@
       <property name="jmsOperations" ref="outgoingJmsTemplate"/>
     </bean>
 
+    <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>
+
     <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
       <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
     </bean>
