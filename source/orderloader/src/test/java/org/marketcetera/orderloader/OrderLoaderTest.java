@@ -15,7 +15,6 @@ import javax.jms.JMSException;
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
 import java.util.Vector;
-import java.util.HashMap;
 
 /**
  * @author Toli Kuznets
@@ -46,10 +45,7 @@ public class OrderLoaderTest extends TestCase
     {
         super.setUp();
         mLoader = new MyOrderLoader(false);
-        HashMap<FIXVersion,  String> map = new HashMap<FIXVersion, String>();
-        map.put(FIXVersion.FIX42, "FIX42-orderloader-test.xml");
-        /*waste result*/ new FIXDataDictionaryManager(map);
-        FIXDataDictionaryManager.setCurrentFIXDataDictionary(FIXDataDictionaryManager.getFIXDatDictionary(FIXVersion.FIX42));
+        FIXDataDictionaryManager.initialize(FIXVersion.FIX42, "FIX42-orderloader-test.xml");
     }
 
     public void testGetSide()
