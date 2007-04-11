@@ -2,8 +2,10 @@ package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.Message.Header;
@@ -111,6 +113,14 @@ public class FIXMessageUtil {
             LoggerAdapter.error(MessageKey.FIX_OUTGOING_NO_MSGTYPE.getLocalizedMessage(), ex, LOGGER_NAME);
         }
     }
+
+	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
+		if (fieldMap.isSetField(fieldNumber)){
+			throw new MarketceteraException("Field "+fieldNumber+" is already set in message.");
+		} else {
+			fieldMap.setField(new StringField(fieldNumber, value));
+		}
+	}
 
 
 }
