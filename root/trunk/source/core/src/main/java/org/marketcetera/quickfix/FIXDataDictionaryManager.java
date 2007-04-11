@@ -18,6 +18,22 @@ public class FIXDataDictionaryManager {
     private static HashMap<FIXVersion, FIXDataDictionary> fddMap = new HashMap<FIXVersion, FIXDataDictionary>();
     private static FIXDataDictionary sCurrent;
 
+    public static void initialize(FIXVersion version, String location) throws FIXFieldConverterNotAvailable {
+        /*waste result*/ new FIXDataDictionaryManager(version, location);
+    }
+
+    public static void initialize(FIXVersion version, FIXDataDictionary fixDD) throws FIXFieldConverterNotAvailable {
+        fddMap.put(version, fixDD);
+        setCurrentFIXDataDictionary(fixDD);
+    }
+
+    /** need this for Spring contructor */
+    public FIXDataDictionaryManager(FIXVersion version, String location) throws FIXFieldConverterNotAvailable {
+        FIXDataDictionary fixDD = new FIXDataDictionary(location);
+        fddMap.put(version, fixDD);
+        setCurrentFIXDataDictionary(fixDD);
+    }
+
     public FIXDataDictionaryManager(HashMap<FIXVersion, String> urlMap) throws FIXFieldConverterNotAvailable {
         fddMap = new HashMap<FIXVersion, FIXDataDictionary>();
         for (FIXVersion version : urlMap.keySet()) {
@@ -25,11 +41,12 @@ public class FIXDataDictionaryManager {
         }
     }
 
-    public static FIXDataDictionary getFIXDatDictionary(FIXVersion version) {
+    public static FIXDataDictionary getFIXDatDictionary(FIXVersion
+        version) {
         return fddMap.get(version);
     }
 
-    public static void setCurrentFIXDataDictionary(FIXDataDictionary inFDD) {
+    private static void setCurrentFIXDataDictionary(FIXDataDictionary inFDD) {
         sCurrent = inFDD;
     }
     public static void setCurrentFIXDataDictionary(FIXVersion inVersion) {

@@ -29,7 +29,7 @@ public abstract class FIXVersionedTestCase extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         fixDD = FIXDataDictionaryManager.getFIXDatDictionary(fixVersion);
-        FIXDataDictionaryManager.setCurrentFIXDataDictionary(fixDD);
+        FIXDataDictionaryManager.initialize(fixVersion, fixDD);
     }
 
     public String getName() {
