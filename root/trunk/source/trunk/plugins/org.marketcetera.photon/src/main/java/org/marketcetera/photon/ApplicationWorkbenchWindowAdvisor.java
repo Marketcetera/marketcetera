@@ -18,10 +18,11 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
 import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.ui.MainConsole;
+import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.StockOrderTicketController;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -108,13 +109,14 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		mainConsoleLogger.info(
 				"Application initializing: " + new Date());
 
-		PhotonPlugin.getDefault().ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
 		job.schedule();
 		startJMS();
 		startMarketDataFeed();
 		startIDFactory();
-		
+		plugin.setStockOrderTicketController(new StockOrderTicketController(StockOrderTicket.getDefault()));
 	}
 
 	/** 

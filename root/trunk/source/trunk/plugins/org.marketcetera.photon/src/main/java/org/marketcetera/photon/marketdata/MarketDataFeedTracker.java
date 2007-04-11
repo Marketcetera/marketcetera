@@ -70,8 +70,10 @@ public class MarketDataFeedTracker extends ServiceTracker {
 		if (service != null){
 			if (currentListener != null){
 				service.removeMarketDataListener(currentListener);
-			}	
-			service.addMarketDataListener(listener);
+			}
+			if (listener != null){
+				service.addMarketDataListener(listener);
+			}
 		}
 		currentListener = listener;
 	}
@@ -86,6 +88,13 @@ public class MarketDataFeedTracker extends ServiceTracker {
 	private void addListeners(MarketDataFeedService service) {
 		if (currentListener != null)
 			service.addMarketDataListener(currentListener);
+	}
+
+
+	@Override
+	public synchronized void close() {
+		setMarketDataListener(null);
+		super.close();
 	}
 
 	
