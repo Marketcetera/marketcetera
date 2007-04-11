@@ -1,7 +1,6 @@
 package org.marketcetera.photon.ui.validation;
 
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.swt.custom.CCombo;
 

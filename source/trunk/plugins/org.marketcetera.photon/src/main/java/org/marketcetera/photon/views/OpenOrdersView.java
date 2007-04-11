@@ -1,19 +1,11 @@
 package org.marketcetera.photon.views;
 
-import java.util.List;
 
 import org.eclipse.jface.action.IToolBarManager;
-import org.marketcetera.photon.core.ClOrdIDComparator;
 import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.LatestExecutionReportsFunction;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.core.NotNullMatcher;
-import org.marketcetera.photon.core.OpenOrderMatcher;
 
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.GroupingList;
 
 public class OpenOrdersView extends HistoryMessagesView {
 

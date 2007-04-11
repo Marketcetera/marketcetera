@@ -38,7 +38,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	
 	public EnumTableFormat(Table table, Enum[] columns) {
 		this.columns = columns;
-		dataDictionary = FIXDataDictionaryManager.getDictionary();
+		dataDictionary = FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary();
 		// TODO: how can we get the max number of fields?
 		for (int fieldNum = 1; fieldNum < 10000; fieldNum++) {
 			if (dataDictionary.isField(fieldNum))
@@ -85,7 +85,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
 					value = new BigDecimal(map.getString(fieldID));
 				} else if (dataDictionary.hasFieldValue(fieldID)){
-					value = FIXDataDictionaryManager.getHumanFieldValue(fieldID, map.getString(fieldID));
+					value = FIXDataDictionaryManager.getCurrentFixDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
 				} else if (fieldID.intValue() == ORDERID_FIELDID) {
 					value = new SortableOrderID(map.getString(fieldID));
 				} else {

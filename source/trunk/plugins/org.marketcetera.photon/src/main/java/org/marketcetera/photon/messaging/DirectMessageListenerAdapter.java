@@ -9,7 +9,6 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import org.apache.log4j.Logger;
 import org.marketcetera.core.LoggerAdapter;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;

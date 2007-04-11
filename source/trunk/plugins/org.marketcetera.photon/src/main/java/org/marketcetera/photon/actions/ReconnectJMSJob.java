@@ -5,8 +5,6 @@ package org.marketcetera.photon.actions;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.jms.JMSException;
-
 import org.apache.log4j.Logger;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -19,7 +17,6 @@ import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.beans.factory.BeanCreationException;

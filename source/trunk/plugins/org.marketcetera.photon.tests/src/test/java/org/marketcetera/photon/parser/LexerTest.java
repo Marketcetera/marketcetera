@@ -1,6 +1,5 @@
 package org.marketcetera.photon.parser;
 
-import jfun.parsec.Parsers;
 import jfun.parsec.Tok;
 import jfun.parsec.tokens.TokenType;
 import jfun.parsec.tokens.TypedToken;
