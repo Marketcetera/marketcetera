@@ -19,6 +19,7 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
+import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
@@ -143,7 +144,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelReplaceOneOrder(Message)'
 	 */
-	public void testCancelReplaceOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
+	public void testCancelReplaceOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue, IncorrectDataFormat {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newLimitOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
@@ -168,7 +169,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrder(Message)'
 	 */
-	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
+	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue, IncorrectDataFormat {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
@@ -196,7 +197,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrderByClOrdID(String)'
 	 */
-	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, IncorrectTagValue {
+	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, IncorrectTagValue, IncorrectDataFormat {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
