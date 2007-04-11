@@ -42,11 +42,8 @@
     </bean>
 
     <bean id="fixDataDictionaryMgr" class="org.marketcetera.quickfix.FIXDataDictionaryManager" scope="singleton">
-        <constructor-arg>
-            <map>
-                <entry key-ref="fixVersionEnum" value-ref="fixDictionaryPath"/>
-            </map>
-        </constructor-arg>
+        <constructor-arg ref="fixVersionEnum"/>
+        <constructor-arg ref="fixDictionaryPath"/>
     </bean>
 </beans>
 <!-- END SNIPPET: spring -->
