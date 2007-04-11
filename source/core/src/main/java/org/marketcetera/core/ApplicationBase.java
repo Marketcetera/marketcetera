@@ -51,7 +51,6 @@ public abstract class ApplicationBase implements Clock {
         }
         fixVersion = (FIXVersion) appCtx.getBean(FIX_VERSION_NAME);
         fixDD = FIXDataDictionaryManager.getFIXDatDictionary(fixVersion);
-        FIXDataDictionaryManager.setCurrentFIXDataDictionary(fixDD);
         msgFactory = fixVersion.getMessageFactory();
         return appCtx;
     }
