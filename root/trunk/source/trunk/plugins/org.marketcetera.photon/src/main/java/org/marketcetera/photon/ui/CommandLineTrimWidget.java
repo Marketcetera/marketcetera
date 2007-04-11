@@ -1,6 +1,5 @@
 package org.marketcetera.photon.ui;
 
-import jfun.parsec.Parser;
 import jfun.parsec.ParserException;
 
 import org.eclipse.swt.SWT;
@@ -13,7 +12,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.menus.AbstractWorkbenchTrimWidget;
-import org.marketcetera.core.IDFactory;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;

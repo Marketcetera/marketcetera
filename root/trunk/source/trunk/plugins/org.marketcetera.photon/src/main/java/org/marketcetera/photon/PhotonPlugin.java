@@ -3,6 +3,7 @@ package org.marketcetera.photon;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -199,7 +200,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			// just use version 4.2
 		}
 		messageFactory = version.getMessageFactory();
-		FIXDataDictionaryManager.setDataDictionary(version.getDataDictionaryURL());
+		FIXDataDictionaryManager.initialize(version, version.getDataDictionaryURL());
 	}
 
 	public void startScriptRegistry() {

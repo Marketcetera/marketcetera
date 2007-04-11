@@ -19,12 +19,8 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
-import quickfix.IncorrectDataFormat;
-import quickfix.IncorrectTagValue;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderQty;
@@ -144,7 +140,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelReplaceOneOrder(Message)'
 	 */
-	public void testCancelReplaceOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue, IncorrectDataFormat {
+	public void testCancelReplaceOneOrder() throws Exception {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newLimitOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
@@ -162,14 +158,14 @@ public class OrderManagerTest extends TestCase {
 		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancelReplace = holder.getMessage();
 		assertEquals(MsgType.ORDER_CANCEL_REPLACE_REQUEST, filledCancelReplace.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getDictionary().validate(filledCancelReplace);
+		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancelReplace);
 		assertEquals("1", filledCancelReplace.getString(OrderQty.FIELD));
 	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrder(Message)'
 	 */
-	public void testCancelOneOrder() throws FieldNotFound, MarketceteraException, IncorrectTagValue, IncorrectDataFormat {
+	public void testCancelOneOrder() throws Exception {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
@@ -189,7 +185,7 @@ public class OrderManagerTest extends TestCase {
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getDictionary().validate(filledCancel);
+		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancel);
 	}
 
 
@@ -197,7 +193,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.cancelOneOrderByClOrdID(String)'
 	 */
-	public void testCancelOneOrderByClOrdID() throws FieldNotFound, MarketceteraException, IncorrectTagValue, IncorrectDataFormat {
+	public void testCancelOneOrderByClOrdID() throws Exception {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
@@ -217,7 +213,7 @@ public class OrderManagerTest extends TestCase {
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getDictionary().validate(filledCancel);
+		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancel);
 		assertEquals(myClOrdID, filledCancel.getString(OrigClOrdID.FIELD));
 		assertEquals("999", filledCancel.getString(ClOrdID.FIELD));
 		assertEquals("QWER", filledCancel.getString(Symbol.FIELD));

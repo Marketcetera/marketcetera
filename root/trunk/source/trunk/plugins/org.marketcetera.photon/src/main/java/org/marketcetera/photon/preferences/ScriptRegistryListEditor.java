@@ -1,14 +1,8 @@
 package org.marketcetera.photon.preferences;
 
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.eclipse.jface.preference.ListEditor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
-
-import ca.odell.glazedlists.EventList;
-
 
 /**
  * todo:doc
