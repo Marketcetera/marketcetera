@@ -36,7 +36,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     {
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
-        suite.addTest(new OrderManagerTest("testMessageRejectedLoggedOutOMS", FIXVersion.FIX41));
+        suite.addTest(new OrderManagerTest("testDictionaryLoad", FIXVersion.FIX41));
         suite.init(new MessageBundleInfo[]{OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO});
         return suite;
 /*/
@@ -89,7 +89,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
     private void verifyExecutionReport(Message inExecReport) throws Exception
     {
-        FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY, msgFactory);
+        FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY, msgFactory, fixDD);
     }
 
     /** Create a few default fields and verify they get placed
@@ -97,7 +97,6 @@ public class OrderManagerTest extends FIXVersionedTestCase
      */
     public void testInsertDefaultFields() throws Exception
     {
-
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new OrderRouteManager());
         handler.setOrderModifiers(getOrderModifiers());
@@ -128,10 +127,10 @@ public class OrderManagerTest extends FIXVersionedTestCase
         modifiedMessage.removeField(14);
         modifiedMessage.removeField(37);
         modifiedMessage.getTrailer().removeField(2);
-        FIXDataDictionaryManager.getDictionary().validate(modifiedMessage);
+        fixDD.getDictionary().validate(modifiedMessage, true);
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
         response.setField(new OrderID("fake-order-id"));
-        FIXDataDictionaryManager.getDictionary().validate(response);
+        fixDD.getDictionary().validate(response, true);
     }
 
     /** Send a generic event and a single-order event.
@@ -200,7 +199,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         // validation will fail b/c we didn't send a side in to begin with
         new ExpectedTestFailure(RuntimeException.class, "field="+Side.FIELD) {
             protected void execute() throws Throwable {
-                FIXDataDictionaryManager.getDictionary().validate(result);
+                fixDD.getDictionary().validate(result, true);
             }
         }.run();
     }
@@ -252,7 +251,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         		quickFIXSender.getCapturedMessages().get(0));
         assertEquals("2nd event should be cancel order", cancelOrder,
         		quickFIXSender.getCapturedMessages().get(1));
-        FIXDataDictionaryManager.getDictionary().validate(quickFIXSender.getCapturedMessages().get(1));
+        fixDD.getDictionary().validate(quickFIXSender.getCapturedMessages().get(1), true);
     }
 
     public void testInvalidSessionID() throws Exception {

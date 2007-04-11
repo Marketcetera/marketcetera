@@ -2,6 +2,7 @@ package org.marketcetera.oms;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigFileLoadingException;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -46,9 +47,11 @@ public class OMSStartupTest extends TestCase {
 
         assertFalse("failure in OMS startup: " + failureEx, failed);
 
-        // call through to the FIXDataDictionaryManager in a way that doesn't explicitly load the dictionary
-        assertNotNull("fix dictionary not initialized", FIXDataDictionaryManager.getHumanFieldName(Symbol.FIELD));
-        assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
+        // call through to the FIXDataDictionary in a way that doesn't explicitly load the dictionary
+        assertNotNull("fix dictionary not initialized",
+                FIXDataDictionaryManager.getCurrentFixDataDictionary().getHumanFieldName(Symbol.FIELD));
+        assertEquals(FIXDataDictionary.FIX_4_2_BEGIN_STRING,
+                FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().getVersion());
     }
 
 }

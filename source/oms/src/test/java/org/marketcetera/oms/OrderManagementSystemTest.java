@@ -1,11 +1,7 @@
 package org.marketcetera.oms;
 
 import junit.framework.Test;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -36,18 +32,20 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
     private static JmsTemplate jmsQueueSender;
     private static NullQuickFIXSender qfSender;
 
-    public OrderManagementSystemTest(String inName)
+    public OrderManagementSystemTest(String inName, FIXVersion version)
     {
-        super(inName, FIXVersion.FIX42);
+        super(inName, version);
     }
 
     public static Test suite()
     {
-        return new MarketceteraTestSuite(OrderManagementSystemTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO);
+        return new FIXVersionTestSuite(OrderManagementSystemTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
+                new FIXVersion[]{FIXVersion.FIX42});
     }
 
 
 	protected void setUp() throws Exception {
+        super.setUp();
         try {
         	appContext = new ClassPathXmlApplicationContext(new String[]{"order-modifiers.xml", "order-limits.xml",
                     "oms-shared.xml", "it-oms.xml"});
@@ -94,7 +92,7 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
                                          Semaphore sema, char inSide) throws Exception
     {
         if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Before sending for "+FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+inSide) +
+            LoggerAdapter.debug("Before sending for "+ fixDD.getHumanFieldValue(Side.FIELD, ""+inSide) +
             " sema is "+sema.getQueueLength(), this);
         }
 
@@ -115,7 +113,7 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
         Message execReport = topicMsgs.take();
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
         execReport.setField(new OrderID("fake-order-id"));
-        FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide, msgFactory);
+        FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide, msgFactory, fixDD);
         assertEquals("12.34", execReport.getString(Price.FIELD));
     }
 
