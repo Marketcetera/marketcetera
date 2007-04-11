@@ -3,9 +3,5 @@
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="src" path="agitar/test"/>
-	<classpathentry kind="var" path="JUNIT_HOME/junit.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.1/src/org.junit_3.8.1/junitsrc.zip"/>
-	<classpathentry kind="var" path="AGITAR_MOCK_OBJECTS"/>
-	<classpathentry kind="var" path="AGITAR_TEST_LIB"/>
 	<classpathentry kind="output" path="target"/>
 </classpath>
