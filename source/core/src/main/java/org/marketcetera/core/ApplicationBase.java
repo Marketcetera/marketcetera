@@ -2,17 +2,13 @@ package org.marketcetera.core;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.ApplicationContext;
-import org.marketcetera.quickfix.SessionAdmin;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
-import javax.management.JMException;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.lang.management.ManagementFactory;
 
 /**
  * Abstract superclass to all applications
@@ -27,6 +23,7 @@ public abstract class ApplicationBase implements Clock {
     private ClassPathXmlApplicationContext appCtx;
     protected FIXMessageFactory msgFactory;
     protected FIXVersion fixVersion;
+    protected FIXDataDictionary fixDD;
     private static final String FIX_VERSION_NAME = "fixVersionEnum";
 
     public ApplicationBase()
@@ -53,7 +50,8 @@ public abstract class ApplicationBase implements Clock {
             appCtx.registerShutdownHook();
         }
         fixVersion = (FIXVersion) appCtx.getBean(FIX_VERSION_NAME);
-        FIXDataDictionaryManager.setDataDictionary(fixVersion.getDataDictionaryURL());
+        fixDD = FIXDataDictionaryManager.getFIXDatDictionary(fixVersion);
+        FIXDataDictionaryManager.setCurrentFIXDataDictionary(fixDD);
         msgFactory = fixVersion.getMessageFactory();
         return appCtx;
     }
@@ -101,26 +99,5 @@ public abstract class ApplicationBase implements Clock {
     /** Returns a pointer to the Spring application context that started this app */
     public ClassPathXmlApplicationContext getAppCtx() {
         return appCtx;
-    }
-
-    /**
-     * register the OMS mean
-     * should be superseded by functionality provided by QuickfixJ
-     * @param fExitOnFail
-     * @deprecated
-     */
-    protected void registerMBean(SessionAdmin adminBean, boolean fExitOnFail)
-    {
-        MBeanServer mbs = ManagementFactory.getPlatformMBeanServer();
-
-        try {
-            String pkgName = this.getClass().getPackage().toString();
-            String className = adminBean.getClass().getSimpleName();
-            ObjectName name = new ObjectName(pkgName +":type="+className);
-            mbs.registerMBean(adminBean, name);
-        } catch (JMException ex) {
-            LoggerAdapter.error(MessageKey.JMX_BEAN_FAILURE.getLocalizedMessage(), ex, this);
-            if(fExitOnFail) {System.exit(-1); }
-        }
     }
 }

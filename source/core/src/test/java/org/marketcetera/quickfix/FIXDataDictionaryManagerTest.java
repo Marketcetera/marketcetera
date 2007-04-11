@@ -23,43 +23,46 @@ public class FIXDataDictionaryManagerTest extends TestCase {
     }
 
     public void testDictionaryInit() throws Exception {
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
 
         // lookup some fields
-        assertEquals("OrderID", FIXDataDictionaryManager.getHumanFieldName(37));
-        assertEquals("OrderID", FIXDataDictionaryManager.getHumanFieldName(37));
+        assertEquals("OrderID", fdd.getHumanFieldName(37));
+        assertEquals("OrderID", fdd.getHumanFieldName(37));
 
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
-        assertEquals("OrderID", FIXDataDictionaryManager.getHumanFieldName(37));
-        assertEquals("CollAction", FIXDataDictionaryManager.getHumanFieldName(944));
+        fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
+        assertEquals("OrderID", fdd.getHumanFieldName(37));
+        assertEquals("CollAction", fdd.getHumanFieldName(944));
 
-        assertNull(FIXDataDictionaryManager.getHumanFieldName(-32));
+        assertNull(fdd.getHumanFieldName(-32));
     }
 
     public void testValueGetting() throws Exception {
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
 
-        assertEquals("BUY", FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+Side.BUY));
-        assertEquals("SELL", FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+Side.SELL));
-        assertEquals("SELL SHORT", FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+Side.SELL_SHORT));
-        assertEquals("SELL SHORT EXEMPT", FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, ""+Side.SELL_SHORT_EXEMPT));
+        assertEquals("BUY", fdd.getHumanFieldValue(Side.FIELD, ""+Side.BUY));
+        assertEquals("SELL", fdd.getHumanFieldValue(Side.FIELD, ""+Side.SELL));
+        assertEquals("SELL SHORT", fdd.getHumanFieldValue(Side.FIELD, ""+Side.SELL_SHORT));
+        assertEquals("SELL SHORT EXEMPT", fdd.getHumanFieldValue(Side.FIELD, ""+Side.SELL_SHORT_EXEMPT));
 
-        assertEquals("PARTIAL FILL", FIXDataDictionaryManager.getHumanFieldValue(ExecType.FIELD, ""+ExecType.PARTIAL_FILL));
+        assertEquals("PARTIAL FILL", fdd.getHumanFieldValue(ExecType.FIELD, ""+ExecType.PARTIAL_FILL));
     }
 
     public void testWhenValueNotFound() throws Exception {
-        assertEquals("non-existing value", null, FIXDataDictionaryManager.getHumanFieldValue(Side.FIELD, "37"));
+        FIXDataDictionary fdd = FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        assertEquals("non-existing value", null, fdd.getHumanFieldValue(Side.FIELD, "37"));
     }
 
 
     public void testGetDataDictionary() throws Exception {
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX41.getDataDictionaryURL());
-        assertEquals(FIXDataDictionaryManager.FIX_4_1_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
-        assertEquals(FIXDataDictionaryManager.FIX_4_2_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX43.getDataDictionaryURL());
-        assertEquals(FIXDataDictionaryManager.FIX_4_3_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
-        FIXDataDictionaryManager.setDataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
-        assertEquals(FIXDataDictionaryManager.FIX_4_4_BEGIN_STRING, FIXDataDictionaryManager.getDictionary().getVersion());
+        assertEquals(FIXDataDictionary.FIX_4_0_BEGIN_STRING,
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX40.getDataDictionaryURL()).getDictionary().getVersion());
+        assertEquals(FIXDataDictionary.FIX_4_1_BEGIN_STRING,
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX41.getDataDictionaryURL()).getDictionary().getVersion());
+        assertEquals(FIXDataDictionary.FIX_4_2_BEGIN_STRING,
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL()).getDictionary().getVersion());
+        assertEquals(FIXDataDictionary.FIX_4_3_BEGIN_STRING,
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX43.getDataDictionaryURL()).getDictionary().getVersion());
+        assertEquals(FIXDataDictionary.FIX_4_4_BEGIN_STRING,
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryURL()).getDictionary().getVersion());
     }
 }

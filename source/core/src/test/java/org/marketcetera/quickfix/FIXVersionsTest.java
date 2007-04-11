@@ -30,17 +30,17 @@ public class FIXVersionsTest extends TestCase {
     }
 
     public void testNOS() throws Exception {
-        DataDictionary dict0 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX40);
-        DataDictionary dict1 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX41);
-        DataDictionary dict2 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX42);
-        DataDictionary dict3 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX43);
-        DataDictionary dict4 = FIXDataDictionaryManager.getDataDictionary(FIXVersion.FIX44);
+        DataDictionary dict0 = new DataDictionary(FIXVersion.FIX40.getDataDictionaryURL());
+        DataDictionary dict1 = new DataDictionary(FIXVersion.FIX41.getDataDictionaryURL());
+        DataDictionary dict2 = new DataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
+        DataDictionary dict3 = new DataDictionary(FIXVersion.FIX43.getDataDictionaryURL());
+        DataDictionary dict4 = new DataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
 
-        dict0.validate(createNOSHelper(FIXVersion.FIX40, "toli", 33, Side.BUY));
-        dict1.validate(createNOSHelper(FIXVersion.FIX41, "toli", 33, Side.BUY));
-        dict2.validate(createNOSHelper(FIXVersion.FIX42, "toli", 33, Side.BUY));
-        dict3.validate(createNOSHelper(FIXVersion.FIX43, "toli", 33, Side.BUY));
-        dict4.validate(createNOSHelper(FIXVersion.FIX44, "toli", 33, Side.BUY));
+        dict0.validate(createNOSHelper(FIXVersion.FIX40, "toli", 33, Side.BUY), true);
+        dict1.validate(createNOSHelper(FIXVersion.FIX41, "toli", 33, Side.BUY), true);
+        dict2.validate(createNOSHelper(FIXVersion.FIX42, "toli", 33, Side.BUY), true);
+        dict3.validate(createNOSHelper(FIXVersion.FIX43, "toli", 33, Side.BUY), true);
+        dict4.validate(createNOSHelper(FIXVersion.FIX44, "toli", 33, Side.BUY), true);
 
 
     }

@@ -31,7 +31,7 @@ public class MarketceteraFIXException extends MarketceteraException {
         return createFieldNotFoundException(fnf, null);
     }
     public static MarketceteraFIXException createFieldNotFoundException(FieldNotFound fnf, Message message) {
-        String fieldName = FIXDataDictionaryManager.getHumanFieldName(fnf.field);
+        String fieldName = FIXDataDictionaryManager.getCurrentFixDataDictionary().getHumanFieldName(fnf.field);
         String msg = MessageKey.FIX_FNF.getLocalizedMessage(fieldName);
         String msgSuffix = (message == null) ? "" : ": "+message;
         return new MarketceteraFIXException(msg+msgSuffix, fnf);

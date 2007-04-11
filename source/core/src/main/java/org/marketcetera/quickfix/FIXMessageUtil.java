@@ -97,7 +97,7 @@ public class FIXMessageUtil {
     {
         try {
             String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
-            DataDictionary dict = FIXDataDictionaryManager.getDictionary();
+            DataDictionary dict = FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary();
             for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
                 if (dict.isRequiredField(msgType, fieldInt) && existingMessage.isSetField(fieldInt) &&
                         !outgoingMessage.isSetField(fieldInt)){
