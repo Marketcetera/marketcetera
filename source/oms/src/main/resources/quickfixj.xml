@@ -57,7 +57,10 @@
                 <entry key="JdbcURL" value="jdbc:mysql://localhost/marketcetera"/>
                 <entry key="JdbcUser" value="marketcetera"/>
                 <entry key="JdbcPassword" value="marketcetera"/>
-			</map>
+                <entry key="JdbcLogHeartBeats" value="N"/>
+                <!-- leave the heartbeats in for slf4j logger -->
+                <entry key="SLF4JLogHeartbeats" value="Y"/>
+            </map>
 		</property>
 		<property name="sessionDescriptors">
 			<list>
