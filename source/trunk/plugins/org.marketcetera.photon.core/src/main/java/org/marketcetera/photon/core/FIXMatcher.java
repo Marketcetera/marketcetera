@@ -53,7 +53,7 @@ public class FIXMatcher<T> implements Matcher<MessageHolder> {
 	}
 
 	private String getFieldValueString(Message msg, int fieldNum) throws FieldNotFound{
-		DataDictionary dictionary = FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary();
+		DataDictionary dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
 		if (dictionary.isHeaderField(fieldNum)){
 			return msg.getHeader().getString(fieldNum);
 		} else if (dictionary.isTrailerField(fieldNum)) {
