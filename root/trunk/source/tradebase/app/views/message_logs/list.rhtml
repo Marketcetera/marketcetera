@@ -63,6 +63,18 @@
     lastShares = Quickfix::LastShares.new
     lastPx = Quickfix::LastPx.new
 %>
+
+<!-- Display the messages that have failed to parse -->
+<% i=0
+    for message in @failed_msg %>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
+    <td/>
+    <td colspan="12">Failed to parse message [<%= message.id %>]: <%=h shorten_string(message.text.gsub("\001", " "), 130) %></td>
+    <td><%= link_to(image_tag("/images/icons/show.png", :alt=> 'Show', :width => 16, :height => 16), 
+                :action => 'show_unparseable_msg', :id => message, :controller => 'message_logs') %></td>
+  </tr>
+<% end %>
+<!-- Display timportable messages -->
 <% i=0
     for message in @exec_report_pages %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
