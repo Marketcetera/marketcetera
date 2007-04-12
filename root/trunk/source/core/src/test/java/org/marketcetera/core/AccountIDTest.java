@@ -1,7 +1,6 @@
 package org.marketcetera.core;
 
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 
 
 /**

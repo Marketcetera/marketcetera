@@ -1,51 +1,27 @@
-package org.marketcetera.bogusfeed;
+package org.marketcetera.marketdata;
 
 import java.util.LinkedList;
 import java.util.List;
 
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.quotefeed.IQuoteFeed;
-import org.springframework.jms.core.JmsOperations;
-
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
-import ca.odell.glazedlists.BasicEventList;
+import org.marketcetera.marketdata.IMarketDataFeed;
+import org.marketcetera.marketdata.IMarketDataListener;
 
 
 /**
- * An abstract base class for all quote feeds. Contains logic common to all quote feed impls with 
+ * An abstract base class for all market data feeds. Contains logic common to all market data feed impls with 
  * the mechanics of adding/removing symbol/feed component listeners and keeping track of the feed 
  * status.
  *
  * @author andrei@lissovski.org
  * @author gmiller
  */
-//agl todo:refactor move into the core plugin -- there's nothing bogus feed related in this class
-public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
+public abstract class MarketDataFeedBase implements IMarketDataFeed {
 
 	protected FeedStatus feedStatus;
 	private List<IFeedComponentListener> feedComponentListeners = new LinkedList<IFeedComponentListener>();
-	protected BasicEventList<MSymbol> listenedSymbols = new BasicEventList<MSymbol>();
-	private JmsOperations quoteJmsOperations;
-	private JmsOperations tradeJmsOperations;
+	private IMarketDataListener marketDataListener;
 
-
-	public void listenLevel2(MSymbol symbol) {
-		synchronized (listenedSymbols) {
-			listenedSymbols.add(symbol);
-		}
-	}
-
-	public void unlistenLevel2(MSymbol symbol) {
-		synchronized (listenedSymbols) {
-			for (MSymbol entry : listenedSymbols) {
-				if (entry.equals(symbol)){
-					listenedSymbols.remove(entry);
-					break;
-				}
-			}
-		}
-	}
 
 	public void addFeedComponentListener(IFeedComponentListener arg0) {
 		feedComponentListeners.add(arg0);
@@ -65,48 +41,20 @@ public abstract class AbstractQuoteFeedBase implements IQuoteFeed {
 		}
 	}
 
-	public void listenQuotes(MSymbol symbol) {
-		synchronized (listenedSymbols) {
-			listenedSymbols.add(symbol);
-		}
-	}
-
-	public void listenTrades(MSymbol symbol) {
-		//agl todo:implement listenTrades()
-		throw new NotImplementedException();
-	}
-
-	public void unlistenQuotes(MSymbol symbol) {
-		synchronized (listenedSymbols) {
-			listenedSymbols.remove(symbol);
-		}
-	}
-
-	public void unlistenTrades(MSymbol symbol) {
-		//agl todo:implement unlistenTrades()
-		throw new NotImplementedException();
-	}
 
 	protected void setFeedStatus(FeedStatus status) {
 		feedStatus = status;
 		fireFeedStatusChanged();
 	}
 
-	public JmsOperations getQuoteJmsOperations() {
-		// TODO Auto-generated method stub
-		return quoteJmsOperations;
+	public IMarketDataListener getMarketDataListener() {
+		return marketDataListener;
 	}
 
-	public JmsOperations getTradeJmsOperations() {
-		// TODO Auto-generated method stub
-		return tradeJmsOperations;
+	public void setMarketDataListener(IMarketDataListener listener) {
+		marketDataListener = listener;
 	}
 
-	public void setQuoteJmsOperations(JmsOperations jms) {
-		quoteJmsOperations = jms;
-	}
 
-	public void setTradeJmsOperations(JmsOperations jms) {
-		tradeJmsOperations = jms;		
-	}
+
 }

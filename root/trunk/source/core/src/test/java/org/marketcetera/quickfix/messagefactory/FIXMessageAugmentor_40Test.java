@@ -4,12 +4,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraTestSuite;
 import junit.framework.TestCase;
 import junit.framework.Test;
-import quickfix.Message;
-import quickfix.StringField;
-import quickfix.fix41.NewOrderSingle;
-import quickfix.field.*;
-
-import java.math.BigDecimal;
 
 /**
  * @author toli
