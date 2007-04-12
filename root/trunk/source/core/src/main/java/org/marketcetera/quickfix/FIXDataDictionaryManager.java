@@ -41,7 +41,7 @@ public class FIXDataDictionaryManager {
         }
     }
 
-    public static FIXDataDictionary getFIXDatDictionary(FIXVersion
+    public static FIXDataDictionary getFIXDataDictionary(FIXVersion
         version) {
         return fddMap.get(version);
     }
@@ -50,10 +50,10 @@ public class FIXDataDictionaryManager {
         sCurrent = inFDD;
     }
     public static void setCurrentFIXDataDictionary(FIXVersion inVersion) {
-        sCurrent = getFIXDatDictionary(inVersion);
+        sCurrent = getFIXDataDictionary(inVersion);
     }
 
-    public static FIXDataDictionary getCurrentFixDataDictionary() {
+    public static FIXDataDictionary getCurrentFIXDataDictionary() {
         return sCurrent;
     }
 }
