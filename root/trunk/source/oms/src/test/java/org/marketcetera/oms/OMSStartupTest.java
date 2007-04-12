@@ -49,9 +49,9 @@ public class OMSStartupTest extends TestCase {
 
         // call through to the FIXDataDictionary in a way that doesn't explicitly load the dictionary
         assertNotNull("fix dictionary not initialized",
-                FIXDataDictionaryManager.getCurrentFixDataDictionary().getHumanFieldName(Symbol.FIELD));
+                FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldName(Symbol.FIELD));
         assertEquals(FIXDataDictionary.FIX_4_2_BEGIN_STRING,
-                FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().getVersion());
+                FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().getVersion());
     }
 
 }

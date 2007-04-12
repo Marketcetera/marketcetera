@@ -65,7 +65,7 @@ public class NullQuickFIXSender implements IQuickFIXSender {
             if(LoggerAdapter.isDebugEnabled(this)) {
                 String humanSide = null;
                 try {
-                    humanSide = FIXDataDictionaryManager.getCurrentFixDataDictionary().getHumanFieldValue(Side.FIELD,
+                    humanSide = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(Side.FIELD,
                         ""+message.getChar(Side.FIELD));
                 } catch (FieldNotFound fieldNotFound) {
                     //ignore
