@@ -2,7 +2,6 @@ package org.marketcetera.quickfix;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
-import junit.framework.TestSuite;
 import quickfix.SessionID;
 
 import java.lang.reflect.Field;

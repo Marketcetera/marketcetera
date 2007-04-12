@@ -3,7 +3,6 @@ package org.marketcetera.core;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
-import java.util.Properties;
 import java.util.List;
 
 /**
