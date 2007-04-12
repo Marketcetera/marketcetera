@@ -28,7 +28,7 @@ public abstract class FIXVersionedTestCase extends TestCase {
 
     protected void setUp() throws Exception {
         super.setUp();
-        fixDD = FIXDataDictionaryManager.getFIXDatDictionary(fixVersion);
+        fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         FIXDataDictionaryManager.initialize(fixVersion, fixDD);
     }
 
