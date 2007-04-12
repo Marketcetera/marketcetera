@@ -158,7 +158,7 @@ public class OrderManagerTest extends TestCase {
 		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancelReplace = holder.getMessage();
 		assertEquals(MsgType.ORDER_CANCEL_REPLACE_REQUEST, filledCancelReplace.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancelReplace);
+		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancelReplace, true);
 		assertEquals("1", filledCancelReplace.getString(OrderQty.FIELD));
 	}
 
@@ -185,7 +185,7 @@ public class OrderManagerTest extends TestCase {
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancel);
+		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancel, true);
 	}
 
 
@@ -213,7 +213,7 @@ public class OrderManagerTest extends TestCase {
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancel);
+		FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary().validate(filledCancel, true);
 		assertEquals(myClOrdID, filledCancel.getString(OrigClOrdID.FIELD));
 		assertEquals("999", filledCancel.getString(ClOrdID.FIELD));
 		assertEquals("QWER", filledCancel.getString(Symbol.FIELD));
