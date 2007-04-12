@@ -291,7 +291,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		uiStringToMessageStringMap.put(SideImage.SELL_SHORT_EXEMPT.getImage(),
 				"" + Side.SELL_SHORT_EXEMPT);
 		FIXCComboExtractor extractor = new FIXCComboExtractor(sideCCombo,
-				Side.FIELD, FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary(),
+				Side.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary(),
 				uiStringToMessageStringMap);
 
 		validator.register(sideCCombo, true);
@@ -332,7 +332,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		ParentColorHighlighter highlighter = new ParentColorHighlighter(
 				quantityText);
 		FIXTextExtractor extractor = new FIXTextExtractor(quantityText,
-				OrderQty.FIELD, FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary());
+				OrderQty.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
 		validator.register(quantityText, true);
 		extractors.add(extractor);
 	}
@@ -367,7 +367,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		ParentColorHighlighter highlighter = new ParentColorHighlighter(
 				symbolText);
 		FIXTextExtractor extractor = new FIXTextExtractor(symbolText,
-				Symbol.FIELD, FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary());
+				Symbol.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
 		extractors.add(extractor);
 	}
 
@@ -406,7 +406,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				priceText);
 		validator.register(priceText, true);
 		FIXTextExtractor extractor = new OrderPriceExtractor(priceText,
-				FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary());
+				FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
 		extractors.add(extractor);
 	}
 
@@ -449,7 +449,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		uiStringToMessageStringMap.put(TimeInForceImage.IOC.getImage(), ""
 				+ TimeInForce.IMMEDIATE_OR_CANCEL);
 		FIXCComboExtractor extractor = new FIXCComboExtractor(tifCCombo,
-				TimeInForce.FIELD, FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary(),
+				TimeInForce.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary(),
 				uiStringToMessageStringMap, TimeInForceImage.DAY.getImage());
 
 		validator.register(tifCCombo, true);
@@ -567,7 +567,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		getFormToolkit().paintBordersFor(otherComposite);
 		otherExpandableComposite.setClient(otherComposite);
 		FIXTextExtractor extractor = new FIXTextExtractor(accountText,Account.FIELD, 
-				FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary());
+				FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
 
 		extractors.add(extractor);
 	}
@@ -696,7 +696,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	void addCustomFields(Message message) throws MarketceteraException {
 		TableItem[] items = customFieldsTable.getItems();
-		DataDictionary dictionary = FIXDataDictionaryManager.getCurrentFixDataDictionary().getDictionary();
+		DataDictionary dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
 		for (TableItem item : items) {
 			if (item.getChecked()) {
 				String key = item.getText(1);
