@@ -19,7 +19,7 @@
             class="org.marketcetera.photon.ui.EquityPerspectiveFactory"
             icon="icons/silk/medal_gold_2.png"
             id="org.marketcetera.photon.EquityPerspective"
-            name="Equity Perspective">
+            name="Equity">
       </perspective>
    </extension>
    <extension
