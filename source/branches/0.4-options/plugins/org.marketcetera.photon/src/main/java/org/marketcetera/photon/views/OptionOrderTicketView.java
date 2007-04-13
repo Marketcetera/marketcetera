@@ -24,14 +24,9 @@ public class OptionOrderTicketView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-        Image image = new Image(parent.getDisplay(), 
-        		OptionOrderTicketView.class.getResourceAsStream("/icons/mockui/optionorder.png"));  //$NON-NLS-1$
-        Rectangle imageBounds = image.getBounds();
-
         Composite composite = new Composite(parent, SWT.NONE);
 		Label viewer = new Label(composite, SWT.NONE);
-		viewer.setImage(image);
-		RowData rowData = new RowData(imageBounds.width, imageBounds.height);
+		RowData rowData = new RowData(300, 200);
 		viewer.setLayoutData(rowData);
 		composite.setLayout(new RowLayout());
 	}
