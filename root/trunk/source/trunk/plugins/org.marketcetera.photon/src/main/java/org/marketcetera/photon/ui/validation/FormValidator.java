@@ -68,7 +68,7 @@ public class FormValidator {
 					IControlValidator.CONTROL_HIGHLIGHTER_KEY);
 			if (controlHighglighterObj != null
 					&& controlHighglighterObj instanceof IControlHighlighter) {
-				((IControlHighlighter) controlHighglighterObj).highlightError();
+				((IControlHighlighter) controlHighglighterObj).highlightError(ex.getLocalizedMessage());
 			}
 
 		}
