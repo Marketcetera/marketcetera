@@ -199,9 +199,10 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	private void createForm() {
 		GridLayout gridLayout = new GridLayout();
 		gridLayout.numColumns = 5;
-		gridLayout.marginWidth = 3;
+		gridLayout.marginWidth = 6;
 		gridLayout.verticalSpacing = 1;
-		gridLayout.horizontalSpacing = 1;
+		// The horizontalSpacing needs to be wide enough to show the error image in ControlDecoration.
+		gridLayout.horizontalSpacing = 6;
 		gridLayout.marginHeight = 1;
 		form = getFormToolkit().createScrolledForm(top);
 		form.setText(NEW_EQUITY_ORDER);
