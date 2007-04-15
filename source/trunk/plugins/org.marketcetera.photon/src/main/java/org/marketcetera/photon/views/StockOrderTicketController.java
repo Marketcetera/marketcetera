@@ -1,13 +1,23 @@
 package org.marketcetera.photon.views;
 
-import java.math.BigDecimal;
-
+import org.eclipse.core.databinding.Binding;
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.list.IObservableList;
+import org.eclipse.core.databinding.observable.map.IMapChangeListener;
+import org.eclipse.core.databinding.observable.map.MapChangeEvent;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.databinding.swt.ISWTObservable;
+import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.ConjunctionMessageSelector;
@@ -17,10 +27,25 @@ import org.marketcetera.marketdata.SymbolMessageSelector;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.ui.validation.fix.AbstractFIXExtractor;
+import org.marketcetera.photon.parser.PriceImage;
+import org.marketcetera.photon.parser.SideImage;
+import org.marketcetera.photon.parser.TimeInForceImage;
+import org.marketcetera.photon.ui.validation.DataDictionaryValidator;
+import org.marketcetera.photon.ui.validation.StringRequiredValidator;
+import org.marketcetera.photon.ui.validation.fix.BigDecimalToStringConverter;
+import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.FIXObservables;
+import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.Account;
+import quickfix.field.ClOrdID;
+import quickfix.field.MsgType;
+import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Side;
@@ -38,16 +63,28 @@ public class StockOrderTicketController {
 	
 	private MarketDataListener marketDataListener;
 
-	private Message targetOrder;
+	private Message targetMessage;
+
+	private EnumStringConverterBuilder<Character> sideConverterBuilder;
+	private EnumStringConverterBuilder<Character> tifConverterBuilder;
+	private PriceConverterBuilder priceConverterBuilder;
+
+	private DataDictionary dictionary;
+
+	private DataBindingContext dataBindingContext;
 
 
 
 	public StockOrderTicketController(IStockOrderTicket ticket) {
 		this.ticket = ticket;
+
+		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
+		dataBindingContext = new DataBindingContext();
 		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault().getBundleContext());
 		marketDataTracker.open();
 		
 		marketDataListener = new MarketDataListener(){
+
 			public void onLevel2Quote(Message aQuote) {
 				StockOrderTicketController.this.onQuote(aQuote);
 			}
@@ -80,11 +117,7 @@ public class StockOrderTicketController {
 				if (!symbolText.isFocusControl())
 				{
 					String symbolTextString = symbolText.getText();
-					if (symbolTextString == null || symbolTextString.length()==0){
-						unlisten();
-					} else {
-						listenMarketData(symbolTextString);
-					}
+					listenMarketData(symbolTextString);
 				}
 			}
 		});
@@ -99,13 +132,18 @@ public class StockOrderTicketController {
 				handleSend();
 			}
 		});
-
+		initSideConverterBuilder();
+		initTifConverterBuilder();
+		initPriceConverterBuilder();
+		
+		clear();
 	}
 	
 	public void dispose()
 	{
 		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
+		dataBindingContext.dispose();
 	}
 
 	
@@ -117,6 +155,9 @@ public class StockOrderTicketController {
 			
 			if (service != null
 					&& !newListenedSymbol.equals(listenedSymbol)) {
+				if (listenedSymbol != null){
+					unlisten();
+				}
 				ConjunctionMessageSelector subscription = new ConjunctionMessageSelector(
 												new SymbolMessageSelector(newListenedSymbol),
 												new MessageTypeSelector(false, false, true));
@@ -157,27 +198,10 @@ public class StockOrderTicketController {
 	
 	public void handleSend() {
 		try {
-			if (ticket.validateAll()) {
-				Message aMessage;
-				PhotonPlugin plugin = PhotonPlugin.getDefault();
-				if (targetOrder == null) {
-					String orderID = plugin.getIDFactory().getNext();
-					aMessage = plugin.getMessageFactory()
-							.newLimitOrder(orderID, Side.BUY,
-									BigDecimal.ZERO, new MSymbol(""),
-									BigDecimal.ZERO, TimeInForce.DAY, null);
-					aMessage.removeField(Side.FIELD);
-					aMessage.removeField(OrderQty.FIELD);
-					aMessage.removeField(Symbol.FIELD);
-					aMessage.removeField(Price.FIELD);
-					aMessage.removeField(TimeInForce.FIELD);
-				} else {
-					aMessage = targetOrder;
-				}
-				ticket.updateMessage(aMessage);
-				plugin.getPhotonController().handleInternalMessage(aMessage);
-				ticket.clear();
-			}
+			PhotonPlugin plugin = PhotonPlugin.getDefault();
+			ticket.updateMessage(targetMessage);
+			plugin.getPhotonController().handleInternalMessage(targetMessage);
+			clear();
 		} catch (Exception e) {
 			PhotonPlugin.getMainConsoleLogger().error(
 					"Error sending order: " + e.getMessage(), e);
@@ -185,13 +209,130 @@ public class StockOrderTicketController {
 	}
 
 
-	protected void handleCancel() {
+	public void handleCancel() {
+		clear();
+	}
+
+	private void clear() {
+		unlisten();
+		unbind();
 		ticket.clear();
+		bind(newNewOrderSingle());
+	}
+
+	private void unbind(){
+		IObservableList bindingList = dataBindingContext.getBindings();
+		Object[] bindings = bindingList.toArray();
+		for (Object bindingObj : bindings) {
+			((Binding) (bindingObj)).dispose();
+		}
+	}
+	
+	private void bind(Message message) {
+		targetMessage = message;
+		try {
+			Realm realm = Realm.getDefault();
+			dataBindingContext.bindValue(SWTObservables.observeText(ticket.getSideCCombo()),
+					FIXObservables.observeValue(realm, message, Side.FIELD, dictionary), 
+					new UpdateValueStrategy().setAfterGetValidator(
+							sideConverterBuilder.newTargetAfterGetValidator())
+					.setConverter(sideConverterBuilder.newToModelConverter()),
+					new UpdateValueStrategy().setConverter(sideConverterBuilder.newToTargetConverter()));
+			dataBindingContext.bindValue(SWTObservables.observeText(ticket.getQuantityText(), SWT.Modify),
+					FIXObservables.observeValue(realm, message, OrderQty.FIELD, dictionary), 
+					new UpdateValueStrategy().setAfterGetValidator(new StringRequiredValidator())
+						.setConverter(new StringToBigDecimalConverter()), 
+					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter()));
+			dataBindingContext.bindValue(SWTObservables.observeText(ticket.getSymbolText(), SWT.Modify),
+					FIXObservables.observeValue(realm, message, Symbol.FIELD, dictionary), 
+					new UpdateValueStrategy().setAfterGetValidator(new StringRequiredValidator()), new UpdateValueStrategy());
+			dataBindingContext.bindValue(SWTObservables.observeText(
+					ticket.getPriceText(), SWT.Modify), 
+					FIXObservables.observePriceValue(realm, message, Price.FIELD,
+							dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(
+							priceConverterBuilder.newTargetAfterGetValidator())
+							.setConverter(priceConverterBuilder.newToModelConverter()),
+					new UpdateValueStrategy().setAfterGetValidator(
+							priceConverterBuilder.newModelAfterGetValidator())
+							.setConverter(priceConverterBuilder.newToTargetConverter()));
+			dataBindingContext.bindValue(SWTObservables.observeText(ticket.getTifCCombo()),
+					FIXObservables.observeValue(realm, message, TimeInForce.FIELD, dictionary), 
+					new UpdateValueStrategy().setAfterGetValidator(
+							tifConverterBuilder.newTargetAfterGetValidator())
+									.setAfterConvertValidator(
+											new DataDictionaryValidator(
+													dictionary,
+													TimeInForce.FIELD,
+													"Not a valid value for TimeInForce",
+													PhotonPlugin.ID))
+									.setConverter(tifConverterBuilder.newToModelConverter()),
+					new UpdateValueStrategy().setConverter(tifConverterBuilder.newToTargetConverter()));
+			dataBindingContext.bindValue(SWTObservables.observeText(ticket.getAccountText(), SWT.Modify),
+					FIXObservables.observeValue(realm, message, Account.FIELD, dictionary), 
+					new UpdateValueStrategy(), new UpdateValueStrategy());
+			
+			dataBindingContext.getValidationStatusMap().addMapChangeListener(new IMapChangeListener(){
+				public void handleMapChange(MapChangeEvent event) {
+					if (!ticket.getErrorMessageLabel().isDisposed()){
+						ticket.clearErrors();
+						for (Object binding : event.diff.getChangedKeys()) {
+							IStatus status = ((IStatus)dataBindingContext.getValidationStatusMap().get(binding));
+							Control aControl = (Control)((ISWTObservable)((Binding)binding).getTarget()).getWidget();
+							ticket.showErrorForControl(aControl, status.getSeverity(), status.getMessage());
+							if(status.getSeverity() == IStatus.ERROR)
+							{
+								ticket.showErrorMessage(status.getMessage(), status.getSeverity());
+							}
+						}
+					}
+				}
+			});
+		} catch (Exception ex){
+			ex.printStackTrace();
+		}
+	}
+
+	private void initSideConverterBuilder() {
+		sideConverterBuilder = new EnumStringConverterBuilder<Character>(Character.class);
+		sideConverterBuilder.addMapping(Side.BUY, SideImage.BUY.getImage());
+		sideConverterBuilder.addMapping(Side.SELL, SideImage.SELL.getImage());
+		sideConverterBuilder.addMapping(Side.SELL_SHORT, SideImage.SELL_SHORT.getImage());
+		sideConverterBuilder.addMapping(Side.SELL_SHORT_EXEMPT, SideImage.SELL_SHORT_EXEMPT.getImage());
+	}
+
+	private void initTifConverterBuilder() {
+		tifConverterBuilder = new EnumStringConverterBuilder<Character>(Character.class);
+
+		tifConverterBuilder.addMapping(TimeInForce.DAY, TimeInForceImage.DAY.getImage());
+		tifConverterBuilder.addMapping(TimeInForce.AT_THE_OPENING, TimeInForceImage.OPG.getImage());
+		tifConverterBuilder.addMapping(TimeInForce.AT_THE_CLOSE, TimeInForceImage.CLO.getImage());
+		tifConverterBuilder.addMapping(TimeInForce.FILL_OR_KILL, TimeInForceImage.FOK.getImage());
+		tifConverterBuilder.addMapping(TimeInForce.GOOD_TILL_CANCEL, TimeInForceImage.GTC.getImage());
+		tifConverterBuilder.addMapping(TimeInForce.IMMEDIATE_OR_CANCEL, TimeInForceImage.IOC.getImage());
+	}
+
+	private void initPriceConverterBuilder() {
+		priceConverterBuilder = new PriceConverterBuilder(dictionary);
+
+		priceConverterBuilder.addMapping(OrdType.MARKET, PriceImage.MKT.getImage());
+	}
+	private Message newNewOrderSingle() {
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		Message aMessage = plugin.getMessageFactory()
+				.createNewMessage();
+		aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
+		return aMessage;
 	}
 
 	public void showMessage(Message aMessage){
-		targetOrder = aMessage;
+		unbind();
+		bind(aMessage);
 		ticket.showMessage(aMessage);
+	}
+
+	public Message getMessage() {
+		return targetMessage;
 	}
 
 }

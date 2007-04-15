@@ -19,7 +19,6 @@ import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
 import quickfix.field.ExecID;
-import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
@@ -155,12 +154,21 @@ public class PhotonController {
 
 
 	protected void handleNewOrder(final Message aMessage) {
-		asyncExec(new Runnable() {
-			public void run() {
-				fixMessageHistory.addOutgoingMessage(aMessage);
+		try {
+			String orderID;
+			orderID = idFactory.getNext();
+			if (!aMessage.isSetField(ClOrdID.FIELD)){
+				aMessage.setField(new ClOrdID(orderID));
 			}
-		});
-		convertAndSend(aMessage);
+			asyncExec(new Runnable() {
+				public void run() {
+					fixMessageHistory.addOutgoingMessage(aMessage);
+				}
+			});
+			convertAndSend(aMessage);
+		} catch (NoMoreIDsException e) {
+			internalMainLogger.error("Could not send message, no order IDs", e);
+		}
 	}
 
 	protected void cancelReplaceOneOrder(final Message cancelMessage) {
