@@ -1,6 +1,8 @@
 package org.marketcetera.photon;
 
+import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.runtime.IPlatformRunnable;
+import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.swt.widgets.Display;
@@ -35,11 +37,16 @@ public class Application implements IPlatformRunnable, IPropertyChangeListener {
 	public Object run(Object args) throws Exception {
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 
-		
-		Display display = PlatformUI.createDisplay();
+		final Display display = PlatformUI.createDisplay();
 		try {
-			int returnCode = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
-			if (returnCode == PlatformUI.RETURN_RESTART) {
+			final int [] returnCode = new int[1];
+			Realm.runWithDefault(SWTObservables.getRealm(display), new Runnable() {
+				public void run() {
+					returnCode[0] = PlatformUI.createAndRunWorkbench(display, new ApplicationWorkbenchAdvisor());
+				}
+			});
+
+			if (returnCode[0] == PlatformUI.RETURN_RESTART) {
 				return IPlatformRunnable.EXIT_RESTART;
 			}
 			return IPlatformRunnable.EXIT_OK;

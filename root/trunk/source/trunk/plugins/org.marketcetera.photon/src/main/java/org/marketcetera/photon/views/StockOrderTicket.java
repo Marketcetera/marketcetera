@@ -1,12 +1,14 @@
 package org.marketcetera.photon.views;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -14,6 +16,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -21,6 +24,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
@@ -46,30 +50,20 @@ import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.ui.BookComposite;
-import org.marketcetera.photon.ui.validation.CComboValidator;
-import org.marketcetera.photon.ui.validation.FormValidator;
+import org.marketcetera.photon.ui.validation.ControlDecoration;
 import org.marketcetera.photon.ui.validation.IMessageDisplayer;
-import org.marketcetera.photon.ui.validation.NumericTextValidator;
-import org.marketcetera.photon.ui.validation.ParentColorHighlighter;
-import org.marketcetera.photon.ui.validation.TextValidator;
-import org.marketcetera.photon.ui.validation.fix.AbstractFIXExtractor;
-import org.marketcetera.photon.ui.validation.fix.FIXCComboExtractor;
-import org.marketcetera.photon.ui.validation.fix.FIXTextExtractor;
-import org.marketcetera.photon.ui.validation.fix.PriceTextValidator;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.OrderQty;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
 
 public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPropertyChangeListener, IStockOrderTicket {
 
+	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY";
+	
 	private static final String NEW_EQUITY_ORDER = "New Equity Order";
 
 	private static final String REPLACE_EQUITY_ORDER = "Replace Equity Order";
@@ -122,10 +116,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	private CheckboxTableViewer tableViewer = null;
 
-	private FormValidator validator = new FormValidator(this);
-
-	List<AbstractFIXExtractor> extractors = new LinkedList<AbstractFIXExtractor>();
-
 	private Button sendButton;
 
 	private Button cancelButton;
@@ -142,6 +132,12 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	
 	private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
 
+	private Image errorImage;
+
+	private Image warningImage;
+
+	private List<Control> inputControls = new LinkedList<Control>();
+
 
 	public StockOrderTicket() {
 		
@@ -149,6 +145,13 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 	@Override
 	public void createPartControl(Composite parent) {
+        FieldDecoration deco = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                FieldDecorationRegistry.DEC_ERROR);
+        errorImage = deco.getImage();
+        deco = FieldDecorationRegistry.getDefault().getFieldDecoration(
+                FieldDecorationRegistry.DEC_WARNING);
+        warningImage = deco.getImage();
+        
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -173,7 +176,6 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	@Override
 	public void dispose() {
 		PhotonPlugin.getDefault().getPreferenceStore().removePropertyChangeListener(this);
-		
 	}
 
 	@Override
@@ -234,6 +236,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		okCancelComposite.setLayoutData(gd);
 		sendButton = getFormToolkit().createButton(okCancelComposite, "Send",
 				SWT.PUSH);
+		sendButton.setEnabled(false);
 		cancelButton = getFormToolkit().createButton(okCancelComposite,
 				"Cancel", SWT.PUSH);
 
@@ -278,25 +281,17 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		sideCCombo.add(SideImage.SELL.getImage());
 		sideCCombo.add(SideImage.SELL_SHORT.getImage());
 		sideCCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
-		CComboValidator comboValidator = new CComboValidator(sideCCombo,
-				"Side", Arrays.asList(sideCCombo.getItems()), false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				sideCCombo);
+        addInputControl(sideCCombo);
 
-		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
-		uiStringToMessageStringMap.put(SideImage.BUY.getImage(), "" + Side.BUY);
-		uiStringToMessageStringMap.put(SideImage.SELL.getImage(), ""
-				+ Side.SELL);
-		uiStringToMessageStringMap.put(SideImage.SELL_SHORT.getImage(), ""
-				+ Side.SELL_SHORT);
-		uiStringToMessageStringMap.put(SideImage.SELL_SHORT_EXEMPT.getImage(),
-				"" + Side.SELL_SHORT_EXEMPT);
-		FIXCComboExtractor extractor = new FIXCComboExtractor(sideCCombo,
-				Side.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary(),
-				uiStringToMessageStringMap);
+	}
 
-		validator.register(sideCCombo, true);
-		extractors.add(extractor);
+	private void addInputControl(Control control) {
+		ControlDecoration cd = new ControlDecoration(control, SWT.LEFT | SWT.BOTTOM);
+        cd.setMarginWidth(2);
+		cd.setImage(errorImage);
+		cd.hide();
+		control.setData(CONTROL_DECORATOR_KEY, cd);
+		inputControls.add(control);
 	}
 
 	/**
@@ -328,14 +323,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				((Text) e.widget).selectAll();
 			}
 		});
-		NumericTextValidator textValidator = new NumericTextValidator(
-				quantityText, "Quantity", true, false, false, false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				quantityText);
-		FIXTextExtractor extractor = new FIXTextExtractor(quantityText,
-				OrderQty.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
-		validator.register(quantityText, true);
-		extractors.add(extractor);
+		addInputControl(quantityText);
 	}
 
 	/**
@@ -363,13 +351,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		symbolText = getFormToolkit().createText(symbolBorderComposite, null,
 				SWT.SINGLE | SWT.BORDER);
 		symbolText.setLayoutData(symbolTextGridData);
-		TextValidator textValidator = new TextValidator(symbolText, "Symbol",
-				false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				symbolText);
-		FIXTextExtractor extractor = new FIXTextExtractor(symbolText,
-				Symbol.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
-		extractors.add(extractor);
+		addInputControl(symbolText);
 	}
 
 
@@ -401,14 +383,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 				((Text) e.widget).selectAll();
 			}
 		});
-		PriceTextValidator textValidator = new PriceTextValidator(priceText,
-				"Price", false, false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				priceText);
-		validator.register(priceText, true);
-		FIXTextExtractor extractor = new OrderPriceExtractor(priceText,
-				FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
-		extractors.add(extractor);
+		addInputControl(priceText);
 	}
 
 	/**
@@ -431,30 +406,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		tifCCombo.add(TimeInForceImage.GTC.getImage());
 		tifCCombo.add(TimeInForceImage.IOC.getImage());
 
-		CComboValidator comboValidator = new CComboValidator(tifCCombo, "TIF",
-				Arrays.asList(tifCCombo.getItems()), false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				tifCCombo);
-
-		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
-		uiStringToMessageStringMap.put(TimeInForceImage.DAY.getImage(), ""
-				+ TimeInForce.DAY);
-		uiStringToMessageStringMap.put(TimeInForceImage.OPG.getImage(), ""
-				+ TimeInForce.AT_THE_OPENING);
-		uiStringToMessageStringMap.put(TimeInForceImage.CLO.getImage(), ""
-				+ TimeInForce.AT_THE_CLOSE);
-		uiStringToMessageStringMap.put(TimeInForceImage.FOK.getImage(), ""
-				+ TimeInForce.FILL_OR_KILL);
-		uiStringToMessageStringMap.put(TimeInForceImage.GTC.getImage(), ""
-				+ TimeInForce.GOOD_TILL_CANCEL);
-		uiStringToMessageStringMap.put(TimeInForceImage.IOC.getImage(), ""
-				+ TimeInForce.IMMEDIATE_OR_CANCEL);
-		FIXCComboExtractor extractor = new FIXCComboExtractor(tifCCombo,
-				TimeInForce.FIELD, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary(),
-				uiStringToMessageStringMap, TimeInForceImage.DAY.getImage());
-
-		validator.register(tifCCombo, true);
-		extractors.add(extractor);
+		addInputControl(tifCCombo);		
 	}
 
 	/**
@@ -564,13 +516,10 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 	 	accountTextRowData.height = sizeHint.y; 
 	 	accountTextRowData.width = sizeHint.x; 
 	 	accountText.setLayoutData(accountTextRowData); 
+	 	addInputControl(accountText);
 	 	
 		getFormToolkit().paintBordersFor(otherComposite);
 		otherExpandableComposite.setClient(otherComposite);
-		FIXTextExtractor extractor = new FIXTextExtractor(accountText,Account.FIELD, 
-				FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
-
-		extractors.add(extractor);
 	}
 
 
@@ -599,18 +548,13 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 
 
 	public void clear() {
-		for (AbstractFIXExtractor extractor : extractors) {
-			extractor.clearUI();
-		}
 		updateTitle(null);
 		symbolText.setEnabled(true);
+		sendButton.setEnabled(false);
 	}
 
 	public void updateMessage(Message aMessage) throws MarketceteraException
 	{
-		for (AbstractFIXExtractor extractor : extractors) {
-			extractor.modifyOrder(aMessage);
-		}
 		addCustomFields(aMessage);
 	}
 	
@@ -618,26 +562,7 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		errorMessageLabel.setText("");
 	}
 
-	public void showError(String errorString) {
-		if (errorString == null) {
-			errorMessageLabel.setText("");
-		} else {
-			errorMessageLabel.setText(errorString);
-		}
-	}
-
-	public void showWarning(String warningString) {
-		if (warningString == null) {
-			errorMessageLabel.setText("");
-		} else {
-			errorMessageLabel.setText(warningString);
-		}
-	}
-
 	public void showMessage(Message order) {
-		for (AbstractFIXExtractor extractor : extractors) {
-			extractor.updateUI(order);
-		}
 		symbolText.setEnabled(FIXMessageUtil.isOrderSingle(order));
 		updateTitle(order);
 	}
@@ -834,8 +759,53 @@ public class StockOrderTicket extends ViewPart implements IMessageDisplayer, IPr
 		return tifCCombo;
 	}
 
-	public boolean validateAll(){
-		return validator.validateAll();
+	public void clearErrors() {
+		showErrorMessage("", 0);
+		for (Control aControl : inputControls) {
+			Object cd;
+			if (((cd = aControl.getData(CONTROL_DECORATOR_KEY)) != null)
+					&& cd instanceof ControlDecoration) 
+			{
+				ControlDecoration controlDecoration = ((ControlDecoration)cd);
+				controlDecoration.hide();
+			}
+			
+		}
 	}
-	
+
+	public void showErrorForControl(Control aControl, int severity, String message) {
+		Object cd;
+		if (((cd = aControl.getData(CONTROL_DECORATOR_KEY)) != null)
+				&& cd instanceof ControlDecoration) 
+		{
+			ControlDecoration controlDecoration = ((ControlDecoration)cd);
+			if (severity == IStatus.OK){
+				controlDecoration.hide();
+			} else {
+				if (severity == IStatus.ERROR){
+					controlDecoration.setImage(errorImage);
+				} else {
+					controlDecoration.setImage(warningImage);
+				}
+				if (message != null){
+					controlDecoration.setDescriptionText(message);
+				}
+				controlDecoration.show();
+			}
+		}
+	}
+
+	public void showErrorMessage(String errorMessage, int severity) {
+		if (errorMessage == null){
+			errorMessageLabel.setText("");
+		} else {
+			errorMessageLabel.setText(errorMessage);
+		}
+		if (severity == IStatus.ERROR){
+			sendButton.setEnabled(false);
+		} else {
+			sendButton.setEnabled(true);
+		}
+	}
+
 }

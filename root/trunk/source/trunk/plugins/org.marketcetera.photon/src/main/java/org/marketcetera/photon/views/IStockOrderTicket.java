@@ -3,12 +3,12 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.ui.BookComposite;
-import org.marketcetera.photon.ui.validation.fix.AbstractFIXExtractor;
 
 import quickfix.Message;
 
@@ -40,8 +40,12 @@ public interface IStockOrderTicket {
 
 	public void updateMessage(Message aMessage) throws MarketceteraException;
 	public void showMessage(Message order);
+	public void showErrorForControl(Control aControl, int severity, String message);
+	public void clearErrors();
+	public void showErrorMessage(String errorMessage, int severity);
+	
 	public void clear();
-	public boolean validateAll();
 
+	
 
 }

@@ -33,7 +33,9 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.marketcetera.photon.core;visibility:=reexport,
  org.jruby.bsf;visibility:=reexport,
  net.java.dev.glazedlists,
- org.rubypeople.rdt.core;resolution:=optional
+ org.rubypeople.rdt.core;resolution:=optional,
+ org.eclipse.core.databinding;visibility:=reexport,
+ org.eclipse.jface.databinding;visibility:=reexport
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,
