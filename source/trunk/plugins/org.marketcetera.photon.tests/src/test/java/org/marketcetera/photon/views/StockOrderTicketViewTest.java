@@ -9,6 +9,8 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.internal.ErrorViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.MSymbol;
@@ -19,6 +21,7 @@ import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -31,12 +34,18 @@ import org.springframework.jms.core.ProducerCallback;
 import org.springframework.jms.core.SessionCallback;
 
 import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.field.DeliverToCompID;
+import quickfix.field.EncodedText;
+import quickfix.field.EncodedTextLen;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntryType;
+import quickfix.field.MsgType;
 import quickfix.field.NoMDEntries;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
 import quickfix.field.PrevClosePx;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
@@ -62,7 +71,11 @@ public class StockOrderTicketViewTest extends ViewTestBase {
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
-		IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
+		IViewPart theTestView = getTestView();
+		if (theTestView instanceof ErrorViewPart){
+			fail("Test view was not created");
+		}
+		IStockOrderTicket ticket = (IStockOrderTicket) theTestView;
 		controller = new StockOrderTicketController(ticket);
 	}
 
@@ -71,7 +84,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		super.tearDown();
 		controller.dispose();
 	}
-
 
 	public void testShowOrder() throws NoSuchFieldException, IllegalAccessException {
 		IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
@@ -84,6 +96,17 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals("1", ticket.getPriceText().getText());
 		assertEquals("QWER", ticket.getSymbolText().getText());
 		assertEquals("DAY", ticket.getTifCCombo().getText());
+
+		message = msgFactory.newMarketOrder("2",
+				Side.SELL_SHORT_EXEMPT, BigDecimal.ONE, new MSymbol("QWER"),
+				TimeInForce.AT_THE_OPENING, "123456789101112");
+		controller.showMessage(message);
+		assertEquals("1", ticket.getQuantityText().getText());
+		assertEquals("SSE", ticket.getSideCCombo().getText());
+		assertEquals("MKT", ticket.getPriceText().getText());
+		assertEquals("QWER", ticket.getSymbolText().getText());
+		assertEquals("OPG", ticket.getTifCCombo().getText());
+		assertEquals("123456789101112", ticket.getAccountText().getText());
 	}
 	
 	public void testShowQuote() throws Exception {
@@ -138,6 +161,24 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 				assertTrue(false);
 			}
 		}
+	}
+	
+	public void testTypeNewOrder() throws Exception {
+		controller.handleCancel();
+		StockOrderTicket view = (StockOrderTicket) getTestView();
+		view.getSideCCombo().setText("S");
+		view.getQuantityText().setText("45");
+		view.getSymbolText().setText("ASDF");
+		view.getPriceText().setText("MKT");
+		view.getTifCCombo().setText("FOK");
+		
+		Message orderMessage = controller.getMessage();
+		assertEquals(MsgType.ORDER_SINGLE, orderMessage.getHeader().getString(MsgType.FIELD));
+		assertEquals(Side.SELL, orderMessage.getChar(Side.FIELD));
+		assertEquals(45, orderMessage.getInt(OrderQty.FIELD));
+		assertEquals("ASDF", orderMessage.getString(Symbol.FIELD));
+		assertEquals(OrdType.MARKET, orderMessage.getChar	(OrdType.FIELD));
+		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
 	}
 
 	/**
