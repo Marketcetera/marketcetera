@@ -1,9 +1,18 @@
 package org.marketcetera.photon.views;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.jface.action.IToolBarManager;
+import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.CumQty;
+import quickfix.field.OrderQty;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 
@@ -19,21 +28,36 @@ public class AveragePriceView extends HistoryMessagesView {
 	 * @author gmiller
 	 *
 	 */
-	public enum AvgPriceColumns {
-		SIDE("Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY("CumQty"), 
-		AVGPX("AvgPx"), ACCOUNT("Account");
+	public enum AvgPriceColumns implements IFieldIdentifier {
+		SIDE(Side.class), SYMBOL(Symbol.class), ORDERQTY(OrderQty.class), CUMQTY(CumQty.class), 
+		AVGPX(AvgPx.class), ACCOUNT(Account.class);
 
-		private String mName;
+		private String name;
+		private Integer fieldID;
 
-		AvgPriceColumns(String name) {
-			mName = name;
+		AvgPriceColumns(String name){
+			this.name = name;
+		}
+
+		AvgPriceColumns(Class clazz) {
+			name = clazz.getSimpleName();
+			try {
+				Field fieldField = clazz.getField("FIELD");
+				fieldID = (Integer) fieldField.get(null);
+			} catch (Throwable t){
+				assert(false);
+			}
 		}
 
 		public String toString() {
-			return mName;
+			return name;
+		}
+
+		public Integer getFieldID() {
+			return fieldID;
 		}
 	};
-
+	
 	@Override
 	protected Enum[] getEnumValues() {
 		return AvgPriceColumns.values();
