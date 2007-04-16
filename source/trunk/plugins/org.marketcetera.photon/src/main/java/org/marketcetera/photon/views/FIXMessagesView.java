@@ -1,11 +1,14 @@
 package org.marketcetera.photon.views;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
 import org.marketcetera.photon.core.FIXMatcher;
 import org.marketcetera.photon.core.FIXMessageHistory;
@@ -14,7 +17,28 @@ import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
 import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.RefSeqNum;
+import quickfix.field.SendingTime;
+import quickfix.field.SessionRejectReason;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.TransactTime;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
@@ -41,25 +65,43 @@ public class FIXMessagesView extends HistoryMessagesView {
 	 * @author gmiller
 	 *
 	 */
-	public enum MessageColumns {
-		DIRECTION("D"), TRANSACTTIME("TransactTime"), SENDINGTIME("SendingTime"), MSGTYPE("MsgType"), CLORDID(
-				"ClOrdID"), ORICCLORDID("OrigClOrdID"), ORDSTATUS("OrdStatus"), SIDE(
-				"Side"), SYMBOL("Symbol"), ORDERQTY("OrderQty"), CUMQTY(
-				"CumQty"), LEAVESQTY("LeavesQty"), ORDTYPE("OrdType"), Price("Price"), AVGPX(
-				"AvgPx"), ACCOUNT("Account"), LASTSHARES("LastShares"), LASTPX(
-				"LastPx"), LASTMKT("LastMkt"), EXECID("ExecID"), ORDERID(
-				"OrderID"), SESSION_REJECT_REASON("SessionRejectReason"), REF_SEQ_NUM("RefSeqNum");
+	public enum MessageColumns implements IFieldIdentifier{
+		DIRECTION("D"), TRANSACTTIME(TransactTime.class), SENDINGTIME(
+				SendingTime.class), MSGTYPE(MsgType.class), CLORDID(
+				ClOrdID.class), ORICCLORDID(OrigClOrdID.class), ORDSTATUS(
+				OrdStatus.class), SIDE(Side.class), SYMBOL(Symbol.class), ORDERQTY(
+				OrderQty.class), CUMQTY(CumQty.class), LEAVESQTY(
+				LeavesQty.class), ORDTYPE(OrdType.class), Price(Price.class), AVGPX(
+				AvgPx.class), ACCOUNT(Account.class), LASTSHARES(
+				LastShares.class), LASTPX(LastPx.class), LASTMKT(LastMkt.class), EXECID(
+				ExecID.class), ORDERID(OrderID.class), SESSION_REJECT_REASON(
+				SessionRejectReason.class), REF_SEQ_NUM(RefSeqNum.class);
 
-		private String mName;
+		private String name;
+		private Integer fieldID;
 
-		MessageColumns(String name) {
-			mName = name;
+		MessageColumns(String name){
+			this.name = name;
+		}
+
+		MessageColumns(Class clazz) {
+			name = clazz.getSimpleName();
+			try {
+				Field fieldField = clazz.getField("FIELD");
+				fieldID = (Integer) fieldField.get(null);
+			} catch (Throwable t){
+				assert(false);
+			}
 		}
 
 		public String toString() {
-			return mName;
+			return name;
 		}
-	}
+
+		public Integer getFieldID() {
+			return fieldID;
+		}
+	};
 
 	protected Enum[] getEnumValues() {
 		return MessageColumns.values();
