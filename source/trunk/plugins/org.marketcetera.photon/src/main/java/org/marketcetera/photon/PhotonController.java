@@ -23,7 +23,6 @@ import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Symbol;
-import quickfix.field.Text;
 
 /**
  * OrderManager is the main repository for business logic.  It can be considered
@@ -124,13 +123,10 @@ public class PhotonController {
 		char ordStatus = aMessage.getChar(OrdStatus.FIELD);
 
 		if (ordStatus == OrdStatus.REJECTED) {
-			String rejectReason = "";
-			if(aMessage.isSetField(Text.FIELD)) {
-				rejectReason = ": "+aMessage.getString(Text.FIELD);
-			}
+			String rejectReason = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
 			
 			String rejectMsg = "Order rejected " + orderID + " "
-					+ aMessage.getString(Symbol.FIELD) + rejectReason;
+					+ aMessage.getString(Symbol.FIELD) + ": "+ rejectReason;
 			internalMainLogger.error(rejectMsg);
 		}
 	}
@@ -143,15 +139,16 @@ public class PhotonController {
 		} catch (FieldNotFound fnf){
 			//do nothing
 		}
-		String text = aMessage.getString(Text.FIELD);
-		String origClOrdID = aMessage.getString(OrigClOrdID.FIELD);
+		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
+		String origClOrdID = "Unknown";
+		if (aMessage.isSetField(OrigClOrdID.FIELD)){
+			origClOrdID = aMessage.getString(OrigClOrdID.FIELD);
+		}
 		String errorMsg = "Cancel rejected for order " + origClOrdID + ": "
 				+ (text == null ? "" : text)
 				+ (reason == null ? "" : " (" + reason + ")");
 		internalMainLogger.error(errorMsg);
 	}
-
-
 
 	protected void handleNewOrder(final Message aMessage) {
 		try {
