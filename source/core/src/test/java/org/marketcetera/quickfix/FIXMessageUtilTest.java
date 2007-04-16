@@ -3,6 +3,7 @@ package org.marketcetera.quickfix;
 import junit.framework.Test;
 import org.marketcetera.core.*;
 import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.Group;
 import quickfix.field.*;
@@ -237,5 +238,23 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertFalse("clOrdID is not required so should not be transferred", execReport.isSetField(ClOrdID.FIELD));
         assertTrue(execReport.isSetField(OrderID.FIELD));
         assertTrue(execReport.isSetField(ExecID.FIELD));
+    }
+    
+    public void testGetTextOrEncodedText() throws InvalidMessage {
+    	{
+	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+	        String unencodedMessage = "some unencoded message text";
+	        buy.setField(new Text(unencodedMessage));
+	        Message copy = new Message(buy.toString());
+	        assertEquals(unencodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
+    	}
+    	{
+	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+	        String encodedMessage = "some encoded message text";
+	        buy.setField(new EncodedTextLen(encodedMessage.length()));
+	        buy.setField(new EncodedText(encodedMessage));
+	        Message copy = new Message(buy.toString());
+	        assertEquals(encodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
+    	}
     }
 }

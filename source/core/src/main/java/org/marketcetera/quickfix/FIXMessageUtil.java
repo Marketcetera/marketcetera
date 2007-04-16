@@ -10,7 +10,9 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.Message.Header;
 import quickfix.StringField;
+import quickfix.field.EncodedText;
 import quickfix.field.MsgType;
+import quickfix.field.Text;
 
 /**
  * Collection of utilities to create work with FIX messages
@@ -120,6 +122,22 @@ public class FIXMessageUtil {
 		} else {
 			fieldMap.setField(new StringField(fieldNumber, value));
 		}
+	}
+
+	public static String getTextOrEncodedText(Message aMessage, String defaultString) {
+		String text = defaultString;
+		if (aMessage.isSetField(Text.FIELD)){
+			try {
+				text = aMessage.getString(Text.FIELD);
+			} catch (FieldNotFound e) {
+			}
+		} else {
+			try {
+				text = aMessage.getString(EncodedText.FIELD);
+			} catch (FieldNotFound e) {
+			}
+		}
+		return text;
 	}
 
 
