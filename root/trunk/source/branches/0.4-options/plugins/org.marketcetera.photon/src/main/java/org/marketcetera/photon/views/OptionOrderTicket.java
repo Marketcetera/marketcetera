@@ -1,12 +1,13 @@
 package org.marketcetera.photon.views;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.jface.fieldassist.FieldDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
@@ -14,18 +15,21 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
@@ -45,16 +49,8 @@ import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.photon.ui.BookComposite;
-import org.marketcetera.photon.ui.validation.CComboValidator;
-import org.marketcetera.photon.ui.validation.FormValidator;
+import org.marketcetera.photon.ui.validation.ControlDecoration;
 import org.marketcetera.photon.ui.validation.IMessageDisplayer;
-import org.marketcetera.photon.ui.validation.NumericTextValidator;
-import org.marketcetera.photon.ui.validation.ParentColorHighlighter;
-import org.marketcetera.photon.ui.validation.TextValidator;
-import org.marketcetera.photon.ui.validation.fix.AbstractFIXExtractor;
-import org.marketcetera.photon.ui.validation.fix.FIXCComboExtractor;
-import org.marketcetera.photon.ui.validation.fix.FIXTextExtractor;
-import org.marketcetera.photon.ui.validation.fix.PriceTextValidator;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -63,11 +59,7 @@ import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.OpenClose;
 import quickfix.field.OrderCapacity;
-import quickfix.field.OrderQty;
-import quickfix.field.Side;
 import quickfix.field.StrikePrice;
-import quickfix.field.Symbol;
-import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
 
 /**
@@ -75,10 +67,12 @@ import ca.odell.glazedlists.EventList;
  * 
  * @author andrei.lissovski@softwaregoodness.com
  */
-public class OptionOrderTicketView extends ViewPart implements
-		IMessageDisplayer, IPropertyChangeListener {
+public class OptionOrderTicket extends ViewPart implements IMessageDisplayer,
+		IPropertyChangeListener, IOptionOrderTicket {
 
 	public static String ID = "org.marketcetera.photon.views.OptionOrderTicketView"; //$NON-NLS-1$
+
+	private static final String CONTROL_DECORATOR_KEY = "OPTION_ORDER_CONTROL_DECORATOR_KEY";
 
 	private static final String NEW_OPTION_ORDER = "New Option Order";
 
@@ -98,11 +92,11 @@ public class OptionOrderTicketView extends ViewPart implements
 
 	private Label symbolLabel;
 
-	private Label expirationLabel;
+	private Label expireMonthLabel;
 
 	private Label strikeLabel;
 
-	private Label yearLabel;
+	private Label expireYearLabel;
 
 	private Label putOrCallLabel;
 
@@ -134,9 +128,9 @@ public class OptionOrderTicketView extends ViewPart implements
 
 	private CCombo tifCCombo = null;
 
-	private Composite expirationBorderComposite = null;
+	private Composite expireMonthBorderComposite = null;
 
-	private CCombo expirationCCombo = null;
+	private CCombo expireMonthCCombo = null;
 
 	private Composite strikeBorderComposite = null;
 
@@ -146,9 +140,9 @@ public class OptionOrderTicketView extends ViewPart implements
 
 	private Composite putOrCallBorderComposite = null;
 
-	private CCombo yearCCombo = null;
+	private CCombo expireYearCCombo = null;
 
-	private Composite yearBorderComposite = null;
+	private Composite expireYearBorderComposite = null;
 
 	private ExpandableComposite customFieldsExpandableComposite = null;
 
@@ -158,19 +152,25 @@ public class OptionOrderTicketView extends ViewPart implements
 
 	private CheckboxTableViewer tableViewer = null;
 
-	private FormValidator validator = new FormValidator(this);
-
-	List<AbstractFIXExtractor> extractors = new LinkedList<AbstractFIXExtractor>();
-
 	private BookComposite bookComposite;
 
 	private Section otherExpandableComposite;
 
 	private Text accountText;
 
+	private CCombo orderCapacityCCombo;
+
+	private CCombo openCloseCCombo;
+
 	private Section bookSection;
 
-	public OptionOrderTicketView() {
+	private Image errorImage;
+
+	private Image warningImage;
+
+	private List<Control> inputControls = new LinkedList<Control>();
+
+	public OptionOrderTicket() {
 	}
 
 	// todo: Duplicated code from StockOrderTicket
@@ -186,8 +186,16 @@ public class OptionOrderTicketView extends ViewPart implements
 		return formToolkit;
 	}
 
+	// todo: Duplicated code from StockOrderTicket, partly modified
 	@Override
 	public void createPartControl(Composite parent) {
+		FieldDecoration deco = FieldDecorationRegistry.getDefault()
+				.getFieldDecoration(FieldDecorationRegistry.DEC_ERROR);
+		errorImage = deco.getImage();
+		deco = FieldDecorationRegistry.getDefault().getFieldDecoration(
+				FieldDecorationRegistry.DEC_WARNING);
+		warningImage = deco.getImage();
+
 		GridData gridData = new GridData();
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.grabExcessHorizontalSpace = true;
@@ -222,10 +230,10 @@ public class OptionOrderTicketView extends ViewPart implements
 		quantityLabel = getFormToolkit()
 				.createLabel(form.getBody(), "Quantity");
 		symbolLabel = getFormToolkit().createLabel(form.getBody(), "Symbol");
-		expirationLabel = getFormToolkit().createLabel(form.getBody(),
+		expireMonthLabel = getFormToolkit().createLabel(form.getBody(),
 				"Expiration");
 		strikeLabel = getFormToolkit().createLabel(form.getBody(), "Strike");
-		yearLabel = getFormToolkit().createLabel(form.getBody(), "Year");
+		expireYearLabel = getFormToolkit().createLabel(form.getBody(), "Year");
 		putOrCallLabel = getFormToolkit().createLabel(form.getBody(), "C/P");
 		priceLabel = getFormToolkit().createLabel(form.getBody(), "Price");
 		tifLabel = getFormToolkit().createLabel(form.getBody(), "TIF");
@@ -233,9 +241,9 @@ public class OptionOrderTicketView extends ViewPart implements
 		createSideBorderComposite();
 		createQuantityBorderComposite();
 		createSymbolBorderComposite();
-		createExpirationBorderComposite();
+		createExpireMonthBorderComposite();
 		createStrikeBorderComposite();
-		createYearBorderComposite();
+		createExpireYearBorderComposite();
 		createPutOrCallBorderComposite();
 		createPriceBorderComposite();
 		createTifBorderComposite();
@@ -257,6 +265,7 @@ public class OptionOrderTicketView extends ViewPart implements
 		okCancelComposite.setLayoutData(gd);
 		sendButton = getFormToolkit().createButton(okCancelComposite, "Send",
 				SWT.PUSH);
+		sendButton.setEnabled(false);
 		cancelButton = getFormToolkit().createButton(okCancelComposite,
 				"Cancel", SWT.PUSH);
 
@@ -268,7 +277,23 @@ public class OptionOrderTicketView extends ViewPart implements
 				.getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
 		// restoreCustomFieldStates();
 
+		addAllInputControlDecorations();
+
 		form.pack(true);
+	}
+
+	private void addAllInputControlDecorations() {
+		addInputControl(expireMonthCCombo);
+		addInputControl(openCloseCCombo);
+		addInputControl(orderCapacityCCombo);
+		addInputControl(priceText);
+		addInputControl(putOrCallCCombo);
+		addInputControl(quantityText);
+		addInputControl(sideCCombo);
+		addInputControl(strikeText);
+		addInputControl(symbolText);
+		addInputControl(tifCCombo);
+		addInputControl(expireYearCCombo);
 	}
 
 	private void assignLayoutDataForOrderEntryComposites() {
@@ -276,14 +301,13 @@ public class OptionOrderTicketView extends ViewPart implements
 		quantityBorderComposite
 				.setLayoutData(createStandardSingleColumnGridData());
 		// The symbolBorderComposite GridData is assigned in
-		// createSymbolBorderComposite
-		// symbolBorderComposite
-		// .setLayoutData(createStandardSingleColumnGridData());
-		expirationBorderComposite
+		// createSymbolBorderComposite.
+
+		expireMonthBorderComposite
 				.setLayoutData(createStandardSingleColumnGridData());
 		strikeBorderComposite
 				.setLayoutData(createStandardSingleColumnGridData());
-		yearBorderComposite.setLayoutData(createStandardSingleColumnGridData());
+		expireYearBorderComposite.setLayoutData(createStandardSingleColumnGridData());
 		putOrCallBorderComposite
 				.setLayoutData(createStandardSingleColumnGridData());
 		priceBorderComposite
@@ -300,18 +324,19 @@ public class OptionOrderTicketView extends ViewPart implements
 		return gridData;
 	}
 
-	private void createExpirationBorderComposite() {
-		expirationBorderComposite = getFormToolkit().createComposite(
+	private void createExpireMonthBorderComposite() {
+		expireMonthBorderComposite = getFormToolkit().createComposite(
 				form.getBody());
 		GridLayout gridLayout = createStandardBorderGridLayout();
-		expirationBorderComposite.setLayout(gridLayout);
-		expirationCCombo = new CCombo(expirationBorderComposite, SWT.BORDER);
+		expireMonthBorderComposite.setLayout(gridLayout);
+		expireMonthCCombo = new CCombo(expireMonthBorderComposite, SWT.BORDER);
 		// todo: Dynamically populate expiration choices from market data
-		expirationCCombo.add("Sept");
-		expirationCCombo.add("Dec");
-		new CComboValidator(expirationCCombo, "Expiration", Arrays
-				.asList(expirationCCombo.getItems()), false);
-		new ParentColorHighlighter(expirationCCombo);
+		expireMonthCCombo.add("Sept");
+		expireMonthCCombo.add("Dec");
+
+		// new CComboValidator(expirationCCombo, "Expiration", Arrays
+		// .asList(expirationCCombo.getItems()), false);
+		// new ParentColorHighlighter(expirationCCombo);
 
 		// todo: FIXCComboExtractor can't handle the Expiration combo yet, since
 		// we would need to initialize it when we receive new market data about
@@ -339,14 +364,6 @@ public class OptionOrderTicketView extends ViewPart implements
 				((Text) e.widget).selectAll();
 			}
 		});
-		new NumericTextValidator(text, fieldNameForValidator, true, false,
-				false, false);
-		new ParentColorHighlighter(text);
-		FIXTextExtractor extractor = new FIXTextExtractor(text,
-				associatedFixField, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary());
-		validator.register(text, true);
-		extractors.add(extractor);
 	}
 
 	private void createStrikeBorderComposite() {
@@ -357,26 +374,17 @@ public class OptionOrderTicketView extends ViewPart implements
 
 		initNumericTextBorderComposite(strikeBorderComposite, strikeText,
 				"Strike", StrikePrice.FIELD);
+
 	}
 
-	private void createYearBorderComposite() {
-		yearBorderComposite = getFormToolkit().createComposite(form.getBody());
+	private void createExpireYearBorderComposite() {
+		expireYearBorderComposite = getFormToolkit().createComposite(form.getBody());
 		GridLayout gridLayout = createStandardBorderGridLayout();
-		yearBorderComposite.setLayout(gridLayout);
-		yearCCombo = new CCombo(yearBorderComposite, SWT.BORDER);
+		expireYearBorderComposite.setLayout(gridLayout);
+		expireYearCCombo = new CCombo(expireYearBorderComposite, SWT.BORDER);
 		// todo: Dynamically populate year choices from market data.
-		yearCCombo.add("07");
-		yearCCombo.add("08");
-		new CComboValidator(yearCCombo, "year", Arrays.asList(yearCCombo
-				.getItems()), false);
-		new ParentColorHighlighter(yearCCombo);
-
-		// todo: FIXCComboExtractor can't handle the Year combo yet, since we
-		// would need to initialize it when we receive new market data about
-		// available years for the current symbol.
-
-		// validator.register(yearCCombo, true);
-		// extractors.add(extractor);
+		expireYearCCombo.add("07");
+		expireYearCCombo.add("08");
 	}
 
 	private void createPutOrCallBorderComposite() {
@@ -387,14 +395,6 @@ public class OptionOrderTicketView extends ViewPart implements
 		putOrCallCCombo = new CCombo(putOrCallBorderComposite, SWT.BORDER);
 		putOrCallCCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCCombo.add(PutOrCallImage.CALL.getImage());
-		new CComboValidator(putOrCallCCombo, "Put/Call", Arrays
-				.asList(putOrCallCCombo.getItems()), false);
-		new ParentColorHighlighter(putOrCallCCombo);
-
-		// todo: FIXCComboExtractor can't map ints to combo choices yet
-
-		validator.register(putOrCallCCombo, true);
-		// extractors.add(extractor);
 	}
 
 	private GridLayout createStandardBorderGridLayout() {
@@ -405,6 +405,17 @@ public class OptionOrderTicketView extends ViewPart implements
 		gridLayout.marginHeight = 2;
 		gridLayout.numColumns = 1;
 		return gridLayout;
+	}
+
+	// todo: Duplicated code from StockOrderTicket
+	private void addInputControl(Control control) {
+		ControlDecoration cd = new ControlDecoration(control, SWT.LEFT
+				| SWT.BOTTOM);
+		cd.setMarginWidth(2);
+		cd.setImage(errorImage);
+		cd.hide();
+		control.setData(CONTROL_DECORATOR_KEY, cd);
+		inputControls.add(control);
 	}
 
 	// todo: Duplicated code from StockOrderTicket
@@ -425,26 +436,6 @@ public class OptionOrderTicketView extends ViewPart implements
 		sideCCombo.add(SideImage.SELL.getImage());
 		sideCCombo.add(SideImage.SELL_SHORT.getImage());
 		sideCCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
-		CComboValidator comboValidator = new CComboValidator(sideCCombo,
-				"Side", Arrays.asList(sideCCombo.getItems()), false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				sideCCombo);
-
-		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
-		uiStringToMessageStringMap.put(SideImage.BUY.getImage(), "" + Side.BUY);
-		uiStringToMessageStringMap.put(SideImage.SELL.getImage(), ""
-				+ Side.SELL);
-		uiStringToMessageStringMap.put(SideImage.SELL_SHORT.getImage(), ""
-				+ Side.SELL_SHORT);
-		uiStringToMessageStringMap.put(SideImage.SELL_SHORT_EXEMPT.getImage(),
-				"" + Side.SELL_SHORT_EXEMPT);
-		FIXCComboExtractor extractor = new FIXCComboExtractor(sideCCombo,
-				Side.FIELD, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary(),
-				uiStringToMessageStringMap);
-
-		validator.register(sideCCombo, true);
-		extractors.add(extractor);
 	}
 
 	// todo: Duplicated code from StockOrderTicket
@@ -478,15 +469,6 @@ public class OptionOrderTicketView extends ViewPart implements
 				((Text) e.widget).selectAll();
 			}
 		});
-		NumericTextValidator textValidator = new NumericTextValidator(
-				quantityText, "Quantity", true, false, false, false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				quantityText);
-		FIXTextExtractor extractor = new FIXTextExtractor(quantityText,
-				OrderQty.FIELD, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary());
-		validator.register(quantityText, true);
-		extractors.add(extractor);
 
 		quantityBorderComposite.pack(true);
 	}
@@ -520,14 +502,6 @@ public class OptionOrderTicketView extends ViewPart implements
 		symbolText = getFormToolkit().createText(symbolBorderComposite, null,
 				SWT.SINGLE | SWT.BORDER);
 		symbolText.setLayoutData(symbolTextGridData);
-		TextValidator textValidator = new TextValidator(symbolText, "Symbol",
-				false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				symbolText);
-		FIXTextExtractor extractor = new FIXTextExtractor(symbolText,
-				Symbol.FIELD, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary());
-		extractors.add(extractor);
 	}
 
 	// todo: Duplicated code from StockOrderTicket
@@ -560,15 +534,7 @@ public class OptionOrderTicketView extends ViewPart implements
 				((Text) e.widget).selectAll();
 			}
 		});
-		PriceTextValidator textValidator = new PriceTextValidator(priceText,
-				"Price", false, false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				priceText);
-		validator.register(priceText, true);
-		FIXTextExtractor extractor = new OrderPriceExtractor(priceText,
-				FIXDataDictionaryManager.getCurrentFIXDataDictionary()
-						.getDictionary());
-		extractors.add(extractor);
+
 	}
 
 	// todo: Duplicated code from StockOrderTicket
@@ -592,31 +558,6 @@ public class OptionOrderTicketView extends ViewPart implements
 		tifCCombo.add(TimeInForceImage.GTC.getImage());
 		tifCCombo.add(TimeInForceImage.IOC.getImage());
 
-		CComboValidator comboValidator = new CComboValidator(tifCCombo, "TIF",
-				Arrays.asList(tifCCombo.getItems()), false);
-		ParentColorHighlighter highlighter = new ParentColorHighlighter(
-				tifCCombo);
-
-		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
-		uiStringToMessageStringMap.put(TimeInForceImage.DAY.getImage(), ""
-				+ TimeInForce.DAY);
-		uiStringToMessageStringMap.put(TimeInForceImage.OPG.getImage(), ""
-				+ TimeInForce.AT_THE_OPENING);
-		uiStringToMessageStringMap.put(TimeInForceImage.CLO.getImage(), ""
-				+ TimeInForce.AT_THE_CLOSE);
-		uiStringToMessageStringMap.put(TimeInForceImage.FOK.getImage(), ""
-				+ TimeInForce.FILL_OR_KILL);
-		uiStringToMessageStringMap.put(TimeInForceImage.GTC.getImage(), ""
-				+ TimeInForce.GOOD_TILL_CANCEL);
-		uiStringToMessageStringMap.put(TimeInForceImage.IOC.getImage(), ""
-				+ TimeInForce.IMMEDIATE_OR_CANCEL);
-		FIXCComboExtractor extractor = new FIXCComboExtractor(tifCCombo,
-				TimeInForce.FIELD, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary(),
-				uiStringToMessageStringMap, TimeInForceImage.DAY.getImage());
-
-		validator.register(tifCCombo, true);
-		extractors.add(extractor);
 	}
 
 	// todo: Duplicated code from StockOrderTicket, changed horizontalSpan
@@ -730,14 +671,15 @@ public class OptionOrderTicketView extends ViewPart implements
 		Label openCloseLabel = getFormToolkit().createLabel(otherComposite,
 				"Open/Close");
 		openCloseLabel.setLayoutData(createStandardSingleColumnGridData());
-		createFixFieldImageComboEntry(otherComposite, "OpenClose",
-				OpenClose.FIELD, OpenCloseImage.values());
+		openCloseCCombo = createFixFieldImageComboEntry(otherComposite,
+				"OpenClose", OpenClose.FIELD, OpenCloseImage.values());
 
 		Label capacityLabel = getFormToolkit().createLabel(otherComposite,
 				"Capacity");
 		capacityLabel.setLayoutData(createStandardSingleColumnGridData());
-		createFixFieldImageComboEntry(otherComposite, "Capacity",
-				OrderCapacity.FIELD, OrderCapacityImage.values());
+		orderCapacityCCombo = createFixFieldImageComboEntry(otherComposite,
+				"Capacity", OrderCapacity.FIELD, OrderCapacityImage.values());
+
 	}
 
 	private void addComboChoicesFromLexerEnum(CCombo combo,
@@ -747,36 +689,15 @@ public class OptionOrderTicketView extends ViewPart implements
 		}
 	}
 
-	private Map<String, String> createFIXComboExtractorMap(
-			ILexerFIXImage[] choices) {
-		Map<String, String> uiStringToMessageStringMap = new HashMap<String, String>();
-		for (ILexerFIXImage choice : choices) {
-			String key = choice.getImage();
-			String value = "" + choice.getFIXCharValue();
-			uiStringToMessageStringMap.put(key, value);
-		}
-		return uiStringToMessageStringMap;
-	}
-
-	private void createFixFieldImageComboEntry(Composite parent,
+	private CCombo createFixFieldImageComboEntry(Composite parent,
 			String fieldNameForValidator, int fixFieldNumber,
 			ILexerFIXImage[] choices) {
 
 		CCombo combo = new CCombo(parent, SWT.BORDER);
 		combo.setLayoutData(createStandardSingleColumnGridData());
 		addComboChoicesFromLexerEnum(combo, choices);
-		new CComboValidator(combo, fieldNameForValidator, Arrays.asList(combo
-				.getItems()), false);
-		new ParentColorHighlighter(combo);
 
-		Map<String, String> uiStringToMessageStringMap = createFIXComboExtractorMap(choices);
-		FIXCComboExtractor extractor = new FIXCComboExtractor(combo,
-				fixFieldNumber, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary(),
-				uiStringToMessageStringMap);
-
-		validator.register(combo, true);
-		extractors.add(extractor);
+		return combo;
 	}
 
 	private void addFixFieldEntry(Composite targetComposite, Text textControl,
@@ -791,11 +712,6 @@ public class OptionOrderTicketView extends ViewPart implements
 		textControl.setLayoutData(textGridData);
 
 		getFormToolkit().paintBordersFor(targetComposite);
-		FIXTextExtractor extractor = new FIXTextExtractor(textControl,
-				fixFieldNumber, FIXDataDictionaryManager
-						.getCurrentFIXDataDictionary().getDictionary());
-
-		extractors.add(extractor);
 	}
 
 	// todo: Duplicated code from StockOrderTicket, changed horizontalSpan
@@ -835,6 +751,12 @@ public class OptionOrderTicketView extends ViewPart implements
 	public void setFocus() {
 	}
 
+	public static OptionOrderTicket getDefault() {
+		return (OptionOrderTicket) PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow().getActivePage().findView(
+						OptionOrderTicket.ID);
+	}
+
 	// todo: Duplicated code from StockOrderTicket
 	private void updateTitle(Message targetOrder) {
 		if (targetOrder == null
@@ -847,18 +769,13 @@ public class OptionOrderTicketView extends ViewPart implements
 
 	// todo: Duplicated code from StockOrderTicket
 	public void clear() {
-		for (AbstractFIXExtractor extractor : extractors) {
-			extractor.clearUI();
-		}
 		updateTitle(null);
 		symbolText.setEnabled(true);
+		sendButton.setEnabled(false);
 	}
 
 	// todo: Duplicated code from StockOrderTicket
 	public void updateMessage(Message aMessage) throws MarketceteraException {
-		for (AbstractFIXExtractor extractor : extractors) {
-			extractor.modifyOrder(aMessage);
-		}
 		addCustomFields(aMessage);
 	}
 
@@ -906,33 +823,6 @@ public class OptionOrderTicketView extends ViewPart implements
 	}
 
 	// todo: Duplicated code from StockOrderTicket
-	public void showError(String errorString) {
-		if (errorString == null) {
-			errorMessageLabel.setText("");
-		} else {
-			errorMessageLabel.setText(errorString);
-		}
-	}
-
-	// todo: Duplicated code from StockOrderTicket
-	public void showWarning(String warningString) {
-		if (warningString == null) {
-			errorMessageLabel.setText("");
-		} else {
-			errorMessageLabel.setText(warningString);
-		}
-	}
-
-	// todo: Duplicated code from StockOrderTicket
-	public void showMessage(Message order) {
-		for (AbstractFIXExtractor extractor : extractors) {
-			extractor.updateUI(order);
-		}
-		symbolText.setEnabled(FIXMessageUtil.isOrderSingle(order));
-		updateTitle(order);
-	}
-
-	// todo: Duplicated code from StockOrderTicket
 	public void propertyChange(PropertyChangeEvent event) {
 		String property = event.getProperty();
 		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(property)) {
@@ -972,4 +862,130 @@ public class OptionOrderTicketView extends ViewPart implements
 			column.pack();
 		}
 	}
+
+	// todo: Duplicated code from StockOrderTicket
+	public void clearErrors() {
+		showErrorMessage("", 0);
+		for (Control aControl : inputControls) {
+			Object cd;
+			if (((cd = aControl.getData(CONTROL_DECORATOR_KEY)) != null)
+					&& cd instanceof ControlDecoration) {
+				ControlDecoration controlDecoration = ((ControlDecoration) cd);
+				controlDecoration.hide();
+			}
+
+		}
+	}
+
+	// todo: Duplicated code from StockOrderTicket
+	public void showErrorForControl(Control aControl, int severity,
+			String message) {
+		Object cd;
+		if (((cd = aControl.getData(CONTROL_DECORATOR_KEY)) != null)
+				&& cd instanceof ControlDecoration) {
+			ControlDecoration controlDecoration = ((ControlDecoration) cd);
+			if (severity == IStatus.OK) {
+				controlDecoration.hide();
+			} else {
+				if (severity == IStatus.ERROR) {
+					controlDecoration.setImage(errorImage);
+				} else {
+					controlDecoration.setImage(warningImage);
+				}
+				if (message != null) {
+					controlDecoration.setDescriptionText(message);
+				}
+				controlDecoration.show();
+			}
+		}
+	}
+
+	// todo: Duplicated code from StockOrderTicket
+	public void showMessage(Message order) {
+		symbolText.setEnabled(FIXMessageUtil.isOrderSingle(order));
+		updateTitle(order);
+	}
+
+	// todo: Duplicated code from StockOrderTicket
+	public void showErrorMessage(String errorMessage, int severity) {
+		if (errorMessage == null) {
+			errorMessageLabel.setText("");
+		} else {
+			errorMessageLabel.setText(errorMessage);
+		}
+		if (severity == IStatus.ERROR) {
+			sendButton.setEnabled(false);
+		} else {
+			sendButton.setEnabled(true);
+		}
+	}
+
+	public Text getAccountText() {
+		return accountText;
+	}
+
+	public CCombo getExpireMonthCCombo() {
+		return expireMonthCCombo;
+	}
+
+	public Text getPriceText() {
+		return priceText;
+	}
+
+	public CCombo getPutOrCallCCombo() {
+		return putOrCallCCombo;
+	}
+
+	public Text getQuantityText() {
+		return quantityText;
+	}
+
+	public CCombo getSideCCombo() {
+		return sideCCombo;
+	}
+
+	public Text getStrikeText() {
+		return strikeText;
+	}
+
+	public Text getSymbolText() {
+		return symbolText;
+	}
+
+	public CheckboxTableViewer getTableViewer() {
+		return tableViewer;
+	}
+
+	public CCombo getTifCCombo() {
+		return tifCCombo;
+	}
+
+	public CCombo getExpireYearCCombo() {
+		return expireYearCCombo;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	public Button getSendButton() {
+		return sendButton;
+	}
+
+	public BookComposite getBookComposite() {
+		return bookComposite;
+	}
+
+	public Label getErrorMessageLabel() {
+		return errorMessageLabel;
+	}
+
+	public CCombo getOrderCapacityCCombo() {
+		return orderCapacityCCombo;
+	}
+
+	public CCombo getOpenCloseCCombo() {
+		return openCloseCCombo;
+	}
+
 }

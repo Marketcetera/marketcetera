@@ -12,7 +12,7 @@ import org.marketcetera.photon.ui.BookComposite;
 
 import quickfix.Message;
 
-public interface IStockOrderTicket {
+public interface IStockOrderTicket extends IOrderTicket {
 
 	public abstract Text getAccountText();
 
@@ -37,15 +37,5 @@ public interface IStockOrderTicket {
 	public abstract CheckboxTableViewer getTableViewer();
 
 	public abstract CCombo getTifCCombo();
-
-	public void updateMessage(Message aMessage) throws MarketceteraException;
-	public void showMessage(Message order);
-	public void showErrorForControl(Control aControl, int severity, String message);
-	public void clearErrors();
-	public void showErrorMessage(String errorMessage, int severity);
-	
-	public void clear();
-
-	
 
 }

@@ -8,7 +8,7 @@ import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.photon.views.OpenOrdersView;
-import org.marketcetera.photon.views.OptionOrderTicketView;
+import org.marketcetera.photon.views.OptionOrderTicket;
 import org.marketcetera.photon.views.StockOrderTicket;
 
 /**
@@ -70,8 +70,8 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		topFolder = layout.createFolder(TOP_FOLDER, IPageLayout.TOP,
 				0.4f, RIGHT_FOLDER);
-		topFolder.addPlaceholder(OptionOrderTicketView.ID + ":*");
-		topFolder.addView(OptionOrderTicketView.ID);
+		topFolder.addPlaceholder(OptionOrderTicket.ID + ":*");
+		topFolder.addView(OptionOrderTicket.ID);
 	}
 
 }
