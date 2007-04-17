@@ -1,0 +1,49 @@
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "P & L", :top_level_controller => 'pnl'} %>
+<h1>Mark Reports</h1>
+<p>Please choose from the following reports:</p>
+    <div id="by_symbol">
+        <% form_tag :action => 'by_symbol' do -%>
+            <fieldset>
+                <h2>Marks By Symbol</h2>
+                <p>List all marks for a particular symbol for a range of dates.</p>
+                <label for="m_symbol_root">Symbol</label>
+                <%= text_field_with_auto_complete :m_symbol, :root  %>
+    
+                <div class="form_left">
+                    <label for="from_date">From</label>
+                    <div class="date">
+                        <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                    </div>
+                </div>
+                <div class="form_right">
+                    <label for="to_date">To</label>
+                    <div class="date">
+                        <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
+                    </div>
+                </div>
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search by Symbol', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>
+    <div id="by_date">        
+        <% form_tag :action => 'by_date' do -%>
+            <fieldset>
+                <h2>Marks On Date</h2>
+                <p>List marks for all symbols on a particular date.</p>
+                
+                <div class="form_left">
+                    <label for="on_date">On Date</label>
+                    <div class="date">
+                        <%= date_select 'date', 'on', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                    </div>
+                </div>
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search on Date', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>           

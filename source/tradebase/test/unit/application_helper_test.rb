@@ -7,13 +7,16 @@ class ApplicationHelperTest < MarketceteraTestBase
   
   def test_get_date_from_params
     assert_equal Date.civil(2006, 7, 11), 
-      get_date_from_params({"position"=>{"as_of(1i)"=>"2006", "as_of(2i)"=>"7", "as_of(3i)"=>"11"}}, 
-                            "position", "as_of", "as_of_date")
+    get_date_from_params({"position"=>{"as_of(1i)"=>"2006", "as_of(2i)"=>"7", "as_of(3i)"=>"11"}}, 
+                          "position", "as_of", "as_of_date")
     assert_equal Date.civil(2006, 7, 11).to_s, 
                  get_date_from_params({ "as_of_date"=>"2006-7-11"}, "position", "as_of", "as_of_date").to_s
       
     assert_nil get_date_from_params({}, "position", "as_of", "as_of_date")
     assert_nil get_date_from_params({"position" => {} }, "position", "as_of", "as_of_date")
+    
+    # try specifying the object_name but not the full date
+    assert_nil get_date_from_params({"position"=>{"unrelated"=>"data"}}, "position", "as_of", "as_of_date")
   end
 
   def test_contract_string

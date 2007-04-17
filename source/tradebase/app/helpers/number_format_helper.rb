@@ -26,6 +26,9 @@ module NumberFormatHelper
     if(number.instance_of?(String))
       number = BigDecimal.new(number)
     end
+    if(number.instance_of?(Fixnum) || number.instance_of?(Float))
+      number = BigDecimal.new(number.to_s)
+    end
     
     if(stripDecimalsForIntegers && (number.frac == 0))
       return number.to_i.to_s

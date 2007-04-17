@@ -17,6 +17,10 @@ class NumberFormatHelperTest < MarketceteraTestBase
     # test string not BigDecimal
     assert_equal "23.46", format_number("23.456", 2)
 
+    # test fixnum
+    assert_equal "1.00", format_number(1, 2)
+    assert_equal "1.22", format_number(1.22, 2)
+
     # test alias
     assert_equal "23.456", fn(BigDecimal.new("23.4563478"), 3)
     assert_equal "23.46", fn(BigDecimal.new("23.456"), 2)
