@@ -28,10 +28,13 @@ module ApplicationHelper
   # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
   # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
   def parse_date_from_params(params, object_name, tag_name)
-    if(params[object_name].blank?) 
+    if(params[object_name].blank? ||
+       params[object_name][tag_name+"(1i)"].blank? ||
+       params[object_name][tag_name+"(2i)"].blank? ||
+       params[object_name][tag_name+"(3i)"].blank?) 
       return nil
     end
-    
+
     return Date.new(Integer(params[object_name][tag_name+"(1i)"]), 
                       Integer(params[object_name][tag_name+"(2i)"]), 
                       Integer(params[object_name][tag_name+"(3i)"]))
@@ -60,7 +63,7 @@ module ApplicationHelper
           if(isHeader) 
             outStr += "<th>" + column.human_name+"</th>"
           else 
-            if(column.number?) 
+            if(column.number? || column.instance_of?(BigDecimal)) 
               tdStr = "<td"+RJUST_NUMBER_CLASS_STR+">"
               value = fn(inObject.send(column.name), 2)
             else 

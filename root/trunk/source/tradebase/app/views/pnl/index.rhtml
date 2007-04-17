@@ -1,0 +1,17 @@
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "P & L", :top_level_controller => 'pnl'} %>
+<h1>P & L</h1>
+<p>Please choose from the following P & L calculations:</p>
+    <% form_tag :action => 'by_account' do -%>
+        <fieldset>
+            <h2>P & L by Account</h2>
+            <p>Compute a P & L for a particular account.</p>
+            <label for="account_nickname">Account</label>
+            <%= text_field_with_auto_complete :account, :nickname %>
+        </fieldset>
+        <div>
+            <%= submit_tag 'P & L by Account', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
+    <% end -%>
+
+    

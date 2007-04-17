@@ -1,0 +1,8 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P & L", :action_name => "P &L by #{@query_type}", :top_level_controller => 'pnl' } %>
+<h1>P & L for <%= @query_type -%>: <span><%= @param_value %></span></h1>
+
+
+
+<%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
+
