@@ -38,4 +38,7 @@ public enum OpenCloseImage implements ILexerFIXImage {
 	public char getFIXCharValue() {
 		return fixValue;
 	}
+	public int getFIXIntValue() {
+		return (int) fixValue;
+	}
 }

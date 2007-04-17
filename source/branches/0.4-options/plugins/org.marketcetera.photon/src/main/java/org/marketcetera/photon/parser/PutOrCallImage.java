@@ -6,7 +6,7 @@ import java.util.Map;
 
 import quickfix.field.PutOrCall;
 
-public enum PutOrCallImage implements ILexerImage {
+public enum PutOrCallImage implements ILexerFIXImage {
 
 	PUT("P", PutOrCall.PUT), CALL("C", PutOrCall.CALL);
 	static final Map<String, PutOrCallImage> nameMap = new HashMap<String, PutOrCallImage>();
@@ -38,5 +38,8 @@ public enum PutOrCallImage implements ILexerImage {
 	}
 	public int getFIXIntValue() {
 		return fixValue;
+	}
+	public char getFIXCharValue() {
+		return (char) fixValue;
 	}
 }

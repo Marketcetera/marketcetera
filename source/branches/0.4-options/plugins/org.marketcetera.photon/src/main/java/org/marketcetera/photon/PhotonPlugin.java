@@ -32,6 +32,7 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
+import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -66,6 +67,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	
 	private StockOrderTicketController stockOrderTicketController;
 
+	private OptionOrderTicketController optionOrderTicketController;
 
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
@@ -337,4 +339,12 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		this.stockOrderTicketController = stockOrderTicketController;
 	}
 
+	public OptionOrderTicketController getOptionOrderTicketController() {
+		return optionOrderTicketController;
+	}
+
+	public void setOptionOrderTicketController(
+			OptionOrderTicketController optionOrderTicketController) {
+		this.optionOrderTicketController = optionOrderTicketController;
+	}
 }

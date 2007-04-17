@@ -21,6 +21,8 @@ import org.marketcetera.photon.actions.StartScriptRegistryJob;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.ui.MainConsole;
+import org.marketcetera.photon.views.OptionOrderTicket;
+import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.osgi.framework.BundleContext;
@@ -117,6 +119,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		startMarketDataFeed();
 		startIDFactory();
 		plugin.setStockOrderTicketController(new StockOrderTicketController(StockOrderTicket.getDefault()));
+		plugin.setOptionOrderTicketController(new OptionOrderTicketController(OptionOrderTicket.getDefault()));
 	}
 
 	/** 
