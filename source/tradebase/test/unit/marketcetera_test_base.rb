@@ -32,6 +32,11 @@ class MarketceteraTestBase < Test::Unit::TestCase
     assert_tag :tag => "div", :attributes => { :class => "errorExplanation" }
   end
   
+  # verifies the red line with an error notice shows up (ex: No bla bla was found...)
+  def assert_has_error_notice
+    assert_tag :tag => "div", :attributes => { :id => "error_notice" }
+  end
+  
   # verifies trade has the right total price + commissions
   # Looks at all the postings and makes sure the numbers are the same as passed in
   def verify_trade_prices(trade, total_price, total_commission)

@@ -45,8 +45,11 @@ class MarksController < ApplicationController
   end
   
   # List of all marks on the specified date
-  def by_date
+  def on_date
     @on_date = get_date_from_params(params, :date, "on", "on_date") 
+    if(@on_date.blank?)
+      @on_date = Date.today
+    end
     @mark_pages, @marks = paginate :marks, :per_page => MaxPerPage, :conditions => [ 'mark_date = ?', @on_date]
 
     @param_name = :m_symbol_root
@@ -81,7 +84,6 @@ class MarksController < ApplicationController
       rescue => ex
         logger.debug("exception in mark save with errors: "+@mark.errors.length.to_s + 
           " and ex is: "+ex.class.to_s + ":" + ex.message)
-          puts "ex class: " + ex.class.to_s
         render :action => 'new'
      end
     end

@@ -4,3 +4,4 @@
 
 <%= render :partial => 'marks/mark_list_display' %>
 
+<%= pagination_links(@mark_pages,  :params => { @param_name => @param_value, :on_date => @on_date }) %>
