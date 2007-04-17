@@ -119,7 +119,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		startMarketDataFeed();
 		startIDFactory();
 		plugin.setStockOrderTicketController(new StockOrderTicketController(StockOrderTicket.getDefault()));
-		plugin.setOptionOrderTicketController(new OptionOrderTicketController(OptionOrderTicket.getDefault()));
+//		plugin.setOptionOrderTicketController(new OptionOrderTicketController(OptionOrderTicket.getDefault()));
 	}
 
 	/** 
