@@ -33,7 +33,8 @@ class MarksController < ApplicationController
 
     @mark_pages, @marks = paginate :marks, :per_page => MaxPerPage, 
             :conditions => conditionsArr,
-            :joins => 'inner join equities on equities.id = equity_id'
+            :joins => 'as m inner join equities on equities.id = m.equity_id',
+             :select => 'm.*'
             
     @param_name = :m_symbol_root
     @param_value = symbol_str
@@ -104,7 +105,9 @@ class MarksController < ApplicationController
   end
 
   def destroy
-    Mark.find(params[:id]).destroy
-    redirect_to :action => 'list'
+    m = Mark.find(params[:id])
+    symbol = m.equity_m_symbol_root
+    m.destroy
+    redirect_to :action => 'by_symbol', :m_symbol_root => symbol, :to_date => Date.today
   end
 end
