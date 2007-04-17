@@ -54,7 +54,7 @@ class MarkTest < Test::Unit::TestCase
     assert_not_nil mark.errors[:mark_date]
 
     mark.mark_date = Date.today + 10
-    assert !mark.valid?
+    assert !mark.valid?, "mark created in future"
     assert_equal 1, mark.errors.length
     assert_not_nil mark.errors[:mark_date]
 
@@ -139,8 +139,8 @@ class MarkTest < Test::Unit::TestCase
     mark = Mark.find(:first)
     newMark = Mark.new(:equity_id => mark.equity, :mark_date => mark.mark_date)
     newMark.save
-    assert_not_nil newMark.errors[:equity_id]
-    assert_equal "Already have a mark on that date. Please update an existing mark.", newMark.errors[:equity_id]
+    assert_not_nil newMark.errors[:mark_date]
+    assert_equal "Already have a mark on that date. Please update an existing mark.", newMark.errors[:mark_date]
   end
 
 end

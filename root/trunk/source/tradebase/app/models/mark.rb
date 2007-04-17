@@ -8,7 +8,7 @@ class Mark < ActiveRecord::Base
   
   MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
 
-  validates_uniqueness_of :equity_id, :scope => :mark_date, 
+  validates_uniqueness_of :mark_date, :scope => :equity_id, 
     :message => "Already have a mark on that date. Please update an existing mark."
 
   validates_numericality_of(:mark_value, :message => "should be a number.")
