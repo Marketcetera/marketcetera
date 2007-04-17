@@ -232,7 +232,7 @@ class MarksControllerTest < MarketceteraTestBase
 
     post :destroy, :id => @sunw_4_12
     assert_response :redirect
-    assert_redirected_to :action => 'list'
+    assert_redirected_to :action => 'by_symbol'
 
     assert_raise(ActiveRecord::RecordNotFound) {
       Mark.find(@sunw_4_12)
