@@ -51,6 +51,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 		layout.addPerspectiveShortcut("org.marketcetera.photon.DebugPerspective");
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		layout.addShowViewShortcut(StockOrderTicket.ID);
+		layout.addShowViewShortcut(OptionOrderTicket.ID);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);

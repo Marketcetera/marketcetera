@@ -118,8 +118,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		startJMS();
 		startMarketDataFeed();
 		startIDFactory();
-		plugin.setStockOrderTicketController(new StockOrderTicketController(StockOrderTicket.getDefault()));
-//		plugin.setOptionOrderTicketController(new OptionOrderTicketController(OptionOrderTicket.getDefault()));
+		// todo: A new controller should be associated with each new view. This method, postWindowOpen, is not executed after view creation. If a new StockOrderTicket view is created, it will not have a controller.  
+		if (StockOrderTicket.getDefault() != null) {
+			plugin.setStockOrderTicketController(new StockOrderTicketController(
+							StockOrderTicket.getDefault()));
+		}
+		if (OptionOrderTicket.getDefault() != null) {
+			plugin.setOptionOrderTicketController(new OptionOrderTicketController(
+							OptionOrderTicket.getDefault()));
+		}
 	}
 
 	/** 

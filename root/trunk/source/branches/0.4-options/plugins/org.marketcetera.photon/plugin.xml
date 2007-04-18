@@ -42,7 +42,7 @@
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.OptionOrderTicket"
             icon="icons/silk/clock_add.png"
-            id="org.marketcetera.photon.views.OptionOrderTicketView"
+            id="org.marketcetera.photon.views.OptionOrderTicket"
             name="Option Order Ticket"
             allowMultiple="true"
             />
