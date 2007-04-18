@@ -70,7 +70,7 @@ import ca.odell.glazedlists.EventList;
 public class OptionOrderTicket extends ViewPart implements IMessageDisplayer,
 		IPropertyChangeListener, IOptionOrderTicket {
 
-	public static String ID = "org.marketcetera.photon.views.OptionOrderTicketView"; //$NON-NLS-1$
+	public static String ID = "org.marketcetera.photon.views.OptionOrderTicket"; //$NON-NLS-1$
 
 	private static final String CONTROL_DECORATOR_KEY = "OPTION_ORDER_CONTROL_DECORATOR_KEY";
 
@@ -752,9 +752,11 @@ public class OptionOrderTicket extends ViewPart implements IMessageDisplayer,
 	}
 
 	public static OptionOrderTicket getDefault() {
-		return (OptionOrderTicket) PlatformUI.getWorkbench()
+		OptionOrderTicket orderTicket = (OptionOrderTicket) PlatformUI.getWorkbench()
 				.getActiveWorkbenchWindow().getActivePage().findView(
 						OptionOrderTicket.ID);
+		
+		return orderTicket;
 	}
 
 	// todo: Duplicated code from StockOrderTicket
