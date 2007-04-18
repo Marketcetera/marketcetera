@@ -100,12 +100,12 @@ public class DefaultOrderModifier implements OrderModifier {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
-    public boolean modifyOrder(Message order, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyOrder(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException {
         String msgType = null;
         boolean modified = false;
 
         try {
-            msgType = order.getHeader().getString(MsgType.FIELD);
+            msgType = message.getHeader().getString(MsgType.FIELD);
         } catch (FieldNotFound fieldNotFound) {
             // ignore
         }
@@ -114,23 +114,23 @@ public class DefaultOrderModifier implements OrderModifier {
             msgType = msgType.toUpperCase();
             mod = messageModifiers.get(msgType);
             if (mod != null){
-                modified = mod.modifyOrder(order) || modified;
+                modified = mod.modifyOrder(message) || modified;
             }
-            if (FIXDataDictionary.isAdminMessageType42(msgType)){
+            if (message.isAdmin()){
                 mod = messageModifiers.get(ADMIN_MODIFIER_KEY);
                 if (mod != null){
-                    modified = mod.modifyOrder(order) || modified;
+                    modified = mod.modifyOrder(message) || modified;
                 }
             } else {
                 mod = messageModifiers.get(APP_MODIFIER_KEY);
                 if (mod != null){
-                    modified = mod.modifyOrder(order)||modified;
+                    modified = mod.modifyOrder(message)||modified;
                 }
             }
         }
         mod = messageModifiers.get(GLOBAL_MODIFIER_KEY);
         if (mod!= null){
-            modified = mod.modifyOrder(order)||modified;
+            modified = mod.modifyOrder(message)||modified;
         }
         return modified;
     }

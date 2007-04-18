@@ -98,23 +98,4 @@ public class FIXDataDictionary {
         ourInstance = new FIXDataDictionary(fixDataDictionaryPath);
         return ourInstance;
     }
-
-        public static boolean isAdminMessageType42(String msgType) {
-        if (msgType.length() == 1) {
-            switch (msgType.charAt(0)){
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case 'A':
-                    return true;
-                default:
-                    return false;
-            }
-        } else {
-            return false;
-        }
-    }
 }
