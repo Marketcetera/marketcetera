@@ -85,6 +85,13 @@
             icon="icons/silk/chart_curve.png"
             id="org.marketcetera.photon.views.MarketDataView"
             name="Market Data"/>
+      <view
+            allowMultiple="true"
+            category="org.marketcetera.photon.category"
+            class="org.marketcetera.photon.views.OptionMarketDataView"
+            icon="icons/silk/chart_curve.png"
+            id="org.marketcetera.photon.views.OptionMarketDataView"
+            name="Option Market Data"/>   
    </extension>
 
    <extension

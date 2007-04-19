@@ -75,6 +75,10 @@ public abstract class MessagesView extends ViewPart {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
 		composite.setLayout(layout);
+		
+		GridData gridData = new GridData(GridData.FILL, GridData.FILL, true, true);
+		composite.setLayoutData(gridData);
+		
 		layout.numColumns = 1;
 
         messageTable = createMessageTable(composite);
