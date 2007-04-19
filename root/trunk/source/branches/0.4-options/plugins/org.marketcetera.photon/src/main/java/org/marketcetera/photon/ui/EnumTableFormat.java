@@ -3,9 +3,8 @@ package org.marketcetera.photon.ui;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -14,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.photon.FIXFieldLocalizer;
+import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
@@ -28,7 +28,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 {
 	Enum [] columns;
 	private DataDictionary dataDictionary;
-	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
+//	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
 	
 	private static final String COLUMN_WIDTH_SAVED_KEY_NAME = "width.saved";  //$NON-NLS-1$
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
@@ -39,17 +39,35 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	public EnumTableFormat(Table table, Enum[] columns) {
 		this.columns = columns;
 		dataDictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
-		// TODO: how can we get the max number of fields?
-		for (int fieldNum = 1; fieldNum < 10000; fieldNum++) {
-			if (dataDictionary.isField(fieldNum))
-				fieldMap.put(dataDictionary.getFieldName(fieldNum), fieldNum);
-		}
 		int i = 0;
         for (Enum aColumn : columns) {
-			TableColumn tableColumn = new TableColumn(table, SWT.LEFT);
+			int alignment;
+			if (isNumericColumn(aColumn, dataDictionary)){
+				alignment = SWT.RIGHT;
+			} else {
+				alignment = SWT.LEFT;
+			}
+			TableColumn tableColumn = new TableColumn(table, alignment);
 			String localizedName = FIXFieldLocalizer.getLocalizedMessage(getColumnName(i++));
 			tableColumn.setText(localizedName);
 		}
+	}
+
+	private boolean isNumericColumn(Enum column, DataDictionary dict) {
+		Class javaType;
+		FieldType fieldTypeEnum;
+		Integer fieldID;
+		if (column instanceof IFieldIdentifier
+				&& (fieldID = ((IFieldIdentifier)column).getFieldID()) != null
+				&& (fieldTypeEnum = dict.getFieldTypeEnum(fieldID)) != null
+				&& (javaType = fieldTypeEnum.getJavaType()) != null
+				&& (Number.class.isAssignableFrom(javaType)
+					|| Date.class.isAssignableFrom(javaType)
+					|| Calendar.class.isAssignableFrom(javaType)))
+		{
+			return true;
+		}
+		return false;
 	}
 
 	public int getColumnCount() {
@@ -61,13 +79,19 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	}
 
 	public Object getColumnValue(T element, int columnIndex) {
-		Integer fieldID = fieldMap.get(columns[columnIndex].toString());
-		Object value = null;
-		if (fieldID != null) {
-			FieldMap map = extractMap(element, fieldID);
-			value = fieldValueFromMap(map, fieldID);
+		Enum columnEnum = columns[columnIndex];
+		if (columnEnum instanceof IFieldIdentifier)
+		{
+			Integer fieldID = ((IFieldIdentifier)columnEnum).getFieldID();
+			Object value = null;
+			if (fieldID != null) {
+				FieldMap map = extractMap(element, fieldID);
+				value = fieldValueFromMap(map, fieldID);
+			}
+			return value;
+		} else {
+			return null;
 		}
-		return value;
 	}
 
 	protected Object fieldValueFromMap(FieldMap map, Integer fieldID) {
@@ -102,24 +126,30 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		Integer fieldID = fieldMap.get(columns[columnIndex].toString());
-		Object objValue = getColumnValue((T)element, columnIndex);
-		String value = "";
-		if (objValue != null){
-			FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
-			if (fieldType.equals(FieldType.UtcTimeOnly)
-					|| fieldType.equals(FieldType.UtcTimeStamp)){
-				value = TIME_FORMAT.format((Date)objValue);
-			} else if (fieldType.equals(FieldType.UtcDateOnly)
-					||fieldType.equals(FieldType.UtcDate)){
-				value = DATE_FORMAT.format((Date)objValue);
-			} else if (objValue instanceof BigDecimal){
-				value  = ((BigDecimal)objValue).toPlainString();
-			} else {
-				value = objValue.toString();
+		Enum columnEnum = columns[columnIndex];
+		Integer fieldID;
+		if (columnEnum instanceof IFieldIdentifier && 
+				(fieldID = ((IFieldIdentifier)columnEnum).getFieldID()) != null){
+			Object objValue = getColumnValue((T)element, columnIndex);
+			String value = "";
+			if (objValue != null){
+				FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
+				if (fieldType.equals(FieldType.UtcTimeOnly)
+						|| fieldType.equals(FieldType.UtcTimeStamp)){
+					value = TIME_FORMAT.format((Date)objValue);
+				} else if (fieldType.equals(FieldType.UtcDateOnly)
+						||fieldType.equals(FieldType.UtcDate)){
+					value = DATE_FORMAT.format((Date)objValue);
+				} else if (objValue instanceof BigDecimal){
+					value  = ((BigDecimal)objValue).toPlainString();
+				} else {
+					value = objValue.toString();
+				}
 			}
+			return value;
+		} else {
+			return null;
 		}
-		return value;
 	}
 
 

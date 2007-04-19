@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -26,10 +28,15 @@ import org.marketcetera.photon.ui.TextContributionItem;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.BidPx;
+import quickfix.field.BidSize;
+import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
 import quickfix.field.NoMDEntries;
+import quickfix.field.OfferPx;
+import quickfix.field.OfferSize;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
@@ -58,18 +65,34 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 	public enum MarketDataColumns
 	{
-		ZEROWIDTH(""), SYMBOL("Symbol"), LASTPX("LastPx"), BIDSZ("BidSize"), BID("BidPx"), ASK("OfferPx"), ASKSZ("OfferSize");
+		ZEROWIDTH(""), SYMBOL(Symbol.class), LASTPX(LastPx.class), BIDSZ(BidSize.class),
+		BID(BidPx.class), ASK(OfferPx.class), ASKSZ(OfferSize.class);
 		
-		private String mName;
+		private String name;
+		private Integer fieldID;
 
-		MarketDataColumns(String name) {
-			mName = name;
+		MarketDataColumns(String name){
+			this.name = name;
+		}
+
+		MarketDataColumns(Class clazz) {
+			name = clazz.getSimpleName();
+			try {
+				Field fieldField = clazz.getField("FIELD");
+				fieldID = (Integer) fieldField.get(null);
+			} catch (Throwable t){
+				assert(false);
+			}
 		}
 
 		public String toString() {
-			return mName;
+			return name;
 		}
-	}
+
+		public Integer getFieldID() {
+			return fieldID;
+		}
+	};
 
 	private MarketDataFeedTracker marketDataTracker;
 
