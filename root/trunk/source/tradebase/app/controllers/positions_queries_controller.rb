@@ -36,9 +36,9 @@ class PositionsQueriesController < ApplicationController
     end
       @position_pages, @positions, @num_positions = paginate_by_sql(Position, 
             [ 'SELECT sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id '+
-              ' FROM trades'+
-              ' LEFT JOIN accounts ON trades.account_id=accounts.id '+
-              ' WHERE accounts.nickname like ? GROUP BY account_id, tradeable_id, tradeable_type'+
+              ' FROM trades, accounts '+
+              ' WHERE trades.account_id=accounts.id AND ' +
+              '       accounts.nickname like ? GROUP BY account_id, tradeable_id, tradeable_type'+
               ' HAVING position != 0 ',
               query_nickname], MaxPerPage)
 

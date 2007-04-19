@@ -1,0 +1,12 @@
+                <div class="form_left">
+                    <label for="from_date">From</label>
+                    <div class="date">
+                        <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                    </div>
+                </div>
+                <div class="form_right">
+                    <label for="to_date">To</label>
+                    <div class="date">
+                        <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
+                    </div>
+                </div>

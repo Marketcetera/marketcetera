@@ -40,19 +40,7 @@
             <fieldset>
                 <h2>Trades By Date</h2>
                 <p>List all trades posting between specified dates.</p>
-                
-                <div class="form_left">
-                    <label for="from_date">From</label>
-                    <div class="date">
-                        <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
-                    </div>
-                </div>
-                <div class="form_right">
-                    <label for="to_date">To</label>
-                    <div class="date">
-                        <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
-                    </div>
-                </div>
+                <%= render :partial => 'shared/from_to_date_fields' %>
             </fieldset>
             <div>
                 <%= submit_tag 'Search by Date', :class => "submit floatright"  %>

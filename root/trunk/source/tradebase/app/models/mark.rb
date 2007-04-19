@@ -4,7 +4,7 @@ class Mark < ActiveRecord::Base
 
   belongs_to :equity
  
-  acts_as_versioned
+#  acts_as_versioned :limit => 1
   
   MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
 

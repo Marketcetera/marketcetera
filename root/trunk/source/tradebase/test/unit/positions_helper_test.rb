@@ -18,10 +18,21 @@ class PositionsHelperTest < MarketceteraTestBase
     assert_equal ["MOLI", 3], [accounts[2][0].nickname, accounts[2][1]]
   end
   
+  def test_get_positions_as_of_inclusive_date_and_account
+    create_trades_in_account(3, "vasya")
+    create_trades_in_account(2, "vasya", Date.today-1)
+    create_trades_in_account(3, "bob")
+  
+    assert_equal 3, get_positions_as_of_inclusive_date_and_account(Date.today, Account.find_by_nickname("vasya")).length
+    assert_equal 3, get_positions_as_of_inclusive_date_and_account(Date.today+1,  Account.find_by_nickname("vasya")).length
+    assert_equal 0, get_positions_as_of_inclusive_date_and_account(Date.today,  Account.find_by_nickname("noName")).length
+    assert_equal 2, get_positions_as_of_inclusive_date_and_account(Date.today-1,  Account.find_by_nickname("vasya")).length
+  end
+  
   private
-  def create_trades_in_account(num_trades, account)
+  def create_trades_in_account(num_trades, account, date=Date.today)
     for i in 1..num_trades
-      create_test_trade(100, 20.11, Side::QF_SIDE_CODE[:buy], account, Date.today, "IFLI-"+i.to_s, 4.99, "USD")
+      create_test_trade(100, 20.11, Side::QF_SIDE_CODE[:buy], account, date, "IFLI-"+i.to_s, 4.99, "USD")
     end
   end  
 end

@@ -1,8 +1,27 @@
 <%= render :partial => 'shared/breadcrumbs', 
     :locals=> { :top_level => "P & L", :action_name => "P &L by #{@query_type}", :top_level_controller => 'pnl' } %>
-<h1>P & L for <%= @query_type -%>: <span><%= @param_value %></span></h1>
+<h1>P & L for <%= @query_type -%>: <span><%= @param_value %></span> from <%= @from_date %> to <%= @to_date %></h1>
 
-
+<table>
+    <tr>
+        <th>Symbol</th>
+        <th>Tradeable ID</th>
+        <th>P&L</th>
+    </tr>
+<% i=0
+   total = BigDecimal.new("O")
+ for cf in @cashflows %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <td><%=h cf.symbol %></td>    
+    <td><%=h cf.tradeable_id %></td>
+    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(cf.cashflow, 2) %></td>
+    <% total += BigDecimal(cf.cashflow.to_s) %>
+  </tr>
+<% end %>
+  <tr>
+      <td colspan="3" <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>>Total: <%= fn(total,2) %></td>
+  </tr>
+</table>
 
 <%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
 

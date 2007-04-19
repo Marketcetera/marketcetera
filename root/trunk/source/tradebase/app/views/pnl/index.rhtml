@@ -7,6 +7,7 @@
             <p>Compute a P & L for a particular account.</p>
             <label for="account_nickname">Account</label>
             <%= text_field_with_auto_complete :account, :nickname %>
+            <%= render :partial => 'shared/from_to_date_fields' %>
         </fieldset>
         <div>
             <%= submit_tag 'P & L by Account', :class => "submit floatright"  %>
