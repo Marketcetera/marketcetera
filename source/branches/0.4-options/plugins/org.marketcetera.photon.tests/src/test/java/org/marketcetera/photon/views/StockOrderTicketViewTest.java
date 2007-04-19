@@ -61,7 +61,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	private StockOrderTicketController controller;
-	private DefaultRealm realm;
 
 	public StockOrderTicketViewTest(String name) {
 		super(name);
@@ -82,7 +81,6 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		controller.dispose();
-		realm.dispose();
 	}
 
 	public void testShowOrder() throws NoSuchFieldException, IllegalAccessException {
