@@ -233,6 +233,11 @@ public class PhotonController {
 	public void setIDFactory(IDFactory fact){
 		idFactory = fact;
 	}
+	
+	public IDFactory getIDFactory() {
+		return idFactory;
+	}
+	
 
 	/**
 	 * @return Returns the mainConsoleLogger.

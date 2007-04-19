@@ -5,12 +5,11 @@ import java.util.Date;
 
 import javax.jms.Destination;
 
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.AccessViolator;
+import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -54,6 +53,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	private StockOrderTicketController controller;
+	private DefaultRealm realm;
 
 	public StockOrderTicketViewTest(String name) {
 		super(name);
@@ -62,6 +62,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
+		realm = new DefaultRealm();
 		IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
 		controller = new StockOrderTicketController(ticket);
 	}
@@ -70,6 +71,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	protected void tearDown() throws Exception {
 		super.tearDown();
 		controller.dispose();
+		realm.dispose();
 	}
 
 
@@ -187,6 +189,18 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		TableItem item1 = customFieldsTable.getItem(1);
 		item1.setChecked(true);
 
+		// Attempt to get a message ID. This currently has the side effect of
+		// initializing an in memory ID generator if the database backed one is
+		// unavailable. This allows the subsequent ID generation to succeed,
+		// which is required for handleSend() below.
+		try {
+			IDFactory idFactory = PhotonPlugin.getDefault()
+					.getPhotonController().getIDFactory();
+			idFactory.getNext();
+		} catch (Exception anyException) {
+			// Ignore
+		}
+		
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
@@ -197,8 +211,10 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		delay(1);
 		
 		Message sentMessage = (Message) mockJmsOperations.getStoredMessage();
+		assertNotNull( sentMessage );
 		try {
-			String value = sentMessage.getHeader().getString(DeliverToCompID.FIELD);  // header field
+			quickfix.Message.Header header = sentMessage.getHeader();
+			String value = header.getString(DeliverToCompID.FIELD);  // header field
 			assertEquals("ABCD", value);  //$NON-NLS-1$
 		} catch (FieldNotFound e) {
 			fail();
