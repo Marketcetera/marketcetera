@@ -1,6 +1,8 @@
 package org.marketcetera.photon.ui;
 
 
+import java.lang.reflect.Field;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -9,11 +11,16 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.photon.IFieldIdentifier;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
+import quickfix.field.MDEntryTime;
 import quickfix.field.MDEntryType;
+import quickfix.field.MDMkt;
 import quickfix.field.NoMDEntries;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
@@ -22,20 +29,36 @@ import ca.odell.glazedlists.EventList;
 public class BookComposite extends Composite
 {
 
-	public enum BookColumns{
-		MDMKT("MDMkt"), MDENTRYPX("MDEntryPx"), MDENTRYSIZE("MDEntrySize"),
-		MDENTRYTIME("MDEntryTime");
+	public enum BookColumns implements IFieldIdentifier {
+		MDMKT(MDMkt.class), MDENTRYPX(MDEntryPx.class), MDENTRYSIZE(MDEntrySize.class),
+		MDENTRYTIME(MDEntryTime.class);
 
-		private String mName;
+		private String name;
+		private Integer fieldID;
 
-		BookColumns(String name) {
-			mName = name;
+		BookColumns(String name){
+			this.name = name;
+		}
+
+		BookColumns(Class clazz) {
+			name = clazz.getSimpleName();
+			try {
+				Field fieldField = clazz.getField("FIELD");
+				fieldID = (Integer) fieldField.get(null);
+			} catch (Throwable t){
+				assert(false);
+			}
 		}
 
 		public String toString() {
-			return mName;
+			return name;
 		}
-	}	
+
+		public Integer getFieldID() {
+			return fieldID;
+		}
+	};
+	
 	private Table bidTable;
 	private Table askTable;
 	private IndexedTableViewer bidViewer;
