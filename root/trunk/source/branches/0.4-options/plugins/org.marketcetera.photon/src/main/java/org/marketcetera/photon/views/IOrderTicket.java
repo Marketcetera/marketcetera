@@ -1,11 +1,36 @@
 package org.marketcetera.photon.views;
 
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.ui.BookComposite;
 
 import quickfix.Message;
 
 public interface IOrderTicket {
+
+	Button getCancelButton();
+
+	Button getSendButton();
+
+	BookComposite getBookComposite();
+
+	Text getPriceText();
+
+	Text getQuantityText();
+
+	CCombo getSideCCombo();
+
+	Text getSymbolText();
+
+	CCombo getTifCCombo();
+
+	Text getAccountText();
+
+	Label getErrorMessageLabel();
 
 	void updateMessage(Message aMessage) throws MarketceteraException;
 
