@@ -8,7 +8,6 @@ import javax.jms.Destination;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
@@ -111,9 +110,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MyMarketDataFeed feed = (MarketDataViewTest.MyMarketDataFeed)marketDataFeed.getMarketDataFeed();
 		feed.sendMessage(quoteMessageToSend);
 				
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-
-		BookComposite bookComposite = (BookComposite) violator.getField("bookComposite", view);
+		BookComposite bookComposite = view.getBookComposite();
 
 		Message returnedMessage = null;
 		for (int i = 0; i < 10; i ++){
@@ -153,8 +150,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		delay(1);
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
+		Table customFieldsTable = view.getCustomFieldsTable();
 		
 		assertEquals(2, customFieldsTable.getItemCount());
 		
@@ -182,8 +178,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 		StockOrderTicket view = (StockOrderTicket) getTestView();
 
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
+		Table customFieldsTable = view.getCustomFieldsTable();
 		TableItem item0 = customFieldsTable.getItem(0);
 		item0.setChecked(true);
 		TableItem item1 = customFieldsTable.getItem(1);
@@ -220,7 +215,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			fail();
 		}
 		try {
-			String value = sentMessage.getString(DeliverToCompID.FIELD);
+			sentMessage.getString(DeliverToCompID.FIELD);
 			//shouldn't be in the body.
 			fail();
 		} catch (FieldNotFound e) {
@@ -246,8 +241,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		setUpJMSFeedService(mockJmsOperations);
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
+		Table customFieldsTable = view.getCustomFieldsTable();
 		TableItem item0 = customFieldsTable.getItem(0);
 		item0.setChecked(false);
 		TableItem item1 = customFieldsTable.getItem(1);
