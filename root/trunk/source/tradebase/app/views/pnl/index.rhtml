@@ -15,4 +15,15 @@
         </div>
     <% end -%>
 
+    <% form_tag :action => 'by_date' do -%>
+        <fieldset>
+            <h2>P & L by Dates</h2>
+            <p>Compute a P & L across all accounts for a range of dates</p>
+            <%= render :partial => 'shared/from_to_date_fields' %>
+        </fieldset>
+        <div>
+            <%= submit_tag 'P & L for Dates', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
+    <% end -%>
     
