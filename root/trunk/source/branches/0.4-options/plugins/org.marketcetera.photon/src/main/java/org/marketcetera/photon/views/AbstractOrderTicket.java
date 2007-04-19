@@ -1,0 +1,359 @@
+package org.marketcetera.photon.views;
+
+import org.eclipse.jface.util.Assert;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.forms.events.ExpansionAdapter;
+import org.eclipse.ui.forms.events.ExpansionEvent;
+import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.eclipse.ui.forms.widgets.Section;
+import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.preferences.CustomOrderFieldPage;
+import org.marketcetera.photon.ui.BookComposite;
+import org.marketcetera.photon.ui.validation.IMessageDisplayer;
+import org.marketcetera.quickfix.FIXMessageUtil;
+
+import quickfix.Message;
+
+public abstract class AbstractOrderTicket extends ViewPart implements
+		IMessageDisplayer, IPropertyChangeListener {
+
+	private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
+
+	protected Composite outermostComposite;
+
+	protected ScrolledForm outermostForm;
+
+	protected FormToolkit formToolkit;
+
+	protected Label errorMessageLabel;
+
+	protected OrderTicketViewPieces orderTicketViewPieces;
+
+	protected CustomFieldsViewPieces customFieldsViewPieces;
+
+	protected Button sendButton;
+
+	protected Button cancelButton;
+
+	protected IMemento viewStateMemento;
+	
+	private BookComposite bookComposite;
+
+	private Section bookSection;
+
+	/**
+	 * Set the human readable title on the outermostForm.
+	 * 
+	 * @param targetOrder the order on which to base the update. When null, the title should be updated to its default.
+	 */
+	protected abstract void updateOutermostFormTitle( Message targetOrder );
+
+	/**
+	 * Create the contents of the ScrolledForm. Call outermostForm.getBody() to
+	 * get the container occupying the body of the form and use that as the parent for the controls.
+	 */
+	protected abstract void createFormContents();
+	
+	/**
+	 * @return the number of columns in the grid for the outermostForm.
+	 */
+	protected abstract int getNumColumnsInForm();
+
+	@Override
+	public void createPartControl(Composite parent) {
+
+		createTopComposite(parent);
+
+		createForm();
+		createViewPieces();
+		createFormContents();
+		createErrorLabel();
+		addCustomFieldsExpansionListener();
+
+		restoreCustomFieldStates();
+
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		plugin.getPreferenceStore().addPropertyChangeListener(this);
+	}
+
+	protected void createTopComposite(Composite parent) {
+		outermostComposite = new Composite(parent, SWT.NONE);
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.marginWidth = 0;
+		gridLayout.marginHeight = 0;
+		outermostComposite.setLayout(gridLayout);
+	}
+
+	protected void createForm() {
+		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = getNumColumnsInForm();
+		gridLayout.marginWidth = 6;
+		gridLayout.verticalSpacing = 1;
+		// The horizontalSpacing needs to be wide enough to show the error image
+		// in ControlDecoration.
+		gridLayout.horizontalSpacing = 6;
+		gridLayout.marginHeight = 1;
+		outermostForm = getFormToolkit().createScrolledForm(outermostComposite);
+		outermostForm.getBody().setLayout(gridLayout);
+		updateOutermostFormTitle( null );
+
+		GridData formGridData = new GridData();
+		formGridData.grabExcessHorizontalSpace = true;
+		formGridData.horizontalAlignment = GridData.FILL;
+		formGridData.grabExcessVerticalSpace = true;
+		formGridData.verticalAlignment = GridData.FILL;
+		outermostForm.setLayoutData(formGridData);
+	}
+
+	/**
+	 * Check that the outermostForm is initialized and throw an exception if
+	 * not.
+	 * 
+	 * @throws org.eclipse.jface.util.AssertionFailedException
+	 *             if outermostForm is null.
+	 */
+	protected void checkOutermostFormInitialized() {
+		Assert.isNotNull(outermostForm, "Form was not yet initialized."); //$NON-NLS-1$
+	}
+
+	protected void createViewPieces() {
+		checkOutermostFormInitialized();
+		orderTicketViewPieces = new OrderTicketViewPieces(outermostForm
+				.getBody(), getFormToolkit());
+		customFieldsViewPieces = new CustomFieldsViewPieces(outermostForm
+				.getBody(), getFormToolkit());
+	}
+	
+	/**
+	 * Create the market data book section. 
+	 * <p>
+	 * This method is not called automatically and derived classes should invoke it.
+	 * </p> 
+	 */
+	protected void createBookSection() {
+		bookSection = getFormToolkit().createSection(outermostForm
+				.getBody(),
+				Section.TITLE_BAR);
+		bookSection.setText("Market data");
+		bookSection.setExpanded(true);
+
+		GridLayout gridLayout = new GridLayout();
+		GridData layoutData = new GridData();
+		layoutData.grabExcessHorizontalSpace = true;
+		layoutData.grabExcessVerticalSpace = true;
+		layoutData.verticalAlignment = SWT.FILL;
+		layoutData.horizontalAlignment = SWT.FILL;
+		layoutData.horizontalSpan = getNumColumnsInForm();
+		gridLayout.marginWidth = 0;
+		gridLayout.marginHeight = 0;
+		gridLayout.numColumns = 2;
+
+		bookSection.setLayout(gridLayout);
+		bookSection.setLayoutData(layoutData);
+
+		bookComposite = new BookComposite(bookSection, SWT.NONE,
+				getFormToolkit());
+		bookSection.setClient(bookComposite);
+	}
+	
+	protected void addCustomFieldsExpansionListener()
+	{
+		Assert.isNotNull(customFieldsViewPieces, "Custom fields view was null." );
+		customFieldsViewPieces.getCustomFieldsExpandableComposite()
+		.addExpansionListener(new ExpansionAdapter() {
+			@Override
+			public void expansionStateChanging(ExpansionEvent e) {
+				outermostForm.reflow(true);
+			}
+
+			public void expansionStateChanged(ExpansionEvent e) {
+				outermostForm.reflow(true);
+			}
+		});
+
+	}
+
+	@Override
+	public void dispose() {
+		PhotonPlugin.getDefault().getPreferenceStore()
+				.removePropertyChangeListener(this);
+	}
+
+	@Override
+	public void setFocus() {
+	}
+
+
+
+	/**
+	 * This method initializes formToolkit
+	 * 
+	 * @return org.eclipse.ui.forms.widgets.FormToolkit
+	 */
+	protected FormToolkit getFormToolkit() {
+		if (formToolkit == null) {
+			formToolkit = new FormToolkit(Display.getCurrent());
+		}
+		return formToolkit;
+	}
+
+	protected void createSendAndCancelButtons() {
+		checkOutermostFormInitialized();
+		Composite okCancelComposite = getFormToolkit().createComposite(
+				outermostForm.getBody());
+		okCancelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		gd.horizontalSpan = getNumColumnsInForm();
+		okCancelComposite.setLayoutData(gd);
+		sendButton = getFormToolkit().createButton(okCancelComposite, "Send",
+				SWT.PUSH);
+		sendButton.setEnabled(false);
+		cancelButton = getFormToolkit().createButton(okCancelComposite,
+				"Cancel", SWT.PUSH);
+	}
+
+	protected void createErrorLabel() {
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.verticalAlignment = GridData.END;
+
+		errorMessageLabel = getFormToolkit()
+				.createLabel(outermostComposite, "");
+		errorMessageLabel.setLayoutData(gridData);
+		outermostComposite.setBackground(errorMessageLabel.getBackground());
+	}
+
+	public void propertyChange(PropertyChangeEvent event) {
+		String property = event.getProperty();
+		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(property)) {
+			String valueString = event.getNewValue().toString();
+			customFieldsViewPieces.updateCustomFields(valueString);
+		}
+	}
+
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+
+		this.viewStateMemento = memento;
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+
+		customFieldsViewPieces.saveState(memento,
+				CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX);
+	}
+
+	protected void restoreCustomFieldStates() {
+		if (viewStateMemento == null)
+			return;
+
+		if (customFieldsViewPieces != null) {
+			customFieldsViewPieces.restoreCustomFieldsTableItemCheckedState(
+					viewStateMemento, CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX);
+		}
+	}
+	
+	public void clear() {
+		updateOutermostFormTitle(null);
+		orderTicketViewPieces.getSymbolText().setEnabled(true);
+		sendButton.setEnabled(false);
+	}
+
+	public void updateMessage(Message aMessage) throws MarketceteraException {
+		customFieldsViewPieces.addCustomFields(aMessage);
+	}
+
+	public void clearMessage() {
+		errorMessageLabel.setText("");
+	}
+
+	public void showMessage(Message order) {
+		orderTicketViewPieces.getSymbolText().setEnabled(
+				FIXMessageUtil.isOrderSingle(order));
+		updateOutermostFormTitle(order);
+	}
+
+	public BookComposite getBookComposite() {
+		return bookComposite;
+	}
+
+	public Button getCancelButton() {
+		return cancelButton;
+	}
+
+	public Table getCustomFieldsTable() {
+		return customFieldsViewPieces.getCustomFieldsTable();
+	}
+
+	public Label getErrorMessageLabel() {
+		return errorMessageLabel;
+	}
+
+	public Text getPriceText() {
+		return orderTicketViewPieces.getPriceText();
+	}
+
+	public Text getQuantityText() {
+		return orderTicketViewPieces.getQuantityText();
+	}
+
+	public Button getSendButton() {
+		return sendButton;
+	}
+
+	public CCombo getSideCCombo() {
+		return orderTicketViewPieces.getSideCCombo();
+	}
+
+	public Text getSymbolText() {
+		return orderTicketViewPieces.getSymbolText();
+	}
+
+	public CheckboxTableViewer getTableViewer() {
+		return customFieldsViewPieces.getTableViewer();
+	}
+
+	public CCombo getTifCCombo() {
+		return orderTicketViewPieces.getTifCCombo();
+	}
+
+	public void showErrorMessage(String errorMessage, int severity) {
+		orderTicketViewPieces.showErrorMessage(errorMessage, severity,
+				errorMessageLabel, sendButton);
+	}
+
+	public void clearErrors() {
+		showErrorMessage("", 0);
+		orderTicketViewPieces.clearErrors();
+	}
+
+	public void showErrorForControl(Control aControl, int severity,
+			String message) {
+		orderTicketViewPieces.showErrorForControl(aControl, severity, message);
+	}
+
+}

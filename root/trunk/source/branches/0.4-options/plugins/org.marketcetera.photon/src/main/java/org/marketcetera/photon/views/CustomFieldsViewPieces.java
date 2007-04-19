@@ -55,9 +55,9 @@ public class CustomFieldsViewPieces {
 	 * This method initializes customFieldsExpandableComposite
 	 * 
 	 */
-	public void createCustomFieldsExpandableComposite() {
+	public void createCustomFieldsExpandableComposite( int gridHorizontalSpan ) {
 		GridData gridData3 = new GridData();
-		gridData3.horizontalSpan = 3;
+		gridData3.horizontalSpan = gridHorizontalSpan;
 		gridData3.verticalAlignment = GridData.BEGINNING;
 		gridData3.grabExcessHorizontalSpace = true;
 		gridData3.horizontalAlignment = GridData.FILL;
