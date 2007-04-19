@@ -49,7 +49,7 @@ public class OrderTicketViewPieces {
 
 	private Image warningImage;
 
-	private List<Control> inputControls = new LinkedList<Control>();
+	private List<Control> decoratedInputControls = new LinkedList<Control>();
 
 	public OrderTicketViewPieces(Composite defaultParent,
 			FormToolkit formToolkit) {
@@ -72,35 +72,27 @@ public class OrderTicketViewPieces {
 		return formToolkit;
 	}
 
-	public void addInputControl(Control control) {
+	public void addInputControlErrorDecoration(Control control) {
 		ControlDecoration cd = new ControlDecoration(control, SWT.LEFT
 				| SWT.BOTTOM);
 		cd.setMarginWidth(2);
 		cd.setImage(errorImage);
 		cd.hide();
 		control.setData(CONTROL_DECORATOR_KEY, cd);
-		inputControls.add(control);
+		decoratedInputControls.add(control);
 	}
 
-	/**
-	 * This method initializes sideBorderComposite
-	 * 
-	 */
-	public void createSideBorderComposite() {
+	public void createSideInput() {
 
 		sideCCombo = new CCombo(defaultParent, SWT.BORDER);
 		sideCCombo.add(SideImage.BUY.getImage());
 		sideCCombo.add(SideImage.SELL.getImage());
 		sideCCombo.add(SideImage.SELL_SHORT.getImage());
 		sideCCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
-		addInputControl(sideCCombo);
+		addInputControlErrorDecoration(sideCCombo);
 	}
 
-	/**
-	 * This method initializes quantityBorderComposite
-	 * 
-	 */
-	public void createQuantityBorderComposite() {
+	public void createQuantityInput() {
 		quantityText = getFormToolkit().createText(defaultParent, null,
 				SWT.SINGLE | SWT.BORDER);
 
@@ -118,14 +110,10 @@ public class OrderTicketViewPieces {
 				((Text) e.widget).selectAll();
 			}
 		});
-		addInputControl(quantityText);
+		addInputControlErrorDecoration(quantityText);
 	}
 
-	/**
-	 * This method initializes symbolBorderComposite
-	 * 
-	 */
-	public void createSymbolBorderComposite() {
+	public void createSymbolInput() {
 		GridData symbolTextGridData = new GridData();
 		symbolTextGridData.horizontalAlignment = GridData.FILL;
 		symbolTextGridData.grabExcessHorizontalSpace = true;
@@ -134,14 +122,10 @@ public class OrderTicketViewPieces {
 		symbolText = getFormToolkit().createText(defaultParent, null,
 				SWT.SINGLE | SWT.BORDER);
 		symbolText.setLayoutData(symbolTextGridData);
-		addInputControl(symbolText);
+		addInputControlErrorDecoration(symbolText);
 	}
 
-	/**
-	 * This method initializes priceBorderComposite
-	 * 
-	 */
-	public void createPriceBorderComposite() {
+	public void createPriceInput() {
 		priceText = getFormToolkit().createText(defaultParent, null,
 				SWT.SINGLE | SWT.BORDER);
 
@@ -158,14 +142,10 @@ public class OrderTicketViewPieces {
 				((Text) e.widget).selectAll();
 			}
 		});
-		addInputControl(priceText);
+		addInputControlErrorDecoration(priceText);
 	}
 
-	/**
-	 * This method initializes tifBorderComposite
-	 * 
-	 */
-	public void createTifBorderComposite() {
+	public void createTifInput() {
 
 		tifCCombo = new CCombo(defaultParent, SWT.BORDER);
 		tifCCombo.add(TimeInForceImage.DAY.getImage());
@@ -175,7 +155,7 @@ public class OrderTicketViewPieces {
 		tifCCombo.add(TimeInForceImage.GTC.getImage());
 		tifCCombo.add(TimeInForceImage.IOC.getImage());
 
-		addInputControl(tifCCombo);
+		addInputControlErrorDecoration(tifCCombo);
 	}
 
 	public CCombo getSideCCombo() {
@@ -217,7 +197,7 @@ public class OrderTicketViewPieces {
 	}
 
 	public void clearErrors() {
-		for (Control aControl : inputControls) {
+		for (Control aControl : decoratedInputControls) {
 			Object cd;
 			if (((cd = aControl.getData(CONTROL_DECORATOR_KEY)) != null)
 					&& cd instanceof ControlDecoration) {

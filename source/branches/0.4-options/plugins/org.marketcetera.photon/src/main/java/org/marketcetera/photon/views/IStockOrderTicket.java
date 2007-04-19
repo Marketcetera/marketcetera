@@ -3,14 +3,10 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.ui.BookComposite;
-
-import quickfix.Message;
 
 public interface IStockOrderTicket extends IOrderTicket {
 
