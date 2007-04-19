@@ -75,6 +75,8 @@ public class OrderTicketControllerHelper {
 	private DataBindingContext dataBindingContext;
 
 	private IFIXControllerBinding fixControllerBinding;
+	
+	private BindingHelper bindingHelper;
 
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this(ticket, null);
@@ -90,6 +92,8 @@ public class OrderTicketControllerHelper {
 
 	private void init() {
 
+		bindingHelper = new BindingHelper();
+		
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
@@ -244,6 +248,7 @@ public class OrderTicketControllerHelper {
 		targetMessage = message;
 		try {
 			Realm realm = Realm.getDefault();
+			// todo: Refactor to using BindingHelper for UpdateValueStrategy creation.
 			dataBindingContext.bindValue(SWTObservables.observeText(ticket
 					.getSideCCombo()), FIXObservables.observeValue(realm,
 					message, Side.FIELD, dictionary), new UpdateValueStrategy()
@@ -350,30 +355,15 @@ public class OrderTicketControllerHelper {
 	private void initSideConverterBuilder() {
 		sideConverterBuilder = new EnumStringConverterBuilder<Character>(
 				Character.class);
-		sideConverterBuilder.addMapping(Side.BUY, SideImage.BUY.getImage());
-		sideConverterBuilder.addMapping(Side.SELL, SideImage.SELL.getImage());
-		sideConverterBuilder.addMapping(Side.SELL_SHORT, SideImage.SELL_SHORT
-				.getImage());
-		sideConverterBuilder.addMapping(Side.SELL_SHORT_EXEMPT,
-				SideImage.SELL_SHORT_EXEMPT.getImage());
+		
+		bindingHelper.initCharToImageConverterBuilder(sideConverterBuilder, SideImage.values());
 	}
 
 	private void initTifConverterBuilder() {
 		tifConverterBuilder = new EnumStringConverterBuilder<Character>(
 				Character.class);
 
-		tifConverterBuilder.addMapping(TimeInForce.DAY, TimeInForceImage.DAY
-				.getImage());
-		tifConverterBuilder.addMapping(TimeInForce.AT_THE_OPENING,
-				TimeInForceImage.OPG.getImage());
-		tifConverterBuilder.addMapping(TimeInForce.AT_THE_CLOSE,
-				TimeInForceImage.CLO.getImage());
-		tifConverterBuilder.addMapping(TimeInForce.FILL_OR_KILL,
-				TimeInForceImage.FOK.getImage());
-		tifConverterBuilder.addMapping(TimeInForce.GOOD_TILL_CANCEL,
-				TimeInForceImage.GTC.getImage());
-		tifConverterBuilder.addMapping(TimeInForce.IMMEDIATE_OR_CANCEL,
-				TimeInForceImage.IOC.getImage());
+		bindingHelper.initCharToImageConverterBuilder(tifConverterBuilder, TimeInForceImage.values());
 	}
 
 	private void initPriceConverterBuilder() {
