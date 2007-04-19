@@ -29,14 +29,14 @@ class Journal < ActiveRecord::Base
       params << acct
     end
 
-    cashflow = Journal.find_by_sql(['SELECT sum(p.quantity) as cashflow, t.tradeable_id, s.root as symbol ' +
-              'FROM trades AS t, postings p, journals j, m_symbols s, sub_accounts sa, equities e ' +
+    cashflow = Journal.find_by_sql(['SELECT sum(p.quantity) as cashflow, t.tradeable_id, s.root as symbol, a.nickname as account ' +
+              'FROM trades AS t, postings p, journals j, m_symbols s, sub_accounts sa, equities e, accounts a ' +
               'WHERE t.journal_id = j.id AND p.journal_id = j.id AND t.tradeable_id = e.id AND e.m_symbol_id = s.id AND '+
-              'p.sub_account_id = sa.id AND sa.sub_account_type_id = ? AND '+
+              't.account_id = a.id AND p.sub_account_id = sa.id AND sa.sub_account_type_id = ? AND '+
               'j.post_date >= ? AND j.post_date <= ? '+acctQuery + 
-              ' GROUP BY t.tradeable_id '+ 
+              ' GROUP BY t.tradeable_id, t.account_id '+ 
               ' HAVING cashflow != 0', params].flatten)
-     cashflow.each { |cf| { :cashflow => cf.cashflow, :tradeable_id => cf.tradeable_id, :symbol => cf.symbol} }
+     cashflow.each { |cf| { :cashflow => cf.cashflow, :tradeable_id => cf.tradeable_id, :symbol => cf.symbol, :account => cf.account} }
   end
   
   

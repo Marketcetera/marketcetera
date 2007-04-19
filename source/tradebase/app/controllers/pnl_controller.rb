@@ -1,7 +1,7 @@
 class PnlController < ApplicationController
   auto_complete_for :m_symbol, :root, {}
   auto_complete_for :account, :nickname, {}
-  include ApplicationHelper, PositionsHelper, PnlHelper
+  include ApplicationHelper
   
   def index
     # display the index page   
@@ -24,4 +24,19 @@ class PnlController < ApplicationController
     
     render :template => 'pnl/pnl_output'
   end
+
+  def by_date
+    @from_date = get_date_from_params(params, :date, "from", "from_date")
+    @to_date = get_date_from_params(params, :date, "to", "to_date")
+    if(@to_date.blank?) 
+      @to_date = Date.today 
+    end
+    
+    @cashflows = Journal.get_cashflows_from_to_in_acct(nil, @from_date, @to_date)
+    
+    @query_type = "Date"
+    
+    render :template => 'pnl/pnl_output'
+  end
+
 end
