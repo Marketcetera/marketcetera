@@ -8,19 +8,7 @@
                 <p>List all marks for a particular symbol for a range of dates.</p>
                 <label for="m_symbol_root">Symbol</label>
                 <%= text_field_with_auto_complete :m_symbol, :root  %>
-    
-                <div class="form_left">
-                    <label for="from_date">From</label>
-                    <div class="date">
-                        <%= date_select 'date', 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
-                    </div>
-                </div>
-                <div class="form_right">
-                    <label for="to_date">To</label>
-                    <div class="date">
-                        <%= date_select 'date', 'to', :order => [:year, :month, :day] %>
-                    </div>
-                </div>
+                <%= render :partial => 'shared/from_to_date_fields' %>
             </fieldset>
             <div>
                 <%= submit_tag 'Search by Symbol', :class => "submit floatright"  %>

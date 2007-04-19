@@ -18,5 +18,26 @@ class Journal < ActiveRecord::Base
     end
   end
   
+  # returns an array of cashflows for the specified account 
+  # Returns an arra of [cashflow, tradeable_id] pairs
+  # Incoming acct is an Account object
+  def Journal.get_cashflows_from_to_in_acct(acct, from_date, to_date)
+    params = [SubAccountType::CASH, from_date, to_date]
+    acctQuery = ''
+    if(!acct.blank?)
+      acctQuery = 'AND t.account_id = ?'
+      params << acct
+    end
+
+    cashflow = Journal.find_by_sql(['SELECT sum(p.quantity) as cashflow, t.tradeable_id, s.root as symbol ' +
+              'FROM trades AS t, postings p, journals j, m_symbols s, sub_accounts sa, equities e ' +
+              'WHERE t.journal_id = j.id AND p.journal_id = j.id AND t.tradeable_id = e.id AND e.m_symbol_id = s.id AND '+
+              'p.sub_account_id = sa.id AND sa.sub_account_type_id = ? AND '+
+              'j.post_date >= ? AND j.post_date <= ? '+acctQuery + 
+              ' GROUP BY t.tradeable_id '+ 
+              ' HAVING cashflow != 0', params].flatten)
+     cashflow.each { |cf| { :cashflow => cf.cashflow, :tradeable_id => cf.tradeable_id, :symbol => cf.symbol} }
+  end
+  
   
 end
