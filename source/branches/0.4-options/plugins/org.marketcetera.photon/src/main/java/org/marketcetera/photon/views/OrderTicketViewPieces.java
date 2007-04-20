@@ -189,11 +189,16 @@ public class OrderTicketViewPieces {
 		} else {
 			errorMessageLabel.setText(errorMessage);
 		}
-		if (severity == IStatus.ERROR) {
-			sendButton.setEnabled(false);
-		} else {
-			sendButton.setEnabled(true);
-		}
+
+		// todo: Remove the below code if it remains unused.
+		// Currently the OrderTicketControllerHelper is managing sendButton
+		// state.
+		//
+		// if (severity == IStatus.ERROR) {
+		// sendButton.setEnabled(false);
+		// } else {
+		// sendButton.setEnabled(true);
+		// }
 	}
 
 	public void clearErrors() {

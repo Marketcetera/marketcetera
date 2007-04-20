@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -88,6 +89,10 @@ public class OrderTicketControllerHelper {
 
 	private Color colorRed;
 
+	private HashSet<Control> controlsRequiringUserInput;
+
+	private HashMap<Control, IStatus> inputControlErrorStatus;
+
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this(ticket, null);
 	}
@@ -166,6 +171,7 @@ public class OrderTicketControllerHelper {
 		initTifConverterBuilder();
 		initPriceConverterBuilder();
 
+		resetTrackers();
 		addInputControlSendOrderListeners();
 
 		// To force the initial state to appear the same as the Canceled state,
@@ -270,11 +276,24 @@ public class OrderTicketControllerHelper {
 		});
 	}
 
+	private void resetTrackers() {
+		controlsRequiringUserInput = new HashSet<Control>();
+		inputControlErrorStatus = new HashMap<Control, IStatus>();
+	}
+
+	public void addControlRequiringUserInput(Control targetControl) {
+		if (targetControl != null) {
+			controlsRequiringUserInput.add(targetControl);
+		}
+	}
+
 	public void clear() {
 		unlisten();
 		unbind();
 		ticket.clear();
+		resetTrackers();
 		bind(newNewOrderSingle());
+		updateSendButtonState();
 	}
 
 	private void unbind() {
@@ -292,27 +311,30 @@ public class OrderTicketControllerHelper {
 			// todo: Refactor to use BindingHelper for UpdateValueStrategy
 			// creation.
 			{
+				Control whichControl = ticket.getSideCCombo();
 				IToggledValidator validator = (IToggledValidator) sideConverterBuilder
 						.newTargetAfterGetValidator();
 				validator.setEnabled(false);
-				dataBindingContext.bindValue(SWTObservables.observeText(ticket
-						.getSideCCombo()), FIXObservables.observeValue(realm,
-						message, Side.FIELD, dictionary),
+				dataBindingContext.bindValue(SWTObservables
+						.observeText(whichControl), FIXObservables
+						.observeValue(realm, message, Side.FIELD, dictionary),
 						new UpdateValueStrategy().setAfterGetValidator(
 								validator).setConverter(
 								sideConverterBuilder.newToModelConverter()),
 						new UpdateValueStrategy()
 								.setConverter(sideConverterBuilder
 										.newToTargetConverter()));
-				addInitialStateFocusListener(ticket.getSideCCombo(), validator);
+				addControlStateListeners(whichControl, validator);
+				addControlRequiringUserInput(whichControl);
 			}
 			{
+				Control whichControl = ticket.getQuantityText();
 				IToggledValidator validator = new StringRequiredValidator();
 				validator.setEnabled(false);
 				dataBindingContext
 						.bindValue(
-								SWTObservables.observeText(ticket
-										.getQuantityText(), SWT.Modify),
+								SWTObservables.observeText(whichControl,
+										SWT.Modify),
 								FIXObservables.observeValue(realm, message,
 										OrderQty.FIELD, dictionary),
 								new UpdateValueStrategy().setAfterGetValidator(
@@ -320,27 +342,29 @@ public class OrderTicketControllerHelper {
 										new StringToBigDecimalConverter()),
 								new UpdateValueStrategy()
 										.setConverter(new BigDecimalToStringConverter()));
-				addInitialStateFocusListener(ticket.getQuantityText(),
-						validator);
+				addControlStateListeners(whichControl, validator);
+				addControlRequiringUserInput(whichControl);
 			}
 			{
+				Control whichControl = ticket.getSymbolText();
 				IToggledValidator validator = new StringRequiredValidator();
 				validator.setEnabled(false);
-				dataBindingContext.bindValue(SWTObservables.observeText(ticket
-						.getSymbolText(), SWT.Modify),
-						FIXObservables.observeValue(realm, message,
-								Symbol.FIELD, dictionary),
+				dataBindingContext.bindValue(SWTObservables.observeText(
+						whichControl, SWT.Modify), FIXObservables.observeValue(
+						realm, message, Symbol.FIELD, dictionary),
 						new UpdateValueStrategy()
 								.setAfterGetValidator(validator),
 						new UpdateValueStrategy());
-				addInitialStateFocusListener(ticket.getSymbolText(), validator);
+				addControlStateListeners(whichControl, validator);
+				addControlRequiringUserInput(whichControl);
 			}
 			{
+				Control whichControl = ticket.getPriceText();
 				IToggledValidator validator = (IToggledValidator) priceConverterBuilder
 						.newTargetAfterGetValidator();
 				validator.setEnabled(false);
-				dataBindingContext.bindValue(SWTObservables.observeText(ticket
-						.getPriceText(), SWT.Modify), FIXObservables
+				dataBindingContext.bindValue(SWTObservables.observeText(
+						whichControl, SWT.Modify), FIXObservables
 						.observePriceValue(realm, message, Price.FIELD,
 								dictionary), new UpdateValueStrategy()
 						.setAfterGetValidator(validator).setConverter(
@@ -351,9 +375,11 @@ public class OrderTicketControllerHelper {
 								.setConverter(
 										priceConverterBuilder
 												.newToTargetConverter()));
-				addInitialStateFocusListener(ticket.getPriceText(), validator);
+				addControlStateListeners(whichControl, validator);
+				addControlRequiringUserInput(whichControl);
 			}
 			{
+				Control whichControl = ticket.getTifCCombo();
 				IToggledValidator afterGetValidator = (IToggledValidator) tifConverterBuilder
 						.newTargetAfterGetValidator();
 				afterGetValidator.setEnabled(false);
@@ -361,9 +387,10 @@ public class OrderTicketControllerHelper {
 						dictionary, TimeInForce.FIELD,
 						"Not a valid value for TimeInForce", PhotonPlugin.ID);
 				afterConvertValidator.setEnabled(false);
-				dataBindingContext.bindValue(SWTObservables.observeText(ticket
-						.getTifCCombo()), FIXObservables.observeValue(realm,
-						message, TimeInForce.FIELD, dictionary),
+				dataBindingContext.bindValue(SWTObservables
+						.observeText(whichControl), FIXObservables
+						.observeValue(realm, message, TimeInForce.FIELD,
+								dictionary),
 						new UpdateValueStrategy().setAfterGetValidator(
 								afterGetValidator).setAfterConvertValidator(
 								afterConvertValidator).setConverter(
@@ -371,10 +398,9 @@ public class OrderTicketControllerHelper {
 						new UpdateValueStrategy()
 								.setConverter(tifConverterBuilder
 										.newToTargetConverter()));
-				addInitialStateFocusListener(ticket.getPriceText(),
-						afterGetValidator);
-				addInitialStateFocusListener(ticket.getPriceText(),
-						afterConvertValidator);
+				addControlStateListeners(whichControl, afterGetValidator);
+				addControlStateListeners(whichControl, afterConvertValidator);
+				addControlRequiringUserInput(whichControl);
 			}
 			dataBindingContext.bindValue(SWTObservables.observeText(ticket
 					.getAccountText(), SWT.Modify), FIXObservables
@@ -393,8 +419,9 @@ public class OrderTicketControllerHelper {
 		}
 	}
 
-	private void addInitialStateFocusListener(Control control,
+	private void addControlStateListeners(Control control,
 			final IToggledValidator validator) {
+
 		control.addFocusListener(new FocusAdapter() {
 			private boolean initialState = true;
 
@@ -404,14 +431,21 @@ public class OrderTicketControllerHelper {
 					initialState = false;
 					validator.setEnabled(true);
 				}
+				// todo: Removing the control from the set of controls requiring
+				// user input should occur when the user actually makes a
+				// selection or types something.
+				if (!controlsRequiringUserInput.isEmpty()
+						&& e.widget instanceof Control) {
+					Control aControl = (Control) e.widget;
+					controlsRequiringUserInput.remove(aControl);
+				}
+				updateSendButtonState();
 			}
-
 		});
 	}
 
 	private IMapChangeListener createMapChangeListener() {
 		return new IMapChangeListener() {
-			private HashMap<Control, IStatus> inputControlErrorStatus = new HashMap<Control, IStatus>();
 
 			public void handleMapChange(MapChangeEvent event) {
 				if (ticket.getErrorMessageLabel().isDisposed()) {
@@ -442,11 +476,26 @@ public class OrderTicketControllerHelper {
 						}
 					}
 				}
-				if (inputControlErrorStatus.isEmpty()) {
-					ticket.clearErrors();
-				}
+
+				conditionallyClearErrors();
+				updateSendButtonState();
 			}
 		};
+	}
+
+	private void conditionallyClearErrors() {
+		if (inputControlErrorStatus.isEmpty()) {
+			ticket.clearErrors();
+		}
+	}
+
+	private void updateSendButtonState() {
+		if (!controlsRequiringUserInput.isEmpty()) {
+			ticket.getSendButton().setEnabled(false);
+		} else {
+			boolean enabled = inputControlErrorStatus.isEmpty();
+			ticket.getSendButton().setEnabled(enabled);
+		}
 	}
 
 	private void initSideConverterBuilder() {
