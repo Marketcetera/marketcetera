@@ -3,9 +3,13 @@ package org.marketcetera.photon.views;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
@@ -61,113 +65,106 @@ public class UnderlierInfo {
 	}
 	
 	private void createFirstRowComposite(Composite parent)
-	{	
+	{			
 		Composite firstRow = getFormToolkit().createComposite(parent);
-		GridLayout gridLayout = createBasicGridLayout(12);
-		firstRow.setLayout(gridLayout);
 		firstRow.setLayoutData(createHorizontallySpannedGridData());
-
+		firstRow.setLayout(new FormLayout());
+		
 		// Controls in first row of the main info section
 		instrumentLabel = getFormToolkit().createLabel(firstRow, null);
-		instrumentLabel.setLayoutData(createFirstRowLabelGridData());
+		instrumentLabel.setLayoutData(createLeftMostControlFormData());
 
 		lastPriceUpDownArrowLabel = getFormToolkit().createLabel(
 				firstRow, null);
-		lastPriceUpDownArrowLabel.setLayoutData(createNarrowGridData());
+		lastPriceUpDownArrowLabel.setLayoutData(createFormData(instrumentLabel));
 
 		lastPriceLabel = getFormToolkit().createLabel(firstRow, null);
 		lastPriceLabel.setForeground(SYSTEM_COLOR_RED);
-		lastPriceLabel.setLayoutData(createFirstRowLabelGridData());
+		lastPriceLabel.setLayoutData(createNarrowFormData(lastPriceUpDownArrowLabel));
 
 		lastPriceChangeLabel = getFormToolkit().createLabel(firstRow, null);		
-		lastPriceChangeLabel.setLayoutData(createFirstRowLabelGridData());
+		lastPriceChangeLabel.setLayoutData(createFormData(lastPriceLabel));
 
 		bidPriceLabel = getFormToolkit().createLabel(firstRow, null);
-		bidPriceLabel.setLayoutData(createNarrowGridData());
+		bidPriceLabel.setLayoutData(createFormData(lastPriceChangeLabel));
 		
 		Label bidAskPriceSeparatorLabel = getFormToolkit().createLabel(firstRow, "/");
 		bidAskPriceSeparatorLabel.setForeground(SYSTEM_COLOR_BLUE);
-		bidAskPriceSeparatorLabel.setLayoutData(createNarrowGridData());
+		bidAskPriceSeparatorLabel.setLayoutData(createNarrowFormData(bidPriceLabel));
 
 
 		askPriceLabel = getFormToolkit().createLabel(firstRow, null);
-		askPriceLabel.setLayoutData(createFirstRowLabelGridData());
+		askPriceLabel.setLayoutData(createNarrowFormData(bidAskPriceSeparatorLabel));
 
 		bidSizeLabel = getFormToolkit().createLabel(firstRow, null);
-		bidSizeLabel.setLayoutData(createNarrowGridData());
+		bidSizeLabel.setLayoutData(createFormData(askPriceLabel));
 
 		Label bidAskSizeSeparatorLabel = getFormToolkit().createLabel(firstRow, "x");
 		bidAskSizeSeparatorLabel.setForeground(SYSTEM_COLOR_BLUE);
-		bidAskSizeSeparatorLabel.setLayoutData(createNarrowGridData());
+		bidAskSizeSeparatorLabel.setLayoutData(createNarrowFormData(bidSizeLabel));
 
 		askSizeLabel = getFormToolkit().createLabel(firstRow, null);
-		askSizeLabel.setLayoutData(createFirstRowLabelGridData());
+		askSizeLabel.setLayoutData(createNarrowFormData(bidAskSizeSeparatorLabel));
 
 		exDivDateAmountTextLabel = getFormToolkit().createLabel(firstRow, "Divs");
 		exDivDateAmountTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		exDivDateAmountTextLabel.setLayoutData(createNarrowGridData());
+		exDivDateAmountTextLabel.setLayoutData(createFormData(askSizeLabel));
 		
 
 		exDivDateAmount = new List(firstRow, SWT.V_SCROLL | SWT.H_SCROLL);
-		GridData gridData = createFirstRowLabelGridData();		
-		gridData.heightHint = exDivDateAmountTextLabel.getSize().y - 2;
-		gridData.widthHint = 75;
-		exDivDateAmount.setLayoutData(gridData);
-		
+		FormData narrowForm = createNarrowFormData(exDivDateAmountTextLabel);
+		narrowForm.height = exDivDateAmountTextLabel.getSize().y - 2;		
+		exDivDateAmount.setLayoutData(narrowForm);		
 	}
 	
 	private void createSecondRowComposite(Composite parent)
 	{	
 		Composite secondRow = getFormToolkit().createComposite(parent);
-		GridLayout gridLayout = createBasicGridLayout(12);
-		secondRow.setLayout(gridLayout);
 		secondRow.setLayoutData(createHorizontallySpannedGridData());
+		secondRow.setLayout(new FormLayout());
 
-
-		Label timeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "AT");
+		Label timeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "AT ");
 		timeIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		timeIndicatorTextLabel.setLayoutData(createNarrowGridData());
+		timeIndicatorTextLabel.setLayoutData(createLeftMostControlFormData());
 
 		lastUpdatedTimeLabel = getFormToolkit().createLabel(
 				secondRow, null);
-		lastUpdatedTimeLabel.setLayoutData(createSecondRowLabelGridData());
+		lastUpdatedTimeLabel.setLayoutData(createNarrowFormData(timeIndicatorTextLabel));
 		
-		Label volumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Vol");
+		Label volumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Vol ");
 		volumeIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		volumeIndicatorTextLabel.setLayoutData(createNarrowGridData());
+		volumeIndicatorTextLabel.setLayoutData(createFormData(lastUpdatedTimeLabel));
 
 		volumeLabel = getFormToolkit().createLabel(secondRow, null);
-		GridData extraWideData = createSecondRowLabelGridData();
-		extraWideData.widthHint = 55;
-		volumeLabel.setLayoutData(extraWideData);
+		volumeLabel.setLayoutData(createNarrowFormData(volumeIndicatorTextLabel));
 		
-		Label openPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Op");
+		Label openPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Op ");
 		openPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		openPriceIndicatorTextLabel.setLayoutData(createNarrowGridData());
+		openPriceIndicatorTextLabel.setLayoutData(createFormData(volumeLabel));
 
 		openPriceLabel = getFormToolkit().createLabel(secondRow, null);
-		openPriceLabel.setLayoutData(createSecondRowLabelGridData());
+		openPriceLabel.setLayoutData(createNarrowFormData(openPriceIndicatorTextLabel));
 
-		Label highPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Hi");
+		Label highPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Hi ");
 		highPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		highPriceIndicatorTextLabel.setLayoutData(createNarrowGridData());
+		highPriceIndicatorTextLabel.setLayoutData(createFormData(openPriceLabel));
 
 		highPriceLabel = getFormToolkit().createLabel(secondRow, null);
-		highPriceLabel.setLayoutData(createSecondRowLabelGridData());
+		highPriceLabel.setLayoutData(createNarrowFormData(highPriceIndicatorTextLabel));
 
-		Label lowPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Lo");
+		Label lowPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Lo ");
 		lowPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		lowPriceIndicatorTextLabel.setLayoutData(createNarrowGridData());
+		lowPriceIndicatorTextLabel.setLayoutData(createFormData(highPriceLabel));
 
 		lowPriceLabel = getFormToolkit().createLabel(secondRow, null);
-		lowPriceLabel.setLayoutData(createSecondRowLabelGridData());
+		lowPriceLabel.setLayoutData(createNarrowFormData(lowPriceIndicatorTextLabel));
 
-		Label tradingVolumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Trd");
+		Label tradingVolumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Trd ");
 		tradingVolumeIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		tradingVolumeIndicatorTextLabel.setLayoutData(createNarrowGridData());
+		tradingVolumeIndicatorTextLabel.setLayoutData(createFormData(lowPriceLabel));
 
 		tradingVolumeLabel = getFormToolkit().createLabel(secondRow, null);
-		tradingVolumeLabel.setLayoutData(createSecondRowLabelGridData());
+		tradingVolumeLabel.setLayoutData(createNarrowFormData(tradingVolumeIndicatorTextLabel));
 
 	}
 
@@ -195,129 +192,80 @@ public class UnderlierInfo {
 		return formGridData;
 	}
 
-	private GridData createFirstRowLabelGridData()
+	private FormData createFormData(Control leftNeighbor)
 	{
-		GridData formGridData = new GridData();
-		formGridData.minimumWidth = 35;
-		formGridData.widthHint = 35;
-		formGridData.horizontalAlignment = SWT.FILL;
-		formGridData.grabExcessVerticalSpace = true;
-		formGridData.verticalAlignment = SWT.FILL;
-		return formGridData;
+		FormData formData = new FormData();
+		formData.left = new FormAttachment(leftNeighbor, 12);
+		formData.top = new FormAttachment(0);
+		return formData;		
 	}
 
-	private GridData createSecondRowLabelGridData()
+	private FormData createNarrowFormData(Control leftNeighbor)
 	{
-		GridData formGridData = new GridData();
-		formGridData.minimumWidth = 45;
-		formGridData.widthHint = 45;
-		formGridData.horizontalAlignment = SWT.FILL;
-		formGridData.grabExcessVerticalSpace = true;
-		formGridData.verticalAlignment = SWT.FILL;
-		return formGridData;
+		FormData formData = new FormData();
+		formData.left = new FormAttachment(leftNeighbor, 0);
+		formData.top = new FormAttachment(0);
+		return formData;		
 	}
 
-	private GridData createNarrowGridData()
+	private FormData createLeftMostControlFormData()
 	{
-		GridData formGridData = new GridData();
-		formGridData.horizontalAlignment = SWT.BEGINNING;
-		formGridData.grabExcessVerticalSpace = true;
-		formGridData.verticalAlignment = SWT.FILL;
-		return formGridData;
+		FormData formData = new FormData();
+		formData.left = new FormAttachment(0);
+		formData.top = new FormAttachment(0);
+		return formData;		
 	}
-
-	//todo: duplicate
-	private GridLayout createBasicGridLayout(int numColumns)
-	{
-		GridLayout gridLayout = new GridLayout();
-		gridLayout.numColumns = numColumns;
-		gridLayout.verticalSpacing = 0;
-		gridLayout.horizontalSpacing = 2;
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		return gridLayout;
-	}
-
 	
-	public Label getAskPriceLabel() {
-		return askPriceLabel;
-	}
 	public void setAskPriceLabelText(String askPriceLabelText) {
 		this.askPriceLabel.setText(askPriceLabelText);
 	}
 	public void setAskSizeLabelText(String askSizeLabelText) {
 		this.askSizeLabel.setText(askSizeLabelText);
 	}
-	public Label getBidPriceLabel() {
-		return bidPriceLabel;
-	}
+	
 	public void setBidPriceLabelText(String bidPriceLabelText) {
 		this.bidPriceLabel.setText(bidPriceLabelText);
 	}
-	public Label getBidSizeLabel() {
-		return bidSizeLabel;
-	}
+	
 	public void setBidSizeLabelText(String bidSizeLabelText) {
 		this.bidSizeLabel.setText(bidSizeLabelText);
 	}
-	public Label getHighPriceLabel() {
-		return highPriceLabel;
-	}
+	
 	public void setHighPriceLabelText(String highPriceLabelText) {
 		this.highPriceLabel.setText(highPriceLabelText);
 	}
-	public Label getInstrumentLabel() {
-		return instrumentLabel;
-	}
+	
 	public void setInstrumentLabelText(String instrumentLabelText) {
 		this.instrumentLabel.setText(instrumentLabelText);
 	}
-	public Label getLastPriceChangeLabel() {
-		return lastPriceChangeLabel;
-	}
+	
 	public void setLastPriceChangeLabelText(String lastPriceChangeLabelText) {
 		this.lastPriceChangeLabel.setText(lastPriceChangeLabelText);
-	}
-	public Label getLastPriceLabel() {
-		return lastPriceLabel;
 	}
 	public void setLastPriceLabelText(String lastPriceLabelText) {
 		this.lastPriceLabel.setText(lastPriceLabelText);
 	}
-	public Label getLastPriceUpDownArrowLabel() {
-		return lastPriceUpDownArrowLabel;
-	}
+
 	public void setLastPriceUpDownArrowLabelImage(Image arrowImage) {
 		this.lastPriceUpDownArrowLabel.setImage(arrowImage);
 	}
 	
-	public Label getLastUpdatedTimeLabel() {
-		return lastUpdatedTimeLabel;
-	}
 	public void setLastUpdatedTimeLabelText(String lastUpdatedTimeLabelText) {
 		this.lastUpdatedTimeLabel.setText(lastUpdatedTimeLabelText);
 	}
-	public Label getLowPriceLabel() {
-		return lowPriceLabel;
-	}
+
 	public void setLowPriceLabelText(String lowPriceLabelText) {
 		this.lowPriceLabel.setText(lowPriceLabelText);
 	}
-	public Label getOpenPriceLabel() {
-		return openPriceLabel;
-	}
+
 	public void setOpenPriceLabelText(String openPriceLabelText) {
 		this.openPriceLabel.setText(openPriceLabelText);
 	}
-	public Label getTradingVolumeLabel() {
-		return tradingVolumeLabel;
-	}
+
 	public void setTradingVolumeLabelText(String tradingVolumeLabelText) {
 		this.tradingVolumeLabel.setText(tradingVolumeLabelText);
 	}
-	public Label getVolumeLabel() {
-		return volumeLabel;
-	}
+
 	public void setVolumeLabelText(String volumeLabelText) {
 		this.volumeLabel.setText(volumeLabelText);
 	}
