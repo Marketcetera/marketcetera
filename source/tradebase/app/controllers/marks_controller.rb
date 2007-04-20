@@ -12,30 +12,37 @@ class MarksController < ApplicationController
          :redirect_to => { :action => :index }
 
   # List of all the marks for a particular symbol for the date range specified
+  # TODO: redo the date creation/checking logic to call into one funciton
   def by_symbol
-    symbol_str = get_non_empty_string_from_two(params, :m_symbol, :root, "m_symbol_root")
-    if(symbol_str.blank?)
-      flash[:error] = "Please specify a symbol."
-      redirect_to :action => 'index'
-      return
-    end
-    equity = Equity.get_equity(symbol_str, false)
-    @from_date = get_date_from_params(params, :date, "from", "from_date")
-    @to_date = get_date_from_params(params, :date, "to", "to_date")
-    if(@to_date.blank?) 
-      @to_date = Date.today 
-    end
-    if(@from_date.blank?)
-      conditionsArr = ['mark_date <= ? and equities.id= ?', @to_date, equity]
-    else 
-      conditionsArr = ['mark_date >= ? and mark_date <= ? and equities.id= ?', @from_date, @to_date, equity]
-    end
+    begin
+      symbol_str = get_non_empty_string_from_two(params, :m_symbol, :root, "m_symbol_root")
+      if(symbol_str.blank?)
+        flash[:error] = "Please specify a symbol."
+        redirect_to :action => 'index'
+        return
+      end
+      equity = Equity.get_equity(symbol_str, false)
+      @from_date = get_date_from_params(params, :date, "from", "from_date")
+      @to_date = get_date_from_params(params, :date, "to", "to_date")
+      if(@to_date.blank?) 
+        @to_date = Date.today 
+      end
+      if(@from_date.blank?)
+        conditionsArr = ['mark_date <= ? and equities.id= ?', @to_date, equity]
+      else 
+        conditionsArr = ['mark_date >= ? and mark_date <= ? and equities.id= ?', @from_date, @to_date, equity]
+      end
+      @mark_pages, @marks = paginate :marks, :per_page => MaxPerPage, 
+              :conditions => conditionsArr,
+              :joins => 'as m inner join equities on equities.id = m.equity_id',
+               :select => 'm.*'
 
-    @mark_pages, @marks = paginate :marks, :per_page => MaxPerPage, 
-            :conditions => conditionsArr,
-            :joins => 'as m inner join equities on equities.id = m.equity_id',
-             :select => 'm.*'
-            
+    rescue => ex
+      flash[:error] = ex.message
+      redirect_to :action => :index
+      return
+    end            
+  
     @param_name = :m_symbol_root
     @param_value = symbol_str
                 

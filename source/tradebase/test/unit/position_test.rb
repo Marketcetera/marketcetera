@@ -18,15 +18,15 @@ class PositionTest < MarketceteraTestBase
     assert_equal ["MOLI", 3], [accounts[2][0].nickname, accounts[2][1]]
   end
   
-  def test_get_positions_as_of_inclusive_date_and_account
+  def test_get_positions_on_inclusive_date_and_account
     create_trades_in_account(3, "vasya")
     create_trades_in_account(2, "vasya", Date.today-1)
     create_trades_in_account(3, "bob")
   
-    assert_equal 3, Position.get_positions_as_of_inclusive_date_and_account(Date.today, Account.find_by_nickname("vasya")).length
-    assert_equal 3, Position.get_positions_as_of_inclusive_date_and_account(Date.today+1,  Account.find_by_nickname("vasya")).length
-    assert_equal 0, Position.get_positions_as_of_inclusive_date_and_account(Date.today,  Account.find_by_nickname("noName")).length
-    assert_equal 2, Position.get_positions_as_of_inclusive_date_and_account(Date.today-1,  Account.find_by_nickname("vasya")).length
+    assert_equal 3, Position.get_positions_on_inclusive_date_and_account(Date.today, Account.find_by_nickname("vasya")).length
+    assert_equal 3, Position.get_positions_on_inclusive_date_and_account(Date.today+1,  Account.find_by_nickname("vasya")).length
+    assert_equal 0, Position.get_positions_on_inclusive_date_and_account(Date.today,  Account.find_by_nickname("noName")).length
+    assert_equal 2, Position.get_positions_on_inclusive_date_and_account(Date.today-1,  Account.find_by_nickname("vasya")).length
   end
   
   private

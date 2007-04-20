@@ -204,7 +204,13 @@ class MarksControllerTest < MarketceteraTestBase
   end
   
   def test_create_future_date
-  
+    post :create, { :mark => {:mark_value => "10.20", :mark_date => Date.today+10}, 
+                    :m_symbol =>{ :root => @sunw_4_12.equity.m_symbol.root} }
+    assert_response :success
+    assert_has_error_box
+    assert_equal 1, assigns(:mark).errors.length
+    assert_not_nil assigns(:mark).errors[:mark_date]   
+    assert_equal "should not be in the future", assigns(:mark).errors[:mark_date]             
   end
 
   def test_edit

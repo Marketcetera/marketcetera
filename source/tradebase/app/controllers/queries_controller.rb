@@ -17,8 +17,11 @@ class QueriesController < ApplicationController
     if(symbol_str.blank?) 
       @trade_pages, @trades = paginate :trades, :per_page => MaxPerPage
     else
-      @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, :conditions => ['m_symbols.root = ? ', symbol_str], 
-                           :joins => 'as t inner join ( equities inner join m_symbols on m_symbols.id=equities.m_symbol_id) on equities.id = t.tradeable_id',
+      @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage, 
+                           :joins => 'as t, equities, m_symbols, journals',
+                           :conditions => ['m_symbols.id=equities.m_symbol_id AND equities.id = t.tradeable_id AND '+
+                                         't.journal_id = journals.id AND m_symbols.root = ? ', symbol_str],
+                           :order => 'journals.post_date',
                            :select => 't.*'
     end
     if(@trades.empty?)
