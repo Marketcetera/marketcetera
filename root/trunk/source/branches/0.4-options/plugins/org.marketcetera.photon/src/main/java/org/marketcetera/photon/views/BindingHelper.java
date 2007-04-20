@@ -1,11 +1,13 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.validation.IValidator;
 import org.marketcetera.photon.parser.ILexerFIXImage;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.IConverterBuilder;
 
 public class BindingHelper {
-	
+
 	public void initCharToImageConverterBuilder(
 			EnumStringConverterBuilder<Character> converterBuilder,
 			ILexerFIXImage[] lexerImages) {
@@ -25,25 +27,47 @@ public class BindingHelper {
 			converterBuilder.addMapping(fixValue, image);
 		}
 	}
-	
+
 	public UpdateValueStrategy createToTargetUpdateValueStrategy(
-			EnumStringConverterBuilder<?> converterBuilder) {
+			IConverterBuilder converterBuilder,
+			IValidator modelAfterGetValidator) {
 		UpdateValueStrategy updateValueStrategy = new UpdateValueStrategy();
-		updateValueStrategy.setAfterGetValidator(converterBuilder
-				.newModelAfterGetValidator());
+		IValidator validator = modelAfterGetValidator;
+		if (validator == null) {
+			validator = converterBuilder.newModelAfterGetValidator();
+		}
+		if (validator != null) {
+			updateValueStrategy.setAfterGetValidator(validator);
+		}
 		updateValueStrategy.setConverter(converterBuilder
 				.newToTargetConverter());
 		return updateValueStrategy;
 	}
 
+	public UpdateValueStrategy createToTargetUpdateValueStrategy(
+			IConverterBuilder converterBuilder) {
+		return createToTargetUpdateValueStrategy(converterBuilder, null);
+	}
+
 	public UpdateValueStrategy createToModelUpdateValueStrategy(
-			EnumStringConverterBuilder<?> converterBuilder) {
+			IConverterBuilder converterBuilder,
+			IValidator targetAfterGetValidator) {
 		UpdateValueStrategy updateValueStrategy = new UpdateValueStrategy();
-		updateValueStrategy.setAfterGetValidator(converterBuilder
-				.newTargetAfterGetValidator());
+		IValidator validator = targetAfterGetValidator;
+		if (validator == null) {
+			validator = converterBuilder.newTargetAfterGetValidator();
+		}
+		if (validator != null) {
+			updateValueStrategy.setAfterGetValidator(validator);
+		}
 		updateValueStrategy
 				.setConverter(converterBuilder.newToModelConverter());
 		return updateValueStrategy;
+	}
+
+	public UpdateValueStrategy createToModelUpdateValueStrategy(
+			IConverterBuilder converterBuilder) {
+		return createToModelUpdateValueStrategy(converterBuilder, null);
 	}
 
 }
