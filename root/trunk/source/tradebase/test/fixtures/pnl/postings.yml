@@ -386,6 +386,15 @@ posting_00027:
   pair_id: 2
   id: 27
   journal_id: 7
+posting_00070: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: 44500.0
+  pair_id: 1
+  id: 70
+  journal_id: 18
 posting_00048: 
   created_on: 2007-04-13 13:37:20 -07:00
   sub_account_id: 2
@@ -395,6 +404,15 @@ posting_00048:
   pair_id: 2
   id: 48
   journal_id: 12
+posting_00069: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 15
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: -44500.0
+  pair_id: 1
+  id: 69
+  journal_id: 18
 posting_00007: 
   created_on: 2007-04-13 13:37:18 -07:00
   sub_account_id: 6
@@ -422,6 +440,15 @@ posting_00028:
   pair_id: 2
   id: 28
   journal_id: 7
+posting_00071: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 20
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: 14.88
+  pair_id: 2
+  id: 71
+  journal_id: 18
 posting_00049: 
   created_on: 2007-04-13 13:37:20 -07:00
   sub_account_id: 1
@@ -467,6 +494,15 @@ posting_00051:
   pair_id: 2
   id: 51
   journal_id: 13
+posting_00072: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:10:05 -07:00
+  quantity: -14.88
+  pair_id: 2
+  id: 72
+  journal_id: 18
 posting_00010: 
   created_on: 2007-04-13 13:37:18 -07:00
   sub_account_id: 2
@@ -503,6 +539,15 @@ posting_00052:
   pair_id: 2
   id: 52
   journal_id: 13
+posting_00073: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 15
+  currency_id: 154
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: 4000.0
+  pair_id: 1
+  id: 73
+  journal_id: 19
 posting_00011: 
   created_on: 2007-04-13 13:37:18 -07:00
   sub_account_id: 6
@@ -530,6 +575,24 @@ posting_00053:
   pair_id: 1
   id: 53
   journal_id: 14
+posting_00074: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 16
+  currency_id: 154
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: -4000.0
+  pair_id: 1
+  id: 74
+  journal_id: 19
+posting_00054: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  sub_account_id: 9
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:20 -07:00
+  quantity: 40818.0
+  pair_id: 1
+  id: 54
+  journal_id: 14
 posting_00012: 
   created_on: 2007-04-13 13:37:18 -07:00
   sub_account_id: 2
@@ -548,24 +611,24 @@ posting_00033:
   pair_id: 1
   id: 33
   journal_id: 9
-posting_00054: 
-  created_on: 2007-04-13 13:37:20 -07:00
-  sub_account_id: 9
+posting_00075: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 20
   currency_id: 154
-  updated_on: 2007-04-13 13:37:20 -07:00
-  quantity: 40818.0
-  pair_id: 1
-  id: 54
-  journal_id: 14
-posting_00013: 
-  created_on: 2007-04-13 13:37:18 -07:00
-  sub_account_id: 8
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: 10.0
+  pair_id: 2
+  id: 75
+  journal_id: 19
+posting_00076: 
+  created_on: 2007-04-19 14:35:42 -07:00
+  sub_account_id: 16
   currency_id: 154
-  updated_on: 2007-04-13 13:37:18 -07:00
-  quantity: -852.0
-  pair_id: 1
-  id: 13
-  journal_id: 4
+  updated_on: 2007-04-19 14:35:42 -07:00
+  quantity: -10.0
+  pair_id: 2
+  id: 76
+  journal_id: 19
 posting_00034: 
   created_on: 2007-04-13 13:37:19 -07:00
   sub_account_id: 2
@@ -575,6 +638,15 @@ posting_00034:
   pair_id: 1
   id: 34
   journal_id: 9
+posting_00013: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  sub_account_id: 8
+  currency_id: 154
+  updated_on: 2007-04-13 13:37:18 -07:00
+  quantity: -852.0
+  pair_id: 1
+  id: 13
+  journal_id: 4
 posting_00055: 
   created_on: 2007-04-13 13:37:20 -07:00
   sub_account_id: 13

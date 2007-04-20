@@ -86,6 +86,17 @@ class MarketceteraTestBase < Test::Unit::TestCase
     end
   end
   
+  # compare exceptions
+  def assert_exception(exception, message=nil, &block)
+    begin
+      yield
+    rescue exception => e
+      assert_equal message,e.message
+    end
+  end
+  
+   
+  
   # Helper function to create a trade
   def create_test_trade(qty, price, side, account, date, symbol, commission, cur)
       theTrade = Trade.new(:quantity => qty, :price_per_share => price, :side => side)
@@ -105,7 +116,5 @@ EOT
     expected = BigDecimal.new(expected.to_s)
     actual =   BigDecimal.new(actual.to_s)
     assert_block(full_message) { (expected - actual).abs < tolerance }
-  end
-  
-   
+  end  
 end

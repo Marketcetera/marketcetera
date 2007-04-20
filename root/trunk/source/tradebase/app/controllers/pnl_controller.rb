@@ -16,8 +16,13 @@ class PnlController < ApplicationController
       @to_date = Date.today 
     end
     
-    @cashflows = Journal.get_cashflows_from_to_in_acct(theAcct, @from_date, @to_date)
-    
+    begin
+      @cashflows = CashFlow.get_cashflows_from_to_in_acct(theAcct, @from_date, @to_date)
+    rescue Exception => ex
+      logger.debug("Error generating cashflow for #{theAcct.nickname}: " + ex);
+      flash.now[:error] = ex.to_s
+      @cashflows = []
+    end
     @param_name = "nickname"
     @param_value = theAcct.nickname
     @query_type = "Account"
@@ -32,7 +37,7 @@ class PnlController < ApplicationController
       @to_date = Date.today 
     end
     
-    @cashflows = Journal.get_cashflows_from_to_in_acct(nil, @from_date, @to_date)
+    @cashflows = CashFlow.get_cashflows_from_to_in_acct(nil, @from_date, @to_date)
     
     @query_type = "Date"
     
