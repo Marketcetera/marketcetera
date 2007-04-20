@@ -40,12 +40,12 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 
 	@Override
 	protected void createFormContents() {
-
-		getFormToolkit().createLabel(outermostForm.getBody(), "Side");
-		getFormToolkit().createLabel(outermostForm.getBody(), "Quantity");
-		getFormToolkit().createLabel(outermostForm.getBody(), "Symbol");
-		getFormToolkit().createLabel(outermostForm.getBody(), "Price");
-		getFormToolkit().createLabel(outermostForm.getBody(), "TIF");
+		Composite formBody = outermostForm.getBody();
+		getFormToolkit().createLabel(formBody, "Side");
+		getFormToolkit().createLabel(formBody, "Quantity");
+		getFormToolkit().createLabel(formBody, "Symbol");
+		getFormToolkit().createLabel(formBody, "Price");
+		getFormToolkit().createLabel(formBody, "TIF");
 		orderTicketViewPieces.createSideInput();
 		orderTicketViewPieces.createQuantityInput();
 		orderTicketViewPieces.createSymbolInput();

@@ -1,11 +1,14 @@
 package org.marketcetera.photon.views;
 
+import java.util.HashMap;
+
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IMapChangeListener;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.map.MapChangeEvent;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservable;
@@ -75,7 +78,7 @@ public class OrderTicketControllerHelper {
 	private DataBindingContext dataBindingContext;
 
 	private IFIXControllerBinding fixControllerBinding;
-	
+
 	private BindingHelper bindingHelper;
 
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
@@ -93,7 +96,7 @@ public class OrderTicketControllerHelper {
 	private void init() {
 
 		bindingHelper = new BindingHelper();
-		
+
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
@@ -154,6 +157,10 @@ public class OrderTicketControllerHelper {
 		initTifConverterBuilder();
 		initPriceConverterBuilder();
 
+		// To force the initial state to appear the same as the Canceled state,
+		// bind first, then clear. The IMapChangeListener is notified when the
+		// controls are unbound.
+		bind(newNewOrderSingle());
 		clear();
 	}
 
@@ -248,7 +255,8 @@ public class OrderTicketControllerHelper {
 		targetMessage = message;
 		try {
 			Realm realm = Realm.getDefault();
-			// todo: Refactor to using BindingHelper for UpdateValueStrategy creation.
+			// todo: Refactor to using BindingHelper for UpdateValueStrategy
+			// creation.
 			dataBindingContext.bindValue(SWTObservables.observeText(ticket
 					.getSideCCombo()), FIXObservables.observeValue(realm,
 					message, Side.FIELD, dictionary), new UpdateValueStrategy()
@@ -318,30 +326,7 @@ public class OrderTicketControllerHelper {
 					new UpdateValueStrategy(), new UpdateValueStrategy());
 
 			dataBindingContext.getValidationStatusMap().addMapChangeListener(
-					new IMapChangeListener() {
-						public void handleMapChange(MapChangeEvent event) {
-							if (!ticket.getErrorMessageLabel().isDisposed()) {
-								ticket.clearErrors();
-								for (Object binding : event.diff
-										.getChangedKeys()) {
-									IStatus status = ((IStatus) dataBindingContext
-											.getValidationStatusMap().get(
-													binding));
-									Control aControl = (Control) ((ISWTObservable) ((Binding) binding)
-											.getTarget()).getWidget();
-									ticket
-											.showErrorForControl(aControl,
-													status.getSeverity(),
-													status.getMessage());
-									if (status.getSeverity() == IStatus.ERROR) {
-										ticket.showErrorMessage(status
-												.getMessage(), status
-												.getSeverity());
-									}
-								}
-							}
-						}
-					});
+					createMapChangeListener());
 
 			if (fixControllerBinding != null) {
 				fixControllerBinding.bind(realm, dataBindingContext,
@@ -352,18 +337,58 @@ public class OrderTicketControllerHelper {
 		}
 	}
 
+	private IMapChangeListener createMapChangeListener() {
+		return new IMapChangeListener() {
+			private HashMap<Control, IStatus> inputControlErrorStatus = new HashMap<Control, IStatus>();
+
+			public void handleMapChange(MapChangeEvent event) {
+				if (ticket.getErrorMessageLabel().isDisposed()) {
+					return;
+				}
+
+				for (Object bindingObj : event.diff.getChangedKeys()) {
+					IObservableMap validationStatusMap = dataBindingContext
+							.getValidationStatusMap();
+					IStatus status = (IStatus) validationStatusMap
+							.get(bindingObj);
+					Binding binding = (Binding) bindingObj;
+					ISWTObservable targetObservable = (ISWTObservable) binding
+							.getTarget();
+					Control aControl = (Control) targetObservable.getWidget();
+
+					ticket.showErrorForControl(aControl, status.getSeverity(),
+							status.getMessage());
+					if (status.getSeverity() == IStatus.ERROR) {
+						inputControlErrorStatus.put(aControl, status);
+						ticket.showErrorMessage(status.getMessage(), status
+								.getSeverity());
+					} else {
+						if (inputControlErrorStatus.containsKey(aControl)) {
+							inputControlErrorStatus.remove(aControl);
+						}
+					}
+				}
+				if (inputControlErrorStatus.isEmpty()) {
+					ticket.clearErrors();
+				}
+			}
+		};
+	}
+
 	private void initSideConverterBuilder() {
 		sideConverterBuilder = new EnumStringConverterBuilder<Character>(
 				Character.class);
-		
-		bindingHelper.initCharToImageConverterBuilder(sideConverterBuilder, SideImage.values());
+
+		bindingHelper.initCharToImageConverterBuilder(sideConverterBuilder,
+				SideImage.values());
 	}
 
 	private void initTifConverterBuilder() {
 		tifConverterBuilder = new EnumStringConverterBuilder<Character>(
 				Character.class);
 
-		bindingHelper.initCharToImageConverterBuilder(tifConverterBuilder, TimeInForceImage.values());
+		bindingHelper.initCharToImageConverterBuilder(tifConverterBuilder,
+				TimeInForceImage.values());
 	}
 
 	private void initPriceConverterBuilder() {
