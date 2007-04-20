@@ -205,6 +205,7 @@ public class OrderTicketViewPieces {
 				controlDecoration.hide();
 			}
 
+			aControl.setBackground(null);
 		}
 	}
 

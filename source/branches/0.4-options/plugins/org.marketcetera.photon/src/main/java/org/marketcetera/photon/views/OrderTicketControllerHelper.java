@@ -20,7 +20,9 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.ConjunctionMessageSelector;
@@ -81,7 +83,9 @@ public class OrderTicketControllerHelper {
 	private IFIXControllerBinding fixControllerBinding;
 
 	private BindingHelper bindingHelper;
-
+	
+	private Color colorRed;
+	
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this(ticket, null);
 	}
@@ -98,6 +102,8 @@ public class OrderTicketControllerHelper {
 
 		bindingHelper = new BindingHelper();
 
+		colorRed = Display.getCurrent().getSystemColor( SWT.COLOR_RED);
+		
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
@@ -169,6 +175,7 @@ public class OrderTicketControllerHelper {
 		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
 		dataBindingContext.dispose();
+		colorRed.dispose();
 	}
 
 	protected void listenMarketData(String symbol) {
@@ -396,7 +403,9 @@ public class OrderTicketControllerHelper {
 						inputControlErrorStatus.put(aControl, status);
 						ticket.showErrorMessage(status.getMessage(), status
 								.getSeverity());
+						aControl.setBackground( colorRed );
 					} else {
+						aControl.setBackground( null );
 						if (inputControlErrorStatus.containsKey(aControl)) {
 							inputControlErrorStatus.remove(aControl);
 						}
