@@ -35,7 +35,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import quickfix.Message;
 
 public abstract class AbstractOrderTicket extends ViewPart implements
-		IMessageDisplayer, IPropertyChangeListener {
+		IOrderTicket, IMessageDisplayer, IPropertyChangeListener {
 
 	private static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
 
@@ -281,6 +281,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		updateOutermostFormTitle(null);
 		orderTicketViewPieces.getSymbolText().setEnabled(true);
 		sendButton.setEnabled(false);
+		clearErrors();
 	}
 
 	public void updateMessage(Message aMessage) throws MarketceteraException {
