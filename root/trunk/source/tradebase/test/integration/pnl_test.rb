@@ -9,12 +9,13 @@ class PnlTest < ActionController::IntegrationTest
   end
   
   def test_get_cashflows
-    cashflows = CashFlow.get_cashflows_from_to_in_acct(Account.find_by_nickname("TOLI"), Date.new(2005, 1,1), Date.new(2007, 4,19))
-#    assert_equal 4, cashflows.length
-#    assert_equal ["SUNW", BigDecimal.new("-1709.00").to_s], [cashflows[0].symbol, cashflows[0].cashflow.to_s]  
-#    assert_equal ["MSFT", BigDecimal.new("4562.00")], [cashflows[1].symbol, cashflows[1].cashflow]  
-#    assert_equal ["IBM", BigDecimal.new("-17859.50")], [cashflows[2].symbol, cashflows[2].cashflow]  
-#    assert_equal ["GOOG", BigDecimal.new("40818")], [cashflows[3].symbol, cashflows[3].cashflow]  
+    cashflows = CashFlow.get_cashflows_from_to_in_acct(Account.find_by_nickname("TOLI"), 
+                                                       Date.new(2005, 1,1), Date.new(2007, 4,19))
+    assert_equal 4, cashflows.length
+    assert_equal ["GOOG", BigDecimal.new("-4782").to_s], [cashflows[0].symbol, cashflows[0].cashflow.to_s]
+    assert_equal ["IBM", BigDecimal.new("1920.5").to_s], [cashflows[1].symbol, cashflows[1].cashflow.to_s]
+    assert_equal ["MSFT", BigDecimal.new("-38").to_s], [cashflows[2].symbol, cashflows[2].cashflow.to_s]  
+    assert_equal ["SUNW", BigDecimal.new("-674").to_s], [cashflows[3].symbol, cashflows[3].cashflow.to_s]  
   end
     
 
