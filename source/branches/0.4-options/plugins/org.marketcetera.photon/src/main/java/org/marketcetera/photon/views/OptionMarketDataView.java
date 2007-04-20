@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
@@ -61,7 +60,7 @@ public class OptionMarketDataView extends MessagesView implements
 
 	private FormToolkit formToolkit;
 
-	private ExpandableComposite underliersExpandableSection;
+	private Section underliersSection;
 
 	private Composite underliersContainer;
 
@@ -103,14 +102,14 @@ public class OptionMarketDataView extends MessagesView implements
 	@Override
 	public void createPartControl(Composite parent) {
 		createForm(parent);
-		createUnderliersExpandableSection();
+		createUnderliersSection();
 
 		// helper methods for testing and mocking-up the UI only, will remove
 		int numUnderliers = 3;
 		test_createUnderliers(numUnderliers);
 		test_populateUnderliersMktData(numUnderliers);
 
-		Composite tableExpandable = createDataTableExpandableSection();
+		Composite tableExpandable = createDataTableSection();
 		super.createPartControl(tableExpandable);
 		this.setInput(new BasicEventList<MessageHolder>());
 	}
@@ -136,51 +135,46 @@ public class OptionMarketDataView extends MessagesView implements
 				createTopAlignedHorizontallySpannedGridData());
 	}
 
-	private void createUnderliersExpandableSection() {
-		underliersExpandableSection = getFormToolkit().createSection(
-				form.getBody(), Section.TITLE_BAR | Section.TWISTIE);
-		underliersExpandableSection.setText("Underliers");
-		underliersExpandableSection.setExpanded(true);
-		underliersExpandableSection
+	private void createUnderliersSection() {
+		underliersSection = getFormToolkit().createSection(
+				form.getBody(), Section.EXPANDED | Section.NO_TITLE);
+		underliersSection
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 		createUnderliersContainerComposite();
 	}
 
 	private void createUnderliersContainerComposite() {
 		underliersContainer = getFormToolkit().createComposite(
-				underliersExpandableSection, SWT.NONE);
+				underliersSection, SWT.NONE);
 		underliersContainer
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 		underliersContainer.setLayout(createBasicGridLayout(1));
-		underliersExpandableSection.setClient(underliersContainer);
+		underliersSection.setClient(underliersContainer);		
 	}
-
-	private Composite createDataTableExpandableSection() {
-		ExpandableComposite tableExpandable = getFormToolkit().createSection(
-				form.getBody(), Section.TITLE_BAR | Section.TWISTIE);
-		tableExpandable.setText("Market Data");
-		tableExpandable.setExpanded(true);
-		tableExpandable.setLayout(createBasicGridLayout(1));
+		
+	private Composite createDataTableSection() {
+		Section tableSection = getFormToolkit().createSection(
+				form.getBody(), Section.EXPANDED | Section.NO_TITLE);
+		tableSection.setLayout(createBasicGridLayout(1));
 		GridData gridData1 = createTopAlignedHorizontallySpannedGridData();
 		gridData1.grabExcessVerticalSpace = true;
 		gridData1.verticalAlignment = GridData.FILL;
-
-		tableExpandable.setLayoutData(gridData1);
+		tableSection.setLayoutData(gridData1);
 		Composite tableComposite = getFormToolkit().createComposite(
-				tableExpandable, SWT.NONE);
+				tableSection, SWT.NONE);
 		tableComposite.setLayout(createBasicGridLayout(1));
 		GridData gridData2 = createTopAlignedHorizontallySpannedGridData();
 		gridData2.grabExcessVerticalSpace = true;
 		gridData2.verticalAlignment = GridData.FILL;
 		tableComposite.setLayoutData(gridData2);
 
-		tableExpandable.setClient(tableComposite);
+		tableSection.setClient(tableComposite);
 		return tableComposite;
 	}
 
-	private Composite createUnderlierComposite(Composite expandableParent) {
+	private Composite createUnderlierComposite(Composite parent) {
 		Composite underlier = getFormToolkit().createComposite(
-				expandableParent, SWT.BORDER);
+				parent, SWT.BORDER);
 		underlier.setLayout(createBasicGridLayout(1));
 		underlier.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 		return underlier;

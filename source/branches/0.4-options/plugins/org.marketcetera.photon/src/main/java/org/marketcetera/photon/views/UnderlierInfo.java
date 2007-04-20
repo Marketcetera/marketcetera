@@ -1,7 +1,6 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -9,6 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 
 public class UnderlierInfo {
@@ -40,9 +40,8 @@ public class UnderlierInfo {
 	private Label lowPriceLabel;
 	private Label tradingVolumeLabel;
 	
-//	private Label dividendsIndicatorTextLabel;
-	
-	private CCombo exDividendsDateAndAmount;
+	private Label exDivDateAmountTextLabel;
+	private List exDivDateAmount;
 
 	
 	private static Color SYSTEM_COLOR_BLUE;
@@ -104,19 +103,19 @@ public class UnderlierInfo {
 		askSizeLabel = getFormToolkit().createLabel(firstRow, null);
 		askSizeLabel.setLayoutData(createFirstRowLabelGridData());
 
-		Label exDividendsDateAndAmountLabel = getFormToolkit().createLabel(firstRow, "Divs:");
-		exDividendsDateAndAmountLabel.setForeground(SYSTEM_COLOR_BLUE);
-		exDividendsDateAndAmountLabel.setLayoutData(createNarrowGridData());
+		exDivDateAmountTextLabel = getFormToolkit().createLabel(firstRow, "Divs");
+		exDivDateAmountTextLabel.setForeground(SYSTEM_COLOR_BLUE);
+		exDivDateAmountTextLabel.setLayoutData(createNarrowGridData());
+		
 
-		exDividendsDateAndAmount = new CCombo(firstRow, SWT.BORDER);
-		GridData exDividendGridData = createFirstRowLabelGridData();
-		exDividendGridData.horizontalAlignment = SWT.END;
-		exDividendGridData.minimumWidth = 100;
-		exDividendGridData.widthHint = 100;		
-		exDividendsDateAndAmount.setLayoutData(exDividendGridData);
+		exDivDateAmount = new List(firstRow, SWT.V_SCROLL | SWT.H_SCROLL);
+		GridData gridData = createFirstRowLabelGridData();		
+		gridData.heightHint = exDivDateAmountTextLabel.getSize().y - 2;
+		gridData.widthHint = 75;
+		exDivDateAmount.setLayoutData(gridData);
 		
 	}
-
+	
 	private void createSecondRowComposite(Composite parent)
 	{	
 		Composite secondRow = getFormToolkit().createComposite(parent);
@@ -138,7 +137,9 @@ public class UnderlierInfo {
 		volumeIndicatorTextLabel.setLayoutData(createNarrowGridData());
 
 		volumeLabel = getFormToolkit().createLabel(secondRow, null);
-		volumeLabel.setLayoutData(createSecondRowLabelGridData());
+		GridData extraWideData = createSecondRowLabelGridData();
+		extraWideData.widthHint = 55;
+		volumeLabel.setLayoutData(extraWideData);
 		
 		Label openPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Op");
 		openPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
@@ -197,8 +198,8 @@ public class UnderlierInfo {
 	private GridData createFirstRowLabelGridData()
 	{
 		GridData formGridData = new GridData();
-		formGridData.minimumWidth = 50;
-		formGridData.widthHint = 50;
+		formGridData.minimumWidth = 35;
+		formGridData.widthHint = 35;
 		formGridData.horizontalAlignment = SWT.FILL;
 		formGridData.grabExcessVerticalSpace = true;
 		formGridData.verticalAlignment = SWT.FILL;
@@ -208,8 +209,8 @@ public class UnderlierInfo {
 	private GridData createSecondRowLabelGridData()
 	{
 		GridData formGridData = new GridData();
-		formGridData.minimumWidth = 60;
-		formGridData.widthHint = 60;
+		formGridData.minimumWidth = 45;
+		formGridData.widthHint = 45;
 		formGridData.horizontalAlignment = SWT.FILL;
 		formGridData.grabExcessVerticalSpace = true;
 		formGridData.verticalAlignment = SWT.FILL;
@@ -232,7 +233,7 @@ public class UnderlierInfo {
 		gridLayout.numColumns = numColumns;
 		gridLayout.verticalSpacing = 0;
 		gridLayout.horizontalSpacing = 2;
-		gridLayout.marginHeight = 2;
+		gridLayout.marginHeight = 0;
 		gridLayout.marginWidth = 0;
 		return gridLayout;
 	}
@@ -322,9 +323,16 @@ public class UnderlierInfo {
 	}
 
 	public void setExDividendsDateAndAmountItems(String[] dateAmountStrings) {
-		this.exDividendsDateAndAmount.setItems(dateAmountStrings);
-		if (dateAmountStrings != null && dateAmountStrings.length > 0)
-			this.exDividendsDateAndAmount.setText(dateAmountStrings[0]);
+		StringBuffer dateAmountAsTooltip = new StringBuffer();
+		for (String str : dateAmountStrings)
+		{
+			dateAmountAsTooltip.append(str);			
+			dateAmountAsTooltip.append("\n");			
+		}					
+		this.exDivDateAmountTextLabel.setToolTipText(dateAmountAsTooltip.toString());
+		this.exDivDateAmount.setToolTipText(dateAmountAsTooltip.toString());
+		this.exDivDateAmount.setItems(dateAmountStrings);
+		
 	}
 
 }
