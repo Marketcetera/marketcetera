@@ -26,6 +26,8 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.ConjunctionMessageSelector;
@@ -422,25 +424,22 @@ public class OrderTicketControllerHelper {
 	private void addControlStateListeners(Control control,
 			final IToggledValidator validator) {
 
-		control.addFocusListener(new FocusAdapter() {
+		control.addListener(SWT.Modify, new Listener() {
 			private boolean initialState = true;
 
-			@Override
-			public void focusGained(FocusEvent e) {
+			public void handleEvent(Event event) {
 				if (initialState) {
 					initialState = false;
 					validator.setEnabled(true);
 				}
-				// todo: Removing the control from the set of controls requiring
-				// user input should occur when the user actually makes a
-				// selection or types something.
 				if (!controlsRequiringUserInput.isEmpty()
-						&& e.widget instanceof Control) {
-					Control aControl = (Control) e.widget;
+						&& event.widget instanceof Control) {
+					Control aControl = (Control) event.widget;
 					controlsRequiringUserInput.remove(aControl);
 				}
 				updateSendButtonState();
 			}
+
 		});
 	}
 
