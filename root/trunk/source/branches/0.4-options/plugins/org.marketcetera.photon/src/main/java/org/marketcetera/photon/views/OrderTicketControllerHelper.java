@@ -16,6 +16,8 @@ import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
@@ -164,6 +166,8 @@ public class OrderTicketControllerHelper {
 		initTifConverterBuilder();
 		initPriceConverterBuilder();
 
+		addInputControlSendOrderListeners();
+
 		// To force the initial state to appear the same as the Canceled state,
 		// bind first, then clear. The IMapChangeListener is notified when the
 		// controls are unbound.
@@ -242,6 +246,28 @@ public class OrderTicketControllerHelper {
 
 	public void handleCancel() {
 		clear();
+	}
+
+	private void addInputControlSendOrderListeners() {
+		addSendOrderListener(ticket.getSideCCombo());
+		addSendOrderListener(ticket.getQuantityText());
+		addSendOrderListener(ticket.getSymbolText());
+		addSendOrderListener(ticket.getPriceText());
+		addSendOrderListener(ticket.getTifCCombo());
+	}
+
+	public void addSendOrderListener(Control targetControl) {
+		targetControl.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyReleased(KeyEvent e) {
+				if (e.keyCode == SWT.CR) {
+					if (ticket.getSendButton().isEnabled()) {
+						handleSend();
+					}
+				}
+			}
+		});
 	}
 
 	public void clear() {
