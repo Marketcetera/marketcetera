@@ -55,6 +55,9 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 		return new SetValidator<String>(map.values(), PhotonPlugin.ID, "Not a valid value") {
 			@Override
 			public IStatus validate(Object obj) {
+				if (!isEnabled()) {
+					return Status.OK_STATUS;
+				}
 				try {
 					new BigDecimal((String) obj);
 					return Status.OK_STATUS;

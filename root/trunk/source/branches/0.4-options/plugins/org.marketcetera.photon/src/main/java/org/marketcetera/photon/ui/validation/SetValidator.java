@@ -3,12 +3,10 @@ package org.marketcetera.photon.ui.validation;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.marketcetera.photon.PhotonPlugin;
 
-public class SetValidator<T> implements IValidator {
+public class SetValidator<T> extends AbstractToggledValidator {
 
 	private HashSet<T> validSet;
 	private IStatus errorStatus;
@@ -19,6 +17,9 @@ public class SetValidator<T> implements IValidator {
 	}
 
 	public IStatus validate(Object arg0) {
+		if (!isEnabled()) {
+			return Status.OK_STATUS;
+		}
 		if (validSet.contains(arg0)){
 			return Status.OK_STATUS;
 		} else {

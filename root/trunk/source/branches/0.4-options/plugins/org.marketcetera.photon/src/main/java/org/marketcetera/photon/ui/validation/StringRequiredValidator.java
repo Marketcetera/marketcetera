@@ -1,11 +1,10 @@
 package org.marketcetera.photon.ui.validation;
 
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class StringRequiredValidator implements IValidator {
+public class StringRequiredValidator extends AbstractToggledValidator {
 
 	private IStatus errorStatus;
 
@@ -14,6 +13,9 @@ public class StringRequiredValidator implements IValidator {
 	}
 	
 	public IStatus validate(Object value) {
+		if (!isEnabled()) {
+			return Status.OK_STATUS;
+		}
 		if (value == null){
 			return errorStatus;
 		}

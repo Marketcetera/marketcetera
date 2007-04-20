@@ -34,6 +34,7 @@ import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.ui.validation.DataDictionaryValidator;
+import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.BigDecimalToStringConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
@@ -257,22 +258,38 @@ public class OrderTicketControllerHelper {
 			Realm realm = Realm.getDefault();
 			// todo: Refactor to using BindingHelper for UpdateValueStrategy
 			// creation.
-			dataBindingContext.bindValue(SWTObservables.observeText(ticket
-					.getSideCCombo()), FIXObservables.observeValue(realm,
-					message, Side.FIELD, dictionary), new UpdateValueStrategy()
-					.setAfterGetValidator(
-							sideConverterBuilder.newTargetAfterGetValidator())
-					.setConverter(sideConverterBuilder.newToModelConverter()),
-					new UpdateValueStrategy().setConverter(sideConverterBuilder
-							.newToTargetConverter()));
-			dataBindingContext.bindValue(SWTObservables.observeText(ticket
-					.getQuantityText(), SWT.Modify), FIXObservables
-					.observeValue(realm, message, OrderQty.FIELD, dictionary),
-					new UpdateValueStrategy().setAfterGetValidator(
-							new StringRequiredValidator()).setConverter(
-							new StringToBigDecimalConverter()),
-					new UpdateValueStrategy()
-							.setConverter(new BigDecimalToStringConverter()));
+			{
+				IToggledValidator validator = (IToggledValidator) sideConverterBuilder
+						.newTargetAfterGetValidator();
+				validator.setEnabled(false);
+				dataBindingContext.bindValue(SWTObservables.observeText(ticket
+						.getSideCCombo()), FIXObservables.observeValue(realm,
+						message, Side.FIELD, dictionary),
+						new UpdateValueStrategy().setAfterGetValidator(
+								validator).setConverter(
+								sideConverterBuilder.newToModelConverter()),
+						new UpdateValueStrategy()
+								.setConverter(sideConverterBuilder
+										.newToTargetConverter()));
+				addInitialStateFocusListener(ticket.getSideCCombo(), validator);
+			}
+			{
+				IToggledValidator validator = new StringRequiredValidator();
+				validator.setEnabled(false);
+				dataBindingContext
+						.bindValue(
+								SWTObservables.observeText(ticket
+										.getQuantityText(), SWT.Modify),
+								FIXObservables.observeValue(realm, message,
+										OrderQty.FIELD, dictionary),
+								new UpdateValueStrategy().setAfterGetValidator(
+										validator).setConverter(
+										new StringToBigDecimalConverter()),
+								new UpdateValueStrategy()
+										.setConverter(new BigDecimalToStringConverter()));
+				addInitialStateFocusListener(ticket.getQuantityText(),
+						validator);
+			}
 			dataBindingContext
 					.bindValue(
 							SWTObservables.observeText(ticket.getSymbolText(),
@@ -282,23 +299,24 @@ public class OrderTicketControllerHelper {
 							new UpdateValueStrategy()
 									.setAfterGetValidator(new StringRequiredValidator()),
 							new UpdateValueStrategy());
-			dataBindingContext
-					.bindValue(SWTObservables.observeText(
-							ticket.getPriceText(), SWT.Modify), FIXObservables
-							.observePriceValue(realm, message, Price.FIELD,
-									dictionary),
-							new UpdateValueStrategy().setAfterGetValidator(
-									priceConverterBuilder
-											.newTargetAfterGetValidator())
-									.setConverter(
-											priceConverterBuilder
-													.newToModelConverter()),
-							new UpdateValueStrategy().setAfterGetValidator(
-									priceConverterBuilder
-											.newModelAfterGetValidator())
-									.setConverter(
-											priceConverterBuilder
-													.newToTargetConverter()));
+			{
+				IToggledValidator validator = (IToggledValidator) priceConverterBuilder
+						.newTargetAfterGetValidator();
+				validator.setEnabled(false);
+				dataBindingContext.bindValue(SWTObservables.observeText(ticket
+						.getPriceText(), SWT.Modify), FIXObservables
+						.observePriceValue(realm, message, Price.FIELD,
+								dictionary), new UpdateValueStrategy()
+						.setAfterGetValidator(validator).setConverter(
+								priceConverterBuilder.newToModelConverter()),
+						new UpdateValueStrategy().setAfterGetValidator(
+								priceConverterBuilder
+										.newModelAfterGetValidator())
+								.setConverter(
+										priceConverterBuilder
+												.newToTargetConverter()));
+				addInitialStateFocusListener(ticket.getPriceText(), validator);
+			}
 			dataBindingContext
 					.bindValue(
 							SWTObservables.observeText(ticket.getTifCCombo()),
@@ -335,6 +353,22 @@ public class OrderTicketControllerHelper {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private void addInitialStateFocusListener(Control control,
+			final IToggledValidator validator) {
+		control.addFocusListener(new FocusAdapter() {
+			private boolean initialState = true;
+
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (initialState) {
+					initialState = false;
+					validator.setEnabled(true);
+				}
+			}
+
+		});
 	}
 
 	private IMapChangeListener createMapChangeListener() {
