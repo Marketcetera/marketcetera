@@ -83,9 +83,9 @@ public class OrderTicketControllerHelper {
 	private IFIXControllerBinding fixControllerBinding;
 
 	private BindingHelper bindingHelper;
-	
+
 	private Color colorRed;
-	
+
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this(ticket, null);
 	}
@@ -102,8 +102,8 @@ public class OrderTicketControllerHelper {
 
 		bindingHelper = new BindingHelper();
 
-		colorRed = Display.getCurrent().getSystemColor( SWT.COLOR_RED);
-		
+		colorRed = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
@@ -263,7 +263,7 @@ public class OrderTicketControllerHelper {
 		targetMessage = message;
 		try {
 			Realm realm = Realm.getDefault();
-			// todo: Refactor to using BindingHelper for UpdateValueStrategy
+			// todo: Refactor to use BindingHelper for UpdateValueStrategy
 			// creation.
 			{
 				IToggledValidator validator = (IToggledValidator) sideConverterBuilder
@@ -297,15 +297,18 @@ public class OrderTicketControllerHelper {
 				addInitialStateFocusListener(ticket.getQuantityText(),
 						validator);
 			}
-			dataBindingContext
-					.bindValue(
-							SWTObservables.observeText(ticket.getSymbolText(),
-									SWT.Modify),
-							FIXObservables.observeValue(realm, message,
-									Symbol.FIELD, dictionary),
-							new UpdateValueStrategy()
-									.setAfterGetValidator(new StringRequiredValidator()),
-							new UpdateValueStrategy());
+			{
+				IToggledValidator validator = new StringRequiredValidator();
+				validator.setEnabled(false);
+				dataBindingContext.bindValue(SWTObservables.observeText(ticket
+						.getSymbolText(), SWT.Modify),
+						FIXObservables.observeValue(realm, message,
+								Symbol.FIELD, dictionary),
+						new UpdateValueStrategy()
+								.setAfterGetValidator(validator),
+						new UpdateValueStrategy());
+				addInitialStateFocusListener(ticket.getSymbolText(), validator);
+			}
 			{
 				IToggledValidator validator = (IToggledValidator) priceConverterBuilder
 						.newTargetAfterGetValidator();
@@ -324,27 +327,29 @@ public class OrderTicketControllerHelper {
 												.newToTargetConverter()));
 				addInitialStateFocusListener(ticket.getPriceText(), validator);
 			}
-			dataBindingContext
-					.bindValue(
-							SWTObservables.observeText(ticket.getTifCCombo()),
-							FIXObservables.observeValue(realm, message,
-									TimeInForce.FIELD, dictionary),
-							new UpdateValueStrategy()
-									.setAfterGetValidator(
-											tifConverterBuilder
-													.newTargetAfterGetValidator())
-									.setAfterConvertValidator(
-											new DataDictionaryValidator(
-													dictionary,
-													TimeInForce.FIELD,
-													"Not a valid value for TimeInForce",
-													PhotonPlugin.ID))
-									.setConverter(
-											tifConverterBuilder
-													.newToModelConverter()),
-							new UpdateValueStrategy()
-									.setConverter(tifConverterBuilder
-											.newToTargetConverter()));
+			{
+				IToggledValidator afterGetValidator = (IToggledValidator) tifConverterBuilder
+						.newTargetAfterGetValidator();
+				afterGetValidator.setEnabled(false);
+				IToggledValidator afterConvertValidator = (IToggledValidator) new DataDictionaryValidator(
+						dictionary, TimeInForce.FIELD,
+						"Not a valid value for TimeInForce", PhotonPlugin.ID);
+				afterConvertValidator.setEnabled(false);
+				dataBindingContext.bindValue(SWTObservables.observeText(ticket
+						.getTifCCombo()), FIXObservables.observeValue(realm,
+						message, TimeInForce.FIELD, dictionary),
+						new UpdateValueStrategy().setAfterGetValidator(
+								afterGetValidator).setAfterConvertValidator(
+								afterConvertValidator).setConverter(
+								tifConverterBuilder.newToModelConverter()),
+						new UpdateValueStrategy()
+								.setConverter(tifConverterBuilder
+										.newToTargetConverter()));
+				addInitialStateFocusListener(ticket.getPriceText(),
+						afterGetValidator);
+				addInitialStateFocusListener(ticket.getPriceText(),
+						afterConvertValidator);
+			}
 			dataBindingContext.bindValue(SWTObservables.observeText(ticket
 					.getAccountText(), SWT.Modify), FIXObservables
 					.observeValue(realm, message, Account.FIELD, dictionary),
@@ -403,9 +408,9 @@ public class OrderTicketControllerHelper {
 						inputControlErrorStatus.put(aControl, status);
 						ticket.showErrorMessage(status.getMessage(), status
 								.getSeverity());
-						aControl.setBackground( colorRed );
+						aControl.setBackground(colorRed);
 					} else {
-						aControl.setBackground( null );
+						aControl.setBackground(null);
 						if (inputControlErrorStatus.containsKey(aControl)) {
 							inputControlErrorStatus.remove(aControl);
 						}
