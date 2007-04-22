@@ -425,7 +425,7 @@ public class OrderTicketControllerHelper {
 	private void addControlStateListeners(Control control,
 			final IToggledValidator validator) {
 
-		control.addListener(SWT.Modify, new Listener() {
+		control.addListener(SWT.FocusIn, new Listener() {
 			private boolean initialState = true;
 
 			public void handleEvent(Event event) {
@@ -433,6 +433,13 @@ public class OrderTicketControllerHelper {
 					initialState = false;
 					validator.setEnabled(true);
 				}
+				updateSendButtonState();
+			}
+
+		});
+		
+		control.addListener(SWT.Modify, new Listener() {
+			public void handleEvent(Event event) {
 				if (!controlsRequiringUserInput.isEmpty()
 						&& event.widget instanceof Control) {
 					Control aControl = (Control) event.widget;
