@@ -57,7 +57,25 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private CCombo openCloseCCombo;
 
+	private OptionOrderTicketController optionOrderTicketController;
+
 	public OptionOrderTicket() {
+	}
+
+	public OptionOrderTicketController getOptionOrderTicketController() {
+		return optionOrderTicketController;
+	}
+
+	@Override
+	protected void postCreatePartControl() {
+		optionOrderTicketController = new OptionOrderTicketController(this);
+	}
+
+	@Override
+	public void dispose() {
+		safelyDispose(optionOrderTicketController);
+
+		super.dispose();
 	}
 
 	@Override

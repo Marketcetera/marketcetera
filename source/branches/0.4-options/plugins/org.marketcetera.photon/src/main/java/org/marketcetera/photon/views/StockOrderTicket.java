@@ -29,6 +29,8 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 
 	private Text accountText;
 
+	private StockOrderTicketController stockOrderTicketController;
+
 	public StockOrderTicket() {
 
 	}
@@ -36,6 +38,22 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 	@Override
 	protected int getNumColumnsInForm() {
 		return 5;
+	}
+
+	public StockOrderTicketController getStockOrderTicketController() {
+		return stockOrderTicketController;
+	}
+
+	@Override
+	protected void postCreatePartControl() {
+		stockOrderTicketController = new StockOrderTicketController(this);
+	}
+
+	@Override
+	public void dispose() {
+		safelyDispose(stockOrderTicketController);
+
+		super.dispose();
 	}
 
 	@Override
