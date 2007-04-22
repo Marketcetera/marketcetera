@@ -19,7 +19,6 @@ import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -32,11 +31,8 @@ import org.springframework.jms.core.ProducerCallback;
 import org.springframework.jms.core.SessionCallback;
 
 import quickfix.FieldNotFound;
-import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.field.DeliverToCompID;
-import quickfix.field.EncodedText;
-import quickfix.field.EncodedTextLen;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntryType;
@@ -74,7 +70,8 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			fail("Test view was not created");
 		}
 		IStockOrderTicket ticket = (IStockOrderTicket) theTestView;
-		controller = new StockOrderTicketController(ticket);
+		controller = new StockOrderTicketController();
+		controller.bind(ticket);
 	}
 
     @Override

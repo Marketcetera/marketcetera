@@ -45,8 +45,11 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 	}
 
 	@Override
-	protected void postCreatePartControl() {
-		stockOrderTicketController = new StockOrderTicketController(this);
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+
+		stockOrderTicketController = new StockOrderTicketController();
+		stockOrderTicketController.bind(this);
 	}
 
 	@Override

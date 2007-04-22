@@ -2,11 +2,12 @@ package org.marketcetera.photon.views;
 
 import quickfix.Message;
 
-public abstract class AbstractOrderTicketController implements IOrderTicketController {
-	
+public abstract class AbstractOrderTicketController implements
+		IOrderTicketController {
+
 	public AbstractOrderTicketController() {
 	}
-	
+
 	/**
 	 * @return an OrderTicketControllerHelper, never null.
 	 */
