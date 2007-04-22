@@ -67,8 +67,11 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 
 	@Override
-	protected void postCreatePartControl() {
-		optionOrderTicketController = new OptionOrderTicketController(this);
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+
+		optionOrderTicketController = new OptionOrderTicketController();
+		optionOrderTicketController.bind(this);
 	}
 
 	@Override
@@ -136,6 +139,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		// todo: Dynamically populate expiration choices from market data
 		expireMonthCCombo.add("Sept");
 		expireMonthCCombo.add("Dec");
+		
+		orderTicketViewPieces.addInputControlErrorDecoration(expireMonthCCombo);
 	}
 
 	private void addSelectAllFocusListener(Control control) {
@@ -158,6 +163,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		// textGridData.heightHint = sizeHint.y;
 		textGridData.widthHint = sizeHint.x;
 		strikeText.setLayoutData(textGridData);
+		
+		orderTicketViewPieces.addInputControlErrorDecoration(strikeText);
 	}
 
 	private void createExpireYearBorderComposite() {
@@ -165,12 +172,16 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		// todo: Dynamically populate year choices from market data.
 		expireYearCCombo.add("07");
 		expireYearCCombo.add("08");
+		
+		orderTicketViewPieces.addInputControlErrorDecoration(expireYearCCombo);
 	}
 
 	private void createPutOrCallBorderComposite() {
 		putOrCallCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
 		putOrCallCCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCCombo.add(PutOrCallImage.CALL.getImage());
+		
+		orderTicketViewPieces.addInputControlErrorDecoration(putOrCallCCombo);
 	}
 
 	private GridLayout createStandardBorderGridLayout() {
@@ -218,13 +229,14 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		openCloseLabel.setLayoutData(createStandardSingleColumnGridData());
 		openCloseCCombo = createFixFieldImageComboEntry(otherComposite,
 				"OpenClose", OpenClose.FIELD, OpenCloseImage.values());
-
+		orderTicketViewPieces.addInputControlErrorDecoration(openCloseCCombo);
+		
 		Label capacityLabel = getFormToolkit().createLabel(otherComposite,
 				"Capacity");
 		capacityLabel.setLayoutData(createStandardSingleColumnGridData());
 		orderCapacityCCombo = createFixFieldImageComboEntry(otherComposite,
 				"Capacity", OrderCapacity.FIELD, OrderCapacityImage.values());
-
+		orderTicketViewPieces.addInputControlErrorDecoration(orderCapacityCCombo);
 	}
 
 	private void addComboChoicesFromLexerEnum(CCombo combo,

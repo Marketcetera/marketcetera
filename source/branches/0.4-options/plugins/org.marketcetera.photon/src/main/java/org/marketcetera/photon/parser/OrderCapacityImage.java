@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import quickfix.field.OrderCapacity;
+import quickfix.field.CustomerOrFirm;
 
 public enum OrderCapacityImage implements ILexerFIXImage  {
-	CUSTOMER("Customer", OrderCapacity.AGENCY), BROKERDEALER("Broker/Dealer", OrderCapacity.PRINCIPAL), MARKETMAKER("Market Maker", OrderCapacity.PROPRIETARY);
+	// todo: This mapping needs to be revised. See http://trac.marketcetera.org/trac.fcgi/ticket/185
+    //	CUSTOMER("Customer", OrderCapacity.AGENCY), BROKERDEALER("Broker/Dealer", OrderCapacity.PRINCIPAL), MARKETMAKER("Market Maker", OrderCapacity.PROPRIETARY);
+	CUSTOMER("Customer", CustomerOrFirm.CUSTOMER), BROKERDEALER("Broker/Dealer", CustomerOrFirm.FIRM), MARKETMAKER("Market Maker", CustomerOrFirm.FIRM);
 	static final Map<String, OrderCapacityImage> nameMap = new HashMap<String, OrderCapacityImage>();
 	private static final String[] images;
 
@@ -21,8 +23,8 @@ public enum OrderCapacityImage implements ILexerFIXImage  {
 	}
 
 	private String image;
-	private final char fixValue;
-	OrderCapacityImage(String s, char fixValue) {
+	private final int fixValue;
+	OrderCapacityImage(String s, int fixValue) {
 		image = s;
 		this.fixValue = fixValue;
 	}
@@ -36,7 +38,7 @@ public enum OrderCapacityImage implements ILexerFIXImage  {
 		return images;
 	}
 	public char getFIXCharValue() {
-		return fixValue;
+		return (char) fixValue;
 	}
 	public int getFIXIntValue() {
 		return fixValue;

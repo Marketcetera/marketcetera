@@ -94,16 +94,6 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		plugin.getPreferenceStore().addPropertyChangeListener(this);
-		
-		postCreatePartControl();
-	}
-	
-	/**
-	 * Derived classes can use this method to hook at the end of
-	 * createPartControl().
-	 */
-	protected void postCreatePartControl() {
-
 	}
 	
 	protected void createTopComposite(Composite parent) {
