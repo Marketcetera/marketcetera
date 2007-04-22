@@ -94,8 +94,18 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		plugin.getPreferenceStore().addPropertyChangeListener(this);
+		
+		postCreatePartControl();
 	}
+	
+	/**
+	 * Derived classes can use this method to hook at the end of
+	 * createPartControl().
+	 */
+	protected void postCreatePartControl() {
 
+	}
+	
 	protected void createTopComposite(Composite parent) {
 		outermostComposite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout();
@@ -274,6 +284,16 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		if (customFieldsViewPieces != null) {
 			customFieldsViewPieces.restoreCustomFieldsTableItemCheckedState(
 					viewStateMemento, CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX);
+		}
+	}
+	
+	protected void safelyDispose(IOrderTicketController orderTicketController) {
+		try {
+			orderTicketController.dispose();
+		} catch (Exception anyException) {
+			PhotonPlugin.getMainConsoleLogger().warn(
+					"Failed to dispose of order ticket controller. " + orderTicketController,
+					anyException);
 		}
 	}
 	

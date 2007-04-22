@@ -118,14 +118,16 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		startJMS();
 		startMarketDataFeed();
 		startIDFactory();
-		// todo: A new controller should be associated with each new view. This method, postWindowOpen, is not executed after view creation. If a new StockOrderTicket view is created, it will not have a controller.  
+		// todo: Multiple order ticket views can exist and the
+		// PhotonPlugin.setStockOrderTicketController and
+		// setOptionOrderTicketController will not work properly.
 		if (StockOrderTicket.getDefault() != null) {
-			plugin.setStockOrderTicketController(new StockOrderTicketController(
-							StockOrderTicket.getDefault()));
+			plugin.setStockOrderTicketController(StockOrderTicket.getDefault()
+					.getStockOrderTicketController());
 		}
 		if (OptionOrderTicket.getDefault() != null) {
-			plugin.setOptionOrderTicketController(new OptionOrderTicketController(
-							OptionOrderTicket.getDefault()));
+			plugin.setOptionOrderTicketController(OptionOrderTicket
+					.getDefault().getOptionOrderTicketController());
 		}
 	}
 
