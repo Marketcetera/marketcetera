@@ -312,6 +312,7 @@ public class OrderTicketControllerHelper {
 			Realm realm = Realm.getDefault();
 			// todo: Refactor to use BindingHelper for UpdateValueStrategy
 			// creation.
+			final int swtEvent = SWT.Modify;
 			{
 				Control whichControl = ticket.getSideCCombo();
 				IToggledValidator validator = (IToggledValidator) sideConverterBuilder
@@ -336,7 +337,7 @@ public class OrderTicketControllerHelper {
 				dataBindingContext
 						.bindValue(
 								SWTObservables.observeText(whichControl,
-										SWT.Modify),
+										swtEvent),
 								FIXObservables.observeValue(realm, message,
 										OrderQty.FIELD, dictionary),
 								new UpdateValueStrategy().setAfterGetValidator(
@@ -352,7 +353,7 @@ public class OrderTicketControllerHelper {
 				IToggledValidator validator = new StringRequiredValidator();
 				validator.setEnabled(false);
 				dataBindingContext.bindValue(SWTObservables.observeText(
-						whichControl, SWT.Modify), FIXObservables.observeValue(
+						whichControl, swtEvent), FIXObservables.observeValue(
 						realm, message, Symbol.FIELD, dictionary),
 						new UpdateValueStrategy()
 								.setAfterGetValidator(validator),
@@ -366,7 +367,7 @@ public class OrderTicketControllerHelper {
 						.newTargetAfterGetValidator();
 				validator.setEnabled(false);
 				dataBindingContext.bindValue(SWTObservables.observeText(
-						whichControl, SWT.Modify), FIXObservables
+						whichControl, swtEvent), FIXObservables
 						.observePriceValue(realm, message, Price.FIELD,
 								dictionary), new UpdateValueStrategy()
 						.setAfterGetValidator(validator).setConverter(
@@ -405,7 +406,7 @@ public class OrderTicketControllerHelper {
 				addControlRequiringUserInput(whichControl);
 			}
 			dataBindingContext.bindValue(SWTObservables.observeText(ticket
-					.getAccountText(), SWT.Modify), FIXObservables
+					.getAccountText(), swtEvent), FIXObservables
 					.observeValue(realm, message, Account.FIELD, dictionary),
 					new UpdateValueStrategy(), new UpdateValueStrategy());
 
