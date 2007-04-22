@@ -1,5 +1,9 @@
 package org.marketcetera.photon.views;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
@@ -137,9 +141,19 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		checkOutermostFormInitialized();
 		expireMonthCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate expiration choices from market data
-		expireMonthCCombo.add("Sept");
-		expireMonthCCombo.add("Dec");
-		
+
+		SimpleDateFormat formatter = new SimpleDateFormat("MMM");
+		GregorianCalendar calendar = new GregorianCalendar();
+		final int minMonth = calendar.getMinimum(Calendar.MONTH);
+		final int maxMonth = calendar.getMaximum(Calendar.MONTH);
+		for (int month = minMonth; month <= maxMonth; ++month) {
+			calendar.set(Calendar.MONTH, month);
+			java.util.Date monthTime = calendar.getTime();
+			String monthStr = formatter.format(monthTime);
+			monthStr = monthStr.toUpperCase();
+			expireMonthCCombo.add(monthStr);
+		}
+
 		orderTicketViewPieces.addInputControlErrorDecoration(expireMonthCCombo);
 	}
 
@@ -163,16 +177,23 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		// textGridData.heightHint = sizeHint.y;
 		textGridData.widthHint = sizeHint.x;
 		strikeText.setLayoutData(textGridData);
-		
+
 		orderTicketViewPieces.addInputControlErrorDecoration(strikeText);
 	}
 
 	private void createExpireYearBorderComposite() {
 		expireYearCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate year choices from market data.
-		expireYearCCombo.add("07");
-		expireYearCCombo.add("08");
-		
+		final int maxYear = 12;
+		for (int currentYear = 7; currentYear <= maxYear; ++currentYear) {
+			StringBuilder year = new StringBuilder();
+			if (currentYear < 10) {
+				year.append("0");
+			}
+			year.append(currentYear);
+			expireYearCCombo.add(year.toString());
+		}
+
 		orderTicketViewPieces.addInputControlErrorDecoration(expireYearCCombo);
 	}
 
@@ -180,7 +201,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		putOrCallCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
 		putOrCallCCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCCombo.add(PutOrCallImage.CALL.getImage());
-		
+
 		orderTicketViewPieces.addInputControlErrorDecoration(putOrCallCCombo);
 	}
 
@@ -230,13 +251,14 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		openCloseCCombo = createFixFieldImageComboEntry(otherComposite,
 				"OpenClose", OpenClose.FIELD, OpenCloseImage.values());
 		orderTicketViewPieces.addInputControlErrorDecoration(openCloseCCombo);
-		
+
 		Label capacityLabel = getFormToolkit().createLabel(otherComposite,
 				"Capacity");
 		capacityLabel.setLayoutData(createStandardSingleColumnGridData());
 		orderCapacityCCombo = createFixFieldImageComboEntry(otherComposite,
 				"Capacity", OrderCapacity.FIELD, OrderCapacityImage.values());
-		orderTicketViewPieces.addInputControlErrorDecoration(orderCapacityCCombo);
+		orderTicketViewPieces
+				.addInputControlErrorDecoration(orderCapacityCCombo);
 	}
 
 	private void addComboChoicesFromLexerEnum(CCombo combo,
