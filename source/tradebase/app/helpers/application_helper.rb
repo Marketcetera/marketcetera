@@ -24,36 +24,6 @@ module ApplicationHelper
   
   end
 
-  # Designed to create a date from something that may look like this:
-  # params={"trade"=>{"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10","journal_post_date(3i)"=>"11"}}
-  # Basically, we have a params[:trade][:journal_post_date(xi)] series of values
-  def parse_date_from_params(params, object_name, tag_name)
-    if(params[object_name].blank? ||
-       params[object_name][tag_name+"(1i)"].blank? ||
-       params[object_name][tag_name+"(2i)"].blank? ||
-       params[object_name][tag_name+"(3i)"].blank?) 
-      return nil
-    end
-
-    return Date.new(Integer(params[object_name][tag_name+"(1i)"]), 
-                      Integer(params[object_name][tag_name+"(2i)"]), 
-                      Integer(params[object_name][tag_name+"(3i)"]))
-  end
-  
-  # Take 2 params: either the nested hash or a flat varname stringified date and return whichever is setup, 
-  # giving the nested one preference
-  # Leverages the above function, but is useful for when you need to specify the date as a param 
-  # in the pagination_links function and it currently doesn't accept two-named nested hash
-  def get_date_from_params(params, nested_parent, nested_child, secondary)
-    parent = params[nested_parent]
-    if(!parent.nil?)
-        return parse_date_from_params(params, nested_parent, nested_child)
-    end
-    secondaryStr = params[secondary]
-    return (secondaryStr.blank?) ? nil : Date.parse(secondaryStr)
-  end  
-  
-  
   # Displays all the table columns except for the created_on/updated_on columns
   # ex:   <%= show_relevant_table_columns(Currency.new, true) %>
   def show_relevant_table_columns(inObject, isHeader)

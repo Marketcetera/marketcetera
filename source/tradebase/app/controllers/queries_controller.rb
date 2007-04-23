@@ -36,13 +36,13 @@ class QueriesController < ApplicationController
   end
   
   def on_date
-    @on_date = get_date_from_params(params, :date, "on", "on_date") 
+    @on_date = VDate.get_date_from_params(params, :date, "on", "on_date").as_date
     by_date_helper(@on_date, @on_date)
   end
   
   def by_date
-    @from_date = get_date_from_params(params, :date, "from", "from_date")
-    @to_date = get_date_from_params(params, :date, "to", "to_date")
+    @from_date = VDate.get_date_from_params(params, :date, "from", "from_date").as_date
+    @to_date = VDate.get_date_from_params(params, :date, "to", "to_date").as_date
     by_date_helper(@from_date, @to_date)
   end
 

@@ -1,11 +1,7 @@
-require 'acts_as_versioned'
-
 class Mark < ActiveRecord::Base
 
   belongs_to :equity
  
-#  acts_as_versioned :limit => 1
-  
   MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
 
   validates_uniqueness_of :mark_date, :scope => :equity_id, 

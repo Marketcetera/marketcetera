@@ -13,7 +13,7 @@ class PositionsQueriesController < ApplicationController
   end
 
   def positions_as_of
-    as_of_date = get_date_from_params(params, :position, "as_of", "as_of_date")
+    as_of_date = VDate.get_date_from_params(params, :position, "as_of", "as_of_date").as_date
     if(as_of_date.blank?) 
       as_of_date = Date.today
     end

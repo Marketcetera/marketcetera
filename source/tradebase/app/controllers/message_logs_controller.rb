@@ -16,8 +16,8 @@ class MessageLogsController < ApplicationController
   def list
     fSubsetSearch = params[:search_type] == 's'
     if(fSubsetSearch)
-      @startDate = parse_date_from_params(params, :dates, "start_date")
-      @endDate = parse_date_from_params(params, :dates, "end_date")
+      @startDate = VDate.parse_date_from_params(params, :dates, "start_date").as_date
+      @endDate = VDate.parse_date_from_params(params, :dates, "end_date").as_date
     end
     all_exec_reports = []
     @failed_msg = []

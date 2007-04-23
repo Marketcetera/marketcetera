@@ -1,28 +1,30 @@
-<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "P & L", :top_level_controller => 'pnl'} %>
-<h1>P & L</h1>
-<p>Please choose from the following P & L calculations:</p>
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "P &amp; L", :top_level_controller => 'pnl'} %>
+<h1>P &amp; L</h1>
+<p>Please choose from the following P &amp; L calculations:</p>
     <% form_tag :action => 'by_account' do -%>
         <fieldset>
-            <h2>P & L by Account</h2>
-            <p>Compute a P & L for a particular account.</p>
+            <h2>P &amp; L by Account</h2>
+            <p>Compute a P &amp; L for a particular account.</p>
             <label for="account_nickname">Account</label>
             <%= text_field_with_auto_complete :account, :nickname %>
-            <%= render :partial => 'shared/from_to_date_fields' %>
+            <%= render :partial => 'shared/from_to_date_fields', :locals => { :suffix => "acct" } %>
+            <input type="hidden" name='suffix' value="acct"/>
         </fieldset>
         <div>
-            <%= submit_tag 'P & L by Account', :class => "submit floatright"  %>
+            <%= submit_tag 'P &amp; L by Account', :class => "submit floatright"  %>
             <div class="clear"></div>
         </div>
     <% end -%>
 
     <% form_tag :action => 'by_date' do -%>
         <fieldset>
-            <h2>P & L by Dates</h2>
-            <p>Compute a P & L across all accounts for a range of dates</p>
-            <%= render :partial => 'shared/from_to_date_fields' %>
+            <h2>P &amp; L by Dates</h2>
+            <p>Compute a P &amp; L across all accounts for a range of dates</p>
+            <%= render :partial => 'shared/from_to_date_fields', :locals => { :suffix => "date" } %>
+            <input type="hidden" name='suffix' value="date"/>
         </fieldset>
         <div>
-            <%= submit_tag 'P & L for Dates', :class => "submit floatright"  %>
+            <%= submit_tag 'P &amp; L for Dates', :class => "submit floatright"  %>
             <div class="clear"></div>
         </div>
     <% end -%>

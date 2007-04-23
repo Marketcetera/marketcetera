@@ -40,7 +40,7 @@
             <fieldset>
                 <h2>Trades By Date</h2>
                 <p>List all trades posting between specified dates.</p>
-                <%= render :partial => 'shared/from_to_date_fields' %>
+                <%= render :partial => 'shared/from_to_date_fields', :locals => { :suffix => "acct" }  %>
             </fieldset>
             <div>
                 <%= submit_tag 'Search by Date', :class => "submit floatright"  %>

@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "P & L", :action_name => "View Mark", :top_level_controller => @controller.controller_name } %>
+    :locals=> { :top_level => "P &amp; L", :action_name => "View Mark", :top_level_controller => @controller.controller_name } %>
 <h1>Mark for <%= @mark.equity.m_symbol.root %></h1>
 
 <form action="">
@@ -14,7 +14,7 @@
         <div class="form_right">
 
             <label for="mark_type" class="view_background">Type</label>
-            <div id="mark_date" class="data view_data"><%=df @mark.mark_type %></div>
+            <div id="mark_type" class="data view_data"><%=df @mark.mark_type %></div>
             
             <label for="mark_date" class="view_background">Date</label>
             <div id="mark_date" class="data view_data"><%=df @mark.mark_date %></div>

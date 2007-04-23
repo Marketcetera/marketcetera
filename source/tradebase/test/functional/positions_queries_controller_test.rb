@@ -15,10 +15,10 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
   end
 
   # essentially, the same as 'list' if no date is specified
-  def test_positions_as_of_no_date_specified
+  def test_positions_as_of_specified
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
-    get :positions_as_of
+    get :positions_as_of, { "position"=>{"as_of(1i)"=>"2007", "as_of(2i)"=>"10", "as_of(3i)"=>"30"}}
 
     assert_response :success
     assert_template 'positions_search_output'
@@ -30,7 +30,7 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
   end
 
   # essentially, specify date in future
-  def test_positions_as
+  def test_positions_as_of_future
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     get :positions_as_of, { "position"=>{"as_of(1i)"=>"2006", "as_of(2i)"=>"10", "as_of(3i)"=>"30"}}
