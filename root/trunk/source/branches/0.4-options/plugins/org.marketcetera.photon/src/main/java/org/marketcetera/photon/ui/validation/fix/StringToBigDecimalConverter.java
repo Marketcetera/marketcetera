@@ -10,20 +10,20 @@ public class StringToBigDecimalConverter extends Converter {
 
 	private final NumberFormat numberFormat;
 
-	public StringToBigDecimalConverter(){
+	public StringToBigDecimalConverter() {
 		this(NumberFormat.getNumberInstance());
 	}
-	
+
 	public StringToBigDecimalConverter(NumberFormat numberFormat) {
 		super(String.class, BigDecimal.class);
 		this.numberFormat = numberFormat;
-		
+
 	}
 
 	public Object convert(Object fromObject) {
 		if (!(fromObject instanceof String)) {
 			throw new IllegalArgumentException(
-					"'fromObject' not instanceof String"); //$NON-NLS-1$
+					"The value " + fromObject + " is not valid."); //$NON-NLS-1$
 		}
 		String source = (String) fromObject;
 		if (source.trim().length() == 0) {
@@ -42,10 +42,9 @@ public class StringToBigDecimalConverter extends Converter {
 						.getErrorIndex() : position.getIndex();
 
 				throw new IllegalArgumentException(
-						"FromObject " + fromObject + " was invalid at character " + errorIndex); //$NON-NLS-1$ //$NON-NLS-2$
+						"The value " + fromObject + " is not a valid decimal at character index: " + errorIndex); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		
 
 		return new BigDecimal(source);
 
