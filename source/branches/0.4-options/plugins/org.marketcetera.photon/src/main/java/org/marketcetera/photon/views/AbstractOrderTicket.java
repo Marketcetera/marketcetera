@@ -46,6 +46,8 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 	protected FormToolkit formToolkit;
 
 	protected Label errorMessageLabel;
+	
+	protected Label errorIconLabel;
 
 	protected OrderTicketViewPieces orderTicketViewPieces;
 
@@ -87,6 +89,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		createForm();
 		createViewPieces();
 		createFormContents();
+		createErrorIconLabel();
 		createErrorLabel();
 		addCustomFieldsExpansionListener();
 
@@ -99,6 +102,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 	protected void createTopComposite(Composite parent) {
 		outermostComposite = new Composite(parent, SWT.NONE);
 		GridLayout gridLayout = new GridLayout();
+		gridLayout.numColumns = 2;
 		gridLayout.marginWidth = 0;
 		gridLayout.marginHeight = 0;
 		outermostComposite.setLayout(gridLayout);
@@ -111,7 +115,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		gridLayout.verticalSpacing = 1;
 		// The horizontalSpacing needs to be wide enough to show the error image
 		// in ControlDecoration.
-		gridLayout.horizontalSpacing = 6;
+		gridLayout.horizontalSpacing = 10;
 		gridLayout.marginHeight = 1;
 		outermostForm = getFormToolkit().createScrolledForm(outermostComposite);
 		outermostForm.getBody().setLayout(gridLayout);
@@ -122,6 +126,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		formGridData.horizontalAlignment = GridData.FILL;
 		formGridData.grabExcessVerticalSpace = true;
 		formGridData.verticalAlignment = GridData.FILL;
+		formGridData.horizontalSpan = 2;
 		outermostForm.setLayoutData(formGridData);
 	}
 
@@ -244,6 +249,17 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		errorMessageLabel.setLayoutData(gridData);
 		outermostComposite.setBackground(errorMessageLabel.getBackground());
 	}
+	
+	protected void createErrorIconLabel() {
+		GridData iconGridData = new GridData();
+		iconGridData.horizontalAlignment = GridData.BEGINNING;
+		iconGridData.verticalAlignment = GridData.END;
+		iconGridData.horizontalIndent = 3;
+		iconGridData.widthHint = 7;
+		errorIconLabel = getFormToolkit().createLabel(outermostComposite, null);
+		errorIconLabel.setImage(null);
+		errorIconLabel.setLayoutData(iconGridData);
+	}
 
 	public void propertyChange(PropertyChangeEvent event) {
 		String property = event.getProperty();
@@ -301,6 +317,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 	public void clearMessage() {
 		errorMessageLabel.setText("");
+		errorIconLabel.setImage(null);		
 	}
 
 	public void showMessage(Message order) {
@@ -355,7 +372,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 	public void showErrorMessage(String errorMessage, int severity) {
 		orderTicketViewPieces.showErrorMessage(errorMessage, severity,
-				errorMessageLabel, sendButton);
+				errorMessageLabel, errorIconLabel, sendButton);
 	}
 
 	public void clearErrors() {
