@@ -75,7 +75,6 @@ public class OrderTicketViewPieces {
 	public void addInputControlErrorDecoration(Control control) {
 		ControlDecoration cd = new ControlDecoration(control, SWT.LEFT
 				| SWT.BOTTOM);
-		cd.setMarginWidth(2);
 		cd.setImage(errorImage);
 		cd.hide();
 		control.setData(CONTROL_DECORATOR_KEY, cd);
@@ -183,11 +182,20 @@ public class OrderTicketViewPieces {
 	 * and severity.
 	 */
 	public void showErrorMessage(String errorMessage, int severity,
-			Label errorMessageLabel, Button sendButton) {
+			Label errorMessageLabel, Label errorIconLabel, Button sendButton) {
 		if (errorMessage == null) {
 			errorMessageLabel.setText("");
+			errorIconLabel.setImage(null);
 		} else {
 			errorMessageLabel.setText(errorMessage);
+			if (severity == IStatus.OK) {
+				errorIconLabel.setImage(null);
+			} else {
+				if (severity == IStatus.ERROR)
+					errorIconLabel.setImage(errorImage);
+				else
+					errorIconLabel.setImage(warningImage);
+			}
 		}
 
 		// todo: Remove the below code if it remains unused.
