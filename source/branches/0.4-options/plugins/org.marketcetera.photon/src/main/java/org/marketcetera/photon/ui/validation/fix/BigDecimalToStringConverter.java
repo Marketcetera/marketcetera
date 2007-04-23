@@ -11,6 +11,7 @@ public class BigDecimalToStringConverter extends Converter {
 	private NumberFormat numberFormat;
 
 	public BigDecimalToStringConverter(){
+		// todo: Shouldn't we call super(BigDecimal.class, String.class);
 		this(NumberFormat.getNumberInstance());
 	}
 	

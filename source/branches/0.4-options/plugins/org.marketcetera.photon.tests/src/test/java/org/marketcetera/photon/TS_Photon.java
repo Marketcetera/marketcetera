@@ -13,7 +13,7 @@ import org.marketcetera.photon.scripting.ClasspathTest;
 import org.marketcetera.photon.scripting.JRubyBSFTest;
 import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
 import org.marketcetera.photon.scripting.ScriptRegistryTest;
-import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverterTest;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilderTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
@@ -46,6 +46,7 @@ public class TS_Photon {
 		suite.addTestSuite(MarketDataViewTest.class);
 		suite.addTestSuite(BogusFeedTest.class);
 		suite.addTestSuite(PriceConverterBuilderTest.class);
+		suite.addTestSuite(DateToStringCustomConverterTest.class);
 		return suite;
 	}
 
