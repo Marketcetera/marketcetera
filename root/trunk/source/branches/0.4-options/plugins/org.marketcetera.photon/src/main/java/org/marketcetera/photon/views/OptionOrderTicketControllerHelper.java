@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
@@ -10,13 +11,17 @@ import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
+import org.marketcetera.photon.ui.validation.StringRequiredValidator;
+import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.CustomerOrFirm;
+import quickfix.field.ExpireDate;
 import quickfix.field.OpenClose;
 import quickfix.field.OrdType;
 import quickfix.field.PutOrCall;
@@ -60,9 +65,44 @@ public class OptionOrderTicketControllerHelper extends
 		DataBindingContext dataBindingContext = getDataBindingContext();
 		DataDictionary dictionary = getDictionary();
 
-		// todo: ExpireDate.FIELD bindings to
-		// ticket.getExpireYearCCombo() and
-		// ticket.getExpireMonthCCombo()
+		// todo: Handle the Days part of the date.
+		
+		// ExpireDate Month
+		{
+			Control whichControl = optionTicket.getExpireMonthCCombo();
+			IToggledValidator validator = new StringRequiredValidator();
+			validator.setEnabled(false);
+			dataBindingContext.bindValue(SWTObservables
+					.observeText(whichControl), FIXObservables
+					.observeMonthDateValue(realm, message, ExpireDate.FIELD,
+							dictionary), new UpdateValueStrategy()
+					.setAfterGetValidator(validator).setConverter(
+							new StringToDateCustomConverter(
+									DateToStringCustomConverter.MONTH_FORMAT)),
+					new UpdateValueStrategy()
+							.setConverter(new DateToStringCustomConverter(
+									DateToStringCustomConverter.MONTH_FORMAT)));
+			addControlStateListeners(whichControl, validator);
+			addControlRequiringUserInput(whichControl);
+		}
+		// ExpireDate Year
+		{
+			Control whichControl = optionTicket.getExpireYearCCombo();
+			IToggledValidator validator = new StringRequiredValidator();
+			validator.setEnabled(false);
+			dataBindingContext.bindValue(SWTObservables
+					.observeText(whichControl), FIXObservables
+					.observeMonthDateValue(realm, message, ExpireDate.FIELD,
+							dictionary), new UpdateValueStrategy()
+					.setAfterGetValidator(validator).setConverter(
+							new StringToDateCustomConverter(
+									DateToStringCustomConverter.YEAR_FORMAT)),
+					new UpdateValueStrategy()
+							.setConverter(new DateToStringCustomConverter(
+									DateToStringCustomConverter.YEAR_FORMAT)));
+			addControlStateListeners(whichControl, validator);
+			addControlRequiringUserInput(whichControl);
+		}
 
 		final int swtEvent = SWT.Modify;
 		// StrikePrice
@@ -123,8 +163,8 @@ public class OptionOrderTicketControllerHelper extends
 			validator.setEnabled(false);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
-					realm, message, OpenClose.FIELD, dictionary),
-					bindingHelper.createToModelUpdateValueStrategy(
+					realm, message, OpenClose.FIELD, dictionary), bindingHelper
+					.createToModelUpdateValueStrategy(
 							openCloseConverterBuilder, validator),
 					bindingHelper.createToTargetUpdateValueStrategy(
 							openCloseConverterBuilder, validator));
