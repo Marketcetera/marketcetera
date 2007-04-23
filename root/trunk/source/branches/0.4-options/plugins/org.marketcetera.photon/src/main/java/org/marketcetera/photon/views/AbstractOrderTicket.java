@@ -173,6 +173,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 		bookComposite = new BookComposite(bookSection, SWT.NONE,
 				getFormToolkit());
+		bookComposite.setBackground(bookSection.getBackground()); 
 		bookSection.setClient(bookComposite);
 	}
 	
