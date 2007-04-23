@@ -35,7 +35,7 @@ class TradesController < ApplicationController
     logger.debug("initial trade creation, qty is: "+@trade.quantity.to_s)
     begin
       Trade.transaction() do
-        trade_date = parse_date_from_params(params, :trade, "journal_post_date")
+        trade_date = VDate.parse_date_from_params(params, :trade, "journal_post_date").as_date
         @trade.create_equity_trade(@trade.quantity, 
             get_non_empty_string_from_two(params, :m_symbol, :root, nil), 
             @trade.price_per_share, 
@@ -72,7 +72,7 @@ class TradesController < ApplicationController
         @trade.tradeable_m_symbol_root = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
         @trade.account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil)
         @trade.currency = Currency.get_currency(get_non_empty_string_from_two(params, :currency, :alpha_code, nil))
-        @trade.journal_post_date = parse_date_from_params(params, :trade, :journal_post_date.to_s)
+        @trade.journal_post_date = VDate.parse_date_from_params(params, :trade, :journal_post_date.to_s).as_date
         @trade.side = params[:trade][:side]
         @trade.quantity = params[:trade][:quantity]
         @trade.price_per_share = params[:trade][:price_per_share]

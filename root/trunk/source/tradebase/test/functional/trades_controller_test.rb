@@ -92,7 +92,8 @@ class TradesControllerTest < MarketceteraTestBase
   def test_create_no_args
     num_trades = Trade.count
 
-    post :create, :trade => {}
+    # todo: remove date arg once we switch to date validation
+    post :create, :trade => {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"}
 
     assert_template 'new'
     assert_equal 4, assigns(:trade).errors.length, "number of validation errors"

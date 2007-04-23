@@ -4,7 +4,6 @@
   <th>Value</th>
   <th>Type</th>
   <th>Date</th>
-  <th>Version</th>
   <th colspan="3"/>
   </tr>
  
@@ -15,7 +14,6 @@
     <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(mark.mark_value, 2) %></td>
     <td><%=h mark.mark_type %></td>
     <td><%=h mark.mark_date %></td>
-    <td><%=h mark.version %></td>
     <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => mark, :controller_name => 'marks'} %>
   </tr>
 <% end %>

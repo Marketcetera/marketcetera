@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "P & L", :action_name => "List Marks", :top_level_controller => 'pnl' } %>
+    :locals=> { :top_level => "P &amp; L", :action_name => "List Marks", :top_level_controller => 'pnl' } %>
 <% if(@from_date.blank?)%>
     <h1>Listing Marks for <%=h @param_value %> up to <%= @to_date %></h1>
 <% else %>

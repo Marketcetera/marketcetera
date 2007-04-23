@@ -10,8 +10,8 @@ class PnlController < ApplicationController
   def by_account
     nickname = get_non_empty_string_from_two(params, :account, :nickname, "nickname")
     theAcct = Account.find_by_nickname(nickname)
-    @from_date = get_date_from_params(params, :date, "from", "from_date")
-    @to_date = get_date_from_params(params, :date, "to", "to_date")
+    @from_date = VDate.get_date_from_params(params, :date, "from", "from_date").as_date
+    @to_date = VDate.get_date_from_params(params, :date, "to", "to_date").as_date
     if(@to_date.blank?) 
       @to_date = Date.today 
     end
@@ -31,11 +31,14 @@ class PnlController < ApplicationController
   end
 
   def by_date
-    @from_date = get_date_from_params(params, :date, "from", "from_date")
-    @to_date = get_date_from_params(params, :date, "to", "to_date")
-    if(@to_date.blank?) 
-      @to_date = Date.today 
+    suffix = (params[:suffix].nil?) ? '' : params[:suffix]
+    @report = ReportWithToFromDates.new(params, suffix)
+    if(!@report.valid?)
+      render :action => :index
+      return
     end
+    @from_date = @report.from_date.as_date
+    @to_date = @report.to_date.as_date
     
     @cashflows = CashFlow.get_cashflows_from_to_in_acct(nil, @from_date, @to_date)
     
