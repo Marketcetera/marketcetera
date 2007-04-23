@@ -100,7 +100,8 @@ public class OrderTicketViewPieces {
 
 		GridData quantityTextGridData = new GridData();
 		// quantityTextGridData.heightHint = sizeHint.y;
-		quantityTextGridData.widthHint = sizeHint.x;
+		quantityTextGridData.widthHint = sizeHint.x ;
+		quantityTextGridData.horizontalAlignment = GridData.FILL;
 		quantityText.setLayoutData(quantityTextGridData);
 
 		quantityText.addFocusListener(new FocusAdapter() {
