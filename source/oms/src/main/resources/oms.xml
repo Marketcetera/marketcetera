@@ -59,7 +59,7 @@
 
     <!-- Location (host/port) of the FIX reciever we are connecting to -->
     <bean id="socketConnectHostValue" class="java.lang.String">
-        <constructor-arg value="localhost"/>
+        <constructor-arg value="exchange.marketcetera.org"/>
     </bean>
     <bean id="socketConnectPortValue" class="java.lang.String">
         <constructor-arg value="7001"/>
