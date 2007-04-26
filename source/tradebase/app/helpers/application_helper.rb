@@ -102,6 +102,12 @@ module ApplicationHelper
     theString
   end
   
+  # A wrapper around the regular error_messages_for, except for it substitutes the error 
+  # messages to say "prohibeted from ... being executed" instead of '... from being saved"
+  def error_messages_for_report(*params)
+    (error_messages_for(params)).gsub("being saved", "being executed")
+  end
+  
   # Replaces spaces with &nbsp; - to be used for Account and Symbol names
   # this effectively makes spaces "hard" so they won't wrap.
   # Keep in mind that we need to call h() on the incoming string before this function is called 

@@ -9,11 +9,17 @@ class SubAccountType < ActiveRecord::Base
     :commissions => "Commissions",
     :interestRevenue => "Interest Revenue",
   }
+
+  @@cash = SubAccountType.find_by_description(DESCRIPTIONS[:cash])
+
+  def SubAccountType.CASH
+      @@cash
+  end
   
-  CASH = SubAccountType.find_by_description(DESCRIPTIONS[:cash])
-  
-  
-  def SubAccountType.preloaded 
+  def SubAccountType.preloaded
+    if(@@cash.nil?)
+        @@cash = SubAccountType.find_by_description(DESCRIPTIONS[:cash])
+    end
     SubAccountType.find(:all)
-  end 
+  end
 end

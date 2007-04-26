@@ -2,7 +2,7 @@
 <h1>Trade Reports</h1>
 <p>Please choose from the following reports:</p>
     <div id="by_symbol">
-        <% form_tag :action => 'by_symbol' do -%>
+        <% form_tag '/queries/by_symbol', :method => :get do -%>
             <fieldset>
                 <h2>Trades By Symbol</h2>
                 <p>List all trades for a particular symbol.</p>
@@ -17,7 +17,7 @@
     </div>
     
     <div id="on_date">
-        <% form_tag :action => 'on_date' do -%>
+        <% form_tag '/queries/on_date', :method => :get do -%>
             <fieldset>
                 <h2>Trades On Date</h2>
                 <p>List all trades posting on specified date.</p>
@@ -36,7 +36,7 @@
         <% end -%>
     </div>
     <div id="by_date">
-        <% form_tag :action => 'by_date' do -%>
+        <% form_tag '/queries/by_date', :method => :get do -%>
             <fieldset>
                 <h2>Trades By Date</h2>
                 <p>List all trades posting between specified dates.</p>
@@ -49,7 +49,7 @@
         <% end -%>
     </div>
     <div id="by_account">
-        <% form_tag :action => 'by_account' do -%>
+        <% form_tag '/queries/by_account', :method => :get do -%>
             <fieldset>
                 <h2>Trades By Account</h2>
                 <p>List all trades for a particular account</p>
