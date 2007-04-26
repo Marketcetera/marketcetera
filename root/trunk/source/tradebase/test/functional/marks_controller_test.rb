@@ -179,6 +179,9 @@ class MarksControllerTest < MarketceteraTestBase
     assert_response :redirect
     assert_redirected_to :action => 'by_symbol'
 
+
+    assert_nil assigns(:report) # shouldn't have any errors on redirection'
+    assert_no_tag :tag => 'div', :attributes => {:class => "errorExplanation"}
     assert_equal num_marks + 1, Mark.count
   end
 

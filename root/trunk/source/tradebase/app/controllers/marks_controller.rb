@@ -74,7 +74,8 @@ class MarksController < ApplicationController
         @mark.equity = Equity.get_equity(get_non_empty_string_from_two(params, :m_symbol, :root, nil))
         if @mark.save
           flash[:notice] = 'Mark was successfully created.'
-          redirect_to :action => 'by_symbol', :m_symbol_root => @mark.equity.m_symbol.root, :to_date => Date.today
+          redirect_to :action => 'by_symbol', :m_symbol_root => @mark.equity.m_symbol.root,
+                                              :to_date => Date.today, :from_date => Date.today
         else
           throw Exception.new
         end
