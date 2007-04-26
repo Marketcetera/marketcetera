@@ -9,6 +9,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -174,7 +175,7 @@ public class OptionMarketDataView extends MessagesView implements
 
 	private Composite createUnderlierComposite(Composite parent) {
 		Composite underlier = getFormToolkit().createComposite(
-				parent, SWT.BORDER);
+				parent, SWT.NONE);
 		underlier.setLayout(createBasicGridLayout(1));
 		underlier.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 		return underlier;
@@ -191,6 +192,12 @@ public class OptionMarketDataView extends MessagesView implements
 
 		for (int i = 0; i < numUnderliers; i++) {
 			underliers[i] = createUnderlierComposite(underliersContainer);
+			if (i<numUnderliers -1){
+				Label separator = new Label(underliersContainer, SWT.SEPARATOR | SWT.HORIZONTAL);
+				GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+				gridData.widthHint = 400;
+				separator.setLayoutData(gridData);
+			}
 			underlierInfoSections[i] = new UnderlierInfo(underliers[i]);
 		}
 	}
