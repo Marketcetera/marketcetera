@@ -88,7 +88,7 @@ public class UnderlierInfo {
 		bidPriceLabel = getFormToolkit().createLabel(firstRow, null);
 		bidPriceLabel.setLayoutData(createFormData(lastPriceChangeLabel));
 		
-		Label bidAskPriceSeparatorLabel = getFormToolkit().createLabel(firstRow, "/");
+		Label bidAskPriceSeparatorLabel = getFormToolkit().createLabel(firstRow, "-");
 		bidAskPriceSeparatorLabel.setForeground(SYSTEM_COLOR_BLUE);
 		bidAskPriceSeparatorLabel.setLayoutData(createNarrowFormData(bidPriceLabel));
 
