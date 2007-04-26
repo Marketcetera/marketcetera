@@ -16,7 +16,10 @@ class TradesController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-    @trade_pages, @trades = paginate :trades, :per_page => MaxPerPage
+    @trade_pages, @trades = paginate :trades, :per_page => MaxPerPage,
+                            :joins => "as t, journals j, accounts a",
+                            :conditions => "t.journal_id = j.id AND t.account_id = a.id",
+                            :order => "j.post_date, a.nickname"
   end
 
   def show

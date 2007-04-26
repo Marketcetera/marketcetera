@@ -42,7 +42,29 @@ class TradesControllerTest < MarketceteraTestBase
     
     assert_tag :tag => "td", :content => "SS"
   end
-  
+
+  # should be sorted: c, b, a, d, e
+  def test_list_sorted_correctly
+    Trade.delete_all
+    assert_equal 0, Trade.count
+    # create a few trades
+    create_test_trade(44, 100.10, Quickfix::Side_BUY(), "TOLI", Date.new(2007, 4, 1), "b", 3, "USD")
+    create_test_trade(44, 100.10, Quickfix::Side_BUY(), "TOLI", Date.new(2007, 4, 2), "a", 3, "USD")
+    create_test_trade(44, 100.10, Quickfix::Side_BUY(), "BOB", Date.new(2007, 4, 1), "c", 3, "USD")
+    create_test_trade(44, 100.10, Quickfix::Side_BUY(), "TOLI", Date.new(2007, 4, 3), "d", 3, "USD")
+    create_test_trade(44, 100.10, Quickfix::Side_BUY(), "TOLI", Date.new(2007, 4, 4), "e", 3, "USD")
+
+      get :list
+      assert_response :success
+      trades = assigns(:trades)
+      assert_equal 5, trades.length
+      assert_equal "c", trades[0].tradeable_m_symbol_root
+      assert_equal "b", trades[1].tradeable_m_symbol_root
+      assert_equal "a", trades[2].tradeable_m_symbol_root
+      assert_equal "d", trades[3].tradeable_m_symbol_root
+      assert_equal "e", trades[4].tradeable_m_symbol_root
+  end
+
   # verify that the formatting for long strings in Symbol/Account/Comments is handled
   def test_list_account_symbol_comment_formatting
     Trade.delete_all
