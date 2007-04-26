@@ -9,14 +9,16 @@ class PositionsQueriesController < ApplicationController
 
   def positions
     # display positions index page
-    render :template => 'queries/positions_queries'
+    render :template => '/queries/positions_queries'
   end
 
   def positions_as_of
-    as_of_date = VDate.get_date_from_params(params, :position, "as_of", "as_of_date").as_date
-    if(as_of_date.blank?) 
-      as_of_date = Date.today
+    @report = ReportOnDate.new(params)
+    if(!@report.valid?)
+        render :template => '/queries/positions_queries'
+        return
     end
+    as_of_date = @report.on_date.as_date
     @position_pages, @positions, @num_positions = get_positions_as_of_date(as_of_date)
     @query_type = "as of open on "
     if(@positions.empty?)

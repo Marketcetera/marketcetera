@@ -15,12 +15,18 @@ class MessageLogsController < ApplicationController
   # get a slice of data from DB since not every message is going to be displayed.
   def list
     fSubsetSearch = params[:search_type] == 's'
+    @failed_msg, @exec_report_pages = [], []
     if(fSubsetSearch)
-      @startDate = VDate.parse_date_from_params(params, :dates, "start_date").as_date
-      @endDate = VDate.parse_date_from_params(params, :dates, "end_date").as_date
+        suffix = (params[:suffix].nil?) ? '' : params[:suffix]
+        @report = ReportWithToFromDates.new(params, suffix)
+        @report.validate()
+        if(!@report.valid?)
+          render :action => :list
+          return
+        end
+      @startDate, @endDate  = @report.from_date.as_date, @report.to_date.as_date
     end
     all_exec_reports = []
-    @failed_msg = []
     msgTypeField = Quickfix::MsgType.new
     ordStatusField = Quickfix::OrdStatus.new
     sendingTimeField = Quickfix::SendingTime.new

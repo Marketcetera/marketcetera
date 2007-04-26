@@ -57,11 +57,28 @@ class MessagesLogControllerTest < MarketceteraTestBase
   
   def test_conditional_date_list
     # there are 2 messages that  are done on Sept 23-24, shoudl find just these 2
-    get :list, {:dates => { "start_date(1i)"=>"2006", "start_date(2i)"=>"9", "start_date(3i)"=>"16", 
-                            "end_date(1i)"=>"2006", "end_date(2i)"=>"9", "end_date(3i)"=>"27"}, "search_type"=>"s"}
+    get :list, {:suffix => 'date', :date_date => { "from(1i)"=>"2006", "from(2i)"=>"9", "from(3i)"=>"16",
+                            "to(1i)"=>"2006", "to(2i)"=>"9", "to(3i)"=>"27"}, "search_type"=>"s"}
     assert_response :success
     assert_template 'list'
     assert_equal 2, assigns(:exec_report_pages).length
+  end
+
+  def test_subset_invalid_dates
+    get :list, {:dates => { "start_date(1i)"=>"2006", "start_date(2i)"=>"9", "start_date(3i)"=>"16",
+                            "end_date(1i)"=>"2006", "end_date(2i)"=>"9", "end_date(3i)"=>"33"}, "search_type"=>"s"}
+    assert_response :success
+    assert_template 'list'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors[:to_date]
+
+
+    get :list, {:dates => { "start_date(1i)"=>"2006", "start_date(2i)"=>"9", "start_date(3i)"=>"36",
+                            "end_date(1i)"=>"2006", "end_date(2i)"=>"9", "end_date(3i)"=>"3"}, "search_type"=>"s"}
+    assert_response :success
+    assert_template 'list'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors[:from_date]
   end
 
   # test if the account is empty we still display an &nbsp

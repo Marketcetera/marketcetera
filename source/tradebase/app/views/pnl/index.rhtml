@@ -19,7 +19,7 @@
             <% end -%>
             <%= render :partial => 'shared/from_to_date_fields', 
                        :locals => { :suffix => "acct", :errors => (@report.nil?) ? nil : @report.errors,
-                                    :errSfx => (@report.nil?) ? '' : @report.suffix  } %>
+                                    :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true  } %>
             <input type="hidden" name='suffix' value="acct"/>
         </fieldset>
         <div>
@@ -34,7 +34,7 @@
             <p>Compute a P &amp; L across all accounts for a range of dates</p>
             <%= render :partial => 'shared/from_to_date_fields', 
                        :locals => { :suffix => "date", :errors => (@report.nil?) ? nil : @report.errors,
-                                    :errSfx => (@report.nil?) ? '' : @report.suffix } %>
+                                    :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true } %>
             <input type="hidden" name='suffix' value="date"/>
         </fieldset>
         <div>

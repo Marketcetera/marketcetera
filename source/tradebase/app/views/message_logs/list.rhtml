@@ -1,28 +1,29 @@
 <%= render :partial => 'shared/breadcrumbs', 
     :locals=> { :top_level => "Trades", :action_name => "Import Trades", :top_level_controller => 'trades' } %>
 <h1>Import Trades</h1>
-
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+    end %>
 <% form_tag({:action => 'list'}, { :id => 'dateRange' }) do -%>
     <fieldset>
         <div class="clear"></div>
         <label for="search_type">Select Date Range</label>
         <div class="clear"></div>
-        <%= radio_button_tag('search_type', 's', false,  
+        <%= radio_button_tag('search_type', 's', (!@report.nil? && @report.errors.length > 0),  
             { :id => 'subset',  :class => 'radio' })%>
         <label for="subset">Subset</label>
         <div class="clear"></div>
         <div id="subset_content">
             <div class="clear"></div>
-            <label for="start_date">Start date</label>
-            <div class="date"><%= date_select 'dates', 'start_date', :order => [:year, :month, :day], :date => @startDate  %></div>
-            <div class="clear"></div>
-            <label for="end_date">End date</label>
-            <div class="date"><%= date_select 'dates', 'end_date', :end_year => Date.today.year, :date => @endDate, :order => [:year, :month, :day] %></div>
+            <%= render :partial => 'shared/from_to_date_fields',
+                       :locals => { :suffix => "date", :errors => (@report.nil?) ? nil : @report.errors,
+                                :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => false} %>
+            <input type="hidden" name="suffix" value="date"/>
             <div class="clear"></div>
         </div>
         <div class="clear"></div>
-       <%= radio_button_tag('search_type', 'a', true,  
-            {:id => 'all', :class => 'radio', :checked => 'true'} )%>
+       <%= radio_button_tag('search_type', 'a', (@report.nil? || @report.errors.length == 0),
+            {:id => 'all', :class => 'radio'} )%>
        <label for="all">All</label>
         <div class="clear"></div>
     </fieldset>
@@ -103,5 +104,7 @@ Select: <a href="javascript:toggleCheckboxes('selectTrades', 1);">All</a> <a hre
 <%= submit_tag 'Import Trades', :class => "submit floatright" %>
 <% end -%>
 <p/>
-<%= link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous %>
-<%= link_to 'Next page', { :page => @paginator.current.next } if @paginator.current.next %> 
+<%= if(!@paginator.nil?)
+  link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous
+  link_to 'Next page', { :page => @paginator.current.next } if @paginator.current.next
+ end%> 

@@ -21,7 +21,7 @@ class QueriesControllerTest < MarketceteraTestBase
   end
 
   def test_by_symbol_none_specified
-    post :by_symbol
+    get :by_symbol
     
     assert_response :success
     assert_template 'queries_output'
@@ -33,7 +33,7 @@ class QueriesControllerTest < MarketceteraTestBase
   end
   
   def test_by_symbol_specified
-    post :by_symbol,{"m_symbol"=>{"root"=>"IFLI"} }
+    get :by_symbol,{"m_symbol"=>{"root"=>"IFLI"} }
     
     assert_response :success
     assert_template 'queries_output'
@@ -60,7 +60,7 @@ class QueriesControllerTest < MarketceteraTestBase
   end  
   
   def test_search_by_account_none
-      post :by_account
+    get :by_account
     
     assert_response :success
     assert_template 'queries_output'
@@ -73,7 +73,7 @@ class QueriesControllerTest < MarketceteraTestBase
   end
   
   def test_by_account_specified
-    post :by_account, {"account"=>{"nickname"=>"acct2"} }
+    get :by_account, {"account"=>{"nickname"=>"acct2"} }
     
     assert_response :success
     assert_template 'queries_output'
@@ -86,7 +86,7 @@ class QueriesControllerTest < MarketceteraTestBase
   end
   
   def test_by_account_none_match
-    post :by_account, {"account"=>{"nickname"=>"zanachka"} }
+    get :by_account, {"account"=>{"nickname"=>"zanachka"} }
     
     assert_response :success
     assert_template 'queries_output'
@@ -95,31 +95,59 @@ class QueriesControllerTest < MarketceteraTestBase
     assert_equal 0, assigns(:trades).length
   end  
   
-  # todo: fix when we switch to date validation checking
   def _test_by_date_no_params
-    post :by_date
+    get :by_date
     
     assert_response :success
-    assert_template 'by_date'
-    
+    assert_template 'index'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors
+    assert_not_nil assigns(:report).errors[:from_date]
+    assert_not_nil assigns(:report).errors[:to_date]
     assert_not_nil assigns(:trades)
     assert_equal 0, assigns(:trades).length
   end
 
-  # todo: fix when we switch to date validation checking
   def _test_on_date_no_params
-    post :on_date
+    get :on_date
     
     assert_response :success
-    assert_template 'on_date'
-    
+    assert_template 'index'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors
+    assert_not_nil assigns(:report).errors[:on_date]
+
     assert_not_nil assigns(:trades)
     assert_equal 0, assigns(:trades).length
   end
   
   
+  def _test_on_date_invalid
+    get :on_date, {"date"=>{ "on(1i)"=>"2006", "on(2i)"=>"7", "on(3i)"=>"32"}}
+
+    assert_response :success
+    assert_template 'index'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors
+    assert_not_nil assigns(:report).errors[:on_date]
+
+    assert_not_nil assigns(:trades)
+    assert_equal 0, assigns(:trades).length
+  end
+
+  def test_by_date_ivalid
+    get :by_date, {:suffix => 'date', "date"=>{ "from(1i)"=>"2006", "from(2i)"=>"7", "from(3i)"=>"1",
+                              "to(1i)"=>"2006", "to(2i)"=>"11", "to(3i)"=>"35" }}
+
+    assert_response :success
+    assert_template 'index'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors
+    assert_not_nil assigns(:report).errors[:to_date]
+  end
+
   def test_by_date_wide_range
-    post :by_date, {"date"=>{ "from(1i)"=>"2006", "from(2i)"=>"7", "from(3i)"=>"1", 
+    get :by_date, {:suffix => 'date', "date_date"=>{ "from(1i)"=>"2006", "from(2i)"=>"7", "from(3i)"=>"1",
                               "to(1i)"=>"2006", "to(2i)"=>"11", "to(3i)"=>"30" }}
     
     assert_response :success
@@ -134,7 +162,8 @@ class QueriesControllerTest < MarketceteraTestBase
   
   #2006/7/12 - 2006/8/1 includes 1,2,3
   def test_by_date_partial_range
-    post :by_date, {"date"=>{ "from(1i)"=>"2006", "from(2i)"=>"7", "from(3i)"=>"12", 
+    get :by_date, {:suffix => 'date',
+                    "date_date"=>{ "from(1i)"=>"2006", "from(2i)"=>"7", "from(3i)"=>"12",
                               "to(1i)"=>"2006", "to(2i)"=>"8", "to(3i)"=>"1" }}
     
     assert_response :success
@@ -149,7 +178,7 @@ class QueriesControllerTest < MarketceteraTestBase
   end
   
   def test_by_date_outside_of_range
-    post :by_date, {"date"=>{ "from(1i)"=>"2007", "from(2i)"=>"7", "from(3i)"=>"1", 
+    get :by_date, {:suffix => 'date', "date_date"=>{ "from(1i)"=>"2007", "from(2i)"=>"7", "from(3i)"=>"1",
                               "to(1i)"=>"2008", "to(2i)"=>"11", "to(3i)"=>"30" }}
     
     assert_response :success
@@ -157,11 +186,12 @@ class QueriesControllerTest < MarketceteraTestBase
     
     assert_not_nil assigns(:trades)
     assert_equal 0, assigns(:trades).length
+    assert_has_error_notice
   end
   
   def test_on_date_has_trade
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2008, 7, 11), "IFLI", "4.53", "ZAI")
-    post :on_date, {"date"=> { "on(1i)"=>"2008", "on(2i)"=>"7", "on(3i)"=>"11" }}
+    get :on_date, {"date"=> { "on(1i)"=>"2008", "on(2i)"=>"7", "on(3i)"=>"11" }}
     
     assert_response :success
     assert_template 'on_date'
