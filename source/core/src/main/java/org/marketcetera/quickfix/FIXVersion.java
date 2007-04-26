@@ -18,17 +18,16 @@ import java.util.HashMap;
 
 @ClassVersion("$Id$")
 public enum FIXVersion {
-    // todo: later when QFJ is ready we get rid of MyMessageFactory and just create a straight QFJ quickfix.fix4x.MessageFactory
     FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, "FIX40.xml",
-          new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING, new MessageFactory40(), new FIXMessageAugmentor_40())),
+          new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING, new quickfix.fix40.MessageFactory(), new FIXMessageAugmentor_40())),
     FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING, "FIX41.xml",
-            new FIXMessageFactory(FIXDataDictionary.FIX_4_1_BEGIN_STRING, new MessageFactory41(), new FIXMessageAugmentor_41())),
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_1_BEGIN_STRING, new quickfix.fix41.MessageFactory(), new FIXMessageAugmentor_41())),
     FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING, "FIX42.xml",
-            new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING, new MessageFactory42(), new FIXMessageAugmentor_42())),
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING, new quickfix.fix42.MessageFactory(), new FIXMessageAugmentor_42())),
     FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, "FIX43.xml",
-            new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new MessageFactory43(), new FIXMessageAugmentor_43())),
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new quickfix.fix43.MessageFactory(), new FIXMessageAugmentor_43())),
     FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, "FIX44.xml",
-            new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new MessageFactory44(), new FIXMessageAugmentor_44()));
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
 
