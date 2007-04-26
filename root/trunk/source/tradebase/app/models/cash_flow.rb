@@ -85,7 +85,7 @@ class CashFlow
     if(posOnDate.nil? || posOnDate.empty?)
       return 0
     end
-    markOnDate = Mark.find(:first, :conditions => ['equity_id = ? AND mark_date =? ', tradeable_id, date])
+    markOnDate = Mark.find(:first, :conditions => ['tradeable_id = ? AND mark_date =? ', tradeable_id, date])
     if(markOnDate.blank?) 
       raise Exception.new("Please enter a mark for #{symbol} on #{date}.")
     end

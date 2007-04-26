@@ -26,7 +26,7 @@ class MarksController < ApplicationController
       @to_date, @from_date = @report.to_date.as_date, @report.from_date.as_date
       @mark_pages, @marks = paginate :marks, :per_page => MaxPerPage, 
               :conditions => ['mark_date >= ? and mark_date <= ? and equities.id= ?', @from_date, @to_date, equity],
-              :joins => 'as m inner join equities on equities.id = m.equity_id',
+              :joins => 'as m inner join equities on equities.id = m.tradeable_id',
                :select => 'm.*'
 
 
