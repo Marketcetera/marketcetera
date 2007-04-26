@@ -36,13 +36,23 @@ class QueriesController < ApplicationController
   end
   
   def on_date
-    @on_date = VDate.get_date_from_params(params, :date, "on", "on_date").as_date
+    @report = ReportOnDate.new(params)
+    if(!@report.valid?)
+        render :action => :index
+        return
+    end
+    @on_date = @report.on_date.as_date
     by_date_helper(@on_date, @on_date)
   end
   
   def by_date
-    @from_date = VDate.get_date_from_params(params, :date, "from", "from_date").as_date
-    @to_date = VDate.get_date_from_params(params, :date, "to", "to_date").as_date
+    suffix = (params[:suffix].nil?) ? '' : params[:suffix]
+    @report = ReportWithToFromDates.new(params, suffix)
+    if(!@report.valid?)
+        render :action => :index
+        return
+    end
+    @from_date, @to_date = @report.from_date.as_date, @report.to_date.as_date
     by_date_helper(@from_date, @to_date)
   end
 

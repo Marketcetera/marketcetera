@@ -68,9 +68,13 @@ class VDate
     secondaryStr = params[secondary]
     return (secondaryStr.blank?) ? nil : VDate.new(secondaryStr, nil, nil)
   end  
-  
+
+  def to_s
+    (!@single_str.blank?) ? @single_str : "#{year}-#{month}-#{day}"
+  end
+
   private 
   def get_error_msg
-    "Invalid date: " + ((!@single_str.blank?) ? @single_str : "#{year}-#{month}-#{day}")
+    "Invalid date: " + to_s
   end
 end   

@@ -10,6 +10,6 @@ class ReportOnDate < Tableless
   end
   
   def validate
-    errors.add(:on_date, "Invalid date") unless (!on_date.nil? && on_date.valid?)
+    errors.add(:on_date, "is not a valid date #{@on_date.to_s}") unless (!on_date.nil? && on_date.valid?)
   end
 end

@@ -30,6 +30,11 @@ class VDateTest < MarketceteraTestBase
     end
   end
 
+  def test_to_s
+      assert_equal "2007-4-33", VDate.new(2007,4,33).to_s
+      assert_equal "2007-4-33", VDate.new("2007-4-33").to_s
+  end
+
   def test_erro_message_single_str
     begin
       vdate = VDate.new("2007-4-31", nil, nil)

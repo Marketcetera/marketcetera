@@ -38,7 +38,7 @@ class ComplexPositionsTest < MarketceteraTestBase
   end
   
   def verify_position(numPos, posIndex, qty, account, date)
-    get :positions_as_of, { "position"=>{"as_of(1i)"=>date.year, "as_of(2i)"=>date.month, "as_of(3i)"=>date.day}}
+    get :positions_as_of, { "date"=>{"on(1i)"=>date.year, "on(2i)"=>date.month, "on(3i)"=>date.day}}
 
     assert_response :success
     assert_template 'positions_search_output'

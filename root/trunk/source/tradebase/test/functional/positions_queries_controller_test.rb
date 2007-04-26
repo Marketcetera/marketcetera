@@ -18,7 +18,7 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
   def test_positions_as_of_specified
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
-    get :positions_as_of, { "position"=>{"as_of(1i)"=>"2007", "as_of(2i)"=>"10", "as_of(3i)"=>"30"}}
+    get :positions_as_of, { "date"=>{"on(1i)"=>"2007", "on(2i)"=>"10", "on(3i)"=>"30"}}
 
     assert_response :success
     assert_template 'positions_search_output'
@@ -33,7 +33,7 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
   def test_positions_as_of_future
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
-    get :positions_as_of, { "position"=>{"as_of(1i)"=>"2006", "as_of(2i)"=>"10", "as_of(3i)"=>"30"}}
+    get :positions_as_of, { "date"=>{"on(1i)"=>"2006", "on(2i)"=>"10", "on(3i)"=>"30"}}
     assert_response :success
     assert_template 'positions_search_output'
 
@@ -42,11 +42,20 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
     assert_nums_equal -300, assigns(:positions)[0].position
   end
 
+  def test_positions_as_of_invalid_date
+    get :positions_as_of, { "position"=>{"as_of(1i)"=>"2006", "as_of(2i)"=>"10", "as_of(3i)"=>"33"}}
+    assert_response :success
+    assert_template 'positions_queries'
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors
+    assert_not_nil assigns(:report).errors[:on_date]
+  end
+
   # essentially, specify date in past ie outside of range
   def test_positions_as_date_in_past
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
-    get :positions_as_of, { "position"=>{"as_of(1i)"=>"2005", "as_of(2i)"=>"10", "as_of(3i)"=>"30"}}
+    get :positions_as_of, { "date"=>{"on(1i)"=>"2005", "on(2i)"=>"10", "on(3i)"=>"30"}}
     assert_response :success
     assert_template 'positions_search_output'
 
