@@ -7,7 +7,6 @@ import java.util.List;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import org.marketcetera.quickfix.messagefactory.MyMessageFactory;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -58,11 +57,11 @@ import quickfix.field.TransactTime;
 @ClassVersion("$Id$")
 public class FIXMessageFactory {
 
-    private MyMessageFactory msgFactory;
+    private MessageFactory msgFactory;
     private FIXMessageAugmentor msgAugmentor;
     private String beginString;
 
-    public FIXMessageFactory(String beginString, MyMessageFactory inFactory, FIXMessageAugmentor augmentor) {
+    public FIXMessageFactory(String beginString, MessageFactory inFactory, FIXMessageAugmentor augmentor) {
         this.beginString = beginString;
         msgFactory = inFactory;
         msgAugmentor = augmentor;
