@@ -2,6 +2,7 @@
 # and is intended to be a helper class (a struct) holding relevant cash flow-related information.
 class CashFlow 
   attr_reader :cashflow, :account, :symbol, :tradeable_id
+  attr_writer :cashflow
 
   # Cashflow is a BigDecimal, account and symbols are strings
   def initialize(cashflow, symbol, account, tradeable_id)
@@ -15,11 +16,20 @@ class CashFlow
     @cashflow.to_s + " for #{@symbol} in #{account}"
   end
   
-    # returns an array of cashflows for the specified account 
-  # Returns an arra of [cashflow, tradeable_id] pairs
+  # returns an array of cashflows for the specified account 
   # Incoming acct is an Account object
+  # IF the incoming accoutn is nil, then we get a set of cashflows across all available accounts
+  # Returns an unsorted double hashtable, where the first key is an account id pointing to another table of
+  # [symbol, cashflow value] pairs.
+  # Users should sort the individual per-account cashflows accordingly (probably by symbol)
+  # Ex: To get list of cashflows sorted by symbol for a given account
+  #   cashflows[theAcct.id].values.sort { |x,y| x.symbol <=> y.symbol} 
+  #   
+  # Essentially, you get back something like this for each account:
+  # result[toli] => {sunw=> <sunw cashflow>, goog => <goog cashflow>, etc}
+  # result[bob] =>  {sunw=> <sunw cashflow>, goog => <goog cashflow>, etc}
   def CashFlow.get_cashflows_from_to_in_acct(acct, from_date, to_date)
-    params = [SubAccountType::CASH, from_date, to_date]
+    params = [SubAccountType.CASH, from_date, to_date]
     acctQuery = ''
     if(!acct.blank?)
       acctQuery = 'AND t.account_id = ?'
@@ -37,28 +47,33 @@ class CashFlow
               ' ORDER BY symbol ', params].flatten)
     cashflows = {}
     results.each { |cf| 
-      openSyntheticCashflow = get_synthetic_cashflow(from_date, acct, cf.tradeable_id, cf.symbol)
-      closeSyntheticCashflow = get_synthetic_cashflow(to_date, acct, cf.tradeable_id, cf.symbol)
-      cashflows[cf.symbol] = CashFlow.new(BigDecimal.new(cf.cashflow)+closeSyntheticCashflow - openSyntheticCashflow, 
+      openSyntheticCashflow = get_synthetic_cashflow(from_date, cf.account, cf.tradeable_id, cf.symbol)
+      closeSyntheticCashflow = get_synthetic_cashflow(to_date, cf.account, cf.tradeable_id, cf.symbol)
+      if(cashflows[cf.account].nil?)
+        cashflows[cf.account] = {}
+      end
+      cashflows[cf.account][cf.symbol] = CashFlow.new(BigDecimal.new(cf.cashflow)+closeSyntheticCashflow - openSyntheticCashflow, 
                                 cf.symbol, cf.account, cf.tradeable_id) 
     }
     
-    # now look at all positions that we had open on P&L start date
-    positionsOnToDate = Position.get_positions_on_inclusive_date_and_account(from_date, acct)
-    positionsOnToDate.each { |pos|
+    # now look at all positions that we had open on P&L start date (ie from_date)
+    posOnFromDate = Position.get_positions_on_inclusive_date_and_account(from_date, acct)
+    posOnFromDate.each { |pos|
       equity = Equity.find(pos.tradeable_id)
-      openSyntheticCashflow = get_synthetic_cashflow(from_date, acct, pos.tradeable_id, equity.m_symbol_root)
-      closeSyntheticCashflow = get_synthetic_cashflow(to_date, acct, pos.tradeable_id, equity.m_symbol_root)
-      if(cashflows[equity.m_symbol_root].nil?)
-        cashflows[equity.m_symbol_root] = CashFlow.new(closeSyntheticCashflow - openSyntheticCashflow, 
+      openSyntheticCashflow = get_synthetic_cashflow(from_date, pos.account, pos.tradeable_id, equity.m_symbol_root)
+      closeSyntheticCashflow = get_synthetic_cashflow(to_date, pos.account, pos.tradeable_id, equity.m_symbol_root)
+      if(cashflows[pos.account.nickname].nil?)
+        cashflows[pos.account.nickname] = {}
+      end
+      if(cashflows[pos.account.nickname][equity.m_symbol_root].nil?)
+        cashflows[pos.account.nickname][equity.m_symbol_root]  = CashFlow.new(closeSyntheticCashflow - openSyntheticCashflow, 
                                   equity.m_symbol_root, pos.account.nickname, pos.tradeable_id)
       else 
-        cf = cashflow[equity.m_symbol_root]
+        cf = cashflows[pos.account.nickname][equity.m_symbol_root]
         cf.cashflow += closeSyntheticCashflow - openSyntheticCashflow
       end                                 
     }
-    
-    return cashflows.values.sort { |x, y| x.symbol <=> y.symbol }
+    return cashflows
   end
 
   # Gets the synthetic cashflow for a particular equity on a date meant to reflect what it'd 

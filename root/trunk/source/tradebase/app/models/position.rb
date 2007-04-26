@@ -5,6 +5,7 @@ class Position < ActiveRecord::Base
   
   # returns all the positions for a given date and account, with date being inclusive
   # account is an account Object, not just a string nickname
+  # If the incoming account is nil, returns positions across all accounts
   def Position.get_positions_on_inclusive_date_and_account(date, account)
     get_position_helper(date, account)
   end
@@ -19,7 +20,10 @@ class Position < ActiveRecord::Base
   
   # returns the position for a particular tradeable_id on a given date in a given account
   def Position.get_position_on_date_for_equity(tradeable_id, date, account)
-      get_position_helper(date, account, tradeable_id)
+    if(account.nil?)
+      raise "Cannot search for position in unspecified account"
+    end
+    get_position_helper(date, account, tradeable_id)
   end
   
   
@@ -38,19 +42,24 @@ class Position < ActiveRecord::Base
   end
   
   private 
+  # If the incoming account is nil, returns positions across all accounts
   def Position.get_position_helper(date, account, tradeable_id=nil)
-  params = [account, date]
-  tradeableQuery = ""
-  if(!tradeable_id.nil?)
-    tradeableQuery = 'AND trades.tradeable_id = ? '
-    params << tradeable_id
-  end
-      Position.find_by_sql( 
+    params = [date]
+    tradeableQuery, accountQuery  = "", ""
+    if(!account.nil?)
+      accountQuery = 'AND trades.account_id = ? '
+      params << account
+    end
+    if(!tradeable_id.nil?)
+      tradeableQuery = 'AND trades.tradeable_id = ? '
+      params << tradeable_id
+    end
+    Position.find_by_sql( 
             [ 'SELECT sum(trades.position_qty) as position, tradeable_id, tradeable_type, account_id, journal_id '+
               ' FROM accounts, trades'+
               ' LEFT JOIN journals ON trades.journal_id = journals.id '+
-              ' WHERE accounts.id = ? AND journals.post_date <= ? AND trades.account_id=accounts.id ' +
-                     tradeableQuery +
+              ' WHERE accounts.id = trades.account_id AND journals.post_date <= ? ' +
+                     accountQuery + tradeableQuery +
               'GROUP BY account_id, tradeable_id, tradeable_type'+
               ' HAVING position != 0 ',
               params].flatten)

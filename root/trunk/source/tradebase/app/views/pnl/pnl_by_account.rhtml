@@ -1,6 +1,6 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "P & L", :action_name => "P &amp; L by #{@query_type}", :top_level_controller => 'pnl' } %>
-<h1>P & L by <%= @query_type -%>: <span><%= @param_value %></span> from <%= @from_date %> to <%= @to_date %></h1>
+    :locals=> { :top_level => "P &amp; L", :action_name => "P &amp; L by Account", :top_level_controller => 'pnl' } %>
+<h1>P &amp; L for Account: <span><%= @nickname %></span> from <%= @from_date %> to <%= @to_date %></h1>
 
 <table>
     <tr>

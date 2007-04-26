@@ -2,11 +2,11 @@
            :locals=> { :top_level => "P &amp; L", :top_level_controller => 'pnl', :action_name=>''} %>
 <h1>Mark Reports</h1>
 <%= if(!@report.nil?)
-       error_messages_for :report
+       error_messages_for_report :report
     end %>
 <p>Please choose from the following reports:</p>
     <div id="by_symbol">
-        <% form_tag 'by_symbol', :method => "get" do -%>
+        <% form_tag '/marks/by_symbol', :method => :get do -%>
             <fieldset>
                 <h2>Marks By Symbol</h2>
                 <p>List all marks for a particular symbol for a range of dates.</p>
@@ -19,7 +19,8 @@
                     </div>
                 <% end -%>
                 <%= render :partial => 'shared/from_to_date_fields', 
-                           :locals => { :suffix => "smb", :errors => (@report.nil?) ? nil : @report.errors }  %>
+                           :locals => { :suffix => "smb", :errors => (@report.nil?) ? nil : @report.errors,
+                                    :errSfx => (@report.nil?) ? '' : @report.suffix }  %>
                 <input type="hidden" name="suffix" value="smb"/>
             </fieldset>
             <div>
@@ -29,7 +30,7 @@
         <% end -%>
     </div>
     <div id="on_date">        
-        <% form_tag 'on_date', :method => :get do -%>
+        <% form_tag 'marks/on_date', :method => :get do -%>
             <fieldset>
                 <h2>Marks On Date</h2>
                 <p>List marks for all symbols on a particular date.</p>

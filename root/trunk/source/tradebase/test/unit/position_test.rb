@@ -2,9 +2,8 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/marketcetera_test_base'
 
 class PositionTest < MarketceteraTestBase
-  fixtures :currencies
-
-
+  fixtures :currencies, :accounts, :sub_accounts, :sub_account_types
+  
   def test_get_top_positioned_accounts
     create_trades_in_account(3, "TOLI")
     create_trades_in_account(5, "RAMA")
@@ -25,10 +24,28 @@ class PositionTest < MarketceteraTestBase
   
     assert_equal 3, Position.get_positions_on_inclusive_date_and_account(Date.today, Account.find_by_nickname("vasya")).length
     assert_equal 3, Position.get_positions_on_inclusive_date_and_account(Date.today+1,  Account.find_by_nickname("vasya")).length
-    assert_equal 0, Position.get_positions_on_inclusive_date_and_account(Date.today,  Account.find_by_nickname("noName")).length
     assert_equal 2, Position.get_positions_on_inclusive_date_and_account(Date.today-1,  Account.find_by_nickname("vasya")).length
+
+    # this will search across all accounts for all positions
+    assert_equal 6, Position.get_positions_on_inclusive_date_and_account(Date.today,  Account.find_by_nickname("noName")).length
+    assert_equal 6, Position.get_positions_on_inclusive_date_and_account(Date.today,  nil).length
   end
   
+  def test_get_position_on_date_for_equity
+    create_test_trade(100, "4.45", Quickfix::Side_BUY(), "bob", Date.today, "IFLI", 3.33, "USD")
+    #create_trades_in_account(1, "bob")
+    begin
+      Position.get_position_on_date_for_equity(Equity.get_equity("IFLI"), Date.today, nil)
+      fail("should've generated an exception while looking up position in non-existent account")
+    rescue Exception => ex
+      assert_equal "Cannot search for position in unspecified account", ex.message
+    end
+    
+    pos = Position.get_position_on_date_for_equity(Equity.get_equity("IFLI"), Date.today, Account.find_by_nickname("bob"))
+    assert_equal 1, pos.length
+    assert_nums_equal 100, pos[0].position
+  end
+
   private
   def create_trades_in_account(num_trades, account, date=Date.today)
     for i in 1..num_trades

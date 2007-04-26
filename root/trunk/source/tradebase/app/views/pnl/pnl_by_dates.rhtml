@@ -1,0 +1,25 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P &amp; L", :action_name => "P &amp; L Across Accounts", :top_level_controller => 'pnl' } %>
+<h1>Combined P &amp; L from <%= @from_date %> to <%= @to_date %></h1>
+
+<table>
+    <tr>
+        <th>Account</th>
+        <th>P&L</th>
+    </tr>
+<% i=0
+   total = BigDecimal.new("0")
+ for cf in @cashflows %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <td><%= link_to cf[:account], {:action => :by_account, :nickname => cf[:account], :from_date => @from_date, :to_date => @to_date} %></td>
+    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(cf[:cashflow], 2) %></td>
+    <% total += BigDecimal(cf[:cashflow].to_s) %>
+  </tr>
+<% end %>
+  <tr>
+      <td colspan="3" <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>>Total: <%= fn(total,2) %></td>
+  </tr>
+</table>
+
+<%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
+
