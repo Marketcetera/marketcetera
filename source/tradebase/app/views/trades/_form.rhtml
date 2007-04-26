@@ -3,19 +3,20 @@
 <!--[form:trade]-->
 <fieldset>
     <div class="form_left">
-        <label for="side">Side</label>
-        <%= select(:trade, :side, Side.SIDES_HI_COLLECTION, { :selected => @trade.side.to_s }) %>
-
-        <%= render :partial => '/shared/symbol_auto_complete', 
-            :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root, :error_key => :symbol} %>
-
         <label for="trade_date">Trade Date</label>
         <div class="date"><%= date_select :trade, :journal_post_date %></div>
 
-        <label for="total_commission">Total Commission</label>
-        <%= text_field :trade, :total_commission %>
+        <label for="side">Side</label>
+        <%= select(:trade, :side, Side.SIDES_HI_COLLECTION, { :selected => @trade.side.to_s }) %>
 
-        <%= render :partial => '/shared/currency_auto_complete', :locals => { :alpha_code => @trade.currency_alpha_code } %>
+        <label for="trade_quantity">Quantity</label>
+        <%= text_field :trade, :quantity %>
+
+        <%= render :partial => '/shared/symbol_auto_complete',
+            :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root, :error_key => :symbol} %>
+
+        <label for="price_per_share">Price</label>
+        <%= text_field :trade, :price_per_share %>
 
         <label for="account_nickname">Account</label>
         <%= text_field_with_auto_complete :account, :nickname, :value=> @trade.account_nickname %>
@@ -27,7 +28,7 @@
         <label for="trade_trade_type">Trade type</label>
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true, :class => "radio"})%>
         <label class="radio_label" for="trade_trade_type_t">Trade</label>
-        <div class="clear"></div>
+        <div class="clear"></div>des
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeExerciseOrExpire, { :class => "radio"})%>
         <label class="radio_label" for="trade_trade_type_e">Exercise or expire</label>
         <div class="clear"></div>
@@ -38,11 +39,10 @@
         <label class="radio_label" for="trade_trade_type_c">Corporate Action</label>
         <div class="clear"></div>
  
-        <label for="trade_quantity">Quantity</label>
-        <%= text_field :trade, :quantity %>
+        <label for="total_commission">Total Commission</label>
+        <%= text_field :trade, :total_commission %>
 
-        <label for="price_per_share">Price</label>
-        <%= text_field :trade, :price_per_share %>
+        <%= render :partial => '/shared/currency_auto_complete', :locals => { :alpha_code => @trade.currency_alpha_code } %>
 
         <label for="trade_comment">Comment</label>
         <%= text_field 'trade', 'comment'  %>
