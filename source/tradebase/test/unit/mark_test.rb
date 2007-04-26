@@ -140,7 +140,7 @@ class MarkTest < Test::Unit::TestCase
     newMark = Mark.new(:tradeable_id => mark.equity, :mark_date => mark.mark_date)
     newMark.save
     assert_not_nil newMark.errors[:mark_date]
-    assert_equal "Already have a mark on that date. Please update an existing mark.", newMark.errors[:mark_date]
+    assert_equal "Already have a mark on that date. Please update an existing mark instead.", newMark.errors[:mark_date]
   end
 
 end
