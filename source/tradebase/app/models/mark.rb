@@ -1,10 +1,10 @@
 class Mark < ActiveRecord::Base
 
-  belongs_to :equity
+  belongs_to :equity, :foreign_key => :tradeable_id
  
   MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
 
-  validates_uniqueness_of :mark_date, :scope => :equity_id, 
+  validates_uniqueness_of :mark_date, :scope => :tradeable_id, 
     :message => "Already have a mark on that date. Please update an existing mark."
 
   validates_numericality_of(:mark_value, :message => "should be a number.")

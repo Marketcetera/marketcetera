@@ -34,7 +34,7 @@ class Position < ActiveRecord::Base
               ' FROM accounts, marks, trades '+
               ' LEFT JOIN journals ON trades.journal_id = journals.id '+
               ' WHERE accounts.id = ? AND journals.post_date <= ? AND trades.account_id=accounts.id ' +
-                     'AND trades.tradeable_id = ? AND marks.equity_id = trades.tradeable_id ' +
+                     'AND trades.tradeable_id = ? AND marks.tradeable_id = trades.tradeable_id ' +
                      'AND marks.mark_date = ? '+
               'GROUP BY account_id, tradeable_id, tradeable_type'+
               ' HAVING position != 0 ',

@@ -18,7 +18,7 @@ class MarkTest < Test::Unit::TestCase
   end
   
   def test_negative_amount_validation
-    mark = Mark.new(:equity_id => @ifli, :mark_value => "-10.23", :mark_date => Date.today)
+    mark = Mark.new(:tradeable_id => @ifli, :mark_value => "-10.23", :mark_date => Date.today)
     assert_equal 0, mark.errors.length
     mark.save  
     assert_equal 1, mark.errors.length, "accepted a negative amount"
@@ -137,7 +137,7 @@ class MarkTest < Test::Unit::TestCase
   # test duplicate marks on same day
   def test_marks_on_same_date
     mark = Mark.find(:first)
-    newMark = Mark.new(:equity_id => mark.equity, :mark_date => mark.mark_date)
+    newMark = Mark.new(:tradeable_id => mark.equity, :mark_date => mark.mark_date)
     newMark.save
     assert_not_nil newMark.errors[:mark_date]
     assert_equal "Already have a mark on that date. Please update an existing mark.", newMark.errors[:mark_date]

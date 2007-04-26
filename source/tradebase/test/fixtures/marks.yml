@@ -1,42 +1,42 @@
 # 4 equities (1-4): SUNW, GOOG, TOLI, BEER
 sunw_4_12:
   id: 1
-  equity_id: 1
+  tradeable_id: 1
   mark_value: 6.48
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 12) %>
   
 goog_4_11:
   id: 2
-  equity_id: 2
+  tradeable_id: 2
   mark_value: 450.32
   mark_type: C
   mark_date: <%= Date.new(2007, 4, 11) %>
   
 goog_4_13:
   id: 3
-  equity_id: 2
+  tradeable_id: 2
   mark_value: 452.32
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 13) %>
   
 goog_4_14:
   id: 4
-  equity_id: 2
+  tradeable_id: 2
   mark_value: 460.32
   mark_type: C
   mark_date: <%= Date.new(2007, 4, 14) %>
   
 sunw_4_13:
   id: 5
-  equity_id: 1
+  tradeable_id: 1
   mark_value: 5.48
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 13) %>
   
 beer_4_13:
   id: 6
-  equity_id: 4
+  tradeable_id: 4
   mark_value: 3.48
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 13) %>
