@@ -18,6 +18,10 @@ public class SocketAcceptor extends quickfix.SocketAcceptor implements Initializ
         super(application, messageStoreFactory, settings, logFactory, messageFactory);
     }
 
+    public SocketAcceptor(SessionFactory sessionFactory, SessionSettings settings) throws ConfigError
+    {
+	super(sessionFactory, settings);
+    }
 
     public void afterPropertiesSet() throws Exception {
         start();
