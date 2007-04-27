@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Position Reports", :action_name => "List Positions #{@query_type}", :top_level_controller => 'queries' } %>
+    :locals=> { :top_level => "Position Reports", :action_name => "List Positions", :top_level_controller => 'queries' } %>
 <h1>List positions <%= @query_type -%>: <span><%= @param_value %></span></h1>
 
 <%= render :partial => 'positions/positions_list_display' %>

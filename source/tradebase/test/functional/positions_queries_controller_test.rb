@@ -51,6 +51,19 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:report).errors[:on_date]
   end
 
+  # make sure the date is not inclusive
+  def test_positions_as_of_inclusivity
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
+    create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 13), "MIFLI", "4.53", "ZAI")
+    create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 16), "BIFLI", "4.53", "ZAI")
+    get :positions_as_of, { "date"=>{"on(1i)"=>"2006", "on(2i)"=>"7", "on(3i)"=>"16"}}
+    assert_response :success
+    assert_template 'positions_search_output'
+
+    assert_not_nil assigns(:positions)
+    assert_equal 2, assigns(:positions).length
+  end
+
   # essentially, specify date in past ie outside of range
   def test_positions_as_date_in_past
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")

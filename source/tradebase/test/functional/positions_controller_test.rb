@@ -42,7 +42,17 @@ class PositionsControllerTest < MarketceteraTestBase
     assert_equal 15, assigns(:num_positions)
     assert_has_show_edit_delete_links(false, false, false)
   end
-  
+
+  def test_list_positions_inclusivity
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 13), "MIFLI", "4.53", "ZAI")
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.today, "BIFLI", "4.53", "ZAI")
+
+    get :list
+    # should get today's position'
+    assert_equal 3, assigns(:num_positions)
+  end
+
   def test_zero_position
     create_test_trade(130, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(130, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
