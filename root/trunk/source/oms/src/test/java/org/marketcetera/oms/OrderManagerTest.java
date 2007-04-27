@@ -349,22 +349,22 @@ public class OrderManagerTest extends FIXVersionedTestCase
         NullQuickFIXSender sender = new NullQuickFIXSender();
         handler.setQuickFIXSender(sender);
         Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
-        assertEquals(1, sender.capturedMessages.size());
+        assertEquals(1, sender.getCapturedMessages().size());
         assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
 
         // now set it to be logged out and verify a reject
-        sender.capturedMessages.clear();
+        sender.getCapturedMessages().clear();
         handler.getQFApp().onLogout(null);
         execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
-        assertEquals(0, sender.capturedMessages.size());
+        assertEquals(0, sender.getCapturedMessages().size());
         verifyRejection(execReport, msgFactory, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
 
         // verify goes through again after log on
-        sender.capturedMessages.clear();
+        sender.getCapturedMessages().clear();
         handler.getQFApp().onLogon(null);
         execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
-        assertEquals(1, sender.capturedMessages.size());
+        assertEquals(1, sender.getCapturedMessages().size());
         assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
     }
