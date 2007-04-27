@@ -4,7 +4,7 @@
 <%= if(!@report.nil?)
        error_messages_for_report :report
     end %>
-<% form_tag({:action => 'list'}, { :id => 'dateRange' }) do -%>
+<% form_tag 'list', { :id => 'dateRange', :method => :get } do -%>
     <fieldset>
         <div class="clear"></div>
         <label for="search_type">Select Date Range</label>
