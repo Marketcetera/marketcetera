@@ -39,6 +39,8 @@ class TradesControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:trades)
     assert_equal @allTrades.length, assigns(:trades).length
     assert_has_show_edit_delete_links(true, true, true)
+
+    assert_not_equal assigns(:trades)[0].id, assigns(:trades)[1].id 
     
     assert_tag :tag => "td", :content => "SS"
   end
