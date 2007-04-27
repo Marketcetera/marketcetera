@@ -26,7 +26,18 @@ class WelcomeControllerTest < MarketceteraTestBase
     assert_equal 0, assigns(:num_positions)
     assert_equal 0, assigns(:top_positioned_accounts).length
   end
-  
+
+  def test_num_positions_should_be_inclusive
+      create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
+      create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.civil(2006, 7, 13), "MIFLI", "4.53", "ZAI")
+      create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "pos-acct", Date.today, "BIFLI", "4.53", "ZAI")
+      get :welcome
+      assert_response :success
+      assert_template 'welcome'
+
+      assert_equal 3, assigns(:num_positions)
+  end
+
   def test_values_assigned
     for i in 1..10
       create_test_trade(100, 20.11, Side::QF_SIDE_CODE[:buy], "TOLI", Date.civil(2006, 7,11), "IFLI-"+i.to_s, 4.99, "USD")
@@ -35,7 +46,7 @@ class WelcomeControllerTest < MarketceteraTestBase
     
     get :index
     assert_response :success
-    assert_equal 10, assigns(:num_positions)
+    assert_equal 11, assigns(:num_positions)
     assert_equal 1, assigns(:num_trades_today)
     
     # verify top accounts

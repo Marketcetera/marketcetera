@@ -12,6 +12,6 @@ class PositionsController < ApplicationController
 
   def list
      @date = Date.today
-     @position_pages, @positions, @num_positions = get_positions_as_of_date(@date)
+     @position_pages, @positions, @num_positions = get_positions_as_of_date(@date, true)
   end
 end
