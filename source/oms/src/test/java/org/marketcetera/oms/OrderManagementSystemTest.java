@@ -4,6 +4,7 @@ import junit.framework.Test;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.NullQuickFIXSender;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;

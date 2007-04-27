@@ -35,7 +35,7 @@
         <property name="defaultDestination" ref="replyTopic"/>
     </bean>
 
-    <bean id="quickfixSender" class="org.marketcetera.oms.QuickFIXSender"/>
+    <bean id="quickfixSender" class="org.marketcetera.quickfix.QuickFIXSender"/>
 
     <!-- *******************************************************
         | User-configurable session and senderCompID variables |
