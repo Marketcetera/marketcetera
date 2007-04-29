@@ -5,12 +5,12 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -45,21 +45,21 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private static final String REPLACE_OPTION_ORDER = "Replace Option Order";
 
-	private CCombo expireMonthCCombo = null;
+	private Combo expireMonthCCombo = null;
 
 	private Text strikeText = null;
 
-	private CCombo putOrCallCCombo = null;
+	private Combo putOrCallCCombo = null;
 
-	private CCombo expireYearCCombo = null;
+	private Combo expireYearCCombo = null;
 
 	private Section otherExpandableComposite;
 
 	private Text accountText;
 
-	private CCombo orderCapacityCCombo;
+	private Combo orderCapacityCCombo;
 
-	private CCombo openCloseCCombo;
+	private Combo openCloseCCombo;
 
 	private OptionOrderTicketController optionOrderTicketController;
 
@@ -139,7 +139,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createExpireMonthBorderComposite() {
 		checkOutermostFormInitialized();
-		expireMonthCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
+		expireMonthCCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate expiration choices from market data
 
 		SimpleDateFormat formatter = new SimpleDateFormat("MMM");
@@ -182,7 +182,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 
 	private void createExpireYearBorderComposite() {
-		expireYearCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
+		expireYearCCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate year choices from market data.
 		final int maxYear = 12;
 		for (int currentYear = 7; currentYear <= maxYear; ++currentYear) {
@@ -198,7 +198,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 
 	private void createPutOrCallBorderComposite() {
-		putOrCallCCombo = new CCombo(outermostForm.getBody(), SWT.BORDER);
+		putOrCallCCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		putOrCallCCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCCombo.add(PutOrCallImage.CALL.getImage());
 
@@ -261,18 +261,18 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 				.addInputControlErrorDecoration(orderCapacityCCombo);
 	}
 
-	private void addComboChoicesFromLexerEnum(CCombo combo,
+	private void addComboChoicesFromLexerEnum(Combo combo,
 			ILexerFIXImage[] choices) {
 		for (ILexerFIXImage choice : choices) {
 			combo.add(choice.getImage());
 		}
 	}
 
-	private CCombo createFixFieldImageComboEntry(Composite parent,
+	private Combo createFixFieldImageComboEntry(Composite parent,
 			String fieldNameForValidator, int fixFieldNumber,
 			ILexerFIXImage[] choices) {
 
-		CCombo combo = new CCombo(parent, SWT.BORDER);
+		Combo combo = new Combo(parent, SWT.BORDER);
 		combo.setLayoutData(createStandardSingleColumnGridData());
 		addComboChoicesFromLexerEnum(combo, choices);
 
@@ -314,23 +314,23 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return accountText;
 	}
 
-	public CCombo getExpireMonthCCombo() {
+	public Combo getExpireMonthCombo() {
 		return expireMonthCCombo;
 	}
 
-	public CCombo getExpireYearCCombo() {
+	public Combo getExpireYearCombo() {
 		return expireYearCCombo;
 	}
 
-	public CCombo getOpenCloseCCombo() {
+	public Combo getOpenCloseCombo() {
 		return openCloseCCombo;
 	}
 
-	public CCombo getOrderCapacityCCombo() {
+	public Combo getOrderCapacityCombo() {
 		return orderCapacityCCombo;
 	}
 
-	public CCombo getPutOrCallCCombo() {
+	public Combo getPutOrCallCombo() {
 		return putOrCallCCombo;
 	}
 

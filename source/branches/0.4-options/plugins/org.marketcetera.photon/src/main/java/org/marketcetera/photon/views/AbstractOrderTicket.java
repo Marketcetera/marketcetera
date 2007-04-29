@@ -5,11 +5,11 @@ import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -354,8 +354,8 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		return sendButton;
 	}
 
-	public CCombo getSideCCombo() {
-		return orderTicketViewPieces.getSideCCombo();
+	public Combo getSideCombo() {
+		return orderTicketViewPieces.getSideCombo();
 	}
 
 	public Text getSymbolText() {
@@ -366,8 +366,8 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		return customFieldsViewPieces.getTableViewer();
 	}
 
-	public CCombo getTifCCombo() {
-		return orderTicketViewPieces.getTifCCombo();
+	public Combo getTifCombo() {
+		return orderTicketViewPieces.getTifCombo();
 	}
 
 	public void showErrorMessage(String errorMessage, int severity) {

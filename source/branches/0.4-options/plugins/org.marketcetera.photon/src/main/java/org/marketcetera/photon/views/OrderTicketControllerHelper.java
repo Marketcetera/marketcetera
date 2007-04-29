@@ -264,11 +264,11 @@ public class OrderTicketControllerHelper {
 	}
 
 	private void addInputControlSendOrderListeners() {
-		addSendOrderListener(ticket.getSideCCombo());
+		addSendOrderListener(ticket.getSideCombo());
 		addSendOrderListener(ticket.getQuantityText());
 		addSendOrderListener(ticket.getSymbolText());
 		addSendOrderListener(ticket.getPriceText());
-		addSendOrderListener(ticket.getTifCCombo());
+		addSendOrderListener(ticket.getTifCombo());
 	}
 
 	public void addSendOrderListener(Control targetControl) {
@@ -330,7 +330,7 @@ public class OrderTicketControllerHelper {
 		// creation.
 		final int swtEvent = SWT.Modify;
 		{
-			Control whichControl = ticket.getSideCCombo();
+			Control whichControl = ticket.getSideCombo();
 			IToggledValidator validator = (IToggledValidator) sideConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(false);
@@ -398,7 +398,7 @@ public class OrderTicketControllerHelper {
 			addControlRequiringUserInput(whichControl);
 		}
 		{
-			Control whichControl = ticket.getTifCCombo();
+			Control whichControl = ticket.getTifCombo();
 			IToggledValidator afterGetValidator = (IToggledValidator) tifConverterBuilder
 					.newTargetAfterGetValidator();
 			afterGetValidator.setEnabled(false);

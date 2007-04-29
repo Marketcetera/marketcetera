@@ -87,20 +87,20 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 				TimeInForce.DAY, null);
 		controller.showMessage(message);
 		assertEquals("10", ticket.getQuantityText().getText());
-		assertEquals("B", ticket.getSideCCombo().getText());
+		assertEquals("B", ticket.getSideCombo().getText());
 		assertEquals("1", ticket.getPriceText().getText());
 		assertEquals("QWER", ticket.getSymbolText().getText());
-		assertEquals("DAY", ticket.getTifCCombo().getText());
+		assertEquals("DAY", ticket.getTifCombo().getText());
 
 		message = msgFactory.newMarketOrder("2",
 				Side.SELL_SHORT_EXEMPT, BigDecimal.ONE, new MSymbol("QWER"),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.showMessage(message);
 		assertEquals("1", ticket.getQuantityText().getText());
-		assertEquals("SSE", ticket.getSideCCombo().getText());
+		assertEquals("SSE", ticket.getSideCombo().getText());
 		assertEquals("MKT", ticket.getPriceText().getText());
 		assertEquals("QWER", ticket.getSymbolText().getText());
-		assertEquals("OPG", ticket.getTifCCombo().getText());
+		assertEquals("OPG", ticket.getTifCombo().getText());
 		assertEquals("123456789101112", ticket.getAccountText().getText());
 	}
 	
@@ -159,11 +159,11 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	public void testTypeNewOrder() throws Exception {
 		controller.handleCancel();
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		view.getSideCCombo().setText("S");
+		view.getSideCombo().setText("S");
 		view.getQuantityText().setText("45");
 		view.getSymbolText().setText("ASDF");
 		view.getPriceText().setText("MKT");
-		view.getTifCCombo().setText("FOK");
+		view.getTifCombo().setText("FOK");
 		
 		Message orderMessage = controller.getMessage();
 		assertEquals(MsgType.ORDER_SINGLE, orderMessage.getHeader().getString(MsgType.FIELD));
