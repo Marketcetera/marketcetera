@@ -7,13 +7,13 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -35,7 +35,7 @@ public class OrderTicketViewPieces {
 
 	private FormToolkit formToolkit;
 
-	private CCombo sideCCombo = null;
+	private Combo sideCombo = null;
 
 	private Text quantityText = null;
 
@@ -43,7 +43,7 @@ public class OrderTicketViewPieces {
 
 	private Text priceText = null;
 
-	private CCombo tifCCombo = null;
+	private Combo tifCombo = null;
 
 	private Image errorImage;
 
@@ -83,12 +83,12 @@ public class OrderTicketViewPieces {
 
 	public void createSideInput() {
 
-		sideCCombo = new CCombo(defaultParent, SWT.BORDER);
-		sideCCombo.add(SideImage.BUY.getImage());
-		sideCCombo.add(SideImage.SELL.getImage());
-		sideCCombo.add(SideImage.SELL_SHORT.getImage());
-		sideCCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
-		addInputControlErrorDecoration(sideCCombo);
+		sideCombo = new Combo(defaultParent, SWT.BORDER);
+		sideCombo.add(SideImage.BUY.getImage());
+		sideCombo.add(SideImage.SELL.getImage());
+		sideCombo.add(SideImage.SELL_SHORT.getImage());
+		sideCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
+		addInputControlErrorDecoration(sideCombo);
 	}
 
 	public void createQuantityInput() {
@@ -147,19 +147,19 @@ public class OrderTicketViewPieces {
 
 	public void createTifInput() {
 
-		tifCCombo = new CCombo(defaultParent, SWT.BORDER);
-		tifCCombo.add(TimeInForceImage.DAY.getImage());
-		tifCCombo.add(TimeInForceImage.OPG.getImage());
-		tifCCombo.add(TimeInForceImage.CLO.getImage());
-		tifCCombo.add(TimeInForceImage.FOK.getImage());
-		tifCCombo.add(TimeInForceImage.GTC.getImage());
-		tifCCombo.add(TimeInForceImage.IOC.getImage());
+		tifCombo = new Combo(defaultParent, SWT.BORDER);
+		tifCombo.add(TimeInForceImage.DAY.getImage());
+		tifCombo.add(TimeInForceImage.OPG.getImage());
+		tifCombo.add(TimeInForceImage.CLO.getImage());
+		tifCombo.add(TimeInForceImage.FOK.getImage());
+		tifCombo.add(TimeInForceImage.GTC.getImage());
+		tifCombo.add(TimeInForceImage.IOC.getImage());
 
-		addInputControlErrorDecoration(tifCCombo);
+		addInputControlErrorDecoration(tifCombo);
 	}
 
-	public CCombo getSideCCombo() {
-		return sideCCombo;
+	public Combo getSideCombo() {
+		return sideCombo;
 	}
 
 	public Text getSymbolText() {
@@ -174,8 +174,8 @@ public class OrderTicketViewPieces {
 		return quantityText;
 	}
 
-	public CCombo getTifCCombo() {
-		return tifCCombo;
+	public Combo getTifCombo() {
+		return tifCombo;
 	}
 
 	/**

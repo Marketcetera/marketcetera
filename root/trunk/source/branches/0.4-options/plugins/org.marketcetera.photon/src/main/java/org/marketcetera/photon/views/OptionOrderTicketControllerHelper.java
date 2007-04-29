@@ -69,7 +69,7 @@ public class OptionOrderTicketControllerHelper extends
 		
 		// ExpireDate Month
 		{
-			Control whichControl = optionTicket.getExpireMonthCCombo();
+			Control whichControl = optionTicket.getExpireMonthCombo();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(false);
 			dataBindingContext.bindValue(SWTObservables
@@ -87,7 +87,7 @@ public class OptionOrderTicketControllerHelper extends
 		}
 		// ExpireDate Year
 		{
-			Control whichControl = optionTicket.getExpireYearCCombo();
+			Control whichControl = optionTicket.getExpireYearCombo();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(false);
 			dataBindingContext.bindValue(SWTObservables
@@ -123,7 +123,7 @@ public class OptionOrderTicketControllerHelper extends
 		}
 		// PutOrCall
 		{
-			Control whichControl = optionTicket.getPutOrCallCCombo();
+			Control whichControl = optionTicket.getPutOrCallCombo();
 			IToggledValidator validator = (IToggledValidator) putOrCallConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(false);
@@ -139,7 +139,7 @@ public class OptionOrderTicketControllerHelper extends
 		}
 		// OrderCapacity
 		{
-			Control whichControl = optionTicket.getOrderCapacityCCombo();
+			Control whichControl = optionTicket.getOrderCapacityCombo();
 			IToggledValidator validator = (IToggledValidator) orderCapacityConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(false);
@@ -157,7 +157,7 @@ public class OptionOrderTicketControllerHelper extends
 		}
 		// OpenClose
 		{
-			Control whichControl = optionTicket.getOpenCloseCCombo();
+			Control whichControl = optionTicket.getOpenCloseCombo();
 			IToggledValidator validator = (IToggledValidator) openCloseConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(false);

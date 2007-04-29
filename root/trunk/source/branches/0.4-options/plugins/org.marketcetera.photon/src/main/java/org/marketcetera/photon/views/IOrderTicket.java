@@ -1,7 +1,8 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.swt.custom.CCombo;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -22,15 +23,17 @@ public interface IOrderTicket {
 
 	Text getQuantityText();
 
-	CCombo getSideCCombo();
+	Combo getSideCombo();
 
 	Text getSymbolText();
 
-	CCombo getTifCCombo();
+	Combo getTifCombo();
 
 	Text getAccountText();
 
 	Label getErrorMessageLabel();
+	
+	CheckboxTableViewer getTableViewer();
 
 	void updateMessage(Message aMessage) throws MarketceteraException;
 
