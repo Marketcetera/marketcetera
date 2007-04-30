@@ -48,38 +48,45 @@ public class FIXMessageUtil {
         return false;
     }
 
-    public static boolean isExecutionReport(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.EXECUTION_REPORT);
+    public static boolean isExecutionReport(Message message) {
+        return msgTypeHelper(message, MsgType.EXECUTION_REPORT);
     }
 
-    public static boolean isOrderSingle(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_SINGLE);
+    public static boolean isOrderSingle(Message message) {
+        return msgTypeHelper(message, MsgType.ORDER_SINGLE);
     }
 
-    public static boolean isReject(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.REJECT);
+    public static boolean isReject(Message message) {
+        return msgTypeHelper(message, MsgType.REJECT);
     }
 
-    public static boolean isCancelReject(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REJECT);
+    public static boolean isCancelReject(Message message) {
+        return msgTypeHelper(message, MsgType.ORDER_CANCEL_REJECT);
     }
 
-    public static boolean isStatusRequest(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_STATUS_REQUEST);
+    public static boolean isStatusRequest(Message message) {
+        return msgTypeHelper(message, MsgType.ORDER_STATUS_REQUEST);
     }
 
-    public static boolean isCancelRequest(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REQUEST);
+    public static boolean isCancelRequest(Message message) {
+        return msgTypeHelper(message, MsgType.ORDER_CANCEL_REQUEST);
     }
 
-    public static boolean isCancelReplaceRequest(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
+    public static boolean isCancelReplaceRequest(Message message) {
+        return msgTypeHelper(message, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
     }
 
-    public static boolean isOrderList(Message jmsMessage) {
-        return msgTypeHelper(jmsMessage, MsgType.ORDER_LIST);
+    public static boolean isOrderList(Message message) {
+        return msgTypeHelper(message, MsgType.ORDER_LIST);
     }
 
+    public static boolean isLogon(Message message){
+    	return msgTypeHelper(message, MsgType.LOGON);
+    }
+
+    public static boolean isLogout(Message message){
+    	return msgTypeHelper(message, MsgType.LOGOUT);
+    }
 
     /** Helper method to extract all useful fields from an existing message into another message
      * This is usually called when the "existing" message is malformed and is missing some fields,
