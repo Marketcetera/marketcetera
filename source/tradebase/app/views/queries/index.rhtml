@@ -3,71 +3,33 @@
 <%= if(!@report.nil?)
        error_messages_for_report :report
  end %>
-<p>Please choose from the following reports:</p>
-    <div id="by_symbol">
-        <% form_tag '/queries/by_symbol', :method => :get do -%>
+    <div id="trade_query">
+        <% form_tag '/queries/trade_search', :method => :get do -%>
             <fieldset>
-                <h2>Trades By Symbol</h2>
-                <p>List all trades for a particular symbol.</p>
-                <label for="m_symbol_root">Symbol</label>
-                <%= text_field_with_auto_complete :m_symbol, :root  %>
-            </fieldset>
-            <div>
-                <%= submit_tag 'Search by Symbol', :class => "submit floatright"  %>
-                <div class="clear"></div>
-            </div>
-        <% end -%>
-    </div>
-    
-    <div id="on_date">
-        <% form_tag '/queries/on_date', :method => :get do -%>
-            <fieldset>
-                <h2>Trades On Date</h2>
-                <p>List all trades posting on specified date.</p>
-                
+                <h2>Query Trades</h2>
+                <p>List all trades for the specified criteria (can be blank)</p>
                 <div class="form_left">
-                    <label for="on_date">On Date</label>
-                    <% if(!@report.nil? && !@report.errors[:on_date].nil?) %>
-                        <div class="fieldWithErrors">
-                    <% end -%>
-                    <div class="date">
-                        <%= date_select 'date', 'on', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
-                    </div>
-                    <% if(!@report.nil? && !@report.errors[:on_date].nil?)%></div><% end -%>
+                    <label for="m_symbol_root">Symbol</label>
+                    <%= text_field_with_auto_complete :m_symbol, :root  %>
                 </div>
-            </fieldset>
-            <div>
-                <%= submit_tag 'Search by Date', :class => "submit floatright"  %>
+                <div class="form_right">
+                    <label for="account_nickname">Account</label>
+                    <%= text_field_with_auto_complete :account, :nickname %>
+                </div>
                 <div class="clear"></div>
-            </div>
-        <% end -%>
-    </div>
-    <div id="by_date">
-        <% form_tag '/queries/by_date', :method => :get do -%>
-            <fieldset>
-                <h2>Trades By Date</h2>
-                <p>List all trades posting between specified dates.</p>
-                <%= render :partial => 'shared/from_to_date_fields',
-                           :locals => { :suffix => "date", :errors => (@report.nil?) ? nil : @report.errors,
-                                    :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true }  %>
+                <%= check_box_tag :all_dates, "yes", false,
+                        { :onclick => "$('dateSelector').descendants().each(function(a) {a.disabled = !a.disabled});"} %>
+                Select All Dates<br>
+
+                <div id="dateSelector">
+                    <%= render :partial => 'shared/from_to_date_fields',
+                               :locals => { :suffix => "date", :errors => (@report.nil?) ? nil : @report.errors,
+                                        :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true }  %>
+                </div>
                 <input type="hidden" name='suffix' value="date"/>
             </fieldset>
             <div>
-                <%= submit_tag 'Search by Date', :class => "submit floatright"  %>
-                <div class="clear"></div>
-            </div>
-        <% end -%>
-    </div>
-    <div id="by_account">
-        <% form_tag '/queries/by_account', :method => :get do -%>
-            <fieldset>
-                <h2>Trades By Account</h2>
-                <p>List all trades for a particular account</p>
-                <label for="account_nickname">Account</label>
-                <%= text_field_with_auto_complete :account, :nickname %>
-            </fieldset>
-            <div>
-                <%= submit_tag 'Search by Account', :class => "submit floatright"  %>
+                <%= submit_tag 'Search for Trades', :class => "submit floatright"  %>
                 <div class="clear"></div>
             </div>
         <% end -%>

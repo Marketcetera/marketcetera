@@ -1,7 +1,0 @@
-<%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Reports", :action_name => "List Trades on Date", :top_level_controller => 'queries' } %>
-
-<h1>List Trades on Date: <span><%= @on_date %></span></h1>
-<%= render :partial => 'trades/trade_list_display' %>
-
-<%= pagination_links(@trade_pages, :params => { "on_date" => @on_date } ) %>

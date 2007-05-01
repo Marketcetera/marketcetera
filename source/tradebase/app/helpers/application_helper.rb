@@ -3,7 +3,8 @@ module ApplicationHelper
   include NumberFormatHelper
   
   RJUST_NUMBER_CLASS_STR = " class='number'"
-  
+  RJUST_NUMBER_CLASS_NEG_STR = " class='negative'"
+
   def auto_complete_for_currency_alpha_code
     auto_complete_responder_for_currency_alpha_code params[:currency][:alpha_code]
   end
@@ -117,6 +118,22 @@ module ApplicationHelper
     end
     str.gsub(" ", "&nbsp;")
   end
+
+  # Helps determine if a checkbox is checked
+  # Lifted from http://snippets.dzone.com/posts/show/2559
+  def checked?( *args )
+  if args.length == 3
+    object, method, value = args
+    if params[object] && params[object][method] && params[object][method] == value
+      'checked'
+    end
+  elsif args.length == 2
+    name, value = args
+    if params[name] && params[name] == value
+      true
+    end
+  end
+end
 
   private
   def auto_complete_responder_for_currency_alpha_code(value)

@@ -253,10 +253,15 @@ body {
 }
 
 /** Right-justify numbers */
-#body .right_column table tr td.number {
+#body .right_column table tr td.number, #body .right_column table tr td.total {
   text-align: right;
 }
 
+/** Red color for negative P&L */
+#body .right_column table tr td span.negative, #body .right_column table tr td.negative {
+  text-align: right;
+  color: #e57358;
+}
 
 #body .right_column .pagination {
   list-style-type: none;
@@ -299,6 +304,11 @@ body {
   width: 135px;
   margin: 0 0 10px 0;
   font-size: 1.0em;
+}
+
+#body .right_column fieldset input#all_dates {
+  width: 14px;
+  margin: 0 0 10px 0;
 }
 
 #body .right_column fieldset .data {
