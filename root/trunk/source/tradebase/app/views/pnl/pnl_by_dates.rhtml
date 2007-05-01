@@ -5,19 +5,19 @@
 <table>
     <tr>
         <th>Account</th>
-        <th>P&L</th>
+        <th>P&amp;L</th>
     </tr>
 <% i=0
    total = BigDecimal.new("0")
  for cf in @cashflows %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
     <td><%= link_to cf[:account], {:action => :by_account, :nickname => cf[:account], :from_date => @from_date, :to_date => @to_date} %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(cf[:cashflow], 2) %></td>
+    <td <%= pnl_number_class(cf[:cashflow]) %>><%= fn(cf[:cashflow], 2) %></td>
     <% total += BigDecimal(cf[:cashflow].to_s) %>
   </tr>
 <% end %>
   <tr>
-      <td colspan="3" <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>>Total: <%= fn(total,2) %></td>
+      <td colspan="3" class="total">Total: <span <%= pnl_number_class(total) %>><%= fn(total,2) %></span></td>
   </tr>
 </table>
 
