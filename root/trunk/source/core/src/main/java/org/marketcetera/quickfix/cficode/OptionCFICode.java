@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix.cficode;
 
-class OptionCFICode extends CFICode {
+public class OptionCFICode extends CFICode {
 	private static final int TYPE_POSITION = 1;
 	private static final int EXERCISE_POSITION = 2;
 	private static final int UNDERLYING_POSITION = 3;

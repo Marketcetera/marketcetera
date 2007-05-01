@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix.cficode;
 
-class OtherCFICode extends CFICode {
+public class OtherCFICode extends CFICode {
 
 	
 	public OtherCFICode() {

@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix.cficode;
 
-class FutureCFICode extends CFICode {
+public class FutureCFICode extends CFICode {
 	
 	public FutureCFICode() {
 		super(CATEGORY_FUTURE+"XXXXX");

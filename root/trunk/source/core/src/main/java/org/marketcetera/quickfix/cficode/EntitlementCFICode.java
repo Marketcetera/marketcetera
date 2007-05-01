@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix.cficode;
 
-class EntitlementCFICode extends CFICode {
+public class EntitlementCFICode extends CFICode {
 	
 
 	public EntitlementCFICode(CharSequence seq) {

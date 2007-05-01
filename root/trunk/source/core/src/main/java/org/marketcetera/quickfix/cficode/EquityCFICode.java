@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix.cficode;
 
-class EquityCFICode extends CFICode {
+public class EquityCFICode extends CFICode {
 
 	public EquityCFICode() {
 		super(CATEGORY_EQUITY+"XXXXX");
