@@ -5,14 +5,12 @@ import java.util.Date;
 
 import javax.jms.Destination;
 
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.internal.ErrorViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.AccessViolator;
+import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -21,7 +19,6 @@ import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.BookComposite;
 import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -34,11 +31,8 @@ import org.springframework.jms.core.ProducerCallback;
 import org.springframework.jms.core.SessionCallback;
 
 import quickfix.FieldNotFound;
-import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.field.DeliverToCompID;
-import quickfix.field.EncodedText;
-import quickfix.field.EncodedTextLen;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntryType;
@@ -76,7 +70,8 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			fail("Test view was not created");
 		}
 		IStockOrderTicket ticket = (IStockOrderTicket) theTestView;
-		controller = new StockOrderTicketController(ticket);
+		controller = new StockOrderTicketController();
+		controller.bind(ticket);
 	}
 
     @Override
@@ -92,20 +87,20 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 				TimeInForce.DAY, null);
 		controller.showMessage(message);
 		assertEquals("10", ticket.getQuantityText().getText());
-		assertEquals("B", ticket.getSideCCombo().getText());
+		assertEquals("B", ticket.getSideCombo().getText());
 		assertEquals("1", ticket.getPriceText().getText());
 		assertEquals("QWER", ticket.getSymbolText().getText());
-		assertEquals("DAY", ticket.getTifCCombo().getText());
+		assertEquals("DAY", ticket.getTifCombo().getText());
 
 		message = msgFactory.newMarketOrder("2",
 				Side.SELL_SHORT_EXEMPT, BigDecimal.ONE, new MSymbol("QWER"),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.showMessage(message);
 		assertEquals("1", ticket.getQuantityText().getText());
-		assertEquals("SSE", ticket.getSideCCombo().getText());
+		assertEquals("SSE", ticket.getSideCombo().getText());
 		assertEquals("MKT", ticket.getPriceText().getText());
 		assertEquals("QWER", ticket.getSymbolText().getText());
-		assertEquals("OPG", ticket.getTifCCombo().getText());
+		assertEquals("OPG", ticket.getTifCombo().getText());
 		assertEquals("123456789101112", ticket.getAccountText().getText());
 	}
 	
@@ -132,9 +127,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MyMarketDataFeed feed = (MarketDataViewTest.MyMarketDataFeed)marketDataFeed.getMarketDataFeed();
 		feed.sendMessage(quoteMessageToSend);
 				
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-
-		BookComposite bookComposite = (BookComposite) violator.getField("bookComposite", view);
+		BookComposite bookComposite = view.getBookComposite();
 
 		Message returnedMessage = null;
 		for (int i = 0; i < 10; i ++){
@@ -166,11 +159,11 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	public void testTypeNewOrder() throws Exception {
 		controller.handleCancel();
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		view.getSideCCombo().setText("S");
+		view.getSideCombo().setText("S");
 		view.getQuantityText().setText("45");
 		view.getSymbolText().setText("ASDF");
 		view.getPriceText().setText("MKT");
-		view.getTifCCombo().setText("FOK");
+		view.getTifCombo().setText("FOK");
 		
 		Message orderMessage = controller.getMessage();
 		assertEquals(MsgType.ORDER_SINGLE, orderMessage.getHeader().getString(MsgType.FIELD));
@@ -192,8 +185,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		delay(1);
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
+		Table customFieldsTable = view.getCustomFieldsTable();
 		
 		assertEquals(2, customFieldsTable.getItemCount());
 		
@@ -221,13 +213,24 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 		StockOrderTicket view = (StockOrderTicket) getTestView();
 
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
+		Table customFieldsTable = view.getCustomFieldsTable();
 		TableItem item0 = customFieldsTable.getItem(0);
 		item0.setChecked(true);
 		TableItem item1 = customFieldsTable.getItem(1);
 		item1.setChecked(true);
 
+		// Attempt to get a message ID. This currently has the side effect of
+		// initializing an in memory ID generator if the database backed one is
+		// unavailable. This allows the subsequent ID generation to succeed,
+		// which is required for handleSend() below.
+		try {
+			IDFactory idFactory = PhotonPlugin.getDefault()
+					.getPhotonController().getIDFactory();
+			idFactory.getNext();
+		} catch (Exception anyException) {
+			// Ignore
+		}
+		
 		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
 				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
 				TimeInForce.DAY, null);
@@ -238,14 +241,16 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		delay(1);
 		
 		Message sentMessage = (Message) mockJmsOperations.getStoredMessage();
+		assertNotNull( sentMessage );
 		try {
-			String value = sentMessage.getHeader().getString(DeliverToCompID.FIELD);  // header field
+			quickfix.Message.Header header = sentMessage.getHeader();
+			String value = header.getString(DeliverToCompID.FIELD);  // header field
 			assertEquals("ABCD", value);  //$NON-NLS-1$
 		} catch (FieldNotFound e) {
 			fail();
 		}
 		try {
-			String value = sentMessage.getString(DeliverToCompID.FIELD);
+			sentMessage.getString(DeliverToCompID.FIELD);
 			//shouldn't be in the body.
 			fail();
 		} catch (FieldNotFound e) {
@@ -271,8 +276,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		setUpJMSFeedService(mockJmsOperations);
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
-		AccessViolator violator = new AccessViolator(StockOrderTicket.class);
-		Table customFieldsTable = (Table) violator.getField("customFieldsTable", view);  //$NON-NLS-1$
+		Table customFieldsTable = view.getCustomFieldsTable();
 		TableItem item0 = customFieldsTable.getItem(0);
 		item0.setChecked(false);
 		TableItem item1 = customFieldsTable.getItem(1);

@@ -1,13 +1,12 @@
 package org.marketcetera.photon.ui.validation;
 
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import quickfix.DataDictionary;
 import quickfix.field.TimeInForce;
 
-public class DataDictionaryValidator implements IValidator {
+public class DataDictionaryValidator extends AbstractToggledValidator {
 
 	DataDictionary dictionary;
 	private IStatus errorStatus;
@@ -26,7 +25,9 @@ public class DataDictionaryValidator implements IValidator {
 
 
 	public IStatus validate(Object obj) {
-		
+		if (!isEnabled()) {
+			return Status.OK_STATUS;
+		}
 		boolean isFieldValue = dictionary.isFieldValue(fieldNumber, obj.toString());
 		// Oooh this is ugly.  Technically "AT_THE_CLOSE" was not introduced
 		// until FIX4.3, however we should probably still allow it at this level...
