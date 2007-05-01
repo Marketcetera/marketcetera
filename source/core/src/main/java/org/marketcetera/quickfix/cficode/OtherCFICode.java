@@ -1,0 +1,20 @@
+package org.marketcetera.quickfix.cficode;
+
+class OtherCFICode extends CFICode {
+
+	
+	public OtherCFICode() {
+		super(CATEGORY_OTHER+"XXXXX");
+	}
+
+	public OtherCFICode(CharSequence codes) {
+		super(codes);
+	}
+
+	@Override
+	public boolean isValid() {
+		// not yet implemented
+		return false;
+	}
+	
+}
