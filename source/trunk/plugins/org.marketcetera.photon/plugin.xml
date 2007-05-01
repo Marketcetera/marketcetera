@@ -21,12 +21,6 @@
             id="org.marketcetera.photon.EquityPerspective"
             name="Equity">
       </perspective>
-      <perspective
-            class="org.marketcetera.photon.ui.OptionPerspectiveFactory"
-            icon="icons/silk/clock.png"
-            id="org.marketcetera.photon.OptionPerspective"
-            name="Option">
-      </perspective>
    </extension>
    <extension
          point="org.eclipse.ui.views">
@@ -36,14 +30,6 @@
             icon="icons/silk/medal_gold_add.png"
             id="org.marketcetera.photon.views.StockOrderTicket"
             name="Stock Order Ticket"
-            allowMultiple="true"
-            />
-      <view
-            category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.OptionOrderTicket"
-            icon="icons/silk/clock_add.png"
-            id="org.marketcetera.photon.views.OptionOrderTicket"
-            name="Option Order Ticket"
             allowMultiple="true"
             />
       <view
@@ -85,13 +71,6 @@
             icon="icons/silk/chart_curve.png"
             id="org.marketcetera.photon.views.MarketDataView"
             name="Market Data"/>
-      <view
-            allowMultiple="true"
-            category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.OptionMarketDataView"
-            icon="icons/silk/chart_curve.png"
-            id="org.marketcetera.photon.views.OptionMarketDataView"
-            name="Option Market Data"/>   
    </extension>
 
    <extension
@@ -99,22 +78,11 @@
       <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
          <perspectiveShortcut
                id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
-      </perspectiveExtension>
-
-      <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
-         <perspectiveShortcut
-               id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
       </perspectiveExtension>
 
       <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
          <perspectiveShortcut
                id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
 
       <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
@@ -126,8 +94,6 @@
                visible="true"/>
          <perspectiveShortcut
                id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
    </extension>
 
@@ -201,15 +167,6 @@
             commandId="org.marketcetera.photon.FocusCommand"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
             keySequence="M3+C"/>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.marketcetera.photon.editors.EquityOptionEditor"
-            default="false"
-            icon="icons/silk/tab.png"
-            id="org.marketcetera.photon.editors.EquityOptionEditor"
-            name="Equity Options"/>
    </extension>
    <extension point="org.eclipse.ui.editorActions"> 
       <editorContribution 
