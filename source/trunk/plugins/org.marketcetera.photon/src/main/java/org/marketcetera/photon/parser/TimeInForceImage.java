@@ -14,7 +14,7 @@ import quickfix.field.TimeInForce;
  * @author gmiller
  *
  */
-public enum TimeInForceImage implements ILexerImage{
+public enum TimeInForceImage implements ILexerFIXImage{
     DAY("DAY", TimeInForce.DAY), 
     GTC("GTC", TimeInForce.GOOD_TILL_CANCEL), 
     FOK("FOK", TimeInForce.FILL_OR_KILL), 
@@ -53,7 +53,16 @@ public enum TimeInForceImage implements ILexerImage{
 		return images;
 	}
 
+	// todo: remove this method
 	public char getFIXValue() {
+		return getFIXCharValue();
+	}
+
+	public char getFIXCharValue() {
+		return fixValue;
+	}
+
+	public int getFIXIntValue() {
 		return fixValue;
 	}
 

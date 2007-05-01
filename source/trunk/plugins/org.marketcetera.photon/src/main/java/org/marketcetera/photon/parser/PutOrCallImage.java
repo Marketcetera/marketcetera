@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import quickfix.field.Side;
+import quickfix.field.PutOrCall;
 
-public enum SideImage implements ILexerFIXImage {
-	BUY("B", Side.BUY), SELL("S", Side.SELL), SELL_SHORT("SS", Side.SELL_SHORT), SELL_SHORT_EXEMPT("SSE", Side.SELL_SHORT_EXEMPT);
-	static final Map<String, SideImage> nameMap = new HashMap<String, SideImage>();
+public enum PutOrCallImage implements ILexerFIXImage {
+
+	PUT("P", PutOrCall.PUT), CALL("C", PutOrCall.CALL);
+	static final Map<String, PutOrCallImage> nameMap = new HashMap<String, PutOrCallImage>();
 	private static final String[] images;
 
 	static {
 		ArrayList<String> imageList = new ArrayList<String>();
-		for (SideImage anImage : SideImage.values()) {
+		for (PutOrCallImage anImage : PutOrCallImage.values()) {
 			nameMap.put(anImage.getImage(), anImage);
 			imageList.add(anImage.getImage());
 		}
@@ -21,32 +22,24 @@ public enum SideImage implements ILexerFIXImage {
 	}
 
 	private String image;
-	private final char fixValue;
-	SideImage(String s, char fixValue) {
+	private final int fixValue;
+	PutOrCallImage(String s, int fixValue) {
 		image = s;
 		this.fixValue = fixValue;
 	}
 	public String getImage() {
 		return image;
 	}
-	public static SideImage fromName(String image) {
+	public static PutOrCallImage fromName(String image) {
 		return nameMap.get(image);
 	}
 	public static String [] getImages(){
 		return images;
 	}
-	
-	// todo: Remove this method
-	public char getFIXValue() {
-		return getFIXCharValue();
-	}
-	public char getFIXCharValue() {
-		return fixValue;
-	}
 	public int getFIXIntValue() {
 		return fixValue;
 	}
-	
-
+	public char getFIXCharValue() {
+		return (char) fixValue;
+	}
 }
-

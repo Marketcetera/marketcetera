@@ -61,6 +61,11 @@ public class FIXObservableValue extends AbstractObservableValue {
 		}
 		fieldMap = myFieldMap;
 	}
+	
+	
+	protected FieldMap getFieldMap() {
+		return fieldMap;
+	}
 
 	@Override
 	protected Object doGetValue() {

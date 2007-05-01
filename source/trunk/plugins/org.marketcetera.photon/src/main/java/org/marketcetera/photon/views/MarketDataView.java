@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
@@ -63,7 +64,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	private static final int LAST_NORMAL_COLUMN_INDEX = LASTPX_COLUMN_INDEX;
 	
 	
-	public enum MarketDataColumns
+	public enum MarketDataColumns implements IFieldIdentifier
 	{
 		ZEROWIDTH(""), SYMBOL(Symbol.class), LASTPX(LastPx.class), BIDSZ(BidSize.class),
 		BID(BidPx.class), ASK(OfferPx.class), ASKSZ(OfferSize.class);

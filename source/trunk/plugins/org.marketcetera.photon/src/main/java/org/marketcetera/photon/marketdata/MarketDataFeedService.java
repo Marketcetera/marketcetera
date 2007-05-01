@@ -154,12 +154,15 @@ public class MarketDataFeedService implements IFeedComponentListener, IFeedCompo
 	}
 
 	public void feedComponentChanged(IFeedComponent component) {
-		if (serviceRegistration != null)
-		{
-			serviceRegistration.setProperties(null);
+		if (serviceRegistration != null) {
+			try {
+				serviceRegistration.setProperties(null);
+			} catch (IllegalStateException illegalStateEx) {
+				// During shutdown the service may already be unregistered.
+				serviceRegistration = null;
+			}
 		}
 	}
-
 
 
 }
