@@ -58,8 +58,8 @@
                 <entry key="JdbcUser" value="marketcetera"/>
                 <entry key="JdbcPassword" value="marketcetera"/>
                 <entry key="JdbcLogHeartBeats" value="N"/>
-                <!-- leave the heartbeats in for slf4j logger -->
-                <entry key="SLF4JLogHeartbeats" value="Y"/>
+                <!-- leave the heartbeats out for slf4j logger -->
+                <entry key="SLF4JLogHeartbeats" value="N"/>
             </map>
 		</property>
 		<property name="sessionDescriptors">
