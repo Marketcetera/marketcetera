@@ -1,7 +1,7 @@
 package org.marketcetera.core;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.FIXDataDictionary;
@@ -38,7 +38,7 @@ public abstract class ApplicationBase implements Clock {
         sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
     }
 
-    public ApplicationContext createApplicationContext(String[] ctxFileNames, boolean registerShutdownHook) throws MarketceteraException {
+    public ConfigurableApplicationContext createApplicationContext(String[] ctxFileNames, boolean registerShutdownHook) throws MarketceteraException {
         appCtx = new ClassPathXmlApplicationContext(ctxFileNames) {
             protected void onClose() {
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("in shutdown hook", this); }
