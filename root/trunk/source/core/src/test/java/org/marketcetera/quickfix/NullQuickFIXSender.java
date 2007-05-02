@@ -1,7 +1,6 @@
-package org.marketcetera.oms;
+package org.marketcetera.quickfix;
 
 import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.SessionID;
