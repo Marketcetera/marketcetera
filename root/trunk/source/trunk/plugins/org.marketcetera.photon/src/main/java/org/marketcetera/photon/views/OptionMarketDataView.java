@@ -18,6 +18,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
@@ -347,9 +348,6 @@ public class OptionMarketDataView extends MessagesView implements
 				.toString();
 		aMessagesViewer.setColumnProperties(columnProperties);
 
-		// Set the cell modifier for the viewer
-		aMessagesViewer.setCellModifier(new MarketDataCellModifier(this));
-
 		return aMessagesViewer;
 	}
 
@@ -417,58 +415,6 @@ public class OptionMarketDataView extends MessagesView implements
 		}
 	}
 
-	class MarketDataCellModifier implements ICellModifier {
-		private final OptionMarketDataView view;
-
-		public MarketDataCellModifier(OptionMarketDataView view) {
-			this.view = view;
-		}
-
-		public boolean canModify(Object element, String property) {
-			return MarketDataColumns.SYMBOL.toString().equals(property);
-		}
-
-		public Object getValue(Object element, String property) {
-			try {
-				return ((MessageHolder) element).getMessage().getString(
-						Symbol.FIELD);
-			} catch (FieldNotFound e) {
-				return "";
-			}
-		}
-
-		public void modify(Object element, String property, Object value) {
-			MarketDataFeedService service = (MarketDataFeedService) marketDataTracker
-					.getMarketDataFeedService();
-			if (service == null) {
-				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
-				return;
-			}
-			MSymbol newSymbol = service.symbolFromString(value.toString());
-
-			String stringValue = newSymbol.toString();
-			if (listContains(stringValue)) {
-				return;
-			}
-			TableItem tableItem = (TableItem) element;
-			MessageHolder messageHolder = (MessageHolder) tableItem.getData();
-			Message message = messageHolder.getMessage();
-
-			try {
-				MSymbol symbol = service.symbolFromString(message
-						.getString(Symbol.FIELD));
-				marketDataTracker.simpleUnsubscribe(symbol);
-			} catch (FieldNotFound fnf) {
-			}
-			message.clear();
-			if (stringValue.length() > 0) {
-				MSymbol mSymbol = service.symbolFromString(stringValue);
-				message.setField(new Symbol(stringValue));
-				marketDataTracker.simpleSubscribe(mSymbol);
-				getMessagesViewer().refresh();
-			}
-		}
-	}
 
 	private static final int CALL_VOLUME_INDEX = LAST_NORMAL_COLUMN_INDEX + 1;
 
@@ -651,8 +597,14 @@ public class OptionMarketDataView extends MessagesView implements
 			message.setField(new Symbol(symbol.toString()));
 			list.add(new MessageHolder(message));
 
-			marketDataTracker.simpleSubscribe(symbol);
+			try {
+				marketDataTracker.simpleSubscribe(symbol);
+			} catch (MarketceteraException e) {
+				PhotonPlugin.getMainConsoleLogger().error(
+						"Exception subscribing to market data for " + symbol);
+			}
 			getMessagesViewer().refresh();
+			
 		}
 	}
 
