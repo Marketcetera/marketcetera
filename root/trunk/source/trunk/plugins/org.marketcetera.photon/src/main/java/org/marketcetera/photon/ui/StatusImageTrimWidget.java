@@ -189,7 +189,8 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 				if (!imageLabel.isDisposed()){
 					imageLabel.setImage(getStatusImage(aStatus));
 					String statusString = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
-					imageLabel.setToolTipText(name + " \""+ feedID +"\" " + statusString);
+					String nameString = feedID==null ? " " : " \""+ feedID +"\" ";
+					imageLabel.setToolTipText(name + nameString + statusString);
 				}
 			}
 		});
