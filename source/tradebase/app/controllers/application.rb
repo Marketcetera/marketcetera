@@ -44,5 +44,17 @@ class ApplicationController < ActionController::Base
        objects = model.find_by_sql_with_limit(sql,
             object_pages.current.to_sql[1], per_page)
        return [object_pages, objects, total]
-   end
+    end
+
+    # for some reason :page and "page" ends up being different keys in a hash.
+    # We get "page" from pagionation_links so use that as a key
+    def paginate_collection(collection, options = {})
+      default_options = {:per_page => MaxPerPage, "page" => 1}
+      options = default_options.merge options
+      pages = Paginator.new self, collection.size, options[:per_page], options["page"]
+      first = pages.current.offset
+      last = [first + options[:per_page], collection.size].min
+      slice = collection[first...last]
+      return [pages, slice]
+    end
 end

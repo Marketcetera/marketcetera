@@ -20,13 +20,14 @@ class PnlController < ApplicationController
     begin
       byAcctCashflows = CashFlow.get_cashflows_from_to_in_acct(theAcct, @from_date, @to_date)
       logger.debug("byAccount got cfs: "+byAcctCashflows.inspect)
-      @cashflows = byAcctCashflows[theAcct.nickname].values.sort { |x,y| x.symbol <=> y.symbol}
+      cashflows = byAcctCashflows[theAcct.nickname].values.sort { |x,y| x.symbol <=> y.symbol}
       @nickname = theAcct.nickname
     rescue Exception => ex
       logger.debug("Error generating cashflow for #{theAcct.nickname}: " + ex);
       flash.now[:error] = ex.to_s
-      @cashflows = []
+      cashflows = []
     end
+    @cashflow_pages, @cashflows = paginate_collection(cashflows, params)
     render :template => 'pnl/pnl_by_account'
   end
 
@@ -50,14 +51,15 @@ class PnlController < ApplicationController
       result.keys.each { |key| pnls[key] = BigDecimal("0")}
       # sum up all the cashflows
       result.keys.each { |key| result[key].values.each { |cf| pnls[key] += cf.cashflow }}
-      @cashflows = []
-      pnls.keys.sort.each { |key| @cashflows << {:account => key, :cashflow => pnls[key]} }
+      cashflows = []
+      pnls.keys.sort.each { |key| cashflows << {:account => key, :cashflow => pnls[key]} }
     rescue Exception => ex
       logger.debug("Error generating aggregate cashflow: " + ex);
       flash.now[:error] = ex.to_s
-      @cashflows = []
+      cashflows = []
     end
-    
+
+    @cashflow_pages, @cashflows = paginate_collection(cashflows, params)
     render :template => 'pnl/pnl_by_dates'
   end
 

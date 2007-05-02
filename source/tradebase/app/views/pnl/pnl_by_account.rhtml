@@ -20,9 +20,10 @@
   </tr>
 <% end %>
   <tr>
-      <td colspan="3" class="total">Total: <span <%= pnl_number_class(total) %>><%= fn(total,2) %></span></td>
+      <td colspan="3" class="total">Subtotal: <span <%= pnl_number_class(total) %>><%= fn(total,2) %></span></td>
   </tr>
 </table>
 
 <%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
 
+<%= pagination_links(@cashflow_pages, :params => {:nickname => @nickname, :from_date => @from_date, :to_date => @to_date }) %>
