@@ -137,7 +137,7 @@
                value="Marketcetera Photon&#x0A;&#x0A;Version: 0.3.0&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006 2007.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
-               value="photon-config.ini"/>
+               value="photon_customization.ini"/>
          <property
                name="windowImages"
                value="icons/marketcetera/photon-16x16.gif,icons/marketcetera/photon-32x32.gif,icons/marketcetera/photon-48x48.gif,icons/marketcetera/photon-64x64.gif,icons/marketcetera/photon-128x128.gif"/>
