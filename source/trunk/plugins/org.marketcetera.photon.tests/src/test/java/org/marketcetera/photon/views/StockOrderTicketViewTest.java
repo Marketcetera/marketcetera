@@ -139,6 +139,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 				break;
 			}
 		}
+		assertNotNull(returnedMessage);
 		assertEquals("MRKT", returnedMessage.getString(Symbol.FIELD));
 		int noEntries = returnedMessage.getInt(NoMDEntries.FIELD);
 		for (int i = 1; i < noEntries+1; i++){
