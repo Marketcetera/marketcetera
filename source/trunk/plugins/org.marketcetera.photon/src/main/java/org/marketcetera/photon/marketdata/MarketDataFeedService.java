@@ -6,11 +6,10 @@ import java.util.List;
 import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.IFeedComponent.FeedStatus;
-import org.marketcetera.core.IFeedComponent.FeedType;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
-import org.marketcetera.marketdata.IMessageSelector;
+import org.marketcetera.marketdata.ISubscription;
 import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;
@@ -68,16 +67,16 @@ public class MarketDataFeedService implements IFeedComponentListener, IFeedCompo
 		feed.stop();
 	}
 
-	public final void subscribe(IMessageSelector selector) {
-		feed.subscribe(selector);
+	public final ISubscription subscribe(Message subscriptionMessage) throws MarketceteraException {
+		return feed.asyncQuery(subscriptionMessage);
 	}
 
 	public final MSymbol symbolFromString(String symbolString) {
 		return feed.symbolFromString(symbolString);
 	}
 
-	public final boolean unsubscribe(IMessageSelector selector) {
-		return feed.unsubscribe(selector);
+	public final void unsubscribe(ISubscription subscription) throws MarketceteraException {
+		feed.asyncUnsubscribe(subscription);
 	}
 	
 	public final IMarketDataFeed getMarketDataFeed()

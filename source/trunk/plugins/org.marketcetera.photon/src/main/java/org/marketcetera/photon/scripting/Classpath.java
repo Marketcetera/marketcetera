@@ -40,7 +40,7 @@ public class Classpath implements List<IPath> {
 	public String toString() {
 		int size = innerList.size();
 		int i = 0;
-		StringBuffer sb = new StringBuffer();;
+		StringBuffer sb = new StringBuffer();
 		for (IPath path : innerList) {
 			sb.append(path.toOSString());
 			if (++i < size){

@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
@@ -32,6 +33,7 @@ import quickfix.Message;
 import quickfix.field.BidPx;
 import quickfix.field.BidSize;
 import quickfix.field.LastPx;
+import quickfix.field.LastQty;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
@@ -66,7 +68,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 	public enum MarketDataColumns implements IFieldIdentifier
 	{
-		ZEROWIDTH(""), SYMBOL(Symbol.class), LASTPX(LastPx.class), BIDSZ(BidSize.class),
+		ZEROWIDTH(""), SYMBOL(Symbol.class), LASTPX(LastPx.class), LASTQTY(LastQty.class), BIDSZ(BidSize.class),
 		BID(BidPx.class), ASK(OfferPx.class), ASKSZ(OfferSize.class);
 		
 		private String name;
@@ -298,7 +300,11 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			if (stringValue.length()>0){
 				MSymbol mSymbol = service.symbolFromString(stringValue);
 				message.setField(new Symbol(stringValue));
-				marketDataTracker.simpleSubscribe(mSymbol);
+				try {
+					marketDataTracker.simpleSubscribe(mSymbol);
+				} catch (MarketceteraException e) {
+					PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+mSymbol);
+				}
 				getMessagesViewer().refresh();
 			}
 		}
@@ -396,12 +402,20 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 				&& (fieldID == quickfix.field.BidSize.FIELD
 					|| fieldID == quickfix.field.BidPx.FIELD
 					|| fieldID == quickfix.field.OfferPx.FIELD 
-					|| fieldID == quickfix.field.OfferSize.FIELD)) 
+					|| fieldID == quickfix.field.OfferSize.FIELD
+					|| fieldID == quickfix.field.LastPx.FIELD 
+					|| fieldID == quickfix.field.LastQty.FIELD)) 
 			{
 				try {
 					Message castedMap = (Message) map;
 					switch (fieldID) {
 
+					case quickfix.field.LastPx.FIELD:
+						return getGroup(castedMap, MDEntryType.TRADE).getDouble(
+								MDEntryPx.FIELD);
+					case quickfix.field.LastQty.FIELD:
+						return getGroup(castedMap, MDEntryType.TRADE).getDouble(
+								MDEntrySize.FIELD);
 					case quickfix.field.BidSize.FIELD:
 						return getGroup(castedMap, MDEntryType.BID).getDouble(
 								MDEntrySize.FIELD);
@@ -445,7 +459,11 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			message.setField(new Symbol(symbol.toString()));
 			list.add(new MessageHolder(message));
 
-			marketDataTracker.simpleSubscribe(symbol);
+			try {
+				marketDataTracker.simpleSubscribe(symbol);
+			} catch (MarketceteraException e) {
+				PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+symbol);
+			}
 			getMessagesViewer().refresh();
 		}
 	}
