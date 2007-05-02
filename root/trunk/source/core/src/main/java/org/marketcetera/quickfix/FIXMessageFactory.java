@@ -53,7 +53,6 @@ import quickfix.field.TransactTime;
  * @author toli
  * @version $Id$
  */
-
 @ClassVersion("$Id$")
 public class FIXMessageFactory {
 

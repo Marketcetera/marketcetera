@@ -5,15 +5,12 @@ package org.marketcetera.core;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class MemoizedHashCombinator<T1, T2> {
+public class MemoizedHashCombinator<T1, T2> extends Pair<T1, T2>{
 	String hashString;
 	int hashCode;
-	private T1 firstMember;
-	private T2 secondMember;
 
 	public MemoizedHashCombinator(T1 o1, T2 o2){
-		firstMember = o1;
-		secondMember = o2;
+		super(o1, o2);
 		String s1 = o1==null ? "null" : o1.toString();
 		String s2 = o2==null ? "null" : o2.toString();
 		int len1 = s1.length();
@@ -22,20 +19,6 @@ public class MemoizedHashCombinator<T1, T2> {
 		hashCode = hashString.hashCode();
 	}
 
-	/**
-	 * @return Returns the firstMember.
-	 */
-	protected T1 getFirstMember() {
-		return firstMember;
-	}
-
-
-	/**
-	 * @return Returns the secondMember.
-	 */
-	protected T2 getSecondMember() {
-		return secondMember;
-	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#equals(java.lang.Object)

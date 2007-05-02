@@ -7,6 +7,8 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 
+import quickfix.Message;
+
 
 /**
  * An abstract base class for all market data feeds. Contains logic common to all market data feed impls with 
@@ -55,6 +57,11 @@ public abstract class MarketDataFeedBase implements IMarketDataFeed {
 		marketDataListener = listener;
 	}
 
+	protected void fireMarketDataMessage(Message aMessage){
+		if (marketDataListener != null){
+			marketDataListener.onMessage(aMessage);
+		}
+	}
 
 
 }
