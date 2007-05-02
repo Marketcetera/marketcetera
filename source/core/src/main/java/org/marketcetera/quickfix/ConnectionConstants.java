@@ -32,12 +32,6 @@ public class ConnectionConstants
     // ID factory
     public static final String ID_FACTORY_BASE_KEY = "id.factory.base";
 
-    // Quote feed
-    public static final String QUOTE_FEED_SERVER = "quotefeed.server";
-    public static final String QUOTE_FEED_PORT = "quotefeed.port";
-    public static final String QUOTE_FEED_USER = "quotefeed.user";
-    public static final String QUOTE_FEED_PWD = "quotefeed.pwd";
-
 
     /** MarketData request - show all known symbols */
     public static final int MARKET_DATA_REQUEST_SHOW_ALL_KNOWN_SYMBOLS = 0;
