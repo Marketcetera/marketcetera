@@ -13,12 +13,7 @@ public abstract class MarketDataListener implements IMarketDataListener {
 				onTrade(aMessage);
 			}
 			if (MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH.equals(msgTypeString)) {
-				int noEntries = aMessage.getInt(NoMDEntries.FIELD);
-				if (noEntries > 2){
-					onLevel2Quote(aMessage);
-				} else {
-					onQuote(aMessage);
-				}
+				onQuote(aMessage);
 			}
 		} catch (Exception e) {
 			System.out.println(""+e);
@@ -43,10 +38,10 @@ public abstract class MarketDataListener implements IMarketDataListener {
         }
     }
 
-	public void onLevel2Quotes(Message[] quotes) {
-        for (Message quote : quotes) {
-            onLevel2Quote(quote);
-        }
-    }
+
+    public abstract void onQuote(Message aQuote);
+
+    public abstract void onTrade(Message aTrade);
+    
 
 }

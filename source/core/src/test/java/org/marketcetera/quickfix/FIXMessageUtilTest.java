@@ -1,18 +1,63 @@
 package org.marketcetera.quickfix;
 
-import junit.framework.Test;
-import org.marketcetera.core.*;
-import quickfix.FieldNotFound;
-import quickfix.InvalidMessage;
-import quickfix.Message;
-import quickfix.Group;
-import quickfix.field.*;
-
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.HashSet;
+import java.util.List;
+
+import junit.framework.Test;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.MSymbol;
+
+import quickfix.DataDictionary;
+import quickfix.FieldNotFound;
+import quickfix.Group;
+import quickfix.InvalidMessage;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.EncodedText;
+import quickfix.field.EncodedTextLen;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LeavesQty;
+import quickfix.field.MDEntryType;
+import quickfix.field.MDReqID;
+import quickfix.field.MaturityDay;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
+import quickfix.field.PutOrCall;
+import quickfix.field.SecurityReqID;
+import quickfix.field.SecurityRequestResult;
+import quickfix.field.SecurityResponseID;
+import quickfix.field.Side;
+import quickfix.field.StrikePrice;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.Text;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
+import quickfix.field.UnderlyingSymbol;
+import quickfix.fix44.DerivativeSecurityList;
 
 /**
  * @author Graham Miller
@@ -257,4 +302,79 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 	        assertEquals(encodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
     	}
     }
+    
+    public void testGetCorrelationField() throws Exception {
+		String requestString = "REQUEST";
+    	Field[] fields = MsgType.class.getDeclaredFields();
+    	for (Field field : fields) {
+			String fieldName = field.getName();
+			if (field.getType().equals(String.class)
+					&& !fieldName.equals("TEST_REQUEST")	// omit session-level message
+					&& !fieldName.equals("RESEND_REQUEST")	// omit session-level message
+					&& !fieldName.equals("BID_REQUEST")		// omit 
+					&& !fieldName.startsWith("ORDER_")		// omit order-related messages
+					&& !fieldName.startsWith("CROSS_ORDER_")// omit order-related messages
+					&& !fieldName.endsWith("_ACK")			// omit "ack" messages
+					&& !fieldName.startsWith("LIST_")		// omit list-order-related messages
+					&& (fieldName.startsWith(requestString) 
+					|| fieldName.endsWith("REQUEST")))
+			{
+				String msgTypeValue = (String) field.get(null);
+				DataDictionary dictionary = fixDD.getDictionary();
+				if (dictionary.isMsgType(msgTypeValue)){
+					StringField correlationField = FIXMessageUtil.getCorrelationField(fixVersion, msgTypeValue);
+					assertTrue("Couldn't find correlation for "+fieldName, correlationField!=null);
+					assertTrue(correlationField.getField()+" is not a valid value for "+fieldName+" in "+this.fixVersion,
+							dictionary.isMsgField(msgTypeValue, correlationField.getField()));
+				}
+			}
+		}
+    }
+    
+    public void testValidateDerivative() throws Exception {
+		SecurityRequestResult resultCode = new SecurityRequestResult(
+				SecurityRequestResult.NO_INSTRUMENTS_FOUND_THAT_MATCH_SELECTION_CRITERIA);
+		if (FIXVersion.FIX44.equals(fixVersion)){
+		UnderlyingSymbol underlyingSymbolField = new UnderlyingSymbol("UND");
+		SecurityReqID id = new SecurityReqID("1234");
+
+		DerivativeSecurityList responseMessage = new DerivativeSecurityList();
+		responseMessage.setField(id);
+		responseMessage.setField(underlyingSymbolField);
+		responseMessage.setField(new SecurityResponseID("2345"));
+
+		{
+			Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
+			optionGroup.setField(new Symbol("OPT+RQ"));
+			optionGroup.setField(new StringField(StrikePrice.FIELD, "10"));
+			optionGroup.setField(new PutOrCall(PutOrCall.CALL));
+			optionGroup.setField(new MaturityMonthYear("200802"));
+			optionGroup.setField(new MaturityDay("22"));
+			responseMessage.addGroup(optionGroup);
+		}
+		{
+			Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
+			optionGroup.setField(new Symbol("OPT+RB"));
+			optionGroup.setField(new StringField(StrikePrice.FIELD, "10"));
+			optionGroup.setField(new PutOrCall(PutOrCall.CALL));
+			optionGroup.setField(new MaturityMonthYear("200802"));
+			optionGroup.setField(new MaturityDay("22"));
+			responseMessage.addGroup(optionGroup);
+		}
+		resultCode.setValue(SecurityRequestResult.VALID_REQUEST);
+		responseMessage.setField(resultCode);
+		System.out.println(responseMessage.toString());
+		fixDD.getDictionary().validate(responseMessage, true);
+
+		Message message = new Message("8=FIX.4.49=23435=AA34=249=MRKT52=20070428-00:04:35.78156=1177718667984-capybara/192.168.0.100311=IBM320=1177718667986-capybara/192.168.0.100322=1000560=0146=255=IBM+EA200=200705202=0201=1205=1555=IBM+QA200=200705202=0201=0205=1510=100");
+//		Message message = new Message("8=FIX.4.49=143535=AA34=649=MRKT52=20070427-23:34:47.85956=1177716780250-capybara/192.168.0.100311=FRO320=1177716780256-capybara/192.168.0.100322=1002560=0146=3255=FRO+EA200=200705202=0201=1205=1555=FRO+QA200=200705202=0201=0205=1555=FRO+EB200=200705202=1201=1205=1555=FRO+QB200=200705202=1201=0205=1555=FRO+EC200=200705202=2201=1205=1555=FRO+QC200=200705202=2201=0205=1555=FRO+ED200=200705202=3201=1205=1555=FRO+QD200=200705202=3201=0205=1555=FRO+FE200=200706202=0201=1205=1555=FRO+RE200=200706202=0201=0205=1555=FRO+FF200=200706202=1201=1205=1555=FRO+RF200=200706202=1201=0205=1555=FRO+FG200=200706202=2201=1205=1555=FRO+RG200=200706202=2201=0205=1555=FRO+FH200=200706202=3201=1205=1555=FRO+RH200=200706202=3201=0205=1555=FRO+GI200=200707202=0201=1205=1555=FRO+SI200=200707202=0201=0205=1555=FRO+GJ200=200707202=1201=1205=1555=FRO+SJ200=200707202=1201=0205=1555=FRO+GK200=200707202=2201=1205=1555=FRO+SK200=200707202=2201=0205=1555=FRO+GL200=200707202=3201=1205=1555=FRO+SL200=200707202=3201=0205=1555=FRO+HM200=200708202=0201=1205=1555=FRO+TM200=200708202=0201=0205=1555=FRO+HN200=200708202=1201=1205=1555=FRO+TN200=200708202=1201=0205=1555=FRO+HO200=200708202=2201=1205=1555=FRO+TO200=200708202=2201=0205=1555=FRO+HP200=200708202=3201=1205=1555=FRO+TP200=200708202=3201=0205=1510=181", fixDD.getDictionary(), true);
+		Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
+		message.getGroup(1, optionGroup);
+		System.out.println("msg 1 "+responseMessage.toString());
+		System.out.println("msg 2 "+message.toString());
+		System.out.println("msg group "+optionGroup.getString(Symbol.FIELD));
+		fixDD.getDictionary().validate(message, true);
+
+		}		
+	}
 }

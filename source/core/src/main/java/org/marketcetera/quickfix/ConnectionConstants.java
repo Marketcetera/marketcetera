@@ -19,7 +19,13 @@ public class ConnectionConstants
     public static final String JMS_CONNECTION_FACTORY_KEY = "jms.connection.factory";
     public static final String JMS_CONTEXT_FACTORY_KEY = "jms.context.factory";
     public static final String JMS_URL_KEY = "jms.url";
-
+    
+    public static final String MARKETDATA_KEY_BASE = "marketdata";
+    public static final String MARKETDATA_STARTUP_KEY = MARKETDATA_KEY_BASE+".startup";
+    public static final String MARKETDATA_USER_SUFFIX = "user";
+    public static final String MARKETDATA_PASSWORD_SUFFIX = "password";
+    public static final String MARKETDATA_URL_SUFFIX = "url";
+    
     public static final String WEB_APP_HOST_KEY = "web.app.host";
     public static final String WEB_APP_PORT_KEY = "web.app.port";
 
