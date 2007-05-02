@@ -2,17 +2,20 @@ package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
-import org.marketcetera.marketdata.IMessageSelector;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.osgi.framework.BundleContext;
-import org.springframework.jms.core.JmsOperations;
 
 import quickfix.Message;
 import quickfix.StringField;
@@ -136,9 +139,8 @@ public class MarketDataViewTest extends ViewTestBase {
 			marketDataListener = listener;
 		}
 
-		public void subscribe(IMessageSelector selector) {
-			// TODO Auto-generated method stub
-			
+		public ISubscription subscribe(Message subscription) {
+			return null;
 		}
 
 		public MSymbol symbolFromString(String symbolString) {
@@ -146,13 +148,27 @@ public class MarketDataViewTest extends ViewTestBase {
 			return null;
 		}
 
-		public boolean unsubscribe(IMessageSelector selector) {
-			// TODO Auto-generated method stub
+		public boolean unsubscribe(ISubscription selector) {
 			return false;
 		}
 
 		public void sendMessage(Message aMessage) {
 			marketDataListener.onMessage(aMessage);
+		}
+
+		public ISubscription asyncQuery(Message query) throws MarketceteraException {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		public void asyncUnsubscribe(ISubscription subscription) throws MarketceteraException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws MarketceteraException, TimeoutException {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 }

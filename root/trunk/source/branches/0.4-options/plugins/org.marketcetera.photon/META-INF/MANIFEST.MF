@@ -6,7 +6,7 @@ Bundle-Version: 0.3.0
 Bundle-Activator: org.marketcetera.photon.PhotonPlugin
 Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
-Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n, org.apache.activemq
+Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n, org.apache.activemq, org.jruby.bsf
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .,
  src/main/resources

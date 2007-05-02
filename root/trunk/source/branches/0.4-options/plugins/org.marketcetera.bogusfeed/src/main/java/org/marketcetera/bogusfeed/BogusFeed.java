@@ -2,148 +2,110 @@ package org.marketcetera.bogusfeed;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+import java.util.WeakHashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.marketcetera.core.BigDecimalUtils;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.ConjunctionMessageSelector;
-import org.marketcetera.marketdata.IMarketDataListener;
-import org.marketcetera.marketdata.IMessageSelector;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataFeedBase;
-import org.marketcetera.marketdata.MessageTypeSelector;
-import org.marketcetera.marketdata.SymbolMessageSelector;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.FieldNotFound;
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryTime;
 import quickfix.field.MDEntryType;
-import quickfix.field.MDMkt;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
+import quickfix.fix44.MarketDataRequest;
+import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 public class BogusFeed extends MarketDataFeedBase {
 
-	protected List<SymbolMessageSelector> subscriptions = new LinkedList<SymbolMessageSelector>();
 
-	private QuoteGeneratorThread quoteGeneratorThread;
+	private static final BigDecimal PENNY = new BigDecimal("0.01");
 	AtomicBoolean isRunning = new AtomicBoolean(false);
-
-	class QuoteGeneratorThread extends Thread {
-		boolean shouldShutdown = false;
-		Random rand = new Random();
-
-		public QuoteGeneratorThread() {
-			setName("BogusFeed quote generator");
-		}
-		
-		@Override
-		public void run() 
-		{
-			setFeedStatus(FeedStatus.AVAILABLE);
-			while (!shouldShutdown){
-				try {
-					LinkedList<SymbolMessageSelector> theSubscriptions;
-					synchronized (subscriptions){
-						theSubscriptions = new LinkedList<SymbolMessageSelector>(subscriptions);
-					}
-					Set<MSymbol> symbolSet = new HashSet<MSymbol>();
-					for (SymbolMessageSelector selector : theSubscriptions) {
-						MSymbol symbol = selector.getExactSymbol();
-						symbolSet.add(symbol);
-					}
-					
-					for (MSymbol symbol : symbolSet){
-						Message quote = generateQuote(symbol);
-						IMarketDataListener listener = BogusFeed.this.getMarketDataListener();
-						if (listener != null ) {
-							listener.onMessage(quote);
-						}
-					}
-					sleep(randAmount());
-				} catch (InterruptedException ex){
-					setFeedStatus(FeedStatus.OFFLINE);
-				}
-			}
-		}
-		private long randAmount() {
-			return (long)((rand.nextDouble()*1500)+1000);
-		}
-		public void shutdown()
-		{
-			shouldShutdown = true;
-			interrupt();
-		}
-		Message generateQuote(MSymbol symbol){
-			MarketDataSnapshotFullRefresh quoteMessage = new MarketDataSnapshotFullRefresh();
-			quoteMessage.setField(new Symbol(symbol.getBaseSymbol()));
-			BigDecimal randBid;
-			BigDecimal randAsk;
-			if (rand.nextBoolean()){
-				randBid = getRandPrice(symbol);
-				randAsk = randBid.add(getRandMarketWidth(randBid));
-			} else {
-				randAsk = getRandPrice(symbol);
-				randBid = randAsk.subtract(getRandMarketWidth(randAsk));
-			}
-			addGroup(quoteMessage, MDEntryType.BID, randBid.setScale(2, RoundingMode.HALF_UP), new BigDecimal(200), new Date(), "BGUS");
-			addGroup(quoteMessage, MDEntryType.OFFER, randAsk.setScale(2, RoundingMode.HALF_UP), new BigDecimal(300), new Date(), "BGUS");
-			quoteMessage.setString(LastPx.FIELD,randBid.add(randAsk).divide(new BigDecimal(2)).setScale(2, RoundingMode.HALF_UP).toPlainString());
-			return quoteMessage;	
-		}
-		private void addGroup(Message message, char side, BigDecimal price, BigDecimal quantity, Date time, String mkt) {
-			MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-			group.set(new MDEntryType(side));
-			group.set(new MDEntryTime(time));
-			group.set(new MDMkt(mkt));
-			group.setField(new StringField(MDEntryPx.FIELD, price.toPlainString()));
-			group.setField(new StringField(MDEntrySize.FIELD, quantity.toPlainString()));
-			message.addGroup(group);
-		}
-
-		Map<MSymbol, BigDecimal> priceMap = new HashMap<MSymbol, BigDecimal>();
-		private BigDecimal getRandPrice(MSymbol symbol){
-			BigDecimal oldPrice = priceMap.get(symbol);
-			BigDecimal newPrice;
-			if (oldPrice == null){
-				oldPrice = new BigDecimal(100* rand.nextDouble());
-			}
-			BigDecimal offset = new BigDecimal(.05 * rand.nextDouble());
-			newPrice = oldPrice.add(offset).max(BigDecimal.ONE.divide(new BigDecimal(10)));
-			priceMap.put(symbol, newPrice);
-			return newPrice;
-		}
-		private BigDecimal getRandMarketWidth(BigDecimal price){
-			return new BigDecimal(.005 * rand.nextDouble()).multiply(price)
-			  .max(BigDecimal.ONE.divide(new BigDecimal(100)));
-		}
-		
-	}
+	Map<BogusSubscription, String> subscriptionMap;
+	Map<String, BigDecimal> valueMap = new WeakHashMap<String, BigDecimal>();
+	IDFactory idFactory = new InMemoryIDFactory(5000);
 	
+	private ScheduledThreadPoolExecutor executor;
+	private Random random = new Random();
+
 	public void start() {
 		boolean oldValue = isRunning.getAndSet(true);
 		if (oldValue)
 			throw new IllegalStateException();
 				
-		quoteGeneratorThread = new QuoteGeneratorThread();
-		quoteGeneratorThread.start();
+        executor = new ScheduledThreadPoolExecutor(1);
+        executor.scheduleAtFixedRate(new Runnable() {
+			public void run() {
+				try {
+					sendQuotes();
+				} catch (Throwable t){
+					t.printStackTrace();
+				}
+			}
+
+        }, 0, 1, TimeUnit.SECONDS);
 		setFeedStatus(FeedStatus.AVAILABLE);
+	}
+
+	protected void sendQuotes() {
+		for (String symbol : valueMap.keySet()) {
+			BigDecimal currentValue = valueMap.get(symbol);
+			valueMap.put(symbol, currentValue.add(PENNY));
+			sendQuote(symbol, currentValue);
+		}
+	}
+
+	private void sendQuote(String symbol, BigDecimal currentValue) {
+		Message refresh = new MarketDataSnapshotFullRefresh();
+		refresh.setField(new Symbol(symbol));
+
+		{
+			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+			group.setField(new MDEntryType(MDEntryType.BID));
+			group.setField(new StringField(MDEntryPx.FIELD, currentValue.subtract(PENNY).toPlainString()));
+			group.setField(new MDEntrySize(100));
+			refresh.addGroup(group);
+		}
+		{
+			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+			group.setField(new MDEntryType(MDEntryType.OFFER));
+			group.setField(new StringField(MDEntryPx.FIELD, currentValue.add(PENNY).toPlainString()));
+			group.setField(new MDEntrySize(100));
+			refresh.addGroup(group);
+		}
+		{
+			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+			group.setField(new MDEntryType(MDEntryType.TRADE));
+			group.setField(new StringField(MDEntryPx.FIELD, currentValue.toPlainString()));
+			group.setField(new MDEntrySize(100));
+			refresh.addGroup(group);
+		}
+		
+		fireMarketDataMessage(refresh);
 	}
 
 	public void stop() {
 		boolean oldValue = isRunning.getAndSet(false);
 		if (oldValue){
 			setFeedStatus(FeedStatus.OFFLINE);
-			quoteGeneratorThread.shutdown();
+			executor.shutdownNow();
 		}
 	}
 
@@ -160,42 +122,75 @@ public class BogusFeed extends MarketDataFeedBase {
 		return isRunning.get();
 	}
 
-	public void subscribe(IMessageSelector selector) {
-		SymbolMessageSelector toAdd = null;
-		boolean error = false;
-		if (selector instanceof SymbolMessageSelector) {
-			toAdd = (SymbolMessageSelector) selector;
-		} else if (selector instanceof ConjunctionMessageSelector){
-			for (IMessageSelector aSelector : ((ConjunctionMessageSelector)selector)) {
-				if (aSelector instanceof SymbolMessageSelector) {
-					toAdd = (SymbolMessageSelector) aSelector;
-				} else if (aSelector instanceof MessageTypeSelector) {
-					if (!((MessageTypeSelector)aSelector).isQuotes() && 
-							!((MessageTypeSelector)aSelector).isLevel2()	) {
-						error = true;
-					}
-				} else {
-					error = true;
-				}
-			}
-		}
-		if (toAdd != null && !error){
-			synchronized (subscriptions) {
-				subscriptions.add((SymbolMessageSelector) toAdd);
-			}
-		} else {
-			throw new IllegalArgumentException("Unsupported IMessageSelector: "+selector);
-		}
-	}
 
 	public MSymbol symbolFromString(String symbolString) {
 		return new MSymbol(symbolString);
 	}
 
-	public boolean unsubscribe(IMessageSelector selector) {
-		synchronized (subscriptions) {
-			return subscriptions.remove(selector);
+	public BogusSubscription asyncQuery(Message query) throws MarketceteraException {
+		try {
+			String reqID = idFactory.getNext();
+			if (FIXMessageUtil.isMarketDataRequest(query)) {
+				char subscriptionRequestType = query.getChar(SubscriptionRequestType.FIELD);
+				if (SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES == subscriptionRequestType)
+				{
+					int noRelatedSyms = query.getInt(NoRelatedSym.FIELD);
+					if (noRelatedSyms == 1){
+						Group symGroup = new MarketDataRequest.NoRelatedSym();
+						query.getGroup(1, symGroup);
+						String symbol = symGroup.getString(Symbol.FIELD);
+						if (valueMap.containsKey(symbol)){
+							// This may seem a little bit silly,
+							// but because valueMap is a weak map,
+							// we need to use the actual string that 
+							// is the key.
+							for (String aKey : valueMap.keySet()) {
+								if (symbol.equals(aKey)){
+									symbol = aKey;
+									break;
+								}
+							}
+						} else {
+							valueMap.put(symbol, getRandPrice());
+						}
+						return subscribe(reqID, symbol);
+					}
+				} else {
+					throw new MarketceteraException("Market data request must have exactly one related symbol.");
+				}
+			}
+			return null;
+		} catch (FieldNotFound e) {
+			throw new MarketceteraException(e);
 		}
 	}
+
+	private BigDecimal getRandPrice() {
+		return BigDecimalUtils.multiply(new BigDecimal(100), random.nextDouble()).setScale(2, RoundingMode.HALF_UP);
+	}
+
+	private BogusSubscription subscribe(final String reqID, final String symbol) {
+		final BogusSubscription bogusSubscription = new BogusSubscription(reqID);
+		bogusSubscription.setSymbol(symbol);
+		executor.submit(new Runnable() {
+			public void run() {
+				subscriptionMap.put(bogusSubscription, symbol);
+			}
+		});
+		return bogusSubscription;
+	}
+
+	public void asyncUnsubscribe(final ISubscription subscription) throws MarketceteraException {
+		executor.submit(new Runnable() {
+			public void run() {
+				subscriptionMap.remove(subscription);
+			}
+		});
+	}
+
+	public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws MarketceteraException, TimeoutException {
+		throw new UnsupportedOperationException();
+	}
+
 
 }
