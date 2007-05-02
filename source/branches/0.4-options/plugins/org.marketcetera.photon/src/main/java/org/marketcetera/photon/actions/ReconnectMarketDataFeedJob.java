@@ -1,6 +1,11 @@
 package org.marketcetera.photon.actions;
 
 import java.lang.reflect.Constructor;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
@@ -13,15 +18,16 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.IMarketDataConstants;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
-import org.osgi.util.tracker.ServiceTracker;
 
 public class ReconnectMarketDataFeedJob extends Job {
 
@@ -46,32 +52,53 @@ public class ReconnectMarketDataFeedJob extends Job {
 		}
 		boolean succeeded = false;
 		try {
+			disconnect(marketDataFeedTracker);
+		} catch (Throwable th) {
+			PhotonPlugin.getMainConsoleLogger().warn("Could not disconnect from quote feed");
+		}
+		try {
+
 			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
 	    	IExtensionPoint extensionPoint =
 	    	extensionRegistry.getExtensionPoint(IMarketDataConstants.EXTENSION_POINT_ID);
 	    	IExtension[] extensions = extensionPoint.getExtensions();
+
+	    	Set<String> startupFeeds = getStartupFeeds();
+
 	    	if (extensions != null && extensions.length > 0)
 	    	{
-	    		IConfigurationElement[] configurationElements = extensions[0].getConfigurationElements();
-	    		IConfigurationElement feedElement = configurationElements[0];
-	    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-	    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
-	    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
-	    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
-	    		IMarketDataFeed targetQuoteFeed = factory.getInstance("", "", "");
-    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
-				ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
-    			marketDataFeedService.setServiceRegistration(registration);
-    			marketDataFeedService.afterPropertiesSet();
-    			
-    			targetQuoteFeed.start();
-    			succeeded = true;
+	    		for (IExtension anExtension : extensions) {
+	    			String pluginName = anExtension.getContributor().getName();
+					if (startupFeeds.contains(pluginName)) {
+		    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
+			    		IConfigurationElement feedElement = configurationElements[0];
+			    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
+			    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
+			    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
+			    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
+			    		ScopedPreferenceStore store = PhotonPlugin.getDefault().getPreferenceStore();
+			    		String url = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_URL_SUFFIX);
+			    		String user = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_USER_SUFFIX);
+			    		String password = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_PASSWORD_SUFFIX);
+			    		Map<String, Object> parameters = getParameters(factory, store, pluginName);
+			    		IMarketDataFeed targetQuoteFeed = factory.getInstance(url, user, password, parameters);
+		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
+						ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
+		    			marketDataFeedService.setServiceRegistration(registration);
+		    			marketDataFeedService.afterPropertiesSet();
+		    			
+		    			targetQuoteFeed.start();
+		    			succeeded = true;
+		    			break;
+	    			}
+				}
 			}
 	
 		} catch (Exception e) {
 			logger.error("Exception connecting to quote feed", e);
 			return Status.CANCEL_STATUS;
 		} finally {
+			reconnectInProgress.set(false);
 			if (!succeeded){
 				logger.error("Error connecting to quote feed");
 				return Status.CANCEL_STATUS;
@@ -79,6 +106,40 @@ public class ReconnectMarketDataFeedJob extends Job {
 		}
 		return Status.OK_STATUS;
 
+	}
+
+	private Map<String, Object> getParameters(IMarketDataFeedFactory factory, ScopedPreferenceStore store, String pluginName) {
+		String[] keys = factory.getAllowedPropertyKeys();
+		Map<String, Object> map = new HashMap<String, Object>();
+		for (String key : keys) {
+			String fqKey = constructKey(pluginName, key);
+			if (store.contains(fqKey)){
+				map.put(key, store.getString(fqKey));
+			}
+		}
+		return map;
+	}
+
+	private String getPreference(ScopedPreferenceStore store, String ... pieces) {
+		return store.getString(constructKey(pieces));
+	}
+
+	private String constructKey(String... pieces) {
+		StringBuilder builder = new StringBuilder(ConnectionConstants.MARKETDATA_KEY_BASE);
+		builder.append('.');
+		int i;
+		for (i = 0; i < pieces.length-1; i++) {
+			builder.append(pieces[i]);
+			builder.append('.');
+		}
+		builder.append(pieces[i]);
+		return builder.toString();
+	}
+
+	private Set<String> getStartupFeeds() {
+		String startupString = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.MARKETDATA_STARTUP_KEY);
+		startupString.split("[\\s,]+");
+		return new HashSet<String>(Arrays.asList(startupString.split("[\\s,]+")));
 	}
 
 	public static void disconnect(MarketDataFeedTracker marketDataFeedTracker) {

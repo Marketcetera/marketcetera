@@ -30,13 +30,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.ConjunctionMessageSelector;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataListener;
-import org.marketcetera.marketdata.MessageTypeSelector;
-import org.marketcetera.marketdata.SymbolMessageSelector;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
@@ -69,8 +69,8 @@ public class OrderTicketControllerHelper {
 
 	private MSymbol listenedSymbol = null;
 
-	private ConjunctionMessageSelector currentSubscription;
-
+	private ISubscription currentSubscription;
+	
 	private MarketDataListener marketDataListener;
 
 	private Message targetMessage;
@@ -205,15 +205,18 @@ public class OrderTicketControllerHelper {
 					.getMarketDataFeedService();
 
 			if (service != null && !newListenedSymbol.equals(listenedSymbol)) {
-				if (listenedSymbol != null) {
+				if (listenedSymbol != null){
 					unlisten();
 				}
-				ConjunctionMessageSelector subscription = new ConjunctionMessageSelector(
-						new SymbolMessageSelector(newListenedSymbol),
-						new MessageTypeSelector(false, false, true));
-				service.subscribe(subscription);
+				Message subscriptionMessage = MarketDataUtils.newSubscribeLevel2(newListenedSymbol);
+				ISubscription subscription;
+				try {
+					subscription = service.subscribe(subscriptionMessage);
+					currentSubscription = subscription;
+				} catch (MarketceteraException e) {
+					PhotonPlugin.getMainConsoleLogger().error("Exception requesting quotes for "+newListenedSymbol);
+				}
 				listenedSymbol = newListenedSymbol;
-				currentSubscription = subscription;
 			}
 		}
 	}
@@ -224,9 +227,13 @@ public class OrderTicketControllerHelper {
 
 		if (service != null) {
 			if (currentSubscription != null) {
-				service.unsubscribe(currentSubscription);
-				listenedSymbol = null;
-				currentSubscription = null;
+				try {
+					service.unsubscribe(currentSubscription);
+					listenedSymbol = null;
+					currentSubscription = null;
+				} catch (MarketceteraException e) {
+					PhotonPlugin.getMainConsoleLogger().warn("Error unsubscribing to quotes for "+listenedSymbol);
+				}
 			}
 		}
 		ticket.getBookComposite().setInput(null);

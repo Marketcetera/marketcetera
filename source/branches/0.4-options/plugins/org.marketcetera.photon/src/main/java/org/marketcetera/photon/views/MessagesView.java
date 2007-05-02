@@ -173,12 +173,16 @@ public abstract class MessagesView extends ViewPart {
 	}
 	
 	protected void restoreColumnOrder(IMemento memento) {
-		if (memento == null)
-			return;
-		String delimitedColumnOrder = memento.getString(COLUMN_ORDER_KEY);
-		int[] columnOrder = deserializeColumnOrder(delimitedColumnOrder);
-		if(columnOrder != null && columnOrder.length > 0) {
-			messageTable.setColumnOrder(columnOrder);
+		try {
+			if (memento == null)
+				return;
+			String delimitedColumnOrder = memento.getString(COLUMN_ORDER_KEY);
+			int[] columnOrder = deserializeColumnOrder(delimitedColumnOrder);
+			if(columnOrder != null && columnOrder.length > 0) {
+				messageTable.setColumnOrder(columnOrder);
+			}
+		} catch (Throwable t){
+			// do nothing
 		}
 	}
 

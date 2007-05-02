@@ -4,7 +4,6 @@ import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-import org.marketcetera.bogusfeed.BogusFeedTest;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.ParserTest;
@@ -44,7 +43,6 @@ public class TS_Photon {
 		suite.addTestSuite(ScriptChangesAdapterTest.class);
 		suite.addTestSuite(QuickFIXTest.class);
 		suite.addTestSuite(MarketDataViewTest.class);
-		suite.addTestSuite(BogusFeedTest.class);
 		suite.addTestSuite(PriceConverterBuilderTest.class);
 		suite.addTestSuite(DateToStringCustomConverterTest.class);
 		return suite;
