@@ -17,7 +17,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.marketdata.quickfix.EventLogFactory;
+import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
