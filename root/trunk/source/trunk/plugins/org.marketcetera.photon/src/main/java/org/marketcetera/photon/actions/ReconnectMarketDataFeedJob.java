@@ -95,12 +95,12 @@ public class ReconnectMarketDataFeedJob extends Job {
 			}
 	
 		} catch (Exception e) {
-			logger.error("Exception connecting to quote feed", e);
+			logger.error("Exception connecting to market data feed: "+e.getMessage(), e);
 			return Status.CANCEL_STATUS;
 		} finally {
 			reconnectInProgress.set(false);
 			if (!succeeded){
-				logger.error("Error connecting to quote feed");
+				logger.error("Error connecting to market data feed");
 				return Status.CANCEL_STATUS;
 			}
 		}
