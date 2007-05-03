@@ -9,6 +9,8 @@ import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -88,6 +90,18 @@ public class OrderTicketViewPieces {
 		sideCombo.add(SideImage.SELL.getImage());
 		sideCombo.add(SideImage.SELL_SHORT.getImage());
 		sideCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
+
+		// Force Side to be uppercase
+		sideCombo.addVerifyListener( new VerifyListener() {
+			public void verifyText(VerifyEvent event) {
+				if( event.widget == sideCombo ) {
+					if( event.text != null ) {
+						event.text = event.text.toUpperCase();
+					}
+				}
+			}
+		});
+
 		addInputControlErrorDecoration(sideCombo);
 	}
 
@@ -100,7 +114,7 @@ public class OrderTicketViewPieces {
 
 		GridData quantityTextGridData = new GridData();
 		// quantityTextGridData.heightHint = sizeHint.y;
-		quantityTextGridData.widthHint = sizeHint.x ;
+		quantityTextGridData.widthHint = sizeHint.x;
 		quantityTextGridData.horizontalAlignment = GridData.FILL;
 		quantityText.setLayoutData(quantityTextGridData);
 
