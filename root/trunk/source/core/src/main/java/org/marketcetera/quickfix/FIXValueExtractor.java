@@ -27,18 +27,22 @@ public class FIXValueExtractor {
 
 	}
 
-	public Object extractValue(Message message, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue) {
-		return extractValue(message, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, false);
+	public Object extractValue(FieldMap inMap, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue) {
+		return extractValue(inMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, false);
 	}
-	public Object extractValue(Message message, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue, boolean humanReadable) {
+	public Object extractValue(FieldMap inMap, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue, boolean humanReadable) {
 		Object value = null;
 		if (fieldID != null) {
 			FieldMap map;
-			if (groupID != null && groupDiscriminatorID!=null &&
-					groupDiscriminatorValue!=null){
-				map = extractGroup(message, groupID, groupDiscriminatorID, groupDiscriminatorValue);
+			if (inMap instanceof Message){
+				if (groupID != null && groupDiscriminatorID!=null &&
+						groupDiscriminatorValue!=null){
+					map = extractGroup((Message)inMap, groupID, groupDiscriminatorID, groupDiscriminatorValue);
+				} else {
+					map = extractMap(inMap, fieldID);
+				}
 			} else {
-				map = extractMap(message, fieldID);
+				map = inMap;
 			}
 			value = fieldValueFromMap(map, fieldID, humanReadable);
 		}
