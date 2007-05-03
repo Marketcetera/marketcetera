@@ -11,6 +11,7 @@ import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
@@ -31,6 +32,8 @@ import org.marketcetera.photon.ui.validation.ControlDecoration;
  */
 public class OrderTicketViewPieces {
 
+	public static final String CONTROL_DEFAULT_COLOR = "CONTROL_DEFAULT_COLOR";
+	
 	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY";
 
 	private Composite defaultParent;
@@ -80,6 +83,7 @@ public class OrderTicketViewPieces {
 		cd.setImage(errorImage);
 		cd.hide();
 		control.setData(CONTROL_DECORATOR_KEY, cd);
+		control.setData(CONTROL_DEFAULT_COLOR, control.getBackground());
 		decoratedInputControls.add(control);
 	}
 
@@ -232,8 +236,12 @@ public class OrderTicketViewPieces {
 				ControlDecoration controlDecoration = ((ControlDecoration) cd);
 				controlDecoration.hide();
 			}
-
-			aControl.setBackground(null);
+			try {
+				aControl.setBackground((Color) aControl
+						.getData(CONTROL_DEFAULT_COLOR));
+			} catch (Exception e) {
+				aControl.setBackground(null);
+			}
 		}
 	}
 
