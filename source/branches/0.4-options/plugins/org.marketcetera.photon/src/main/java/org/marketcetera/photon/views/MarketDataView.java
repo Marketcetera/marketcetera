@@ -68,14 +68,32 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 	public enum MarketDataColumns implements IFieldIdentifier
 	{
-		ZEROWIDTH(""), SYMBOL(Symbol.class), LASTPX(LastPx.class), LASTQTY(LastQty.class), BIDSZ(BidSize.class),
-		BID(BidPx.class), ASK(OfferPx.class), ASKSZ(OfferSize.class);
+		ZEROWIDTH(""), 
+		SYMBOL(Symbol.class), 
+		LASTPX(LastPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
+		LASTQTY(LastQty.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
+		BIDSZ(BidSize.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		BID(BidPx.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		ASK(OfferPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), 
+		ASKSZ(OfferSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER);
 		
 		private String name;
 		private Integer fieldID;
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
 
 		MarketDataColumns(String name){
 			this.name = name;
+		}
+
+		MarketDataColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this(clazz);
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
 		MarketDataColumns(Class clazz) {
@@ -95,6 +113,19 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		public Integer getFieldID() {
 			return fieldID;
 		}
+		
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
 	};
 
 	private MarketDataFeedTracker marketDataTracker;
@@ -395,49 +426,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			return new Message();
 		}
 
-		@Override
-		public Object fieldValueFromMap(FieldMap map, Integer fieldID) {
-			Object value = super.fieldValueFromMap(map, fieldID);
-			if (value == null && (map instanceof Message) 
-				&& (fieldID == quickfix.field.BidSize.FIELD
-					|| fieldID == quickfix.field.BidPx.FIELD
-					|| fieldID == quickfix.field.OfferPx.FIELD 
-					|| fieldID == quickfix.field.OfferSize.FIELD
-					|| fieldID == quickfix.field.LastPx.FIELD 
-					|| fieldID == quickfix.field.LastQty.FIELD)) 
-			{
-				try {
-					Message castedMap = (Message) map;
-					switch (fieldID) {
-
-					case quickfix.field.LastPx.FIELD:
-						return getGroup(castedMap, MDEntryType.TRADE).getDouble(
-								MDEntryPx.FIELD);
-					case quickfix.field.LastQty.FIELD:
-						return getGroup(castedMap, MDEntryType.TRADE).getDouble(
-								MDEntrySize.FIELD);
-					case quickfix.field.BidSize.FIELD:
-						return getGroup(castedMap, MDEntryType.BID).getDouble(
-								MDEntrySize.FIELD);
-					case quickfix.field.BidPx.FIELD:
-						return getGroup(castedMap, MDEntryType.BID).getDouble(
-								MDEntryPx.FIELD);
-					case quickfix.field.OfferPx.FIELD:
-						return getGroup(castedMap, MDEntryType.OFFER)
-								.getDouble(MDEntryPx.FIELD);
-					case quickfix.field.OfferSize.FIELD:
-						return getGroup(castedMap, MDEntryType.OFFER)
-								.getDouble(MDEntrySize.FIELD);
-					default:
-						return 0d;
-					}
-				} catch (FieldNotFound e) {
-					return 0d;
-				}
-			}
-			return value;
-		}
-		
 	}
 
 	
@@ -475,8 +463,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 				new Matcher<MessageHolder>() {
 					public boolean matches(MessageHolder listItem) {
 						try {
-							String listSymbol = listItem.getMessage().getString(Symbol.FIELD).trim().toLowerCase();
-							return listSymbol.equals(symbol.getFullSymbol().trim().toLowerCase());
+							String listSymbol = listItem.getMessage().getString(Symbol.FIELD).trim();
+							return listSymbol.equals(symbol.getFullSymbol().trim());
 						} catch (FieldNotFound e) {
 							return false;
 						}
@@ -494,7 +482,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		}
 		try {
 			MSymbol mSymbol = service.symbolFromString(holder.getMessage().getString(Symbol.FIELD));
-			marketDataTracker.simpleUnsubscribe(mSymbol);
 			removeSymbol(mSymbol);
 		} catch (FieldNotFound e) {
 			// do nothing
