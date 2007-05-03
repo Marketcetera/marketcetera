@@ -490,7 +490,12 @@ public class OrderTicketControllerHelper {
 								.getSeverity());
 						aControl.setBackground(colorRed);
 					} else {
-						aControl.setBackground(null);
+						try {
+							aControl.setBackground((Color) aControl
+									.getData(OrderTicketViewPieces.CONTROL_DEFAULT_COLOR));
+						} catch (Exception e) {
+							aControl.setBackground(null);
+						}
 						if (inputControlErrorStatus.containsKey(aControl)) {
 							inputControlErrorStatus.remove(aControl);
 						}
