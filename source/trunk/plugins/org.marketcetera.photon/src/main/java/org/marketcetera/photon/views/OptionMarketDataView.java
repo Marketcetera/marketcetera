@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -20,6 +22,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
@@ -36,7 +39,9 @@ import quickfix.Message;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
+import quickfix.field.MaturityMonthYear;
 import quickfix.field.NoMDEntries;
+import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
@@ -72,21 +77,62 @@ public class OptionMarketDataView extends MessagesView implements
 
 	private ScrolledForm form = null;
 
-	public enum MarketDataColumns {
-		ZEROWIDTH(""), SYMBOL("Symbol"), CVOL("cVol"), CBIDSZ("cBidSz"), CBID(
-				"cBid"), CASK("cAsk"), CASKSZ("cAskSz"), CSYM("cSym"), STRIKE(
-				"Strike"), EXP("Exp"), PSYM("pSym"), PBIDSZ("pBidSz"), PBID(
-				"pBid"), PASK("pAsk"), PASKSZ("pAskSz"), PVOL("pVol");
+	public enum OptionDataColumns implements IFieldIdentifier {
+		ZEROWIDTH(""), 
+		CVOL("cVol", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME), 
+		CBIDSZ("cBidSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		CBID("cBid", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		CASK("cAsk", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		CASKSZ("cAskSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		CSYM("cSym", Symbol.FIELD, null, null, null),
+		STRIKE("Strike", StrikePrice.FIELD, null, null, null),
+		EXP("Exp", MaturityMonthYear.FIELD, null, null, null),
+		PSYM("pSym", Symbol.FIELD, null, null, null),
+		PBIDSZ("pBidSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		PBID("pBid", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		PASK("pAsk", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		PASKSZ("pAskSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		PVOL("pVol", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME);
 
-		private String mName;
 
-		MarketDataColumns(String name) {
-			mName = name;
+		private String name;
+		private Integer fieldID;
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
+		OptionDataColumns(String name){
+			this.name = name;
+		}
+
+		OptionDataColumns(String name, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this.name=name;
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
 		public String toString() {
-			return mName;
+			return name;
 		}
+
+		public Integer getFieldID() {
+			return fieldID;
+		}
+		
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
 	}
 
 	private MarketDataFeedTracker marketDataTracker;
@@ -335,25 +381,12 @@ public class OptionMarketDataView extends MessagesView implements
 		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(
 				aMessageTable, getSite()));
 
-		// Create the cell editors
-		CellEditor[] editors = new CellEditor[MarketDataColumns.values().length];
-
-		// Column 1 : Completed (Checkbox)
-		editors[SYMBOL_COLUMN_INDEX] = new TextCellEditor(aMessageTable);
-
-		// Assign the cell editors to the viewer
-		aMessagesViewer.setCellEditors(editors);
-		String[] columnProperties = new String[MarketDataColumns.values().length];
-		columnProperties[SYMBOL_COLUMN_INDEX] = MarketDataColumns.SYMBOL
-				.toString();
-		aMessagesViewer.setColumnProperties(columnProperties);
-
 		return aMessagesViewer;
 	}
 
 	@Override
 	protected Enum[] getEnumValues() {
-		return MarketDataColumns.values();
+		return OptionDataColumns.values();
 	}
 
 	@Override
@@ -449,7 +482,7 @@ public class OptionMarketDataView extends MessagesView implements
 	class MarketDataTableFormat extends MessageListTableFormat {
 
 		public MarketDataTableFormat(Table table, IWorkbenchPartSite site) {
-			super(table, MarketDataColumns.values(), site);
+			super(table, OptionDataColumns.values(), site);
 		}
 
 		@Override
@@ -542,39 +575,6 @@ public class OptionMarketDataView extends MessagesView implements
 			return new Message();
 		}
 
-		@Override
-		public Object fieldValueFromMap(FieldMap map, Integer fieldID) {
-			Object value = super.fieldValueFromMap(map, fieldID);
-			if (value == null
-					&& (map instanceof Message)
-					&& (fieldID == quickfix.field.BidSize.FIELD
-							|| fieldID == quickfix.field.BidPx.FIELD
-							|| fieldID == quickfix.field.OfferPx.FIELD || fieldID == quickfix.field.OfferSize.FIELD)) {
-				try {
-					Message castedMap = (Message) map;
-					switch (fieldID) {
-
-					case quickfix.field.BidSize.FIELD:
-						return getGroup(castedMap, MDEntryType.BID).getDouble(
-								MDEntrySize.FIELD);
-					case quickfix.field.BidPx.FIELD:
-						return getGroup(castedMap, MDEntryType.BID).getDouble(
-								MDEntryPx.FIELD);
-					case quickfix.field.OfferPx.FIELD:
-						return getGroup(castedMap, MDEntryType.OFFER)
-								.getDouble(MDEntryPx.FIELD);
-					case quickfix.field.OfferSize.FIELD:
-						return getGroup(castedMap, MDEntryType.OFFER)
-								.getDouble(MDEntrySize.FIELD);
-					default:
-						return 0d;
-					}
-				} catch (FieldNotFound e) {
-					return 0d;
-				}
-			}
-			return value;
-		}
 
 	}
 
