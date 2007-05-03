@@ -113,7 +113,7 @@ public class UnderlierInfo {
 
 		exDivDateAmount = new List(firstRow, SWT.V_SCROLL | SWT.H_SCROLL);
 		FormData narrowForm = createNarrowFormData(exDivDateAmountTextLabel);
-		narrowForm.height = exDivDateAmountTextLabel.getSize().y - 2;		
+		narrowForm.height = 0;		
 		exDivDateAmount.setLayoutData(narrowForm);		
 	}
 	
