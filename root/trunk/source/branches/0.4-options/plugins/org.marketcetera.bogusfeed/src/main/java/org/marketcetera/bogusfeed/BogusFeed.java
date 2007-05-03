@@ -27,6 +27,7 @@ import quickfix.StringField;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
+import quickfix.field.MDMkt;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
@@ -37,6 +38,8 @@ public class BogusFeed extends MarketDataFeedBase {
 
 
 	private static final BigDecimal PENNY = new BigDecimal("0.01");
+	private static final String BGUS_MARKET = "BGUS";
+	
 	AtomicBoolean isRunning = new AtomicBoolean(false);
 	Map<BogusSubscription, String> subscriptionMap;
 	Map<String, BigDecimal> valueMap = new WeakHashMap<String, BigDecimal>();
@@ -80,6 +83,7 @@ public class BogusFeed extends MarketDataFeedBase {
 			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
 			group.setField(new MDEntryType(MDEntryType.BID));
 			group.setField(new StringField(MDEntryPx.FIELD, currentValue.subtract(PENNY).toPlainString()));
+			group.setField(new MDMkt(BGUS_MARKET));
 			group.setField(new MDEntrySize(100));
 			refresh.addGroup(group);
 		}
@@ -87,6 +91,7 @@ public class BogusFeed extends MarketDataFeedBase {
 			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
 			group.setField(new MDEntryType(MDEntryType.OFFER));
 			group.setField(new StringField(MDEntryPx.FIELD, currentValue.add(PENNY).toPlainString()));
+			group.setField(new MDMkt(BGUS_MARKET));
 			group.setField(new MDEntrySize(100));
 			refresh.addGroup(group);
 		}
@@ -94,6 +99,7 @@ public class BogusFeed extends MarketDataFeedBase {
 			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
 			group.setField(new MDEntryType(MDEntryType.TRADE));
 			group.setField(new StringField(MDEntryPx.FIELD, currentValue.toPlainString()));
+			group.setField(new MDMkt(BGUS_MARKET));
 			group.setField(new MDEntrySize(100));
 			refresh.addGroup(group);
 		}
@@ -115,7 +121,7 @@ public class BogusFeed extends MarketDataFeedBase {
 	}
 
 	public String getID() {
-		return "Bogus Book";
+		return "Bogus";
 	}
 
 	public boolean isRunning() {

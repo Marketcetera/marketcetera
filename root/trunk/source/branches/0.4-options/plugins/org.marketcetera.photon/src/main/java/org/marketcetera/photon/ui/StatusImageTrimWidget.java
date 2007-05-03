@@ -19,8 +19,6 @@ import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.messaging.JMSFeedService;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -46,6 +44,7 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	private ServiceTracker serviceTracker;
 	private char idChar;
 	private String name;
+	private String feedID;
 
 
 	public StatusImageTrimWidget() {
@@ -154,7 +153,9 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	private FeedStatus getServiceStatus(Object service) {
 		FeedStatus theStatus = FeedStatus.UNKNOWN;
 		if (service != null && service instanceof IFeedComponent){
-			theStatus = ((IFeedComponent)service).getFeedStatus();
+			IFeedComponent feedComponent = ((IFeedComponent)service);
+			feedID = feedComponent.getID();
+			theStatus = feedComponent.getFeedStatus();
 		}
 		return theStatus;
 	}
@@ -188,7 +189,8 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 				if (!imageLabel.isDisposed()){
 					imageLabel.setImage(getStatusImage(aStatus));
 					String statusString = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
-					imageLabel.setToolTipText(name + " " + statusString);
+					String nameString = feedID==null ? " " : " \""+ feedID +"\" ";
+					imageLabel.setToolTipText(name + nameString + statusString);
 				}
 			}
 		});

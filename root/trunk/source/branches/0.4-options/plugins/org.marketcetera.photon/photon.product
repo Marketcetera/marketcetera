@@ -15,7 +15,7 @@ Visit http://www.marketcetera.org
       </text>
    </aboutInfo>
 
-   <configIni use="custom" path="photon-config.ini"/>
+   <configIni use="default"/>
 
    <launcherArgs>
       <vmArgs>-Djava.util.logging.config.file=java.util.logging.properties -Declipse.createRegistry=false -Dosgi.bundles=org.eclipse.equinox.registry@2:start,org.eclipse.equinox.common@2:start,org.eclipse.update.configurator@3:start,org.eclipse.core.runtime@3:start,org.marketcetera.photon.registry@4:start -Dosgi.bundles.defaultStartLevel=5</vmArgs>
