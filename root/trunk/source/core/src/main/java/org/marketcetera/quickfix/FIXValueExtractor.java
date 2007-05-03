@@ -86,9 +86,8 @@ public class FIXValueExtractor {
 					value = new BigDecimal(map.getString(fieldID));
 				} else if (humanReadable && dataDictionary.hasFieldValue(fieldID)){
 					value = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
-// TODO: put this back in.
-//				} else if (fieldID.intValue() == ClOrdID.FIELD) {
-//					value = new NumericStringSortable(map.getString(fieldID));
+				} else if (fieldID.intValue() == ClOrdID.FIELD) {
+					value = new NumericStringSortable(map.getString(fieldID));
 				} else {
 					value = map.getString(fieldID);
 				}
