@@ -7,7 +7,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -113,7 +112,7 @@ public class UnderlierInfo {
 
 		exDivDateAmount = new List(firstRow, SWT.V_SCROLL | SWT.H_SCROLL);
 		FormData narrowForm = createNarrowFormData(exDivDateAmountTextLabel);
-		narrowForm.height = exDivDateAmountTextLabel.getSize().y - 2;		
+		narrowForm.height = 0;   	
 		exDivDateAmount.setLayoutData(narrowForm);		
 	}
 	
