@@ -35,9 +35,6 @@ import quickfix.field.LastQty;
 import quickfix.field.LeavesQty;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDReqID;
-import quickfix.field.MaturityDate;
-import quickfix.field.MaturityDay;
-import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
@@ -46,19 +43,12 @@ import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
-import quickfix.field.PutOrCall;
-import quickfix.field.SecurityReqID;
-import quickfix.field.SecurityRequestResult;
-import quickfix.field.SecurityResponseID;
 import quickfix.field.Side;
-import quickfix.field.StrikePrice;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
-import quickfix.field.UnderlyingSymbol;
-import quickfix.fix44.DerivativeSecurityList;
 
 /**
  * @author Graham Miller
@@ -330,5 +320,39 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 				}
 			}
 		}
+    }
+    
+    /**
+     * Test that trailing zeroes are preserved in decimal fields of QuickFIX messages
+     * @throws InvalidMessage
+     * @throws FieldNotFound
+     */
+    public void testTrailingZeroesAssumption() throws InvalidMessage, FieldNotFound
+    {
+    	String noZeroes = "1.111";
+    	String twoZeroes = "1.100";
+    	String aLotOfZeroes = "1.1000000";
+    	String separator = "\u0001";
+
+    	Message execReport = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
+    	execReport.setField(new OrderID("1"));
+    	execReport.setField(new ExecID("2"));
+    	execReport.setField(new ExecTransType(ExecTransType.NEW));
+    	execReport.setField(new OrdStatus(OrdStatus.NEW));
+    	execReport.setField(new Symbol("A"));
+    	execReport.setField(new Side(Side.BUY));
+		execReport.setField(new StringField(OrderQty.FIELD, noZeroes)); 
+		execReport.setField(new StringField(CumQty.FIELD, twoZeroes)); 
+		execReport.setField(new StringField(AvgPx.FIELD, aLotOfZeroes)); 
+
+    	String execReportString = execReport.toString();
+    	assertTrue(execReportString.contains(separator+OrderQty.FIELD+"="+noZeroes+separator));
+    	assertTrue(execReportString.contains(separator+CumQty.FIELD+"="+twoZeroes+separator));
+    	assertTrue(execReportString.contains(separator+AvgPx.FIELD+"="+aLotOfZeroes+separator));
+    	
+    	Message reconstituted = new Message(execReportString);
+    	assertEquals(noZeroes, reconstituted.getString(OrderQty.FIELD));
+    	assertEquals(twoZeroes, reconstituted.getString(CumQty.FIELD));
+    	assertEquals(aLotOfZeroes, reconstituted.getString(AvgPx.FIELD));
     }
 }

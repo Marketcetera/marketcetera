@@ -128,4 +128,23 @@ public class BigDecimalUtilsTest extends TestCase {
         assertEquals(new BigDecimal("11").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_UP).toPlainString());
         assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_DOWN).toPlainString());
     }
+    
+    /**
+     * Test the assumption that the String constructor for BigDecimal preserves
+     * scale, and trailing zeroes.
+     *
+     */
+    public void testToPlainStringAssumptions() {
+    	assertEquals("23.45", new BigDecimal("23.45").toPlainString());
+    	assertEquals("23.40", new BigDecimal("23.40").toPlainString());
+    	assertEquals("23.450", new BigDecimal("23.45").setScale(3).toPlainString());
+    	assertEquals("23.400", new BigDecimal("23.40").setScale(3).toPlainString());
+    	assertEquals("23.4", new BigDecimal("23.40").setScale(1).toPlainString());
+    	new ExpectedTestFailure(ArithmeticException.class){
+			@Override
+			protected void execute() throws Throwable {
+		    	assertEquals("23.5", new BigDecimal("23.46").setScale(1).toPlainString());
+			}
+    	}.run();
+    }
 }
