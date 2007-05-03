@@ -183,7 +183,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	}
 
 	public String getID() {
-		return null;
+		return "Marketcetera";
 	}
 
 	public boolean isRunning() {
