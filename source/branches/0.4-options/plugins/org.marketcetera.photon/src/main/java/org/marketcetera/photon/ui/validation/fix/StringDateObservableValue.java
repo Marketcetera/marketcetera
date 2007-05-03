@@ -43,12 +43,6 @@ public class StringDateObservableValue extends FIXObservableValue {
 		return Date.class;
 	}
 
-	private void handleError() {
-		// todo: http://trac.marketcetera.org/trac.fcgi/ticket/197
-		FieldMap fixFieldMap = getFieldMap();
-		fixFieldMap.removeField(fieldNumber);
-	}
-
 	private Date getFIXFieldDate(StringField field, FieldMap fixFieldMap) {
 		Date currentDate = null;
 		try {
@@ -56,7 +50,7 @@ public class StringDateObservableValue extends FIXObservableValue {
 			String fixDateField = fixFieldMap.getField(field).getValue();
 			currentDate = fixUTCFormatter.parse(fixDateField);
 		} catch (Exception anyException) {
-			handleError();
+			currentDate = null;
 		}
 		return currentDate;
 	}
@@ -75,9 +69,8 @@ public class StringDateObservableValue extends FIXObservableValue {
 			existingCalendar.set(calendarField, calendarFieldValue);
 			return existingCalendar.getTime();
 		} catch (Exception anyException) {
-			handleError();
+			return null;
 		}
-		return null;
 	}
 
 	@Override
