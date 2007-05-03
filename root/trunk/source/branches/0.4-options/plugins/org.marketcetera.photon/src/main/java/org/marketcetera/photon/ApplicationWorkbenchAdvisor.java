@@ -3,6 +3,8 @@ package org.marketcetera.photon;
 import java.io.PrintStream;
 import java.net.URL;
 
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -62,6 +64,21 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		
 		System.setOut(new PrintStream(mainConsole.getInfoMessageStream(), true));
 		System.setErr(new PrintStream(mainConsole.getErrorMessageStream(), true));
+	}
+
+	
+	@Override
+	public void postShutdown() {
+		try {
+			// todo: Eclipse's IDEWorkbenchAdvisor.disconnectFromWorkspace uses
+			// a progress monitor in a IRunnableWithProgress during the final save. 
+			// Is such a thing useful here during shutdown?
+			ResourcesPlugin.getWorkspace().save(true, null);
+		} catch (Exception anyException) {
+			org.marketcetera.photon.PhotonPlugin.getMainConsoleLogger().warn(
+					"Failed to save workspace during workbench shutdown. Cause: " //$NON-NLS-1$
+							+ anyException.getMessage(), anyException);
+		}
 	}
 
 	/**

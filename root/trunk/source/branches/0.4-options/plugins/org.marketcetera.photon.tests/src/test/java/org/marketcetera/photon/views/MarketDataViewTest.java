@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.eclipse.swt.widgets.Table;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
@@ -79,7 +80,33 @@ public class MarketDataViewTest extends ViewTestBase {
 			}
 		}
 	}
-	
+
+	public void testLastPxValue() throws Exception {
+		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
+		MarketDataFeedService marketDataFeedService = getNullQuoteFeedService();
+		bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
+		
+		
+		MarketDataView view = (MarketDataView) getTestView();
+		view.addSymbol(new MSymbol("MRKT"));
+
+		MarketDataSnapshotFullRefresh fixMessage = new MarketDataSnapshotFullRefresh();
+		fixMessage.set(new Symbol("MRKT"));
+		
+		String priceWithZeroes = "123.400";
+		addGroup(fixMessage, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
+		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
+		addGroup(fixMessage, MDEntryType.TRADE, new BigDecimal(priceWithZeroes), BigDecimal.TEN, new Date(), "BGUS");
+		
+		((MyMarketDataFeed)marketDataFeedService.getMarketDataFeed()).sendMessage(fixMessage);
+		
+		// TODO: fix me...
+		//delay(10000);
+		
+		String text = ((Table)view.getMessagesViewer().getControl()).getItem(0).getText(2);
+		assertEquals(priceWithZeroes, text);
+	}
+
 	public static MarketDataFeedService getNullQuoteFeedService() {
 		MarketDataFeedService feedService = new MarketDataFeedService(new MyMarketDataFeed());
 		return feedService;

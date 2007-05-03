@@ -35,9 +35,21 @@ public class BookComposite extends Composite
 
 		private String name;
 		private Integer fieldID;
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
 
 		BookColumns(String name){
 			this.name = name;
+		}
+
+		BookColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this(clazz);
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
 		BookColumns(Class clazz) {
@@ -57,6 +69,19 @@ public class BookComposite extends Composite
 		public Integer getFieldID() {
 			return fieldID;
 		}
+		
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
 	};
 	
 	private Table bidTable;

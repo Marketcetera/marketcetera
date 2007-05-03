@@ -16,12 +16,13 @@ import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXValueExtractor;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
-import quickfix.FieldNotFound;
 import quickfix.FieldType;
-import quickfix.Message;
 import ca.odell.glazedlists.gui.TableFormat;
 
 public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
@@ -29,16 +30,19 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	Enum [] columns;
 	private DataDictionary dataDictionary;
 //	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
+	private FIXValueExtractor valueExtractor;
 	
 	private static final String COLUMN_WIDTH_SAVED_KEY_NAME = "width.saved";  //$NON-NLS-1$
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-	private static final int ORDERID_FIELDID = 11;  //agl todo:change figure out how to retrieve this id with quickfix
 
 	
 	public EnumTableFormat(Table table, Enum[] columns) {
 		this.columns = columns;
 		dataDictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
+		FIXMessageFactory messageFactory = FIXVersion.getFIXVersion(dataDictionary.getVersion()).getMessageFactory();
+		valueExtractor = new FIXValueExtractor(dataDictionary, messageFactory);
+		
 		int i = 0;
         for (Enum aColumn : columns) {
 			int alignment;
@@ -82,44 +86,27 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		Enum columnEnum = columns[columnIndex];
 		if (columnEnum instanceof IFieldIdentifier)
 		{
-			Integer fieldID = ((IFieldIdentifier)columnEnum).getFieldID();
-			Object value = null;
-			if (fieldID != null) {
-				FieldMap map = extractMap(element, fieldID);
-				value = fieldValueFromMap(map, fieldID);
+			IFieldIdentifier fieldIdentifier = ((IFieldIdentifier)columnEnum);
+
+			Integer fieldID = fieldIdentifier.getFieldID();
+			Integer groupID = fieldIdentifier.getGroupID();
+			Integer groupDiscriminatorID = fieldIdentifier.getGroupDiscriminatorID();
+			Object groupDiscriminatorValue = fieldIdentifier.getGroupDiscriminatorValue();
+
+			FieldMap fieldMap;
+			if (element instanceof MessageHolder){
+				fieldMap = ((MessageHolder)element).getMessage();
+			} else {
+				fieldMap = (FieldMap)element;
 			}
+			Object value = valueExtractor.extractValue(fieldMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, true);
 			return value;
 		} else {
 			return null;
 		}
 	}
 
-	protected Object fieldValueFromMap(FieldMap map, Integer fieldID) {
-		Object value = null;
-		if (map != null){
-			try {
-				FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
-				if (fieldType.equals(FieldType.UtcTimeOnly)) {
-					value = map.getUtcTimeOnly(fieldID);
-				} else if (fieldType.equals(FieldType.UtcTimeStamp)){
-					value = map.getUtcTimeStamp(fieldID);
-				} else if (fieldType.equals(FieldType.UtcDateOnly)
-						||fieldType.equals(FieldType.UtcDate)){
-					value = map.getUtcDateOnly(fieldID);
-				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
-					value = new BigDecimal(map.getString(fieldID));
-				} else if (dataDictionary.hasFieldValue(fieldID)){
-					value = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
-				} else if (fieldID.intValue() == ORDERID_FIELDID) {
-					value = new SortableOrderID(map.getString(fieldID));
-				} else {
-					value = map.getString(fieldID);
-				}
-			} catch (FieldNotFound e) {
-			}
-		}
-		return value;
-	}
+
 
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
@@ -152,34 +139,6 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		}
 	}
 
-
-	private FieldMap extractMap(T element, Integer fieldID) {
-		FieldMap map = null;
-		Message message = null;
-		if (element instanceof MessageHolder) {
-			MessageHolder holder = (MessageHolder) element;
-			message = holder.getMessage();
-			map = getAppropriateMap(fieldID, message);
-		} if (element instanceof Message) {
-			message = (Message) element;
-			map = getAppropriateMap(fieldID, message);
-		} else if (element instanceof FieldMap){
-			map = (FieldMap) element;
-		}
-		return map;
-	}
-
-	private FieldMap getAppropriateMap(Integer fieldID, Message message) {
-		FieldMap map;
-		if (dataDictionary.isHeaderField(fieldID)) {
-			map = message.getHeader();
-		} else if (dataDictionary.isTrailerField(fieldID)) {
-			map = message.getTrailer();
-		} else {
-			map = message;
-		}
-		return map;
-	}
 
 	public void addListener(ILabelProviderListener listener) {
 		FieldType fieldTypeEnum = dataDictionary.getFieldTypeEnum(1);

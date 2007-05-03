@@ -34,9 +34,21 @@ public class AveragePriceView extends HistoryMessagesView {
 
 		private String name;
 		private Integer fieldID;
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
 
 		AvgPriceColumns(String name){
 			this.name = name;
+		}
+
+		AvgPriceColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this(clazz);
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
 		AvgPriceColumns(Class clazz) {
@@ -56,6 +68,19 @@ public class AveragePriceView extends HistoryMessagesView {
 		public Integer getFieldID() {
 			return fieldID;
 		}
+
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
 	};
 	
 	@Override

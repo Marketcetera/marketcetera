@@ -101,6 +101,23 @@ public class FIXMessagesView extends HistoryMessagesView {
 		public Integer getFieldID() {
 			return fieldID;
 		}
+		
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
 	};
 
 	protected Enum[] getEnumValues() {
