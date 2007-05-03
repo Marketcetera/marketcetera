@@ -475,8 +475,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 				new Matcher<MessageHolder>() {
 					public boolean matches(MessageHolder listItem) {
 						try {
-							String listSymbol = listItem.getMessage().getString(Symbol.FIELD).trim().toLowerCase();
-							return listSymbol.equals(symbol.getFullSymbol().trim().toLowerCase());
+							String listSymbol = listItem.getMessage().getString(Symbol.FIELD).trim();
+							return listSymbol.equals(symbol.getFullSymbol().trim());
 						} catch (FieldNotFound e) {
 							return false;
 						}
