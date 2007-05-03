@@ -28,6 +28,7 @@ import quickfix.FieldNotFound;
 import quickfix.FileLogFactory;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
+import quickfix.Initiator;
 import quickfix.LogFactory;
 import quickfix.MemoryStoreFactory;
 import quickfix.Message;
@@ -57,6 +58,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	/*package*/ static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
 	/*package*/ static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
 	private int serverPort;
+	private String server;
 	private SessionID sessionID;
 	private IDFactory idFactory;
 	private FeedType feedType;
@@ -72,6 +74,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			if ((serverPort = feedURI.getPort()) < 0){
 				throw new MarketceteraException("Port must be defined on feed URL");
 			}
+			server = feedURI.getHost();
 			String senderCompID;
 			String targetCompID;
 			if (!properties.containsKey(SETTING_SENDER_COMP_ID))
@@ -198,6 +201,9 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 				MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
 				SessionSettings sessionSettings;
 				sessionSettings = new SessionSettings(getClass().getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
+				sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
+				sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
+				
 				File workspaceDir = Activator.getDefault().getStoreDirectory();
 				File quoteFeedLogDir = new File(workspaceDir, "marketdata");
 				if (!quoteFeedLogDir.exists())
