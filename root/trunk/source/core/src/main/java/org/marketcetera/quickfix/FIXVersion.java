@@ -40,10 +40,10 @@ public enum FIXVersion {
         versionMap.put(FIX44.toString(), FIX44);
     }
 
-    public static FIXVersion getFIXVersion(String version) throws MarketceteraException {
+    public static FIXVersion getFIXVersion(String version) {
         FIXVersion fixVersion = versionMap.get(version);
         if(fixVersion == null) {
-            throw new MarketceteraException(MessageKey.FIX_VERSION_UNSUPPORTED.getLocalizedMessage(version));
+            throw new IllegalArgumentException(MessageKey.FIX_VERSION_UNSUPPORTED.getLocalizedMessage(version));
         }
         return fixVersion;
     }
