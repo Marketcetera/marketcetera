@@ -12,3 +12,5 @@ Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.photon
 Eclipse-LazyStart: true
 Export-Package: org.marketcetera.marketdata
+Bundle-ClassPath: src/main/resources/,
+ .

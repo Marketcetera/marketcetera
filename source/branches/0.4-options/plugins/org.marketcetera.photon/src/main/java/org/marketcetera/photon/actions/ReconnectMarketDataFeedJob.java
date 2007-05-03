@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
 import org.marketcetera.photon.PhotonPlugin;
@@ -54,7 +55,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 		try {
 			disconnect(marketDataFeedTracker);
 		} catch (Throwable th) {
-			PhotonPlugin.getMainConsoleLogger().warn("Could not disconnect from quote feed");
+			logger.warn("Could not disconnect from quote feed");
 		}
 		try {
 
@@ -65,11 +66,13 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	    	Set<String> startupFeeds = getStartupFeeds();
 
+	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: examining "+extensions.length+" extensions"); }
 	    	if (extensions != null && extensions.length > 0)
 	    	{
 	    		for (IExtension anExtension : extensions) {
 	    			String pluginName = anExtension.getContributor().getName();
 					if (startupFeeds.contains(pluginName)) {
+				    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: using "+pluginName); }
 		    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
 			    		IConfigurationElement feedElement = configurationElements[0];
 			    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
@@ -90,17 +93,20 @@ public class ReconnectMarketDataFeedJob extends Job {
 		    			targetQuoteFeed.start();
 		    			succeeded = true;
 		    			break;
+	    			} else {
+				    	 logger.warn("Marketdata: not using "+pluginName+" because it is not listed in 'org.marketcetera.photon/marketdata.startup'");
 	    			}
 				}
 			}
 	
+	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: done examining "+extensions.length+" extensions"); }
 		} catch (Exception e) {
-			logger.error("Exception connecting to quote feed", e);
+			logger.error("Exception connecting to market data feed: "+e.getMessage(), e);
 			return Status.CANCEL_STATUS;
 		} finally {
 			reconnectInProgress.set(false);
 			if (!succeeded){
-				logger.error("Error connecting to quote feed");
+				logger.error("Error connecting to market data feed");
 				return Status.CANCEL_STATUS;
 			}
 		}
