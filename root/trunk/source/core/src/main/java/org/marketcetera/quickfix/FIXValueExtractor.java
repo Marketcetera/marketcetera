@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.core.NumericStringSortable;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 
