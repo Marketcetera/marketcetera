@@ -45,9 +45,20 @@ public class FillsView extends HistoryMessagesView {
 				LastPx.class), LASTMKT(LastMkt.class);
 		private String name;
 		private Integer fieldID;
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
 
 		FillColumns(String name){
 			this.name = name;
+		}
+		
+		FillColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this(clazz);
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
 		FillColumns(Class clazz) {
@@ -67,6 +78,20 @@ public class FillsView extends HistoryMessagesView {
 		public Integer getFieldID() {
 			return fieldID;
 		}
+		
+
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
 	};
 
 	@Override

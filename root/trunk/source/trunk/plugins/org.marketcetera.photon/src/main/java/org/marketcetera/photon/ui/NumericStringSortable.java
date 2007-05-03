@@ -8,19 +8,19 @@ package org.marketcetera.photon.ui;
  *
  * @author andrei@lissovski.org
  */
-public class SortableOrderID implements Comparable<SortableOrderID> {
+public class NumericStringSortable implements Comparable<NumericStringSortable> {
 	
 	private String orderId;
 	
 	
-	public SortableOrderID(String orderId) {
+	public NumericStringSortable(String orderId) {
 		this.orderId = orderId;
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
-	public int compareTo(SortableOrderID that) {
+	public int compareTo(NumericStringSortable that) {
 		try {
 			//agl attempt to compare as numerics
 			Long thisNumericOrderId = Long.valueOf(this.orderId);
