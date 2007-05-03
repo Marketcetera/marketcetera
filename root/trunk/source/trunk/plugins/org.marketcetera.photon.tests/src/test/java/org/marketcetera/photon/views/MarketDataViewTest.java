@@ -93,10 +93,10 @@ public class MarketDataViewTest extends ViewTestBase {
 		MarketDataSnapshotFullRefresh fixMessage = new MarketDataSnapshotFullRefresh();
 		fixMessage.set(new Symbol("MRKT"));
 		
+		String priceWithZeroes = "123.400";
 		addGroup(fixMessage, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
 		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
-		String priceWithZeroes = "123.400";
-		fixMessage.setString(LastPx.FIELD,priceWithZeroes);
+		addGroup(fixMessage, MDEntryType.TRADE, new BigDecimal(priceWithZeroes), BigDecimal.TEN, new Date(), "BGUS");
 		
 		((MyMarketDataFeed)marketDataFeedService.getMarketDataFeed()).sendMessage(fixMessage);
 		
