@@ -16,6 +16,7 @@ public class ShowOrderInTicketCommand implements IPhotonCommand {
 	}
 
 	public void execute() {
+		PhotonPlugin.getDefault().getStockOrderTicketController().handleCancel();
 		PhotonPlugin.getDefault().getStockOrderTicketController().showMessage(order);
 	}
 
