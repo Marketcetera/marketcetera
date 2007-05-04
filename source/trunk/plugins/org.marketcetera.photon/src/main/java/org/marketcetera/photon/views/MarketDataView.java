@@ -62,8 +62,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	private static final int ZERO_WIDTH_COLUMN_INDEX = 0;
 	private static final int SYMBOL_COLUMN_INDEX = 1;
-	private static final int LASTPX_COLUMN_INDEX = 2;
-	private static final int LAST_NORMAL_COLUMN_INDEX = LASTPX_COLUMN_INDEX;
+//	private static final int LASTPX_COLUMN_INDEX = 2;
+	private static final int LASTQTY_COLUMN_INDEX = 3;
+	private static final int LAST_NORMAL_COLUMN_INDEX = LASTQTY_COLUMN_INDEX;
 	
 	
 	public enum MarketDataColumns implements IFieldIdentifier
