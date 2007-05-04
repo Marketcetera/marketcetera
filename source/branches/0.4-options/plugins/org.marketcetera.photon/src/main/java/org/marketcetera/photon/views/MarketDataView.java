@@ -27,7 +27,6 @@ import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.BidPx;
@@ -41,7 +40,6 @@ import quickfix.field.NoMDEntries;
 import quickfix.field.OfferPx;
 import quickfix.field.OfferSize;
 import quickfix.field.Symbol;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -62,8 +60,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	private static final int ZERO_WIDTH_COLUMN_INDEX = 0;
 	private static final int SYMBOL_COLUMN_INDEX = 1;
-	private static final int LASTPX_COLUMN_INDEX = 2;
-	private static final int LAST_NORMAL_COLUMN_INDEX = LASTPX_COLUMN_INDEX;
+//	private static final int LASTPX_COLUMN_INDEX = 2;
+	private static final int LASTQTY_COLUMN_INDEX = 3;
+	private static final int LAST_NORMAL_COLUMN_INDEX = LASTQTY_COLUMN_INDEX;
 	
 	
 	public enum MarketDataColumns implements IFieldIdentifier
@@ -72,8 +71,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		SYMBOL(Symbol.class), 
 		LASTPX(LastPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
 		LASTQTY(LastQty.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
-		BIDSZ(BidSize.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		BID(BidPx.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		BIDSZ(BidSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		BID(BidPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
 		ASK(OfferPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), 
 		ASKSZ(OfferSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER);
 		
@@ -383,51 +382,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			if (index == ZERO_WIDTH_COLUMN_INDEX) {
 				return "";  //$NON-NLS-1$
 			}
-			if (index <= LAST_NORMAL_COLUMN_INDEX) {
-				return super.getColumnText(element, index);
-			}
-			MessageHolder messageHolder = (MessageHolder) element;
-			Message message = messageHolder.getMessage();
-			try {
-				switch (index) {
-				case BID_SIZE_INDEX:
-					return getGroup(message, MDEntryType.BID).getString(
-							MDEntrySize.FIELD);
-				case BID_INDEX:
-					return getGroup(message, MDEntryType.BID).getString(
-							MDEntryPx.FIELD);
-				case ASK_INDEX:
-					return getGroup(message, MDEntryType.OFFER).getString(
-							MDEntryPx.FIELD);
-				case ASK_SIZE_INDEX:
-					return getGroup(message, MDEntryType.OFFER).getString(
-							MDEntrySize.FIELD);
-				default:
-					return "";
-				}
-			} catch (FieldNotFound e) {
-				return "";
-			}
+			return super.getColumnText(element, index);
 		}
-
-		private FieldMap getGroup(Message message, char type) {
-			int noEntries;
-			try {
-				noEntries = message.getInt(NoMDEntries.FIELD);
-				for (int i = 1; i < noEntries+1; i++){
-					MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-					message.getGroup(i, group);
-					if (type == group.getChar(MDEntryType.FIELD)){
-						return group;
-					}
-				}
-			} catch (FieldNotFound e) {
-			}
-			return new Message();
-		}
-
 	}
-
 	
 	public void onAssertSymbol(MSymbol symbol) {
 		addSymbol(symbol);

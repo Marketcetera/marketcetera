@@ -21,8 +21,8 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -93,6 +93,8 @@ public class OrderTicketControllerHelper {
 
 	private HashMap<Control, IStatus> inputControlErrorStatus;
 
+	private HashSet<IToggledValidator> allValidators;
+	
 	private Realm targetRealm;
 
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
@@ -115,6 +117,8 @@ public class OrderTicketControllerHelper {
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
+		
+		allValidators = new HashSet<IToggledValidator>();
 	}
 
 	protected void initListeners() {
@@ -124,9 +128,9 @@ public class OrderTicketControllerHelper {
 
 		marketDataListener = new MarketDataListener() {
 
-			public void onLevel2Quote(Message aQuote) {
-				OrderTicketControllerHelper.this.onQuote(aQuote);
-			}
+//			public void onLevel2Quote(Message aQuote) {
+//				OrderTicketControllerHelper.this.onQuote(aQuote);
+//			}
 
 			public void onQuote(Message aQuote) {
 				OrderTicketControllerHelper.this.onQuote(aQuote);
@@ -160,13 +164,19 @@ public class OrderTicketControllerHelper {
 			}
 		});
 
-		ticket.getCancelButton().addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
+		ticket.getCancelButton().addSelectionListener( new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				handleCancel();
+			}
+			public void widgetSelected(SelectionEvent e) {
 				handleCancel();
 			}
 		});
-		ticket.getSendButton().addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
+		ticket.getSendButton().addSelectionListener( new SelectionListener() {
+			public void widgetDefaultSelected(SelectionEvent e) {
+				handleSend();
+			}
+			public void widgetSelected(SelectionEvent e) {
 				handleSend();
 			}
 		});
@@ -438,6 +448,8 @@ public class OrderTicketControllerHelper {
 	public void addControlStateListeners(Control control,
 			final IToggledValidator validator) {
 
+		allValidators.add(validator);
+		
 		control.addListener(SWT.FocusIn, new Listener() {
 			private boolean initialState = true;
 
@@ -462,6 +474,16 @@ public class OrderTicketControllerHelper {
 			}
 
 		});
+	}
+	
+	public void forceEnableValidators() {
+		for( IToggledValidator validator : allValidators ) {
+			if( validator != null ) {
+				validator.setEnabled(true);
+			}
+		}
+		controlsRequiringUserInput.clear();
+		updateSendButtonState();
 	}
 
 	private IMapChangeListener createMapChangeListener() {

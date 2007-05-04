@@ -84,7 +84,7 @@ public class BogusFeed extends MarketDataFeedBase {
 			group.setField(new MDEntryType(MDEntryType.BID));
 			group.setField(new StringField(MDEntryPx.FIELD, currentValue.subtract(PENNY).toPlainString()));
 			group.setField(new MDMkt(BGUS_MARKET));
-			group.setField(new MDEntrySize(100));
+			group.setField(new MDEntrySize(Math.round((currentValue.subtract(PENNY)).doubleValue()* 100)));
 			refresh.addGroup(group);
 		}
 		{
@@ -92,7 +92,7 @@ public class BogusFeed extends MarketDataFeedBase {
 			group.setField(new MDEntryType(MDEntryType.OFFER));
 			group.setField(new StringField(MDEntryPx.FIELD, currentValue.add(PENNY).toPlainString()));
 			group.setField(new MDMkt(BGUS_MARKET));
-			group.setField(new MDEntrySize(100));
+			group.setField(new MDEntrySize(Math.round((currentValue.add(PENNY)).doubleValue()* 100)));
 			refresh.addGroup(group);
 		}
 		{
@@ -100,7 +100,7 @@ public class BogusFeed extends MarketDataFeedBase {
 			group.setField(new MDEntryType(MDEntryType.TRADE));
 			group.setField(new StringField(MDEntryPx.FIELD, currentValue.toPlainString()));
 			group.setField(new MDMkt(BGUS_MARKET));
-			group.setField(new MDEntrySize(100));
+			group.setField(new MDEntrySize(Math.round(currentValue.doubleValue())));
 			refresh.addGroup(group);
 		}
 		
