@@ -54,15 +54,19 @@ public class FIXValueExtractor {
 		FieldMap map = null;
 		try {
 			Group aGroup = messageFactory.createGroup(message.getHeader().getString(MsgType.FIELD), groupID);
-			int groupTag = aGroup.getFieldTag();
-			int numGroups = message.getInt(groupTag);
-			String discriminatorString = groupDiscriminatorValue.toString();
-			for (int i = 1; i<= numGroups; i++){
-				message.getGroup(i, aGroup);
-				String messageDiscriminatorValue = aGroup.getString(groupDiscriminatorID);
-				if (discriminatorString.equals(messageDiscriminatorValue)){
-					return aGroup;
+			if (aGroup !=null){
+				int groupTag = aGroup.getFieldTag();
+				int numGroups = message.getInt(groupTag);
+				String discriminatorString = groupDiscriminatorValue.toString();
+				for (int i = 1; i<= numGroups; i++){
+					message.getGroup(i, aGroup);
+					String messageDiscriminatorValue = aGroup.getString(groupDiscriminatorID);
+					if (discriminatorString.equals(messageDiscriminatorValue)){
+						return aGroup;
+					}
 				}
+			} else {
+				return null;
 			}
 		} catch (FieldNotFound e) {
 		}
