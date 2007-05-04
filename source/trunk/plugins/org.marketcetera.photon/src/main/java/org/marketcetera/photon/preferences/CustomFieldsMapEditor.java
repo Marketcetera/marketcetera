@@ -18,6 +18,12 @@ public class CustomFieldsMapEditor extends MapEditor {
 		super(custom_fields_preference, label, theFieldEditorParent);
 	}
 
+	
+	@Override
+	protected boolean isDuplicateKeyAllowed() {
+		return false;
+	}
+
 	@Override
 	protected String createMap(EventList<Map.Entry<String, String>> entries) {
 		return MapEditorUtil.encodeList(entries);
