@@ -33,7 +33,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.marketcetera.core.MMapEntry;
 
-import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
@@ -111,7 +110,12 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
         createControl(parent);
     }
 
-    /**
+    
+    protected boolean isDuplicateKeyAllowed() {
+		return true;
+	}
+
+	/**
      * Notifies that the Add button has been pressed.
      */
     private void addPressed() {
@@ -119,19 +123,21 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
         Entry<String, String> input = getNewInputObject();
 
         if (input != null) {
-            int index = table.getSelectionIndex();
-            if (index >= 0) {
-				entries.add(index + 1, input);
-			} else {
-				entries.add(0, input);
+        	if (isDuplicateKeyAllowed() || !hasEntryKey(input.getKey())) {
+				int index = table.getSelectionIndex();
+				if (index >= 0) {
+					entries.add(index + 1, input);
+				} else {
+					entries.add(0, input);
+				}
+				selectionChanged();
 			}
-            selectionChanged();
         }
     }
 
-    /* (non-Javadoc)
-     * Method declared on FieldEditor.
-     */
+    /*
+	 * (non-Javadoc) Method declared on FieldEditor.
+	 */
     protected void adjustForNumColumns(int numColumns) {
         Control control = getLabelControl();
         ((GridData) control.getLayoutData()).horizontalSpan = numColumns;
@@ -237,7 +243,6 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
         if (table != null) {
             String s = getPreferenceStore().getString(getPreferenceName());
         	
-            entries = new BasicEventList<Entry<String,String>>();
             entries = parseString(s);
             tableViewer.setInput(entries);
         }
@@ -251,10 +256,24 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
             table.removeAll();
             String s = getPreferenceStore().getDefaultString(
                     getPreferenceName());
-            entries = new BasicEventList<Entry<String,String>>();
             entries = parseString(s);
             tableViewer.setInput(entries);
         }
+    }
+    
+    private boolean hasEntryKey(String entryKey) {
+    	if( entryKey == null || entries == null ) {
+			return false;
+		}
+    	for( Map.Entry<String, String> entry : entries ) {
+    		if( entry != null ) {
+    			String key = entry.getKey();
+    			if( entryKey.equals(key)) {
+    				return true;
+    			}
+    		}
+    	}
+    	return false;
     }
 
     /* (non-Javadoc)
