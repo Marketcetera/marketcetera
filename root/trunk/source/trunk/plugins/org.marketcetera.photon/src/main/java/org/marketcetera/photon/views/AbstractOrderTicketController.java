@@ -36,6 +36,8 @@ public abstract class AbstractOrderTicketController implements
 
 	public void showMessage(Message aMessage) {
 		OrderTicketControllerHelper controllerHelper = getOrderTicketControllerHelper();
+		controllerHelper.handleCancel();
 		controllerHelper.showMessage(aMessage);
+		controllerHelper.forceEnableValidators();
 	}
 }
