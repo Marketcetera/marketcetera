@@ -172,7 +172,7 @@ public class CustomFieldsViewPieces {
 					} else if (dictionary.isTrailerField(fieldNumber)) {
 						FIXMessageUtil.insertFieldIfMissing(fieldNumber, value,
 								message.getTrailer());
-					} else if (dictionary.isField(fieldNumber)) {
+					} else {
 						FIXMessageUtil.insertFieldIfMissing(fieldNumber, value,
 								message);
 					}
