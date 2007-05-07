@@ -41,6 +41,7 @@ import quickfix.SocketInitiator;
 import quickfix.StringField;
 import quickfix.UnsupportedMessageType;
 import quickfix.Message.Header;
+import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.SenderCompID;
 import quickfix.field.SubscriptionRequestType;
@@ -97,9 +98,11 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 
 	public ISubscription asyncQuery(Message query) {
 		try {
+			Integer marketDepth = null;
+			try { marketDepth = query.getInt(MarketDepth.FIELD); } catch (FieldNotFound fnf) { /* do nothing */ }
 			String reqID = addReqID(query);
 			Session.sendToTarget(query, sessionID);
-			return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD));
+			return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
 		} catch (SessionNotFound e) {
 		} catch (FieldNotFound e) {
 		}
@@ -137,6 +140,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			
 			message.setField(correlationID);
 			message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+			message.setField(new MarketDepth(mSubscription.getMarketDepth()));
 			try {
 				Session.sendToTarget(message, sessionID);
 			} catch (SessionNotFound e) {
