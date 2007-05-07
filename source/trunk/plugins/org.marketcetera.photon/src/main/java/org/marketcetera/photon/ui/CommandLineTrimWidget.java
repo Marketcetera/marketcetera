@@ -54,6 +54,7 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		commandParser.setIDFactory(plugin.getIDFactory());
 		commandParser.setMessageFactory(plugin.getMessageFactory());
+		commandParser.setDataDictionary(plugin.getFIXDataDictionary().getDictionary());
 		
 	}
 

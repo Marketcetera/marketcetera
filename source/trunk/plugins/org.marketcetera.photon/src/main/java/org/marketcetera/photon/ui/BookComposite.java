@@ -12,7 +12,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXVersion;
 
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
@@ -22,7 +25,7 @@ import quickfix.field.MDEntryTime;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDMkt;
 import quickfix.field.NoMDEntries;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
+import quickfix.fix44.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
@@ -128,7 +131,8 @@ public class BookComposite extends Composite
 
 	private IndexedTableViewer getTableViewer(Table theTable) {
 		IndexedTableViewer tableViewer = new IndexedTableViewer(theTable);
-		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values());
+		DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary();
+		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values(), dictionary);
 		tableViewer.setContentProvider(new EventListContentProvider<Group>());
 		tableViewer.setLabelProvider(format);
 		return tableViewer;
