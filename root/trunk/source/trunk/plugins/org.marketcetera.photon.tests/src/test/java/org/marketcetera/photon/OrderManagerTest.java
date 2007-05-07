@@ -65,7 +65,7 @@ public class OrderManagerTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		idFactory = new InMemoryIDFactory(999);
-		messageHistory = new FIXMessageHistory();
+		messageHistory = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
 		photonController = new ImmediatePhotonController();
 		photonController.setMessageHistory(messageHistory);
 		photonController.setIDFactory(idFactory);
