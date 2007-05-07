@@ -36,10 +36,13 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
+	public EnumTableFormat(Table table, Enum[] columns){
+		this(table, columns, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
+	}
 	
-	public EnumTableFormat(Table table, Enum[] columns) {
+	public EnumTableFormat(Table table, Enum[] columns, DataDictionary dataDictionary) {
 		this.columns = columns;
-		dataDictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
+		this.dataDictionary = dataDictionary;
 		FIXMessageFactory messageFactory = FIXVersion.getFIXVersion(dataDictionary.getVersion()).getMessageFactory();
 		valueExtractor = new FIXValueExtractor(dataDictionary, messageFactory);
 		

@@ -14,6 +14,8 @@ import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.photon.core.MessageHolder;
 
+import quickfix.DataDictionary;
+
 
 
 public class MessageListTableFormat extends EnumTableFormat<MessageHolder> {
@@ -21,14 +23,25 @@ public class MessageListTableFormat extends EnumTableFormat<MessageHolder> {
 	private final IWorkbenchPartSite site;
 	private final ISelectionProvider selectionProvider;
 
+	public MessageListTableFormat(Table table, Enum[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
+		super(table, columns, dataDictionary);
+		this.site = site;
+		this.selectionProvider = site.getSelectionProvider();
+		init(table);
+	}
+
 	public MessageListTableFormat(Table table, Enum[] columns, IWorkbenchPartSite site) {
 		super(table, columns);
 		this.site = site;
 		this.selectionProvider = site.getSelectionProvider();
+		init(table);
+
+	}
+
+	private void init(Table table) {
 		
         createContextMenu("messagesContextMenu",table);
         hookColumnChooserMenu(table);
-
 	}
 
 	private void hookColumnChooserMenu(final Table table) {

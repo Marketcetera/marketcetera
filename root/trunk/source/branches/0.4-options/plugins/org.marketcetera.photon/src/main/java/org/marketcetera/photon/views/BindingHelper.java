@@ -18,6 +18,16 @@ public class BindingHelper {
 		}
 	}
 
+	public void initStringToImageConverterBuilder(
+			EnumStringConverterBuilder<String> converterBuilder,
+			ILexerFIXImage[] lexerImages) {
+		for (ILexerFIXImage lexerImage : lexerImages) {
+			String image = lexerImage.getImage();
+			String fixValue = lexerImage.getFIXStringValue();
+			converterBuilder.addMapping(fixValue, image);
+		}
+	}
+
 	public void initIntToImageConverterBuilder(
 			EnumStringConverterBuilder<Integer> converterBuilder,
 			ILexerFIXImage[] lexerImages) {

@@ -43,7 +43,7 @@ import quickfix.field.MaturityMonthYear;
 import quickfix.field.NoMDEntries;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
+import quickfix.fix44.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;

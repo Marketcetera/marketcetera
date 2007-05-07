@@ -6,6 +6,9 @@ import java.util.HashSet;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.conversion.NumberToStringConverter;
+import org.eclipse.core.databinding.conversion.StringToNumberConverter;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IMapChangeListener;
@@ -41,7 +44,9 @@ import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.SideImage;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.ui.validation.DataDictionaryValidator;
+import org.marketcetera.photon.ui.validation.DecimalRequiredValidator;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
+import org.marketcetera.photon.ui.validation.IntegerRequiredValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.BigDecimalToStringConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
@@ -52,6 +57,7 @@ import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
+import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.MsgType;
@@ -75,9 +81,9 @@ public class OrderTicketControllerHelper {
 
 	private Message targetMessage;
 
-	private EnumStringConverterBuilder<Character> sideConverterBuilder;
+	private EnumStringConverterBuilder<? extends Object> sideConverterBuilder;
 
-	private EnumStringConverterBuilder<Character> tifConverterBuilder;
+	private EnumStringConverterBuilder<? extends Object> tifConverterBuilder;
 
 	private PriceConverterBuilder priceConverterBuilder;
 
@@ -96,6 +102,10 @@ public class OrderTicketControllerHelper {
 	private HashSet<IToggledValidator> allValidators;
 	
 	private Realm targetRealm;
+
+	protected boolean orderQtyIsInt;
+
+	private boolean hasRealCharDatatype;
 
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this.ticket = ticket;
@@ -117,6 +127,9 @@ public class OrderTicketControllerHelper {
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
+		
+		orderQtyIsInt = (FieldType.Int == dictionary.getFieldTypeEnum(OrderQty.FIELD));
+		hasRealCharDatatype = FieldType.Char.equals(dictionary.getFieldTypeEnum(Side.FIELD));
 		
 		allValidators = new HashSet<IToggledValidator>();
 	}
@@ -367,15 +380,26 @@ public class OrderTicketControllerHelper {
 		}
 		{
 			Control whichControl = ticket.getQuantityText();
-			IToggledValidator validator = new StringRequiredValidator();
+			IToggledValidator validator;
+			IConverter toModelConverter;
+			IConverter toUIConverter;
+			if (orderQtyIsInt){
+				validator = new IntegerRequiredValidator();
+				toModelConverter = StringToNumberConverter.toInteger(false);
+				toUIConverter = NumberToStringConverter.fromInteger(false);
+			} else {
+				validator = new DecimalRequiredValidator();
+				toModelConverter = new StringToBigDecimalConverter();
+				toUIConverter = new BigDecimalToStringConverter();
+			}
 			validator.setEnabled(false);
 			dataBindingContext.bindValue(SWTObservables.observeText(
 					whichControl, swtEvent), FIXObservables.observeValue(realm,
 					message, OrderQty.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator)
-							.setConverter(new StringToBigDecimalConverter()),
+							.setConverter(toModelConverter),
 					new UpdateValueStrategy()
-							.setConverter(new BigDecimalToStringConverter()));
+							.setConverter(toUIConverter));
 			addControlStateListeners(whichControl, validator);
 			addControlRequiringUserInput(whichControl);
 		}
@@ -546,19 +570,39 @@ public class OrderTicketControllerHelper {
 	}
 
 	private void initSideConverterBuilder() {
-		sideConverterBuilder = new EnumStringConverterBuilder<Character>(
+		if (!hasRealCharDatatype){
+			EnumStringConverterBuilder<String> escb = new EnumStringConverterBuilder<String>(
+					String.class);
+		
+			bindingHelper.initStringToImageConverterBuilder(escb,
+					SideImage.values());
+			sideConverterBuilder = escb;
+		} else {
+			EnumStringConverterBuilder<Character> escb = new EnumStringConverterBuilder<Character>(
 				Character.class);
-
-		bindingHelper.initCharToImageConverterBuilder(sideConverterBuilder,
-				SideImage.values());
+	
+			bindingHelper.initCharToImageConverterBuilder(escb,
+					SideImage.values());
+			sideConverterBuilder = escb;
+		}
 	}
-
+	
 	private void initTifConverterBuilder() {
-		tifConverterBuilder = new EnumStringConverterBuilder<Character>(
+		if (!hasRealCharDatatype){
+			EnumStringConverterBuilder<String> escb = new EnumStringConverterBuilder<String>(
+					String.class);
+		
+			bindingHelper.initStringToImageConverterBuilder(escb,
+					TimeInForceImage.values());
+			tifConverterBuilder = escb;
+		} else {
+			EnumStringConverterBuilder<Character> escb = new EnumStringConverterBuilder<Character>(
 				Character.class);
-
-		bindingHelper.initCharToImageConverterBuilder(tifConverterBuilder,
-				TimeInForceImage.values());
+	
+			bindingHelper.initCharToImageConverterBuilder(escb,
+					TimeInForceImage.values());
+			tifConverterBuilder = escb;
+		}
 	}
 
 	private void initPriceConverterBuilder() {

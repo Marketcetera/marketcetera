@@ -47,6 +47,9 @@ public enum SideImage implements ILexerFIXImage {
 		return fixValue;
 	}
 	
+	public String getFIXStringValue() {
+		return ""+fixValue;
+	}
 
 }
 

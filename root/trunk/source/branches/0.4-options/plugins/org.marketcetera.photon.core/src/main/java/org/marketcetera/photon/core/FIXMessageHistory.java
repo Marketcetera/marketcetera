@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -38,7 +40,7 @@ public class FIXMessageHistory extends PlatformObject {
 	
 	private int messageReferenceCounter = 0;
 
-	public FIXMessageHistory() {
+	public FIXMessageHistory(FIXMessageFactory messageFactory) {
 		allMessages = new BasicEventList<MessageHolder>();
 		allFilteredMessages = new FilterList<MessageHolder>(allMessages);
 		fillMessages = new FilterList<MessageHolder>(allFilteredMessages, new FillMatcher());
@@ -52,12 +54,11 @@ public class FIXMessageHistory extends PlatformObject {
 		symbolSideList = new GroupingList<MessageHolder>(allFilteredMessages, new SymbolSideComparator());
 		averagePriceList = new FilterList<MessageHolder>(
 				new FunctionList<List<MessageHolder>, MessageHolder>(symbolSideList,
-				new AveragePriceFunction()), new NotNullMatcher());
+				new AveragePriceFunction(messageFactory)), new NotNullMatcher());
 		openOrderList = new FilterList<MessageHolder>(latestExecutionReportsList, new OpenOrderMatcher());
 	}
 	
-	public FIXMessageHistory(List<MessageHolder> messages){
-		this();
+	public FIXMessageHistory(FIXMessageFactory messageFactory, List<MessageHolder> messages){
 		allMessages.addAll(messages);
 	}
 

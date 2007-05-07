@@ -42,4 +42,8 @@ public enum PutOrCallImage implements ILexerFIXImage {
 	public char getFIXCharValue() {
 		return (char) fixValue;
 	}
+	public String getFIXStringValue() {
+		return ""+fixValue;
+	}
+
 }

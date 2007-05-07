@@ -35,7 +35,7 @@ public class TS_Photon {
 		suite.addTestSuite(FIXMessagesViewTest.class);
 		suite.addTestSuite(FillsViewTest.class);
 		suite.addTestSuite(AveragePricesViewTest.class);
-		suite.addTestSuite(ParserTest.class);
+		suite.addTest(ParserTest.suite());
 		suite.addTestSuite(LexerTest.class);
 		suite.addTestSuite(ScriptRegistryTest.class);
 		suite.addTestSuite(JRubyBSFTest.class);

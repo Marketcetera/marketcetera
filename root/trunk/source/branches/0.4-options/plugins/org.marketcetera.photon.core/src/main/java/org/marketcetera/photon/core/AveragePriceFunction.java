@@ -8,6 +8,7 @@ import java.math.RoundingMode;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -22,7 +23,6 @@ import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
-import quickfix.fix42.ExecutionReport;
 import ca.odell.glazedlists.FunctionList.Function;
 
 /**
@@ -44,6 +44,14 @@ import ca.odell.glazedlists.FunctionList.Function;
  */
 @ClassVersion("$Id$")
 public class AveragePriceFunction implements Function<List<MessageHolder>, MessageHolder> {
+
+	private FIXMessageFactory messageFactory;
+	
+	public AveragePriceFunction(FIXMessageFactory messageFactory) {
+		super();
+		this.messageFactory = messageFactory;
+	}
+
 	/**
 	 * Given the list of {@link quickfix.Message}s representing execution
 	 * reports for a single security on a single side of the market, calculates
@@ -89,7 +97,7 @@ public class AveragePriceFunction implements Function<List<MessageHolder>, Messa
 	private Message computeAveragePrice(Message avgPriceMessage, Message fillMessage) throws FieldNotFound {
 		Message returnMessage = null;
 		if (avgPriceMessage == null){
-			returnMessage = new ExecutionReport();
+			returnMessage = messageFactory.createMessage(MsgType.EXECUTION_REPORT);
 			returnMessage.setField(fillMessage.getField(new Side()));
 			returnMessage.setField(fillMessage.getField(new Symbol()));
 			returnMessage.setField(fillMessage.getField(new OrderQty()));
@@ -97,7 +105,6 @@ public class AveragePriceFunction implements Function<List<MessageHolder>, Messa
 			returnMessage.setField(new StringField(CumQty.FIELD, fillMessage.getString(LastShares.FIELD)));
 			returnMessage.setField(new StringField(AvgPx.FIELD, fillMessage.getString(LastPx.FIELD)));
 			try { returnMessage.setField(fillMessage.getField(new Account())); } catch (FieldNotFound ex) { /* do nothing */ }
-			returnMessage.getHeader().setField(new MsgType(MsgType.EXECUTION_REPORT));
 		} else {
 			BigDecimal existingCumQty = new BigDecimal(avgPriceMessage.getString(CumQty.FIELD));
 			BigDecimal existingAvgPx = new BigDecimal(avgPriceMessage.getString(AvgPx.FIELD));
