@@ -1,6 +1,7 @@
 package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import jfun.parsec.FromString;
 import jfun.parsec.FromToken;
@@ -21,7 +22,6 @@ import jfun.parsec.tokens.Tokenizers;
 import jfun.parsec.tokens.TypedToken;
 
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.InternalID;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.IPhotonCommand;
@@ -30,9 +30,11 @@ import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.DataDictionary;
+import quickfix.FieldType;
 import quickfix.Message;
+import quickfix.field.OrderQty;
 
 public class CommandParser {
 	//////////////////////////////////////////////////////////////
@@ -109,6 +111,16 @@ public class CommandParser {
 		}
 	});
 	
+	final Parser<BigDecimal> orderQtyParser = Terms.decimalParser(new FromString<BigDecimal>(){
+		public BigDecimal fromString(int arg0, int arg1, String arg2) {
+			if (orderQtyIsInt){
+				// throw an exception if it cannot be parsed as an int
+				new BigInteger(arg2);
+			}
+			return new BigDecimal(arg2);
+		}
+	});
+	
 	final Parser<String> wordParser = Terms.wordParser(new FromString<String>(){
 		public String fromString(int arg0, int arg1, String arg2) {
 			return arg2;
@@ -122,7 +134,7 @@ public class CommandParser {
 	});
 
 	final Parser<IPhotonCommand> orderCommandMapper = Parsers.mapn(
-			(Parser<Object>[])new Parser[]{sideImageParser, integerParser, wordParser, priceParser, timeInForceParser.optional(), accountParser.optional()} ,
+			(Parser<Object>[])new Parser[]{sideImageParser, orderQtyParser, wordParser, priceParser, timeInForceParser.optional(), accountParser.optional()} ,
 		new Mapn<IPhotonCommand>(){
 		  public IPhotonCommand map(Object... vals) {
 					int i = 0;
@@ -181,6 +193,10 @@ public class CommandParser {
 
 	private FIXMessageFactory messageFactory;
 
+	private DataDictionary dataDictionary;
+
+	private boolean orderQtyIsInt = false;
+
 	public MessageCommand parseNewOrder(String theInputString) {
 		SendOrderToOrderManagerCommand result = (SendOrderToOrderManagerCommand)Parsers.runParser(theInputString, newOrderCommandParser,
 		"user input");
@@ -201,6 +217,10 @@ public class CommandParser {
 
 	public void setMessageFactory(FIXMessageFactory factory) {
 		this.messageFactory = factory;
+	}
+	public void setDataDictionary(DataDictionary dd) {
+		this.dataDictionary = dd;
+		orderQtyIsInt = FieldType.Int == dataDictionary.getFieldTypeEnum(OrderQty.FIELD);
 	}
 
 }

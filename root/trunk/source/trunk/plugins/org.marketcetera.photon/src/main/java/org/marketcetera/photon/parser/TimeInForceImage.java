@@ -66,5 +66,8 @@ public enum TimeInForceImage implements ILexerFIXImage{
 		return fixValue;
 	}
 
+	public String getFIXStringValue() {
+		return ""+fixValue;
+	}
 
 }

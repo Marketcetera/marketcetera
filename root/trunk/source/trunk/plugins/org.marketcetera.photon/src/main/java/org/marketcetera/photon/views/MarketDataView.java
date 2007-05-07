@@ -26,7 +26,10 @@ import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXVersion;
 
+import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.BidPx;
@@ -202,7 +205,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
-		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(aMessageTable, getSite()));
+		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(aMessageTable, getSite(), FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary()));
 		
 		// Create the cell editors
 	    CellEditor[] editors = new CellEditor[MarketDataColumns.values().length];
@@ -351,8 +354,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	class MarketDataTableFormat extends MessageListTableFormat {
 
 
-		public MarketDataTableFormat(Table table, IWorkbenchPartSite site) {
-			super(table, MarketDataColumns.values(), site);
+		public MarketDataTableFormat(Table table, IWorkbenchPartSite site, DataDictionary dataDictionary) {
+			super(table, MarketDataColumns.values(), site, dataDictionary);
 		}
 
 		@Override

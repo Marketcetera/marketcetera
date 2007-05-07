@@ -111,9 +111,8 @@ public class FIXObservableValue extends AbstractObservableValue {
 	public Object getValueType() {
 		if (fieldTypeEnum != null) {
 			Class javaType = fieldTypeEnum.getJavaType();
-			if (fieldTypeEnum == FieldType.Char){
-				return Character.class;
-			} else if (Calendar.class.equals(javaType)){
+			// TODO: this is a result of QuickFIX/J bug, remove after QF/J 1.1.1 release
+			if (Calendar.class.equals(javaType)){
 				return Date.class;
 			} else if (Double.class.equals(javaType)){
 				return BigDecimal.class;

@@ -41,4 +41,7 @@ public enum OpenCloseImage implements ILexerFIXImage {
 	public int getFIXIntValue() {
 		return (int) fixValue;
 	}
+	public String getFIXStringValue() {
+		return ""+fixValue;
+	}
 }

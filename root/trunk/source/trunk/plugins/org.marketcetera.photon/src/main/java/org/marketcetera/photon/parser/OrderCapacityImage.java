@@ -43,4 +43,7 @@ public enum OrderCapacityImage implements ILexerFIXImage  {
 	public int getFIXIntValue() {
 		return fixValue;
 	}
+	public String getFIXStringValue() {
+		return ""+fixValue;
+	}
 }
