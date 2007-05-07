@@ -6,6 +6,7 @@ import java.util.Date;
 
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.BooleanField;
 import quickfix.CharField;
@@ -111,8 +112,10 @@ public class FIXObservableValue extends AbstractObservableValue {
 	public Object getValueType() {
 		if (fieldTypeEnum != null) {
 			Class javaType = fieldTypeEnum.getJavaType();
-			// TODO: this is a result of QuickFIX/J bug, remove after QF/J 1.1.1 release
-			if (Calendar.class.equals(javaType)){
+			if (FieldType.Char.equals(fieldTypeEnum)){
+				return Character.class;
+			} else if (Calendar.class.equals(javaType)){
+				// TODO: this is a result of QuickFIX/J bug, remove after QF/J 1.1.1 release
 				return Date.class;
 			} else if (Double.class.equals(javaType)){
 				return BigDecimal.class;

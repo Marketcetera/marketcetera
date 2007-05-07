@@ -105,7 +105,7 @@ public class OrderTicketControllerHelper {
 
 	protected boolean orderQtyIsInt;
 
-	protected boolean charFieldsAreStrings;
+	private boolean hasRealCharDatatype;
 
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this.ticket = ticket;
@@ -129,7 +129,7 @@ public class OrderTicketControllerHelper {
 		dataBindingContext = new DataBindingContext();
 		
 		orderQtyIsInt = (FieldType.Int == dictionary.getFieldTypeEnum(OrderQty.FIELD));
-		charFieldsAreStrings = (FieldType.Char.getJavaType().equals(String.class));
+		hasRealCharDatatype = FieldType.Char.equals(dictionary.getFieldTypeEnum(Side.FIELD));
 		
 		allValidators = new HashSet<IToggledValidator>();
 	}
@@ -570,7 +570,7 @@ public class OrderTicketControllerHelper {
 	}
 
 	private void initSideConverterBuilder() {
-		if (charFieldsAreStrings){
+		if (!hasRealCharDatatype){
 			EnumStringConverterBuilder<String> escb = new EnumStringConverterBuilder<String>(
 					String.class);
 		
@@ -588,7 +588,7 @@ public class OrderTicketControllerHelper {
 	}
 	
 	private void initTifConverterBuilder() {
-		if (charFieldsAreStrings){
+		if (!hasRealCharDatatype){
 			EnumStringConverterBuilder<String> escb = new EnumStringConverterBuilder<String>(
 					String.class);
 		
