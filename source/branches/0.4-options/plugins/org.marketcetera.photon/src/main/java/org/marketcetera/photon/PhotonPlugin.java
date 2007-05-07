@@ -35,6 +35,7 @@ import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.ConnectionConstants;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -81,6 +82,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private FIXMessageFactory messageFactory;
 
+	private FIXVersion fixVersion;
+
 	/**
 	 * The constructor.
 	 */
@@ -123,7 +126,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	}
 
 	private void initFIXMessageHistory() {
-		fixMessageHistory = new FIXMessageHistory();
+		fixMessageHistory = new FIXMessageHistory(messageFactory);
 	}
 
 	private void initScriptRegistry() {
@@ -195,14 +198,15 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
 		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
 		String versionString = thePreferenceStore.getString(ConnectionsPreferencePage.FIX_VERSION_PREFERENCE);
-		FIXVersion version = FIXVersion.FIX42;
+		fixVersion = FIXVersion.FIX42;
 		try {
-			version = FIXVersion.valueOf(versionString);
+			fixVersion = FIXVersion.valueOf(versionString);
 		} catch (IllegalArgumentException iae) {
 			// just use version 4.2
 		}
-		messageFactory = version.getMessageFactory();
-		FIXDataDictionaryManager.initialize(version, version.getDataDictionaryURL());
+		messageFactory = fixVersion.getMessageFactory();
+		FIXDataDictionaryManager.initialize(FIXVersion.FIX44, "FIX44.xml");
+		FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryURL());
 	}
 
 	public void startScriptRegistry() {
@@ -347,4 +351,13 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			OptionOrderTicketController optionOrderTicketController) {
 		this.optionOrderTicketController = optionOrderTicketController;
 	}
+
+	public FIXDataDictionary getFIXDataDictionary() {
+		return FIXDataDictionaryManager.getCurrentFIXDataDictionary();
+	}
+
+	public FIXVersion getFIXVersion() {
+		return fixVersion;
+	}
+
 }

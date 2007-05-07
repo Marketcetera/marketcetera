@@ -4,8 +4,9 @@ public class MarketceteraSubscription implements ISubscription, Comparable<Strin
 
 	private final String value;
 	private final String subscribeMsgType;
+	private Integer marketDepth;
 	
-	public MarketceteraSubscription(String value, String subscribeMsgType) {
+	public MarketceteraSubscription(String value, String subscribeMsgType, Integer marketDepth) {
 		this.value = value;
 		this.subscribeMsgType = subscribeMsgType;
 	}
@@ -32,5 +33,9 @@ public class MarketceteraSubscription implements ISubscription, Comparable<Strin
 
 	public String getSubscribeMsgType() {
 		return subscribeMsgType;
+	}
+
+	public Integer getMarketDepth() {
+		return marketDepth;
 	}
 }

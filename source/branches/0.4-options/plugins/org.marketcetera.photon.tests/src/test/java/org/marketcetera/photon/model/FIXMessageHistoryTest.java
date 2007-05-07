@@ -3,9 +3,11 @@ package org.marketcetera.photon.model;
 import java.math.BigDecimal;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import junit.framework.Test;
 
 import org.marketcetera.core.AccessViolator;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.IncomingMessageHolder;
@@ -39,12 +41,20 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 
-public class FIXMessageHistoryTest extends TestCase {
+public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 
-    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    public FIXMessageHistoryTest(String inName, FIXVersion version) {
+		super(inName, version);
+	}
+
+    public static Test suite() {
+    	return new FIXVersionTestSuite(FIXMessageHistoryTest.class, FIXVersion.values());
+    }
+    
+	private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
 	protected FIXMessageHistory getMessageHistory(){
-		return new FIXMessageHistory();
+		return new FIXMessageHistory(msgFactory);
 	}
 
 	/*
@@ -488,7 +498,7 @@ public class FIXMessageHistoryTest extends TestCase {
 		"8=FIX.4.29=20635=834=1749=MRKTC-EXCH52=20070215-02:58:09.39356=sender-2026-OMS6=011=1171508063705-server02/127.0.0.114=017=1204420=331=032=037=732738=1039=444=1054=155=T60=20070215-02:58:09150=4151=010=226"
 	};
 	public void testStrandedOpenOrder() throws Exception {
-		FIXMessageHistory history = new FIXMessageHistory();
+		FIXMessageHistory history = new FIXMessageHistory(fixVersion.getMessageFactory());
 		for (String aMessageString : messageStrings) {
 			Message aMessage = new Message(aMessageString);
 			String msgType = aMessage.getHeader().getString(MsgType.FIELD);

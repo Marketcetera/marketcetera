@@ -11,12 +11,10 @@ import quickfix.field.MsgType;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SecurityListRequestType;
-import quickfix.field.SecurityReqID;
 import quickfix.field.SecurityType;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
-import quickfix.fix44.DerivativeSecurityListRequest;
 
 public class MarketDataUtils {
 
