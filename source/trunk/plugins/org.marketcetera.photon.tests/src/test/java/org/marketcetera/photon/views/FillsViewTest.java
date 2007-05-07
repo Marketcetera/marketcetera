@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.ui.IndexedTableViewer;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Message;
 import quickfix.field.AvgPx;
@@ -28,7 +29,7 @@ public class FillsViewTest extends ViewTestBase {
 	}
 
 	public void testShowMessage() throws Exception {
-		FIXMessageHistory hist = new FIXMessageHistory();
+		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
 		FillsView view = (FillsView) getTestView();
 		view.setInput(hist);
 		
