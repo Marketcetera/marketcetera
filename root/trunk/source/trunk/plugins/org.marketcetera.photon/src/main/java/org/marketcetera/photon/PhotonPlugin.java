@@ -344,7 +344,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return FIXDataDictionaryManager.getCurrentFIXDataDictionary();
 	}
 
-	public FIXVersion getFixVersion() {
+	public FIXVersion getFIXVersion() {
 		return fixVersion;
 	}
 
