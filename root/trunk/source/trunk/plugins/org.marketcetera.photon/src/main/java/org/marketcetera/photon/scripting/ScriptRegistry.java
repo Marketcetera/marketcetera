@@ -166,7 +166,7 @@ public class ScriptRegistry implements InitializingBean {
 	 * path "/foo/bar.rb", would correspond to the require method parameter,
 	 * "foo/bar".
 	 * 
-	 * @param requireString the argument to the Ruby require method
+	 * @param fileName the argument to the Ruby require method
 	 * @throws BSFException
 	 */
 	public void register(String fileName) throws BSFException {
