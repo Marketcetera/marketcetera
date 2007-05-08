@@ -2,44 +2,44 @@
           <ul id="navigation">
             <li class="display" title="trades"><a title="Trades" href="#trades">Trades</a>
               <ul class="stretcher">
-                <li><a title="List Trades" href="/trades/list">List Trades</a></li>
-                <li><a title="New Trade" href="/trades/new">New Trade</a></li>
-                <li><a title="Import Trades" href="/message_logs/list">Import Trades</a></li>
+                <li><%= link_to "List Trades", {:action => 'list', :controller => 'trades'}, :title => "List Trades" %></li>
+                <li><%= link_to "New Trade", {:action => 'new', :controller => 'trades'}, :title => "New Trade" %></li>
+                <li><%= link_to "Import Trades", {:action => 'list', :controller => 'message_logs'}, :title => "Import Trades" %></li>
               </ul>
             </li>
             <li class="display" title="position"><a title="Positions" href="#positions">Positions</a>
               <ul class="stretcher">
-                <li><a title="All Positions" href="/positions/list">All Positions</a></li>
-                <li><a title="Positions as of" href="/queries/positions#positions_as_of">Positions as Of</a></li>
-                <li><a title="Positions by Account" href="/queries/positions#positions_by_account">Positions by Account</a></li>
+                <li><%= link_to "All Positions", {:action => 'list', :controller => 'positions'}, :title => "All Positions" %></li>
+                <li><%= link_to "Positions as of", {:action => 'positions', :controller => 'queries'}, :title => "Positions as Of" %></li>
+                <li><%= link_to "Positions by Account", {:action => 'positions', :controller => 'queries'}, :title => "Positions by Account" %></li>
               </ul>
             </li>
             <li class="display" title="reports"><a title="Reports" href="#reports">Reports</a>
               <ul class="stretcher">
-                <li><a title="Search for Trades" href="/queries/">Search for Trades</a></li>
-                <li><a title="Positions as of" href="/queries/positions#positions_as_of">Positions as Of</a></li>
-                <li><a title="Positions by Account" href="/queries/positions#positions_by_account">Positions by Account</a></li>
+                <li><%= link_to "Search for Trades", {:controller => 'queries'}, :title => "Search for Trades"%></li>
+                <li><%= link_to "Positions as of", {:action => 'positions', :controller => 'queries'}, :title => "Positions as Of" %></li>
+                <li><%= link_to "Positions by Account", {:action => 'positions', :controller => 'queries'}, :title => "Positions by Account" %></li>
               </ul>
             </li>
             <li class="display" title="pnl"><a title="P &amp; L" href="#pnl">P &amp; L</a>
               <ul class="stretcher">
-                <li><a title="P &amp; L" href="/pnl/">P &amp; L</a></li>
-                <li><a title="List Marks" href="/marks/#by_symbol">List Marks for Symbol</a></li>
-                <li><a title="List Marks" href="/marks/#on_date">List Marks on Date</a></li>
-                <li><a title="New Mark" href="/marks/new">New Mark</a></li>
+                <li><%= link_to "P &amp; L", {:controller => "pnl"}, :title => "P &amp; L"%></li>
+                <li><%= link_to "List Marks for Symbol", {:controller => "marks"}, :title => "List Marks for Symbol" %></li>
+                <li><%= link_to "List Marks on Date", {:controller => "marks"}, :title => "List Marks on Date"  %></li>
+                <li><%= link_to "New Mark", {:controller => "marks", :action => "new"}, :title =>"New Mark"%></li>
               </ul>
             </li>
             <li class="display" title="db_maintenance"><a title="DB Maintenance" href="#db_maintenance">DB Maintenance</a>
               <ul class="stretcher">
-                <li><a title="List Accounts" href="/accounts/list">List Accounts</a></li>
-                <li><a title="New Account" href="/accounts/new">New Account</a></li>
-                <li><a title="List Equities" href="/equities/list">List Equities</a></li>
-                <li><a title="New Equity" href="/equities/new">New Equity</a></li>
-                <li><a title="List Symbols" href="/m_symbols/list">List Symbols</a></li>
-                <li><a title="New Account" href="/m_symbols/new">New Symbol</a></li>
-                <li><a title="List Dividends" href="/dividends/list">List Dividends</a></li>
-                <li><a title="New Dividend" href="/dividends/new">New Dividend</a></li>
-                <li><a title="List Currencies" href="/currencies/list">List Currencies</a></li>
+                <li><%= link_to "List Accounts", {:action => 'list', :controller => 'accounts'}, :title => "List Accounts" %></li>
+                <li><%= link_to "New Account", {:action => 'new', :controller => 'accounts'}, :title => "New Account" %></li>
+                <li><%= link_to "List Equities", {:action => 'list', :controller => 'equities'}, :title => "List Equities" %></li>
+                <li><%= link_to "New Equity", {:action => 'new', :controller => 'equities'}, :title => "New Equity" %></li>
+                <li><%= link_to "List Symbols", {:action => 'list', :controller => 'm_symbols'}, :title => "List Symbols" %></li>
+                <li><%= link_to "New Symbol", {:action => 'new', :controller => 'm_symbols'}, :title => "New Symbol" %></li>
+                <li><%= link_to "List Dividends", {:action => 'list', :controller => 'dividends'}, :title => "List Dividends" %></li>
+                <li><%= link_to "New Dividend", {:action => 'new', :controller => 'dividends'}, :title => "New Dividend" %></li>
+                <li><%= link_to "List Currencies", {:action => 'list', :controller => 'currencies'}, :title => "List Currencies" %></li>
               </ul>
             </li>
 

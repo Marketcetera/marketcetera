@@ -6,7 +6,12 @@
     <meta name="robots" content="index, follow" />
     <%= stylesheet_link_tag "scaffold" %>
     <%= stylesheet_link_tag "global" %>
-    <%= javascript_include_tag "marketcetera/global" %>
+    <%= javascript_include_tag :defaults %>
+    <%= javascript_include_tag "marketcetera/moo.fx.js" %>
+    <%= javascript_include_tag "marketcetera/moo.fx.pack.js" %>
+    <%= javascript_include_tag "marketcetera/event-selectors" %>
+    <%= javascript_include_tag "marketcetera/navigation" %>
+    <%= javascript_include_tag "marketcetera/marketcetera" %>
     <title>Marketcetera Trade Database: <%= controller.action_name + ' ' + controller.controller_name %></title>
     <link rel="alternate" type="application/rss+xml" title="" href="" />
     <link rel="shorcut icon" type="image/x-ico" href="/images/favicon.ico" />
@@ -17,10 +22,11 @@
 <!-- BEGIN HEADER -->
       <div id="header">
         <div id="logo">
-          <a title="Marketcetera" href="/"><img src="/images/logo.jpg" width="150" height="55" alt="Marketcetera" /></a>
+           <%= link_to(image_tag("/images/logo.jpg", :width=>"150", :height=>"55", :alt=>"Marketcetera"), {:controller => 'welcome'})%>
         </div>
         <div id="slogan">
-          <a href="http://www.marketcetera.com"><img src="/images/slogan.gif" width="224" height="10" alt="download.run.trade." /></a>
+           <%= link_to(image_tag("/images/slogan.gif", :width=>"165", :height=>"8", :alt=>"download.run.trade."),
+                       "http://www.marketcetera.com")%>
         </div>
         <div class="clear"></div>
       </div>
