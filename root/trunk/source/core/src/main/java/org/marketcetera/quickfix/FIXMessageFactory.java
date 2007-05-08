@@ -199,11 +199,11 @@ public class FIXMessageFactory {
      * @param account     Account ID
      * @return Message representing this new order
      */
-    public Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, MSymbol symbol,
+    private Message newOrderHelper(String clOrderID, char side, BigDecimal quantity, MSymbol symbol,
                                   char timeInForce, String account) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_SINGLE);
         aMessage.setField(new ClOrdID(clOrderID));
-        aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
         aMessage.setField(new Side(side));
 
@@ -352,8 +352,9 @@ public class FIXMessageFactory {
     /** Creates a new order message and poopulates it with current {@link TransactTime}
      * @return  new order single
      */
-    public Message createNewMessage() {
+    public Message newBasicOrder() {
         Message msg =  msgFactory.create(beginString, MsgType.ORDER_SINGLE);
+        msg.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         addTransactionTimeIfNeeded(msg);
         return msg;
     }

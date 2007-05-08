@@ -38,7 +38,7 @@ public class DefaultOrderModifierTest extends TestCase {
         DefaultOrderModifier modifier = new DefaultOrderModifier();
         modifier.addDefaultField(111, testValue, DefaultOrderModifier.MessageFieldType.MESSAGE);
 
-        Message aMessage = msgFactory.createNewMessage();
+        Message aMessage = msgFactory.newBasicOrder();
 
         modifier.modifyOrder(aMessage, null);
         StringField outField = new StringField(111);
@@ -70,7 +70,7 @@ public class DefaultOrderModifierTest extends TestCase {
         modifier.addDefaultField(111, replacementValue, DefaultOrderModifier.MessageFieldType.MESSAGE);
 
         String originalValue = "Original value";
-        Message aMessage = msgFactory.createNewMessage();
+        Message aMessage = msgFactory.newBasicOrder();
         aMessage.setField(new StringField(111, originalValue));
 
         modifier.modifyOrder(aMessage, null);
@@ -85,13 +85,13 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}}));
 
-        Message heartbeat = msgFactory.createNewMessage();
+        Message heartbeat = msgFactory.newBasicOrder();
         heartbeat.getHeader().setField(new MsgType(MsgType.HEARTBEAT));
 
-        Message newOrderSingle = msgFactory.createNewMessage();
+        Message newOrderSingle = msgFactory.newBasicOrder();
         newOrderSingle.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
 
-        Message logon = msgFactory.createNewMessage();
+        Message logon = msgFactory.newBasicOrder();
         logon.getHeader().setField(new MsgType(MsgType.LOGON));
 
         assertTrue(mod.modifyOrder(heartbeat, null));
@@ -126,7 +126,7 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setMsgFields(createFieldsMap(new String[][]{{"21", FIELD_21_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}}));
 
-        Message msg = msgFactory.createNewMessage();
+        Message msg = msgFactory.newBasicOrder();
         assertTrue(mod.modifyOrder(msg, null));
         assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, msg.getString(21));
