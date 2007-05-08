@@ -140,7 +140,9 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			
 			message.setField(correlationID);
 			message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
-			message.setField(new MarketDepth(mSubscription.getMarketDepth()));
+			if (mSubscription.getMarketDepth() != null){
+				message.setField(new MarketDepth(mSubscription.getMarketDepth()));
+			}
 			try {
 				Session.sendToTarget(message, sessionID);
 			} catch (SessionNotFound e) {
