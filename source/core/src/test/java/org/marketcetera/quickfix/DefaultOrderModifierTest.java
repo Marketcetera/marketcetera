@@ -95,8 +95,9 @@ public class DefaultOrderModifierTest extends TestCase {
         Message heartbeat = msgFactory.createMessage(MsgType.HEARTBEAT);
 
         Message newOrderSingle = msgFactory.newBasicOrder();
-        newOrderSingle.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
-
+        // taking this out explicitly to allow the order modifier to set it.
+        newOrderSingle.removeField(HandlInst.FIELD);
+        
         Message logon = msgFactory.createMessage(MsgType.LOGON);
 
         assertTrue(mod.modifyOrder(heartbeat, null));
