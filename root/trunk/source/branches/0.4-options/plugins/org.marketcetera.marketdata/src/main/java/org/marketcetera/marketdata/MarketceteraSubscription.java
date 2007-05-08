@@ -9,6 +9,7 @@ public class MarketceteraSubscription implements ISubscription, Comparable<Strin
 	public MarketceteraSubscription(String value, String subscribeMsgType, Integer marketDepth) {
 		this.value = value;
 		this.subscribeMsgType = subscribeMsgType;
+		this.marketDepth = marketDepth;
 	}
 
 	public int compareTo(String other) {
