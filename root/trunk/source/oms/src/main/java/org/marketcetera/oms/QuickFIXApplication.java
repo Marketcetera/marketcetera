@@ -7,6 +7,8 @@ import quickfix.Application;
 import quickfix.DoNotSend;
 import quickfix.Message;
 import quickfix.SessionID;
+import quickfix.field.MsgType;
+import quickfix.field.Text;
 
 /**
  * @author gmiller
@@ -25,6 +27,11 @@ public class QuickFIXApplication implements Application {
 	public void fromAdmin(Message message, SessionID session)  {
 		if (jmsOperations != null){
             try {
+                if(MsgType.REJECT.equals(message.getHeader().getString(MsgType.FIELD))) {
+                    // bug #219
+                    if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("received reject: "+message.getString(Text.FIELD), this); }
+                }
+
                 jmsOperations.convertAndSend(message);
             } catch (Exception ex) {
                 LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
