@@ -1,6 +1,7 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerAdapter;
 
 import java.util.HashMap;
 
@@ -15,6 +16,7 @@ import java.util.HashMap;
 
 @ClassVersion("$Id$")
 public class FIXDataDictionaryManager {
+    private static final String LOGGER_CATEGORY = FIXDataDictionaryManager.class.getName();
     private static HashMap<FIXVersion, FIXDataDictionary> fddMap = new HashMap<FIXVersion, FIXDataDictionary>();
     private static FIXDataDictionary sCurrent;
 
@@ -47,6 +49,9 @@ public class FIXDataDictionaryManager {
     }
 
     private static void setCurrentFIXDataDictionary(FIXDataDictionary inFDD) {
+        if(LoggerAdapter.isDebugEnabled(LOGGER_CATEGORY)) {
+            LoggerAdapter.debug("Setting the FIX dd to "+inFDD.getDictionary().getVersion(), LOGGER_CATEGORY);
+        }
         sCurrent = inFDD;
     }
     public static void setCurrentFIXDataDictionary(FIXVersion inVersion) {
