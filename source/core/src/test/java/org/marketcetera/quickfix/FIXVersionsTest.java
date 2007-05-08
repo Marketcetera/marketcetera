@@ -50,7 +50,7 @@ public class FIXVersionsTest extends TestCase {
         long suffix = System.currentTimeMillis();
         Message newSingle = version.getMessageFactory().newMarketOrder("123"+suffix, inSide, new BigDecimal(qty), new MSymbol(inSymbol),
                 TimeInForce.DAY, "testAccount");
-        newSingle.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount"));
         return newSingle;

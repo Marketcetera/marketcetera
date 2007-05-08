@@ -85,7 +85,7 @@ public class FIXMessageFactory {
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
         aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
-        aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         return aMessage;
     }
 
@@ -99,7 +99,7 @@ public class FIXMessageFactory {
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
         aMessage.setField(new StringField(Price.FIELD, price.toPlainString()));
-        aMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         return aMessage;
     }
     
@@ -112,7 +112,7 @@ public class FIXMessageFactory {
 		if (oldMessage.isSetField(Price.FIELD)){
 			cancelMessage.setField(oldMessage.getField(new Price()));
 		}
-        cancelMessage.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        cancelMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
 		return cancelMessage;
 	}
 	
