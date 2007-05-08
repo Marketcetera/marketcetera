@@ -69,7 +69,7 @@ public class OrderLoaderTest extends TestCase
         mLoader.addDefaults(msg);
         assertEquals("msgType", MsgType.ORDER_SINGLE, msg.getHeader().getString(MsgType.FIELD));
         assertEquals("orderType", OrdType.LIMIT, msg.getChar(OrdType.FIELD));
-        assertEquals("handlInst", HandlInst.MANUAL_ORDER, msg.getChar(HandlInst.FIELD));
+        assertEquals("handlInst", HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, msg.getChar(HandlInst.FIELD));
     }
 
     public void testBasicFieldParsing() throws Exception

@@ -73,7 +73,7 @@ public class OrderLoader extends ApplicationBase
         message.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
         message.setField(new OrdType(OrdType.LIMIT));
         message.setField(new ClOrdID(idFactory.getNext()));
-        message.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        message.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         message.setField(new TransactTime());
     }
 
