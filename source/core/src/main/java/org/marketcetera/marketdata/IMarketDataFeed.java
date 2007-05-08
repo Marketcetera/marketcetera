@@ -28,7 +28,7 @@ public interface IMarketDataFeed extends IFeedComponent, Lifecycle {
     /**
      * 
      * @param symbolString
-     * @return
+     * @return The {@link MSymbol} object corresponding to the passed-in symbol name.
 	 * @throws IllegalFormatException if the format of the symbol is not understood
      */
     public MSymbol symbolFromString(String symbolString);
