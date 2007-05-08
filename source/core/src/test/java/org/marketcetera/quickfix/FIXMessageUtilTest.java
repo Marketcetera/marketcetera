@@ -153,7 +153,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public static Message createNOSHelper(String symbol, double qty, char side, OrdType ordType, FIXMessageFactory msgFactory)
     {
         long suffix = System.currentTimeMillis();
-        Message newSingle = msgFactory.createNewMessage();
+        Message newSingle = msgFactory.newBasicOrder();
         newSingle.setField(new ClOrdID("123-"+suffix));
         newSingle.setField(new Symbol(symbol));
         newSingle.setField(new Side(side));
