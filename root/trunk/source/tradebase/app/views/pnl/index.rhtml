@@ -5,7 +5,7 @@
        error_messages_for_report :report
     end %>
 <p>Please choose from the following P &amp; L calculations:</p>
-    <% form_tag '/pnl/by_account', :method => :get do -%>
+    <% form_tag({ :controller =>'pnl', :action => 'by_account'}, :method => :get) do -%>
         <fieldset>
             <h2>P &amp; L by Account</h2>
             <p>Compute a P &amp; L for a particular account.</p>
@@ -28,7 +28,7 @@
         </div>
     <% end -%>
 
-    <% form_tag '/pnl/by_dates', :method => :get do -%>
+    <% form_tag({ :controller => 'pnl', :action => 'by_dates'}, :method => :get) do -%>
         <fieldset>
             <h2>P &amp; L by Dates</h2>
             <p>Compute a P &amp; L across all accounts for a range of dates</p>

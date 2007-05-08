@@ -35,19 +35,13 @@ It can be used to view, create and modify positions, trades, accounts and equiti
 <div class="tile_row">
     <div class="tile">
       <h2>Trade Management</h2>
-      <div><a title="" href="/trades/list"><img src="/images/icons/money.png" alt="list trades" width="16" height="16" /> List</a>
-       - List all trades, most recent first</div>
-    
-      <div>
-        <a title="" href="/trades/new">
-        <img src="/images/icons/money_add.png" alt="new trade" width="16" height="16" /> New</a> - Enter new trade report</div>
+        <div><%= link_to({image_tag("/images/icons/money.png", :width => "16", :height => "16", :alt => "list trades"), " List"}, {:action => 'list', :controller => 'trades'}, :title => "")%> - List all trades, most recent first</div>
+        <div><%= link_to({image_tag("/images/icons/money_add.png", :width => "16", :height => "16", :alt => "new trade"), " New"}, {:action => 'new', :controller => 'trades'}, :title => "")%> - Enter new trade report</div>
     </div>
     <div class="tile norightmargin">
       <h2>Position Management</h2>
-      <div><a title="" href="/positions/list">
-        <img src="/images/icons/text_list_numbers.png" alt="list positions" /> List</a> - List all positions</div>
-      <div><a title="" href="/queries/#positions_as_of">
-        <img src="/images/icons/date.png" alt="positions as of" width="16" height="16" /> As Of</a> - List all positions as of specific date</div>
+        <div><%= link_to({image_tag("/images/icons/text_list_numbers.png", :width => "16", :height => "16", :alt => "list positions"), " List"}, {:action => 'list', :controller => 'positions'}, :title => "")%> - List all positions</div>
+        <div><%= link_to({image_tag("/images/icons/date.png", :width => "16", :height => "16", :alt => "positions as of"), " As Of"}, {:action => 'index', :controller => 'positions_queries'}, :title => "")%> - List all positions as of specific date</div>
     </div>
     <div class="clear"></div>
 </div>
@@ -55,18 +49,14 @@ It can be used to view, create and modify positions, trades, accounts and equiti
 <div class="tile_row">
     <div class="tile">
       <h2>Account</h2>
-      <div><a title="" href="/accounts/list">
-        <img src="/images/icons/vcard.png" alt="list accounts"  width="16" height="16"/> List</a> - List all accounts</div>
-      <div><a title="" href="/accounts/new">
-        <img src="/images/icons/vcard_add.png" alt="new account"  width="16" height="16"/> New</a> - Create new account</div>
+        <div><%= link_to({image_tag("/images/icons/vcard.png", :width => "16", :height => "16", :alt => "list accounts"), " List"}, {:action => 'list', :controller => 'accounts'}, :title => "")%> - List all accounts</div>
+        <div><%= link_to({image_tag("/images/icons/vcard_add.png", :width => "16", :height => "16", :alt => "new account"), " New"}, {:action => 'new', :controller => 'accounts'}, :title => "")%> - Create new account</div>
     </div>
 
     <div class="tile norightmargin">
       <h2>Equities</h2>
-      <div><a title="" href="/equities/list">
-        <img src="/images/icons/medal_gold_2.png" alt="list trades" width="16" height="16" /> List</a> - List all equities</div>
-      <div><a title="" href="/equities/new">
-        <img src="/images/icons/medal_gold_2_add.png" alt="new trade" width="16" height="16" /> New</a> - Create new equity</div>
+        <div><%= link_to({image_tag("/images/icons/medal_gold_2.png", :width => "16", :height => "16", :alt => "list trades"), " List"}, {:action => 'list', :controller => 'equities'}, :title => "")%> - List all equities</div>
+        <div><%= link_to({image_tag("/images/icons/medal_gold_2_add.png", :width => "16", :height => "16", :alt => "new trade"), " New"}, {:action => 'new', :controller => 'equities'}, :title => "")%> - Create new equity</div>
     </div>
     <div class="clear"></div>
 </div>

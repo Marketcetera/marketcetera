@@ -1,5 +1,5 @@
   <ul id="breadcrumbs">
-    <li><a title="<%= top_level -%>" href="/<%= top_level_controller -%>"><%= top_level -%></a>
+    <li><%= link_to top_level, { :controller=>top_level_controller }, :title=>top_level %>
 <% if(!action_name.blank?) -%>
     <span>&gt;</span></li>
     <li class="active"><%= action_name -%>

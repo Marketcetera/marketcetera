@@ -6,7 +6,7 @@
  end %>
 <p>Please choose from the following reports:</p>
     <div id="positions_as_of">
-        <% form_tag '/positions_queries/positions_as_of', :method => :get do -%>
+        <% form_tag({ :controller => 'positions_queries', :action => 'positions_as_of'}, :method => :get) do -%>
             <fieldset>
                 <h2>Positions As Of Date</h2>
                 <label for="on_date">Positions as of: </label>
@@ -24,7 +24,7 @@
     </div>
     
     <div id="positions_by_account">
-        <% form_tag '/positions_queries/positions_by_account', :method => :get do -%>
+        <% form_tag({ :controller => 'positions_queries', :action => 'positions_by_account'}, :method => :get) do -%>
             <fieldset>
                 <h2>Positions By Account</h2>
                 <p>List all positions for a particular account</p>
