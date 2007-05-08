@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JRuby BSF Plug-in
 Bundle-SymbolicName: org.jruby.bsf
-Bundle-Version: 1.0.0
+Bundle-Version: 0.9.9
 Bundle-Activator: org.jruby.bsf.JRubyPlugin
 Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
@@ -12,7 +12,9 @@ Eclipse-LazyStart: true
 Bundle-ClassPath: lib/bsf.jar,
  lib/jruby.jar,
  .,
- lib/asm-2.2.3.jar
+ lib/asm-2.2.3.jar,
+ lib/backport-util-concurrent.jar,
+ lib/asm-commons-2.2.3.jar
 Export-Package: org.apache.bsf,
  org.apache.bsf.dbline,
  org.apache.bsf.debug,
@@ -39,17 +41,24 @@ Export-Package: org.apache.bsf,
  org.jruby.ast.types,
  org.jruby.ast.util,
  org.jruby.ast.visitor,
+ org.jruby.ast.visitor.rewriter,
+ org.jruby.ast.visitor.rewriter.utils,
  org.jruby.bsf,
  org.jruby.common,
+ org.jruby.compiler,
+ org.jruby.compiler.impl,
+ org.jruby.compiler.yarv,
  org.jruby.demo,
  org.jruby.environment,
  org.jruby.evaluator,
  org.jruby.exceptions,
  org.jruby.ext,
+ org.jruby.ext.socket,
  org.jruby.internal.runtime,
  org.jruby.internal.runtime.methods,
  org.jruby.javasupport,
  org.jruby.javasupport.bsf,
+ org.jruby.javasupport.proxy,
  org.jruby.javasupport.util,
  org.jruby.lexer.yacc,
  org.jruby.libraries,
@@ -57,10 +66,15 @@ Export-Package: org.apache.bsf,
  org.jruby.parser,
  org.jruby.runtime,
  org.jruby.runtime.builtin,
- org.jruby.runtime.builtin.meta,
  org.jruby.runtime.callback,
  org.jruby.runtime.load,
  org.jruby.runtime.marshal,
  org.jruby.util,
  org.jruby.util.collections,
- org.jruby.yaml
+ org.jruby.util.string,
+ org.jruby.yaml,
+ org.jvyamlb,
+ org.jvyamlb.events,
+ org.jvyamlb.nodes,
+ org.jvyamlb.tokens,
+ org.jvyamlb.util
