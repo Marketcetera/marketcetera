@@ -162,7 +162,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         // technically, the OrderID is set by the exchange but for tests we'll set it too b/c OrderProgress expects it
         newSingle.setField(new OrderID("456"+suffix));
         newSingle.setField(new OrderQty(qty));
-        newSingle.setField(new HandlInst(HandlInst.MANUAL_ORDER));
+        newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount"));
         return newSingle;
