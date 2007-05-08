@@ -19,7 +19,7 @@ import java.lang.management.ManagementFactory;
  *      order through modifiers, sending it on and generating and returning an
  *      immediate execution report </li>
  *   <li>{@link QuickFIXApplication} - a wrapper for setting up a FIX application (listener/sender)</li>
- *   <li>{@link QuickFIXSender} = actually sends the FIX messages</li>
+ *   <li>{@link org.marketcetera.quickfix.QuickFIXSender} = actually sends the FIX messages</li>
  * </ol>
  *
  * @author gmiller
