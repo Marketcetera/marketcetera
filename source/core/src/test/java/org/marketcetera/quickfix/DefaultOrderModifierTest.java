@@ -1,16 +1,23 @@
 package org.marketcetera.quickfix;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.prefs.BackingStoreException;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.marketcetera.core.*;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.MessageKey;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
+import quickfix.field.HandlInst;
 import quickfix.field.MsgType;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.prefs.BackingStoreException;
 
 /**
  * @author Graham Miller
@@ -85,14 +92,12 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}}));
 
-        Message heartbeat = msgFactory.newBasicOrder();
-        heartbeat.getHeader().setField(new MsgType(MsgType.HEARTBEAT));
+        Message heartbeat = msgFactory.createMessage(MsgType.HEARTBEAT);
 
         Message newOrderSingle = msgFactory.newBasicOrder();
         newOrderSingle.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
 
-        Message logon = msgFactory.newBasicOrder();
-        logon.getHeader().setField(new MsgType(MsgType.LOGON));
+        Message logon = msgFactory.createMessage(MsgType.LOGON);
 
         assertTrue(mod.modifyOrder(heartbeat, null));
         assertTrue(mod.modifyOrder(newOrderSingle, null));
@@ -127,6 +132,8 @@ public class DefaultOrderModifierTest extends TestCase {
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}}));
 
         Message msg = msgFactory.newBasicOrder();
+        // taking this out explicitly to allow the order modifier to set it.
+        msg.removeField(HandlInst.FIELD);
         assertTrue(mod.modifyOrder(msg, null));
         assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, msg.getString(21));
