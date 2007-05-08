@@ -270,6 +270,25 @@ public class OrderLoaderTest extends TestCase
 
     }
 
+    /** Verify that HandlInst, if set, overwrites the default one in the NOS message factory */
+    public void testHandlInstField() throws Exception
+    {
+        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
+                new OrderQty(), new Price(), new HandlInst(), new Account()));
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account"};
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","3","123-ASDF-234"});
+
+        assertFalse("default handlInst is same as what we set so this test is pointless",
+                FIXVersion.FIX42.getMessageFactory().newBasicOrder().getString(HandlInst.FIELD).equals("3"));
+        assertNotNull("message didn't go through", mLoader.mMessage);
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
+        assertEquals("3", mLoader.mMessage.getString(HandlInst.FIELD) );
+        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
+    }
+
     public void testWithCustomField() throws Exception
     {
         final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),

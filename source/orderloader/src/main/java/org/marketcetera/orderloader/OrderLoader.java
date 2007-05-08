@@ -159,7 +159,7 @@ public class OrderLoader extends ApplicationBase
         if(LoggerAdapter.isDebugEnabled(this)) {
             LoggerAdapter.debug("processing row "+Util.getStringFromArray(inOrderRow), this);
         }
-        Message message = msgFactory.createNewMessage();
+        Message message = msgFactory.newBasicOrder();
         // set defaults first b/c they may be overridden for MKT orders
         addDefaults(message);
         try {
