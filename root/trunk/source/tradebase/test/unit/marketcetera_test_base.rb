@@ -33,8 +33,12 @@ class MarketceteraTestBase < Test::Unit::TestCase
   end
   
   # verifies the red line with an error notice shows up (ex: No bla bla was found...)
-  def assert_has_error_notice
-    assert_tag :tag => "div", :attributes => { :id => "error_notice" }
+  def assert_has_error_notice(content = nil)
+    if(content.nil?)
+      assert_tag :tag => "div", :attributes => { :id => "error_notice" }
+    else
+      assert_tag :tag => "div", :attributes => { :id => "error_notice" }, :content => content  
+    end
   end
   
   # verifies trade has the right total price + commissions

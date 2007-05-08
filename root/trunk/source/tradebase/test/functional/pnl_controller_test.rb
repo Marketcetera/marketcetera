@@ -26,7 +26,26 @@ class PnlControllerTest < MarketceteraTestBase
     assert_has_error_notice                   
     assert_equal 0, assigns(:cashflows).length
   end
-  
+
+  def test_pnl_by_account_no_data_at_all
+      Account.delete(Account.find_by_nickname('TOLI'))
+      Account.delete(Account.find_by_nickname('GRAHAM'))
+      Trade.delete_all
+      Equity.delete_all
+      MSymbol.delete_all
+      Mark.delete_all
+      Posting.delete_all
+      Journal.delete_all
+
+      get :by_account, { :account=>{:nickname=>""}, :suffix => "acct",
+                         :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
+                                  "from(3i)"=>"11", "to(3i)"=>"11"}}
+      assert_response :success
+      assert_template 'pnl_by_account'
+      assert_no_tag :tag => 'div', :attributes => { :id => "error_notice" }
+      assert_equal 0, assigns(:cashflows).length
+  end
+
   # should return unassigned account
   def test_no_account_specified
     get :by_account, { :suffix => "acct",
