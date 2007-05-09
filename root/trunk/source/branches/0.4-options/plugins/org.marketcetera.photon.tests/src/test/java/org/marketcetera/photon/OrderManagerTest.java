@@ -215,7 +215,7 @@ public class OrderManagerTest extends TestCase {
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
 		FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().validate(filledCancel, true);
 		assertEquals(myClOrdID, filledCancel.getString(OrigClOrdID.FIELD));
-		assertEquals("999", filledCancel.getString(ClOrdID.FIELD));
+		assertEquals("1000", filledCancel.getString(ClOrdID.FIELD));
 		assertEquals("QWER", filledCancel.getString(Symbol.FIELD));
 		assertEquals(Side.BUY, filledCancel.getChar(Side.FIELD));
 		assertEquals(new Date().getTime(), filledCancel.getUtcTimeStamp(TransactTime.FIELD).getTime(), 500);
