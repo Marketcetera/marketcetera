@@ -25,6 +25,7 @@ import quickfix.field.CumQty;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LastShares;
@@ -65,7 +66,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		String orderID1 = "1";
 		String clOrderID1 = "2";
 		String execID = "3";
-		char execTransType = ExecTransType.STATUS;
 		char execType = ExecType.PARTIAL_FILL;
 		char ordStatus = OrdStatus.PARTIALLY_FILLED;
 		char side = Side.SELL_SHORT;
@@ -91,7 +91,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(orderID1.toString(), historyMessage.getString(OrderID.FIELD));
 			assertEquals(clOrderID1.toString(), historyMessage.getString(ClOrdID.FIELD));
 			assertEquals(execID, historyMessage.getString(ExecID.FIELD));
-			assertEquals(""+execTransType, historyMessage.getString(ExecTransType.FIELD));
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD));
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD));
 			assertEquals(""+side, historyMessage.getString(Side.FIELD));
@@ -116,7 +115,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(orderID2.toString(), historyMessage.getString(OrderID.FIELD));
 			assertEquals(clOrderID2.toString(), historyMessage.getString(ClOrdID.FIELD));
 			assertEquals(execID, historyMessage.getString(ExecID.FIELD));
-			assertEquals(""+execTransType, historyMessage.getString(ExecTransType.FIELD));
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD));
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD));
 			assertEquals(""+side, historyMessage.getString(Side.FIELD));
@@ -156,6 +154,23 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(account.toString(), historyMessage.getString(Account.FIELD));
 	}
 
+	
+	public void testGetOpenOrder() throws FieldNotFound {
+		long currentTime = System.currentTimeMillis();
+		FIXMessageHistory history = getMessageHistory();
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
+		
+		history.addOutgoingMessage(order1);
+		history.addIncomingMessage(executionReportForOrder1);
+
+		Message openOrder = history.getOpenOrder("1");
+		assertEquals(MsgType.ORDER_SINGLE, openOrder.getHeader().getString(MsgType.FIELD));
+		assertEquals("1", openOrder.getString(ClOrdID.FIELD));
+		assertEquals(Side.BUY, openOrder.getChar(Side.FIELD));
+		assertEquals(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, openOrder.getChar(HandlInst.FIELD));
+	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.getLatestExecutionReports()'
