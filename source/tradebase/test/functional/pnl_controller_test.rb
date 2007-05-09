@@ -18,7 +18,7 @@ class PnlControllerTest < MarketceteraTestBase
 
   # no mark for GOOG on 4/11/2007
   def test_by_account_no_mark_present
-    get :by_account, { :account=>{:nickname=>"TOLI"}, :suffix => "acct",
+    get :report, { :account=>{:nickname=>"TOLI"}, :suffix => "acct",
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"11", "to(3i)"=>"11"}}
     assert_response :success
@@ -37,19 +37,19 @@ class PnlControllerTest < MarketceteraTestBase
       Posting.delete_all
       Journal.delete_all
 
-      get :by_account, { :account=>{:nickname=>""}, :suffix => "acct",
+      get :report, { :account=>{:nickname=>""}, :suffix => "acct",
                          :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
                                   "from(3i)"=>"11", "to(3i)"=>"11"}}
       assert_response :success
-      assert_template 'pnl_by_account'
+      assert_template 'pnl_aggregate'
       assert_no_tag :tag => 'div', :attributes => { :id => "error_notice" }
       assert_equal 0, assigns(:cashflows).length
   end
 
   # should return unassigned account
-  def test_no_account_specified
-    get :by_account, { :suffix => "acct",
-                       :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
+  def test_unassigned_account
+    get :report, { :suffix => "acct", :account => {:nickname => "[UNASSIGNED]"},
+                       :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
                                 "from(3i)"=>"17", "to(3i)"=>"19"}}
     assert_response :success
     assert_template 'pnl_by_account'
@@ -62,9 +62,9 @@ class PnlControllerTest < MarketceteraTestBase
     assert_equal [BigDecimal("0").to_s, "IBM"], [cfs[0].cashflow.to_s, cfs[1].symbol]
     assert_equal [BigDecimal("0").to_s, "MSFT"], [cfs[0].cashflow.to_s,  cfs[2].symbol]
   end
-  
+
   def test_nonexistent_acct
-    get :by_account, { :suffix => "acct", :account => {:nickname => "noSuchAcct"},
+    get :report, { :suffix => "acct", :account => {:nickname => "noSuchAcct"},
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"17", "to(3i)"=>"19"}}
     assert_response :success
@@ -75,7 +75,7 @@ class PnlControllerTest < MarketceteraTestBase
   end
     
   def test_by_account
-    get :by_account, { :suffix => "acct", :account => {:nickname => "TOLI"},
+    get :report, { :suffix => "acct", :account => {:nickname => "TOLI"},
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"17", "to(3i)"=>"19"}}
     assert_response :success
@@ -92,7 +92,7 @@ class PnlControllerTest < MarketceteraTestBase
   end
   
   def test_invalid_from_to_by_acct
-    get :by_account, { :suffix => "acct",
+    get :report, { :suffix => "acct",
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"31", "to(3i)"=>"31"}}
     assert_response :success
@@ -104,7 +104,7 @@ class PnlControllerTest < MarketceteraTestBase
   end
   
   def test_invalid_from_to_by_dates
-    get :by_account, { :suffix => "acct",
+    get :report, { :suffix => "acct",
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"31", "to(3i)"=>"31"}}
     assert_response :success
@@ -116,12 +116,12 @@ class PnlControllerTest < MarketceteraTestBase
   end
 
   # should find 3 cashflows across all 3 accounts
-  def test_by_dates_across_all_accts
-    get :by_dates, { :suffix => "acct",
+  def test_aggregate_across_all_accts
+    get :report, { :suffix => "acct",
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"17", "to(3i)"=>"19"}}
     assert_response :success
-    assert_template 'pnl_by_dates'
+    assert_template 'pnl_aggregate'
     assert_equal 0, assigns(:report).errors.length
 
     cfs = assigns(:cashflows)
@@ -131,12 +131,12 @@ class PnlControllerTest < MarketceteraTestBase
     assert_equal ["[UNASSIGNED]", BigDecimal("0")], [cfs[2][:account], cfs[2][:cashflow]] 
   end
 
-  def test_by_dates_missing_mark
-    get :by_dates, { :suffix => "acct",
+  def test_aggregate_missing_mark
+    get :report, { :suffix => "acct",
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
                                 "from(3i)"=>"17", "to(3i)"=>"20"}}
     assert_response :success
-    assert_template 'pnl_by_dates'
+    assert_template 'pnl_aggregate'
     assert_has_error_notice
   end
 end

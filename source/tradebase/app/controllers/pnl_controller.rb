@@ -7,16 +7,33 @@ class PnlController < ApplicationController
     # display the index page   
   end
 
-  def by_account
-    nickname_str = get_non_empty_string_from_two(params, :account, :nickname, "nickname")
-    suffix = (params[:suffix].nil?) ? '' : params[:suffix]
+  # entry point into the search
+  def report
+      nickname_str = get_non_empty_string_from_two(params, :account, :nickname, "nickname")
+      suffix = (params[:suffix].nil?) ? '' : params[:suffix]
+      @report = ReportWithToFromDates.new(params, suffix)
+      if(!@report.valid?)
+        render :action => :index
+        return
+      end
+      @from_date = @report.from_date.as_date
+      @to_date = @report.to_date.as_date
+      if(nickname_str.blank?)
+        aggregate
+      else
+        by_account(nickname_str, params, suffix)
+      end
+  end
+
+  private
+  def by_account(nickname_str, params, suffix)
     @report = PnlByAccount.new(nickname_str, params, suffix)
     if(!@report.valid?)
       render :action => :index
       return
     end
-    @from_date, @to_date, theAcct = @report.from_date.as_date, @report.to_date.as_date, @report.account
-
+    theAcct = @report.account
+            
     begin
       byAcctCashflows = CashFlow.get_cashflows_from_to_in_acct(theAcct, @from_date, @to_date)
       logger.debug("byAccount got cfs: "+byAcctCashflows.inspect)
@@ -33,16 +50,7 @@ class PnlController < ApplicationController
     render :template => 'pnl/pnl_by_account'
   end
 
-  def by_dates
-    suffix = (params[:suffix].nil?) ? '' : params[:suffix]
-    @report = ReportWithToFromDates.new(params, suffix)
-    if(!@report.valid?)
-      render :action => :index
-      return
-    end
-    @from_date = @report.from_date.as_date
-    @to_date = @report.to_date.as_date
-    
+  def aggregate
     begin
       result = CashFlow.get_cashflows_from_to_in_acct(nil, @from_date, @to_date)
       
@@ -62,7 +70,7 @@ class PnlController < ApplicationController
     end
 
     @cashflow_pages, @cashflows = paginate_collection(cashflows, params)
-    render :template => 'pnl/pnl_by_dates'
+    render :template => 'pnl/pnl_aggregate'
   end
 
 end
