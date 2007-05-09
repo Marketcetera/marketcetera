@@ -288,7 +288,6 @@ public class OrderTicketControllerHelper {
 				if (message.isSetField(Symbol.FIELD)
 						&& listenedSymbolString.equals(message
 								.getString(Symbol.FIELD))) {
-					System.out.println(message.toString());
 					ticket.getBookComposite().onQuote(message);
 					onQuoteAdditional(message);
 				}
