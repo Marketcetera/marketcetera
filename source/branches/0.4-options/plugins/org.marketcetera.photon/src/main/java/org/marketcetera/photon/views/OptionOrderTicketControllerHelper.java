@@ -72,7 +72,7 @@ public class OptionOrderTicketControllerHelper extends
 			Message query = MarketDataUtils.newRelatedOptionsQuery(
 					new MSymbol(symbol), false);
 			// todo: Use async query so the UI doesn't hang
-			List<Message> messages = service.getMarketDataFeed().syncQuery(query, 2000,
+			List<Message> messages = service.getMarketDataFeed().syncQuery(query, 200,
 					TimeUnit.MILLISECONDS);
 			// todo: Update expiration combo choices 
 		} catch (TimeoutException timeoutEx) {
@@ -131,7 +131,7 @@ public class OptionOrderTicketControllerHelper extends
 		// StrikePrice
 		{
 			Control whichControl = optionTicket.getStrikeText();
-			IToggledValidator validator = (IToggledValidator) strikeConverterBuilder
+			IToggledValidator validator = strikeConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables.observeText(
@@ -147,7 +147,7 @@ public class OptionOrderTicketControllerHelper extends
 		// PutOrCall
 		{
 			Control whichControl = optionTicket.getPutOrCallCombo();
-			IToggledValidator validator = (IToggledValidator) putOrCallConverterBuilder
+			IToggledValidator validator = putOrCallConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables
@@ -163,7 +163,7 @@ public class OptionOrderTicketControllerHelper extends
 		// OrderCapacity
 		{
 			Control whichControl = optionTicket.getOrderCapacityCombo();
-			IToggledValidator validator = (IToggledValidator) orderCapacityConverterBuilder
+			IToggledValidator validator = orderCapacityConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			// The FIX field may need to be updated., See
@@ -181,7 +181,7 @@ public class OptionOrderTicketControllerHelper extends
 		// OpenClose
 		{
 			Control whichControl = optionTicket.getOpenCloseCombo();
-			IToggledValidator validator = (IToggledValidator) openCloseConverterBuilder
+			IToggledValidator validator = openCloseConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables

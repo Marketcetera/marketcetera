@@ -388,7 +388,7 @@ public class OrderTicketControllerHelper {
 		final int swtEvent = SWT.Modify;
 		{
 			Control whichControl = ticket.getSideCombo();
-			IToggledValidator validator = (IToggledValidator) sideConverterBuilder
+			IToggledValidator validator = sideConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext
@@ -444,7 +444,7 @@ public class OrderTicketControllerHelper {
 		}
 		{
 			Control whichControl = ticket.getPriceText();
-			IToggledValidator validator = (IToggledValidator) priceConverterBuilder
+			IToggledValidator validator = priceConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext
@@ -467,10 +467,10 @@ public class OrderTicketControllerHelper {
 		}
 		{
 			Control whichControl = ticket.getTifCombo();
-			IToggledValidator afterGetValidator = (IToggledValidator) tifConverterBuilder
+			IToggledValidator afterGetValidator = tifConverterBuilder
 					.newTargetAfterGetValidator();
 			afterGetValidator.setEnabled(enableValidators);
-			IToggledValidator afterConvertValidator = (IToggledValidator) new DataDictionaryValidator(
+			IToggledValidator afterConvertValidator = new DataDictionaryValidator(
 					dictionary, TimeInForce.FIELD,
 					"Not a valid value for TimeInForce", PhotonPlugin.ID);
 			afterConvertValidator.setEnabled(enableValidators);
