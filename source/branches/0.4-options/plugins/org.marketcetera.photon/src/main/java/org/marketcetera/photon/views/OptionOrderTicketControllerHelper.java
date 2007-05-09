@@ -1,11 +1,19 @@
 package org.marketcetera.photon.views;
 
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
@@ -56,7 +64,22 @@ public class OptionOrderTicketControllerHelper extends
 		initPutOrCallConverterBuilder();
 		initStrikeConverterBuilder();
 	}
-
+	
+	@Override
+	protected void listenMarketDataAdditional(MarketDataFeedService service,
+			String symbol) throws MarketceteraException {
+		try {
+			Message query = MarketDataUtils.newRelatedOptionsQuery(
+					new MSymbol(symbol), false);
+			// todo: Use async query so the UI doesn't hang
+			List<Message> messages = service.getMarketDataFeed().syncQuery(query, 2000,
+					TimeUnit.MILLISECONDS);
+			// todo: Update expiration combo choices 
+		} catch (TimeoutException timeoutEx) {
+			// Do nothing
+		}
+	}
+	
 	@Override
 	protected void bindImpl(Message message, boolean enableValidators) {
 		super.bindImpl(message, enableValidators);
