@@ -4,12 +4,12 @@ import java.util.List;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
+import quickfix.field.MsgType;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -95,6 +95,23 @@ public class FIXMessageHistory extends PlatformObject {
 		} else {
 			return null;
 		}
+	}
+
+	// TODO: UUUUUgly
+	public Message getOpenOrder(String clOrdID) {
+		Message returnMessage = null;
+		for (MessageHolder holder : allMessages) {
+			try {
+				Message aMessage = holder.getMessage();
+				if (aMessage.getHeader().getString(MsgType.FIELD).equals(MsgType.ORDER_SINGLE) &&
+						clOrdID.equals(aMessage.getString(ClOrdID.FIELD)))
+				{
+					returnMessage  = aMessage;
+				}
+			} catch (FieldNotFound e) {
+			}
+		}
+		return returnMessage;
 	}
 
 	public EventList<MessageHolder> getAllMessagesList() {
