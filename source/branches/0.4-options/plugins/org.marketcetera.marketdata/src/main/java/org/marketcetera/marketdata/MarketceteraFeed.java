@@ -154,6 +154,9 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	}
 
 	public MSymbol symbolFromString(String symbolString) {
+		if (MarketceteraOptionSymbol.matchesPattern(symbolString)){
+			return new MarketceteraOptionSymbol(symbolString);
+		}
 		return new MSymbol(symbolString);
 	}
 
