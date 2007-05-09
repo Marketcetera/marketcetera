@@ -10,8 +10,8 @@ It can be used to view, create and modify positions, trades, accounts and equiti
             <div class="form_left">
               <label for="number_of_trades_today" class="view_background">Number of Trades Today</label>
               <div id="number_of_trades_today" class="data view_data">
-                <%= link_to(@num_trades_today, :controller=>'queries', :action=>'by_date', 
-                           :params => { "from_date" => Date.today , "to_date" => Date.today}) %></div>
+                <%= link_to(@num_trades_today, :controller=>'queries', :action=>'trade_search',
+                           :params => { "from_date" => Date.today , "to_date" => Date.today, :all_dates => "no"}) %></div>
     
               <label for="open_positions" class="view_background">Open Positions</label>
               <div id="open_positions" class="data view_data">
