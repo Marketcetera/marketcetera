@@ -232,16 +232,34 @@ public class OrderTicketControllerHelper {
 					unlisten();
 				}
 				Message subscriptionMessage = MarketDataUtils.newSubscribeLevel2(newListenedSymbol);
-				ISubscription subscription;
+				ISubscription subscription = null;
 				try {
 					subscription = service.subscribe(subscriptionMessage);
 					currentSubscription = subscription;
+					listenMarketDataAdditional(service, symbol);
 				} catch (MarketceteraException e) {
 					PhotonPlugin.getMainConsoleLogger().error("Exception requesting quotes for "+newListenedSymbol);
 				}
-				listenedSymbol = newListenedSymbol;
+				finally {
+					listenedSymbol = newListenedSymbol;
+				}
 			}
 		}
+	}
+
+	/**
+	 * Derived classes can listen for additional market data when subscribing to
+	 * a new symbol.
+	 */
+	protected void listenMarketDataAdditional(MarketDataFeedService service,
+			String symbol) throws MarketceteraException {
+	}
+
+	/**
+	 * Derived classes can unsubscribe the additional market data they are
+	 * listening to.
+	 */
+	protected void unlistenMarketDataAdditional() throws MarketceteraException {
 	}
 
 	protected void unlisten() {
@@ -254,6 +272,7 @@ public class OrderTicketControllerHelper {
 					service.unsubscribe(currentSubscription);
 					listenedSymbol = null;
 					currentSubscription = null;
+					unlistenMarketDataAdditional();
 				} catch (MarketceteraException e) {
 					PhotonPlugin.getMainConsoleLogger().warn("Error unsubscribing to quotes for "+listenedSymbol);
 				}
@@ -269,12 +288,20 @@ public class OrderTicketControllerHelper {
 				if (message.isSetField(Symbol.FIELD)
 						&& listenedSymbolString.equals(message
 								.getString(Symbol.FIELD))) {
+					System.out.println(message.toString());
 					ticket.getBookComposite().onQuote(message);
+					onQuoteAdditional(message);
 				}
 			}
 		} catch (FieldNotFound e) {
 			// Do nothing
 		}
+	}
+	
+	/**
+	 * Derived classes can receive quote notifications for additional market data. 
+	 */
+	protected void onQuoteAdditional(Message message) {
 	}
 
 	public void handleSend() {
