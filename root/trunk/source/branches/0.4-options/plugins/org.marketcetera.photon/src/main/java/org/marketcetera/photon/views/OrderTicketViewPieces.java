@@ -87,6 +87,16 @@ public class OrderTicketViewPieces {
 		decoratedInputControls.add(control);
 	}
 
+	private VerifyListener createToUpperCaseVerifyListener() {
+		return new VerifyListener() {
+			public void verifyText(VerifyEvent event) {
+				if (event.text != null) {
+					event.text = event.text.toUpperCase();
+				}
+			}
+		};
+	}
+	
 	public void createSideInput() {
 
 		sideCombo = new Combo(defaultParent, SWT.BORDER);
@@ -96,15 +106,7 @@ public class OrderTicketViewPieces {
 		sideCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
 		
 		// Force Side to be uppercase
-		sideCombo.addVerifyListener( new VerifyListener() {
-			public void verifyText(VerifyEvent event) {
-				if( event.widget == sideCombo ) {
-					if( event.text != null ) {
-						event.text = event.text.toUpperCase();
-					}
-				}
-			}
-		});
+		sideCombo.addVerifyListener( createToUpperCaseVerifyListener() );
 		addInputControlErrorDecoration(sideCombo);
 	}
 
@@ -172,6 +174,7 @@ public class OrderTicketViewPieces {
 		tifCombo.add(TimeInForceImage.GTC.getImage());
 		tifCombo.add(TimeInForceImage.IOC.getImage());
 
+		tifCombo.addVerifyListener( createToUpperCaseVerifyListener() );
 		addInputControlErrorDecoration(tifCombo);
 	}
 
