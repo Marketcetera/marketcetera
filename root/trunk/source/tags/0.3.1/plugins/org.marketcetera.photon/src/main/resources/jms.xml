@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- START SNIPPET: spring -->
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+
+  <bean id="omsCommandsQueue" class="org.apache.activemq.command.ActiveMQQueue">
+    <constructor-arg value="oms-commands"/>
+  </bean>
+	
+  <bean id="omsMessagesTopic" class="org.apache.activemq.command.ActiveMQTopic">
+    <constructor-arg value="oms-messages"/>
+  </bean>
+
+  <bean id="externalConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" ref="brokerURL"/>
+  </bean>
+  
+  <bean id="photonControllerListener" class="org.marketcetera.photon.messaging.PhotonControllerListenerAdapter">
+    <!--property name="photonController" ref="photonController"/-->
+    <property name="defaultResponseDestination" ref="omsCommandsQueue"/>
+	<property name="messageConverter">
+		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+	</property>		
+  </bean>
+  
+    <!-- note that this needs to use the non-pooled connection factory -->
+  <bean id="photonControllerContainer" class="org.marketcetera.photon.messaging.SimpleMessageListenerContainer">
+    <property name="connectionFactory" ref="externalConnectionFactory"/>
+    <property name="messageListener" ref="photonControllerListener"/>
+    <property name="destination" ref="omsMessagesTopic"/>
+  </bean>
+  
+  <bean id="pooledExternalConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="connectionFactory" ref="externalConnectionFactory"/>
+  </bean>
+
+  <!-- Spring JMS Template -->
+  <bean id="outgoingJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+    <property name="connectionFactory">
+      <ref local="pooledExternalConnectionFactory"/>
+    </property>
+	<property name="defaultDestination" ref="omsCommandsQueue"/>
+	<property name="messageConverter">
+	   <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+	</property>
+  </bean>
+
+</beans>  

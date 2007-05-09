@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Marketcetera Market Data Plug-in
+Bundle-SymbolicName: org.marketcetera.marketdata;singleton:=true
+Bundle-Version: 0.3.1
+Bundle-Activator: org.marketcetera.marketdata.Activator
+Bundle-Vendor: Marketcetera
+Bundle-Localization: plugin
+Eclipse-RegisterBuddy: org.marketcetera.photon
+Require-Bundle: org.eclipse.core.runtime,
+ org.marketcetera.core,
+ org.marketcetera.photon
+Eclipse-LazyStart: true
+Export-Package: org.marketcetera.marketdata
+Bundle-ClassPath: src/main/resources/,
+ .
