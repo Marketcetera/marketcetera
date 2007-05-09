@@ -5,6 +5,7 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.marketdata.MarketceteraOptionSymbolTest;
 import org.marketcetera.photon.model.ClOrdIDComparatorTest;
 import org.marketcetera.photon.model.FIXMessageHistoryTest;
 import org.marketcetera.photon.model.MessageHolderTest;
@@ -39,6 +40,9 @@ public class TS_Photon {
 		// photon
 		suite.addTestSuite(OrderManagerTest.class);
 		
+		// marketdata
+		suite.addTestSuite(MarketceteraOptionSymbolTest.class);
+
 		// model
 		suite.addTestSuite(ClOrdIDComparatorTest.class);
 		suite.addTest(FIXMessageHistoryTest.suite());
