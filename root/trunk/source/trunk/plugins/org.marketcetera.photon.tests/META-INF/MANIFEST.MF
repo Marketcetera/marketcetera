@@ -15,5 +15,6 @@ Export-Package: org.marketcetera.photon,
 Require-Bundle: org.marketcetera.photon,
  org.eclipse.sdk,
  org.junit,
- org.marketcetera.bogusfeed
+ org.marketcetera.bogusfeed,
+ org.marketcetera.marketdata
 Eclipse-LazyStart: true
