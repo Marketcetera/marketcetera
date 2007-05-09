@@ -1,0 +1,205 @@
+package org.marketcetera.photon.views;
+
+import java.lang.reflect.Field;
+
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
+import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.actions.ShowHeartbeatsAction;
+import org.marketcetera.photon.core.FIXMatcher;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
+import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.IndexedTableViewer;
+
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.RefSeqNum;
+import quickfix.field.SendingTime;
+import quickfix.field.SessionRejectReason;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.TransactTime;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.matchers.Matcher;
+
+/**
+ * FIX Messages view.
+ * 
+ * @author gmiller
+ * @author andrei@lissovski.org
+ */
+public class FIXMessagesView extends HistoryMessagesView {
+
+	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
+	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT, false);  // filters out heartbeat messages
+
+	private ShowHeartbeatsAction showHeartbeatsAction;
+	private static final String SHOW_HEARTBEATS_SAVED_STATE_KEY = "SHOW_HEARTBEATS";
+
+	
+	/**
+	 * The columns of the Messages page, represented
+	 * as FIX fields.
+	 * 
+	 * @author gmiller
+	 *
+	 */
+	public enum MessageColumns implements IFieldIdentifier{
+		DIRECTION("D"), TRANSACTTIME(TransactTime.class), SENDINGTIME(
+				SendingTime.class), MSGTYPE(MsgType.class), CLORDID(
+				ClOrdID.class), ORICCLORDID(OrigClOrdID.class), ORDSTATUS(
+				OrdStatus.class), SIDE(Side.class), SYMBOL(Symbol.class), ORDERQTY(
+				OrderQty.class), CUMQTY(CumQty.class), LEAVESQTY(
+				LeavesQty.class), ORDTYPE(OrdType.class), Price(Price.class), AVGPX(
+				AvgPx.class), ACCOUNT(Account.class), LASTSHARES(
+				LastShares.class), LASTPX(LastPx.class), LASTMKT(LastMkt.class), EXECID(
+				ExecID.class), ORDERID(OrderID.class), SESSION_REJECT_REASON(
+				SessionRejectReason.class), REF_SEQ_NUM(RefSeqNum.class);
+
+		private String name;
+		private Integer fieldID;
+
+		MessageColumns(String name){
+			this.name = name;
+		}
+
+		MessageColumns(Class clazz) {
+			name = clazz.getSimpleName();
+			try {
+				Field fieldField = clazz.getField("FIELD");
+				fieldID = (Integer) fieldField.get(null);
+			} catch (Throwable t){
+				assert(false);
+			}
+		}
+
+		public String toString() {
+			return name;
+		}
+
+		public Integer getFieldID() {
+			return fieldID;
+		}
+		
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
+	};
+
+	protected Enum[] getEnumValues() {
+		return MessageColumns.values();
+	}
+
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		setShowHeartbeats(showHeartbeatsAction.isChecked());  // doing it here and using the state from the action since the message list is not yet available by the time init() is called		
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site, memento);
+
+		showHeartbeatsAction = new ShowHeartbeatsAction(this);
+		
+		boolean showHeartbeats = false;  // filter out the heartbeats by default
+		if (memento != null  // can be null if there is no previous saved state
+			&& memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY) != null) 
+		{
+			showHeartbeats = memento.getInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY).intValue() != 0;
+		} 
+		showHeartbeatsAction.setChecked(showHeartbeats);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.ViewPart#saveState(org.eclipse.ui.IMemento)
+	 */
+	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);
+		memento.putInteger(SHOW_HEARTBEATS_SAVED_STATE_KEY, showHeartbeatsAction.isChecked() ? 1 : 0);
+	}
+
+	protected void initializeToolBar(IToolBarManager theToolBarManager) {
+		//theToolBarManager.add(new TextContributionItem(""));
+    	theToolBarManager.add(showHeartbeatsAction);
+    }
+
+	@Override
+	public void setFocus() {
+	}
+
+	@SuppressWarnings("unchecked")
+	protected FilterList<MessageHolder> getFilterList() {
+		return (FilterList<MessageHolder>) getInput();
+	}
+
+
+	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
+		FilterList<MessageHolder> filterList = new FilterList<MessageHolder>(input.getAllMessagesList());
+		return filterList;
+	}
+
+	public void setShowHeartbeats(boolean shouldShow){
+		FilterList<MessageHolder> list = getFilterList();
+		if (shouldShow){
+			list.setMatcher(null);  // no filtering
+		} else {
+			list.setMatcher(HEARTBEAT_MATCHER);  // filter out heartbeats
+		}
+		getMessagesViewer().refresh();
+	}
+	
+	@Override
+	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
+		getSite().setSelectionProvider(aMessagesViewer);
+		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
+		aMessagesViewer.setLabelProvider(new DirectionalMessageTableFormat(aMessageTable, enums, getSite()));
+		return aMessagesViewer;
+	}
+
+    @Override
+	protected void packColumns(Table table) {
+		super.packColumns(table);
+		table.getColumn(0).setWidth(25);
+	}
+    
+}
