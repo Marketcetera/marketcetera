@@ -2,19 +2,19 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
-      version="0.3.0"
+      version="0.3.1"
       provider-name="Marketcetera LLC">
 
-   <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+   <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">
+      Marketcetera Photon Feature
    </description>
 
-   <copyright url="http://www.example.com/copyright">
-      [Enter Copyright Description here.]
+   <copyright url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/License">
+      Marketcetera Licensing Terms
    </copyright>
 
-   <license url="http://www.example.com/license">
-      [Enter License Description here.]
+   <license url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/License">
+      Marketcetera Open-Source Licensing
    </license>
 
    <url>
@@ -61,21 +61,21 @@
          id="org.marketcetera.core"
          download-size="0"
          install-size="0"
-         version="0.3.0"
+         version="0.3.1"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon"
          download-size="0"
          install-size="0"
-         version="0.3.0"
+         version="0.3.1"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon.core"
          download-size="0"
          install-size="0"
-         version="0.3.0"
+         version="0.3.1"
          unpack="false"/>
 
    <plugin

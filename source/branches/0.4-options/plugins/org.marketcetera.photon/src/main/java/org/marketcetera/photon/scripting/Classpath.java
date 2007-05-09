@@ -52,7 +52,7 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param index
-	 * @param element
+	 * @param iPath
 	 * @see java.util.List#add(int, java.lang.Object)
 	 */
 	public void add(int index, IPath iPath) {
@@ -233,8 +233,8 @@ public class Classpath implements List<IPath> {
 
 	/**
 	 * @param index
-	 * @param element
-	 * @return
+	 * @param iPath
+	 * @return the element previously at the specified position.
 	 * @see java.util.List#set(int, java.lang.Object)
 	 */
 	public IPath set(int index, IPath iPath) {
@@ -273,7 +273,6 @@ public class Classpath implements List<IPath> {
 	 * @param <T>
 	 * @param a
 	 * @return an array representation of this classpath
-	 * @see java.util.List#toArray(T[])
 	 */
 	public <T> T[] toArray(T[] a) {
 		return innerList.toArray(a);
