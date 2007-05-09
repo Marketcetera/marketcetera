@@ -3,10 +3,11 @@ package org.marketcetera.photon.ui.validation.fix;
 import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.ui.validation.AbstractToggledValidator;
+import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.SetValidator;
 
 import quickfix.DataDictionary;
@@ -24,8 +25,8 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 	}
 
 
-	public IValidator newModelAfterGetValidator() {
-		return new IValidator(){
+	public IToggledValidator newModelAfterGetValidator() {
+		return new AbstractToggledValidator(){
 			public IStatus validate(Object obj) {
 				if (obj == null){
 					return Status.OK_STATUS;
@@ -51,7 +52,7 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 		};
 	}
 
-	public IValidator newTargetAfterGetValidator() {
+	public IToggledValidator newTargetAfterGetValidator() {
 		return new SetValidator<String>(map.values(), PhotonPlugin.ID, "Not a valid value") {
 			@Override
 			public IStatus validate(Object obj) {
