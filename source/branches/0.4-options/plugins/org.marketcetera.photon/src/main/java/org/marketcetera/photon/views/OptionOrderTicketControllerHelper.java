@@ -1,8 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -12,8 +11,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.marketdata.MarketDataOptionUtils;
+import org.marketcetera.photon.marketdata.OptionExpirationMarketData;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
@@ -49,6 +50,8 @@ public class OptionOrderTicketControllerHelper extends
 
 	private BindingHelper bindingHelper;
 
+	private HashMap<String, Boolean> expirationCache = new HashMap<String, Boolean>();
+
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
 		this.optionTicket = ticket;
@@ -64,22 +67,47 @@ public class OptionOrderTicketControllerHelper extends
 		initPutOrCallConverterBuilder();
 		initStrikeConverterBuilder();
 	}
-	
+
 	@Override
 	protected void listenMarketDataAdditional(MarketDataFeedService service,
-			String symbol) throws MarketceteraException {
-		try {
-			Message query = MarketDataUtils.newRelatedOptionsQuery(
-					new MSymbol(symbol), false);
-			// todo: Use async query so the UI doesn't hang
-			List<Message> messages = service.getMarketDataFeed().syncQuery(query, 200,
-					TimeUnit.MILLISECONDS);
-			// todo: Update expiration combo choices 
-		} catch (TimeoutException timeoutEx) {
-			// Do nothing
+			final String symbol) throws MarketceteraException {
+
+		String underlierSymbol = MarketDataOptionUtils.getUnderlyingSymbol(symbol);
+		if (!expirationCache.containsKey(underlierSymbol)) {
+			requestOptionSecurityList(service, underlierSymbol);
 		}
 	}
-	
+
+	private void requestOptionSecurityList(MarketDataFeedService service,
+			final String underlyingSymbolStr) {
+		final MSymbol underlyingSymbol = new MSymbol(underlyingSymbolStr);
+		IMarketDataListCallback callback = new IMarketDataListCallback() {
+			public void onMarketDataFailure(MSymbol symbol) {
+				// Leave the current expiration choices present.
+			}
+
+			public void onMarketDataListAvailable(
+					List<Message> derivativeSecurityList) {
+				expirationCache.put(underlyingSymbolStr, Boolean.TRUE);
+
+				List<OptionExpirationMarketData> optionExpirations = MarketDataOptionUtils
+						.getOptionExpirationMarketData(underlyingSymbol,
+								derivativeSecurityList);
+				for (OptionExpirationMarketData optionMd : optionExpirations) {
+					System.out.println("" + optionMd.getUnderlyingSymbol()
+							+ ", " + optionMd.getOptionSymbol() + ", "
+							+ optionMd.getExpirationDateString() + " ("
+							+ optionMd.getExpirationYear() + "-"
+							+ optionMd.getExpirationMonth() + ")");
+				}
+				// todo: Populate combo choices from security list
+			}
+		};
+
+		MarketDataOptionUtils.asyncOptionSecurityList(underlyingSymbol, service
+				.getMarketDataFeed(), callback, true);
+	}
+
 	@Override
 	protected void bindImpl(Message message, boolean enableValidators) {
 		super.bindImpl(message, enableValidators);
@@ -89,7 +117,7 @@ public class OptionOrderTicketControllerHelper extends
 		DataDictionary dictionary = getDictionary();
 
 		// todo: Handle the Days part of the date.
-		
+
 		// ExpireDate Month
 		{
 			Control whichControl = optionTicket.getExpireMonthCombo();
@@ -106,7 +134,8 @@ public class OptionOrderTicketControllerHelper extends
 							.setConverter(new DateToStringCustomConverter(
 									DateToStringCustomConverter.MONTH_FORMAT)));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		// ExpireDate Year
 		{
@@ -124,7 +153,8 @@ public class OptionOrderTicketControllerHelper extends
 							.setConverter(new DateToStringCustomConverter(
 									DateToStringCustomConverter.YEAR_FORMAT)));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 
 		final int swtEvent = SWT.Modify;
@@ -142,7 +172,8 @@ public class OptionOrderTicketControllerHelper extends
 					.createToTargetUpdateValueStrategy(strikeConverterBuilder,
 							validator));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		// PutOrCall
 		{
@@ -158,7 +189,8 @@ public class OptionOrderTicketControllerHelper extends
 					bindingHelper.createToTargetUpdateValueStrategy(
 							putOrCallConverterBuilder, validator));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		// OrderCapacity
 		{
@@ -176,7 +208,8 @@ public class OptionOrderTicketControllerHelper extends
 					bindingHelper.createToTargetUpdateValueStrategy(
 							orderCapacityConverterBuilder, validator));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		// OpenClose
 		{
@@ -192,7 +225,8 @@ public class OptionOrderTicketControllerHelper extends
 					bindingHelper.createToTargetUpdateValueStrategy(
 							openCloseConverterBuilder, validator));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 	}
 
