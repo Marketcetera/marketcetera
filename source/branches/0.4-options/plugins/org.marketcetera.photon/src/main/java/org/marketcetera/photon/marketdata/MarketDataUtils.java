@@ -40,4 +40,25 @@ public class MarketDataUtils {
 	}
 	
 
+	/**
+	 * Given an option root, returns a list of all the month/strike/call-put combos related
+	 * to that option root.
+	 * 
+	 * @param optionRoot
+	 * @param subscribe
+	 * @return
+	 */
+	public static Message newOptionRootQuery(String optionRoot, boolean subscribe){
+		Message requestMessage = messageFactory.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+		requestMessage.setField(new SecurityListRequestType(0));// specifies that the receiver should look in Symbol field for more info
+		requestMessage.setField(new SecurityType(SecurityType.OPTION));
+		requestMessage.setField(new Symbol(optionRoot));
+		if (subscribe){
+			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
+		} else {
+			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT));
+		}
+		return requestMessage;
+	}
+
 }

@@ -40,6 +40,10 @@ public class MarketceteraOptionSymbol extends MSymbol implements IEquityOptionSy
 	}
 
 
+	public String getRoot() {
+		return root;
+	}
+
 	@Override
 	public String toString() {
 		return root+"+"+expirationCode+strikeCode;
