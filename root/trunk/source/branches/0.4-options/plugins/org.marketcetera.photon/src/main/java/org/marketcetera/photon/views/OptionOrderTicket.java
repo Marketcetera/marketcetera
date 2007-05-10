@@ -1,9 +1,7 @@
 package org.marketcetera.photon.views;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
@@ -64,6 +62,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private OptionOrderTicketController optionOrderTicketController;
 
+	private OptionDateHelper optionContractDateHelper = new OptionDateHelper();
+	
 	public OptionOrderTicket() {
 	}
 
@@ -181,16 +181,9 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		checkOutermostFormInitialized();
 		expireMonthCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate expiration choices from market data
-
-		SimpleDateFormat formatter = new SimpleDateFormat("MMM");
-		GregorianCalendar calendar = new GregorianCalendar();
-		final int minMonth = calendar.getMinimum(Calendar.MONTH);
-		final int maxMonth = calendar.getMaximum(Calendar.MONTH);
-		for (int month = minMonth; month <= maxMonth; ++month) {
-			calendar.set(Calendar.MONTH, month);
-			java.util.Date monthTime = calendar.getTime();
-			String monthStr = formatter.format(monthTime);
-			monthStr = monthStr.toUpperCase();
+		List<String> monthStrings = optionContractDateHelper
+				.createDefaultMonths();
+		for (String monthStr : monthStrings) {
 			expireMonthCombo.add(monthStr);
 		}
 
@@ -224,13 +217,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	private void createExpireYearBorderComposite() {
 		expireYearCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate year choices from market data.
-		final int maxYear = 12;
-		for (int currentYear = 7; currentYear <= maxYear; ++currentYear) {
-			StringBuilder year = new StringBuilder();
-			if (currentYear < 10) {
-				year.append("0");
-			}
-			year.append(currentYear);
+		List<String> years = optionContractDateHelper.createDefaultYears();
+		for(String year : years) {
 			expireYearCombo.add(year.toString());
 		}
 
