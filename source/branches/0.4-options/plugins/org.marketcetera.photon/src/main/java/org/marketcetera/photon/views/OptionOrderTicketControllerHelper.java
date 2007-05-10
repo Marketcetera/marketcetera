@@ -13,8 +13,8 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataOptionUtils;
-import org.marketcetera.photon.marketdata.OptionExpirationMarketData;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
@@ -51,6 +51,8 @@ public class OptionOrderTicketControllerHelper extends
 	private BindingHelper bindingHelper;
 
 	private HashMap<String, Boolean> expirationCache = new HashMap<String, Boolean>();
+	
+	private String lastUnderlierSymbolStr;
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
@@ -72,10 +74,12 @@ public class OptionOrderTicketControllerHelper extends
 	protected void listenMarketDataAdditional(MarketDataFeedService service,
 			final String symbol) throws MarketceteraException {
 
-		String underlierSymbol = MarketDataOptionUtils.getUnderlyingSymbol(symbol);
+		String underlierSymbol = OptionMarketDataUtils.getUnderlyingSymbol(symbol);
 		if (!expirationCache.containsKey(underlierSymbol)) {
 			requestOptionSecurityList(service, underlierSymbol);
 		}
+		
+
 	}
 
 	private void requestOptionSecurityList(MarketDataFeedService service,
@@ -90,22 +94,33 @@ public class OptionOrderTicketControllerHelper extends
 					List<Message> derivativeSecurityList) {
 				expirationCache.put(underlyingSymbolStr, Boolean.TRUE);
 
-				List<OptionExpirationMarketData> optionExpirations = MarketDataOptionUtils
+				List<OptionContractData> optionExpirations = OptionMarketDataUtils
 						.getOptionExpirationMarketData(underlyingSymbol,
 								derivativeSecurityList);
-				for (OptionExpirationMarketData optionMd : optionExpirations) {
+				for (OptionContractData optionMd : optionExpirations) {
 					System.out.println("" + optionMd.getUnderlyingSymbol()
 							+ ", " + optionMd.getOptionSymbol() + ", "
-							+ optionMd.getExpirationDateString() + " ("
+							+ optionMd.getStrikePrice() + ", " 
 							+ optionMd.getExpirationYear() + "-"
-							+ optionMd.getExpirationMonth() + ")");
+							+ optionMd.getExpirationMonth());
 				}
 				// todo: Populate combo choices from security list
+				
+				if(lastUnderlierSymbolStr == null || !lastUnderlierSymbolStr.equals(underlyingSymbolStr)) {
+					lastUnderlierSymbolStr = underlyingSymbolStr;
+					updateComboChoices(underlyingSymbolStr);
+				}
 			}
 		};
 
-		MarketDataOptionUtils.asyncOptionSecurityList(underlyingSymbol, service
+		OptionMarketDataUtils.asyncOptionSecurityList(underlyingSymbol, service
 				.getMarketDataFeed(), callback, true);
+	}
+	
+	private void updateComboChoices(String underlyingSymbolStr) {
+		// expirationCache.get(underlyingSymbolStr);
+		// Combo expireMonthCombo = optionTicket.getExpireMonthCombo();
+		// expireMonthCombo.removeAll();
 	}
 
 	@Override
