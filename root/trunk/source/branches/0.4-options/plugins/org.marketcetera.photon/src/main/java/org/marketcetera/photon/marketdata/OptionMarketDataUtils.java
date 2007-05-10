@@ -1,5 +1,6 @@
 package org.marketcetera.photon.marketdata;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -27,12 +28,13 @@ import quickfix.field.MsgType;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SecurityListRequestType;
 import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
 
-public class MarketDataOptionUtils {
+public class OptionMarketDataUtils {
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
 	
 	private static Pattern underlyingSymbolPattern;
@@ -138,10 +140,10 @@ public class MarketDataOptionUtils {
 		return new MSymbol(underlier);
 	}
 
-	public static List<OptionExpirationMarketData> getOptionExpirationMarketData(
+	public static List<OptionContractData> getOptionExpirationMarketData(
 			final MSymbol underlyingSymbol, List<Message> derivativeSecurityList) {
 		String underlyingSymbolStr = underlyingSymbol.getBaseSymbol();
-		List<OptionExpirationMarketData> optionExpirations = new ArrayList<OptionExpirationMarketData>();
+		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
 		for (Message message : derivativeSecurityList) {
 			try {
 				String messageType = message.getHeader().getString(
@@ -172,7 +174,7 @@ public class MarketDataOptionUtils {
 	}
 	
 	private static void addExpirationFromMessage(MSymbol underlyingSymbol,
-			Message message, List<OptionExpirationMarketData> optionExpirations)
+			Message message, List<OptionContractData> optionExpirations)
 			throws FieldNotFound, MarketceteraFIXException {
 		int numDerivs = message.getInt(NoRelatedSym.FIELD);
 		for (int index = 1; index <= numDerivs; index++) {
@@ -200,9 +202,13 @@ public class MarketDataOptionUtils {
 			String maturityDateString = maturityDateField.getValue();
 			String year = maturityDateString.substring(0, 4);
 			String month = maturityDateString.substring(4, 6);
-			OptionExpirationMarketData optionData = new OptionExpirationMarketData(
-					underlyingSymbol, new MSymbol(optionSymbolStr),
-					maturityDateString, year, month, optionIsPut);
+			
+			String strikeStr = optionGroup.getString(StrikePrice.FIELD);
+			BigDecimal strike = new BigDecimal(strikeStr);
+			
+			MSymbol optionSymbol = new MSymbol(optionSymbolStr);
+			OptionContractData optionData = new OptionContractData(underlyingSymbol, optionSymbol, year, month, strike, optionIsPut);;
+					
 			optionExpirations.add(optionData);
 		}
 	}
