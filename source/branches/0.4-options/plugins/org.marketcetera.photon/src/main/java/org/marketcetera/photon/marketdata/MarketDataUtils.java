@@ -10,6 +10,8 @@ import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
+import quickfix.field.SecurityType;
+import quickfix.field.SecurityListRequestType;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 
