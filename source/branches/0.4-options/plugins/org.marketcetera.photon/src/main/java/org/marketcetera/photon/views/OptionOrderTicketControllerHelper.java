@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
@@ -8,13 +9,14 @@ import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionContractData;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
@@ -50,9 +52,9 @@ public class OptionOrderTicketControllerHelper extends
 
 	private BindingHelper bindingHelper;
 
-	private HashMap<String, Boolean> expirationCache = new HashMap<String, Boolean>();
-	
-	private String lastUnderlierSymbolStr;
+	private HashMap<MSymbol, OptionContractCacheEntry> optionContractCache = new HashMap<MSymbol, OptionContractCacheEntry>();
+
+	private MSymbol lastUnderlyingSymbol;
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
@@ -74,11 +76,11 @@ public class OptionOrderTicketControllerHelper extends
 	protected void listenMarketDataAdditional(MarketDataFeedService service,
 			final String symbol) throws MarketceteraException {
 
-		String underlierSymbol = OptionMarketDataUtils.getUnderlyingSymbol(symbol);
-		if (!expirationCache.containsKey(underlierSymbol)) {
+		String underlierSymbol = OptionMarketDataUtils
+				.getUnderlyingSymbol(symbol);
+		if (!optionContractCache.containsKey(underlierSymbol)) {
 			requestOptionSecurityList(service, underlierSymbol);
 		}
-		
 
 	}
 
@@ -87,28 +89,28 @@ public class OptionOrderTicketControllerHelper extends
 		final MSymbol underlyingSymbol = new MSymbol(underlyingSymbolStr);
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
 			public void onMarketDataFailure(MSymbol symbol) {
-				// Leave the current expiration choices present.
+				// Restore the full expiration choices.
+				updateComboChoicesFromDefaults();
 			}
 
 			public void onMarketDataListAvailable(
 					List<Message> derivativeSecurityList) {
-				expirationCache.put(underlyingSymbolStr, Boolean.TRUE);
-
-				List<OptionContractData> optionExpirations = OptionMarketDataUtils
+				List<OptionContractData> optionContracts = OptionMarketDataUtils
 						.getOptionExpirationMarketData(underlyingSymbol,
 								derivativeSecurityList);
-				for (OptionContractData optionMd : optionExpirations) {
-					System.out.println("" + optionMd.getUnderlyingSymbol()
-							+ ", " + optionMd.getOptionSymbol() + ", "
-							+ optionMd.getStrikePrice() + ", " 
-							+ optionMd.getExpirationYear() + "-"
-							+ optionMd.getExpirationMonth());
-				}
-				// todo: Populate combo choices from security list
-				
-				if(lastUnderlierSymbolStr == null || !lastUnderlierSymbolStr.equals(underlyingSymbolStr)) {
-					lastUnderlierSymbolStr = underlyingSymbolStr;
-					updateComboChoices(underlyingSymbolStr);
+				if (optionContracts == null || optionContracts.isEmpty()) {
+					updateComboChoicesFromDefaults();
+				} else {
+					OptionContractCacheEntry cacheEntry = new OptionContractCacheEntry(
+							optionContracts);
+					optionContractCache.put(underlyingSymbol, cacheEntry);
+					// todo: Populate combo choices from security list
+
+					if (lastUnderlyingSymbol == null
+							|| !lastUnderlyingSymbol.equals(underlyingSymbol)) {
+						lastUnderlyingSymbol = underlyingSymbol;
+						updateComboChoices(underlyingSymbol);
+					}
 				}
 			}
 		};
@@ -116,11 +118,42 @@ public class OptionOrderTicketControllerHelper extends
 		OptionMarketDataUtils.asyncOptionSecurityList(underlyingSymbol, service
 				.getMarketDataFeed(), callback, true);
 	}
-	
-	private void updateComboChoices(String underlyingSymbolStr) {
-		// expirationCache.get(underlyingSymbolStr);
-		// Combo expireMonthCombo = optionTicket.getExpireMonthCombo();
-		// expireMonthCombo.removeAll();
+
+	private void updateComboChoices(MSymbol underlyingSymbol) {
+		OptionContractCacheEntry cacheEntry = optionContractCache
+				.get(underlyingSymbol);
+
+		if (cacheEntry != null) {
+			updateComboChoices(optionTicket.getExpireMonthCombo(), cacheEntry
+					.getExpirationMonthsForUI());
+			updateComboChoices(optionTicket.getExpireYearCombo(), cacheEntry
+					.getExpirationYearsForUI());
+			// updateComboChoices(optionTicket.getStrikeText(),
+			// cacheEntry.getExpirationYearsForUI() );
+		}
+	}
+
+	private void updateComboChoicesFromDefaults() {
+		OptionDateHelper dateHelper = new OptionDateHelper();
+		List<String> months = dateHelper.createDefaultMonths();
+		updateComboChoices(optionTicket.getExpireMonthCombo(), months);
+		List<String> years = dateHelper.createDefaultYears();
+		updateComboChoices(optionTicket.getExpireYearCombo(), years);
+		// todo: strike
+	}
+
+	private void updateComboChoices(Combo combo, Collection<String> choices) {
+		combo.removeAll();
+		boolean first = true;
+		for (String choice : choices) {
+			if (choice != null) {
+				combo.add(choice);
+				if (first) {
+					combo.setText(choice);
+					first = false;
+				}
+			}
+		}
 	}
 
 	@Override
