@@ -10,11 +10,8 @@ import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
-import quickfix.field.SecurityListRequestType;
-import quickfix.field.SecurityType;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
-import quickfix.field.UnderlyingSymbol;
 
 public class MarketDataUtils {
 
@@ -42,17 +39,5 @@ public class MarketDataUtils {
 		return message;
 	}
 	
-	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol, boolean subscribe){
-		Message requestMessage = messageFactory.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
-		requestMessage.setField(new SecurityListRequestType(1));// specifies that the receiver should look in SecurityType field for more info
-		requestMessage.setField(new SecurityType(SecurityType.OPTION));
-		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol.toString()));
-		if (subscribe){
-			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
-		} else {
-			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT));
-		}
-		return requestMessage;
-	}
 
 }

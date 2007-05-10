@@ -222,7 +222,7 @@ public class OrderTicketControllerHelper {
 
 	protected void listenMarketData(String symbol) {
 		unlisten();
-		if (symbol != null && !"".equals(symbol)) {
+		if (symbol != null && !"".equals(symbol.trim())) {
 			MSymbol newListenedSymbol = new MSymbol(symbol);
 			MarketDataFeedService service = marketDataTracker
 					.getMarketDataFeedService();
