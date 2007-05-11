@@ -9,8 +9,11 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
@@ -33,7 +36,7 @@ import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 import quickfix.DataDictionary;
 import quickfix.Message;
 import quickfix.field.CustomerOrFirm;
-import quickfix.field.ExpireDate;
+import quickfix.field.MaturityDate;
 import quickfix.field.OpenClose;
 import quickfix.field.OrdType;
 import quickfix.field.PutOrCall;
@@ -77,6 +80,31 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	@Override
+	protected void initListeners() {
+		super.initListeners();
+
+		addUpdateOptionSymbolModifyListener(optionTicket.getExpireYearCombo());
+		addUpdateOptionSymbolModifyListener(optionTicket.getExpireMonthCombo());
+		addUpdateOptionSymbolModifyListener(optionTicket
+				.getStrikePriceControl());
+		addUpdateOptionSymbolModifyListener(optionTicket.getPutOrCallCombo());
+	}
+
+	@Override
+	public void clear() {
+		super.clear();
+		lastOptionRoot = null;
+	}
+
+	private void addUpdateOptionSymbolModifyListener(Control targetControl) {
+		targetControl.addListener(SWT.Modify, new Listener() {
+			public void handleEvent(Event event) {
+				conditionallyUpdateOptionContractSymbol();
+			}
+		});
+	}
+
+	@Override
 	protected void listenMarketDataAdditional(MarketDataFeedService service,
 			final String optionRootStr) throws MarketceteraException {
 
@@ -84,7 +112,7 @@ public class OptionOrderTicketControllerHelper extends
 		if (!optionContractCache.containsKey(optionRoot)) {
 			requestOptionSecurityList(service, optionRoot);
 		} else {
-			conditionallyUpdateComboChoices(optionRoot);
+			conditionallyUpdateInputControls(optionRoot);
 		}
 	}
 
@@ -108,7 +136,7 @@ public class OptionOrderTicketControllerHelper extends
 							optionContracts);
 					optionContractCache.put(optionRoot, cacheEntry);
 
-					conditionallyUpdateComboChoices(optionRoot);
+					conditionallyUpdateInputControls(optionRoot);
 				}
 			}
 		};
@@ -119,25 +147,70 @@ public class OptionOrderTicketControllerHelper extends
 				.getMarketDataFeed(), callback);
 	}
 
-	private void conditionallyUpdateComboChoices(MSymbol optionRoot) {
+	private void conditionallyUpdateInputControls(MSymbol optionRoot) {
 		if (lastOptionRoot == null || !lastOptionRoot.equals(optionRoot)) {
 			lastOptionRoot = optionRoot;
-			updateComboChoices(optionRoot);
+			OptionContractCacheEntry cacheEntry = optionContractCache
+					.get(optionRoot);
+			if (cacheEntry != null) {
+				updateComboChoices(cacheEntry);
+				updateOptionContractSymbol(cacheEntry);
+			}
 		}
 	}
 
-	private void updateComboChoices(MSymbol optionRoot) {
-		OptionContractCacheEntry cacheEntry = optionContractCache
-				.get(optionRoot);
-
-		if (cacheEntry != null) {
-			updateComboChoices(optionTicket.getExpireMonthCombo(), cacheEntry
-					.getExpirationMonthsForUI());
-			updateComboChoices(optionTicket.getExpireYearCombo(), cacheEntry
-					.getExpirationYearsForUI());
-			updateComboChoices(optionTicket.getStrikePriceControl(), cacheEntry
-					.getStrikePricesForUI());
+	private void conditionallyUpdateOptionContractSymbol() {
+		String symbolText = optionTicket.getSymbolText().getText();
+		boolean attemptedUpdate = false;
+		if (symbolText != null) {
+			MSymbol optionRoot = new MSymbol(symbolText);
+			OptionContractCacheEntry cacheEntry = optionContractCache
+					.get(optionRoot);
+			if (cacheEntry != null) {
+				attemptedUpdate = true;
+				updateOptionContractSymbol(cacheEntry);
+			}
 		}
+		if (!attemptedUpdate) {
+			clearOptionSymbolControl();
+		}
+	}
+
+	private boolean updateOptionContractSymbol(
+			OptionContractCacheEntry cacheEntry) {
+		String expirationYear = optionTicket.getExpireYearCombo().getText();
+		String expirationMonth = optionTicket.getExpireMonthCombo().getText();
+		String strikePrice = optionTicket.getStrikePriceControl().getText();
+		boolean putWhenTrue = optionTicket.isPut();
+
+		boolean textWasSet = false;
+		OptionContractData optionContract = cacheEntry.getOptionContractData(
+				expirationYear, expirationMonth, strikePrice, putWhenTrue);
+		if (optionContract != null) {
+			MSymbol optionContractSymbol = optionContract.getOptionSymbol();
+			if (optionContractSymbol != null) {
+				String fullSymbol = optionContractSymbol.getFullSymbol();
+				optionTicket.getOptionSymbolControl().setText(fullSymbol);
+				textWasSet = true;
+			}
+		}
+		if (!textWasSet) {
+			clearOptionSymbolControl();
+		}
+		return textWasSet;
+	}
+
+	private void clearOptionSymbolControl() {
+		optionTicket.getOptionSymbolControl().setText("");
+	}
+
+	private void updateComboChoices(OptionContractCacheEntry cacheEntry) {
+		updateComboChoices(optionTicket.getExpireMonthCombo(), cacheEntry
+				.getExpirationMonthsForUI());
+		updateComboChoices(optionTicket.getExpireYearCombo(), cacheEntry
+				.getExpirationYearsForUI());
+		updateComboChoices(optionTicket.getStrikePriceControl(), cacheEntry
+				.getStrikePricesForUI());
 	}
 
 	private void updateComboChoicesFromDefaults() {
@@ -173,7 +246,12 @@ public class OptionOrderTicketControllerHelper extends
 		DataBindingContext dataBindingContext = getDataBindingContext();
 		DataDictionary dictionary = getDictionary();
 
-		// todo: Handle the Days part of the date.
+		/**
+		 * Note that the MaturityDate and StrikePrice in the order are not used
+		 * by the OMS. They are used here to have a place for the data binding
+		 * to store the data. The code part of the option contract symbol
+		 * represents that data.
+		 */
 
 		// ExpireDate Month
 		{
@@ -182,7 +260,7 @@ public class OptionOrderTicketControllerHelper extends
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables
-					.observeMonthDateValue(realm, message, ExpireDate.FIELD,
+					.observeMonthDateValue(realm, message, MaturityDate.FIELD,
 							dictionary), new UpdateValueStrategy()
 					.setAfterGetValidator(validator).setConverter(
 							new StringToDateCustomConverter(
@@ -201,7 +279,7 @@ public class OptionOrderTicketControllerHelper extends
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables
-					.observeMonthDateValue(realm, message, ExpireDate.FIELD,
+					.observeMonthDateValue(realm, message, MaturityDate.FIELD,
 							dictionary), new UpdateValueStrategy()
 					.setAfterGetValidator(validator).setConverter(
 							new StringToDateCustomConverter(
@@ -220,13 +298,13 @@ public class OptionOrderTicketControllerHelper extends
 			IToggledValidator validator = strikeConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables.observeText(
-					whichControl), FIXObservables.observeValue(realm,
-					message, StrikePrice.FIELD, dictionary), bindingHelper
-					.createToModelUpdateValueStrategy(strikeConverterBuilder,
-							validator), bindingHelper
-					.createToTargetUpdateValueStrategy(strikeConverterBuilder,
-							validator));
+			dataBindingContext.bindValue(SWTObservables
+					.observeText(whichControl), FIXObservables.observeValue(
+					realm, message, StrikePrice.FIELD, dictionary),
+					bindingHelper.createToModelUpdateValueStrategy(
+							strikeConverterBuilder, validator), bindingHelper
+							.createToTargetUpdateValueStrategy(
+									strikeConverterBuilder, validator));
 			addControlStateListeners(whichControl, validator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);

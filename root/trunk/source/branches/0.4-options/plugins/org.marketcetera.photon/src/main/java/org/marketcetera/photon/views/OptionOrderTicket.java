@@ -212,7 +212,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createStrikeBorderComposite() {
 		strikePriceControl = new Combo(outermostForm.getBody(), SWT.BORDER);
-		orderTicketViewPieces.assignDefaultGridData(strikePriceControl , 4);
+		orderTicketViewPieces.assignDefaultGridData(strikePriceControl, 4);
 		// addSelectAllFocusListener(strikePriceControl);
 
 		orderTicketViewPieces
@@ -235,7 +235,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		putOrCallCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		putOrCallCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCombo.add(PutOrCallImage.CALL.getImage());
-		
+
 		orderTicketViewPieces.assignDefaultGridData(putOrCallCombo, 3);
 
 		orderTicketViewPieces.addInputControlErrorDecoration(putOrCallCombo);
@@ -372,6 +372,15 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	public Combo getPutOrCallCombo() {
 		return putOrCallCombo;
+	}
+
+	public boolean isPut() {
+		String putOrCallStr = putOrCallCombo.getText();
+		if (putOrCallStr != null
+				&& putOrCallStr.equals(PutOrCallImage.PUT.getImage())) {
+			return true;
+		}
+		return false;
 	}
 
 	public Combo getStrikePriceControl() {
