@@ -33,7 +33,7 @@ import org.marketcetera.photon.ui.validation.ControlDecoration;
 public class OrderTicketViewPieces {
 
 	public static final String CONTROL_DEFAULT_COLOR = "CONTROL_DEFAULT_COLOR";
-	
+
 	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY";
 
 	private Composite defaultParent;
@@ -96,7 +96,28 @@ public class OrderTicketViewPieces {
 			}
 		};
 	}
-	
+
+	public GridData createDefaultGridData(Control controlWithFont,
+			int charWidthHint) {
+		GridData gridData = new GridData();
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = false;
+		gridData.verticalAlignment = SWT.CENTER;
+		Point sizeHint = EclipseUtils.getTextAreaSize(controlWithFont, null,
+				charWidthHint, 1.0);
+		// textGridData.heightHint = sizeHint.y;
+		gridData.widthHint = sizeHint.x;
+		return gridData;
+	}
+
+	public GridData assignDefaultGridData(Control toAssignGridData,
+			int charWidthHint) {
+		GridData gridData = createDefaultGridData(toAssignGridData,
+				charWidthHint);
+		toAssignGridData.setLayoutData(gridData);
+		return gridData;
+	}
+
 	public void createSideInput() {
 
 		sideCombo = new Combo(defaultParent, SWT.BORDER);
@@ -104,24 +125,17 @@ public class OrderTicketViewPieces {
 		sideCombo.add(SideImage.SELL.getImage());
 		sideCombo.add(SideImage.SELL_SHORT.getImage());
 		sideCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
-		
+
+		assignDefaultGridData(sideCombo, 4);
 		// Force Side to be uppercase
-		sideCombo.addVerifyListener( createToUpperCaseVerifyListener() );
+		sideCombo.addVerifyListener(createToUpperCaseVerifyListener());
 		addInputControlErrorDecoration(sideCombo);
 	}
 
-	public void createQuantityInput() {
+	public void createQuantityInput(int charWidthHint) {
 		quantityText = getFormToolkit().createText(defaultParent, null,
 				SWT.SINGLE | SWT.BORDER);
-
-		Point sizeHint = EclipseUtils.getTextAreaSize(quantityText, null, 10,
-				1.0);
-
-		GridData quantityTextGridData = new GridData();
-		// quantityTextGridData.heightHint = sizeHint.y;
-		quantityTextGridData.widthHint = sizeHint.x;
-		quantityTextGridData.horizontalAlignment = GridData.FILL;
-		quantityText.setLayoutData(quantityTextGridData);
+		assignDefaultGridData(quantityText, charWidthHint);
 
 		quantityText.addFocusListener(new FocusAdapter() {
 			@Override
@@ -133,27 +147,19 @@ public class OrderTicketViewPieces {
 	}
 
 	public void createSymbolInput() {
-		GridData symbolTextGridData = new GridData();
-		symbolTextGridData.horizontalAlignment = GridData.FILL;
-		symbolTextGridData.grabExcessHorizontalSpace = true;
-		symbolTextGridData.verticalAlignment = GridData.CENTER;
-
 		symbolText = getFormToolkit().createText(defaultParent, null,
 				SWT.SINGLE | SWT.BORDER);
-		symbolText.setLayoutData(symbolTextGridData);
+		GridData gridData = createDefaultGridData(symbolText, 6);
+		gridData.horizontalAlignment = SWT.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		symbolText.setLayoutData(gridData);
 		addInputControlErrorDecoration(symbolText);
 	}
 
 	public void createPriceInput() {
 		priceText = getFormToolkit().createText(defaultParent, null,
 				SWT.SINGLE | SWT.BORDER);
-
-		Point sizeHint = EclipseUtils.getTextAreaSize(priceText, null, 10, 1.0);
-
-		GridData quantityTextGridData = new GridData();
-		// quantityTextGridData.heightHint = sizeHint.y;
-		quantityTextGridData.widthHint = sizeHint.x;
-		priceText.setLayoutData(quantityTextGridData);
+		assignDefaultGridData(priceText, 8);
 
 		priceText.addFocusListener(new FocusAdapter() {
 			@Override
@@ -174,7 +180,9 @@ public class OrderTicketViewPieces {
 		tifCombo.add(TimeInForceImage.GTC.getImage());
 		tifCombo.add(TimeInForceImage.IOC.getImage());
 
-		tifCombo.addVerifyListener( createToUpperCaseVerifyListener() );
+		assignDefaultGridData(tifCombo, 4);
+		
+		tifCombo.addVerifyListener(createToUpperCaseVerifyListener());
 		addInputControlErrorDecoration(tifCombo);
 	}
 

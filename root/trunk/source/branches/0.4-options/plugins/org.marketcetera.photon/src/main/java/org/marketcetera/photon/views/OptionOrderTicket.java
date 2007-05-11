@@ -42,13 +42,15 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private static final String REPLACE_OPTION_ORDER = "Replace Option Order";
 
-	private Combo expireMonthCombo = null;
+	private Text optionSymbolControl;
 
-	private Combo strikePriceControl = null;
+	private Combo expireMonthCombo;
 
-	private Combo putOrCallCombo = null;
+	private Combo strikePriceControl;
 
-	private Combo expireYearCombo = null;
+	private Combo putOrCallCombo;
+
+	private Combo expireYearCombo;
 
 	private Section otherExpandableComposite;
 
@@ -97,7 +99,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	@Override
 	protected int getNumColumnsInForm() {
-		return 9;
+		return 10;
 	}
 
 	@Override
@@ -105,7 +107,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		Composite formBody = outermostForm.getBody();
 		getFormToolkit().createLabel(formBody, "Side");
 		getFormToolkit().createLabel(formBody, "Quantity");
-		getFormToolkit().createLabel(formBody, "Symbol");
+		getFormToolkit().createLabel(formBody, "Option Root");
+		getFormToolkit().createLabel(formBody, "Option Symbol");
 		getFormToolkit().createLabel(formBody, "Expiration");
 		getFormToolkit().createLabel(formBody, "Strike");
 		getFormToolkit().createLabel(formBody, "Year");
@@ -114,8 +117,9 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		getFormToolkit().createLabel(formBody, "TIF");
 
 		orderTicketViewPieces.createSideInput();
-		orderTicketViewPieces.createQuantityInput();
+		orderTicketViewPieces.createQuantityInput(6);
 		orderTicketViewPieces.createSymbolInput();
+		createOptionSymbolControl();
 		createExpireMonthBorderComposite();
 		createStrikeBorderComposite();
 		createExpireYearBorderComposite();
@@ -175,9 +179,17 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		}
 	}
 
+	private void createOptionSymbolControl() {
+		optionSymbolControl = getFormToolkit().createText(
+				outermostForm.getBody(), null, SWT.SINGLE | SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(optionSymbolControl, 6);
+		optionSymbolControl.setEnabled(false);
+	}
+
 	private void createExpireMonthBorderComposite() {
 		checkOutermostFormInitialized();
 		expireMonthCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(expireMonthCombo, 4);
 		// todo: Dynamically populate expiration choices from market data
 		List<String> monthStrings = optionContractDateHelper
 				.createDefaultMonths();
@@ -200,14 +212,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createStrikeBorderComposite() {
 		strikePriceControl = new Combo(outermostForm.getBody(), SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(strikePriceControl , 4);
 		// addSelectAllFocusListener(strikePriceControl);
-
-		GridData textGridData = new GridData();
-		Point sizeHint = EclipseUtils.getTextAreaSize(strikePriceControl, null,
-				4, 1.0);
-		// textGridData.heightHint = sizeHint.y;
-		textGridData.widthHint = sizeHint.x;
-		strikePriceControl.setLayoutData(textGridData);
 
 		orderTicketViewPieces
 				.addInputControlErrorDecoration(strikePriceControl);
@@ -215,6 +221,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createExpireYearBorderComposite() {
 		expireYearCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(expireYearCombo, 3);
 		// todo: Dynamically populate year choices from market data.
 		List<String> years = optionContractDateHelper.createDefaultYears();
 		for (String year : years) {
@@ -228,6 +235,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		putOrCallCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		putOrCallCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCombo.add(PutOrCallImage.CALL.getImage());
+		
+		orderTicketViewPieces.assignDefaultGridData(putOrCallCombo, 3);
 
 		orderTicketViewPieces.addInputControlErrorDecoration(putOrCallCombo);
 	}
@@ -308,7 +317,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private GridData createStandardSingleColumnGridData() {
 		GridData gridData = new GridData();
-		gridData.horizontalAlignment = SWT.LEFT;
+		gridData.horizontalAlignment = SWT.FILL;
 		gridData.verticalAlignment = SWT.CENTER;
 		gridData.horizontalSpan = 1;
 		gridData.verticalSpan = 1;
@@ -335,6 +344,10 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 				.findView(OptionOrderTicket.ID);
 
 		return orderTicket;
+	}
+
+	public Text getOptionSymbolControl() {
+		return optionSymbolControl;
 	}
 
 	public Text getAccountText() {
