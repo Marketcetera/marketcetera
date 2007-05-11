@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -46,7 +44,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private Combo expireMonthCombo = null;
 
-	private Text strikeText = null;
+	private Combo strikePriceControl = null;
 
 	private Combo putOrCallCombo = null;
 
@@ -63,7 +61,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	private OptionOrderTicketController optionOrderTicketController;
 
 	private OptionDateHelper optionContractDateHelper = new OptionDateHelper();
-	
+
 	public OptionOrderTicket() {
 	}
 
@@ -147,7 +145,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 			tabOrder.add(orderTicketViewPieces.getQuantityText());
 			tabOrder.add(orderTicketViewPieces.getSymbolText());
 			tabOrder.add(expireMonthCombo);
-			tabOrder.add(strikeText);
+			tabOrder.add(strikePriceControl);
 			tabOrder.add(expireYearCombo);
 			tabOrder.add(putOrCallCombo);
 			tabOrder.add(orderTicketViewPieces.getPriceText());
@@ -190,35 +188,36 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		orderTicketViewPieces.addInputControlErrorDecoration(expireMonthCombo);
 	}
 
-	private void addSelectAllFocusListener(Control control) {
-		control.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				((Text) e.widget).selectAll();
-			}
-		});
-	}
+	// todo: Remove this method if it remains unused.
+	// private void addSelectAllFocusListener(Control control) {
+	// control.addFocusListener(new FocusAdapter() {
+	// @Override
+	// public void focusGained(FocusEvent e) {
+	// ((Text) e.widget).selectAll();
+	// }
+	// });
+	// }
 
 	private void createStrikeBorderComposite() {
-		strikeText = getFormToolkit().createText(outermostForm.getBody(), null,
-				SWT.SINGLE | SWT.BORDER);
-		addSelectAllFocusListener(strikeText);
+		strikePriceControl = new Combo(outermostForm.getBody(), SWT.BORDER);
+		// addSelectAllFocusListener(strikePriceControl);
 
 		GridData textGridData = new GridData();
-		Point sizeHint = EclipseUtils
-				.getTextAreaSize(strikeText, null, 10, 1.0);
+		Point sizeHint = EclipseUtils.getTextAreaSize(strikePriceControl, null,
+				4, 1.0);
 		// textGridData.heightHint = sizeHint.y;
 		textGridData.widthHint = sizeHint.x;
-		strikeText.setLayoutData(textGridData);
+		strikePriceControl.setLayoutData(textGridData);
 
-		orderTicketViewPieces.addInputControlErrorDecoration(strikeText);
+		orderTicketViewPieces
+				.addInputControlErrorDecoration(strikePriceControl);
 	}
 
 	private void createExpireYearBorderComposite() {
 		expireYearCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		// todo: Dynamically populate year choices from market data.
 		List<String> years = optionContractDateHelper.createDefaultYears();
-		for(String year : years) {
+		for (String year : years) {
 			expireYearCombo.add(year.toString());
 		}
 
@@ -362,8 +361,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return putOrCallCombo;
 	}
 
-	public Text getStrikeText() {
-		return strikeText;
+	public Combo getStrikePriceControl() {
+		return strikePriceControl;
 	}
 
 }

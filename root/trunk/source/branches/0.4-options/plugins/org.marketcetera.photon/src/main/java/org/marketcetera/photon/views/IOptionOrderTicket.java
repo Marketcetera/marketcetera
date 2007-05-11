@@ -1,7 +1,6 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Text;
 
 public interface IOptionOrderTicket extends IOrderTicket {
 
@@ -13,7 +12,7 @@ public interface IOptionOrderTicket extends IOrderTicket {
 			 
 	 Combo getPutOrCallCombo();
 
-	 Text getStrikeText();
+	 Combo getStrikePriceControl();
 
 	 Combo getExpireYearCombo();
 

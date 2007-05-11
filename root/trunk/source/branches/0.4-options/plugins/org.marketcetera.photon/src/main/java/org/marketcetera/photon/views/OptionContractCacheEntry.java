@@ -91,7 +91,7 @@ public class OptionContractCacheEntry {
 			expirationMonthsForUI.add(monthAbbrev);
 		}
 
-		strikePricesForUI.addAll(yearsSet);
+		strikePricesForUI.addAll(strikePricesSet);
 		Collections.sort(strikePricesForUI);
 	}
 

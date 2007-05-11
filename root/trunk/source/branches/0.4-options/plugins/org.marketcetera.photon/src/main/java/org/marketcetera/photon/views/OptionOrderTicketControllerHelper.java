@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -8,7 +9,6 @@ import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.jface.databinding.swt.SWTObservables;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.marketcetera.core.MSymbol;
@@ -99,8 +99,8 @@ public class OptionOrderTicketControllerHelper extends
 			public void onMarketDataListAvailable(
 					List<Message> derivativeSecurityList) {
 				List<OptionContractData> optionContracts = OptionMarketDataUtils
-						.getOptionExpirationMarketData(optionRoot.getBaseSymbol(),
-								derivativeSecurityList);
+						.getOptionExpirationMarketData(optionRoot
+								.getBaseSymbol(), derivativeSecurityList);
 				if (optionContracts == null || optionContracts.isEmpty()) {
 					updateComboChoicesFromDefaults();
 				} else {
@@ -118,10 +118,9 @@ public class OptionOrderTicketControllerHelper extends
 		MarketDataUtils.asyncMarketDataQuery(optionRoot, query, service
 				.getMarketDataFeed(), callback);
 	}
-	
+
 	private void conditionallyUpdateComboChoices(MSymbol optionRoot) {
-		if (lastOptionRoot == null
-				|| !lastOptionRoot.equals(optionRoot)) {
+		if (lastOptionRoot == null || !lastOptionRoot.equals(optionRoot)) {
 			lastOptionRoot = optionRoot;
 			updateComboChoices(optionRoot);
 		}
@@ -136,8 +135,8 @@ public class OptionOrderTicketControllerHelper extends
 					.getExpirationMonthsForUI());
 			updateComboChoices(optionTicket.getExpireYearCombo(), cacheEntry
 					.getExpirationYearsForUI());
-			// updateComboChoices(optionTicket.getStrikeText(),
-			// cacheEntry.getExpirationYearsForUI() );
+			updateComboChoices(optionTicket.getStrikePriceControl(), cacheEntry
+					.getStrikePricesForUI());
 		}
 	}
 
@@ -147,7 +146,9 @@ public class OptionOrderTicketControllerHelper extends
 		updateComboChoices(optionTicket.getExpireMonthCombo(), months);
 		List<String> years = dateHelper.createDefaultYears();
 		updateComboChoices(optionTicket.getExpireYearCombo(), years);
-		// todo: strike
+		// todo: What should the defaults be for strike price?
+		List<String> strikePrices = new ArrayList<String>();
+		updateComboChoices(optionTicket.getStrikePriceControl(), strikePrices);
 	}
 
 	private void updateComboChoices(Combo combo, Collection<String> choices) {
@@ -213,15 +214,14 @@ public class OptionOrderTicketControllerHelper extends
 				addControlRequiringUserInput(whichControl);
 		}
 
-		final int swtEvent = SWT.Modify;
 		// StrikePrice
 		{
-			Control whichControl = optionTicket.getStrikeText();
+			Control whichControl = optionTicket.getStrikePriceControl();
 			IToggledValidator validator = strikeConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables.observeText(
-					whichControl, swtEvent), FIXObservables.observeValue(realm,
+					whichControl), FIXObservables.observeValue(realm,
 					message, StrikePrice.FIELD, dictionary), bindingHelper
 					.createToModelUpdateValueStrategy(strikeConverterBuilder,
 							validator), bindingHelper
