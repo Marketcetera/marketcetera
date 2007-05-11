@@ -41,6 +41,8 @@ import quickfix.field.OpenClose;
 import quickfix.field.OrdType;
 import quickfix.field.PutOrCall;
 import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
+import quickfix.field.UnderlyingSymbol;
 
 public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
@@ -239,6 +241,12 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	@Override
+	protected int getSymbolFIXField() {
+		// Make the Symbol input control be the option root.
+		return UnderlyingSymbol.FIELD;
+	}
+
+	@Override
 	protected void bindImpl(Message message, boolean enableValidators) {
 		super.bindImpl(message, enableValidators);
 
@@ -253,6 +261,7 @@ public class OptionOrderTicketControllerHelper extends
 		 * represents that data.
 		 */
 
+		final int swtEvent = SWT.Modify;
 		// ExpireDate Month
 		{
 			Control whichControl = optionTicket.getExpireMonthCombo();
@@ -308,6 +317,20 @@ public class OptionOrderTicketControllerHelper extends
 			addControlStateListeners(whichControl, validator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
+		}
+		// OptionSymbol (the symbol for the actual option contract)
+		{
+			Control whichControl = optionTicket.getOptionSymbolControl();
+			IToggledValidator validator = new StringRequiredValidator();
+			// todo: This validator will never be enabled because the control
+			// itself is disabled.
+			validator.setEnabled(enableValidators);
+			dataBindingContext.bindValue(SWTObservables.observeText(
+					whichControl, swtEvent), FIXObservables.observeValue(realm,
+					message, Symbol.FIELD, dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(validator),
+					new UpdateValueStrategy());
+			addControlStateListeners(whichControl, validator);
 		}
 		// PutOrCall
 		{
