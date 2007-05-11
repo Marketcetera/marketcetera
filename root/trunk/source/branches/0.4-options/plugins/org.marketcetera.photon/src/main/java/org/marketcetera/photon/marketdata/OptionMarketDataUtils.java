@@ -28,41 +28,58 @@ import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
 
 public class OptionMarketDataUtils {
-	private static FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
-	
+	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
+			.getMessageFactory();
+
 	private static Pattern underlyingSymbolPattern;
-	
-	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol, boolean subscribe){
-		Message requestMessage = messageFactory.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
-		requestMessage.setField(new SecurityListRequestType(1));// specifies that the receiver should look in SecurityType field for more info
+
+	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol,
+			boolean subscribe) {
+		Message requestMessage = messageFactory
+				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+		/**
+		 * specifies that the receiver should look in SecurityType field for
+		 * more info
+		 */
+		requestMessage.setField(new SecurityListRequestType(1));
 		requestMessage.setField(new SecurityType(SecurityType.OPTION));
-		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol.getBaseSymbol()));
-		if (subscribe){
-			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
+		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol
+				.getBaseSymbol()));
+		if (subscribe) {
+			requestMessage.setField(new SubscriptionRequestType(
+					SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
 		} else {
-			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT));
+			requestMessage.setField(new SubscriptionRequestType(
+					SubscriptionRequestType.SNAPSHOT));
 		}
 		return requestMessage;
 	}
-	
 
 	/**
-	 * Given an option root, returns a list of all the month/strike/call-put combos related
-	 * to that option root.
+	 * Given an option root, returns a list of all the month/strike/call-put
+	 * combos related to that option root.
 	 * 
 	 * @param optionRoot
 	 * @param subscribe
 	 * @return
 	 */
-	public static Message newOptionRootQuery(MSymbol optionRoot, boolean subscribe){
-		Message requestMessage = messageFactory.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
-		requestMessage.setField(new SecurityListRequestType(0));// specifies that the receiver should look in Symbol field for more info
+	public static Message newOptionRootQuery(MSymbol optionRoot,
+			boolean subscribe) {
+		Message requestMessage = messageFactory
+				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+		/**
+		 * specifies that the receiver should look in SecurityType field for
+		 * more info
+		 */
+		requestMessage.setField(new SecurityListRequestType(0));
 		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new Symbol(optionRoot.getBaseSymbol()));
-		if (subscribe){
-			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
+		if (subscribe) {
+			requestMessage.setField(new SubscriptionRequestType(
+					SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
 		} else {
-			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT));
+			requestMessage.setField(new SubscriptionRequestType(
+					SubscriptionRequestType.SNAPSHOT));
 		}
 		return requestMessage;
 	}
@@ -85,7 +102,8 @@ public class OptionMarketDataUtils {
 		return underlierPieces[0];
 	}
 
-	//	 todo: This method is irrelevant if MarketceteraOptionSymbol is moved to core.
+	// todo: This method is irrelevant if MarketceteraOptionSymbol is moved to
+	// core.
 	/**
 	 * For a given option symbol, return the underlier. For example, "AMD+FA"
 	 * will return "AMD".
@@ -101,21 +119,39 @@ public class OptionMarketDataUtils {
 		return new MSymbol(underlier);
 	}
 
+	private static boolean isApplicableUnderlyingSymbol(
+			String messageUnderlyingSymbolStr, String symbolFilter) {
+		if (messageUnderlyingSymbolStr != null) {
+			if (symbolFilter == null || symbolFilter.trim().length() == 0
+					|| messageUnderlyingSymbolStr.startsWith(symbolFilter)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param symbolFilter
+	 *            the UnderlyingSymbol in each message is checked to ensure that
+	 *            it starts with the symbolFilter. Underliers that do not match
+	 *            are not processed. Specify null to process all messages.
+	 */
 	public static List<OptionContractData> getOptionExpirationMarketData(
-			final MSymbol underlyingSymbol, List<Message> derivativeSecurityList) {
-		String underlyingSymbolStr = underlyingSymbol.getBaseSymbol();
+			final String symbolFilter, List<Message> derivativeSecurityList) {
 		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
 		for (Message message : derivativeSecurityList) {
 			try {
 				String messageType = message.getHeader().getString(
 						MsgType.FIELD);
 				if (MsgType.DERIVATIVE_SECURITY_LIST.equals(messageType)) {
-					String messageUnderlyingSymbol = message
+					String messageUnderlyingSymbolStr = message
 							.getString(UnderlyingSymbol.FIELD);
-					if (messageUnderlyingSymbol != null
-							&& messageUnderlyingSymbol
-									.startsWith(underlyingSymbolStr)) {
-						addExpirationFromMessage( underlyingSymbol, message, optionExpirations );
+					if (isApplicableUnderlyingSymbol(
+							messageUnderlyingSymbolStr, symbolFilter)) {
+						MSymbol messageUnderlyingSymbol = new MSymbol(
+								messageUnderlyingSymbolStr);
+						addExpirationFromMessage(messageUnderlyingSymbol,
+								message, optionExpirations);
 					}
 				} else {
 					throw new MarketceteraFIXException(
@@ -133,7 +169,7 @@ public class OptionMarketDataUtils {
 		}
 		return optionExpirations;
 	}
-	
+
 	private static void addExpirationFromMessage(MSymbol underlyingSymbol,
 			Message message, List<OptionContractData> optionExpirations)
 			throws FieldNotFound, MarketceteraFIXException {
@@ -163,13 +199,15 @@ public class OptionMarketDataUtils {
 			String maturityDateString = maturityDateField.getValue();
 			String year = maturityDateString.substring(0, 4);
 			String month = maturityDateString.substring(4, 6);
-			
+
 			String strikeStr = optionGroup.getString(StrikePrice.FIELD);
 			BigDecimal strike = new BigDecimal(strikeStr);
-			
+
 			MSymbol optionSymbol = new MSymbol(optionSymbolStr);
-			OptionContractData optionData = new OptionContractData(underlyingSymbol, optionSymbol, year, month, strike, optionIsPut);;
-					
+			OptionContractData optionData = new OptionContractData(
+					underlyingSymbol, optionSymbol, year, month, strike,
+					optionIsPut);
+
 			optionExpirations.add(optionData);
 		}
 	}
