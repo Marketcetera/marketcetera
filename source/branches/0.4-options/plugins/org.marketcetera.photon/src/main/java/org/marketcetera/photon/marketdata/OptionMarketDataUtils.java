@@ -3,16 +3,9 @@ package org.marketcetera.photon.marketdata;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -43,7 +36,7 @@ public class OptionMarketDataUtils {
 		Message requestMessage = messageFactory.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
 		requestMessage.setField(new SecurityListRequestType(1));// specifies that the receiver should look in SecurityType field for more info
 		requestMessage.setField(new SecurityType(SecurityType.OPTION));
-		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol.toString()));
+		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol.getBaseSymbol()));
 		if (subscribe){
 			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
 		} else {
@@ -51,59 +44,27 @@ public class OptionMarketDataUtils {
 		}
 		return requestMessage;
 	}
+	
 
 	/**
-	 * Create a job that retrieves all the option contracts for a given
-	 * underlier.
+	 * Given an option root, returns a list of all the month/strike/call-put combos related
+	 * to that option root.
 	 * 
-	 * @param callback
-	 *            the callback will be invoked when the market data is available
-	 *            or on failure. The List<Message> passed to the callback is
-	 *            the derivative security list response.
-	 * @param callbackOnUIThread
-	 *            when true, use Display.asyncExec to perform the callback on
-	 *            the UI thread. Otherwise the callback occurs in the Job
-	 *            thread.
+	 * @param optionRoot
+	 * @param subscribe
+	 * @return
 	 */
-	public static void asyncOptionSecurityList(final MSymbol underlyingSymbol,
-			final IMarketDataFeed marketDataFeed,
-			final IMarketDataListCallback callback,
-			final boolean callbackOnUIThread) {
-		final long OPTION_SECURITY_LIST_TIMEOUT_MILLIS = 8000;
-
-		Job securityListJob = new Job("Getting options for " + underlyingSymbol.getFullSymbol()) {
-			protected IStatus run(IProgressMonitor monitor) {
-				try {
-					Message query = newRelatedOptionsQuery(underlyingSymbol, false);
-					final List<Message> messages = marketDataFeed.syncQuery(
-							query, OPTION_SECURITY_LIST_TIMEOUT_MILLIS,
-							TimeUnit.MILLISECONDS);
-
-					if (callbackOnUIThread) {
-						Display.getDefault().asyncExec(new Runnable() {
-							public void run() {
-								callback.onMarketDataListAvailable(messages);
-							}
-						});
-					} else {
-						callback.onMarketDataListAvailable(messages);
-					}
-				} catch (Exception anyException) {
-					if (callbackOnUIThread) {
-						Display.getDefault().asyncExec(new Runnable() {
-							public void run() {
-								callback.onMarketDataFailure(underlyingSymbol);
-							}
-						});
-					} else {
-						callback.onMarketDataFailure(underlyingSymbol);
-					}
-					return Status.CANCEL_STATUS;
-				}
-				return Status.OK_STATUS;
-			}
-		};
-		securityListJob.schedule();
+	public static Message newOptionRootQuery(MSymbol optionRoot, boolean subscribe){
+		Message requestMessage = messageFactory.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+		requestMessage.setField(new SecurityListRequestType(0));// specifies that the receiver should look in Symbol field for more info
+		requestMessage.setField(new SecurityType(SecurityType.OPTION));
+		requestMessage.setField(new Symbol(optionRoot.getBaseSymbol()));
+		if (subscribe){
+			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
+		} else {
+			requestMessage.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT));
+		}
+		return requestMessage;
 	}
 
 	/**

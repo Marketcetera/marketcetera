@@ -15,6 +15,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
@@ -101,6 +102,7 @@ public class OptionOrderTicketControllerHelper extends
 				if (optionContracts == null || optionContracts.isEmpty()) {
 					updateComboChoicesFromDefaults();
 				} else {
+					// todo: Check for cache hit
 					OptionContractCacheEntry cacheEntry = new OptionContractCacheEntry(
 							optionContracts);
 					optionContractCache.put(underlyingSymbol, cacheEntry);
@@ -115,8 +117,9 @@ public class OptionOrderTicketControllerHelper extends
 			}
 		};
 
-		OptionMarketDataUtils.asyncOptionSecurityList(underlyingSymbol, service
-				.getMarketDataFeed(), callback, true);
+		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(underlyingSymbol, false);
+		MarketDataUtils.asyncMarketDataQuery(underlyingSymbol, query, service
+				.getMarketDataFeed(), callback);
 	}
 
 	private void updateComboChoices(MSymbol underlyingSymbol) {
