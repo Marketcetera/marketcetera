@@ -58,6 +58,7 @@ public class OptionDateHelper {
 		calendar.set(Calendar.MONTH, monthNumber);
 		java.util.Date monthTime = calendar.getTime();
 		String monthStr = monthFormatter.format(monthTime);
+		monthStr = monthStr.toUpperCase();
 		return monthStr;
 	}
 }

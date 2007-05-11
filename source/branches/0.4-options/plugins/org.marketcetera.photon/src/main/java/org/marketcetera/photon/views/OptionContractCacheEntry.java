@@ -7,10 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.OptionContractData;
 
 /**
- * Cache entry of option contract information for display in the UI. 
+ * Cache entry of option contract information for display in the UI.
  */
 public class OptionContractCacheEntry {
 	private MSymbol underlyingSymbol;
@@ -34,6 +35,17 @@ public class OptionContractCacheEntry {
 		parseOptionContracts();
 	}
 
+	private void logContractSpecs(OptionContractData optionContract) {
+		if (PhotonPlugin.getMainConsoleLogger().isDebugEnabled()) {
+			PhotonPlugin.getMainConsoleLogger().debug(
+					"" + optionContract.getUnderlyingSymbol() + ", "
+							+ optionContract.getOptionSymbol() + ", "
+							+ optionContract.getStrikePrice() + ", "
+							+ optionContract.getExpirationYear() + "-"
+							+ optionContract.getExpirationMonth());
+		}
+	}
+
 	private void parseOptionContracts() {
 		optionCodeToContractMap = new HashMap<OptionCodeKey, OptionContractData>();
 		expirationYearsForUI = new ArrayList<String>();
@@ -43,13 +55,9 @@ public class OptionContractCacheEntry {
 		// Use ints for the months so they're chronologically sortable.
 		HashSet<Integer> monthsSet = new HashSet<Integer>();
 		HashSet<String> strikePricesSet = new HashSet<String>();
-		
+
 		for (OptionContractData optionContract : optionContracts) {
-			System.out.println("" + optionContract.getUnderlyingSymbol() + ", "
-					+ optionContract.getOptionSymbol() + ", "
-					+ optionContract.getStrikePrice() + ", "
-					+ optionContract.getExpirationYear() + "-"
-					+ optionContract.getExpirationMonth());
+			logContractSpecs(optionContract);
 			if (underlyingSymbol == null) {
 				underlyingSymbol = optionContract.getUnderlyingSymbol();
 			}
@@ -68,7 +76,7 @@ public class OptionContractCacheEntry {
 			String strikePrice = optionContract.getStrikePrice()
 					.toPlainString();
 			OptionCodeKey key = new OptionCodeKey(yearSuffix, monthAbbrev,
-					strikePrice);
+					strikePrice, optionContract.isPut());
 			optionCodeToContractMap.put(key, optionContract);
 
 			yearsSet.add(yearSuffix);
@@ -87,7 +95,8 @@ public class OptionContractCacheEntry {
 		for (int monthNumber : monthIntsList) {
 			String monthAbbrev = optionDateHelper
 					.getMonthAbbreviation(monthNumber);
-			monthAbbrev = monthAbbrev.toUpperCase();
+			// Do not alter the monthAbbrev here. It must match the one used in
+			// the OptionCodeKey above.
 			expirationMonthsForUI.add(monthAbbrev);
 		}
 
@@ -96,9 +105,10 @@ public class OptionContractCacheEntry {
 	}
 
 	public OptionContractData getOptionContractData(String uiExpirationYear,
-			String uiExpirationMonth, String uiStrikePrice) {
-		// todo: impl
-		return null;
+			String uiExpirationMonth, String uiStrikePrice, boolean putWhenTrue) {
+		OptionCodeKey key = new OptionCodeKey(uiExpirationYear,
+				uiExpirationMonth, uiStrikePrice, putWhenTrue);
+		return optionCodeToContractMap.get(key);
 	}
 
 	public List<String> getExpirationMonthsForUI() {
@@ -123,11 +133,18 @@ public class OptionContractCacheEntry {
 
 		private String strikePrice;
 
+		private boolean putWhenTrue;
+
+		public boolean isPut() {
+			return putWhenTrue;
+		}
+
 		public OptionCodeKey(String expirationYear, String expirationMonth,
-				String strikePrice) {
+				String strikePrice, boolean putWhenTrue) {
 			this.expirationYear = expirationYear;
 			this.expirationMonth = expirationMonth;
 			this.strikePrice = strikePrice;
+			this.putWhenTrue = putWhenTrue;
 		}
 
 		public String getExpirationMonth() {
@@ -153,6 +170,7 @@ public class OptionContractCacheEntry {
 			result = PRIME
 					* result
 					+ ((expirationYear == null) ? 0 : expirationYear.hashCode());
+			result = PRIME * result + (putWhenTrue ? 1231 : 1237);
 			result = PRIME * result
 					+ ((strikePrice == null) ? 0 : strikePrice.hashCode());
 			return result;
@@ -177,6 +195,8 @@ public class OptionContractCacheEntry {
 					return false;
 			} else if (!expirationYear.equals(other.expirationYear))
 				return false;
+			if (putWhenTrue != other.putWhenTrue)
+				return false;
 			if (strikePrice == null) {
 				if (other.strikePrice != null)
 					return false;
@@ -184,5 +204,6 @@ public class OptionContractCacheEntry {
 				return false;
 			return true;
 		}
+
 	}
 }

@@ -40,10 +40,6 @@ public class OptionContractData {
 		return optionSymbol;
 	}
 
-	public boolean isPutWhenTrue() {
-		return putWhenTrue;
-	}
-
 	public BigDecimal getStrikePrice() {
 		return strikePrice;
 	}
