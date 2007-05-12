@@ -8,6 +8,7 @@ import java.util.List;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Combo;
@@ -22,9 +23,9 @@ import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
+import org.marketcetera.photon.parser.OptionCFICodeImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
-import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
@@ -35,11 +36,11 @@ import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.CustomerOrFirm;
+import quickfix.field.CFICode;
 import quickfix.field.MaturityDate;
 import quickfix.field.OpenClose;
 import quickfix.field.OrdType;
-import quickfix.field.PutOrCall;
+import quickfix.field.OrderCapacity;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
@@ -48,11 +49,11 @@ public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
 	private IOptionOrderTicket optionTicket;
 
-	private EnumStringConverterBuilder<Integer> orderCapacityConverterBuilder;
+	private EnumStringConverterBuilder<Character> orderCapacityConverterBuilder;
 
 	private EnumStringConverterBuilder<Character> openCloseConverterBuilder;
 
-	private EnumStringConverterBuilder<Integer> putOrCallConverterBuilder;
+	private EnumStringConverterBuilder<String> putOrCallConverterBuilder;
 
 	private PriceConverterBuilder strikeConverterBuilder;
 
@@ -332,15 +333,16 @@ public class OptionOrderTicketControllerHelper extends
 					new UpdateValueStrategy());
 			addControlStateListeners(whichControl, validator);
 		}
-		// PutOrCall
+		// PutOrCall (OptionCFICode)
 		{
 			Control whichControl = optionTicket.getPutOrCallCombo();
 			IToggledValidator validator = putOrCallConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
+			IObservableValue fixObservable = FIXObservables.observeValue(
+					realm, message, CFICode.FIELD, dictionary);
 			dataBindingContext.bindValue(SWTObservables
-					.observeText(whichControl), FIXObservables.observeValue(
-					realm, message, PutOrCall.FIELD, dictionary), bindingHelper
+					.observeText(whichControl), fixObservable, bindingHelper
 					.createToModelUpdateValueStrategy(
 							putOrCallConverterBuilder, validator),
 					bindingHelper.createToTargetUpdateValueStrategy(
@@ -357,9 +359,11 @@ public class OptionOrderTicketControllerHelper extends
 			validator.setEnabled(enableValidators);
 			// The FIX field may need to be updated., See
 			// http://trac.marketcetera.org/trac.fcgi/ticket/185
+			final int orderCapacityFIXField = OrderCapacity.FIELD;
+//			final int orderCapacityFIXField = CustomerOrFirm.FIELD;
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
-					realm, message, CustomerOrFirm.FIELD, dictionary),
+					realm, message, orderCapacityFIXField, dictionary),
 					bindingHelper.createToModelUpdateValueStrategy(
 							orderCapacityConverterBuilder, validator),
 					bindingHelper.createToTargetUpdateValueStrategy(
@@ -388,9 +392,9 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	public void initOrderCapacityConverterBuilder() {
-		orderCapacityConverterBuilder = new EnumStringConverterBuilder<Integer>(
-				Integer.class);
-		bindingHelper.initIntToImageConverterBuilder(
+		orderCapacityConverterBuilder = new EnumStringConverterBuilder<Character>(
+				Character.class);
+		bindingHelper.initCharToImageConverterBuilder(
 				orderCapacityConverterBuilder, OrderCapacityImage.values());
 	}
 
@@ -402,10 +406,10 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	private void initPutOrCallConverterBuilder() {
-		putOrCallConverterBuilder = new EnumStringConverterBuilder<Integer>(
-				Integer.class);
-		bindingHelper.initIntToImageConverterBuilder(putOrCallConverterBuilder,
-				PutOrCallImage.values());
+		putOrCallConverterBuilder = new EnumStringConverterBuilder<String>(
+				String.class);
+		bindingHelper.initStringToImageConverterBuilder(putOrCallConverterBuilder,
+				OptionCFICodeImage.values());
 	}
 
 	private void initStrikeConverterBuilder() {
