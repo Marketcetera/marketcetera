@@ -25,8 +25,12 @@ public class MarketDataFeedTracker extends ServiceTracker {
 	
 	
 	public ISubscription simpleSubscribe(MSymbol symbol) throws MarketceteraException {
-		Message subscribeMessage = MarketDataUtils.newSubscribeBBO(symbol);
 		MarketDataFeedService marketDataFeed = getMarketDataFeedService();
+		return simpleSubscribe(symbol, marketDataFeed);
+	}
+	
+	private ISubscription simpleSubscribe(MSymbol symbol, MarketDataFeedService marketDataFeed) throws MarketceteraException {
+		Message subscribeMessage = MarketDataUtils.newSubscribeBBO(symbol);
 		ISubscription subscription = null;
 		if (marketDataFeed != null){
 			subscription = marketDataFeed.subscribe(subscribeMessage);
@@ -87,7 +91,7 @@ public class MarketDataFeedTracker extends ServiceTracker {
 	private void addSubscriptions(MarketDataFeedService feed) {
 		for (MSymbol symbol : simpleSubscriptions.keySet()) {
 			try {
-				simpleSubscribe(symbol);
+				simpleSubscribe(symbol, feed);
 			} catch (MarketceteraException e) {
 				PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to updates for "+symbol);
 			}
