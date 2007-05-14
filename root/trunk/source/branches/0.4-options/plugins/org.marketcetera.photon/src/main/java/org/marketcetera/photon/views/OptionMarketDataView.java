@@ -39,7 +39,7 @@ import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.OptionMessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.photon.views.UnderlierInfo.UnderlyingSymbolDataFields;
+import org.marketcetera.photon.views.UnderlyingSymbolInfo.UnderlyingSymbolDataFields;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXValueExtractor;
@@ -78,11 +78,11 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 
 	private FormToolkit formToolkit;
 
-	private Section underliersSection;
+	private Section underlyingSymbolsSection;
 
-	private Composite underliersContainer;
+	private Composite underlyingSymbolsContainer;
 
-	private HashMap<String, UnderlierInfo> underlierInfoMap;
+	private HashMap<String, UnderlyingSymbolInfo> underlyingSymbolInfoMap;
 
 	private ScrolledForm form = null;
 	
@@ -180,13 +180,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 	@Override
 	public void createPartControl(Composite parent) {
 		createForm(parent);
-		createUnderliersSection();
-
-		// helper methods for testing and mocking-up the UI only, will remove
-//		int numUnderliers = 3;
-//		test_createUnderliers(numUnderliers);
-//		test_populateUnderliersMktData(numUnderliers);
-
+		createUnderlyingSymbolsSection();
 		Composite tableExpandable = createDataTableSection();
 		super.createPartControl(tableExpandable);
 		this.setInput(new BasicEventList<OptionMessageHolder>());
@@ -197,7 +191,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 		optionSymbolToKeyMap = new HashMap<String, OptionPairKey>();
 		optionSymbolToSideMap = new HashMap<String, Boolean>();
 		optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
-		underlierInfoMap = new HashMap<String, UnderlierInfo>();  		
+		underlyingSymbolInfoMap = new HashMap<String, UnderlyingSymbolInfo>();  		
 	}
 
 	/**
@@ -220,21 +214,21 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 				createTopAlignedHorizontallySpannedGridData());
 	}
 
-	private void createUnderliersSection() {
-		underliersSection = getFormToolkit().createSection(
+	private void createUnderlyingSymbolsSection() {
+		underlyingSymbolsSection = getFormToolkit().createSection(
 				form.getBody(), Section.EXPANDED | Section.NO_TITLE);
-		underliersSection
+		underlyingSymbolsSection
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		createUnderliersContainerComposite();
+		createUnderlyingSymbolsContainerComposite();
 	}
 
-	private void createUnderliersContainerComposite() {
-		underliersContainer = getFormToolkit().createComposite(
-				underliersSection, SWT.NONE);
-		underliersContainer
+	private void createUnderlyingSymbolsContainerComposite() {
+		underlyingSymbolsContainer = getFormToolkit().createComposite(
+				underlyingSymbolsSection, SWT.NONE);
+		underlyingSymbolsContainer
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		underliersContainer.setLayout(createBasicGridLayout(1));
-		underliersSection.setClient(underliersContainer);	
+		underlyingSymbolsContainer.setLayout(createBasicGridLayout(1));
+		underlyingSymbolsSection.setClient(underlyingSymbolsContainer);	
 	}
 		
 	private Composite createDataTableSection() {
@@ -257,24 +251,24 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 		return tableComposite;
 	}
 
-	private Composite createUnderlierComposite(Composite parent) {
-		Composite underlier = getFormToolkit().createComposite(
+	private Composite createUnderlyingSymbolComposite(Composite parent) {
+		Composite underlyingSymbolComposite = getFormToolkit().createComposite(
 				parent, SWT.NONE);
-		underlier.setLayout(createBasicGridLayout(1));
-		underlier.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		return underlier;
+		underlyingSymbolComposite.setLayout(createBasicGridLayout(1));
+		underlyingSymbolComposite.setLayoutData(createTopAlignedHorizontallySpannedGridData());
+		return underlyingSymbolComposite;
 	}
 
 	private void addUnderlyerInfo(String underlyingSymbol) {
-		if (underlierInfoMap.size() > 0) {
-			Label separator = new Label(underliersContainer, SWT.SEPARATOR
+		if (underlyingSymbolInfoMap.size() > 0) {
+			Label separator = new Label(underlyingSymbolsContainer, SWT.SEPARATOR
 					| SWT.HORIZONTAL);
 			GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false);
 			gridData.widthHint = 400;
 			separator.setLayoutData(gridData);			
 		}
-		Composite underlyingSymbolComposite = createUnderlierComposite(underliersContainer);
-		underlierInfoMap.put(underlyingSymbol, new UnderlierInfo(underlyingSymbolComposite));
+		Composite underlyingSymbolComposite = createUnderlyingSymbolComposite(underlyingSymbolsContainer);
+		underlyingSymbolInfoMap.put(underlyingSymbol, new UnderlyingSymbolInfo(underlyingSymbolComposite));
 	}
 
 	private GridData createTopAlignedHorizontallySpannedGridData() {
@@ -304,7 +298,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 	}
 	
 	private void disposeUnderlyerInfoSection() {
-		Control[] children = underliersContainer.getChildren();
+		Control[] children = underlyingSymbolsContainer.getChildren();
 		for (Control child : children) {
 			child.dispose();
 		}
@@ -373,7 +367,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 	 */
 	private void updateQuote(Message quote) {
 		if (matchUnderlyingSymbol(quote)) {
-			updateUnderlier(quote);
+			updateUnderlyingSymbol(quote);
 			return;
 		}
 		OptionMessageHolder newHolder = null;
@@ -400,15 +394,15 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 	private boolean matchUnderlyingSymbol(Message quote)
 	{
 		String quoteSymbol = getSymbol(quote);
-		UnderlierInfo symbolInfo = underlierInfoMap.get(quoteSymbol);
+		UnderlyingSymbolInfo symbolInfo = underlyingSymbolInfoMap.get(quoteSymbol);
 		return (symbolInfo != null);
 	}
 	
 		
-	private void updateUnderlier(Message quote)
+	private void updateUnderlyingSymbol(Message quote)
 	{
 		String quoteSymbol = getSymbol(quote);
-		UnderlierInfo symbolInfo = underlierInfoMap.get(quoteSymbol);
+		UnderlyingSymbolInfo symbolInfo = underlyingSymbolInfoMap.get(quoteSymbol);
 		if (symbolInfo != null)
 		{
 			symbolInfo.setInstrumentLabelText(extractStockValue(UnderlyingSymbolDataFields.SYMBOL, quote).toString());
@@ -416,14 +410,14 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 			symbolInfo.setLastPriceChangeLabelText((String) extractStockValue(UnderlyingSymbolDataFields.LASTPX, quote));
 			
 			symbolInfo.setAskPriceLabelText(extractStockValue(
-					UnderlierInfo.UnderlyingSymbolDataFields.ASK, quote));
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.ASK, quote));
 			symbolInfo.setAskSizeLabelText(extractStockValue(
-					UnderlierInfo.UnderlyingSymbolDataFields.ASKSZ, quote));
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.ASKSZ, quote));
 
 			symbolInfo.setBidPriceLabelText(extractStockValue(
-					UnderlierInfo.UnderlyingSymbolDataFields.BID, quote));
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.BID, quote));
 			symbolInfo.setBidSizeLabelText(extractStockValue(
-					UnderlierInfo.UnderlyingSymbolDataFields.BIDSZ, quote));
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.BIDSZ, quote));
 
 			//cl todo:retrieve dateAmountStrings
 //			symbolInfo.setExDividendsDateAndAmountItems(dateAmountStrings);
@@ -434,7 +428,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 			symbolInfo.setHighPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.HI, quote));
 			symbolInfo.setLowPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.LOW, quote));
 			symbolInfo.setTradeValueLabelText(extractStockValue(UnderlyingSymbolDataFields.TRADEVOL, quote));
-			underliersContainer.pack(true);
+			underlyingSymbolsContainer.pack(true);
 		}		
 	}
 		
@@ -580,7 +574,6 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 		return value;
 	}
 
-	//cl todo:re-implemented this and fill in missing bits in UnderlyingSymbolDataFields
 	public String extractStockValue(Enum fieldEnum, Object element) {
 		Object value = null;
 		Integer fieldID = null;
@@ -593,15 +586,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 			Integer groupDiscriminatorID = fieldIdentifier.getGroupDiscriminatorID();
 			Object groupDiscriminatorValue = fieldIdentifier.getGroupDiscriminatorValue();
 
-			FieldMap fieldMap;
-
-			//cl todo:file bug against this
-			//Supposed to work with generics, shouldn't have specific casting here
-			if (element instanceof OptionMessageHolder) {
-				fieldMap = ((OptionMessageHolder) element).getCallMessage();
-			} else {
-				fieldMap = (FieldMap) element;
-			}
+			FieldMap fieldMap = (FieldMap) element;
 			value = extractor.extractValue(fieldMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, true);
 		}
 		return convertExtractedValue(value, fieldID);
@@ -616,7 +601,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 		}
 		if (hasUnderlyerInfo()) {
 			// remove and unsubscribe underlying symbols and all related contracts
-			Set<String> subscribedUnderlyingSymbols =  underlierInfoMap.keySet();	
+			Set<String> subscribedUnderlyingSymbols =  underlyingSymbolInfoMap.keySet();	
 			for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
 				removeUnderlyingSymbol(subscribedUnderlyingSymbol);
 			}
@@ -624,10 +609,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 		// Step 1 - subscribe to the underlying symbol
 		// Step 2 - retrieve and subscribe to all put/call options on the
 		// underlying symbol
-
 		addUnderlyerInfo(symbol.getBaseSymbol());
-		// UnderlierInfo underlyingInfo =
-		// underlierInfoSections.get(symbol.toString());
 
 		try {
 			marketDataTracker.simpleSubscribe(symbol);
@@ -662,7 +644,6 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 					EventList<OptionMessageHolder> list = getInput();
 
 					for (OptionContractData data : optionContracts) {
-
 						MSymbol optionSymbol = data.getOptionSymbol();
 
 						// construct the option key
@@ -703,7 +684,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 			}
 
 			private void subscribeOption(MSymbol optionSymbol, Message message) {
-				message.setField(new Symbol(optionSymbol.getBaseSymbol())); // MSQ+FM
+				message.setField(new Symbol(optionSymbol.getBaseSymbol())); 
 				try {
 					marketDataTracker.simpleSubscribe(optionSymbol);
 				} catch (MarketceteraException e) {
@@ -743,11 +724,11 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 	}
 	
 	private boolean hasSymbol(final MSymbol symbol) {
-		return (underlierInfoMap.get(symbol.getBaseSymbol()) != null);		
+		return (underlyingSymbolInfoMap.get(symbol.getBaseSymbol()) != null);		
 	}
 	
 	private boolean hasUnderlyerInfo() {
-		return (underlierInfoMap != null && underlierInfoMap.size() > 0);		
+		return (underlyingSymbolInfoMap != null && underlyingSymbolInfoMap.size() > 0);		
 	}
 		
 	private void removeUnderlyingSymbol(String underlyingSymbol) {
@@ -762,7 +743,7 @@ public class OptionMarketDataView extends OptionMessagesView  implements
 		// unsubscribe and remove the underlying symbol
 		MSymbol symbol = service.symbolFromString(underlyingSymbol);			
 		marketDataTracker.simpleUnsubscribe(symbol);
-		underlierInfoMap.clear();  		
+		underlyingSymbolInfoMap.clear();  		
 		disposeUnderlyerInfoSection();
 				
 		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();	

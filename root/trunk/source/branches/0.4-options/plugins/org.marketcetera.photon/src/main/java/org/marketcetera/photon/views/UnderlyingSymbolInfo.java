@@ -20,7 +20,6 @@ import org.marketcetera.photon.IFieldIdentifier;
 import quickfix.field.BidPx;
 import quickfix.field.BidSize;
 import quickfix.field.HighPx;
-import quickfix.field.LastMkt;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LowPx;
@@ -36,7 +35,7 @@ import quickfix.field.SendingTime;
 import quickfix.field.Symbol;
 import quickfix.field.TotalVolumeTraded;
 
-public class UnderlierInfo {
+public class UnderlyingSymbolInfo {
 		
 	public enum UnderlyingSymbolDataFields implements IFieldIdentifier
 	{
@@ -52,7 +51,7 @@ public class UnderlierInfo {
 		ASKSZ(OfferSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
 
 		//cl todo:sending time or lastUpdateTime?  also, what should the last field be?
-		LASTUPDATEDTIME(SendingTime.class, MDEntryTime.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.FIELD), 
+		LASTUPDATEDTIME(SendingTime.class, MDEntryTime.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
 		TRADEVOL(TotalVolumeTraded.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME),
 		OPENPX(OpenClose.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OPENING_PRICE),
 		HI(HighPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADING_SESSION_HIGH_PRICE), 
@@ -64,11 +63,6 @@ public class UnderlierInfo {
 		private Integer groupID;
 		private Integer groupDiscriminatorID;
 		private Object groupDiscriminatorValue;
-
-
-		UnderlyingSymbolDataFields(String name){
-			this.name = name;
-		}
 
 		UnderlyingSymbolDataFields(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
 			this(clazz);
@@ -110,7 +104,7 @@ public class UnderlierInfo {
 
 	};
 	
-	public UnderlierInfo(Composite parent)
+	public UnderlyingSymbolInfo(Composite parent)
 	{
 		createColors(parent);
 		createFirstRowComposite(parent);
