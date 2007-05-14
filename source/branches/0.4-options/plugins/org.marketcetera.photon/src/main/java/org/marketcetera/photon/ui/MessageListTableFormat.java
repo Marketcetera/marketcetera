@@ -15,6 +15,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.photon.core.MessageHolder;
 
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 
 
 
@@ -108,6 +109,12 @@ public class MessageListTableFormat extends EnumTableFormat<MessageHolder> {
 		table.setMenu(menu);
 		table.setData(MenuManager.class.toString(), menuMgr);
 		site.registerContextMenu(menuMgr, selectionProvider);
+	}
+
+	@Override
+	public FieldMap getFieldMap(MessageHolder element, int columnIndex) {
+		FieldMap fieldMap = ((MessageHolder) element).getMessage();
+		return fieldMap;
 	}
 
 }
