@@ -14,9 +14,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.IFieldIdentifier;
-import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.marketdata.OptionMessageHolder;
-import org.marketcetera.photon.views.OptionMarketDataView;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXValueExtractor;
@@ -89,56 +86,28 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 
 	public Object getColumnValue(T element, int columnIndex) {
 		Enum columnEnum = columns[columnIndex];
-		if (columnEnum instanceof IFieldIdentifier)
-		{
-			IFieldIdentifier fieldIdentifier = ((IFieldIdentifier)columnEnum);
-
+		if (columnEnum instanceof IFieldIdentifier) {
+			IFieldIdentifier fieldIdentifier = ((IFieldIdentifier) columnEnum);
 			Integer fieldID = fieldIdentifier.getFieldID();
 			Integer groupID = fieldIdentifier.getGroupID();
-			Integer groupDiscriminatorID = fieldIdentifier.getGroupDiscriminatorID();
-			Object groupDiscriminatorValue = fieldIdentifier.getGroupDiscriminatorValue();
-
-			FieldMap fieldMap;
-
-			//cl todo:file bug against this
-			//Supposed to work with generics, shouldn't have specific casting here
-			if (element instanceof MessageHolder) {
-				fieldMap = ((MessageHolder) element).getMessage();
-			} else if (element instanceof OptionMessageHolder) {
-				OptionMessageHolder optionMessageHolder = (OptionMessageHolder) element;
-
-				//cl todo:determine which column is the cut-off index
-				if (isStrikeColumn(columnIndex)) {
-					return optionMessageHolder.getKey().getStrikePrice();
-				}
-				if (isExpirationColumn(columnIndex)) {
-					return optionMessageHolder.getKey().getExpirationYear() + "-" + optionMessageHolder.getKey().getExpirationMonth();
-				}
-				if (isCallOption(columnIndex)) {
-					fieldMap = optionMessageHolder.getCallMessage();
-				} else {
-					fieldMap = optionMessageHolder.getPutMessage();
-				}
-			} else {
-				fieldMap = (FieldMap) element;
-			}
-			Object value = valueExtractor.extractValue(fieldMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, true);
+			Integer groupDiscriminatorID = fieldIdentifier
+					.getGroupDiscriminatorID();
+			Object groupDiscriminatorValue = fieldIdentifier
+					.getGroupDiscriminatorValue();
+			FieldMap fieldMap = getFieldMap(element, columnIndex);
+			Object value = valueExtractor.extractValue(fieldMap, fieldID,
+					groupID, groupDiscriminatorID, groupDiscriminatorValue,
+					true);
 			return value;
 		} else {
 			return null;
 		}
-	}
+	}	
 	
-	private boolean isStrikeColumn(int columnIndex) {
-		return columnIndex == OptionMarketDataView.STRIKE_INDEX;
-	}
-
-	private boolean isExpirationColumn(int columnIndex) {
-		return columnIndex == OptionMarketDataView.EXP_DATE_INDEX;
-	}
-
-	private boolean isCallOption(int columnIndex) {
-		return (columnIndex < OptionMarketDataView.FIRST_PUT_DATA_COLUMN_INDEX);
+	public FieldMap getFieldMap(T element, int columnIndex) {
+		if (element instanceof FieldMap)
+			return (FieldMap) element;
+		return null;
 	}
 	
 
