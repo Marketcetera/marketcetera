@@ -8,7 +8,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
@@ -20,6 +22,7 @@ import ca.odell.glazedlists.gui.AbstractTableComparatorChooser;
 import ca.odell.glazedlists.gui.TableFormat;
 import ca.odell.glazedlists.impl.gui.MouseOnlySortingStrategy;
 import ca.odell.glazedlists.impl.gui.SortingStrategy;
+import ca.odell.glazedlists.impl.gui.SortingState.SortingColumn;
 
 /**
  * A TableComparatorChooser is a tool that allows the user to sort a ListTable by clicking
@@ -46,6 +49,12 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
     /** listeners for column headers */
     private ColumnListener columnListener = new ColumnListener();
 
+    private SortIndicatorHelper sortIndicatorHelper;
+    
+    private TableColumn lastSortColumn;
+    
+    private boolean multipleColumnSortEnabled;
+    
     /**
      * Creates a new TableComparatorChooser that responds to clicks
      * on the specified table and uses them to sort the specified list.
@@ -62,6 +71,10 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
         // save the SWT-specific state
         this.table = table;
 
+        this.sortIndicatorHelper = new SortIndicatorHelper(table.getDisplay());
+        
+        this.multipleColumnSortEnabled = multipleColumnSort;
+        
         // listen for events on the specified table
         for(int c = 0; c < table.getColumnCount(); c++) {
             table.getColumn(c).addSelectionListener(columnListener);
@@ -100,7 +113,35 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
             Table table = column.getParent();
             int columnIndex = table.indexOf(column);
             sortingStrategy.columnClicked(sortingState, columnIndex, 1, false, false);
+            
+            updateSortIndicatorIcon(column, columnIndex);
         }
+        
+        private void updateSortIndicatorIcon(TableColumn column, int columnIndex) {
+        	List<SortingColumn> sortingColumns = sortingState.getColumns();
+			SortingColumn sortingColumn = sortingColumns.get(columnIndex);
+			if (sortingColumn.getComparatorIndex() >= 0) {
+				if(lastSortColumn != null && !multipleColumnSortEnabled) {
+					if(!lastSortColumn.isDisposed()) {
+						lastSortColumn.setImage(null);
+						lastSortColumn.pack();
+					}
+				}
+				lastSortColumn = column;
+				int direction = SWT.UP;
+				if (sortingColumn.isReverse()) {
+					direction = SWT.DOWN;
+				}
+				Image sortIndicatorImage = sortIndicatorHelper
+						.getSortImage(direction);
+				column.setImage(sortIndicatorImage);
+				column.pack();
+			} else {
+				column.setImage(null);
+				column.pack();
+			}
+        }
+        
         public void widgetDefaultSelected(SelectionEvent e) {
             // Do Nothing
         }
@@ -139,5 +180,6 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
         for(int c = 0; c < table.getColumnCount(); c++) {
             table.getColumn(c).removeSelectionListener(columnListener);
         }
+        sortIndicatorHelper.dispose();
     }
 }

@@ -68,7 +68,7 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 		getFormToolkit().createLabel(formBody, "Price");
 		getFormToolkit().createLabel(formBody, "TIF");
 		orderTicketViewPieces.createSideInput();
-		orderTicketViewPieces.createQuantityInput();
+		orderTicketViewPieces.createQuantityInput(10);
 		orderTicketViewPieces.createSymbolInput();
 		orderTicketViewPieces.createPriceInput();
 		orderTicketViewPieces.createTifInput();

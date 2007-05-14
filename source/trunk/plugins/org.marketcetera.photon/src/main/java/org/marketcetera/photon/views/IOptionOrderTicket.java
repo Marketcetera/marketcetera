@@ -5,16 +5,24 @@ import org.eclipse.swt.widgets.Text;
 
 public interface IOptionOrderTicket extends IOrderTicket {
 
-	 Combo getExpireMonthCombo();
+	Text getOptionSymbolControl();
 
-	 Combo getOpenCloseCombo();
-	 
-	 Combo getOrderCapacityCombo();
-			 
-	 Combo getPutOrCallCombo();
+	Combo getExpireMonthCombo();
 
-	 Text getStrikeText();
+	Combo getOpenCloseCombo();
 
-	 Combo getExpireYearCombo();
+	Combo getOrderCapacityCombo();
+
+	Combo getPutOrCallCombo();
+
+	/**
+	 * @return true if the user has selected a Put option, false if a Call or if
+	 *         the user has not made a selection.
+	 */
+	boolean isPut();
+
+	Combo getStrikePriceControl();
+
+	Combo getExpireYearCombo();
 
 }

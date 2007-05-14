@@ -12,6 +12,7 @@ Export-Package: .,
  org.marketcetera.core,
  org.marketcetera.marketdata,
  org.marketcetera.quickfix,
+ org.marketcetera.quickfix.cficode,
  org.marketcetera.quickfix.customfields,
  org.marketcetera.spring,
  org.marketcetera.symbology

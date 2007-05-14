@@ -1,13 +1,9 @@
 package org.marketcetera.photon.views;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -46,13 +42,15 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private static final String REPLACE_OPTION_ORDER = "Replace Option Order";
 
-	private Combo expireMonthCombo = null;
+	private Text optionSymbolControl;
 
-	private Text strikeText = null;
+	private Combo expireMonthCombo;
 
-	private Combo putOrCallCombo = null;
+	private Combo strikePriceControl;
 
-	private Combo expireYearCombo = null;
+	private Combo putOrCallCombo;
+
+	private Combo expireYearCombo;
 
 	private Section otherExpandableComposite;
 
@@ -63,6 +61,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	private Combo openCloseCombo;
 
 	private OptionOrderTicketController optionOrderTicketController;
+
+	private OptionDateHelper optionContractDateHelper = new OptionDateHelper();
 
 	public OptionOrderTicket() {
 	}
@@ -99,7 +99,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	@Override
 	protected int getNumColumnsInForm() {
-		return 9;
+		return 10;
 	}
 
 	@Override
@@ -107,7 +107,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		Composite formBody = outermostForm.getBody();
 		getFormToolkit().createLabel(formBody, "Side");
 		getFormToolkit().createLabel(formBody, "Quantity");
-		getFormToolkit().createLabel(formBody, "Symbol");
+		getFormToolkit().createLabel(formBody, "Option Root");
+		getFormToolkit().createLabel(formBody, "Option Symbol");
 		getFormToolkit().createLabel(formBody, "Expiration");
 		getFormToolkit().createLabel(formBody, "Strike");
 		getFormToolkit().createLabel(formBody, "Year");
@@ -116,8 +117,9 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		getFormToolkit().createLabel(formBody, "TIF");
 
 		orderTicketViewPieces.createSideInput();
-		orderTicketViewPieces.createQuantityInput();
+		orderTicketViewPieces.createQuantityInput(6);
 		orderTicketViewPieces.createSymbolInput();
+		createOptionSymbolControl();
 		createExpireMonthBorderComposite();
 		createStrikeBorderComposite();
 		createExpireYearBorderComposite();
@@ -147,7 +149,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 			tabOrder.add(orderTicketViewPieces.getQuantityText());
 			tabOrder.add(orderTicketViewPieces.getSymbolText());
 			tabOrder.add(expireMonthCombo);
-			tabOrder.add(strikeText);
+			tabOrder.add(strikePriceControl);
 			tabOrder.add(expireYearCombo);
 			tabOrder.add(putOrCallCombo);
 			tabOrder.add(orderTicketViewPieces.getPriceText());
@@ -177,60 +179,52 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		}
 	}
 
+	private void createOptionSymbolControl() {
+		optionSymbolControl = getFormToolkit().createText(
+				outermostForm.getBody(), null, SWT.SINGLE | SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(optionSymbolControl, 6);
+		optionSymbolControl.setEnabled(false);
+	}
+
 	private void createExpireMonthBorderComposite() {
 		checkOutermostFormInitialized();
 		expireMonthCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(expireMonthCombo, 4);
 		// todo: Dynamically populate expiration choices from market data
-
-		SimpleDateFormat formatter = new SimpleDateFormat("MMM");
-		GregorianCalendar calendar = new GregorianCalendar();
-		final int minMonth = calendar.getMinimum(Calendar.MONTH);
-		final int maxMonth = calendar.getMaximum(Calendar.MONTH);
-		for (int month = minMonth; month <= maxMonth; ++month) {
-			calendar.set(Calendar.MONTH, month);
-			java.util.Date monthTime = calendar.getTime();
-			String monthStr = formatter.format(monthTime);
-			monthStr = monthStr.toUpperCase();
+		List<String> monthStrings = optionContractDateHelper
+				.createDefaultMonths();
+		for (String monthStr : monthStrings) {
 			expireMonthCombo.add(monthStr);
 		}
 
 		orderTicketViewPieces.addInputControlErrorDecoration(expireMonthCombo);
 	}
 
-	private void addSelectAllFocusListener(Control control) {
-		control.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				((Text) e.widget).selectAll();
-			}
-		});
-	}
+	// todo: Remove this method if it remains unused.
+	// private void addSelectAllFocusListener(Control control) {
+	// control.addFocusListener(new FocusAdapter() {
+	// @Override
+	// public void focusGained(FocusEvent e) {
+	// ((Text) e.widget).selectAll();
+	// }
+	// });
+	// }
 
 	private void createStrikeBorderComposite() {
-		strikeText = getFormToolkit().createText(outermostForm.getBody(), null,
-				SWT.SINGLE | SWT.BORDER);
-		addSelectAllFocusListener(strikeText);
+		strikePriceControl = new Combo(outermostForm.getBody(), SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(strikePriceControl, 4);
+		// addSelectAllFocusListener(strikePriceControl);
 
-		GridData textGridData = new GridData();
-		Point sizeHint = EclipseUtils
-				.getTextAreaSize(strikeText, null, 10, 1.0);
-		// textGridData.heightHint = sizeHint.y;
-		textGridData.widthHint = sizeHint.x;
-		strikeText.setLayoutData(textGridData);
-
-		orderTicketViewPieces.addInputControlErrorDecoration(strikeText);
+		orderTicketViewPieces
+				.addInputControlErrorDecoration(strikePriceControl);
 	}
 
 	private void createExpireYearBorderComposite() {
 		expireYearCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
+		orderTicketViewPieces.assignDefaultGridData(expireYearCombo, 3);
 		// todo: Dynamically populate year choices from market data.
-		final int maxYear = 12;
-		for (int currentYear = 7; currentYear <= maxYear; ++currentYear) {
-			StringBuilder year = new StringBuilder();
-			if (currentYear < 10) {
-				year.append("0");
-			}
-			year.append(currentYear);
+		List<String> years = optionContractDateHelper.createDefaultYears();
+		for (String year : years) {
 			expireYearCombo.add(year.toString());
 		}
 
@@ -241,6 +235,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		putOrCallCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
 		putOrCallCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCombo.add(PutOrCallImage.CALL.getImage());
+
+		orderTicketViewPieces.assignDefaultGridData(putOrCallCombo, 3);
 
 		orderTicketViewPieces.addInputControlErrorDecoration(putOrCallCombo);
 	}
@@ -321,7 +317,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private GridData createStandardSingleColumnGridData() {
 		GridData gridData = new GridData();
-		gridData.horizontalAlignment = SWT.LEFT;
+		gridData.horizontalAlignment = SWT.FILL;
 		gridData.verticalAlignment = SWT.CENTER;
 		gridData.horizontalSpan = 1;
 		gridData.verticalSpan = 1;
@@ -350,6 +346,10 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return orderTicket;
 	}
 
+	public Text getOptionSymbolControl() {
+		return optionSymbolControl;
+	}
+
 	public Text getAccountText() {
 		return accountText;
 	}
@@ -374,8 +374,17 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return putOrCallCombo;
 	}
 
-	public Text getStrikeText() {
-		return strikeText;
+	public boolean isPut() {
+		String putOrCallStr = putOrCallCombo.getText();
+		if (putOrCallStr != null
+				&& putOrCallStr.equals(PutOrCallImage.PUT.getImage())) {
+			return true;
+		}
+		return false;
+	}
+
+	public Combo getStrikePriceControl() {
+		return strikePriceControl;
 	}
 
 }
