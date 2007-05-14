@@ -2,7 +2,7 @@ package org.marketcetera.photon.commands;
 
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.StockOrderTicketController;
 
 import quickfix.Message;
 
@@ -16,7 +16,11 @@ public class ShowOrderInTicketCommand implements IPhotonCommand {
 	}
 
 	public void execute() {
-		PhotonPlugin.getDefault().getStockOrderTicketController().showMessage(order);
+		// todo: Make this work with options
+		StockOrderTicketController controller = PhotonPlugin.getStockOrderTicketController();
+		if(controller != null) {
+			controller.showMessage(order);
+		}
 	}
 
 }

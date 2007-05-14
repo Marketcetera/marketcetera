@@ -3,7 +3,6 @@ package org.marketcetera.photon;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.HashMap;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -19,6 +18,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
@@ -32,7 +35,7 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
-import org.marketcetera.photon.views.OptionOrderTicketController;
+import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionary;
@@ -66,10 +69,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private BundleContext bundleContext;
 	
-	private StockOrderTicketController stockOrderTicketController;
-
-	private OptionOrderTicketController optionOrderTicketController;
-
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
 
 	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts";
@@ -334,24 +333,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return messageFactory;
 	}
 
-	public StockOrderTicketController getStockOrderTicketController() {
-		return stockOrderTicketController;
-	}
-
-	public void setStockOrderTicketController(
-			StockOrderTicketController stockOrderTicketController) {
-		this.stockOrderTicketController = stockOrderTicketController;
-	}
-
-	public OptionOrderTicketController getOptionOrderTicketController() {
-		return optionOrderTicketController;
-	}
-
-	public void setOptionOrderTicketController(
-			OptionOrderTicketController optionOrderTicketController) {
-		this.optionOrderTicketController = optionOrderTicketController;
-	}
-
 	public FIXDataDictionary getFIXDataDictionary() {
 		return FIXDataDictionaryManager.getCurrentFIXDataDictionary();
 	}
@@ -360,4 +341,40 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return fixVersion;
 	}
 
+	public static IViewPart getActiveView(String viewId) {
+		IWorkbenchWindow activeWindow = PlatformUI.getWorkbench()
+				.getActiveWorkbenchWindow();
+		if (activeWindow != null) {
+			IWorkbenchPage activePage = activeWindow.getActivePage();
+			if (activePage != null) {
+				return activePage.findView(viewId);
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * @return a view of the expectedClass. null if not found or the found view
+	 *         is not of the expected class.
+	 */
+	public static IViewPart getActiveView(String viewId, Class<?> expectedClass) {
+		IViewPart viewPart = getActiveView(viewId);
+		if (viewPart == null) {
+			return null;
+		}
+		if (expectedClass.isAssignableFrom(viewPart.getClass())) {
+			return viewPart;
+		}
+		return null;
+	}
+	
+	public static StockOrderTicketController getStockOrderTicketController() {
+		StockOrderTicket stockOrderTicket = (StockOrderTicket) PhotonPlugin
+				.getActiveView(StockOrderTicket.ID, StockOrderTicket.class);
+		if (stockOrderTicket != null) {
+			return stockOrderTicket.getStockOrderTicketController();
+		}
+		return null;
+	}
+	
 }

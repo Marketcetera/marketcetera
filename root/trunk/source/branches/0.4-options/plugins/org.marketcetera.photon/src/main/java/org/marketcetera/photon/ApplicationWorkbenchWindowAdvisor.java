@@ -118,17 +118,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		startJMS();
 		startMarketDataFeed();
 		startIDFactory();
-		// todo: Multiple order ticket views can exist and the
-		// PhotonPlugin.setStockOrderTicketController and
-		// setOptionOrderTicketController will not work properly.
-		if (StockOrderTicket.getDefault() != null) {
-			plugin.setStockOrderTicketController(StockOrderTicket.getDefault()
-					.getStockOrderTicketController());
-		}
-		if (OptionOrderTicket.getDefault() != null) {
-			plugin.setOptionOrderTicketController(OptionOrderTicket
-					.getDefault().getOptionOrderTicketController());
-		}
 	}
 
 	/** 
