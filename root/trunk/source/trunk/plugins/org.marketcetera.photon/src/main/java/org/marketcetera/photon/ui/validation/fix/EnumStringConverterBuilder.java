@@ -5,8 +5,8 @@ import java.util.Map;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
-import org.eclipse.core.databinding.validation.IValidator;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.SetValidator;
 
 public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
@@ -41,14 +41,14 @@ public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
 	/* (non-Javadoc)
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newTargetAfterGetValidator()
 	 */
-	public IValidator newTargetAfterGetValidator(){
+	public IToggledValidator newTargetAfterGetValidator(){
 		return new SetValidator<String>(map.values(), PhotonPlugin.ID, "Not a valid value");
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newModelAfterGetValidator()
 	 */
-	public IValidator newModelAfterGetValidator(){
+	public IToggledValidator newModelAfterGetValidator(){
 		return new SetValidator<FROM_T>(map.keySet(), PhotonPlugin.ID, "Not a valid value");
 	}
 	

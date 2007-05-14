@@ -76,7 +76,7 @@ public class OrderTicketControllerHelper {
 	private MSymbol listenedSymbol = null;
 
 	private ISubscription currentSubscription;
-	
+
 	private MarketDataListener marketDataListener;
 
 	private Message targetMessage;
@@ -100,7 +100,7 @@ public class OrderTicketControllerHelper {
 	private HashMap<Control, IStatus> inputControlErrorStatus;
 
 	private HashSet<IToggledValidator> allValidators;
-	
+
 	private Realm targetRealm;
 
 	protected boolean orderQtyIsInt;
@@ -127,10 +127,12 @@ public class OrderTicketControllerHelper {
 		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
 				.getDictionary();
 		dataBindingContext = new DataBindingContext();
-		
-		orderQtyIsInt = (FieldType.Int == dictionary.getFieldTypeEnum(OrderQty.FIELD));
-		hasRealCharDatatype = FieldType.Char.equals(dictionary.getFieldTypeEnum(Side.FIELD));
-		
+
+		orderQtyIsInt = (FieldType.Int == dictionary
+				.getFieldTypeEnum(OrderQty.FIELD));
+		hasRealCharDatatype = FieldType.Char.equals(dictionary
+				.getFieldTypeEnum(Side.FIELD));
+
 		allValidators = new HashSet<IToggledValidator>();
 	}
 
@@ -141,9 +143,9 @@ public class OrderTicketControllerHelper {
 
 		marketDataListener = new MarketDataListener() {
 
-//			public void onLevel2Quote(Message aQuote) {
-//				OrderTicketControllerHelper.this.onQuote(aQuote);
-//			}
+			// public void onLevel2Quote(Message aQuote) {
+			// OrderTicketControllerHelper.this.onQuote(aQuote);
+			// }
 
 			public void onQuote(Message aQuote) {
 				OrderTicketControllerHelper.this.onQuote(aQuote);
@@ -177,18 +179,20 @@ public class OrderTicketControllerHelper {
 			}
 		});
 
-		ticket.getCancelButton().addSelectionListener( new SelectionListener() {
+		ticket.getCancelButton().addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				handleCancel();
 			}
+
 			public void widgetSelected(SelectionEvent e) {
 				handleCancel();
 			}
 		});
-		ticket.getSendButton().addSelectionListener( new SelectionListener() {
+		ticket.getSendButton().addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
 				handleSend();
 			}
+
 			public void widgetSelected(SelectionEvent e) {
 				handleSend();
 			}
@@ -222,26 +226,46 @@ public class OrderTicketControllerHelper {
 
 	protected void listenMarketData(String symbol) {
 		unlisten();
-		if (symbol != null && !"".equals(symbol)) {
+		if (symbol != null && !"".equals(symbol.trim())) {
 			MSymbol newListenedSymbol = new MSymbol(symbol);
 			MarketDataFeedService service = marketDataTracker
 					.getMarketDataFeedService();
 
 			if (service != null && !newListenedSymbol.equals(listenedSymbol)) {
-				if (listenedSymbol != null){
+				if (listenedSymbol != null) {
 					unlisten();
 				}
-				Message subscriptionMessage = MarketDataUtils.newSubscribeLevel2(newListenedSymbol);
-				ISubscription subscription;
+				Message subscriptionMessage = MarketDataUtils
+						.newSubscribeLevel2(newListenedSymbol);
+				ISubscription subscription = null;
 				try {
 					subscription = service.subscribe(subscriptionMessage);
 					currentSubscription = subscription;
+					listenMarketDataAdditional(service, symbol);
 				} catch (MarketceteraException e) {
-					PhotonPlugin.getMainConsoleLogger().error("Exception requesting quotes for "+newListenedSymbol);
+					PhotonPlugin.getMainConsoleLogger().error(
+							"Exception requesting quotes for "
+									+ newListenedSymbol);
+				} finally {
+					listenedSymbol = newListenedSymbol;
 				}
-				listenedSymbol = newListenedSymbol;
 			}
 		}
+	}
+
+	/**
+	 * Derived classes can listen for additional market data when subscribing to
+	 * a new symbol.
+	 */
+	protected void listenMarketDataAdditional(MarketDataFeedService service,
+			String symbol) throws MarketceteraException {
+	}
+
+	/**
+	 * Derived classes can unsubscribe the additional market data they are
+	 * listening to.
+	 */
+	protected void unlistenMarketDataAdditional() throws MarketceteraException {
 	}
 
 	protected void unlisten() {
@@ -254,8 +278,11 @@ public class OrderTicketControllerHelper {
 					service.unsubscribe(currentSubscription);
 					listenedSymbol = null;
 					currentSubscription = null;
+					unlistenMarketDataAdditional();
 				} catch (MarketceteraException e) {
-					PhotonPlugin.getMainConsoleLogger().warn("Error unsubscribing to quotes for "+listenedSymbol);
+					PhotonPlugin.getMainConsoleLogger().warn(
+							"Error unsubscribing to quotes for "
+									+ listenedSymbol);
 				}
 			}
 		}
@@ -270,11 +297,19 @@ public class OrderTicketControllerHelper {
 						&& listenedSymbolString.equals(message
 								.getString(Symbol.FIELD))) {
 					ticket.getBookComposite().onQuote(message);
+					onQuoteAdditional(message);
 				}
 			}
 		} catch (FieldNotFound e) {
 			// Do nothing
 		}
+	}
+
+	/**
+	 * Derived classes can receive quote notifications for additional market
+	 * data.
+	 */
+	protected void onQuoteAdditional(Message message) {
 	}
 
 	public void handleSend() {
@@ -351,6 +386,17 @@ public class OrderTicketControllerHelper {
 		}
 	}
 
+	/**
+	 * Derived classes can change which FIX field is affected by the Symbol
+	 * control.
+	 * 
+	 * @return the int FIX field that the Symbol control will be bound to in the
+	 *         message.
+	 */
+	protected int getSymbolFIXField() {
+		return Symbol.FIELD;
+	}
+
 	protected void bindImpl(Message message, boolean enableValidators) {
 
 		targetMessage = message;
@@ -361,7 +407,7 @@ public class OrderTicketControllerHelper {
 		final int swtEvent = SWT.Modify;
 		{
 			Control whichControl = ticket.getSideCombo();
-			IToggledValidator validator = (IToggledValidator) sideConverterBuilder
+			IToggledValidator validator = sideConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext
@@ -376,14 +422,15 @@ public class OrderTicketControllerHelper {
 									.setConverter(sideConverterBuilder
 											.newToTargetConverter()));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		{
 			Control whichControl = ticket.getQuantityText();
 			IToggledValidator validator;
 			IConverter toModelConverter;
 			IConverter toUIConverter;
-			if (orderQtyIsInt){
+			if (orderQtyIsInt) {
 				validator = new IntegerRequiredValidator();
 				toModelConverter = StringToNumberConverter.toInteger(false);
 				toUIConverter = NumberToStringConverter.fromInteger(false);
@@ -398,10 +445,10 @@ public class OrderTicketControllerHelper {
 					message, OrderQty.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator)
 							.setConverter(toModelConverter),
-					new UpdateValueStrategy()
-							.setConverter(toUIConverter));
+					new UpdateValueStrategy().setConverter(toUIConverter));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		{
 			Control whichControl = ticket.getSymbolText();
@@ -409,15 +456,16 @@ public class OrderTicketControllerHelper {
 			validator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables.observeText(
 					whichControl, swtEvent), FIXObservables.observeValue(realm,
-					message, Symbol.FIELD, dictionary),
+					message, getSymbolFIXField(), dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator),
 					new UpdateValueStrategy());
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		{
 			Control whichControl = ticket.getPriceText();
-			IToggledValidator validator = (IToggledValidator) priceConverterBuilder
+			IToggledValidator validator = priceConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			dataBindingContext
@@ -436,14 +484,15 @@ public class OrderTicketControllerHelper {
 											priceConverterBuilder
 													.newToTargetConverter()));
 			addControlStateListeners(whichControl, validator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		{
 			Control whichControl = ticket.getTifCombo();
-			IToggledValidator afterGetValidator = (IToggledValidator) tifConverterBuilder
+			IToggledValidator afterGetValidator = tifConverterBuilder
 					.newTargetAfterGetValidator();
 			afterGetValidator.setEnabled(enableValidators);
-			IToggledValidator afterConvertValidator = (IToggledValidator) new DataDictionaryValidator(
+			IToggledValidator afterConvertValidator = new DataDictionaryValidator(
 					dictionary, TimeInForce.FIELD,
 					"Not a valid value for TimeInForce", PhotonPlugin.ID);
 			afterConvertValidator.setEnabled(enableValidators);
@@ -458,7 +507,8 @@ public class OrderTicketControllerHelper {
 							.newToTargetConverter()));
 			addControlStateListeners(whichControl, afterGetValidator);
 			addControlStateListeners(whichControl, afterConvertValidator);
-			if (!enableValidators) addControlRequiringUserInput(whichControl);
+			if (!enableValidators)
+				addControlRequiringUserInput(whichControl);
 		}
 		dataBindingContext.bindValue(SWTObservables.observeText(ticket
 				.getAccountText(), swtEvent), FIXObservables.observeValue(
@@ -473,7 +523,7 @@ public class OrderTicketControllerHelper {
 			final IToggledValidator validator) {
 
 		allValidators.add(validator);
-		
+
 		control.addListener(SWT.FocusIn, new Listener() {
 			private boolean initialState = true;
 
@@ -499,7 +549,7 @@ public class OrderTicketControllerHelper {
 
 		});
 	}
-	
+
 	private IMapChangeListener createMapChangeListener() {
 		return new IMapChangeListener() {
 
@@ -527,8 +577,9 @@ public class OrderTicketControllerHelper {
 						aControl.setBackground(colorRed);
 					} else {
 						try {
-							aControl.setBackground((Color) aControl
-									.getData(OrderTicketViewPieces.CONTROL_DEFAULT_COLOR));
+							aControl
+									.setBackground((Color) aControl
+											.getData(OrderTicketViewPieces.CONTROL_DEFAULT_COLOR));
 						} catch (Exception e) {
 							aControl.setBackground(null);
 						}
@@ -560,35 +611,35 @@ public class OrderTicketControllerHelper {
 	}
 
 	private void initSideConverterBuilder() {
-		if (!hasRealCharDatatype){
+		if (!hasRealCharDatatype) {
 			EnumStringConverterBuilder<String> escb = new EnumStringConverterBuilder<String>(
 					String.class);
-		
-			bindingHelper.initStringToImageConverterBuilder(escb,
-					SideImage.values());
+
+			bindingHelper.initStringToImageConverterBuilder(escb, SideImage
+					.values());
 			sideConverterBuilder = escb;
 		} else {
 			EnumStringConverterBuilder<Character> escb = new EnumStringConverterBuilder<Character>(
-				Character.class);
-	
-			bindingHelper.initCharToImageConverterBuilder(escb,
-					SideImage.values());
+					Character.class);
+
+			bindingHelper.initCharToImageConverterBuilder(escb, SideImage
+					.values());
 			sideConverterBuilder = escb;
 		}
 	}
-	
+
 	private void initTifConverterBuilder() {
-		if (!hasRealCharDatatype){
+		if (!hasRealCharDatatype) {
 			EnumStringConverterBuilder<String> escb = new EnumStringConverterBuilder<String>(
 					String.class);
-		
+
 			bindingHelper.initStringToImageConverterBuilder(escb,
 					TimeInForceImage.values());
 			tifConverterBuilder = escb;
 		} else {
 			EnumStringConverterBuilder<Character> escb = new EnumStringConverterBuilder<Character>(
-				Character.class);
-	
+					Character.class);
+
 			bindingHelper.initCharToImageConverterBuilder(escb,
 					TimeInForceImage.values());
 			tifConverterBuilder = escb;

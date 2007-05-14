@@ -7,11 +7,10 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -114,7 +113,12 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 			try {
 				Message cancelReplaceMessage = messageFactory.newCancelReplaceFromMessage(oldMessage);
 				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin.getDefault().getIDFactory().getNext()));
-				PhotonPlugin.getDefault().getStockOrderTicketController().showMessage(cancelReplaceMessage);
+				// todo: Make this work with options
+				StockOrderTicketController controller = PhotonPlugin
+						.getStockOrderTicketController();
+				if (controller != null) {
+					controller.showMessage(cancelReplaceMessage);
+				}
 			} catch (NoMoreIDsException e) {	
 				PhotonPlugin.getMainConsoleLogger().error("Ran out of order ID's");
 			} catch (FieldNotFound e) {

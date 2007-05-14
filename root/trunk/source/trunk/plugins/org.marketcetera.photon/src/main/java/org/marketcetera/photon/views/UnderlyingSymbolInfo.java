@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.lang.reflect.Field;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -7,23 +9,108 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.photon.IFieldIdentifier;
 
-public class UnderlierInfo {
+import quickfix.field.BidPx;
+import quickfix.field.BidSize;
+import quickfix.field.HighPx;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LowPx;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
+import quickfix.field.MDEntryTime;
+import quickfix.field.MDEntryType;
+import quickfix.field.NoMDEntries;
+import quickfix.field.OfferPx;
+import quickfix.field.OfferSize;
+import quickfix.field.OpenClose;
+import quickfix.field.SendingTime;
+import quickfix.field.Symbol;
+import quickfix.field.TotalVolumeTraded;
+
+public class UnderlyingSymbolInfo {
+		
+	public enum UnderlyingSymbolDataFields implements IFieldIdentifier
+	{
+		SYMBOL(Symbol.class), 
+		LASTPX(LastPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
+
+		// todo:what to subscribe to for LastPxDelta?
+		LASTPXDELTA(LastPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE),  
+		LASTQTY(LastQty.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
+		BID(BidPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		ASK(OfferPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), 
+		BIDSZ(BidSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		ASKSZ(OfferSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+
+		//cl todo:sending time or lastUpdateTime?  also, what should the last field be?
+		LASTUPDATEDTIME(SendingTime.class, MDEntryTime.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		TRADEVOL(TotalVolumeTraded.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME),
+		OPENPX(OpenClose.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OPENING_PRICE),
+		HI(HighPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADING_SESSION_HIGH_PRICE), 
+		LOW(LowPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADING_SESSION_LOW_PRICE);
+		//cl todo:implement dividends time/value + trade value
+		
+		private String name;
+		private Integer fieldID;
+		private Integer groupID;
+		private Integer groupDiscriminatorID;
+		private Object groupDiscriminatorValue;
+
+		UnderlyingSymbolDataFields(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this(clazz);
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
+		}
+
+		UnderlyingSymbolDataFields(Class clazz) {
+			name = clazz.getSimpleName();
+			try {
+				Field fieldField = clazz.getField("FIELD");
+				fieldID = (Integer) fieldField.get(null);
+			} catch (Throwable t){
+				assert(false);
+			}
+		}
+
+		public String toString() {
+			return name;
+		}
+
+		public Integer getFieldID() {
+			return fieldID;
+		}
+		
+		public Integer getGroupID() {
+			return groupID;
+		}
+
+		public Integer getGroupDiscriminatorID() {
+			return groupDiscriminatorID;
+		}
+
+		public Object getGroupDiscriminatorValue() {
+			return groupDiscriminatorValue;
+		}
+
+	};
 	
-	public UnderlierInfo(Composite parent)
+	public UnderlyingSymbolInfo(Composite parent)
 	{
 		createColors(parent);
 		createFirstRowComposite(parent);
 		createSecondRowComposite(parent);
 	}
-	
+
 	private FormToolkit formToolkit;
 	
 	// Dynamiclly-updated controls in first row of the main info section
@@ -42,7 +129,7 @@ public class UnderlierInfo {
 	private Label openPriceLabel;
 	private Label highPriceLabel;
 	private Label lowPriceLabel;
-	private Label tradingVolumeLabel;
+	private Label tradeValueLabel;
 	
 	private Label exDivDateAmountTextLabel;
 	private List exDivDateAmount;
@@ -113,7 +200,7 @@ public class UnderlierInfo {
 
 		exDivDateAmount = new List(firstRow, SWT.V_SCROLL | SWT.H_SCROLL);
 		FormData narrowForm = createNarrowFormData(exDivDateAmountTextLabel);
-		narrowForm.height = 0;		
+		narrowForm.height = 0;   	
 		exDivDateAmount.setLayoutData(narrowForm);		
 	}
 	
@@ -159,12 +246,12 @@ public class UnderlierInfo {
 		lowPriceLabel = getFormToolkit().createLabel(secondRow, null);
 		lowPriceLabel.setLayoutData(createNarrowFormData(lowPriceIndicatorTextLabel));
 
-		Label tradingVolumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Trd ");
-		tradingVolumeIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
-		tradingVolumeIndicatorTextLabel.setLayoutData(createFormData(lowPriceLabel));
+		Label tradeValueIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Trd ");
+		tradeValueIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
+		tradeValueIndicatorTextLabel.setLayoutData(createFormData(lowPriceLabel));
 
-		tradingVolumeLabel = getFormToolkit().createLabel(secondRow, null);
-		tradingVolumeLabel.setLayoutData(createNarrowFormData(tradingVolumeIndicatorTextLabel));
+		tradeValueLabel = getFormToolkit().createLabel(secondRow, null);
+		tradeValueLabel.setLayoutData(createNarrowFormData(tradeValueIndicatorTextLabel));
 
 	}
 
@@ -262,8 +349,8 @@ public class UnderlierInfo {
 		this.openPriceLabel.setText(openPriceLabelText);
 	}
 
-	public void setTradingVolumeLabelText(String tradingVolumeLabelText) {
-		this.tradingVolumeLabel.setText(tradingVolumeLabelText);
+	public void setTradeValueLabelText(String tradeValueLabelText) {
+		this.tradeValueLabel.setText(tradeValueLabelText);
 	}
 
 	public void setVolumeLabelText(String volumeLabelText) {

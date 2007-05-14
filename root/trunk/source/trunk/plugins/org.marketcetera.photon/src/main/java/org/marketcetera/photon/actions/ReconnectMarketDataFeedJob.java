@@ -85,12 +85,15 @@ public class ReconnectMarketDataFeedJob extends Job {
 			    		String password = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_PASSWORD_SUFFIX);
 			    		Map<String, Object> parameters = getParameters(factory, store, pluginName);
 			    		IMarketDataFeed targetQuoteFeed = factory.getInstance(url, user, password, parameters);
+			    		// Quote feed must be started before registration so
+						// that resubscription works properly. See bug #213.
+			    		targetQuoteFeed.start();
+			    		
 		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
 						ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
 		    			marketDataFeedService.setServiceRegistration(registration);
 		    			marketDataFeedService.afterPropertiesSet();
 		    			
-		    			targetQuoteFeed.start();
 		    			succeeded = true;
 		    			break;
 	    			} else {

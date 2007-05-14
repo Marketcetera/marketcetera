@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import quickfix.field.CustomerOrFirm;
+import quickfix.field.OrderCapacity;
 
 public enum OrderCapacityImage implements ILexerFIXImage  {
 	// todo: This mapping needs to be revised. See http://trac.marketcetera.org/trac.fcgi/ticket/185
-    //	CUSTOMER("Customer", OrderCapacity.AGENCY), BROKERDEALER("Broker/Dealer", OrderCapacity.PRINCIPAL), MARKETMAKER("Market Maker", OrderCapacity.PROPRIETARY);
-	CUSTOMER("Customer", CustomerOrFirm.CUSTOMER), BROKERDEALER("Broker/Dealer", CustomerOrFirm.FIRM), MARKETMAKER("Market Maker", CustomerOrFirm.FIRM);
+    CUSTOMER("Customer", OrderCapacity.AGENCY), BROKERDEALER("Broker/Dealer", OrderCapacity.PRINCIPAL), MARKETMAKER("Market Maker", OrderCapacity.PROPRIETARY);
+//	CUSTOMER("Customer", CustomerOrFirm.CUSTOMER), BROKERDEALER("Broker/Dealer", CustomerOrFirm.FIRM), MARKETMAKER("Market Maker", CustomerOrFirm.FIRM);
 	static final Map<String, OrderCapacityImage> nameMap = new HashMap<String, OrderCapacityImage>();
 	private static final String[] images;
 

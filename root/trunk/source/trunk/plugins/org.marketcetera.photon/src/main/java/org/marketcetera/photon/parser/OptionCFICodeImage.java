@@ -4,20 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import quickfix.field.PutOrCall;
+import org.marketcetera.quickfix.cficode.OptionCFICode;
 
 /**
- * FIX 4.2. For FIX 4.3 and above see OptionCFICodeImage (CFICode).
+ * FIX 4.3 +
  */
-public enum PutOrCallImage implements ILexerFIXImage {
+public enum OptionCFICodeImage implements ILexerFIXImage {
 
-	PUT("P", PutOrCall.PUT), CALL("C", PutOrCall.CALL);
-	static final Map<String, PutOrCallImage> nameMap = new HashMap<String, PutOrCallImage>();
+	PUT("P", "" + OptionCFICode.TYPE_PUT), CALL("C", ""+OptionCFICode.TYPE_CALL);
+	static final Map<String, OptionCFICodeImage> nameMap = new HashMap<String, OptionCFICodeImage>();
 	private static final String[] images;
 
 	static {
 		ArrayList<String> imageList = new ArrayList<String>();
-		for (PutOrCallImage anImage : PutOrCallImage.values()) {
+		for (OptionCFICodeImage anImage : OptionCFICodeImage.values()) {
 			nameMap.put(anImage.getImage(), anImage);
 			imageList.add(anImage.getImage());
 		}
@@ -25,28 +25,28 @@ public enum PutOrCallImage implements ILexerFIXImage {
 	}
 
 	private String image;
-	private final int fixValue;
-	PutOrCallImage(String s, int fixValue) {
+	private final String fixValue;
+	OptionCFICodeImage(String s, String fixValue) {
 		image = s;
 		this.fixValue = fixValue;
 	}
 	public String getImage() {
 		return image;
 	}
-	public static PutOrCallImage fromName(String image) {
+	public static OptionCFICodeImage fromName(String image) {
 		return nameMap.get(image);
 	}
 	public static String [] getImages(){
 		return images;
 	}
 	public int getFIXIntValue() {
-		return fixValue;
+		return 0;
 	}
 	public char getFIXCharValue() {
-		return (char) fixValue;
+		return 0;
 	}
 	public String getFIXStringValue() {
-		return ""+fixValue;
+		return fixValue;
 	}
 
 }

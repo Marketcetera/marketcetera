@@ -1,20 +1,23 @@
 package org.marketcetera.photon.views;
 
-import java.lang.reflect.Field;
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
-import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
@@ -24,17 +27,28 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionContractData;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionMessageHolder;
+import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
-import org.marketcetera.photon.ui.MessageListTableFormat;
+import org.marketcetera.photon.ui.OptionMessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.photon.views.UnderlyingSymbolInfo.UnderlyingSymbolDataFields;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXValueExtractor;
+import org.marketcetera.quickfix.FIXVersion;
 
+import quickfix.DataDictionary;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
+import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
@@ -43,39 +57,47 @@ import quickfix.field.MaturityMonthYear;
 import quickfix.field.NoMDEntries;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
-import quickfix.fix44.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.matchers.Matcher;
 
 /**
  * Option market data view.
  * 
  * @author caroline.leung@softwaregoodness.com
  */
-public class OptionMarketDataView extends MessagesView implements
+public class OptionMarketDataView extends OptionMessagesView  implements
 		IMSymbolListener {
 
 	public static final String ID = "org.marketcetera.photon.views.OptionMarketDataView";
+	
+	public static final int FIRST_PUT_DATA_COLUMN_INDEX = 9; 
 
 	private static final int ZERO_WIDTH_COLUMN_INDEX = 0;
 
-	private static final int SYMBOL_COLUMN_INDEX = 1;
-
-	private static final int LAST_NORMAL_COLUMN_INDEX = SYMBOL_COLUMN_INDEX;
+	private static final int LAST_NORMAL_COLUMN_INDEX = ZERO_WIDTH_COLUMN_INDEX;
 
 	private FormToolkit formToolkit;
 
-	private Section underliersSection;
+	private Section underlyingSymbolsSection;
 
-	private Composite underliersContainer;
+	private Composite underlyingSymbolsContainer;
 
-	private Composite[] underliers;
-
-	private UnderlierInfo[] underlierInfoSections;
+	private HashMap<String, UnderlyingSymbolInfo> underlyingSymbolInfoMap;
 
 	private ScrolledForm form = null;
+	
+	private DataDictionary dictionary;
+	private FIXValueExtractor extractor;
+
+	private HashMap<String, OptionPairKey> optionSymbolToKeyMap;
+	
+	private HashMap<OptionPairKey, OptionMessageHolder> optionContractMap;
+	
+	private HashMap<String, Boolean> optionSymbolToSideMap;
+
+
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
 	public enum OptionDataColumns implements IFieldIdentifier {
 		ZEROWIDTH(""), 
@@ -145,24 +167,33 @@ public class OptionMarketDataView extends MessagesView implements
 
 		marketDataListener = new MDVMarketDataListener();
 		marketDataTracker.setMarketDataListener(marketDataListener);
+		initializeFixValueExtractor();
+	}
+	
+	private void initializeFixValueExtractor()
+	{
+		dictionary = FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary();
+		FIXMessageFactory messageFactory = FIXVersion.getFIXVersion(dictionary.getVersion()).getMessageFactory();
+		extractor = new FIXValueExtractor(dictionary, messageFactory);
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
 		createForm(parent);
-		createUnderliersSection();
-
-		// helper methods for testing and mocking-up the UI only, will remove
-		int numUnderliers = 3;
-		test_createUnderliers(numUnderliers);
-		test_populateUnderliersMktData(numUnderliers);
-
+		createUnderlyingSymbolsSection();
 		Composite tableExpandable = createDataTableSection();
 		super.createPartControl(tableExpandable);
-		this.setInput(new BasicEventList<MessageHolder>());
+		this.setInput(new BasicEventList<OptionMessageHolder>());
+		initializeDataMaps();
+	}
+	
+	private void initializeDataMaps() {
+		optionSymbolToKeyMap = new HashMap<String, OptionPairKey>();
+		optionSymbolToSideMap = new HashMap<String, Boolean>();
+		optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
+		underlyingSymbolInfoMap = new HashMap<String, UnderlyingSymbolInfo>();  		
 	}
 
-	// todo: duplicated, need to refactor
 	/**
 	 * This method initializes formToolkit
 	 * 
@@ -183,21 +214,21 @@ public class OptionMarketDataView extends MessagesView implements
 				createTopAlignedHorizontallySpannedGridData());
 	}
 
-	private void createUnderliersSection() {
-		underliersSection = getFormToolkit().createSection(
+	private void createUnderlyingSymbolsSection() {
+		underlyingSymbolsSection = getFormToolkit().createSection(
 				form.getBody(), Section.EXPANDED | Section.NO_TITLE);
-		underliersSection
+		underlyingSymbolsSection
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		createUnderliersContainerComposite();
+		createUnderlyingSymbolsContainerComposite();
 	}
 
-	private void createUnderliersContainerComposite() {
-		underliersContainer = getFormToolkit().createComposite(
-				underliersSection, SWT.NONE);
-		underliersContainer
+	private void createUnderlyingSymbolsContainerComposite() {
+		underlyingSymbolsContainer = getFormToolkit().createComposite(
+				underlyingSymbolsSection, SWT.NONE);
+		underlyingSymbolsContainer
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		underliersContainer.setLayout(createBasicGridLayout(1));
-		underliersSection.setClient(underliersContainer);		
+		underlyingSymbolsContainer.setLayout(createBasicGridLayout(1));
+		underlyingSymbolsSection.setClient(underlyingSymbolsContainer);	
 	}
 		
 	private Composite createDataTableSection() {
@@ -220,80 +251,25 @@ public class OptionMarketDataView extends MessagesView implements
 		return tableComposite;
 	}
 
-	private Composite createUnderlierComposite(Composite parent) {
-		Composite underlier = getFormToolkit().createComposite(
+	private Composite createUnderlyingSymbolComposite(Composite parent) {
+		Composite underlyingSymbolComposite = getFormToolkit().createComposite(
 				parent, SWT.NONE);
-		underlier.setLayout(createBasicGridLayout(1));
-		underlier.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		return underlier;
+		underlyingSymbolComposite.setLayout(createBasicGridLayout(1));
+		underlyingSymbolComposite.setLayoutData(createTopAlignedHorizontallySpannedGridData());
+		return underlyingSymbolComposite;
 	}
 
-	// =======================================================
-	// Helper methods for mocking up the UI only;
-	// Remove this section once the data feed is hooked up
-
-	private void test_createUnderliers(int numUnderliers) {
-
-		underliers = new Composite[numUnderliers];
-		underlierInfoSections = new UnderlierInfo[numUnderliers];
-
-		for (int i = 0; i < numUnderliers; i++) {
-			underliers[i] = createUnderlierComposite(underliersContainer);
-			if (i<numUnderliers -1){
-				Label separator = new Label(underliersContainer, SWT.SEPARATOR | SWT.HORIZONTAL);
-				GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false);
-				gridData.widthHint = 400;
-				separator.setLayoutData(gridData);
-			}
-			underlierInfoSections[i] = new UnderlierInfo(underliers[i]);
+	private void addUnderlyerInfo(String underlyingSymbol) {
+		if (underlyingSymbolInfoMap.size() > 0) {
+			Label separator = new Label(underlyingSymbolsContainer, SWT.SEPARATOR
+					| SWT.HORIZONTAL);
+			GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, true, false);
+			gridData.widthHint = 400;
+			separator.setLayoutData(gridData);			
 		}
+		Composite underlyingSymbolComposite = createUnderlyingSymbolComposite(underlyingSymbolsContainer);
+		underlyingSymbolInfoMap.put(underlyingSymbol, new UnderlyingSymbolInfo(underlyingSymbolComposite));
 	}
-
-	private void test_populateUnderliersMktData(int numUnderliers) {
-		String[] instrumentLabels = new String[] { "IBM", "SNE", "MSFT" };
-		String[] lastPriceLabels = new String[] { "85.96", "70.97", "100.21" };
-		String[] priceChangeLabels = new String[] { "-1.01", "+2.45", "-4.56" };
-		String[] bidPriceLabels = new String[] { "85.91", "70.80", "99.21" };
-		String[] askPriceLabels = new String[] { "88.54", "76.34", "101.21" };
-		String[] bidSizeLabels = new String[] { "3", "5", "10" };
-		String[] askSizeLabels = new String[] { "15", "23", "12" };
-		String[] lastUpdatedTimeLabels = new String[] { "16:00", "16:01",
-				"16:04" };
-		String[] volLabels = new String[] { "6,614,100", "24,400", "614,100" };
-		String[] openPriceLabels = new String[] { "87.01", "69.67", "95.21" };
-		String[] hiPriceLabels = new String[] { "87.35", "71.22", "101.11" };
-		String[] lowPriceLabels = new String[] { "85.76", "68.52", "93.11" };
-		String[] tradingVolLabels = new String[] { "319.026m", "445.21m",
-				"446.33m" };
-		String[] exDividendInfo = new String[] { "06/11/07 0.30",
-				"09/10/07 0.30", "12/10/07 0.30" };
-
-		for (int i = 0; i < numUnderliers; i++) {
-			underlierInfoSections[i].setAskPriceLabelText(askPriceLabels[i]);
-			underlierInfoSections[i].setAskSizeLabelText(askSizeLabels[i]);
-			underlierInfoSections[i].setBidPriceLabelText(bidPriceLabels[i]);
-			underlierInfoSections[i].setBidSizeLabelText(bidSizeLabels[i]);
-			underlierInfoSections[i].setHighPriceLabelText(hiPriceLabels[i]);
-			underlierInfoSections[i]
-					.setInstrumentLabelText(instrumentLabels[i]);
-			underlierInfoSections[i]
-					.setLastPriceChangeLabelText(priceChangeLabels[i]);
-			underlierInfoSections[i].setLastPriceLabelText(lastPriceLabels[i]);
-			// todo: use arrow up/down image
-			// underlierInfoSections[i].setLastPriceUpDownArrowLabelImage()
-			underlierInfoSections[i]
-					.setLastUpdatedTimeLabelText(lastUpdatedTimeLabels[i]);
-			underlierInfoSections[i].setLowPriceLabelText(lowPriceLabels[i]);
-			underlierInfoSections[i].setOpenPriceLabelText(openPriceLabels[i]);
-			underlierInfoSections[i]
-					.setTradingVolumeLabelText(tradingVolLabels[i]);
-			underlierInfoSections[i].setVolumeLabelText(volLabels[i]);
-			underlierInfoSections[i]
-					.setExDividendsDateAndAmountItems(exDividendInfo);
-		}
-	}
-
-	// =======================================================
 
 	private GridData createTopAlignedHorizontallySpannedGridData() {
 		GridData formGridData = new GridData();
@@ -318,11 +294,14 @@ public class OptionMarketDataView extends MessagesView implements
 	public void dispose() {
 		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
-		for (UnderlierInfo underlier : underlierInfoSections) {
-			underlier.dispose();
-		}
-
 		super.dispose();
+	}
+	
+	private void disposeUnderlyerInfoSection() {
+		Control[] children = underlyingSymbolsContainer.getChildren();
+		for (Control child : children) {
+			child.dispose();
+		}
 	}
 
 	@Override
@@ -342,26 +321,11 @@ public class OptionMarketDataView extends MessagesView implements
 		}
 	}
 
-	// todo: duplicated code from MarketDataView, need to refactor
+	//cl todo: duplicated code from MarketDataView, need to refactor
+	//cl todo: pack other columns as well
 	@Override
 	protected void packColumns(Table table) {
 		super.packColumns(table);
-
-		// The following is required to work around the root cause of #132
-		// ""Dirt" rendered in Market Data view
-		// row selection".
-		//
-		// There is no way to remove the extra spacing in the first TableColumn
-		// of an SWT Table on Windows.
-		// This extra spacing is what causes the visible gap on a selected row.
-		// It has nothing to do with the TextCellEditor or TableViewer -- the
-		// problem can be
-		// reproduced using just an SWT Table with text in the TableItems. The
-		// first column always has extra space.
-		//
-		// The best that can be done to get rid of the visible gap in a selected
-		// row
-		// is to create an unmovable zero width first column.
 		TableColumn zeroFirstColumn = table.getColumn(ZERO_WIDTH_COLUMN_INDEX);
 		zeroFirstColumn.setWidth(0);
 		zeroFirstColumn.setResizable(false);
@@ -377,7 +341,7 @@ public class OptionMarketDataView extends MessagesView implements
 				aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer
-				.setContentProvider(new EventListContentProvider<MessageHolder>());
+				.setContentProvider(new EventListContentProvider<OptionMessageHolder>());
 		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(
 				aMessageTable, getSite()));
 
@@ -396,42 +360,83 @@ public class OptionMarketDataView extends MessagesView implements
 		theToolBarManager.add(new AddSymbolAction(textContributionItem, this));
 	}
 
-	private boolean listContains(String stringValue) {
-		if (stringValue == null) {
-			return false;
-		}
-		EventList<MessageHolder> list = getInput();
-		for (MessageHolder holder : list) {
-			try {
-				if (stringValue.equalsIgnoreCase(holder.getMessage().getString(
-						Symbol.FIELD))) {
-					return true;
-				}
-			} catch (FieldNotFound e) {
-				// do nothing
-			}
-		}
-		return false;
-	}
-
+	/**
+	 * Perform one of two tasks here. 
+	 * 1. Update the underlying info on top if matching the underlying symbol
+	 * 2. Update the call or put side in the MessagesTable if matching put/call contract in the table row
+	 */
 	private void updateQuote(Message quote) {
-		EventList<MessageHolder> list = getInput();
-		int i = 0;
-		for (MessageHolder holder : list) {
-			Message message = holder.getMessage();
-			try {
-				if (message.getString(Symbol.FIELD).equals(
-						quote.getString(Symbol.FIELD))) {
-					IncomingMessageHolder newHolder = new IncomingMessageHolder(
-							quote);
-					list.set(i, newHolder);
-					getMessagesViewer().update(newHolder, null);
-					return;
-				}
-			} catch (FieldNotFound e) {
-			}
-			i++;
+		if (matchUnderlyingSymbol(quote)) {
+			updateUnderlyingSymbol(quote);
+			return;
 		}
+		OptionMessageHolder newHolder = null;
+		OptionPairKey key = optionSymbolToKeyMap.get(getSymbol(quote));
+		if (key != null) {
+			EventList<OptionMessageHolder> list = getInput();
+			OptionMessageHolder holder = optionContractMap.get(key);
+			int index = list.indexOf(holder);
+
+			boolean isPut = isPut(holder, quote);
+			if (isPut) {
+				newHolder = new OptionMessageHolder(key, holder
+						.getCallMessage(), quote);
+			} else {
+				newHolder = new OptionMessageHolder(key, quote, holder
+						.getPutMessage());
+			}
+			optionContractMap.put(key, newHolder);
+			list.set(index, newHolder);
+			getMessagesViewer().update(newHolder, null);
+		}
+	}
+	
+	private boolean matchUnderlyingSymbol(Message quote)
+	{
+		String quoteSymbol = getSymbol(quote);
+		UnderlyingSymbolInfo symbolInfo = underlyingSymbolInfoMap.get(quoteSymbol);
+		return (symbolInfo != null);
+	}
+	
+		
+	private void updateUnderlyingSymbol(Message quote)
+	{
+		String quoteSymbol = getSymbol(quote);
+		UnderlyingSymbolInfo symbolInfo = underlyingSymbolInfoMap.get(quoteSymbol);
+		if (symbolInfo != null)
+		{
+			symbolInfo.setInstrumentLabelText(extractStockValue(UnderlyingSymbolDataFields.SYMBOL, quote).toString());
+			symbolInfo.setLastPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.LASTPX, quote));
+			symbolInfo.setLastPriceChangeLabelText((String) extractStockValue(UnderlyingSymbolDataFields.LASTPX, quote));
+			
+			symbolInfo.setAskPriceLabelText(extractStockValue(
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.ASK, quote));
+			symbolInfo.setAskSizeLabelText(extractStockValue(
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.ASKSZ, quote));
+
+			symbolInfo.setBidPriceLabelText(extractStockValue(
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.BID, quote));
+			symbolInfo.setBidSizeLabelText(extractStockValue(
+					UnderlyingSymbolInfo.UnderlyingSymbolDataFields.BIDSZ, quote));
+
+			//cl todo:retrieve dateAmountStrings
+//			symbolInfo.setExDividendsDateAndAmountItems(dateAmountStrings);
+		
+			symbolInfo.setLastUpdatedTimeLabelText(extractStockValue(UnderlyingSymbolDataFields.LASTUPDATEDTIME, quote));
+			symbolInfo.setOpenPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.OPENPX, quote));
+			symbolInfo.setOpenPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.OPENPX, quote));
+			symbolInfo.setHighPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.HI, quote));
+			symbolInfo.setLowPriceLabelText(extractStockValue(UnderlyingSymbolDataFields.LOW, quote));
+			symbolInfo.setTradeValueLabelText(extractStockValue(UnderlyingSymbolDataFields.TRADEVOL, quote));
+			underlyingSymbolsContainer.pack(true);
+		}		
+	}
+		
+	private boolean isPut(OptionMessageHolder holder, Message quote) {
+		Boolean isPut = optionSymbolToSideMap.get(getSymbol(quote));
+		if (isPut != null)
+			return isPut;
+		return false;		
 	}
 
 	public void onQuote(final Message aQuote) {
@@ -448,7 +453,14 @@ public class OptionMarketDataView extends MessagesView implements
 		}
 	}
 
-
+	private static String getSymbol(Message message) {
+		try {
+			return message.getString(Symbol.FIELD).trim();
+		} catch (FieldNotFound e) {
+			return null;
+		}
+	}
+	
 	private static final int CALL_VOLUME_INDEX = LAST_NORMAL_COLUMN_INDEX + 1;
 
 	private static final int CALL_BID_SIZE_INDEX = LAST_NORMAL_COLUMN_INDEX + 2;
@@ -461,9 +473,9 @@ public class OptionMarketDataView extends MessagesView implements
 
 	private static final int CALL_SYMBOL_INDEX = LAST_NORMAL_COLUMN_INDEX + 6;
 
-	private static final int STRIKE_INDEX = LAST_NORMAL_COLUMN_INDEX + 7;
+	public static final int STRIKE_INDEX = LAST_NORMAL_COLUMN_INDEX + 7;
 
-	private static final int EXP_DATE_INDEX = LAST_NORMAL_COLUMN_INDEX + 8;
+	public static final int EXP_DATE_INDEX = LAST_NORMAL_COLUMN_INDEX + 8;
 
 	private static final int PUT_SYMBOL_INDEX = LAST_NORMAL_COLUMN_INDEX + 9;
 
@@ -479,7 +491,7 @@ public class OptionMarketDataView extends MessagesView implements
 
 	private MDVMarketDataListener marketDataListener;
 
-	class MarketDataTableFormat extends MessageListTableFormat {
+	class MarketDataTableFormat extends OptionMessageListTableFormat {
 
 		public MarketDataTableFormat(Table table, IWorkbenchPartSite site) {
 			super(table, OptionDataColumns.values(), site);
@@ -513,7 +525,7 @@ public class OptionMarketDataView extends MessagesView implements
 			case PUT_SYMBOL_INDEX:
 				return "pSym";
 			case PUT_BID_SIZE_INDEX:
-				return "cBidSz";
+				return "pBidSz";
 			case PUT_BID_PRICE_INDEX:
 				return "pBid";
 			case PUT_ASK_PRICE_INDEX:
@@ -532,138 +544,222 @@ public class OptionMarketDataView extends MessagesView implements
 			if (index == ZERO_WIDTH_COLUMN_INDEX) {
 				return ""; //$NON-NLS-1$
 			}
-			if (index <= LAST_NORMAL_COLUMN_INDEX) {
-				return super.getColumnText(element, index);
-			}
-			MessageHolder messageHolder = (MessageHolder) element;
-			Message message = messageHolder.getMessage();
-			try {
-				switch (index) {
-				case CALL_BID_SIZE_INDEX:
-					return getGroup(message, MDEntryType.BID).getString(
-							MDEntrySize.FIELD);
-				case CALL_BID_PRICE_INDEX:
-					return getGroup(message, MDEntryType.BID).getString(
-							MDEntryPx.FIELD);
-				case CALL_ASK_PRICE_INDEX:
-					return getGroup(message, MDEntryType.OFFER).getString(
-							MDEntryPx.FIELD);
-				case CALL_ASK_SIZE_INDEX:
-					return getGroup(message, MDEntryType.OFFER).getString(
-							MDEntrySize.FIELD);
-				default:
-					return "";
-				}
-			} catch (FieldNotFound e) {
-				return "";
-			}
+			return super.getColumnText(element, index);
 		}
-
-		private FieldMap getGroup(Message message, char type) {
-			int noEntries;
-			try {
-				noEntries = message.getInt(NoMDEntries.FIELD);
-				for (int i = 1; i < noEntries + 1; i++) {
-					MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-					message.getGroup(i, group);
-					if (type == group.getChar(MDEntryType.FIELD)) {
-						return group;
-					}
-				}
-			} catch (FieldNotFound e) {
-			}
-			return new Message();
-		}
-
-
 	}
 
 	public void onAssertSymbol(MSymbol symbol) {
 		addSymbol(symbol);
 	}
-
-	/**
-	 * @param symbol
-	 */
-	public void addSymbol(MSymbol symbol) {
-
-		if (hasSymbol(symbol)) {
-			PhotonPlugin.getMainConsoleLogger().warn(
-					"Duplicate symbol added to view: " + symbol);
-		} else {
-			EventList<MessageHolder> list = getInput();
-
-			Message message = new Message();
-			message.setField(new Symbol(symbol.toString()));
-			list.add(new MessageHolder(message));
-
-			try {
-				marketDataTracker.simpleSubscribe(symbol);
-			} catch (MarketceteraException e) {
-				PhotonPlugin.getMainConsoleLogger().error(
-						"Exception subscribing to market data for " + symbol);
+	
+	//cl todo:clean up this - fieldID should be encapsulate better, refactor common methods from 
+	// EnumTableFormat into common util class
+	private String convertExtractedValue(Object objValue, Integer fieldID)
+	{
+		String value = "";
+		if (objValue != null && fieldID != null){
+			FieldType fieldType = dictionary.getFieldTypeEnum(fieldID);
+			if (fieldType.equals(FieldType.UtcTimeOnly)
+					|| fieldType.equals(FieldType.UtcTimeStamp)){
+				value = TIME_FORMAT.format((Date)objValue);
+			} else if (fieldType.equals(FieldType.UtcDateOnly)
+					||fieldType.equals(FieldType.UtcDate)){
+				value = DATE_FORMAT.format((Date)objValue);
+			} else if (objValue instanceof BigDecimal){
+				value  = ((BigDecimal)objValue).toPlainString();
+			} else {
+				value = objValue.toString();
 			}
-			getMessagesViewer().refresh();
-			
 		}
+		return value;
 	}
 
-	private boolean hasSymbol(final MSymbol symbol) {
-		EventList<MessageHolder> list = getInput();
+	public String extractStockValue(Enum fieldEnum, Object element) {
+		Object value = null;
+		Integer fieldID = null;
+		if (fieldEnum instanceof IFieldIdentifier)
+		{
+			IFieldIdentifier fieldIdentifier = ((IFieldIdentifier)fieldEnum);
 
-		FilterList<MessageHolder> matches = new FilterList<MessageHolder>(list,
-				new Matcher<MessageHolder>() {
-					public boolean matches(MessageHolder listItem) {
-						try {
-							String listSymbol = listItem.getMessage()
-									.getString(Symbol.FIELD).trim()
-									.toLowerCase();
-							return listSymbol.equals(symbol.getFullSymbol()
-									.trim().toLowerCase());
-						} catch (FieldNotFound e) {
-							return false;
+			fieldID = fieldIdentifier.getFieldID();
+			Integer groupID = fieldIdentifier.getGroupID();
+			Integer groupDiscriminatorID = fieldIdentifier.getGroupDiscriminatorID();
+			Object groupDiscriminatorValue = fieldIdentifier.getGroupDiscriminatorValue();
+
+			FieldMap fieldMap = (FieldMap) element;
+			value = extractor.extractValue(fieldMap, fieldID, groupID, groupDiscriminatorID, groupDiscriminatorValue, true);
+		}
+		return convertExtractedValue(value, fieldID);
+	}
+	
+	public void addSymbol(MSymbol symbol) {
+		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
+			return;
+		}
+		if (hasSymbol(symbol)) {
+			return; // do nothing, already subscribed
+		}
+		if (hasUnderlyerInfo()) {
+			// remove and unsubscribe underlying symbols and all related contracts
+			Set<String> subscribedUnderlyingSymbols =  underlyingSymbolInfoMap.keySet();	
+			for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
+				removeUnderlyingSymbol(subscribedUnderlyingSymbol);
+			}
+		}
+		// Step 1 - subscribe to the underlying symbol
+		// Step 2 - retrieve and subscribe to all put/call options on the
+		// underlying symbol
+		addUnderlyerInfo(symbol.getBaseSymbol());
+
+		try {
+			marketDataTracker.simpleSubscribe(symbol);
+			requestOptionSecurityList(marketDataTracker
+					.getMarketDataFeedService(), symbol);
+
+		} catch (MarketceteraException e) {
+			PhotonPlugin.getMainConsoleLogger().error(
+					"Exception subscribing to market data for " + symbol);
+		}
+		getMessagesViewer().refresh();
+	}
+	
+    
+	private void requestOptionSecurityList(MarketDataFeedService service,
+			final MSymbol underlyingSymbol) {
+
+		IMarketDataListCallback callback = new IMarketDataListCallback() {
+
+			public void onMarketDataFailure(MSymbol symbol) {
+				return; // do nothing
+			}
+
+			public void onMarketDataListAvailable(
+					List<Message> derivativeSecurityList) {
+				List<OptionContractData> optionContracts = OptionMarketDataUtils
+						.getOptionExpirationMarketData(underlyingSymbol
+								.getBaseSymbol(), derivativeSecurityList);
+				if (optionContracts == null || optionContracts.isEmpty()) {
+					// do nothing
+				} else {
+					EventList<OptionMessageHolder> list = getInput();
+
+					for (OptionContractData data : optionContracts) {
+						MSymbol optionSymbol = data.getOptionSymbol();
+
+						// construct the option key
+						OptionPairKey optionKey = new OptionPairKey(
+								underlyingSymbol.getBaseSymbol(),
+								OptionMarketDataUtils.getUnderlyingSymbol(
+										optionSymbol).getBaseSymbol(), data
+										.getExpirationYear(), data
+										.getExpirationMonth(), data
+										.getStrikePrice());
+
+						
+						Message callMessage = new Message();
+						Message putMessage = new Message();
+
+						if (data.isPut()) {
+							subscribeOption(optionSymbol, putMessage);
+
+							// Since OptionPairKey does not track put/call option on
+							// purpose, need to track this separately with a map
+							optionSymbolToSideMap.put(optionSymbol.getBaseSymbol(), true);							
+						} else {
+							subscribeOption(optionSymbol, callMessage);
+							optionSymbolToSideMap.put(optionSymbol.getBaseSymbol(), false);							
 						}
+						
+						optionSymbolToKeyMap.put(optionSymbol.getBaseSymbol(),
+								optionKey);
+						updateOptionContractMap(data.isPut(), optionKey,
+								callMessage, putMessage);
 					}
-				});
-		boolean rv = !matches.isEmpty();
-		return rv;
-	}
+					
+					Set<OptionPairKey> optionKeys = optionContractMap.keySet();
+					for (OptionPairKey optionPairKey : optionKeys) {
+						list.add(optionContractMap.get(optionPairKey));												
+					}
+				}
+			}
 
-	public void removeItem(MessageHolder holder) {
+			private void subscribeOption(MSymbol optionSymbol, Message message) {
+				message.setField(new Symbol(optionSymbol.getBaseSymbol())); 
+				try {
+					marketDataTracker.simpleSubscribe(optionSymbol);
+				} catch (MarketceteraException e) {
+					PhotonPlugin.getMainConsoleLogger().warn(
+							"Error subscribing to quotes for " + optionSymbol);
+				}
+			}
+		};
+
+		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(underlyingSymbol,
+				false);
+		MarketDataUtils.asyncMarketDataQuery(underlyingSymbol, query, service
+				.getMarketDataFeed(), callback);
+	}
+	
+	
+
+	private void updateOptionContractMap(boolean isPut,
+			OptionPairKey optionKey, Message callMessage, Message putMessage) {
+		OptionMessageHolder newHolder = null;
+
+		// lining up the call and put options
+		if (optionContractMap.containsKey(optionKey)) {
+			OptionMessageHolder holder = optionContractMap.get(optionKey);
+			if (isPut) {
+				newHolder = new OptionMessageHolder(optionKey, holder
+						.getCallMessage(), putMessage);
+			} else {
+				newHolder = new OptionMessageHolder(optionKey, callMessage,
+						holder.getPutMessage());
+			}
+		} else {
+			newHolder = new OptionMessageHolder(optionKey, callMessage,
+					putMessage);
+		}
+		optionContractMap.put(optionKey, newHolder);
+	}
+	
+	private boolean hasSymbol(final MSymbol symbol) {
+		return (underlyingSymbolInfoMap.get(symbol.getBaseSymbol()) != null);		
+	}
+	
+	private boolean hasUnderlyerInfo() {
+		return (underlyingSymbolInfoMap != null && underlyingSymbolInfoMap.size() > 0);		
+	}
+		
+	private void removeUnderlyingSymbol(String underlyingSymbol) {
+		// retrieve all related contract symbols, unsubscribe and remove them
 		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker
 				.getService();
 		if (service == null) {
 			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
 			return;
-		}
-		try {
-			MSymbol mSymbol = service.symbolFromString(holder.getMessage()
-					.getString(Symbol.FIELD));
-			marketDataTracker.simpleUnsubscribe(mSymbol);
-			removeSymbol(mSymbol);
-		} catch (FieldNotFound e) {
-			// do nothing
-		}
-	}
-
-	public void removeSymbol(MSymbol symbol) {
-
+		}	
+		
+		// unsubscribe and remove the underlying symbol
+		MSymbol symbol = service.symbolFromString(underlyingSymbol);			
 		marketDataTracker.simpleUnsubscribe(symbol);
-
-		EventList<MessageHolder> list = getInput();
-		for (MessageHolder holder : list) {
-			try {
-				String messageSymbolString = holder.getMessage().getString(
-						Symbol.FIELD);
-				if (messageSymbolString.equals(symbol.toString())) {
-					list.remove(holder);
-					break;
-				}
-			} catch (FieldNotFound e) {
-			}
+		underlyingSymbolInfoMap.clear();  		
+		disposeUnderlyerInfoSection();
+				
+		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();	
+		MSymbol contractSymbolToUnsubscribe = null;
+		for (String optionSymbol : contractSymbols) {
+			contractSymbolToUnsubscribe = service.symbolFromString(optionSymbol);			
+			marketDataTracker.simpleUnsubscribe(contractSymbolToUnsubscribe);			
 		}
+		//clear out all maps and list
+		EventList<OptionMessageHolder> list = getInput();
+		list.clear();
+		optionContractMap.clear();
+		optionSymbolToKeyMap.clear();
+		optionSymbolToSideMap.clear();
 		getMessagesViewer().refresh();
-
+		
 	}
 
 	public class MDVMarketDataListener extends MarketDataListener {
