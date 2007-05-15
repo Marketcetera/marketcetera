@@ -54,8 +54,7 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 	
 	public UnderlyingSymbolInfoComposite(Composite parent) {
 		super(parent, SWT.NONE);
-		super.setLayout(createBasicGridLayout(1));
-		this.setLayoutData(createTopAlignedHorizontallySpannedGridData());
+		this.setLayout(createBasicGridLayout(1));
 		this.setBackground(this.getDisplay().getSystemColor(SWT.COLOR_WHITE));
 		createControl(this);
 		initializeFixValueExtractor();
