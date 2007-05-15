@@ -135,6 +135,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		customFieldsViewPieces.createCustomFieldsExpandableComposite(6);
 		underlyingSymbolInfoComposite = new UnderlyingSymbolInfoComposite(
 				outermostForm.getBody());
+		underlyingSymbolInfoComposite
+				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 
 		createBookSection();
 
@@ -147,6 +149,15 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		adjustTabOrder();
 	}
 
+	private GridData createTopAlignedHorizontallySpannedGridData() {
+		GridData formGridData = new GridData();
+		formGridData.grabExcessHorizontalSpace = true;
+		formGridData.horizontalAlignment = GridData.FILL;
+		// formGridData.grabExcessVerticalSpace = true;
+		formGridData.verticalAlignment = GridData.FILL;
+		return formGridData;
+	}
+	
 	private void adjustTabOrder() {
 		{
 			ArrayList<Control> tabOrder = new ArrayList<Control>();

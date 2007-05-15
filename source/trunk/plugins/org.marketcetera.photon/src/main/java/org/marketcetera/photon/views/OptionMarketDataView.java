@@ -149,6 +149,8 @@ public class OptionMarketDataView extends OptionMessagesView implements
 		createForm(parent);
 		underlyingSymbolInfoComposite = new UnderlyingSymbolInfoComposite(
 				form.getBody());
+		underlyingSymbolInfoComposite
+				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 		Composite tableExpandable = createDataTableSection();
 		super.createPartControl(tableExpandable);
 		this.setInput(new BasicEventList<OptionMessageHolder>());
