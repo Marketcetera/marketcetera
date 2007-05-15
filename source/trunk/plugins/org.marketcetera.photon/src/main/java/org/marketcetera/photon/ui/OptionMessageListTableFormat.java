@@ -70,20 +70,25 @@ public class OptionMessageListTableFormat extends EnumTableFormat<OptionMessageH
 				columnsCascadeItem.setMenu(columnsCascadeMenu);
 				
 				for(final TableColumn column : table.getColumns()) {
-					MenuItem item = new MenuItem(columnsCascadeMenu, SWT.CHECK);
-					item.setText(column.getText());
-					item.setEnabled(true);
-					item.setSelection(!isColumnHidden(column));
-					
-					item.addListener(SWT.Selection, 
-							new Listener() {
-								public void handleEvent(Event event) {
-									if (isColumnHidden(column))
-										showColumn(column);
-									else
-										hideColumn(column);
-								}
-							});
+					boolean columnIsInitialZeroWidthColumn = isColumnHidden(column)
+							&& (column.getText() == null || column.getText()
+									.length() == 0);
+					if (!columnIsInitialZeroWidthColumn) {
+						MenuItem item = new MenuItem(columnsCascadeMenu,
+								SWT.CHECK);
+						item.setText(column.getText());
+						item.setEnabled(true);
+						item.setSelection(!isColumnHidden(column));
+
+						item.addListener(SWT.Selection, new Listener() {
+							public void handleEvent(Event event) {
+								if (isColumnHidden(column))
+									showColumn(column);
+								else
+									hideColumn(column);
+							}
+						});
+					}
 				}
 				
 				new MenuItem(columnsCascadeMenu, SWT.SEPARATOR);
