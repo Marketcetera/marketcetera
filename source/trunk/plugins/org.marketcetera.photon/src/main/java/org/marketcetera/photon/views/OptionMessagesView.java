@@ -1,7 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.util.HashMap;
-
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
@@ -20,7 +18,6 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
-import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
