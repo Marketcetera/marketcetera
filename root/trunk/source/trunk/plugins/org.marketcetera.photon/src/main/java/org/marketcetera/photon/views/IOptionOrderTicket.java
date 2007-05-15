@@ -14,6 +14,8 @@ public interface IOptionOrderTicket extends IOrderTicket {
 	Combo getOrderCapacityCombo();
 
 	Combo getPutOrCallCombo();
+	
+	UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite();
 
 	/**
 	 * @return true if the user has selected a Put option, false if a Call or if

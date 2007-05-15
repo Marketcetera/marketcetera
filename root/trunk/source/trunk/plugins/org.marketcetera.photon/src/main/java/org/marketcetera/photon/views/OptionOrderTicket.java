@@ -63,6 +63,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	private OptionOrderTicketController optionOrderTicketController;
 
 	private OptionDateHelper optionContractDateHelper = new OptionDateHelper();
+	
+	private UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite;
 
 	public OptionOrderTicket() {
 	}
@@ -131,6 +133,9 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 		createOtherExpandableComposite();
 		customFieldsViewPieces.createCustomFieldsExpandableComposite(6);
+		underlyingSymbolInfoComposite = new UnderlyingSymbolInfoComposite(
+				outermostForm.getBody());
+
 		createBookSection();
 
 		customFieldsViewPieces.updateCustomFields(PhotonPlugin.getDefault()
@@ -385,6 +390,10 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	public Combo getStrikePriceControl() {
 		return strikePriceControl;
+	}
+	
+	public UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
+		return underlyingSymbolInfoComposite;
 	}
 
 }

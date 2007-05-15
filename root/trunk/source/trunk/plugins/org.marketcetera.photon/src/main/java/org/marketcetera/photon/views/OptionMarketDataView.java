@@ -56,7 +56,7 @@ public class OptionMarketDataView extends OptionMessagesView implements
 
 	public static final String ID = "org.marketcetera.photon.views.OptionMarketDataView";
 
-	private UnderlyingSymbolInfoViewSection underlyingSymbolInfoViewSection;
+	private UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite;
 
 	public static final int FIRST_PUT_DATA_COLUMN_INDEX = 9;
 
@@ -147,8 +147,8 @@ public class OptionMarketDataView extends OptionMessagesView implements
 	@Override
 	public void createPartControl(Composite parent) {
 		createForm(parent);
-		underlyingSymbolInfoViewSection = new UnderlyingSymbolInfoViewSection(
-				this);
+		underlyingSymbolInfoComposite = new UnderlyingSymbolInfoComposite(
+				form.getBody());
 		Composite tableExpandable = createDataTableSection();
 		super.createPartControl(tableExpandable);
 		this.setInput(new BasicEventList<OptionMessageHolder>());
@@ -179,10 +179,6 @@ public class OptionMarketDataView extends OptionMessagesView implements
 		form.getBody().setLayout(createBasicGridLayout(1));
 		form.getBody().setLayoutData(
 				createTopAlignedHorizontallySpannedGridData());
-	}
-
-	public Composite getTopLevelControl() {
-		return form.getBody();
 	}
 
 	private Composite createDataTableSection() {
@@ -228,6 +224,7 @@ public class OptionMarketDataView extends OptionMessagesView implements
 	public void dispose() {
 		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
+		underlyingSymbolInfoComposite.dispose();
 		super.dispose();
 	}
 
@@ -292,8 +289,9 @@ public class OptionMarketDataView extends OptionMessagesView implements
 	 * 2. Update the call or put side in the MessagesTable if matching put/call contract in the table row
 	 */
 	private void updateQuote(Message quote) {
-		if (underlyingSymbolInfoViewSection.matchUnderlyingSymbol(quote)) {
-			underlyingSymbolInfoViewSection.updateUnderlyingSymbol(quote);
+		
+		if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
+			underlyingSymbolInfoComposite.onQuote(quote);
 			return;
 		}
 		OptionMessageHolder newHolder = null;
@@ -441,15 +439,15 @@ public class OptionMarketDataView extends OptionMessagesView implements
 		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
 			return;
 		}
-		if (underlyingSymbolInfoViewSection.hasSymbol(symbol)) {
+		if (underlyingSymbolInfoComposite.hasSymbol(symbol)) {
 			return; // do nothing, already subscribed
 		}
-		if (underlyingSymbolInfoViewSection.hasUnderlyingSymbolInfo()) {
+		if (underlyingSymbolInfoComposite.hasUnderlyingSymbolInfo()) {
 			removeUnderlyingSymbol();			
 		}
 		// Step 1 - subscribe to the underlying symbol
 		// Step 2 - retrieve and subscribe to all put/call options 
-		underlyingSymbolInfoViewSection.addUnderlyingSymbolInfo(symbol
+		underlyingSymbolInfoComposite.addUnderlyingSymbolInfo(symbol
 				.getBaseSymbol());
 
 		try {
@@ -572,14 +570,14 @@ public class OptionMarketDataView extends OptionMessagesView implements
 		}
 
 		// remove and unsubscribe underlying symbols and all contracts
-		Set<String> subscribedUnderlyingSymbols = underlyingSymbolInfoViewSection
+		Set<String> subscribedUnderlyingSymbols = underlyingSymbolInfoComposite
 				.getUnderlyingSymbolInfoMap().keySet();
 		for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
 			// unsubscribe and remove the underlying symbol
 			MSymbol symbol = service.symbolFromString(subscribedUnderlyingSymbol);
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
-		underlyingSymbolInfoViewSection.removeUnderlyingSymbol(); 
+		underlyingSymbolInfoComposite.removeUnderlyingSymbol(); 
 
 		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();
 		MSymbol contractSymbolToUnsubscribe = null;

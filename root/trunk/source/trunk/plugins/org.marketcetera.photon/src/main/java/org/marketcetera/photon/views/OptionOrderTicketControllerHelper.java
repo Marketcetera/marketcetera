@@ -422,4 +422,10 @@ public class OptionOrderTicketControllerHelper extends
 		strikeConverterBuilder.addMapping(OrdType.MARKET, PriceImage.MKT
 				.getImage());
 	}
+
+	@Override
+	protected void onQuoteAdditional(Message message) {
+		super.onQuoteAdditional(message);
+		optionTicket.getUnderlyingSymbolInfoComposite().onQuote(message);
+	}
 }
