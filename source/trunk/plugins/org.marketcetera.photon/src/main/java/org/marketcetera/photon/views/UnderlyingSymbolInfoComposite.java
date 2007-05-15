@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.views.UnderlyingSymbolInfo.UnderlyingSymbolDataFields;
@@ -31,15 +30,13 @@ import quickfix.Message;
 import quickfix.field.Symbol;
 
 /**
- * Section containing one or more underlying symbols info.
+ * Composite containing one or more underlying symbols info.
  * 
  * @author caroline.leung@softwaregoodness.com
  */
-public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
+public class UnderlyingSymbolInfoComposite extends Composite {
 	
 	private FormToolkit formToolkit;
-
-	private Section underlyingSymbolsSection;
 
 	private Composite underlyingSymbolsContainer;
 
@@ -55,10 +52,13 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
 			"yyyy-MM-dd");
 	
-	public UnderlyingSymbolInfoViewSection(OptionMarketDataView parentView) {
-		super(parentView.getViewSite());
+	public UnderlyingSymbolInfoComposite(Composite parent) {
+		super(parent, SWT.NONE);
+		super.setLayout(createBasicGridLayout(1));
+		this.setLayoutData(createTopAlignedHorizontallySpannedGridData());
+		this.setBackground(this.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+		createControl(this);
 		initializeFixValueExtractor();
-		createSectionControl(parentView.getTopLevelControl());
 	}
 
 	private void initializeFixValueExtractor() {
@@ -81,21 +81,12 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 		return formToolkit;
 	}
 
-	private void createUnderlyingSymbolsSection(Composite parent) {
-		underlyingSymbolsSection = getFormToolkit().createSection(parent,
-				Section.EXPANDED | Section.NO_TITLE);
-		underlyingSymbolsSection
-				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-		createUnderlyingSymbolsContainerComposite();
-	}
-
-	private void createUnderlyingSymbolsContainerComposite() {
+	private void createUnderlyingSymbolsContainerComposite(Composite parent) {
 		underlyingSymbolsContainer = getFormToolkit().createComposite(
-				underlyingSymbolsSection, SWT.NONE);
+				parent, SWT.NONE);
 		underlyingSymbolsContainer
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 		underlyingSymbolsContainer.setLayout(createBasicGridLayout(1));
-		underlyingSymbolsSection.setClient(underlyingSymbolsContainer);
 	}
 
 	private Composite createUnderlyingSymbolComposite(Composite parent) {
@@ -139,22 +130,10 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 		return gridLayout;
 	}
 	
-	private void disposeUnderlyerInfoSection() {
+	private void disposeUnderlyingInfo() {
 		Control[] children = underlyingSymbolsContainer.getChildren();
 		for (Control child : children) {
 			child.dispose();
-		}
-	}
-
-	/**
-	 * Perform one of two tasks here. 1. Update the underlying info on top if
-	 * matching the underlying symbol 2. Update the call or put side in the
-	 * MessagesTable if matching put/call contract in the table row
-	 */
-	private void updateQuote(Message quote) {
-		if (matchUnderlyingSymbol(quote)) {
-			updateUnderlyingSymbol(quote);
-			return;
 		}
 	}
 
@@ -165,7 +144,7 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 		return (symbolInfo != null);
 	}
 
-	protected void updateUnderlyingSymbol(Message quote) {
+	protected void updateQuote(Message quote) {
 		String quoteSymbol = getSymbol(quote);
 		UnderlyingSymbolInfo symbolInfo = underlyingSymbolInfoMap
 				.get(quoteSymbol);
@@ -229,8 +208,7 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 	}
 
 	// cl todo:clean up this - fieldID should be encapsulate better, refactor
-	// common methods from
-	// EnumTableFormat into common util class
+	// common methods from EnumTableFormat into common util class
 	private String convertExtractedValue(Object objValue, Integer fieldID) {
 		String value = "";
 		if (objValue != null && fieldID != null) {
@@ -279,12 +257,6 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 		}
 		if (hasUnderlyingSymbolInfo()) {
 			removeUnderlyingSymbol();
-			//cl todo:need to check for specific underlying symbol to remove?
-//			Set<String> subscribedUnderlyingSymbols = underlyingSymbolInfoMap
-//					.keySet();
-//			for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
-//				removeUnderlyingSymbol(subscribedUnderlyingSymbol);
-//			}
 		}
 		addUnderlyingSymbolInfo(symbol.getBaseSymbol());
 	}
@@ -300,23 +272,18 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 
 	protected void removeUnderlyingSymbol() {
 		underlyingSymbolInfoMap.clear();
-		disposeUnderlyerInfoSection();
+		disposeUnderlyingInfo();
 	}
 
-	@Override
-	protected void createSectionControl(Composite parent) {
+	protected void createControl(Composite parent) {
 		underlyingSymbolInfoMap = new HashMap<String, UnderlyingSymbolInfo>();
-		createUnderlyingSymbolsSection(parent);
-	}
-
-	@Override
-	public Control getControl() {
-		return underlyingSymbolsSection;
+		createUnderlyingSymbolsContainerComposite(parent);
 	}
 
 	@Override
 	public void dispose() {
-		disposeUnderlyerInfoSection();
+		removeUnderlyingSymbol();
+		super.dispose();
 	}
 
 	public HashMap<String, UnderlyingSymbolInfo> getUnderlyingSymbolInfoMap() {
@@ -327,4 +294,5 @@ public class UnderlyingSymbolInfoViewSection extends AbstractViewSection {
 			HashMap<String, UnderlyingSymbolInfo> underlyingSymbolInfoMap) {
 		this.underlyingSymbolInfoMap = underlyingSymbolInfoMap;
 	}
+	
 }
