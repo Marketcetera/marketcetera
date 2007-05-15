@@ -11,6 +11,7 @@ import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -238,6 +239,9 @@ public class OptionOrderTicketControllerHelper extends
 					first = false;
 				}
 			}
+		}
+		if( combo.isFocusControl() ) {
+			combo.setSelection(new Point(0,3));
 		}
 	}
 
