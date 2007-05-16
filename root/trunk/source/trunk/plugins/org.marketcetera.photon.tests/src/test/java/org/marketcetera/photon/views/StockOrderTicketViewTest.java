@@ -16,7 +16,7 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
-import org.marketcetera.photon.ui.BookComposite;
+import org.marketcetera.photon.ui.IBookComposite;
 import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -127,7 +127,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MyMarketDataFeed feed = (MarketDataViewTest.MyMarketDataFeed)marketDataFeed.getMarketDataFeed();
 		feed.sendMessage(quoteMessageToSend);
 				
-		BookComposite bookComposite = view.getBookComposite();
+		IBookComposite bookComposite = view.getBookComposite();
 
 		Message returnedMessage = null;
 		for (int i = 0; i < 10; i ++){

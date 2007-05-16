@@ -29,6 +29,7 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.BookComposite;
+import org.marketcetera.photon.ui.IBookComposite;
 import org.marketcetera.photon.ui.validation.IMessageDisplayer;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -59,7 +60,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 	protected IMemento viewStateMemento;
 	
-	private BookComposite bookComposite;
+	private IBookComposite bookComposite;
 
 	private Section bookSection;
 
@@ -176,12 +177,25 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		bookSection.setLayout(gridLayout);
 		bookSection.setLayoutData(layoutData);
 
-		bookComposite = new BookComposite(bookSection, SWT.NONE,
-				getFormToolkit());
-		bookComposite.setBackground(bookSection.getBackground()); 
-		bookSection.setClient(bookComposite);
+		bookComposite = createBookComposite(bookSection, SWT.NONE, getFormToolkit());
+		setBookCompositeBackground(bookComposite); 
+		setBookSectionClient(bookComposite);
+	}
+
+	protected void setBookSectionClient(IBookComposite book) {
+		bookSection.setClient((BookComposite) book);
+	}
+
+	protected void setBookCompositeBackground(IBookComposite book) {
+		((BookComposite) book).setBackground(bookSection
+				.getBackground());
 	}
 	
+	protected IBookComposite createBookComposite(Composite parent, int style,
+			FormToolkit formToolkit) {
+		return new BookComposite(bookSection, style, formToolkit);
+	}
+			
 	protected void addCustomFieldsExpansionListener()
 	{
 		Assert.isNotNull(customFieldsViewPieces, "Custom fields view was null." );
@@ -326,8 +340,12 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		updateOutermostFormTitle(order);
 	}
 
-	public BookComposite getBookComposite() {
+	public IBookComposite getBookComposite() {
 		return bookComposite;
+	}
+
+	protected Section getBookSection() {
+		return bookSection;
 	}
 
 	public Button getCancelButton() {

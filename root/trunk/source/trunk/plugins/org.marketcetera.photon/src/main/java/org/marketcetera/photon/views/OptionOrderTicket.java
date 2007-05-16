@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
@@ -21,6 +22,8 @@ import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
+import org.marketcetera.photon.ui.IBookComposite;
+import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
@@ -64,8 +67,6 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private OptionDateHelper optionContractDateHelper = new OptionDateHelper();
 	
-	private UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite;
-
 	public OptionOrderTicket() {
 	}
 
@@ -133,11 +134,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 		createOtherExpandableComposite();
 		customFieldsViewPieces.createCustomFieldsExpandableComposite(6);
-		underlyingSymbolInfoComposite = new UnderlyingSymbolInfoComposite(
-				outermostForm.getBody());
-		underlyingSymbolInfoComposite
-				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
-
+	
 		createBookSection();
 
 		customFieldsViewPieces.updateCustomFields(PhotonPlugin.getDefault()
@@ -147,15 +144,6 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		outermostForm.pack(true);
 
 		adjustTabOrder();
-	}
-
-	private GridData createTopAlignedHorizontallySpannedGridData() {
-		GridData formGridData = new GridData();
-		formGridData.grabExcessHorizontalSpace = true;
-		formGridData.horizontalAlignment = GridData.FILL;
-		// formGridData.grabExcessVerticalSpace = true;
-		formGridData.verticalAlignment = GridData.FILL;
-		return formGridData;
 	}
 	
 	private void adjustTabOrder() {
@@ -402,9 +390,27 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	public Combo getStrikePriceControl() {
 		return strikePriceControl;
 	}
-	
-	public UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
-		return underlyingSymbolInfoComposite;
+		
+	@Override
+	protected IBookComposite createBookComposite(Composite parent, int style, FormToolkit formToolkit) {		
+		return new OptionBookComposite(getBookSection(), style, formToolkit);		
 	}
+
+	@Override
+	protected void setBookCompositeBackground(IBookComposite book) {
+		if (book instanceof OptionBookComposite) {
+			OptionBookComposite bookComposite = (OptionBookComposite) book;
+			bookComposite.setBackground(getBookSection().getBackground());
+		}
+	}
+
+	@Override
+	protected void setBookSectionClient(IBookComposite book) {
+		if (book instanceof OptionBookComposite) {
+			getBookSection().setClient((OptionBookComposite) book);			
+		}
+	}
+	
+	
 
 }
