@@ -125,6 +125,16 @@ public class OptionOrderTicketControllerHelper extends
 		}
 	}
 
+	
+	@Override
+	protected void unlistenMarketDataAdditional() throws MarketceteraException {
+		super.unlistenMarketDataAdditional();
+		
+		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
+		symbolComposite.removeUnderlyingSymbol();
+	
+	}
+
 	private void requestOptionSecurityList(MarketDataFeedService service,
 			final MSymbol optionRoot) {
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
