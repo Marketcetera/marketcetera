@@ -7,7 +7,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.photon.ui.BookComposite;
+import org.marketcetera.photon.ui.IBookComposite;
 
 import quickfix.Message;
 
@@ -17,7 +17,7 @@ public interface IOrderTicket {
 
 	Button getSendButton();
 
-	BookComposite getBookComposite();
+	IBookComposite getBookComposite();
 
 	Text getPriceText();
 

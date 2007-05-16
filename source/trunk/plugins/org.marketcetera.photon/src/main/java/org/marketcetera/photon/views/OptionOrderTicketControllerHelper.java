@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.marketcetera.core.MSymbol;
@@ -27,6 +28,7 @@ import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OptionCFICodeImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
+import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
@@ -113,6 +115,9 @@ public class OptionOrderTicketControllerHelper extends
 			final String optionRootStr) throws MarketceteraException {
 
 		MSymbol optionRoot = new MSymbol(optionRootStr);
+		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
+		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
+
 		if (!optionContractCache.containsKey(optionRoot)) {
 			requestOptionSecurityList(service, optionRoot);
 		} else {
@@ -424,8 +429,36 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	@Override
-	protected void onQuoteAdditional(Message message) {
+	protected void onQuoteAdditional(final Message message) {
 		super.onQuoteAdditional(message);
-		optionTicket.getUnderlyingSymbolInfoComposite().onQuote(message);
+		
+		Display theDisplay = Display.getDefault();		
+		if (theDisplay.getThread() == Thread.currentThread()){
+			underlyingSymbolOnQuote(message);
+		} else {
+			theDisplay.asyncExec(
+				new Runnable(){
+					public void run()
+					{
+						underlyingSymbolOnQuote(message);
+					}
+				}
+			);
+		}		
+	}
+
+	private void underlyingSymbolOnQuote(Message message) {
+		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
+		if (symbolComposite.matchUnderlyingSymbol(message)) {
+			symbolComposite.onQuote(message);
+		}
+	}
+	
+	private UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
+		OptionBookComposite bookComposite = ((OptionBookComposite)optionTicket.getBookComposite());
+		UnderlyingSymbolInfoComposite symbolComposite = bookComposite
+				.getUnderlyingSymbolInfoComposite();
+		return symbolComposite;
+		
 	}
 }

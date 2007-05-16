@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.views.UnderlyingSymbolInfoComposite;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 
@@ -29,7 +30,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
-public class BookComposite extends Composite implements IBookComposite
+public class OptionBookComposite extends Composite implements IBookComposite
 {
 
 	public enum BookColumns implements IFieldIdentifier {
@@ -43,18 +44,17 @@ public class BookComposite extends Composite implements IBookComposite
 		private Object groupDiscriminatorValue;
 
 
-		// todo:remove below constructors if they are not used
-//		BookColumns(String name){
-//			this.name = name;
-//		}
-//
-//		BookColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
-//			this(clazz);
-//			this.fieldID = fieldID;
-//			this.groupID = groupID;
-//			this.groupDiscriminatorID = groupDiscriminatorID;
-//			this.groupDiscriminatorValue = groupDiscriminatorValue;
-//		}
+		BookColumns(String name){
+			this.name = name;
+		}
+
+		BookColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+			this(clazz);
+			this.fieldID = fieldID;
+			this.groupID = groupID;
+			this.groupDiscriminatorID = groupDiscriminatorID;
+			this.groupDiscriminatorValue = groupDiscriminatorValue;
+		}
 
 		BookColumns(Class clazz) {
 			name = clazz.getSimpleName();
@@ -88,6 +88,8 @@ public class BookComposite extends Composite implements IBookComposite
 
 	};
 	
+	private UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite;
+
 	private Table bidTable;
 	private Table askTable;
 	private IndexedTableViewer bidViewer;
@@ -95,11 +97,11 @@ public class BookComposite extends Composite implements IBookComposite
 	private final FormToolkit toolkit;
 	private Message currentMarketRefresh;
 
-	public BookComposite(Composite parent, int style){
+	public OptionBookComposite(Composite parent, int style){
 		this(parent, style, null);
 	}
 	
-	public BookComposite(Composite parent, int style, FormToolkit toolkit) 
+	public OptionBookComposite(Composite parent, int style, FormToolkit toolkit) 
 	{
 		super(parent, style);
 		this.toolkit = toolkit;
@@ -118,6 +120,10 @@ public class BookComposite extends Composite implements IBookComposite
 		this.setLayout(gridLayout);
 		this.setLayoutData(layoutData);
 		
+		underlyingSymbolInfoComposite = new UnderlyingSymbolInfoComposite(this);
+		underlyingSymbolInfoComposite
+				.setLayoutData(createUnderlyingSymbolInfoGridData());
+
 		bidTable = getTable();
 		askTable = getTable();
 		bidViewer = getTableViewer(bidTable);
@@ -125,6 +131,20 @@ public class BookComposite extends Composite implements IBookComposite
 		
 	}
 
+	
+	private GridData createUnderlyingSymbolInfoGridData() {
+		GridData gridData = new GridData();
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.horizontalSpan = 2;
+		// formGridData.grabExcessVerticalSpace = true;
+//		formGridData.verticalAlignment = GridData.FILL;
+		return gridData;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.ui.IBookComposite#dispose()
+	 */
 	@Override
 	public void dispose() {
 		super.dispose();
@@ -161,6 +181,9 @@ public class BookComposite extends Composite implements IBookComposite
 	}
 
 
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.ui.IBookComposite#setInput(quickfix.Message)
+	 */
 	public void setInput(Message marketRefresh){
 		currentMarketRefresh = marketRefresh;
 		boolean hadOldInput = bidViewer.getInput()!= null;
@@ -178,10 +201,20 @@ public class BookComposite extends Composite implements IBookComposite
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.ui.IBookComposite#getInput()
+	 */
 	public Message getInput(){
 		return currentMarketRefresh;
 	}
 	
+	public UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
+		return underlyingSymbolInfoComposite;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.ui.IBookComposite#getBookEntryList(quickfix.Message, char)
+	 */
 	public EventList<Group> getBookEntryList(Message marketRefresh, char mdEntryType)
 	{
 		EventList<Group> outputList = new BasicEventList<Group>();
@@ -208,6 +241,9 @@ public class BookComposite extends Composite implements IBookComposite
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.marketcetera.photon.ui.IBookComposite#onQuote(quickfix.Message)
+	 */
 	public void onQuote(final Message aMarketRefresh) {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()){
