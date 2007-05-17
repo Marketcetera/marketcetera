@@ -33,9 +33,12 @@ import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LeavesQty;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDReqID;
 import quickfix.field.MsgType;
+import quickfix.field.NoMDEntries;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.OrdStatus;
@@ -179,7 +182,12 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
             assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
         }
-        assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
+		if (lastQty != null) {
+	        assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
+		}
+		if (lastPrice != null) {
+	        assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
+		}
         assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getString(CumQty.FIELD)));
         assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
@@ -187,7 +195,6 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         }
         assertNotNull(inExecReport.getString(TransactTime.FIELD));
 
-        assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
         assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
         if(version42orBelow(msgFactory)) {
             assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
@@ -275,7 +282,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertTrue(execReport.isSetField(OrderID.FIELD));
         assertTrue(execReport.isSetField(ExecID.FIELD));
     }
-    
+
     public void testGetTextOrEncodedText() throws InvalidMessage {
     	{
 	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
@@ -293,7 +300,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 	        assertEquals(encodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
     	}
     }
-    
+
     public void testGetCorrelationField() throws Exception {
 		String requestString = "REQUEST";
     	Field[] fields = MsgType.class.getDeclaredFields();
@@ -302,12 +309,12 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 			if (field.getType().equals(String.class)
 					&& !fieldName.equals("TEST_REQUEST")	// omit session-level message
 					&& !fieldName.equals("RESEND_REQUEST")	// omit session-level message
-					&& !fieldName.equals("BID_REQUEST")		// omit 
+					&& !fieldName.equals("BID_REQUEST")		// omit
 					&& !fieldName.startsWith("ORDER_")		// omit order-related messages
 					&& !fieldName.startsWith("CROSS_ORDER_")// omit order-related messages
 					&& !fieldName.endsWith("_ACK")			// omit "ack" messages
 					&& !fieldName.startsWith("LIST_")		// omit list-order-related messages
-					&& (fieldName.startsWith(requestString) 
+					&& (fieldName.startsWith(requestString)
 					|| fieldName.endsWith("REQUEST")))
 			{
 				String msgTypeValue = (String) field.get(null);
@@ -321,7 +328,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 			}
 		}
     }
-    
+
     /**
      * Test that trailing zeroes are preserved in decimal fields of QuickFIX messages
      * @throws InvalidMessage
@@ -341,18 +348,73 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     	execReport.setField(new OrdStatus(OrdStatus.NEW));
     	execReport.setField(new Symbol("A"));
     	execReport.setField(new Side(Side.BUY));
-		execReport.setField(new StringField(OrderQty.FIELD, noZeroes)); 
-		execReport.setField(new StringField(CumQty.FIELD, twoZeroes)); 
-		execReport.setField(new StringField(AvgPx.FIELD, aLotOfZeroes)); 
+		execReport.setField(new StringField(OrderQty.FIELD, noZeroes));
+		execReport.setField(new StringField(CumQty.FIELD, twoZeroes));
+		execReport.setField(new StringField(AvgPx.FIELD, aLotOfZeroes));
 
     	String execReportString = execReport.toString();
     	assertTrue(execReportString.contains(separator+OrderQty.FIELD+"="+noZeroes+separator));
     	assertTrue(execReportString.contains(separator+CumQty.FIELD+"="+twoZeroes+separator));
     	assertTrue(execReportString.contains(separator+AvgPx.FIELD+"="+aLotOfZeroes+separator));
-    	
+
     	Message reconstituted = new Message(execReportString);
     	assertEquals(noZeroes, reconstituted.getString(OrderQty.FIELD));
     	assertEquals(twoZeroes, reconstituted.getString(CumQty.FIELD));
     	assertEquals(aLotOfZeroes, reconstituted.getString(AvgPx.FIELD));
+    }
+    
+    public void testMergeMarketDataMessages() throws Exception {
+    	FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
+    	Message marketDataSnapshotFullRefresh = messageFactory.createMessage(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
+    	marketDataSnapshotFullRefresh.setField(new Symbol("IBM"));
+    	Group group;
+		group = messageFactory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
+    	group.setField(new MDEntryType(MDEntryType.BID));
+    	group.setField(new MDEntryPx(1234));
+    	marketDataSnapshotFullRefresh.addGroup(group);
+		group = messageFactory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
+    	group.setField(new MDEntryType(MDEntryType.OFFER));
+    	group.setField(new MDEntryPx(1236));
+    	marketDataSnapshotFullRefresh.addGroup(group);
+    	
+    	Message marketDataIncrementalRefresh = messageFactory.createMessage(MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
+		group = messageFactory.createGroup(MsgType.MARKET_DATA_INCREMENTAL_REFRESH, NoMDEntries.FIELD);
+    	group.setField(new MDEntryType(MDEntryType.TRADE));
+    	group.setField(new MDEntryPx(1239));
+    	group.setField(new MDEntrySize(4000));
+    	marketDataIncrementalRefresh.addGroup(group);
+
+    	assertEquals(2,marketDataSnapshotFullRefresh.getInt(NoMDEntries.FIELD));
+    	assertEquals(1,marketDataIncrementalRefresh.getInt(NoMDEntries.FIELD));
+    	FIXMessageUtil.mergeMarketDataMessages(marketDataSnapshotFullRefresh, marketDataIncrementalRefresh, messageFactory);
+    	
+    	assertEquals(3,marketDataSnapshotFullRefresh.getInt(NoMDEntries.FIELD));
+    	assertEquals(1,marketDataIncrementalRefresh.getInt(NoMDEntries.FIELD));
+
+    	
+    	group = messageFactory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
+    	Group bidGroup = null;
+    	Group offerGroup = null;
+    	Group tradeGroup = null;
+		for (int i = 1; i <= 3; i++){
+			group = messageFactory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
+    		marketDataSnapshotFullRefresh.getGroup(i, group);
+    		if (MDEntryType.BID == group.getChar(MDEntryType.FIELD)){
+    			bidGroup = group;
+    		}
+    		if (MDEntryType.OFFER == group.getChar(MDEntryType.FIELD)){
+    			offerGroup = group;
+    		}
+    		if (MDEntryType.TRADE == group.getChar(MDEntryType.FIELD)){
+    			tradeGroup = group;
+    		}
+    	}
+    	assertNotNull(bidGroup);
+    	assertNotNull(offerGroup);
+    	assertNotNull(tradeGroup);
+    	assertEquals(1234, bidGroup.getInt(MDEntryPx.FIELD));
+    	assertEquals(1236, offerGroup.getInt(MDEntryPx.FIELD));
+    	assertEquals(1239, tradeGroup.getInt(MDEntryPx.FIELD));
+    	assertEquals(4000, tradeGroup.getInt(MDEntrySize.FIELD));
     }
 }

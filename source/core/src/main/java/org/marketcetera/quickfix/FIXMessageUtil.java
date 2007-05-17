@@ -1,22 +1,29 @@
 package org.marketcetera.quickfix;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
 
 import quickfix.DataDictionary;
+import quickfix.Field;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.Message.Header;
 import quickfix.field.CollReqID;
 import quickfix.field.ConfirmReqID;
 import quickfix.field.EncodedText;
+import quickfix.field.MDEntryType;
 import quickfix.field.MDReqID;
 import quickfix.field.MsgType;
 import quickfix.field.NetworkRequestID;
+import quickfix.field.NoMDEntries;
 import quickfix.field.PosReqID;
 import quickfix.field.QuoteID;
 import quickfix.field.QuoteReqID;
@@ -106,6 +113,14 @@ public class FIXMessageUtil {
 
 	public static boolean isMarketDataRequest(Message message) {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_REQUEST);
+	}
+
+	private static boolean isMarketDataSnapshotFullRefresh(Message message) {
+    	return msgTypeHelper(message, MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
+	}
+
+	private static boolean isMarketDataIncrementalRefresh(Message message) {
+    	return msgTypeHelper(message, MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
 	}
 
 	/** Helper method to extract all useful fields from an existing message into another message
@@ -215,6 +230,43 @@ public class FIXMessageUtil {
 		return reqIDField;
 	}
 
+	public static void mergeMarketDataMessages(Message marketDataSnapshotFullRefresh, Message marketDataIncrementalRefresh, FIXMessageFactory factory){
+		if (!isMarketDataSnapshotFullRefresh(marketDataSnapshotFullRefresh)){
+			throw new IllegalArgumentException("marketDataSnapshotFullRefresh must be a MarketDataSnapshotFullRefresh");
+		}
+		if (!isMarketDataIncrementalRefresh(marketDataIncrementalRefresh)){
+			throw new IllegalArgumentException("marketDataSnapshotFullRefresh must be a MarketDataSnapshotFullRefresh");
+		}
+		
+		HashMap<Character, Group> consolidatingSet = new HashMap<Character, Group>();
+		
+		addGroupsToMap(marketDataSnapshotFullRefresh, factory, consolidatingSet);
+		addGroupsToMap(marketDataIncrementalRefresh, factory, consolidatingSet);
+		marketDataSnapshotFullRefresh.removeGroup(NoMDEntries.FIELD);
+		for (Group aGroup : consolidatingSet.values()) {
+			Group group = factory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
+			group.setFields(aGroup);
+			marketDataSnapshotFullRefresh.addGroup(group);
+		}
+	}
 
+	private static void addGroupsToMap(Message marketDataMessage, FIXMessageFactory factory, HashMap<Character, Group> consolidatingSet){
+		try {
+			int noMDEntries = marketDataMessage.getInt(NoMDEntries.FIELD);
+			String msgType = marketDataMessage.getHeader().getString(MsgType.FIELD);
+			for (int i = 1; i <= noMDEntries; i++){
+				Group group = factory.createGroup(msgType, NoMDEntries.FIELD);
+				try {
+					marketDataMessage.getGroup(i, group);
+					consolidatingSet.put(group.getChar(MDEntryType.FIELD), group);
+				} catch (FieldNotFound e) {
+					//just continue
+				}
+			}
+		} catch (FieldNotFound e) {
+			// ignore
+		}
+		
+	}
 
 }
