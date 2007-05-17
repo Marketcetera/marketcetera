@@ -1,10 +1,13 @@
 package org.marketcetera.photon.core;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -38,6 +41,8 @@ public class FIXMessageHistory extends PlatformObject {
 	
 	private FilterList<MessageHolder> openOrderList;
 	
+	private Map<String, MessageHolder> orderMap;
+	
 	private int messageReferenceCounter = 0;
 
 	public FIXMessageHistory(FIXMessageFactory messageFactory) {
@@ -56,6 +61,8 @@ public class FIXMessageHistory extends PlatformObject {
 				new FunctionList<List<MessageHolder>, MessageHolder>(symbolSideList,
 				new AveragePriceFunction(messageFactory)), new NotNullMatcher());
 		openOrderList = new FilterList<MessageHolder>(latestExecutionReportsList, new OpenOrderMatcher());
+		
+		orderMap = new HashMap<String, MessageHolder>();
 	}
 	
 	public FIXMessageHistory(FIXMessageFactory messageFactory, List<MessageHolder> messages){
@@ -67,7 +74,15 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public void addOutgoingMessage(quickfix.Message fixMessage) {
-		allMessages.add(new OutgoingMessageHolder(fixMessage, messageReferenceCounter++));
+		OutgoingMessageHolder messageHolder = new OutgoingMessageHolder(fixMessage, messageReferenceCounter++);
+		if (FIXMessageUtil.isOrderSingle(fixMessage)){
+			try {
+				orderMap.put(fixMessage.getString(ClOrdID.FIELD), messageHolder);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+		}
+		allMessages.add(messageHolder);
 	}
 
 
@@ -137,6 +152,10 @@ public class FIXMessageHistory extends PlatformObject {
 
 	public FilterList<MessageHolder> getOpenOrdersList() {
 		return openOrderList;
+	}
+	
+	public MessageHolder getOrder(String clOrdID){
+		return orderMap.get(clOrdID);
 	}
 	
 }
