@@ -207,7 +207,7 @@ public class OptionMessagesComposite extends Composite {
 	}
 	
     public OptionMessagesComposite(Composite parent, IWorkbenchPartSite site, IMemento memento, boolean sortableColumns) {
-    	super(parent, SWT.NONE); 
+    	super(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.VIRTUAL);
     	this.sortableColumns = sortableColumns;   	
     	this.site = site;
     	this.viewStateMemento = memento;
