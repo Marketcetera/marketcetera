@@ -14,6 +14,7 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
+import org.marketcetera.photon.messaging.ScriptingControllerListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
@@ -80,7 +81,7 @@ public class ReconnectJMSJob extends Job {
 				feedService.setServiceRegistration(registration);
 		
 				try {
-					monitor.beginTask("Connect message server", 3);
+					monitor.beginTask("Connect message server", 4);
 					String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
 					StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext(url);
 					final ClassPathXmlApplicationContext jmsApplicationContext;
@@ -92,7 +93,15 @@ public class ReconnectJMSJob extends Job {
 					
 					PhotonControllerListenerAdapter photonControllerAdapter = (PhotonControllerListenerAdapter) jmsApplicationContext.getBean("photonControllerListener");
 					photonControllerAdapter.setPhotonController(PhotonPlugin.getDefault().getPhotonController());
-		
+
+					monitor.worked(1);
+					
+					SimpleMessageListenerContainer scriptingControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("scriptingControllerContainer");
+					scriptingControllerContainer.setExceptionListener(feedService);
+					
+					ScriptingControllerListenerAdapter scriptingControllerAdapter = (ScriptingControllerListenerAdapter) jmsApplicationContext.getBean("scriptingControllerListener");
+					scriptingControllerAdapter.setScriptRegistry(PhotonPlugin.getDefault().getScriptRegistry());
+
 					monitor.worked(1);
 					
 					jmsApplicationContext.start();

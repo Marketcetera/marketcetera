@@ -60,11 +60,7 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 		for (String scriptName : toDelete) {
 			String normalizedScriptName = normalizeName(scriptName);
 			currentScripts.remove(normalizedScriptName);
-			try {
-				registry.unregister(normalizedScriptName);
-			} catch (BSFException e) {
-				mainConsoleLogger.error("Error unregistering script "+scriptName, e);
-			}
+			registry.unregister(normalizedScriptName);
 		}
 		for (String scriptName : toAdd) {
 			String normalizedScriptName = normalizeName(scriptName);

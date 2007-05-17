@@ -7,8 +7,12 @@ class Photon
 
   @@registrations = Hash.new
 
-  def Photon.on_message(message)
-    @@registrations.each_value {|obj| obj.on_message(message)}
+  def Photon.on_fix_message(message)
+    @@registrations.each_value {|obj| obj.on_fix_message(message)}
+  end
+
+  def Photon.on_market_data_message(message)
+    @@registrations.each_value {|obj| obj.on_market_data_message(message)}
   end
 
   def Photon.is_registered?(file_name)

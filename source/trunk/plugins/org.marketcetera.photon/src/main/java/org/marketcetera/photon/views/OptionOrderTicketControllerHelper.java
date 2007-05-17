@@ -512,15 +512,8 @@ public class OptionOrderTicketControllerHelper extends
 	}
 	
 	public class MDVMarketDataListener extends MarketDataListener {
-
-		public void onLevel2Quote(Message aQuote) {
-		}
-
-		public void onQuote(Message aQuote) {
+		public void onMessage(Message aQuote) {
 			OptionOrderTicketControllerHelper.this.onQuote(aQuote);
-		}
-
-		public void onTrade(Message aTrade) {
 		}
 	}
 

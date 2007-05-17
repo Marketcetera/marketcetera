@@ -1,6 +1,11 @@
 package org.marketcetera.photon.scripting;
 
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
@@ -12,7 +17,6 @@ import org.jruby.bsf.JRubyPlugin;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.InitializingBean;
@@ -34,8 +38,9 @@ public class ScriptRegistry implements InitializingBean {
 	protected BSFEngine engine;
 	private Classpath additionalClasspath =  new Classpath();
 	private Classpath currentClasspath;
-	
-	
+	protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	private Logger logger;
+
 	static String [] JRUBY_PLUGIN_PATH = {
 		"lib/ruby/site_ruby/1.8",
 		"lib/ruby/site_ruby/1.8/java",
@@ -57,34 +62,11 @@ public class ScriptRegistry implements InitializingBean {
 		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
 		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
 		marketDataFeedTracker.open();
+		logger = PhotonPlugin.getMainConsoleLogger();
 		marketDataFeedTracker.setMarketDataListener(new MarketDataListener() {
-
-			private Logger logger = PhotonPlugin.getMainConsoleLogger();
-
-			public void onLevel2Quote(Message aQuote) {
-				try {
-					onEvent(aQuote);
-				} catch (BSFException e) {
-					ScriptLoggingUtil.error(logger , e);
-				}
+			public void onMessage(Message aQuote) {
+				onMarketDataEvent(aQuote);
 			}
-
-			public void onQuote(Message aQuote) {
-				try {
-					onEvent(aQuote);
-				} catch (BSFException e) {
-					ScriptLoggingUtil.error(logger, e);
-				}
-			}
-
-			public void onTrade(Message aTrade) {
-				try {
-					onEvent(aTrade);
-				} catch (BSFException e) {
-					ScriptLoggingUtil.error(logger, e);
-				}
-			}
-			
 		});
 	}
 
@@ -106,7 +88,7 @@ public class ScriptRegistry implements InitializingBean {
 
 		engine = bsfManager.loadScriptingEngine("ruby");
 
-		Object result;
+		Object result; // wasted
 		result = engine.eval("<java>", 1, 1, "require 'active_support/core_ext'");
 		result = engine.eval("<java>", 1, 1, "require 'active_support/dependencies'");
 		result = engine.eval("<java>", 1, 1, "require 'photon'");
@@ -141,9 +123,18 @@ public class ScriptRegistry implements InitializingBean {
 	 * @return true if the script is already registered
 	 * @throws BSFException
 	 */
-	public boolean isRegistered(String requireString) throws BSFException {
-		String evalString = "Photon.is_registered?('"+requireString+"')";
-		return (Boolean) bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+	public boolean isRegistered(final String requireString) {
+		Future<Boolean> future = scheduler.submit(new Callable<Boolean>() {
+			public Boolean call() throws Exception {
+				return doIsRegistered(requireString);
+			}		
+		});
+		try {
+			return future.get();
+		} catch (Exception e) {
+			logger.debug("Error getting a value out of a future.get", e);
+			return false;
+		}
 	}
 	
 	/**
@@ -155,9 +146,12 @@ public class ScriptRegistry implements InitializingBean {
 	 * @param fileName the argument to the Ruby require method
 	 * @throws BSFException
 	 */
-	public void unregister(String fileName) throws BSFException {
-		String evalString = "Photon.unregister('"+fileName+"')";
-		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+	public void unregister(final String fileName) {
+		scheduler.execute(new Runnable() {
+			public void run() {
+				doUnregister(fileName);
+			}		
+		});
 	}
 
 	/**
@@ -169,49 +163,181 @@ public class ScriptRegistry implements InitializingBean {
 	 * @param fileName the argument to the Ruby require method
 	 * @throws BSFException
 	 */
-	public void register(String fileName) throws BSFException {
-		String evalString = "Photon.register('"+fileName+"')";
-		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-	}
-
-	/**
-	 * Note that this method expects a file name, formatted as an
-	 * argument to the Ruby "require" method.  For example, the workspace
-	 * path "/foo/bar.rb", would correspond to the require method parameter,
-	 * "foo/bar".
-	 * 
-	 * @param fileName the argument to the Ruby require method
-	 * @throws BSFException
-	 */
-	public void scriptChanged(String fileName) throws BSFException {
-		boolean reregister = isRegistered(fileName);
-		unregister(fileName);
-		String evalString = "Dependencies.loaded.reject! {|s| s.ends_with?('"+fileName+"')}";
-		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-		evalString = "require_dependency '"+fileName+"'";
-		bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-		if (reregister){
-			register(fileName);
+	public void register(final String fileName) throws BSFException {
+		Future<BSFException> result = scheduler.submit(new Callable<BSFException>() {
+			public BSFException call() {
+				return doRegister(fileName);
+			}		
+		});
+			try {
+			BSFException exception = result.get();
+			if (exception != null) {
+				throw exception;
+			}
+		} catch (InterruptedException ignored) {
+			// no-op
+		} catch (ExecutionException ex) {
+			// TODO: internationalize this
+			logger.warn("Unable to get a result of Ruby script registration", ex);
 		}
-		
 	}
 
-	public void onEvent(Message message) throws BSFException {
-		bsfManager.undeclareBean(MESSAGE_BEAN_NAME);
-		bsfManager.declareBean(MESSAGE_BEAN_NAME, message, message.getClass());
-		bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_message($message)");
+	/**
+	 * Note that this method expects a file name, formatted as an argument to
+	 * the Ruby "require" method. For example, the workspace path "/foo/bar.rb",
+	 * would correspond to the require method parameter, "foo/bar".
+	 * 
+	 * @param fileName
+	 *            the argument to the Ruby require method
+	 * @throws BSFException
+	 */
+	public void scriptChanged(final String fileName) throws BSFException{
+		Future<BSFException> result = scheduler.submit(new Callable<BSFException>() {
+			public BSFException call() {
+				return doScriptChanged(fileName);
+			}
+		});
+		try {
+			BSFException exception = result.get();
+			if (exception != null) {
+				throw exception;
+			}
+		} catch (InterruptedException ignored) {
+			// no-op
+		} catch (ExecutionException ex) {
+			// TODO: internationalize this
+			logger.warn("Unable to get a result of Ruby script change", ex);
+		}
 	}
 
-	public void projectAdded(String absolutePath) {
+	public void onMarketDataEvent(final Message message){
+		scheduler.execute(new Runnable() {
+			public void run() {
+				doOnMarketDataEvent(message);
+			}		
+		});
+	}
+
+	public void onFIXEvent(final Message message){
+		scheduler.execute(new Runnable() {
+			public void run() {
+				doOnFIXEvent(message);
+			}		
+		});
+	}
+
+	public void projectAdded(final String absolutePath) {
+		scheduler.execute(new Runnable() {
+			public void run() {
+				doProjectAdded(absolutePath);
+			}
+		});
+	}
+
+
+	public void projectRemoved(final String absolutePath) {
+		scheduler.execute(new Runnable() {
+			public void run() {
+				doProjectRemoved(absolutePath);
+			}});
+	}
+
+	/** Ability to run an arbitrary passed in script */
+	public Object evalScript(final String script) throws Exception{
+		Future<Object> result = scheduler.submit(new Callable<Object>() {
+			public Object call() throws Exception {
+				return bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, script);	}
+		});
+		return result.get();
+	}	
+	
+
+	public ScheduledExecutorService getScheduler() {
+		return scheduler;
+	}
+
+	private void doOnFIXEvent(final Message message) {
+		try {
+			bsfManager.undeclareBean(MESSAGE_BEAN_NAME);
+			bsfManager.declareBean(MESSAGE_BEAN_NAME, message, message.getClass());
+			bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_fix_message($message)");
+		} catch (BSFException e) {
+			ScriptLoggingUtil.error(logger, e);
+		}
+	}
+
+
+	
+	private void doOnMarketDataEvent(final Message message) {
+		try {
+			bsfManager.undeclareBean(MESSAGE_BEAN_NAME);
+			bsfManager.declareBean(MESSAGE_BEAN_NAME, message, message.getClass());
+			bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_market_data_message($message)");
+		} catch (BSFException e) {
+			ScriptLoggingUtil.error(logger, e);
+		}
+	}
+
+	private void doProjectAdded(final String absolutePath) {
 		currentClasspath.add(0, absolutePath);
 		bsfManager.setClassPath(currentClasspath.toString());
 	}
 
 
-	public void projectRemoved(String absolutePath) {
-		currentClasspath.remove(absolutePath);
-		bsfManager.setClassPath(currentClasspath.toString());
+	private Boolean doIsRegistered(final String requireString) {
+		try {
+			String evalString = "Photon.is_registered?('"+requireString+"')";
+			return (Boolean) bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+		} catch (BSFException e) {
+			ScriptLoggingUtil.error(logger, e);
+		}
+		return false;
 	}
 
-		
+
+	private void doUnregister(final String fileName) {
+		try {
+			String evalString = "Photon.unregister('"+fileName+"')";
+			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+		} catch (BSFException e) {
+			ScriptLoggingUtil.error(logger, e);
+		}
+	}
+
+
+	private BSFException doRegister(final String fileName) {
+		try {
+			String evalString = "Photon.register('"+fileName+"')";
+			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+			return null;
+		} catch (BSFException e) {
+			ScriptLoggingUtil.error(logger, e);
+			return e;
+		}
+	}
+
+
+	private BSFException doScriptChanged(final String fileName) {
+		try {
+			boolean reregister = doIsRegistered(fileName);
+			doUnregister(fileName);
+			String evalString = "Dependencies.loaded.reject! {|s| s.ends_with?('"+ fileName + "')}";
+			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+			evalString = "require_dependency '" + fileName + "'";
+			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+			if (reregister) {
+				doRegister(fileName);
+			}
+			return null;
+		} catch (BSFException e) {
+			return e;
+		}
+	}
+
+
+	private void doProjectRemoved(final String absolutePath) {
+		currentClasspath.remove(absolutePath);
+		bsfManager.setClassPath(currentClasspath.toString());
+	}		
+
 }

@@ -190,16 +190,8 @@ public class OrderTicketControllerHelper {
 
 	protected MarketDataListener createMarketDataListener() {
 		MarketDataListener dataListener = new MarketDataListener() {
-
-			// public void onLevel2Quote(Message aQuote) {
-			// OrderTicketControllerHelper.this.onQuote(aQuote);
-			// }
-
-			public void onQuote(Message aQuote) {
+			public void onMessage(Message aQuote) {
 				OrderTicketControllerHelper.this.onQuote(aQuote);
-			}
-
-			public void onTrade(Message aTrade) {
 			}
 		};
 		return dataListener;
