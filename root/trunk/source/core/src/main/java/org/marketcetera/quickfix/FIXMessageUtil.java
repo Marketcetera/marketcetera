@@ -115,11 +115,11 @@ public class FIXMessageUtil {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_REQUEST);
 	}
 
-	private static boolean isMarketDataSnapshotFullRefresh(Message message) {
+	public static boolean isMarketDataSnapshotFullRefresh(Message message) {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
 	}
 
-	private static boolean isMarketDataIncrementalRefresh(Message message) {
+	public static boolean isMarketDataIncrementalRefresh(Message message) {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
 	}
 
@@ -266,7 +266,7 @@ public class FIXMessageUtil {
 		} catch (FieldNotFound e) {
 			// ignore
 		}
-		
+
 	}
 
 }
