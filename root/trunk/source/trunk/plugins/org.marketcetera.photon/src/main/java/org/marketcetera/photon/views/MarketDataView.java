@@ -469,14 +469,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 
 	public class MDVMarketDataListener extends MarketDataListener {
-
-		public void onLevel2Quote(Message aQuote) {}
-
-		public void onQuote(Message aQuote) {
-			MarketDataView.this.onQuote(aQuote);
+		public void onMessage(Message aMessage) {
+			MarketDataView.this.onQuote(aMessage);
 		}
-
-		public void onTrade(Message aTrade) {}
 
 	}
 

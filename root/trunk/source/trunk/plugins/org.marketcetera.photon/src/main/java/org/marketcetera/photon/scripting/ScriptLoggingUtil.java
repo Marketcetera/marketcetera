@@ -48,4 +48,19 @@ public class ScriptLoggingUtil {
 			logger.info(e.getMessage(), e);
 		}
 	}
+	
+	public static void debug(Logger logger, BSFException e) {
+		Throwable targetException = e.getTargetException();
+		if (targetException instanceof RaiseException){
+			RubyException rubyException = ((RaiseException)targetException).getException();
+			if (rubyException != null){
+				logger.debug(""+rubyException);
+			} else {
+				logger.debug(targetException.getMessage(), targetException);
+			}
+		} else {
+			logger.debug(e.getMessage(), e);
+		}
+	}
+
 }

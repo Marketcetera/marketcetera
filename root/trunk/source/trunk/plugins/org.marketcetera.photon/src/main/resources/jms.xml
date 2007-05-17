@@ -25,12 +25,27 @@
   </bean>
   
     <!-- note that this needs to use the non-pooled connection factory -->
+  <bean id="scriptingControllerContainer" class="org.marketcetera.photon.messaging.SimpleMessageListenerContainer">
+    <property name="connectionFactory" ref="externalConnectionFactory"/>
+    <property name="messageListener" ref="scriptingControllerListener"/>
+    <property name="destination" ref="omsMessagesTopic"/>
+  </bean>
+  
+  <bean id="scriptingControllerListener" class="org.marketcetera.photon.messaging.ScriptingControllerListenerAdapter">
+    <property name="defaultResponseDestination" ref="omsCommandsQueue"/>
+	<property name="messageConverter">
+		<bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+	</property>		
+  </bean>
+  
+    <!-- note that this needs to use the non-pooled connection factory -->
   <bean id="photonControllerContainer" class="org.marketcetera.photon.messaging.SimpleMessageListenerContainer">
     <property name="connectionFactory" ref="externalConnectionFactory"/>
     <property name="messageListener" ref="photonControllerListener"/>
     <property name="destination" ref="omsMessagesTopic"/>
   </bean>
-  
+
+
   <bean id="pooledExternalConnectionFactory" class="org.apache.activemq.pool.PooledConnectionFactory">
     <property name="connectionFactory" ref="externalConnectionFactory"/>
   </bean>

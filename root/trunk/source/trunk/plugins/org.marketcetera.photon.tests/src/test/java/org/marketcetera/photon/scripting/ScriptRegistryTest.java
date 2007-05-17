@@ -1,5 +1,8 @@
 package org.marketcetera.photon.scripting;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 
@@ -12,15 +15,9 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonTestPlugin;
 
 import quickfix.fix42.ExecutionReport;
+import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 public class ScriptRegistryTest extends TestCase {
-
-	class MockScriptRegistry extends ScriptRegistry {
-		public Object evalScript(String script) throws BSFException{
-			return bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, script);
-		}
-	}
-	
 	public ScriptRegistryTest(){
 		PhotonPlugin.getDefault().ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 	}
@@ -33,24 +30,31 @@ public class ScriptRegistryTest extends TestCase {
 
 	public void testBasicScript() throws Throwable {
 		try {
-			MockScriptRegistry registry = new MockScriptRegistry();
+			ScriptRegistry registry = new ScriptRegistry();
 	
 			Classpath classpath = getClasspath();
 			registry.setAdditionalClasspath(classpath);
 			registry.afterPropertiesSet();
 	
 			registry.evalScript("$quote_count = 0");
+			registry.evalScript("$fix_count = 0");
 			registry.register("test_script");
 			assertTrue(registry.isRegistered("test_script"));
 			registry.unregister("test_script");
 			assertTrue(!registry.isRegistered("test_script"));
 			registry.register("test_script");
 			assertTrue(registry.isRegistered("test_script"));
-			registry.onEvent(new ExecutionReport());
+			registry.onMarketDataEvent(new MarketDataSnapshotFullRefresh());
 			Long quoteCountObj = (Long)registry.evalScript("$quote_count");
 			assertNotNull(quoteCountObj);
 			long quoteCount = (long)quoteCountObj;
 			assertEquals((long)1, quoteCount);
+
+			registry.onFIXEvent(new ExecutionReport());
+			Long fixCountObj = (Long)registry.evalScript("$fix_count");
+			assertNotNull(fixCountObj);
+			long fixCount = (long)fixCountObj;
+			assertEquals((long)1, fixCount);
 		} catch (BSFException ex) {
 			throw ex.getTargetException();
 		}
@@ -72,13 +76,14 @@ public class ScriptRegistryTest extends TestCase {
 
 	public void testSubdirScript() throws Throwable {
 		try {
-			MockScriptRegistry registry = new MockScriptRegistry();
+			ScriptRegistry registry = new ScriptRegistry();
 	
 			Classpath classpath = getClasspath();
 			registry.setAdditionalClasspath(classpath);
 			registry.afterPropertiesSet();
 	
 			registry.evalScript("$quote_count = 0");
+			registry.evalScript("$fix_count = 0");
 			registry.register("subdir/test_script");
 			assertTrue(registry.isRegistered("subdir/test_script"));
 			registry.unregister("subdir/test_script");
@@ -88,11 +93,18 @@ public class ScriptRegistryTest extends TestCase {
 			registry.register("test_script");
 			assertTrue(registry.isRegistered("test_script"));
 
-			registry.onEvent(new ExecutionReport());
+			registry.onMarketDataEvent(new MarketDataSnapshotFullRefresh());
 			Long quoteCountObj = (Long)registry.evalScript("$quote_count");
 			assertNotNull(quoteCountObj);
 			long quoteCount = (long)quoteCountObj;
 			assertEquals((long)82, quoteCount);
+
+			registry.onFIXEvent(new ExecutionReport());
+			Long fixCountObj = (Long)registry.evalScript("$fix_count");
+			assertNotNull(fixCountObj);
+			long fixCount = (long)fixCountObj;
+			assertEquals((long) 82, fixCount);
+
 		} catch (BSFException ex) {
 			throw ex.getTargetException();
 		}
@@ -101,7 +113,7 @@ public class ScriptRegistryTest extends TestCase {
 
 	public void testRequiringScript() throws Throwable {
 		try {
-			MockScriptRegistry registry = new MockScriptRegistry();
+			ScriptRegistry registry = new ScriptRegistry();
 	
 			Classpath classpath = getClasspath();
 			registry.setAdditionalClasspath(classpath);

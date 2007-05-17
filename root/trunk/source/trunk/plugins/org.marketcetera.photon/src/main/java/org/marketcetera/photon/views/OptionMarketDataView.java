@@ -268,15 +268,8 @@ public class OptionMarketDataView extends ViewPart implements
 	}
 
 	public class MDVMarketDataListener extends MarketDataListener {
-
-		public void onLevel2Quote(Message aQuote) {
-		}
-
-		public void onQuote(Message aQuote) {
-			OptionMarketDataView.this.onQuote(aQuote);
-		}
-
-		public void onTrade(Message aTrade) {
+		public void onMessage(Message aMessage) {
+			OptionMarketDataView.this.onQuote(aMessage);
 		}
 	}
 

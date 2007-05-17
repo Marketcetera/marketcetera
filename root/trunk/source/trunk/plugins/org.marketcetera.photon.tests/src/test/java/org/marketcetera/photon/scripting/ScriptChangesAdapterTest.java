@@ -243,7 +243,7 @@ public class ScriptChangesAdapterTest extends TestCase {
 		}
 
 		@Override
-		public void unregister(String fileName) throws BSFException {
+		public void unregister(String fileName)  {
 			registered.remove(fileName);
 		}
 
@@ -251,7 +251,7 @@ public class ScriptChangesAdapterTest extends TestCase {
 		 * @see org.marketcetera.photon.scripting.ScriptRegistry#isRegistered(java.lang.String)
 		 */
 		@Override
-		public boolean isRegistered(String fileName) throws BSFException {
+		public boolean isRegistered(String fileName)  {
 			return registered.contains(fileName);
 		}
 		
