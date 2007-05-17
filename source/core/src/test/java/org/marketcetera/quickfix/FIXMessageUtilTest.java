@@ -59,6 +59,9 @@ import quickfix.field.TransactTime;
  */
 @ClassVersion("$Id$")
 public class FIXMessageUtilTest extends FIXVersionedTestCase {
+	/// this is to prevent errors on windows where orderIDs get same system.currentMillis
+	// b/c windows doesn't have fine-grained enough system clock
+	private static long nosSuffixCounter = 1;
     public FIXMessageUtilTest(String inName, FIXVersion version) {
         super(inName, version);
     }
@@ -157,7 +160,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = msgFactory.newBasicOrder();
-        newSingle.setField(new ClOrdID("123-"+suffix));
+        newSingle.setField(new ClOrdID("123-"+(++nosSuffixCounter)+"-"+suffix));
         newSingle.setField(new Symbol(symbol));
         newSingle.setField(new Side(side));
         newSingle.setField(new TransactTime());
@@ -183,7 +186,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
             assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
         }
 		if (lastQty != null) {
-	        assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
+        assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
 		}
 		if (lastPrice != null) {
 	        assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
@@ -282,7 +285,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertTrue(execReport.isSetField(OrderID.FIELD));
         assertTrue(execReport.isSetField(ExecID.FIELD));
     }
-
+    
     public void testGetTextOrEncodedText() throws InvalidMessage {
     	{
 	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
@@ -300,7 +303,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 	        assertEquals(encodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
     	}
     }
-
+    
     public void testGetCorrelationField() throws Exception {
 		String requestString = "REQUEST";
     	Field[] fields = MsgType.class.getDeclaredFields();
@@ -309,12 +312,12 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 			if (field.getType().equals(String.class)
 					&& !fieldName.equals("TEST_REQUEST")	// omit session-level message
 					&& !fieldName.equals("RESEND_REQUEST")	// omit session-level message
-					&& !fieldName.equals("BID_REQUEST")		// omit
+					&& !fieldName.equals("BID_REQUEST")		// omit 
 					&& !fieldName.startsWith("ORDER_")		// omit order-related messages
 					&& !fieldName.startsWith("CROSS_ORDER_")// omit order-related messages
 					&& !fieldName.endsWith("_ACK")			// omit "ack" messages
 					&& !fieldName.startsWith("LIST_")		// omit list-order-related messages
-					&& (fieldName.startsWith(requestString)
+					&& (fieldName.startsWith(requestString) 
 					|| fieldName.endsWith("REQUEST")))
 			{
 				String msgTypeValue = (String) field.get(null);
@@ -328,7 +331,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 			}
 		}
     }
-
+    
     /**
      * Test that trailing zeroes are preserved in decimal fields of QuickFIX messages
      * @throws InvalidMessage
@@ -348,15 +351,15 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     	execReport.setField(new OrdStatus(OrdStatus.NEW));
     	execReport.setField(new Symbol("A"));
     	execReport.setField(new Side(Side.BUY));
-		execReport.setField(new StringField(OrderQty.FIELD, noZeroes));
-		execReport.setField(new StringField(CumQty.FIELD, twoZeroes));
-		execReport.setField(new StringField(AvgPx.FIELD, aLotOfZeroes));
+		execReport.setField(new StringField(OrderQty.FIELD, noZeroes)); 
+		execReport.setField(new StringField(CumQty.FIELD, twoZeroes)); 
+		execReport.setField(new StringField(AvgPx.FIELD, aLotOfZeroes)); 
 
     	String execReportString = execReport.toString();
     	assertTrue(execReportString.contains(separator+OrderQty.FIELD+"="+noZeroes+separator));
     	assertTrue(execReportString.contains(separator+CumQty.FIELD+"="+twoZeroes+separator));
     	assertTrue(execReportString.contains(separator+AvgPx.FIELD+"="+aLotOfZeroes+separator));
-
+    	
     	Message reconstituted = new Message(execReportString);
     	assertEquals(noZeroes, reconstituted.getString(OrderQty.FIELD));
     	assertEquals(twoZeroes, reconstituted.getString(CumQty.FIELD));
