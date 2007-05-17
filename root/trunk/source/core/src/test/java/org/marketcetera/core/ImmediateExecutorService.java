@@ -1,4 +1,4 @@
-package com.marketcetera.core;
+package org.marketcetera.core;
 
 import java.util.ArrayList;
 import java.util.Collection;
