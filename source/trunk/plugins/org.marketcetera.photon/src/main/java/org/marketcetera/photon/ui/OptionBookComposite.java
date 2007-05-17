@@ -1,111 +1,36 @@
 package org.marketcetera.photon.ui;
 
 
-import java.lang.reflect.Field;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
-import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.marketdata.OptionMessageHolder;
+import org.marketcetera.photon.views.OptionMessagesComposite;
 import org.marketcetera.photon.views.UnderlyingSymbolInfoComposite;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXVersion;
 
-import quickfix.DataDictionary;
-import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryTime;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDMkt;
-import quickfix.field.NoMDEntries;
-import quickfix.fix44.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
 public class OptionBookComposite extends Composite implements IBookComposite
 {
-
-	public enum BookColumns implements IFieldIdentifier {
-		MDMKT(MDMkt.class), MDENTRYPX(MDEntryPx.class), MDENTRYSIZE(MDEntrySize.class),
-		MDENTRYTIME(MDEntryTime.class);
-
-		private String name;
-		private Integer fieldID;
-		private Integer groupID;
-		private Integer groupDiscriminatorID;
-		private Object groupDiscriminatorValue;
-
-
-		BookColumns(String name){
-			this.name = name;
-		}
-
-		BookColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
-			this(clazz);
-			this.fieldID = fieldID;
-			this.groupID = groupID;
-			this.groupDiscriminatorID = groupDiscriminatorID;
-			this.groupDiscriminatorValue = groupDiscriminatorValue;
-		}
-
-		BookColumns(Class clazz) {
-			name = clazz.getSimpleName();
-			try {
-				Field fieldField = clazz.getField("FIELD");
-				fieldID = (Integer) fieldField.get(null);
-			} catch (Throwable t){
-				assert(false);
-			}
-		}
-
-		public String toString() {
-			return name;
-		}
-
-		public Integer getFieldID() {
-			return fieldID;
-		}
-		
-		public Integer getGroupID() {
-			return groupID;
-		}
-
-		public Integer getGroupDiscriminatorID() {
-			return groupDiscriminatorID;
-		}
-
-		public Object getGroupDiscriminatorValue() {
-			return groupDiscriminatorValue;
-		}
-
-	};
-	
 	private UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite;
 
-	private Table bidTable;
-	private Table askTable;
-	private IndexedTableViewer bidViewer;
-	private IndexedTableViewer askViewer;
-	private final FormToolkit toolkit;
-	private Message currentMarketRefresh;
+	private OptionMessagesComposite optionMessagesComposite;
 
-	public OptionBookComposite(Composite parent, int style){
-		this(parent, style, null);
+	public OptionBookComposite(Composite parent, int style, IWorkbenchPartSite site, IMemento viewStateMemento){
+		this(parent, style, null, site, viewStateMemento);
 	}
 	
-	public OptionBookComposite(Composite parent, int style, FormToolkit toolkit) 
+	public OptionBookComposite(Composite parent, int style, FormToolkit toolkit, IWorkbenchPartSite site, IMemento viewStateMemento) 
 	{
-		super(parent, style);
-		this.toolkit = toolkit;
-		
+		super(parent, style);		
 		GridLayout gridLayout = new GridLayout();
 		GridData layoutData = new GridData();
 		layoutData.grabExcessHorizontalSpace=true;
@@ -124,11 +49,20 @@ public class OptionBookComposite extends Composite implements IBookComposite
 		underlyingSymbolInfoComposite
 				.setLayoutData(createUnderlyingSymbolInfoGridData());
 
-		bidTable = getTable();
-		askTable = getTable();
-		bidViewer = getTableViewer(bidTable);
-		askViewer = getTableViewer(askTable);
-		
+		optionMessagesComposite = new OptionMessagesComposite(this, site, viewStateMemento);
+		GridData tableGridData = createOptionMessagesGridData();
+		optionMessagesComposite.setLayoutData(tableGridData);		
+		optionMessagesComposite.setInput(new BasicEventList<OptionMessageHolder>());
+	}
+
+	private GridData createOptionMessagesGridData() {
+		GridData gridData = new GridData();
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.grabExcessVerticalSpace = true;
+//		gridData.grabExcessVerticalSpace = true;
+		gridData.verticalAlignment = GridData.FILL;
+		return gridData;
 	}
 
 	
@@ -137,127 +71,68 @@ public class OptionBookComposite extends Composite implements IBookComposite
 		gridData.grabExcessHorizontalSpace = true;
 		gridData.horizontalAlignment = GridData.FILL;
 		gridData.horizontalSpan = 2;
-		// formGridData.grabExcessVerticalSpace = true;
-//		formGridData.verticalAlignment = GridData.FILL;
+//		gridData.grabExcessVerticalSpace = true;
+//		gridData.verticalAlignment = GridData.FILL;
 		return gridData;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.ui.IBookComposite#dispose()
-	 */
 	@Override
 	public void dispose() {
 		super.dispose();
 	}
 
-	private IndexedTableViewer getTableViewer(Table theTable) {
-		IndexedTableViewer tableViewer = new IndexedTableViewer(theTable);
-		DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary();
-		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values(), dictionary);
-		tableViewer.setContentProvider(new EventListContentProvider<Group>());
-		tableViewer.setLabelProvider(format);
-		return tableViewer;
-	}
-
-	private Table getTable() {
-
-		Table table;
-		if (toolkit == null){
-			table = new Table(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
-		} else {
-			table = toolkit.createTable(this, SWT.SINGLE | SWT.FULL_SELECTION | SWT.VIRTUAL);
-		}
-        GridData tableLayout = new GridData();
-        tableLayout.horizontalAlignment = GridData.FILL;
-        tableLayout.verticalAlignment = GridData.FILL;
-        tableLayout.grabExcessHorizontalSpace = true;
-        tableLayout.grabExcessVerticalSpace = true;
-        tableLayout.heightHint = 200;
-        tableLayout.widthHint = 200;
-        table.setLayoutData(tableLayout);
-        table.setHeaderVisible(false);
-
-        return table;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.ui.IBookComposite#setInput(quickfix.Message)
-	 */
-	public void setInput(Message marketRefresh){
-		currentMarketRefresh = marketRefresh;
-		boolean hadOldInput = bidViewer.getInput()!= null;
-		if (marketRefresh == null) {
-			if (!isDisposed()) {
-				bidViewer.setInput(null);
-				askViewer.setInput(null);
-			}
-		} else {
-			bidViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.BID));
-			askViewer.setInput(getBookEntryList(marketRefresh, MDEntryType.OFFER));
-		}
-		if (!hadOldInput && marketRefresh != null){
-			packColumns();
-		}
+	public void setInput(Message marketRefresh) {				
+		// do nothing, handled by 
 	}
 	
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.ui.IBookComposite#getInput()
-	 */
 	public Message getInput(){
-		return currentMarketRefresh;
+		return null;
 	}
 	
 	public UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
 		return underlyingSymbolInfoComposite;
 	}
 
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.ui.IBookComposite#getBookEntryList(quickfix.Message, char)
-	 */
+	public OptionMessagesComposite getOptionMessagesComposite() {
+		return optionMessagesComposite;
+	}
+
+	//This method is not used in OptionBookComposite
 	public EventList<Group> getBookEntryList(Message marketRefresh, char mdEntryType)
 	{
 		EventList<Group> outputList = new BasicEventList<Group>();
-		try {
-			int numEntries = marketRefresh.getInt(NoMDEntries.FIELD);
-			for (int i = 1; i <= numEntries; i++){
-				MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-				marketRefresh.getGroup(i, group);
-				if (group.getMDEntryType().getValue() == mdEntryType) {
-					outputList.add(group);
-				}
-			}
-		} catch (FieldNotFound e) {
-		}
+//		try {
+//			int numEntries = marketRefresh.getInt(NoMDEntries.FIELD);
+//			for (int i = 1; i <= numEntries; i++){
+//				MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+//				marketRefresh.getGroup(i, group);
+//				if (group.getMDEntryType().getValue() == mdEntryType) {
+//					outputList.add(group);
+//				}
+//			}
+//		} catch (FieldNotFound e) {
+//		}
 		return outputList;
 	}
 
-	private void packColumns() {
-		for (TableColumn aColumn : bidTable.getColumns()) {
-			aColumn.pack();
-		}
-		for (TableColumn aColumn : askTable.getColumns()) {
-			aColumn.pack();
-		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.marketcetera.photon.ui.IBookComposite#onQuote(quickfix.Message)
-	 */
 	public void onQuote(final Message aMarketRefresh) {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()){
-			setInput(aMarketRefresh);
+			optionMessagesComposite.updateQuote(aMarketRefresh);
 		} else {
 			theDisplay.asyncExec(
 				new Runnable(){
 					public void run()
 					{
-						setInput(aMarketRefresh);
+						optionMessagesComposite.updateQuote(aMarketRefresh);
 					}
 				}
 			);
 		}
 	}
 
+	public void saveState(IMemento memento) {
+		optionMessagesComposite.saveTableState(memento);
+	}
+	
 }

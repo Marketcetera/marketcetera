@@ -19,11 +19,14 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OptionCFICodeImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
@@ -47,6 +50,7 @@ import quickfix.field.OrderCapacity;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
+import ca.odell.glazedlists.EventList;
 
 public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
@@ -88,6 +92,7 @@ public class OptionOrderTicketControllerHelper extends
 	@Override
 	protected void initListeners() {
 		super.initListeners();
+		getMarketDataTracker().setMarketDataListener(new MDVMarketDataListener());
 
 		addUpdateOptionSymbolModifyListener(optionTicket.getExpireYearCombo());
 		addUpdateOptionSymbolModifyListener(optionTicket.getExpireMonthCombo());
@@ -111,32 +116,47 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	@Override
-	protected void listenMarketDataAdditional(MarketDataFeedService service,
-			final String optionRootStr) throws MarketceteraException {
+	protected MarketDataListener createMarketDataListener() {
+		MarketDataListener dataListener = new MDVMarketDataListener();
+		return dataListener;
+	}
 
+	@Override
+	protected void listenMarketDataAdditional(final String optionRootStr)
+			throws MarketceteraException {
+
+		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		MSymbol optionRoot = new MSymbol(optionRootStr);
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
+		getOptionMessagesComposite().requestOptionSecurityList(marketDataTracker, optionRoot);
+		getOptionMessagesComposite().getMessagesViewer().refresh();
 
 		if (!optionContractCache.containsKey(optionRoot)) {
-			requestOptionSecurityList(service, optionRoot);
+			requestOptionSecurityList(marketDataTracker.getMarketDataFeedService(), optionRoot);
+
 		} else {
 			conditionallyUpdateInputControls(optionRoot);
 		}
 	}
 
-	
 	@Override
 	protected void unlistenMarketDataAdditional() throws MarketceteraException {
 		super.unlistenMarketDataAdditional();
 		
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.removeUnderlyingSymbol();
-	
+		OptionMessagesComposite messagesComposote = getOptionMessagesComposite();
+		messagesComposote.unsubscribeOptions(getMarketDataTracker());
+		EventList<OptionMessageHolder> list = messagesComposote.getInput();
+		list.clear();
+		messagesComposote.clearDataMaps();
+		messagesComposote.getMessagesViewer().refresh();		
 	}
 
 	private void requestOptionSecurityList(MarketDataFeedService service,
 			final MSymbol optionRoot) {
+		
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
 			public void onMarketDataFailure(MSymbol symbol) {
 				// Restore the full expiration choices.
@@ -439,24 +459,33 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	@Override
+	public void onQuote(Message message) {
+		super.onQuote(message);
+		optionTicket.getBookComposite().onQuote(message);  
+	}
+
+	@Override
 	protected void onQuoteAdditional(final Message message) {
 		super.onQuoteAdditional(message);
 		
 		Display theDisplay = Display.getDefault();		
 		if (theDisplay.getThread() == Thread.currentThread()){
 			underlyingSymbolOnQuote(message);
+			optionMessagesOnQuote(message);
 		} else {
 			theDisplay.asyncExec(
 				new Runnable(){
 					public void run()
 					{
 						underlyingSymbolOnQuote(message);
+						if (!getOptionMessagesComposite().getMessagesViewer().getTable().isDisposed())
+							optionMessagesOnQuote(message);
 					}
 				}
 			);
 		}		
 	}
-
+	
 	private void underlyingSymbolOnQuote(Message message) {
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		if (symbolComposite.matchUnderlyingSymbol(message)) {
@@ -468,7 +497,31 @@ public class OptionOrderTicketControllerHelper extends
 		OptionBookComposite bookComposite = ((OptionBookComposite)optionTicket.getBookComposite());
 		UnderlyingSymbolInfoComposite symbolComposite = bookComposite
 				.getUnderlyingSymbolInfoComposite();
-		return symbolComposite;
-		
+		return symbolComposite;		
 	}
+	
+	private void optionMessagesOnQuote(Message message) {
+		OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
+		optionMessagesComposite.updateQuote(message);
+	}
+	
+	private OptionMessagesComposite getOptionMessagesComposite() {
+		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket.getBookComposite());
+		OptionMessagesComposite messagesComposite = bookComposite.getOptionMessagesComposite();
+		return messagesComposite;
+	}
+	
+	public class MDVMarketDataListener extends MarketDataListener {
+
+		public void onLevel2Quote(Message aQuote) {
+		}
+
+		public void onQuote(Message aQuote) {
+			OptionOrderTicketControllerHelper.this.onQuote(aQuote);
+		}
+
+		public void onTrade(Message aTrade) {
+		}
+	}
+
 }
