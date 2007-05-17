@@ -14,6 +14,7 @@ import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.core.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
@@ -534,5 +535,33 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		
 		FilterList<MessageHolder> openOrdersList = history.getOpenOrdersList();
 		assertEquals(0, openOrdersList.size());
+	}
+	
+	public void testGetOrder() throws Exception {
+		long currentTime = System.currentTimeMillis();
+		FIXMessageHistory history = getMessageHistory();
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message order2 = msgFactory.newLimitOrder("2", Side.BUY, new BigDecimal(800), new MSymbol("ASDF"), new BigDecimal("123.44"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
+		
+		history.addOutgoingMessage(order1);
+		history.addIncomingMessage(executionReportForOrder1);
+		history.addOutgoingMessage(order2);
+
+		
+		MessageHolder foundOrder1 = history.getOrder("1");
+		assertNotNull(foundOrder1);
+		assertEquals(OutgoingMessageHolder.class, foundOrder1.getClass());
+		Message message1 = foundOrder1.getMessage();
+		assertTrue(FIXMessageUtil.isOrderSingle(message1));
+		assertEquals("1000", message1.getString(OrderQty.FIELD));
+		
+		MessageHolder foundOrder2 = history.getOrder("2");
+		assertNotNull(foundOrder2);
+		assertEquals(OutgoingMessageHolder.class, foundOrder2.getClass());
+		Message message2 = foundOrder2.getMessage();
+		assertTrue(FIXMessageUtil.isOrderSingle(message2));
+		assertEquals("800", message2.getString(OrderQty.FIELD));
 	}
 }
