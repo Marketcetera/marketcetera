@@ -1,5 +1,7 @@
 package org.marketcetera.photon.ui;
 
+import org.eclipse.ui.IMemento;
+
 import quickfix.Group;
 import quickfix.Message;
 import ca.odell.glazedlists.EventList;
@@ -17,4 +19,5 @@ public interface IBookComposite {
 
 	public abstract void onQuote(final Message aMarketRefresh);
 	
+	public abstract void saveState(IMemento memento);
 }

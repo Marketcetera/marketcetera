@@ -141,20 +141,7 @@ public class OrderTicketControllerHelper {
 				.getBundleContext());
 		marketDataTracker.open();
 
-		marketDataListener = new MarketDataListener() {
-
-			// public void onLevel2Quote(Message aQuote) {
-			// OrderTicketControllerHelper.this.onQuote(aQuote);
-			// }
-
-			public void onQuote(Message aQuote) {
-				OrderTicketControllerHelper.this.onQuote(aQuote);
-			}
-
-			public void onTrade(Message aTrade) {
-			}
-
-		};
+		marketDataListener = createMarketDataListener();
 		marketDataTracker.setMarketDataListener(marketDataListener);
 
 		ticket.getSymbolText().addFocusListener(new FocusAdapter() {
@@ -201,6 +188,23 @@ public class OrderTicketControllerHelper {
 		addInputControlSendOrderListeners();
 	}
 
+	protected MarketDataListener createMarketDataListener() {
+		MarketDataListener dataListener = new MarketDataListener() {
+
+			// public void onLevel2Quote(Message aQuote) {
+			// OrderTicketControllerHelper.this.onQuote(aQuote);
+			// }
+
+			public void onQuote(Message aQuote) {
+				OrderTicketControllerHelper.this.onQuote(aQuote);
+			}
+
+			public void onTrade(Message aTrade) {
+			}
+		};
+		return dataListener;
+	}
+
 	protected void initBuilders() {
 		initSideConverterBuilder();
 		initTifConverterBuilder();
@@ -241,7 +245,7 @@ public class OrderTicketControllerHelper {
 				try {
 					subscription = service.subscribe(subscriptionMessage);
 					currentSubscription = subscription;
-					listenMarketDataAdditional(service, symbol);
+					listenMarketDataAdditional(symbol);
 				} catch (MarketceteraException e) {
 					PhotonPlugin.getMainConsoleLogger().error(
 							"Exception requesting quotes for "
@@ -257,8 +261,8 @@ public class OrderTicketControllerHelper {
 	 * Derived classes can listen for additional market data when subscribing to
 	 * a new symbol.
 	 */
-	protected void listenMarketDataAdditional(MarketDataFeedService service,
-			String symbol) throws MarketceteraException {
+	protected void listenMarketDataAdditional(String symbol)
+			throws MarketceteraException {
 	}
 
 	/**
@@ -296,7 +300,7 @@ public class OrderTicketControllerHelper {
 				if (message.isSetField(Symbol.FIELD)
 						&& listenedSymbolString.equals(message
 								.getString(Symbol.FIELD))) {
-					ticket.getBookComposite().onQuote(message);
+					ticket.getBookComposite().onQuote(message);  
 					onQuoteAdditional(message);
 				}
 			}
@@ -686,4 +690,9 @@ public class OrderTicketControllerHelper {
 	protected Realm getTargetRealm() {
 		return targetRealm;
 	}
+
+	protected MarketDataFeedTracker getMarketDataTracker() {
+		return marketDataTracker;
+	}	
+	
 }

@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
@@ -177,7 +178,8 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		bookSection.setLayout(gridLayout);
 		bookSection.setLayoutData(layoutData);
 
-		bookComposite = createBookComposite(bookSection, SWT.NONE, getFormToolkit());
+		bookComposite = createBookComposite(bookSection, SWT.NONE,
+				getFormToolkit(), getSite(), viewStateMemento);
 		setBookCompositeBackground(bookComposite); 
 		setBookSectionClient(bookComposite);
 	}
@@ -192,7 +194,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 	}
 	
 	protected IBookComposite createBookComposite(Composite parent, int style,
-			FormToolkit formToolkit) {
+			FormToolkit formToolkit, IWorkbenchPartSite site, IMemento memento) {
 		return new BookComposite(bookSection, style, formToolkit);
 	}
 			
@@ -296,6 +298,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 		customFieldsViewPieces.saveState(memento,
 				CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX);
+		bookComposite.saveState(memento);
 	}
 
 	protected void restoreCustomFieldStates() {

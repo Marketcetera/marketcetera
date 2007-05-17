@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -222,6 +223,9 @@ public class BookComposite extends Composite implements IBookComposite
 				}
 			);
 		}
+	}
+
+	public void saveState(IMemento memento) {		
 	}
 
 }

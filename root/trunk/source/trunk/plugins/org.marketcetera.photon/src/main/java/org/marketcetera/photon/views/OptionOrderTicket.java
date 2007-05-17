@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
@@ -83,9 +85,14 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 
 	@Override
+	public void saveState(IMemento memento) {
+		super.saveState(memento);		
+	}
+
+	@Override
 	public void dispose() {
 		safelyDispose(optionOrderTicketController);
-
+		getBookComposite().dispose();
 		super.dispose();
 	}
 
@@ -392,8 +399,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 		
 	@Override
-	protected IBookComposite createBookComposite(Composite parent, int style, FormToolkit formToolkit) {		
-		return new OptionBookComposite(getBookSection(), style, formToolkit);		
+	protected IBookComposite createBookComposite(Composite parent, int style, FormToolkit formToolkit, IWorkbenchPartSite site, IMemento viewStateMemento) {		
+		return new OptionBookComposite(getBookSection(), style, formToolkit, site, viewStateMemento);		
 	}
 
 	@Override
