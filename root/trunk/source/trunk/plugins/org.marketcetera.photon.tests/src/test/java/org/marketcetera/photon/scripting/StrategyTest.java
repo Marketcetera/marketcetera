@@ -25,14 +25,14 @@ public class StrategyTest extends TestCase {
 				sema.release();
 			}
 		};
-		strategy.registerTimedCallback(5000, new Integer(37));
+		strategy.registerTimedCallback(1000, new Integer(37));
 		sema.acquire();
 		long now = System.currentTimeMillis();
-		assertTrue("Didn't wait long enough: "+(now - start)/1000.0, now - start > 5000);
-		assertTrue("Waited too long: "+(now - start)/1000.0, now - start < 8000);
+		assertTrue("Didn't wait long enough: "+(now - start)+" milliseconds", now - start > 999);
+		assertTrue("Waited too long: "+(now - start)+" milliseconds", now - start < 1500);
 	}
 
-	/** Verify that only execreports with LasPx != 0 go through */ 
+	/** Verify that only execreports with LastPx != 0 go through */ 
 	public void testExecutionReports()
 	{
 		TestStrategy strategy = new TestStrategy();
