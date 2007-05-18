@@ -38,7 +38,7 @@ public class ScriptRegistry implements InitializingBean {
 	protected BSFEngine engine;
 	private Classpath additionalClasspath =  new Classpath();
 	private Classpath currentClasspath;
-	protected final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+	protected final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	private Logger logger;
 
 	static String [] JRUBY_PLUGIN_PATH = {
