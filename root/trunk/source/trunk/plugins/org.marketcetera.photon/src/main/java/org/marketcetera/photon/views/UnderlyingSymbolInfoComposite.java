@@ -194,10 +194,16 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()) {
 			updateQuote(aQuote);
+		} else {
+			theDisplay.asyncExec(new Runnable() {
+				public void run() {
+					updateQuote(aQuote);
+				}
+			});
 		}
 	}
 
-	//cl todo:refactor (existed in both this class and OptionMarketDataView)
+	// cl todo:refactor (existed in both this class and OptionMarketDataView)
 	private static String getSymbol(Message message) {
 		try {
 			return message.getString(Symbol.FIELD).trim();

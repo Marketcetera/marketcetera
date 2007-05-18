@@ -293,19 +293,11 @@ public class OrderTicketControllerHelper {
 						&& listenedSymbolString.equals(message
 								.getString(Symbol.FIELD))) {
 					ticket.getBookComposite().onQuote(message);  
-					onQuoteAdditional(message);
 				}
 			}
 		} catch (FieldNotFound e) {
 			// Do nothing
 		}
-	}
-
-	/**
-	 * Derived classes can receive quote notifications for additional market
-	 * data.
-	 */
-	protected void onQuoteAdditional(Message message) {
 	}
 
 	public void handleSend() {

@@ -30,7 +30,6 @@ import org.marketcetera.photon.ui.TextContributionItem;
 
 import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
 
 /**
  * Option market data view.
@@ -258,13 +257,7 @@ public class OptionMarketDataView extends ViewPart implements
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
 		underlyingSymbolInfoComposite.removeUnderlyingSymbol(); 
-		optionMessagesComposite.unsubscribeOptions(marketDataTracker);
-
-		// clear out all maps and list
-		EventList<OptionMessageHolder> list = optionMessagesComposite.getInput();
-		list.clear();
-		optionMessagesComposite.clearDataMaps();
-		optionMessagesComposite.getMessagesViewer().refresh();
+		optionMessagesComposite.unlistenAllMarketData(marketDataTracker);
 	}
 
 	public class MDVMarketDataListener extends MarketDataListener {

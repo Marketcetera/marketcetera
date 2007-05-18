@@ -26,7 +26,6 @@ import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OptionCFICodeImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
@@ -50,7 +49,6 @@ import quickfix.field.OrderCapacity;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
-import ca.odell.glazedlists.EventList;
 
 public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
@@ -72,6 +70,8 @@ public class OptionOrderTicketControllerHelper extends
 	private HashMap<MSymbol, OptionContractCacheEntry> optionContractCache = new HashMap<MSymbol, OptionContractCacheEntry>();
 
 	private MSymbol lastOptionRoot;
+	
+	private MSymbol selectedSymbol;
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
@@ -129,8 +129,7 @@ public class OptionOrderTicketControllerHelper extends
 		MSymbol optionRoot = new MSymbol(optionRootStr);
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
-		getOptionMessagesComposite().requestOptionSecurityList(marketDataTracker, optionRoot);
-		getOptionMessagesComposite().getMessagesViewer().refresh();
+		selectedSymbol = optionRoot;
 
 		if (!optionContractCache.containsKey(optionRoot)) {
 			requestOptionSecurityList(marketDataTracker.getMarketDataFeedService(), optionRoot);
@@ -147,11 +146,7 @@ public class OptionOrderTicketControllerHelper extends
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.removeUnderlyingSymbol();
 		OptionMessagesComposite messagesComposote = getOptionMessagesComposite();
-		messagesComposote.unsubscribeOptions(getMarketDataTracker());
-		EventList<OptionMessageHolder> list = messagesComposote.getInput();
-		list.clear();
-		messagesComposote.clearDataMaps();
-		messagesComposote.getMessagesViewer().refresh();		
+		messagesComposote.unlistenAllMarketData(getMarketDataTracker());
 	}
 
 	private void requestOptionSecurityList(MarketDataFeedService service,
@@ -231,6 +226,7 @@ public class OptionOrderTicketControllerHelper extends
 				String fullSymbol = optionContractSymbol.getFullSymbol();
 				optionTicket.getOptionSymbolControl().setText(fullSymbol);
 				textWasSet = true;
+				getOptionMessagesComposite().requestOptionSecurityList(getMarketDataTracker(), selectedSymbol, fullSymbol);
 			}
 		}
 		if (!textWasSet) {
@@ -459,31 +455,22 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	@Override
-	public void onQuote(Message message) {
-		super.onQuote(message);
-		optionTicket.getBookComposite().onQuote(message);  
-	}
-
-	@Override
-	protected void onQuoteAdditional(final Message message) {
-		super.onQuoteAdditional(message);
-		
-		Display theDisplay = Display.getDefault();		
-		if (theDisplay.getThread() == Thread.currentThread()){
-			underlyingSymbolOnQuote(message);
-			optionMessagesOnQuote(message);
+	public void onQuote(final Message message) {
+		Display theDisplay = Display.getDefault();
+		if (theDisplay.getThread() == Thread.currentThread()) {
+			onQuoteHelper(message);
 		} else {
-			theDisplay.asyncExec(
-				new Runnable(){
-					public void run()
-					{
-						underlyingSymbolOnQuote(message);
-						if (!getOptionMessagesComposite().getMessagesViewer().getTable().isDisposed())
-							optionMessagesOnQuote(message);
-					}
+			theDisplay.asyncExec(new Runnable() {
+				public void run() {
+					onQuoteHelper(message);
 				}
-			);
-		}		
+			});
+		}
+	}
+	
+	private void onQuoteHelper(Message message) {
+		underlyingSymbolOnQuote(message);  // todo:message 
+		optionTicket.getBookComposite().onQuote(message);  		
 	}
 	
 	private void underlyingSymbolOnQuote(Message message) {
@@ -498,11 +485,6 @@ public class OptionOrderTicketControllerHelper extends
 		UnderlyingSymbolInfoComposite symbolComposite = bookComposite
 				.getUnderlyingSymbolInfoComposite();
 		return symbolComposite;		
-	}
-	
-	private void optionMessagesOnQuote(Message message) {
-		OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
-		optionMessagesComposite.updateQuote(message);
 	}
 	
 	private OptionMessagesComposite getOptionMessagesComposite() {
