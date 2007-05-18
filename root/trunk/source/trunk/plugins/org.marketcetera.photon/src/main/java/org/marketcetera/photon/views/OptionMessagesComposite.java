@@ -16,6 +16,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
@@ -269,10 +270,49 @@ public class OptionMessagesComposite extends Composite {
 		zeroFirstColumn.setText("");
 		zeroFirstColumn.setImage(null);
 		for (int i = 1; i < table.getColumnCount(); i++) {
-			table.getColumn(i).pack();
+			table.getColumn(i).setWidth(getTableColumnWidth(i));
 		}
 	}
 
+	private int getColumnWidth(int width) {
+		return EclipseUtils.getTextAreaSize(messageTable, null, width, 1.0).x;
+
+	}
+	private int getTableColumnWidth(int index) {
+		switch (index) {
+		case CALL_VOLUME_INDEX:
+			return getColumnWidth(10);
+		case CALL_BID_SIZE_INDEX:
+			return getColumnWidth(10);
+		case CALL_BID_PRICE_INDEX:
+			return getColumnWidth(10);
+		case CALL_ASK_PRICE_INDEX:
+			return getColumnWidth(10);
+		case CALL_ASK_SIZE_INDEX:
+			return getColumnWidth(10);
+		case CALL_SYMBOL_INDEX:
+			return getColumnWidth(12);
+		case STRIKE_INDEX:
+			return getColumnWidth(10);
+		case EXP_DATE_INDEX:
+			return getColumnWidth(12);
+		case PUT_SYMBOL_INDEX:
+			return getColumnWidth(12);
+		case PUT_BID_SIZE_INDEX:
+			return getColumnWidth(10);
+		case PUT_BID_PRICE_INDEX:
+			return getColumnWidth(10);
+		case PUT_ASK_PRICE_INDEX:
+			return getColumnWidth(10);
+		case PUT_ASK_SIZE_INDEX:
+			return getColumnWidth(10);
+		case PUT_VOLUME_INDEX:
+			return getColumnWidth(10);
+		default:
+			return getColumnWidth(10);
+		}
+	}
+ 
 	public void saveTableState(IMemento memento) {		
 		saveColumnOrder(memento);
 		saveSortByColumn(memento);

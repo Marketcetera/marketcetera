@@ -16,6 +16,7 @@ import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
@@ -198,7 +199,32 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		zeroFirstColumn.setMoveable(false);
 		zeroFirstColumn.setText("");
 		zeroFirstColumn.setImage(null);
+		for (int i = 1; i < table.getColumnCount(); i++) {
+			table.getColumn(i).setWidth(getTableColumnWidth(table, i));
+		}
 	}
+	
+	private int getColumnWidth(Table messageTable, int width) {
+		return EclipseUtils.getTextAreaSize(messageTable, null, width, 1.0).x;
+	}
+	
+	private int getTableColumnWidth(Table table, int index) {
+		switch (index) {
+		case SYMBOL_COLUMN_INDEX:
+			return getColumnWidth(table, 10);			
+		case BID_SIZE_INDEX:
+			return getColumnWidth(table, 10);
+		case BID_INDEX:
+			return getColumnWidth(table, 10);
+		case ASK_INDEX:
+			return getColumnWidth(table, 10);
+		case ASK_SIZE_INDEX:
+			return getColumnWidth(table, 10);
+		default:
+			return getColumnWidth(table, 11);
+		}
+	}
+
 
 	@Override
 	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
