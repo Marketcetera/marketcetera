@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -200,7 +201,6 @@ public class OptionMessagesComposite extends Composite {
 	private HashMap<OptionPairKey, OptionMessageHolder> optionContractMap;
 	private HashMap<String, OptionPairKey> optionSymbolToKeyMap;
 	private HashMap<String, Boolean> optionSymbolToSideMap;
-
 
 	public OptionMessagesComposite(Composite parent, IWorkbenchPartSite site, IMemento memento) {
 		this(parent, site, memento, true);
@@ -415,14 +415,27 @@ public class OptionMessagesComposite extends Composite {
 		optionSymbolToSideMap.clear();
 	}
 
+	public void unlistenAllMarketData(MarketDataFeedTracker marketDataTracker) {
+		unsubscribeOptions(marketDataTracker);
+		getInput().clear();
+		clearDataMaps();
+		getMessagesViewer().refresh();		
+	}
+	
 	@Override
 	public void dispose() {
 		clearDataMaps();
 		super.dispose();
 	}
 	
-	protected void requestOptionSecurityList(final MarketDataFeedTracker marketDataTracker,
+	protected void requestOptionSecurityList(
+			final MarketDataFeedTracker marketDataTracker,
 			final MSymbol underlyingSymbol) {
+		requestOptionSecurityList(marketDataTracker, underlyingSymbol, null);
+	}
+	
+	protected void requestOptionSecurityList(final MarketDataFeedTracker marketDataTracker,
+			final MSymbol underlyingSymbol, final String filteredByOptionSymbol) {
 
 		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
@@ -433,9 +446,18 @@ public class OptionMessagesComposite extends Composite {
 
 			public void onMarketDataListAvailable(
 					List<Message> derivativeSecurityList) {
-				List<OptionContractData> optionContracts = OptionMarketDataUtils
-						.getOptionExpirationMarketData(underlyingSymbol
-								.getBaseSymbol(), derivativeSecurityList);
+				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
+
+				// underlying symbol case
+				if (filteredByOptionSymbol == null) {
+					optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(null,
+							derivativeSecurityList);
+				} else {
+					optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(
+							underlyingSymbol.getBaseSymbol(),
+							derivativeSecurityList);
+					
+				}
 				if (optionContracts == null || optionContracts.isEmpty()) {
 					// do nothing
 				} else {
@@ -469,15 +491,36 @@ public class OptionMessagesComposite extends Composite {
 									.getBaseSymbol(), false);
 						}
 
-						getOptionSymbolToKeyMap().put(optionSymbol.getBaseSymbol(),
+						optionSymbolToKeyMap.put(optionSymbol.getBaseSymbol(),
 								optionKey);
 						updateOptionContractMap(data.isPut(), optionKey,
 								callMessage, putMessage);
 					}
 
 					Set<OptionPairKey> optionKeys = getOptionContractMap().keySet();
+					
+					String callSymbolString = null;
+					String putSymbolString = null;
+					
 					for (OptionPairKey optionPairKey : optionKeys) {
-						list.add(getOptionContractMap().get(optionPairKey));
+						OptionMessageHolder optionMessageHolder = getOptionContractMap()
+								.get(optionPairKey);
+						
+						if (filteredByOptionSymbol == null) {
+							list.add(optionMessageHolder);						
+							continue;
+						}
+							
+						callSymbolString = getSymbol(optionMessageHolder.getCallMessage());
+						putSymbolString = getSymbol(optionMessageHolder.getPutMessage());
+						 
+						if (filteredByOptionSymbol
+										.equalsIgnoreCase(callSymbolString)
+								|| filteredByOptionSymbol
+										.equalsIgnoreCase(putSymbolString)) {
+							list.clear();
+							list.add(optionMessageHolder);
+						}						
 					}
 				}
 			}
@@ -493,8 +536,14 @@ public class OptionMessagesComposite extends Composite {
 			}
 		};
 
-		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(
-				underlyingSymbol, false);
+		Message query = null;
+		//Returns a query for all option contracts for the underlying symbol (e.g. MSFT)
+		if (filteredByOptionSymbol == null) {
+			query = OptionMarketDataUtils.newRelatedOptionsQuery(underlyingSymbol, false);
+		} else {
+		//Returns a query for all the option contracts for the option root (e.g. MSQ)			
+			query = OptionMarketDataUtils.newOptionRootQuery(underlyingSymbol, false);
+		}
 		MarketDataUtils.asyncMarketDataQuery(underlyingSymbol, query, service
 				.getMarketDataFeed(), callback);
 	}
@@ -541,8 +590,10 @@ public class OptionMessagesComposite extends Composite {
 							.getPutMessage());
 				}
 				optionContractMap.put(key, newHolder);
-				list.set(index, newHolder);
-				getMessagesViewer().update(newHolder, null);
+				if (index >= 0) {
+					list.set(index, newHolder);
+					getMessagesViewer().update(newHolder, null);
+				}
 			}
 		}
 	}
