@@ -32,6 +32,8 @@ import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.OptionMessageListTableFormat;
 import org.marketcetera.photon.ui.TableComparatorChooser;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.DataDictionary;
@@ -435,9 +437,37 @@ public class OptionMessagesComposite extends Composite {
 	}
 	
 	protected void requestOptionSecurityList(final MarketDataFeedTracker marketDataTracker,
-			final MSymbol underlyingSymbol, final String filteredByOptionSymbol) {
+			final MSymbol symbol, final String filteredByOptionSymbol) {
 
 		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+
+		IMarketDataListCallback callback = createMarketDataListCallback(
+				marketDataTracker, symbol, filteredByOptionSymbol);
+
+		Message query = null;
+
+		//Returns a query for all option contracts for the underlying symbol 
+		//symbol = underlyingSymbol  (e.g. MSFT)
+		if (showAllOptions(filteredByOptionSymbol)) {			
+			query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol, false);		
+		} 			
+		//Returns a query for all the option contracts for the option root 			
+		//symbol = optionRoot (e.g. MSQ)
+		else {  			
+			query = OptionMarketDataUtils.newOptionRootQuery(symbol, false);
+		}
+		MarketDataUtils.asyncMarketDataQuery(symbol, query, service
+				.getMarketDataFeed(), callback);
+	}
+	
+	private boolean showAllOptions(String filteredByOptionSymbol) {
+		return filteredByOptionSymbol == null;
+	}
+	
+
+	private IMarketDataListCallback createMarketDataListCallback(
+			final MarketDataFeedTracker marketDataTracker,
+			final MSymbol underlyingSymbol, final String filteredByOptionSymbol) {
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
 
 			public void onMarketDataFailure(MSymbol symbol) {
@@ -449,10 +479,11 @@ public class OptionMessagesComposite extends Composite {
 				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
 
 				// underlying symbol case
-				if (filteredByOptionSymbol == null) {
+				if (showAllOptions(filteredByOptionSymbol)) {
 					optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(null,
 							derivativeSecurityList);
 				} else {
+				// option root case
 					optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(
 							underlyingSymbol.getBaseSymbol(),
 							derivativeSecurityList);
@@ -506,7 +537,7 @@ public class OptionMessagesComposite extends Composite {
 						OptionMessageHolder optionMessageHolder = getOptionContractMap()
 								.get(optionPairKey);
 						
-						if (filteredByOptionSymbol == null) {
+						if (showAllOptions(filteredByOptionSymbol)) {
 							list.add(optionMessageHolder);						
 							continue;
 						}
@@ -535,17 +566,7 @@ public class OptionMessagesComposite extends Composite {
 				}
 			}
 		};
-
-		Message query = null;
-		//Returns a query for all option contracts for the underlying symbol (e.g. MSFT)
-		if (filteredByOptionSymbol == null) {
-			query = OptionMarketDataUtils.newRelatedOptionsQuery(underlyingSymbol, false);
-		} else {
-		//Returns a query for all the option contracts for the option root (e.g. MSQ)			
-			query = OptionMarketDataUtils.newOptionRootQuery(underlyingSymbol, false);
-		}
-		MarketDataUtils.asyncMarketDataQuery(underlyingSymbol, query, service
-				.getMarketDataFeed(), callback);
+		return callback;
 	}
 			
 	private void updateOptionContractMap(boolean isPut,
@@ -573,19 +594,38 @@ public class OptionMessagesComposite extends Composite {
 	public void updateQuote(Message quote) {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()) {
-
 			OptionMessageHolder newHolder = null;
 			OptionPairKey key = optionSymbolToKeyMap.get(getSymbol(quote));
 			if (key != null) {
-				EventList<OptionMessageHolder> list = getInput();
 				OptionMessageHolder holder = optionContractMap.get(key);
+				
+				EventList<OptionMessageHolder> list = getInput();
 				int index = list.indexOf(holder);
 
+				
+				boolean isIncrementalRefresh = FIXMessageUtil
+						.isMarketDataIncrementalRefresh(quote);
+				
 				boolean isPut = isPut(holder, quote);
+				FIXVersion fixVersion = PhotonPlugin.getDefault().getFIXVersion();
+				FIXMessageFactory messageFactory = fixVersion.getMessageFactory();
+				
+				
 				if (isPut) {
+					if (isIncrementalRefresh) {
+						System.out.println("Incremental");
+						FIXMessageUtil.mergeMarketDataMessages(quote, holder
+								.getPutMessage(), messageFactory);
+					}
 					newHolder = new OptionMessageHolder(key, holder
 							.getCallMessage(), quote);
-				} else {
+				} else {  
+					//isCall
+					if (isIncrementalRefresh) {
+						System.out.println("Incremental");
+						FIXMessageUtil.mergeMarketDataMessages(quote, holder
+								.getCallMessage(), messageFactory);
+					}
 					newHolder = new OptionMessageHolder(key, quote, holder
 							.getPutMessage());
 				}
