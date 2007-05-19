@@ -54,12 +54,10 @@ public class MarketDataUtils {
 	}
 
 	/**
-	 * Perm a query using the default timeout with a callback on the UI thread.
+	 * Perform a query using the default timeout with a callback on the UI thread.
 	 * 
-	 * @see org.marketcetera.photon.marketdata.MarketDataUtils.asyncMarketDataQuery(final
-	 *      MSymbol symbolToQuery, final Message query, final IMarketDataFeed
-	 *      marketDataFeed, final IMarketDataListCallback callback, final
-	 *      boolean callbackOnUIThread, final long timeoutMillis)
+	 * @see org.marketcetera.photon.marketdata.MarketDataUtils#asyncMarketDataQuery(org.marketcetera.core.MSymbol,
+            quickfix.Message, org.marketcetera.marketdata.IMarketDataFeed, IMarketDataListCallback, boolean, long)
 	 */
 	public static void asyncMarketDataQuery(final MSymbol symbolToQuery,
 			final Message query, final IMarketDataFeed marketDataFeed,

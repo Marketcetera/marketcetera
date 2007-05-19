@@ -16,6 +16,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.Util;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -43,6 +44,8 @@ import quickfix.UnsupportedMessageType;
 import quickfix.Message.Header;
 import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
 import quickfix.field.SenderCompID;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.TargetCompID;
@@ -51,8 +54,8 @@ import quickfix.fix44.MessageFactory;
 
 public class MarketceteraFeed extends MarketDataFeedBase implements Application {
 
-	/*package*/ static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
-	/*package*/ static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
+	public static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
+	public static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
 	private int serverPort;
 	private String server;
 	private SessionID sessionID;
@@ -62,7 +65,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
 	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
-	
+
 	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties) throws MarketceteraException {
 		try {
 			idFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+ InetAddress.getLocalHost().toString());
@@ -101,8 +104,8 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			Integer marketDepth = null;
 			try { marketDepth = query.getInt(MarketDepth.FIELD); } catch (FieldNotFound fnf) { /* do nothing */ }
 			String reqID = addReqID(query);
-			Session.sendToTarget(query, sessionID);
-			return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
+      sendMessage(query);
+      return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
 		} catch (SessionNotFound e) {
 		} catch (FieldNotFound e) {
 		}
@@ -111,7 +114,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 
 	private String addReqID(Message query) throws FieldNotFound {
 		String reqID = null;
-		
+
 		String msgType = query.getHeader().getString(MsgType.FIELD);
 		StringField reqIDField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, msgType);
 		try {
@@ -137,15 +140,17 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			Message message = messageFactory.create("", mSubscription.getSubscribeMsgType());
 			StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, mSubscription.getSubscribeMsgType());
 			correlationID.setValue(mSubscription.toString());
-			
+
 			message.setField(correlationID);
 			message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+			message.setField(new NoRelatedSym(0));
+			message.setField(new NoMDEntryTypes(0));
 			if (mSubscription.getMarketDepth() != null){
 				message.setField(new MarketDepth(mSubscription.getMarketDepth()));
 			}
 			try {
-				Session.sendToTarget(message, sessionID);
-			} catch (SessionNotFound e) {
+                sendMessage(message);
+            } catch (SessionNotFound e) {
 				throw new MarketceteraException(e);
 			}
 		} else {
@@ -153,7 +158,12 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 		}
 	}
 
-	public MSymbol symbolFromString(String symbolString) {
+    /** Delegating to a method so that subclasses can override in tests */
+    protected void sendMessage(Message message) throws SessionNotFound {
+        Session.sendToTarget(message, sessionID);
+    }
+
+    public MSymbol symbolFromString(String symbolString) {
 		if (MarketceteraOptionSymbol.matchesPattern(symbolString)){
 			return new MarketceteraOptionSymbol(symbolString);
 		}
@@ -198,16 +208,16 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	}
 
 	public void start() {
-		
+
 		synchronized (this){
 		try {
 			if (!isRunning){
 				MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
 				SessionSettings sessionSettings;
-				sessionSettings = new SessionSettings(getClass().getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
+				sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
 				sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
 				sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
-				
+
 				File workspaceDir = Activator.getDefault().getStoreDirectory();
 				File quoteFeedLogDir = new File(workspaceDir, "marketdata");
 				if (!quoteFeedLogDir.exists())
@@ -215,7 +225,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 					quoteFeedLogDir.mkdir();
 				}
 				sessionSettings.setString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH, quoteFeedLogDir.getCanonicalPath());
-				
+
 //				LogFactory logFactory = new FileLogFactory(sessionSettings);
 				LogFactory logFactory = new EventLogFactory(sessionSettings);
 				messageFactory = new MessageFactory();
@@ -227,7 +237,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			t.printStackTrace();
 			setFeedStatus(FeedStatus.ERROR);
 		}
-		}		
+		}
 	}
 
 	public void stop() {
@@ -238,7 +248,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 		}
 	}
 
-	
+
 	// quickfix.Application methods
 	public void fromAdmin(Message message, SessionID sessionID)
 			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue,
@@ -258,7 +268,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	}
 
 	public void fromApp(Message message, SessionID sessionID) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
-		
+
 		String reqID = null;
 		boolean handled = false;
 		try {

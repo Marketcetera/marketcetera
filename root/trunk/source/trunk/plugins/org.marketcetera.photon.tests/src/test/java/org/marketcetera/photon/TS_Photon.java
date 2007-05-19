@@ -3,8 +3,8 @@ package org.marketcetera.photon;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
-
 import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.marketdata.MarketceteraFeedTest;
 import org.marketcetera.marketdata.MarketceteraOptionSymbolTest;
 import org.marketcetera.photon.model.ClOrdIDComparatorTest;
 import org.marketcetera.photon.model.FIXMessageHistoryTest;
@@ -13,18 +13,10 @@ import org.marketcetera.photon.model.SymbolSideComparatorTest;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.ParserTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
-import org.marketcetera.photon.scripting.ClasspathTest;
-import org.marketcetera.photon.scripting.JRubyBSFTest;
-import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
-import org.marketcetera.photon.scripting.ScriptRegistryTest;
-import org.marketcetera.photon.scripting.StrategyTest;
+import org.marketcetera.photon.scripting.*;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverterTest;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilderTest;
-import org.marketcetera.photon.views.AveragePricesViewTest;
-import org.marketcetera.photon.views.FIXMessagesViewTest;
-import org.marketcetera.photon.views.FillsViewTest;
-import org.marketcetera.photon.views.MarketDataViewTest;
-import org.marketcetera.photon.views.StockOrderTicketViewTest;
+import org.marketcetera.photon.views.*;
 
 public class TS_Photon {
 	public static Test suite() {
@@ -43,6 +35,7 @@ public class TS_Photon {
 		
 		// marketdata
 		suite.addTestSuite(MarketceteraOptionSymbolTest.class);
+		suite.addTestSuite(MarketceteraFeedTest.class);
 
 		// model
 		suite.addTestSuite(ClOrdIDComparatorTest.class);
