@@ -201,6 +201,15 @@
             commandId="org.marketcetera.photon.FocusCommand"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
             keySequence="M3+C"/>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            description="Quickly focus option market data for a specific underlier"
+            id="org.marketcetera.photon.SelectOptionMarketDataCommandAction"
+            name="Select Option Market Data"/>
+      <keyBinding
+            commandId="org.marketcetera.photon.SelectOptionMarketDataCommandAction"
+            keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
+            keySequence="M3+O"/>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -326,5 +335,4 @@
          </location>
       </widget>
    </extension>
-   
 </plugin>

@@ -501,4 +501,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	}
 
+	public boolean isListeningSymbol(MSymbol symbol) {
+		// todo: implement if necessary
+		return false;
+	}
 }

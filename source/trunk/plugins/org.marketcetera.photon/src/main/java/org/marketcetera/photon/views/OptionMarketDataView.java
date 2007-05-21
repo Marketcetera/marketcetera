@@ -272,4 +272,7 @@ public class OptionMarketDataView extends ViewPart implements
 		
 	}
 
+	public boolean isListeningSymbol(MSymbol symbol) {
+		return underlyingSymbolInfoComposite.hasSymbol(symbol);
+	}
 }
