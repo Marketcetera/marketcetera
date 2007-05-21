@@ -1,47 +1,25 @@
 package org.marketcetera.photon.model;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import junit.framework.Test;
-
-import org.marketcetera.core.AccessViolator;
-import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.core.OutgoingMessageHolder;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.FIXVersion;
-
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.ClOrdID;
-import quickfix.field.CumQty;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.HandlInst;
-import quickfix.field.LastPx;
-import quickfix.field.LastQty;
-import quickfix.field.LastShares;
-import quickfix.field.MsgType;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.SendingTime;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
-import quickfix.field.TimeInForce;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
+import junit.framework.Test;
+import org.marketcetera.core.AccessViolator;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.core.*;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.*;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Vector;
 
 public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 
@@ -564,4 +542,23 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertTrue(FIXMessageUtil.isOrderSingle(message2));
 		assertEquals("800", message2.getString(OrderQty.FIELD));
 	}
+
+    public void testVisitOpenExecReports() throws Exception {
+        FIXMessageHistory history = getMessageHistory();
+        history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000),
+                new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+        history.addIncomingMessage(msgFactory.newExecutionReport("1002", "2", "2002", OrdStatus.NEW, Side.BUY, new BigDecimal(1000),
+                new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("LERA"), null));
+        history.addIncomingMessage(msgFactory.newExecutionReport("1003", "3", "2003", OrdStatus.NEW, Side.BUY, new BigDecimal(1000),
+                new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("FRED"), null));
+
+        final Vector<Message> visited = new Vector<quickfix.Message>();
+        MessageVisitor visitor = new MessageVisitor() {
+            public void visitOpenOrderExecutionReports(Message message) {
+                visited.add(message);
+            }
+        };
+        history.visitOpenOrdersExecutionReports(visitor);
+        assertEquals(3, visited.size());
+    }
 }
