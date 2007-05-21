@@ -3,7 +3,6 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
@@ -34,12 +33,8 @@ public class AddSymbolAction extends Action {
 	}
 	
 	protected void handleKeyReleased(KeyEvent e) {
-		Text theText = (Text) e.widget;
-		if ('\r' == e.character) {
-			String theInputString = theText.getText();
-			theText.setText("");
-			if (isValidInput(theInputString))
-				listener.onAssertSymbol(new MSymbol(theInputString));
+		if ('\r' == e.keyCode && e.stateMask == 0) {
+			run();
 		}
 	}
 

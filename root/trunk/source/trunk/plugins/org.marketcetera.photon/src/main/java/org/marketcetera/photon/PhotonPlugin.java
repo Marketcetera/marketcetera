@@ -35,6 +35,7 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
+import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -82,6 +83,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private FIXMessageFactory messageFactory;
 
 	private FIXVersion fixVersion;
+	
+	private SecondaryIDCreator secondaryIDCreator = new SecondaryIDCreator();
 
 	/**
 	 * The constructor.
@@ -377,4 +380,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return null;
 	}
 	
+	/**
+	 * @return the next secondary ID for use in IWorkbenchPage.showView()
+	 */
+	public String getNextSecondaryID() {
+		return secondaryIDCreator.getNextSecondaryID();
+	}
 }
