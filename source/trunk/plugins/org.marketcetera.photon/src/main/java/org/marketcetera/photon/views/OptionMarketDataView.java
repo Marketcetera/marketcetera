@@ -177,6 +177,7 @@ public class OptionMarketDataView extends ViewPart implements
 		TextContributionItem textContributionItem = new TextContributionItem("");
 		theToolBarManager.add(textContributionItem);
 		theToolBarManager.add(new AddSymbolAction(textContributionItem, this));
+		theToolBarManager.add(new AddSymbolToNewViewAction(getSite().getWorkbenchWindow(), ID, textContributionItem));
 	}
 
 	/**

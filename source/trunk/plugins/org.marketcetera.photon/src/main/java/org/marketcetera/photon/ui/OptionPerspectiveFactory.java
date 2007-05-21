@@ -64,6 +64,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.5f,
 				editorArea);
+		leftFolder.addPlaceholder(OptionMarketDataView.ID + ":*");
 		leftFolder.addView(OptionMarketDataView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
