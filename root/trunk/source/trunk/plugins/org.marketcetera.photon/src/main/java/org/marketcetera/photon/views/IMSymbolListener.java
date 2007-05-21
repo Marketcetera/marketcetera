@@ -3,5 +3,7 @@ package org.marketcetera.photon.views;
 import org.marketcetera.core.MSymbol;
 
 public interface IMSymbolListener {
-	public void onAssertSymbol(MSymbol symbol);
+	void onAssertSymbol(MSymbol symbol);
+	
+	boolean isListeningSymbol(MSymbol symbol);
 }

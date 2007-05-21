@@ -24,6 +24,7 @@ import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.ReconnectMarketDataFeedAction;
+import org.marketcetera.photon.actions.SelectOptionMarketDataCommandAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 
 /**
@@ -113,6 +114,8 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
     private IAction checkForUpdatesAction;
 
 	private ReconnectMarketDataFeedAction reconnectQuoteFeedAction;
+	
+	private IWorkbenchAction selectOptionMarketDataCommandAction;
 
 
 
@@ -176,6 +179,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		
 		//viewSecurityAction = new ViewSecurityAction(window);
 		focusCommandAction = new FocusCommandAction(window);  register(focusCommandAction);
+		selectOptionMarketDataCommandAction = new SelectOptionMarketDataCommandAction(window); register(selectOptionMarketDataCommandAction);
 	}
 
 	/**
