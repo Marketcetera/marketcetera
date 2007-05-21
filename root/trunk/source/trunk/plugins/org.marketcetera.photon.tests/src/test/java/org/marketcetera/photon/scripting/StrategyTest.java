@@ -16,16 +16,15 @@ public class StrategyTest extends TestCase {
 	public void testCallbackTimeout() throws Exception
 	{
 		long start = System.currentTimeMillis();
-		final Integer origClientData = new Integer(37);
+		final Integer origClientData = 37;
 		final Semaphore sema = new Semaphore(0);
 		TestStrategy strategy = new TestStrategy() {
-			@Override
 			public void timeout_callback(Object clientData) {
 				assertEquals(origClientData, clientData);
 				sema.release();
 			}
 		};
-		strategy.registerTimedCallback(1000, new Integer(37));
+		strategy.registerTimedCallback(1000,37);
 		sema.acquire();
 		long now = System.currentTimeMillis();
 		assertTrue("Didn't wait long enough: "+(now - start)+" milliseconds", now - start > 999);
@@ -68,7 +67,7 @@ public class StrategyTest extends TestCase {
 		assertEquals("mdSnapshotRefresh didn't go through", 1, strategy.mdSnapshots.size());
 	}
 
-	
+
 	
 	private class TestStrategy extends Strategy {
 		private Vector<Message> mdSnapshots = new Vector<Message>();

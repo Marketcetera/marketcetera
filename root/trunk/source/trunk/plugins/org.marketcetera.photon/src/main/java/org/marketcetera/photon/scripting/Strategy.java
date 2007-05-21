@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -70,7 +71,11 @@ public abstract class Strategy {
 		plugin.getScriptRegistry().getScheduler().schedule(new Runnable(){
 			public void run() {
 				if(logger.isDebugEnabled()) { logger.debug("starting ruby callback"); }
-				timeout_callback(clientData);
+				try {
+					timeout_callback(clientData);
+				} catch(RaiseException ex) {
+					logger.error("Error in timeout_callback function: "+ex.getException(), ex.getCause());
+				}
 				if(logger.isDebugEnabled()) { logger.debug("finished ruby callback"); }			
 			}
 		}, timeout, unit);
@@ -95,5 +100,17 @@ public abstract class Strategy {
 	public void timeout_callback(Object clientData)
 	{
 		// no-op
+	}
+	
+	/** Returns the latest execution report we have for this clOrdID, or null if we don't have it */
+	public Message getLatestExecutionReport(String clOrdID)
+	{
+		return plugin.getFIXMessageHistory().getLatestExecutionReport(clOrdID);
+	}
+	
+	/** Panic button: cancel all open orders */
+	public void cancelAllOpenOrders() 
+	{
+		plugin.cancelAllOpenOrders();
 	}
 }

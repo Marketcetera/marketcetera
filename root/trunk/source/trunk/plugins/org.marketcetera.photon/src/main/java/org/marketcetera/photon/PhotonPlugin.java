@@ -1,19 +1,10 @@
 package org.marketcetera.photon;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResourceChangeEvent;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -24,11 +15,9 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.HttpDatabaseIDFactory;
-import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.MessageBundleManager;
+import org.marketcetera.core.*;
 import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.MessageVisitor;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.ConnectionsPreferencePage;
 import org.marketcetera.photon.preferences.PhotonPage;
@@ -38,14 +27,15 @@ import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.photon.views.StockOrderTicketController;
-import org.marketcetera.quickfix.ConnectionConstants;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.*;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
 
 /**
  * The main plugin class to be used in the Photon application.
@@ -83,7 +73,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private FIXMessageFactory messageFactory;
 
 	private FIXVersion fixVersion;
-	
+
 	private SecondaryIDCreator secondaryIDCreator = new SecondaryIDCreator();
 
 	/**
@@ -258,6 +248,22 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return scriptRegistry;
 	}
 	
+	/** Panic button: cancel all open orders */
+	public void cancelAllOpenOrders()
+	{
+		fixMessageHistory.visitOpenOrdersExecutionReports(new MessageVisitor() {
+            public void visitOpenOrderExecutionReports(Message message) {
+                try {
+                    photonController.cancelOneOrder(message);
+                } catch (NoMoreIDsException ignored) {
+                    // ignore
+                } catch (FieldNotFound fnf){
+                    LoggerAdapter.error("Could not send cancel for message "+message.toString(), fnf, this);
+                }
+            }
+        });
+	}
+
 	/** 
 	 * Accessor for the OrderManager singleton.  The OrderManager is the 
 	 * holder of most of the business logic for the application.
