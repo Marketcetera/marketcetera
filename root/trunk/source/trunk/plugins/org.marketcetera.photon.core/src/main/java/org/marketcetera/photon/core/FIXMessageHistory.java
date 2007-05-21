@@ -1,5 +1,7 @@
 package org.marketcetera.photon.core;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +154,15 @@ public class FIXMessageHistory extends PlatformObject {
 
 	public FilterList<MessageHolder> getOpenOrdersList() {
 		return openOrderList;
+	}
+	
+	public void visitOpenOrdersExecutionReports(MessageVisitor visitor)
+	{
+		MessageHolder[] holders = openOrderList.toArray(new MessageHolder[0]);
+		for(MessageHolder holder : holders)
+		{
+			visitor.visitOpenOrderExecutionReports(holder.getMessage());
+		}
 	}
 	
 	public MessageHolder getOrder(String clOrdID){
