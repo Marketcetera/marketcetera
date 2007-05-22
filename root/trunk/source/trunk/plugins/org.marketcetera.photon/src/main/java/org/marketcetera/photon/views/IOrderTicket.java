@@ -46,4 +46,6 @@ public interface IOrderTicket {
 	void showErrorMessage(String errorMessage, int severity);
 
 	void clear();
+	
+	IOrderTicketController getOrderTicketController();
 }
