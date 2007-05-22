@@ -104,11 +104,11 @@ public class FIXMessageFactory {
     }
     
     public Message newCancelFromMessage(Message oldMessage) throws FieldNotFound {
-    	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage);
+    	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage, true);
     }
 
 	public Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound {
-    	Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST, oldMessage);
+    	Message cancelMessage = newCancelHelper(MsgType.ORDER_CANCEL_REPLACE_REQUEST, oldMessage, false);
 		if (oldMessage.isSetField(Price.FIELD)){
 			cancelMessage.setField(oldMessage.getField(new Price()));
 		}
@@ -116,10 +116,10 @@ public class FIXMessageFactory {
 		return cancelMessage;
 	}
 	
-	public Message newCancelHelper(String msgType, Message oldMessage) throws FieldNotFound {
+	public Message newCancelHelper(String msgType, Message oldMessage, boolean onlyCopyRequiredFields) throws FieldNotFound {
         Message cancelMessage = msgFactory.create(beginString, msgType);
 		cancelMessage.setField(new OrigClOrdID(oldMessage.getString(ClOrdID.FIELD)));
-		FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, oldMessage);
+		FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, oldMessage, onlyCopyRequiredFields);
 		if (oldMessage.isSetField(OrderQty.FIELD)){
 			cancelMessage.setField(oldMessage.getField(new OrderQty()));
 		}

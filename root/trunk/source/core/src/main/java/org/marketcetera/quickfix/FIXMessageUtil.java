@@ -1,7 +1,6 @@
 package org.marketcetera.quickfix;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -9,7 +8,6 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
 
 import quickfix.DataDictionary;
-import quickfix.Field;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -137,25 +135,35 @@ public class FIXMessageUtil {
      * @param outgoingMessage
      * @param existingMessage
      */
-    public static void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage)
+    public static void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage, boolean onlyCopyRequiredFields)
     {
         try {
             String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
             DataDictionary dict = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
             for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
-                if (dict.isRequiredField(msgType, fieldInt) && existingMessage.isSetField(fieldInt) &&
-                        !outgoingMessage.isSetField(fieldInt)){
-                    try {
-                        outgoingMessage.setField(existingMessage.getField(new StringField(fieldInt)));
-                    } catch (FieldNotFound e) {
-                        // do nothing and ignore
-                    }
-                }
+                if ((!onlyCopyRequiredFields || dict.isRequiredField(msgType,
+						fieldInt))
+						&& existingMessage.isSetField(fieldInt)
+						&& !outgoingMessage.isSetField(fieldInt)) {
+					try {
+						outgoingMessage.setField(existingMessage
+								.getField(new StringField(fieldInt)));
+					} catch (FieldNotFound e) {
+						// do nothing and ignore
+					}
+				}
             }
 
         } catch (FieldNotFound ex) {
             LoggerAdapter.error(MessageKey.FIX_OUTGOING_NO_MSGTYPE.getLocalizedMessage(), ex, LOGGER_NAME);
         }
+    }
+    
+    /**
+     * Copy only required fields.
+     */
+    public static void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage) {
+    	fillFieldsFromExistingMessage(outgoingMessage, existingMessage, true);
     }
 
 	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
