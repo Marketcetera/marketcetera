@@ -40,7 +40,7 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 		return 5;
 	}
 
-	public StockOrderTicketController getStockOrderTicketController() {
+	public IOrderTicketController getOrderTicketController() {
 		return stockOrderTicketController;
 	}
 

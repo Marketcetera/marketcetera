@@ -11,7 +11,9 @@ import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.views.StockOrderTicketController;
+import org.marketcetera.photon.views.IOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicket;
+import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -19,6 +21,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
+import quickfix.field.Symbol;
 
 /**
  * CancelOrderActionDelegate is a subclass of {@link ActionDelegate}
@@ -36,7 +39,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 
 	private IStructuredSelection selection;
 
-	private PhotonController controller;
+//	private PhotonController controller;
 
 	private FIXMessageFactory messageFactory;
 
@@ -54,7 +57,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 	 */
 	public void init(IAction arg0) {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
-		this.controller = plugin.getPhotonController();
+//		this.controller = plugin.getPhotonController();
 		this.messageFactory = plugin.getMessageFactory();
 	}
 
@@ -115,29 +118,34 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 			try {
 				StringField clOrdId = oldMessage.getField(new ClOrdID());
 				Message originalOrderMessage = getOriginalOrderMessage(clOrdId);
-				if(originalOrderMessage == null) {
-					originalOrderMessage = oldMessage; 
+				if (originalOrderMessage == null) {
+					originalOrderMessage = oldMessage;
 				}
-				Message cancelReplaceMessage = messageFactory.newCancelReplaceFromMessage(originalOrderMessage );
-				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin.getDefault().getIDFactory().getNext()));
-				// todo: Make this work with options
-				StockOrderTicketController controller = PhotonPlugin
-						.getStockOrderTicketController();
+				Message cancelReplaceMessage = messageFactory
+						.newCancelReplaceFromMessage(originalOrderMessage);
+				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin
+						.getDefault().getIDFactory().getNext()));
+				IOrderTicketController controller = PhotonPlugin.getDefault()
+						.getOrderTicketController(originalOrderMessage);
 				if (controller != null) {
 					controller.showMessage(cancelReplaceMessage);
 				}
-			} catch (NoMoreIDsException e) {	
-				PhotonPlugin.getMainConsoleLogger().error("Ran out of order ID's");
+			} catch (NoMoreIDsException e) {
+				PhotonPlugin.getMainConsoleLogger().error(
+						"Ran out of order ID's");
 			} catch (FieldNotFound e) {
-				PhotonPlugin.getMainConsoleLogger().error("Could not send order: "+e.getMessage());
+				PhotonPlugin.getMainConsoleLogger().error(
+						"Could not send order: " + e.getMessage());
 			}
 		}
 	}
-	
+
 	private Message getOriginalOrderMessage(StringField clOrdId) {
-		FIXMessageHistory messageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
-		MessageHolder messageHolder = messageHistory.getOrder(clOrdId.getValue());
-		if(messageHolder == null) {
+		FIXMessageHistory messageHistory = PhotonPlugin.getDefault()
+				.getFIXMessageHistory();
+		MessageHolder messageHolder = messageHistory.getOrder(clOrdId
+				.getValue());
+		if (messageHolder == null) {
 			return null;
 		}
 		return messageHolder.getMessage();

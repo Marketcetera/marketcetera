@@ -1,10 +1,19 @@
 package org.marketcetera.photon;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IResourceChangeEvent;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
@@ -15,7 +24,12 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.*;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.HttpDatabaseIDFactory;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MessageBundleManager;
+import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageVisitor;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
@@ -24,18 +38,24 @@ import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
+import org.marketcetera.photon.views.IOrderTicket;
+import org.marketcetera.photon.views.IOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicket;
 import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicket;
-import org.marketcetera.photon.views.StockOrderTicketController;
-import org.marketcetera.quickfix.*;
+import org.marketcetera.quickfix.ConnectionConstants;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import quickfix.StringField;
+import quickfix.field.Symbol;
 
 /**
  * The main plugin class to be used in the Photon application.
@@ -377,13 +397,40 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return null;
 	}
 	
-	public static StockOrderTicketController getStockOrderTicketController() {
-		StockOrderTicket stockOrderTicket = (StockOrderTicket) PhotonPlugin
-				.getActiveView(StockOrderTicket.ID, StockOrderTicket.class);
-		if (stockOrderTicket != null) {
-			return stockOrderTicket.getStockOrderTicketController();
+	public IOrderTicketController getOrderTicketController(
+			String orderTicketViewID) {
+		IViewPart viewPart = getActiveView(orderTicketViewID);
+		IOrderTicketController controller = null;
+		if (viewPart instanceof IOrderTicket) {
+			IOrderTicket orderTicket = (IOrderTicket) viewPart;
+			controller = orderTicket.getOrderTicketController();
 		}
-		return null;
+		return controller;
+	}
+	
+	public IOrderTicketController getOrderTicketController(Message orderMessage) {
+		String orderTicketViewID = StockOrderTicket.ID;
+		if (isOptionOrder(orderMessage)) {
+			orderTicketViewID = OptionOrderTicket.ID;
+		}
+		IOrderTicketController controller = getOrderTicketController(orderTicketViewID);
+		return controller;
+	}
+
+	// todo: This needs to be replaced with an implementation that will work
+	// with any option symbol.
+	private boolean isOptionOrder(Message orderMessage) {
+		boolean rval = false;
+		try {
+			StringField symbolField = orderMessage.getField(new Symbol());
+			String symbol = symbolField.getValue();
+			if (symbol != null && symbol.indexOf("+") >= 0) {
+				rval = true;
+			}
+		} catch (Exception anyException) {
+			// Ignore
+		}
+		return rval;
 	}
 	
 	/**

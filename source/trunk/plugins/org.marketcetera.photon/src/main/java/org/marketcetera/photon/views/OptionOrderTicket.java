@@ -72,7 +72,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	public OptionOrderTicket() {
 	}
 
-	public OptionOrderTicketController getOptionOrderTicketController() {
+	public IOrderTicketController getOrderTicketController() {
 		return optionOrderTicketController;
 	}
 
