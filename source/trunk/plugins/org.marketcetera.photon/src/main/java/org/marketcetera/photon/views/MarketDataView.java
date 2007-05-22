@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
@@ -133,6 +134,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	private MarketDataFeedTracker marketDataTracker;
 
+	private TextContributionItem symbolEntryText;
 
 	public MarketDataView()
 	{
@@ -258,9 +260,31 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	@Override
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		TextContributionItem textContributionItem = new TextContributionItem("");
-		theToolBarManager.add(textContributionItem);
-		theToolBarManager.add(new AddSymbolAction(textContributionItem, this));
+		symbolEntryText = new TextContributionItem("");
+		if(marketDataTracker.getMarketDataFeedService() == null) {
+			symbolEntryText.setEnabled(false);
+		} else {
+			FeedStatus feedStatus = marketDataTracker.getMarketDataFeedService().getFeedStatus();
+			updateSymbolEntryTextFromFeedStatus(feedStatus);
+		}
+		marketDataTracker.addFeedEventListener(new MarketDataFeedTracker.FeedEventListener() {
+			public void handleEvent(FeedStatus status) {
+				if(symbolEntryText == null) {
+					return;
+				}
+				updateSymbolEntryTextFromFeedStatus(status);
+			}
+		});
+		theToolBarManager.add(symbolEntryText);
+		theToolBarManager.add(new AddSymbolAction(symbolEntryText, this));
+	}
+	
+	private void updateSymbolEntryTextFromFeedStatus(FeedStatus status) {
+		if(status == FeedStatus.AVAILABLE) {
+			symbolEntryText.setEnabled(true);
+		} else {
+			symbolEntryText.setEnabled(false);
+		}
 	}
 	
 	private boolean listContains(String stringValue) {

@@ -1,10 +1,14 @@
 package org.marketcetera.photon.marketdata;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
+import org.eclipse.swt.widgets.Display;
+import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.Pair;
+import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
@@ -18,11 +22,11 @@ public class MarketDataFeedTracker extends ServiceTracker {
 
 	protected HashMap<MSymbol, Pair<ISubscription, Message>> simpleSubscriptions = new HashMap<MSymbol, Pair<ISubscription, Message>>();
 	private IMarketDataListener currentListener;
-
+	private HashSet<FeedEventListener> feedEventListeners = new HashSet<FeedEventListener>();
+	
 	public MarketDataFeedTracker(BundleContext context) {
 		super(context, MarketDataFeedService.class.getName(), null);
 	}
-	
 	
 	public ISubscription simpleSubscribe(MSymbol symbol) throws MarketceteraException {
 		MarketDataFeedService marketDataFeed = getMarketDataFeedService();
@@ -63,10 +67,30 @@ public class MarketDataFeedTracker extends ServiceTracker {
 			addSubscriptions((MarketDataFeedService)service);
 			addListeners((MarketDataFeedService)service);
 		}
+		conditionallyNotifyFeedEventListeners(service);
 		return service;
 	}
+	
+	
+	@Override
+	public void modifiedService(ServiceReference reference, Object service) {
+		super.modifiedService(reference, service);
+		conditionallyNotifyFeedEventListeners(service);
+	}
 
-
+	@Override
+	public void removedService(ServiceReference reference, Object service) {
+		super.removedService(reference, service);
+		conditionallyNotifyFeedEventListeners(service);
+	}
+	
+	private void conditionallyNotifyFeedEventListeners(Object service) {
+		if (service instanceof IFeedComponent){
+			IFeedComponent feedComponent = (IFeedComponent)service;
+			FeedStatus status = feedComponent.getFeedStatus();
+			notifyFeedEventListeners(status);
+		}
+	}
 
 	public MarketDataFeedService getMarketDataFeedService()
 	{
@@ -110,6 +134,44 @@ public class MarketDataFeedTracker extends ServiceTracker {
 		super.close();
 	}
 
-	
+	public enum FeedEventType {
+		FEED_ADDED, FEED_REMOVED
+	};
 
+	public interface FeedEventListener {
+		void handleEvent(FeedStatus event);
+	}
+
+	public void addFeedEventListener(FeedEventListener listener) {
+		feedEventListeners.add(listener);
+	}
+
+	public void removeFeedEventListener(FeedEventListener listener) {
+		feedEventListeners.remove(listener);
+	}
+
+	private void notifyFeedEventListeners(final FeedStatus status) {
+		Display theDisplay = Display.getDefault();
+		if (theDisplay.getThread() == Thread.currentThread()) {
+			notifyFeedEventListenersImpl(status);
+		} else {
+			theDisplay.asyncExec(new Runnable() {
+				public void run() {
+					notifyFeedEventListenersImpl(status);
+				}
+			});
+		}
+	}
+
+	private void notifyFeedEventListenersImpl(FeedStatus status) {
+		for (FeedEventListener listener : feedEventListeners) {
+			if (listener != null) {
+				try {
+					listener.handleEvent(status);
+				} catch (Exception anyException) {
+					PhotonPlugin.getMainConsoleLogger().warn(anyException);
+				}
+			}
+		}
+	}
 }

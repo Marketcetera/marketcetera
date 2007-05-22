@@ -43,6 +43,8 @@ public class TextContributionItem extends ContributionItem {
 	private String initialText;
 
 	private List<KeyListener> keyListeners;
+	
+	private boolean initialEnabledState = true;
 
 	public TextContributionItem(String initText) {
 		initialText = initText;
@@ -77,6 +79,8 @@ public class TextContributionItem extends ContributionItem {
 			textField.addKeyListener(listener);
 		}
 		keyListeners = null;
+		
+		textField.setEnabled(initialEnabledState);
 		return textField;
 	}
 
@@ -397,7 +401,11 @@ public class TextContributionItem extends ContributionItem {
 	}
 
 	public void setEnabled(boolean enabled) {
-		textField.setEnabled(enabled);
+		if(textField != null) {
+			textField.setEnabled(enabled);
+		} else {
+			initialEnabledState = enabled;
+		}
 	}
 
 	public boolean setFocus() {
