@@ -9,6 +9,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -16,6 +17,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.StringField;
 import quickfix.field.ClOrdID;
 
 /**
@@ -111,7 +113,12 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 		}
 		if (oldMessage != null){
 			try {
-				Message cancelReplaceMessage = messageFactory.newCancelReplaceFromMessage(oldMessage);
+				StringField clOrdId = oldMessage.getField(new ClOrdID());
+				Message originalOrderMessage = getOriginalOrderMessage(clOrdId);
+				if(originalOrderMessage == null) {
+					originalOrderMessage = oldMessage; 
+				}
+				Message cancelReplaceMessage = messageFactory.newCancelReplaceFromMessage(originalOrderMessage );
 				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin.getDefault().getIDFactory().getNext()));
 				// todo: Make this work with options
 				StockOrderTicketController controller = PhotonPlugin
@@ -126,8 +133,14 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 			}
 		}
 	}
-
-
-
+	
+	private Message getOriginalOrderMessage(StringField clOrdId) {
+		FIXMessageHistory messageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
+		MessageHolder messageHolder = messageHistory.getOrder(clOrdId.getValue());
+		if(messageHolder == null) {
+			return null;
+		}
+		return messageHolder.getMessage();
+	}
 
 }
