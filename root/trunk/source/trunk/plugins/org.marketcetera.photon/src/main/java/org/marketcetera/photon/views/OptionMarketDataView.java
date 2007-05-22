@@ -21,11 +21,13 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker.FeedEventType;
 import org.marketcetera.photon.ui.TextContributionItem;
 
 import quickfix.Message;
@@ -55,6 +57,7 @@ public class OptionMarketDataView extends ViewPart implements
 	private Clipboard clipboard;
 	private CopyMessagesAction copyMessagesAction;
 
+	private TextContributionItem symbolEntryText;
 
 	private MarketDataFeedTracker marketDataTracker;
 
@@ -173,11 +176,36 @@ public class OptionMarketDataView extends ViewPart implements
 		return clipboard;
 	}
 
+	// todo: This duplicates code from MarketDataView.
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		TextContributionItem textContributionItem = new TextContributionItem("");
-		theToolBarManager.add(textContributionItem);
-		theToolBarManager.add(new AddSymbolAction(textContributionItem, this));
-		theToolBarManager.add(new AddSymbolToNewViewAction(getSite().getWorkbenchWindow(), ID, textContributionItem));
+		symbolEntryText = new TextContributionItem("");
+		if(marketDataTracker.getMarketDataFeedService() == null) {
+			symbolEntryText.setEnabled(false);
+		} else {
+			FeedStatus feedStatus = marketDataTracker.getMarketDataFeedService().getFeedStatus();
+			updateSymbolEntryTextFromFeedStatus(feedStatus);
+		}
+		marketDataTracker.addFeedEventListener(new MarketDataFeedTracker.FeedEventListener() {
+			public void handleEvent(FeedStatus status) {
+				if(symbolEntryText == null) {
+					return;
+				}
+				updateSymbolEntryTextFromFeedStatus(status);
+			}
+		});
+		
+		theToolBarManager.add(symbolEntryText);
+		theToolBarManager.add(new AddSymbolAction(symbolEntryText, this));
+		theToolBarManager.add(new AddSymbolToNewViewAction(getSite().getWorkbenchWindow(), ID, symbolEntryText));
+	}
+	
+	// todo: This duplicates code from MarketDataView.
+	private void updateSymbolEntryTextFromFeedStatus(FeedStatus status) {
+		if(status == FeedStatus.AVAILABLE) {
+			symbolEntryText.setEnabled(true);
+		} else {
+			symbolEntryText.setEnabled(false);
+		}
 	}
 
 	/**
