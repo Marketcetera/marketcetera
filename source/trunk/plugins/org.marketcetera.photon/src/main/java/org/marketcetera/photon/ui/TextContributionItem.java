@@ -317,6 +317,9 @@ public class TextContributionItem extends ContributionItem {
 	}
 
 	public boolean isDisposed() {
+		if(textField == null) {
+			return true;
+		}
 		return textField.isDisposed();
 	}
 

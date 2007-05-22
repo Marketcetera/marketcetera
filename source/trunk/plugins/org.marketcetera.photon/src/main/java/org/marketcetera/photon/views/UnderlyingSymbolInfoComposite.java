@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.UnderlyingSymbolInfo.UnderlyingSymbolDataFields;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -130,9 +131,21 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 	}
 	
 	private void disposeUnderlyingInfo() {
+		if (underlyingSymbolsContainer == null
+				|| underlyingSymbolsContainer.isDisposed()) {
+			return;
+		}
 		Control[] children = underlyingSymbolsContainer.getChildren();
 		for (Control child : children) {
-			child.dispose();
+			if(child != null && ! child.isDisposed()) {
+				try {
+					child.dispose();
+				} catch (Exception anyException) {
+					PhotonPlugin.getMainConsoleLogger().info(
+							"Failed to dispose market data widget.",
+							anyException);
+				}
+			}
 		}
 	}
 

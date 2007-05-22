@@ -201,6 +201,10 @@ public class OptionMarketDataView extends ViewPart implements
 	
 	// todo: This duplicates code from MarketDataView.
 	private void updateSymbolEntryTextFromFeedStatus(FeedStatus status) {
+		if(symbolEntryText == null 
+			|| symbolEntryText.isDisposed()) {
+			return;
+		}
 		if(status == FeedStatus.AVAILABLE) {
 			symbolEntryText.setEnabled(true);
 		} else {
