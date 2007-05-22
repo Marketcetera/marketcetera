@@ -16,7 +16,6 @@ public class ShowOrderInTicketCommand implements IPhotonCommand {
 	}
 
 	public void execute() {
-		// todo: Make this work with options
 		IOrderTicketController controller = PhotonPlugin.getDefault().getOrderTicketController(order);
 		if(controller != null) {
 			controller.showMessage(order);

@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Listener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
@@ -31,6 +30,7 @@ import org.marketcetera.photon.parser.OptionCFICodeImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.ui.OptionBookComposite;
+import org.marketcetera.photon.ui.ToggledListener;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
@@ -38,6 +38,7 @@ import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
+import org.marketcetera.photon.views.OptionContractCacheEntry.OptionCodeUIValues;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -70,8 +71,10 @@ public class OptionOrderTicketControllerHelper extends
 	private HashMap<MSymbol, OptionContractCacheEntry> optionContractCache = new HashMap<MSymbol, OptionContractCacheEntry>();
 
 	private MSymbol lastOptionRoot;
-	
+
 	private MSymbol selectedSymbol;
+
+	private List<ToggledListener> optionSymbolListeners;
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
@@ -92,13 +95,28 @@ public class OptionOrderTicketControllerHelper extends
 	@Override
 	protected void initListeners() {
 		super.initListeners();
-		getMarketDataTracker().setMarketDataListener(new MDVMarketDataListener());
+		getMarketDataTracker().setMarketDataListener(
+				new MDVMarketDataListener());
 
-		addUpdateOptionSymbolModifyListener(optionTicket.getExpireYearCombo());
-		addUpdateOptionSymbolModifyListener(optionTicket.getExpireMonthCombo());
-		addUpdateOptionSymbolModifyListener(optionTicket
-				.getStrikePriceControl());
-		addUpdateOptionSymbolModifyListener(optionTicket.getPutOrCallCombo());
+		optionSymbolListeners = new ArrayList<ToggledListener>();
+		addOptionSpecifierModifyListener(optionTicket.getExpireYearCombo());
+		addOptionSpecifierModifyListener(optionTicket.getExpireMonthCombo());
+		addOptionSpecifierModifyListener(optionTicket.getStrikePriceControl());
+		addOptionSpecifierModifyListener(optionTicket.getPutOrCallCombo());
+
+		ToggledListener optionSymbolModifyListener = new ToggledListener() {
+			@Override
+			protected void handleEventWhenEnabled(Event event) {
+				try {
+					setOptionSymbolListenersEnabled(false);
+					updateOptionContractSpecifiers();
+				} finally {
+					setOptionSymbolListenersEnabled(true);
+				}
+			}
+		};
+		optionTicket.getOptionSymbolControl().addListener(SWT.Modify,
+				optionSymbolModifyListener);
 	}
 
 	@Override
@@ -107,12 +125,66 @@ public class OptionOrderTicketControllerHelper extends
 		lastOptionRoot = null;
 	}
 
-	private void addUpdateOptionSymbolModifyListener(Control targetControl) {
-		targetControl.addListener(SWT.Modify, new Listener() {
-			public void handleEvent(Event event) {
-				conditionallyUpdateOptionContractSymbol();
+	/**
+	 * Update the option contract specifiers (expiration etc.) based on the
+	 * option contract symbol (e.g. MSQ+GE).
+	 */
+	private void updateOptionContractSpecifiers() {
+		String optionContractSymbolStr = optionTicket.getOptionSymbolControl()
+				.getText();
+		if (optionContractSymbolStr == null
+				|| optionContractSymbolStr.length() == 0) {
+			return;
+		}
+
+		String optionRootStr = OptionMarketDataUtils
+				.getOptionRootSymbol(optionContractSymbolStr);
+		MSymbol optionRoot = new MSymbol(optionRootStr);
+		if (optionContractCache.containsKey(optionRoot)) {
+			OptionContractCacheEntry cacheEntry = optionContractCache
+					.get(optionRoot);
+			if (cacheEntry != null) {
+				MSymbol optionContractSymbol = new MSymbol(
+						optionContractSymbolStr);
+				OptionCodeUIValues optionUIValues = cacheEntry
+						.getOptionCodeUIValues(optionContractSymbol);
+				if (optionUIValues != null) {
+					setOptionSpecifiers(optionUIValues);
+				}
 			}
-		});
+		}
+	}
+
+	private void setOptionSpecifiers(OptionCodeUIValues optionUIValues) {
+		String expirationYear = optionUIValues.getExpirationYear();
+		optionTicket.getExpireYearCombo().setText(expirationYear);
+		String expirationMonth = optionUIValues.getExpirationMonth();
+		optionTicket.getExpireMonthCombo().setText(expirationMonth);
+		String strikePrice = optionUIValues.getStrikePrice();
+		optionTicket.getStrikePriceControl().setText(strikePrice);
+		boolean optionIsPut = optionUIValues.isPut();
+		optionTicket.setPut(optionIsPut);
+	}
+
+	private void addOptionSpecifierModifyListener(Control targetControl) {
+		ToggledListener modifyListener = new ToggledListener() {
+			public void handleEventWhenEnabled(Event event) {
+				try {
+					setOptionSymbolListenersEnabled(false);
+					attemptUpdateOptionContractSymbol();
+				} finally {
+					setOptionSymbolListenersEnabled(true);
+				}
+			}
+		};
+		optionSymbolListeners.add(modifyListener);
+		targetControl.addListener(SWT.Modify, modifyListener);
+	}
+
+	private void setOptionSymbolListenersEnabled(boolean enabled) {
+		for (ToggledListener listener : optionSymbolListeners) {
+			listener.setEnabled(enabled);
+		}
 	}
 
 	@Override
@@ -132,7 +204,8 @@ public class OptionOrderTicketControllerHelper extends
 		selectedSymbol = optionRoot;
 
 		if (!optionContractCache.containsKey(optionRoot)) {
-			requestOptionSecurityList(marketDataTracker.getMarketDataFeedService(), optionRoot);
+			requestOptionSecurityList(marketDataTracker
+					.getMarketDataFeedService(), optionRoot);
 
 		} else {
 			conditionallyUpdateInputControls(optionRoot);
@@ -142,16 +215,16 @@ public class OptionOrderTicketControllerHelper extends
 	@Override
 	protected void unlistenMarketDataAdditional() throws MarketceteraException {
 		super.unlistenMarketDataAdditional();
-		
+
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.removeUnderlyingSymbol();
-		OptionMessagesComposite messagesComposote = getOptionMessagesComposite();
-		messagesComposote.unlistenAllMarketData(getMarketDataTracker());
+		OptionMessagesComposite messagesComposite = getOptionMessagesComposite();
+		messagesComposite.unlistenAllMarketData(getMarketDataTracker());
 	}
 
 	private void requestOptionSecurityList(MarketDataFeedService service,
 			final MSymbol optionRoot) {
-		
+
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
 			public void onMarketDataFailure(MSymbol symbol) {
 				// Restore the full expiration choices.
@@ -193,7 +266,12 @@ public class OptionOrderTicketControllerHelper extends
 		}
 	}
 
-	private void conditionallyUpdateOptionContractSymbol() {
+	/**
+	 * Only update the option contract symbol (e.g. MSQ+GE) based on the option
+	 * specifiers (expiration etc.) if there is market data available for the
+	 * option. If not, clears the option contract symbol text.
+	 */
+	private void attemptUpdateOptionContractSymbol() {
 		String symbolText = optionTicket.getSymbolText().getText();
 		boolean attemptedUpdate = false;
 		if (symbolText != null) {
@@ -210,6 +288,10 @@ public class OptionOrderTicketControllerHelper extends
 		}
 	}
 
+	/**
+	 * Update the option contract (e.g. MSQ+GE) based on the option specifiers
+	 * (expiration etc.)
+	 */
 	private boolean updateOptionContractSymbol(
 			OptionContractCacheEntry cacheEntry) {
 		String expirationYear = optionTicket.getExpireYearCombo().getText();
@@ -226,7 +308,8 @@ public class OptionOrderTicketControllerHelper extends
 				String fullSymbol = optionContractSymbol.getFullSymbol();
 				optionTicket.getOptionSymbolControl().setText(fullSymbol);
 				textWasSet = true;
-				getOptionMessagesComposite().requestOptionSecurityList(getMarketDataTracker(), selectedSymbol, fullSymbol);
+				getOptionMessagesComposite().requestOptionSecurityList(
+						getMarketDataTracker(), selectedSymbol, fullSymbol);
 			}
 		}
 		if (!textWasSet) {
@@ -271,8 +354,8 @@ public class OptionOrderTicketControllerHelper extends
 				}
 			}
 		}
-		if( combo.isFocusControl() ) {
-			combo.setSelection(new Point(0,3));
+		if (combo.isFocusControl()) {
+			combo.setSelection(new Point(0, 3));
 		}
 	}
 
@@ -374,8 +457,8 @@ public class OptionOrderTicketControllerHelper extends
 			IToggledValidator validator = putOrCallConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
-			IObservableValue fixObservable = FIXObservables.observeValue(
-					realm, message, CFICode.FIELD, dictionary);
+			IObservableValue fixObservable = FIXObservables.observeValue(realm,
+					message, CFICode.FIELD, dictionary);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), fixObservable, bindingHelper
 					.createToModelUpdateValueStrategy(
@@ -395,7 +478,7 @@ public class OptionOrderTicketControllerHelper extends
 			// The FIX field may need to be updated., See
 			// http://trac.marketcetera.org/trac.fcgi/ticket/185
 			final int orderCapacityFIXField = OrderCapacity.FIELD;
-//			final int orderCapacityFIXField = CustomerOrFirm.FIELD;
+			// final int orderCapacityFIXField = CustomerOrFirm.FIELD;
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
 					realm, message, orderCapacityFIXField, dictionary),
@@ -443,8 +526,8 @@ public class OptionOrderTicketControllerHelper extends
 	private void initPutOrCallConverterBuilder() {
 		putOrCallConverterBuilder = new EnumStringConverterBuilder<String>(
 				String.class);
-		bindingHelper.initStringToImageConverterBuilder(putOrCallConverterBuilder,
-				OptionCFICodeImage.values());
+		bindingHelper.initStringToImageConverterBuilder(
+				putOrCallConverterBuilder, OptionCFICodeImage.values());
 	}
 
 	private void initStrikeConverterBuilder() {
@@ -467,32 +550,35 @@ public class OptionOrderTicketControllerHelper extends
 			});
 		}
 	}
-	
+
 	private void onQuoteHelper(Message message) {
-		underlyingSymbolOnQuote(message);  // todo:message 
-		optionTicket.getBookComposite().onQuote(message);  		
+		underlyingSymbolOnQuote(message); // todo:message
+		optionTicket.getBookComposite().onQuote(message);
 	}
-	
+
 	private void underlyingSymbolOnQuote(Message message) {
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		if (symbolComposite.matchUnderlyingSymbol(message)) {
 			symbolComposite.onQuote(message);
 		}
 	}
-	
+
 	private UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
-		OptionBookComposite bookComposite = ((OptionBookComposite)optionTicket.getBookComposite());
+		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket
+				.getBookComposite());
 		UnderlyingSymbolInfoComposite symbolComposite = bookComposite
 				.getUnderlyingSymbolInfoComposite();
-		return symbolComposite;		
+		return symbolComposite;
 	}
-	
+
 	private OptionMessagesComposite getOptionMessagesComposite() {
-		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket.getBookComposite());
-		OptionMessagesComposite messagesComposite = bookComposite.getOptionMessagesComposite();
+		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket
+				.getBookComposite());
+		OptionMessagesComposite messagesComposite = bookComposite
+				.getOptionMessagesComposite();
 		return messagesComposite;
 	}
-	
+
 	public class MDVMarketDataListener extends MarketDataListener {
 		public void onMessage(Message aQuote) {
 			OptionOrderTicketControllerHelper.this.onQuote(aQuote);

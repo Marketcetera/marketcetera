@@ -540,7 +540,7 @@ public class OptionMessagesComposite extends Composite {
 						// construct the option key
 						OptionPairKey optionKey = new OptionPairKey(
 								underlyingSymbol.getBaseSymbol(),
-								OptionMarketDataUtils.getUnderlyingSymbol(
+								OptionMarketDataUtils.getOptionRootSymbol(
 										optionSymbol).getBaseSymbol(), data
 										.getExpirationYear(), data
 										.getExpirationMonth(), data

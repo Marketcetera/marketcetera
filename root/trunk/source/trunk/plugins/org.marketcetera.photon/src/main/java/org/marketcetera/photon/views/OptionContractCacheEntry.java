@@ -26,9 +26,11 @@ public class OptionContractCacheEntry {
 
 	private String yearPrefix;
 
-	private HashMap<OptionCodeKey, OptionContractData> optionCodeToContractMap;
+	private HashMap<OptionCodeUIValues, OptionContractData> optionCodeToContractMap;
 
 	private OptionDateHelper optionDateHelper = new OptionDateHelper();
+	
+	private HashMap<MSymbol, OptionCodeUIValues> optionContractSymbolToUIValuesMap;
 
 	public OptionContractCacheEntry(List<OptionContractData> optionContracts) {
 		this.optionContracts = optionContracts;
@@ -47,7 +49,8 @@ public class OptionContractCacheEntry {
 	}
 
 	private void parseOptionContracts() {
-		optionCodeToContractMap = new HashMap<OptionCodeKey, OptionContractData>();
+		optionCodeToContractMap = new HashMap<OptionCodeUIValues, OptionContractData>();
+		optionContractSymbolToUIValuesMap = new HashMap<MSymbol, OptionCodeUIValues>();
 		expirationYearsForUI = new ArrayList<String>();
 		expirationMonthsForUI = new ArrayList<String>();
 		strikePricesForUI = new ArrayList<String>();
@@ -75,9 +78,10 @@ public class OptionContractCacheEntry {
 
 			String strikePrice = optionContract.getStrikePrice()
 					.toPlainString();
-			OptionCodeKey key = new OptionCodeKey(yearSuffix, monthAbbrev,
+			OptionCodeUIValues uiKey = new OptionCodeUIValues(yearSuffix, monthAbbrev,
 					strikePrice, optionContract.isPut());
-			optionCodeToContractMap.put(key, optionContract);
+			optionCodeToContractMap.put(uiKey, optionContract);
+			optionContractSymbolToUIValuesMap.put(optionContract.getOptionSymbol(), uiKey);
 
 			yearsSet.add(yearSuffix);
 			strikePricesSet.add(strikePrice);
@@ -104,9 +108,13 @@ public class OptionContractCacheEntry {
 		Collections.sort(strikePricesForUI);
 	}
 
+	public OptionCodeUIValues getOptionCodeUIValues(MSymbol optionContractSymbol) {
+		return this.optionContractSymbolToUIValuesMap.get(optionContractSymbol);
+	}
+	
 	public OptionContractData getOptionContractData(String uiExpirationYear,
 			String uiExpirationMonth, String uiStrikePrice, boolean putWhenTrue) {
-		OptionCodeKey key = new OptionCodeKey(uiExpirationYear,
+		OptionCodeUIValues key = new OptionCodeUIValues(uiExpirationYear,
 				uiExpirationMonth, uiStrikePrice, putWhenTrue);
 		return optionCodeToContractMap.get(key);
 	}
@@ -126,7 +134,7 @@ public class OptionContractCacheEntry {
 	/**
 	 * Hash key for option contract UI values such as "JAN","07".
 	 */
-	private static class OptionCodeKey {
+	public static class OptionCodeUIValues {
 		private String expirationYear;
 
 		private String expirationMonth;
@@ -139,7 +147,7 @@ public class OptionContractCacheEntry {
 			return putWhenTrue;
 		}
 
-		public OptionCodeKey(String expirationYear, String expirationMonth,
+		public OptionCodeUIValues(String expirationYear, String expirationMonth,
 				String strikePrice, boolean putWhenTrue) {
 			this.expirationYear = expirationYear;
 			this.expirationMonth = expirationMonth;
@@ -184,7 +192,7 @@ public class OptionContractCacheEntry {
 				return false;
 			if (getClass() != obj.getClass())
 				return false;
-			final OptionCodeKey other = (OptionCodeKey) obj;
+			final OptionCodeUIValues other = (OptionCodeUIValues) obj;
 			if (expirationMonth == null) {
 				if (other.expirationMonth != null)
 					return false;
