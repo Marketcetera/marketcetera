@@ -246,13 +246,16 @@ public class OptionMarketDataView extends ViewPart implements
 		addSymbol(symbol);
 	}
 	
-	public void addSymbol(MSymbol symbol) {
+	private void addSymbol(MSymbol symbol) {
 		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
 			return;
 		}
 		if (underlyingSymbolInfoComposite.hasSymbol(symbol)) {
 			return; // do nothing, already subscribed
 		}
+		
+		updateTitleFromSymbol(symbol);
+		
 		if (underlyingSymbolInfoComposite.hasUnderlyingSymbolInfo()) {
 			removeUnderlyingSymbol();			
 		}
@@ -270,6 +273,21 @@ public class OptionMarketDataView extends ViewPart implements
 					"Exception subscribing to market data for " + symbol);
 		}
 		optionMessagesComposite.getMessagesViewer().refresh();
+	}
+	
+	private String getTitlePrefix() {
+		return "Options: ";
+	}
+	
+	private void updateTitleFromSymbol(MSymbol symbol) {
+		if(symbol == null) {
+			return;
+		}
+		String symbolStr = symbol.getFullSymbol();
+		if(symbolStr != null && symbolStr.trim().length() > 0) {
+			String partName = getTitlePrefix() + symbolStr;
+			setPartName(partName);
+		}
 	}
 
 	private void removeUnderlyingSymbol() {
