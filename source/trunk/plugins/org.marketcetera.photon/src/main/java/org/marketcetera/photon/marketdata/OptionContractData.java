@@ -19,6 +19,9 @@ public class OptionContractData {
 		return putWhenTrue;
 	}
 
+	/**
+	 * @param optionSymbol the option symbol for the specific contract, e.g. MSQ+FN
+	 */
 	public OptionContractData(MSymbol underlyingSymbol, MSymbol optionSymbol, String expirationYear, String expirationMonth, BigDecimal strikePrice, boolean putWhenTrue) {
 		this.underlyingSymbol = underlyingSymbol;
 		this.optionSymbol = optionSymbol;
@@ -36,6 +39,9 @@ public class OptionContractData {
 		return expirationYear;
 	}
 
+	/**
+	 * @return the option symbol for the specific contract, e.g. MSQ+FN
+	 */
 	public MSymbol getOptionSymbol() {
 		return optionSymbol;
 	}

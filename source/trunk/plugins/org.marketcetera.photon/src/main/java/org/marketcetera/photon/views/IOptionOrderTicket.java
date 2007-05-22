@@ -20,6 +20,8 @@ public interface IOptionOrderTicket extends IOrderTicket {
 	 *         the user has not made a selection.
 	 */
 	boolean isPut();
+	
+	void setPut(boolean optionIsPut);
 
 	Combo getStrikePriceControl();
 

@@ -31,7 +31,7 @@ public class OptionMarketDataUtils {
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
 
-	private static Pattern underlyingSymbolPattern;
+	private static Pattern optionSymbolRootSeparatorPattern;
 
 	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol,
 			boolean subscribe) {
@@ -88,14 +88,14 @@ public class OptionMarketDataUtils {
 	 * @see org.marketcetera.photon.marketdata.MarketDataUtils.getUnderlyingSymbol(String
 	 *      symbol)
 	 */
-	public static String getUnderlyingSymbol(String symbol) {
-		if (underlyingSymbolPattern == null) {
-			underlyingSymbolPattern = Pattern.compile("\\+");
+	public static String getOptionRootSymbol(String symbol) {
+		if (optionSymbolRootSeparatorPattern == null) {
+			optionSymbolRootSeparatorPattern = Pattern.compile("\\+");
 		}
 		if (symbol == null) {
 			return null;
 		}
-		String[] underlierPieces = underlyingSymbolPattern.split(symbol);
+		String[] underlierPieces = optionSymbolRootSeparatorPattern.split(symbol);
 		if (underlierPieces == null || underlierPieces.length == 0) {
 			return symbol;
 		}
@@ -105,8 +105,8 @@ public class OptionMarketDataUtils {
 	// todo: This method is irrelevant if MarketceteraOptionSymbol is moved to
 	// core.
 	/**
-	 * For a given option symbol, return the underlier. For example, "AMD+FA"
-	 * will return "AMD".
+	 * For a given option symbol, return the option root. For example, "MSQ+GE"
+	 * will return "MSQ". Note that MSQ is not the underlier MSFT.
 	 * <p>
 	 * This method is not thread safe.
 	 * </p>
@@ -114,8 +114,8 @@ public class OptionMarketDataUtils {
 	 * todo: This will not work for symbol schemes other than SymbolScheme.BASIC
 	 * </p>
 	 */
-	public static MSymbol getUnderlyingSymbol(MSymbol symbol) {
-		String underlier = getUnderlyingSymbol(symbol.getFullSymbol());
+	public static MSymbol getOptionRootSymbol(MSymbol symbol) {
+		String underlier = getOptionRootSymbol(symbol.getFullSymbol());
 		return new MSymbol(underlier);
 	}
 

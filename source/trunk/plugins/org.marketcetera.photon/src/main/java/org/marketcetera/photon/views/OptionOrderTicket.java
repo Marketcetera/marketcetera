@@ -194,7 +194,6 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		optionSymbolControl = getFormToolkit().createText(
 				outermostForm.getBody(), null, SWT.SINGLE | SWT.BORDER);
 		orderTicketViewPieces.assignDefaultGridData(optionSymbolControl, 6);
-		optionSymbolControl.setEnabled(false);
 	}
 
 	private void createExpireMonthBorderComposite() {
@@ -392,6 +391,14 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 			return true;
 		}
 		return false;
+	}
+	
+	public void setPut(boolean optionIsPut) {
+		String putOrCallStr = PutOrCallImage.PUT.getImage();
+		if(!optionIsPut) {
+			putOrCallStr = PutOrCallImage.CALL.getImage();
+		}
+		putOrCallCombo.setText(putOrCallStr);
 	}
 
 	public Combo getStrikePriceControl() {
