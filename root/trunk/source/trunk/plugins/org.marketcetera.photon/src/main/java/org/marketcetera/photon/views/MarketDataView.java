@@ -280,6 +280,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	}
 	
 	private void updateSymbolEntryTextFromFeedStatus(FeedStatus status) {
+		if (symbolEntryText == null || symbolEntryText.isDisposed()) {
+			return;
+		}
 		if(status == FeedStatus.AVAILABLE) {
 			symbolEntryText.setEnabled(true);
 		} else {
