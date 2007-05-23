@@ -1,4 +1,6 @@
-class TestScript
+include_class "org.marketcetera.photon.scripting.Strategy"
+
+class TestScript < Strategy
   def on_market_data_message(message)
     $quote_count = $quote_count + 1
   end

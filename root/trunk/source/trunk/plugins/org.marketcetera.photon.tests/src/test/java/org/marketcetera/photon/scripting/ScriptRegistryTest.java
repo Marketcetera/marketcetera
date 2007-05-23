@@ -6,7 +6,9 @@ import java.util.concurrent.Future;
 import junit.framework.Test;
 import junit.framework.TestCase;
 
+import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
+import org.apache.bsf.BSFManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.MarketceteraTestSuite;
@@ -126,5 +128,5 @@ public class ScriptRegistryTest extends TestCase {
 			throw ex.getTargetException();
 		}
 	}
-		
+
 }

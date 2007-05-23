@@ -7,6 +7,7 @@ Bundle-ClassPath: .
 Bundle-Activator: org.marketcetera.photon.PhotonTestPlugin
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
+Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n, org.apache.activemq, org.jruby.bsf
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.model,
  org.marketcetera.photon.parser,
@@ -16,5 +17,6 @@ Require-Bundle: org.marketcetera.photon,
  org.eclipse.sdk,
  org.junit,
  org.marketcetera.bogusfeed,
- org.marketcetera.marketdata
+ org.marketcetera.marketdata,
+ org.jruby.bsf
 Eclipse-LazyStart: true
