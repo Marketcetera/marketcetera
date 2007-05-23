@@ -1,6 +1,8 @@
 package org.marketcetera.photon.scripting;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
@@ -14,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.jruby.bsf.JRubyPlugin;
+import org.jruby.exceptions.RaiseException;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
@@ -40,7 +43,8 @@ public class ScriptRegistry implements InitializingBean {
 	private Classpath currentClasspath;
 	protected final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 	private Logger logger;
-
+	private Map<String, Strategy> registeredStrategies;
+	
 	static String [] JRUBY_PLUGIN_PATH = {
 		"lib/ruby/site_ruby/1.8",
 		"lib/ruby/site_ruby/1.8/java",
@@ -68,6 +72,7 @@ public class ScriptRegistry implements InitializingBean {
 				onMarketDataEvent(aQuote);
 			}
 		});
+		registeredStrategies = new HashMap<String, Strategy>();
 	}
 
 	
@@ -177,8 +182,12 @@ public class ScriptRegistry implements InitializingBean {
 		} catch (InterruptedException ignored) {
 			// no-op
 		} catch (ExecutionException ex) {
-			// TODO: internationalize this
-			logger.warn("Unable to get a result of Ruby script registration", ex);
+			Throwable cause = ex.getCause();
+			Throwable toLog = ex;
+			if (cause != null){
+				toLog = cause;
+			}
+			logger.warn("Unable to register script", toLog);
 		}
 	}
 
@@ -258,10 +267,10 @@ public class ScriptRegistry implements InitializingBean {
 
 	private void doOnFIXEvent(final Message message) {
 		try {
-			bsfManager.undeclareBean(MESSAGE_BEAN_NAME);
-			bsfManager.declareBean(MESSAGE_BEAN_NAME, message, message.getClass());
-			bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_fix_message($message)");
-		} catch (BSFException e) {
+			for (Strategy aStrategy : registeredStrategies.values()) {
+				aStrategy.on_fix_message(message);
+			}
+		} catch (RaiseException e) {
 			ScriptLoggingUtil.error(logger, e);
 		}
 	}
@@ -270,10 +279,10 @@ public class ScriptRegistry implements InitializingBean {
 	
 	private void doOnMarketDataEvent(final Message message) {
 		try {
-			bsfManager.undeclareBean(MESSAGE_BEAN_NAME);
-			bsfManager.declareBean(MESSAGE_BEAN_NAME, message, message.getClass());
-			bsfManager.exec(RUBY_LANG_STRING, "<java>", 1, 1, "Photon.on_market_data_message($message)");
-		} catch (BSFException e) {
+			for (Strategy aStrategy : registeredStrategies.values()) {
+				aStrategy.on_market_data_message(message);
+			}
+		} catch (RaiseException e) {
 			ScriptLoggingUtil.error(logger, e);
 		}
 	}
@@ -285,30 +294,24 @@ public class ScriptRegistry implements InitializingBean {
 
 
 	private Boolean doIsRegistered(final String requireString) {
-		try {
-			String evalString = "Photon.is_registered?('"+requireString+"')";
-			return (Boolean) bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-		} catch (BSFException e) {
-			ScriptLoggingUtil.error(logger, e);
-		}
-		return false;
+		return registeredStrategies.containsKey(requireString);
 	}
 
 
 	private void doUnregister(final String fileName) {
-		try {
-			String evalString = "Photon.unregister('"+fileName+"')";
-			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-		} catch (BSFException e) {
-			ScriptLoggingUtil.error(logger, e);
-		}
+		registeredStrategies.remove(fileName);
 	}
 
 
 	private BSFException doRegister(final String fileName) {
 		try {
-			String evalString = "Photon.register('"+fileName+"')";
-			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+			String classInstanceEvalString = "Photon.new_instance('"+fileName+"')";
+			Object strategyObject = bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, classInstanceEvalString);
+			if (strategyObject instanceof Strategy){
+				registeredStrategies.put(fileName, (Strategy) strategyObject);
+			} else {
+				throw new IllegalArgumentException("File '"+fileName+"' does not contain a subclass of Strategy");
+			}
 			return null;
 		} catch (BSFException e) {
 			ScriptLoggingUtil.error(logger, e);
