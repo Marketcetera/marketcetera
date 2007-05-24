@@ -32,7 +32,7 @@ import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.OptionMessageListTableFormat;
 import org.marketcetera.photon.ui.TableComparatorChooser;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -407,9 +407,9 @@ public class OptionMessagesComposite extends Composite {
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer
 				.setContentProvider(new EventListContentProvider<OptionMessageHolder>());
-		DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary();
+		FIXDataDictionary dictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
 		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(
-				aMessageTable, getSite(), dictionary));
+				aMessageTable, getSite(), dictionary.getDictionary()));
 
 		return aMessagesViewer;
 	}
