@@ -420,4 +420,45 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     	assertEquals(1239, tradeGroup.getInt(MDEntryPx.FIELD));
     	assertEquals(4000, tradeGroup.getInt(MDEntrySize.FIELD));
     }
+    
+    public void testIsCancellable() throws Exception {
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.ACCEPTED_FOR_BIDDING));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.CALCULATED));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.NEW));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.PARTIALLY_FILLED));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.PENDING_CANCEL));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.PENDING_NEW));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.PENDING_REPLACE));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.STOPPED));
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.SUSPENDED));
+    
+		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.CANCELED));
+		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.DONE_FOR_DAY));
+		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.EXPIRED));
+		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.FILLED));
+		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.REJECTED));
+		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.REPLACED));
+		
+		
+		Message aMessage = msgFactory.newExecutionReport("ordid", "clordid",
+				"execid", OrdStatus.PENDING_REPLACE, Side.BUY, BigDecimal.TEN,
+				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
+				BigDecimal.TEN, new MSymbol("ABC"), null);
+		assertTrue(FIXMessageUtil.isCancellable(aMessage));
+		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", 10, Side.BUY, msgFactory)));
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
