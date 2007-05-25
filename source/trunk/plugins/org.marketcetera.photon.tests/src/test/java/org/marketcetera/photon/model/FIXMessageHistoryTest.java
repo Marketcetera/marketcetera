@@ -438,6 +438,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertTrue(history.getLatestExecutionReport(clOrderID1.toString()).isSetField(OrderID.FIELD));
 
+		// expecting 3, since it's later in order and later with sending time
 		history = getMessageHistory();
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
@@ -445,18 +446,28 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 		
+		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
 		history = getMessageHistory();
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message1);
-		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 
+		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
+		history = getMessageHistory();
+		history.addIncomingMessage(message1);
+		history.addIncomingMessage(message3);
+		history.addIncomingMessage(message2);
+		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+
+		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
 		history = getMessageHistory();
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 	}
 

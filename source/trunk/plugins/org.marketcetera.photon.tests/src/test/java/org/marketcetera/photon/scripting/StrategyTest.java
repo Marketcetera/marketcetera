@@ -6,6 +6,7 @@ import java.util.concurrent.Semaphore;
 import junit.framework.TestCase;
 import quickfix.Message;
 import quickfix.field.LastPx;
+import quickfix.field.OrderID;
 import quickfix.fix40.NewOrderSingle;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.MarketDataRequest;
@@ -44,6 +45,7 @@ public class StrategyTest extends TestCase {
 		assertEquals("execReport went through", 0, strategy.mdSnapshots.size());
 		
 		Message execReport = new ExecutionReport();
+		execReport.setField(new OrderID("abcd"));
 		execReport.setField(new LastPx(0));
 		strategy.on_fix_message(execReport);
 		assertEquals("0 execReport went through", 0, strategy.execReports.size());
@@ -52,7 +54,13 @@ public class StrategyTest extends TestCase {
 		execReport.setField(new LastPx(37));
 		strategy.on_fix_message(execReport);
 		assertEquals("non-zero execReport didn't go through", 1, strategy.execReports.size());
-		assertEquals("execReport went through", 0, strategy.mdSnapshots.size());
+		assertEquals("snapshot went through", 0, strategy.mdSnapshots.size());
+		
+		execReport.removeField(OrderID.FIELD);
+		strategy.clear();
+		strategy.on_fix_message(execReport);
+		assertEquals("execReport without OrderID went through", 0, strategy.execReports.size());
+		assertEquals("snapshot went through", 0, strategy.mdSnapshots.size());
 	}
 	
 	public void testMDSnapshotRefresh()
