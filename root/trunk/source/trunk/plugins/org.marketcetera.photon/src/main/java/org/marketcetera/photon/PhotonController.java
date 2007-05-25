@@ -65,13 +65,7 @@ public class PhotonController {
 	}
 
 	public void handleCounterpartyMessage(final Message aMessage) {
-		asyncExec(
-			new Runnable() {
-				public void run() {
-					fixMessageHistory.addIncomingMessage(aMessage);
-				}
-			}
-		);
+		fixMessageHistory.addIncomingMessage(aMessage);
 		try {
 			if (FIXMessageUtil.isExecutionReport(aMessage)) {
 				handleExecutionReport(aMessage);
@@ -158,11 +152,7 @@ public class PhotonController {
 			if (!aMessage.isSetField(ClOrdID.FIELD)){
 				aMessage.setField(new ClOrdID(orderID));
 			}
-			asyncExec(new Runnable() {
-				public void run() {
-					fixMessageHistory.addOutgoingMessage(aMessage);
-				}
-			});
+			fixMessageHistory.addOutgoingMessage(aMessage);
 			convertAndSend(aMessage);
 		} catch (NoMoreIDsException e) {
 			internalMainLogger.error("Could not send message, no order IDs", e);
@@ -170,11 +160,7 @@ public class PhotonController {
 	}
 
 	protected void cancelReplaceOneOrder(final Message cancelMessage) {
-		asyncExec(new Runnable() {
-			public void run() {
-				fixMessageHistory.addOutgoingMessage(cancelMessage);
-			}
-		});
+		fixMessageHistory.addOutgoingMessage(cancelMessage);
 		convertAndSend(cancelMessage);
 	}
 
@@ -210,11 +196,7 @@ public class PhotonController {
 				// do nothing
 			}
 			FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, latestMessage);
-			asyncExec(new Runnable() {
-				public void run() {
-					fixMessageHistory.addOutgoingMessage(cancelMessage);
-				}
-			});
+			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			convertAndSend(cancelMessage);
 		} catch (FieldNotFound fnf){
 			internalMainLogger.error("Could not send cancel for message "+latestMessage.toString(), fnf);
