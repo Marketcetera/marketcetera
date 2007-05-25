@@ -11,7 +11,7 @@ public class IncomingMessageHolder extends MessageHolder {
 		super(message);
 	}
 
-	public IncomingMessageHolder(Message message, int referenceNo) {
+	public IncomingMessageHolder(Message message, long referenceNo) {
 		super(message, referenceNo);
 	}	
 }

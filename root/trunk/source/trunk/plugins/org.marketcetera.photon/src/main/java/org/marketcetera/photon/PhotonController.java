@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.MessageVisitor;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -23,6 +23,7 @@ import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Symbol;
+import quickfix.field.Text;
 
 /**
  * OrderManager is the main repository for business logic.  It can be considered
@@ -184,6 +185,9 @@ public class PhotonController {
 	}
 	
 	public void cancelOneOrderByClOrdID(String clOrdID) throws NoMoreIDsException {
+		cancelOneOrderByClOrdID(clOrdID, null);
+	}
+	public void cancelOneOrderByClOrdID(String clOrdID, String textField) throws NoMoreIDsException {
 		Message latestMessage = fixMessageHistory.getLatestExecutionReport(clOrdID);
 		if (latestMessage == null){
 			latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
@@ -192,7 +196,11 @@ public class PhotonController {
 				return;
 			}
 		}
-		try { LoggerAdapter.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD), this); } catch (FieldNotFound e1) {	}
+		try { 
+			if(internalMainLogger.isDebugEnabled()) {
+				internalMainLogger.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD)); 
+			} 
+		} catch (FieldNotFound e1) {	}
 		try {
 			final Message cancelMessage = messageFactory.newCancelFromMessage(latestMessage);
 			cancelMessage.setField(new ClOrdID(idFactory.getNext()));
@@ -209,8 +217,26 @@ public class PhotonController {
 			});
 			convertAndSend(cancelMessage);
 		} catch (FieldNotFound fnf){
-			LoggerAdapter.error("Could not send cancel for message "+latestMessage.toString(), fnf, this);
+			internalMainLogger.error("Could not send cancel for message "+latestMessage.toString(), fnf);
 		}
+	}
+
+	/** Panic button: cancel all open orders */
+	public void cancelAllOpenOrders()
+	{
+		fixMessageHistory.visitOpenOrdersExecutionReports(new MessageVisitor() {
+            public void visitOpenOrderExecutionReports(Message message) {
+                try {
+            		String clOrdId = (String) message.getString(ClOrdID.FIELD);
+            		cancelOneOrderByClOrdID(clOrdId, "PANIC");
+                    if(internalMainLogger.isDebugEnabled()) { internalMainLogger.debug("cancelling order for "+message);} 
+                } catch (NoMoreIDsException ignored) {
+                    // ignore
+                } catch (FieldNotFound fnf){
+                	internalMainLogger.error("Could not send cancel for message "+message.toString(), fnf);
+                }
+            }
+        });
 	}
 
 	private void convertAndSend(Message fixMessage) {

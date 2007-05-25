@@ -67,16 +67,18 @@ public class LatestMessageFunction implements
 	 * @return true if messageHolder1 occurred after messageHolder2, false otherwise
 	 */
 	protected boolean isLater(MessageHolder messageHolder1, MessageHolder messageHolder2) throws FieldNotFound {
-		// compare by transact time and 
-		Date date1;
-		Date date2;
-		date1 = messageHolder1.getMessage().getHeader().getUtcTimeStamp(SendingTime.FIELD);
-		date2 = messageHolder2.getMessage().getHeader().getUtcTimeStamp(SendingTime.FIELD);
-		int compareVal = date1.compareTo(date2);
-		return (compareVal > 0 ||
-				(compareVal == 0 && 
-						messageHolder1.getMessageReference() > messageHolder2.getMessageReference()));
-	}
+        long ref1 = messageHolder1.getMessageReference();
+        long ref2 = messageHolder2.getMessageReference();
+        if(ref1 != ref2) {
+            return (ref1 > ref2);
+        }
+
+        Date date1;
+        Date date2;
+        date1 = messageHolder1.getMessage().getHeader().getUtcTimeStamp(SendingTime.FIELD);
+        date2 = messageHolder2.getMessage().getHeader().getUtcTimeStamp(SendingTime.FIELD);
+        return (date1.compareTo(date2) > 0);
+    }
 	/**
 	 * Determines whether a given {@link MessageHolder} should
 	 * be considered for inclusion in the "latest message" calculation.

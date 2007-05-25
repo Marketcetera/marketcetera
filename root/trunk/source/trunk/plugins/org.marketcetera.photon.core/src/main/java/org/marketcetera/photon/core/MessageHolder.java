@@ -7,13 +7,13 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 public class MessageHolder implements Comparable {
 	private Message message;
-	private int messageReference;
+	private long messageReference;
 
 	public MessageHolder(Message message) {
 		this.message = message;
 	}
 
-	public MessageHolder(Message message, int referenceNo) {
+	public MessageHolder(Message message, long referenceNo) {
 		this.message = message;
 		this.messageReference = referenceNo;
 	}
@@ -22,7 +22,7 @@ public class MessageHolder implements Comparable {
 		return message;
 	}
 	
-	public int getMessageReference()
+	public long getMessageReference()
 	{
 		return messageReference;
 	}
