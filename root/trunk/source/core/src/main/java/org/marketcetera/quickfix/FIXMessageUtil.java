@@ -22,6 +22,7 @@ import quickfix.field.MDReqID;
 import quickfix.field.MsgType;
 import quickfix.field.NetworkRequestID;
 import quickfix.field.NoMDEntries;
+import quickfix.field.OrdStatus;
 import quickfix.field.PosReqID;
 import quickfix.field.QuoteID;
 import quickfix.field.QuoteReqID;
@@ -120,7 +121,43 @@ public class FIXMessageUtil {
 	public static boolean isMarketDataIncrementalRefresh(Message message) {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
 	}
+	
+	
+	public static boolean isCancellable(char ordStatus) {
+		switch (ordStatus){
+		case OrdStatus.ACCEPTED_FOR_BIDDING:
+		case OrdStatus.CALCULATED:
+		case OrdStatus.NEW:
+		case OrdStatus.PARTIALLY_FILLED:
+		case OrdStatus.PENDING_CANCEL:
+		case OrdStatus.PENDING_NEW:
+		case OrdStatus.PENDING_REPLACE:
+		case OrdStatus.STOPPED:
+		case OrdStatus.SUSPENDED:
+			return true;
+		case OrdStatus.CANCELED:
+		case OrdStatus.DONE_FOR_DAY:
+		case OrdStatus.EXPIRED:
+		case OrdStatus.FILLED:
+		case OrdStatus.REJECTED:
+		case OrdStatus.REPLACED:
+		default:
+			return false;
+		}
+	}
 
+	public static boolean isCancellable(Message executionReport){
+		if (isExecutionReport(executionReport)){
+			try {
+				return isCancellable(executionReport.getChar(OrdStatus.FIELD));
+			} catch (FieldNotFound e) {
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	
 	/** Helper method to extract all useful fields from an existing message into another message
      * This is usually called when the "existing" message is malformed and is missing some fields,
      * and an appropriate "reject" message needs to be sent.
