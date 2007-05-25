@@ -268,22 +268,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return scriptRegistry;
 	}
 	
-	/** Panic button: cancel all open orders */
-	public void cancelAllOpenOrders()
-	{
-		fixMessageHistory.visitOpenOrdersExecutionReports(new MessageVisitor() {
-            public void visitOpenOrderExecutionReports(Message message) {
-                try {
-                    photonController.cancelOneOrder(message);
-                } catch (NoMoreIDsException ignored) {
-                    // ignore
-                } catch (FieldNotFound fnf){
-                    LoggerAdapter.error("Could not send cancel for message "+message.toString(), fnf, this);
-                }
-            }
-        });
-	}
-
 	/** 
 	 * Accessor for the OrderManager singleton.  The OrderManager is the 
 	 * holder of most of the business logic for the application.

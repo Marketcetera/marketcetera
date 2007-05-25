@@ -1,13 +1,13 @@
 package org.marketcetera.photon.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -15,6 +15,8 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.MsgType;
+import quickfix.field.OrderID;
+import quickfix.field.SendingTime;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
@@ -45,7 +47,7 @@ public class FIXMessageHistory extends PlatformObject {
 	
 	private Map<String, MessageHolder> orderMap;
 	
-	private int messageReferenceCounter = 0;
+	private long messageReferenceCounter = 0;
 
 	public FIXMessageHistory(FIXMessageFactory messageFactory) {
 		allMessages = new BasicEventList<MessageHolder>();
@@ -72,6 +74,19 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public void addIncomingMessage(quickfix.Message fixMessage) {
+		// todo: clean this up after debugging finished
+		if(fixMessage.getHeader().isSetField(SendingTime.FIELD)) {
+			long sendingTime =0;
+			try {
+				sendingTime = fixMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD).getTime();
+			} catch (FieldNotFound e) {
+			}
+			long systemTime = System.currentTimeMillis();
+			double diff = (sendingTime-systemTime)/1000.0;
+			if(Math.abs(diff) > 1) {
+				LoggerAdapter.info(Thread.currentThread().getName() + ": sendingTime v systemTime: "+diff, this);
+			}
+		}
 		allMessages.add(new IncomingMessageHolder(fixMessage, messageReferenceCounter++));
 	}
 
@@ -106,12 +121,16 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public Message getLatestExecutionReport(String clOrdID) {
-		FilterList<MessageHolder> list = new FilterList<MessageHolder>(latestExecutionReportsList,new FIXMatcher<String>(ClOrdID.FIELD, clOrdID));
-		if (list.size()>0) {
-			return list.get(0).getMessage();
-		} else {
-			return null;
+		for (MessageHolder holder : latestExecutionReportsList) {
+			try {
+				if(clOrdID.equals(holder.getMessage().getString(ClOrdID.FIELD))) {
+					return holder.getMessage();
+				}
+			} catch (Exception e) {
+				// ignore
+			}
 		}
+		return null;
 	}
 
 	// TODO: UUUUUgly

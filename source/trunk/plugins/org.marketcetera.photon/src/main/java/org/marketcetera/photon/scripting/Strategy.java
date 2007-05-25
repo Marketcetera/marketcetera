@@ -16,6 +16,7 @@ import quickfix.Message;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryType;
 import quickfix.field.NoMDEntries;
+import quickfix.field.OrderID;
 
 public abstract class Strategy {
 
@@ -33,7 +34,7 @@ public abstract class Strategy {
 	public void on_fix_message(Message message)
 	{
 		if(FIXMessageUtil.isExecutionReport(message)) {
-			if(message.isSetField(LastPx.FIELD)) {
+			if(message.isSetField(LastPx.FIELD) && message.isSetField(OrderID.FIELD)) {
 				try {
 					BigDecimal lastPx = new BigDecimal(message.getString(LastPx.FIELD));
 					if(!BigDecimal.ZERO.equals(lastPx)) {
@@ -60,6 +61,12 @@ public abstract class Strategy {
 		return (BigDecimal) extractor.extractValue(message, fieldID, NoMDEntries.FIELD,
 				MDEntryType.FIELD, mdEntryType);
 	}
+	
+	public void sendFIXMessage(quickfix.Message message)
+	{
+		plugin.getPhotonController().handleInternalMessage(message);
+	}
+
 	
 	public void registerTimedCallback(final long millis, final Object clientData) throws InterruptedException
 	{
@@ -111,6 +118,6 @@ public abstract class Strategy {
 	/** Panic button: cancel all open orders */
 	public void cancelAllOpenOrders() 
 	{
-		plugin.cancelAllOpenOrders();
+		plugin.getPhotonController().cancelAllOpenOrders();
 	}
 }
