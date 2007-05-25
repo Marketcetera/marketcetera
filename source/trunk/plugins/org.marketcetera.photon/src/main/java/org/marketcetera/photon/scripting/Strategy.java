@@ -1,6 +1,7 @@
 package org.marketcetera.photon.scripting;
 
 import java.math.BigDecimal;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
@@ -68,14 +69,14 @@ public abstract class Strategy {
 	}
 
 	
-	public void registerTimedCallback(final long millis, final Object clientData) throws InterruptedException
+	public ScheduledFuture<?> registerTimedCallback(final long millis, final Object clientData) throws InterruptedException
 	{
-		registerTimedCallback(millis, TimeUnit.MILLISECONDS, clientData);
+		return registerTimedCallback(millis, TimeUnit.MILLISECONDS, clientData);
 	}
 	
-	public void registerTimedCallback(final long timeout, TimeUnit unit, final Object clientData) throws InterruptedException
+	public ScheduledFuture<?> registerTimedCallback(final long timeout, TimeUnit unit, final Object clientData) throws InterruptedException
 	{
-		plugin.getScriptRegistry().getScheduler().schedule(new Runnable(){
+		ScheduledFuture<?> future = plugin.getScriptRegistry().getScheduler().schedule(new Runnable(){
 			public void run() {
 				if(logger.isDebugEnabled()) { logger.debug("starting ruby callback"); }
 				try {
@@ -87,6 +88,7 @@ public abstract class Strategy {
 			}
 		}, timeout, unit);
 		if(logger.isDebugEnabled()) { logger.debug("registering timeout callback for "+timeout + " in "+unit); }
+		return future;
 	}
 	
 	public FIXMessageFactory getMessageFactory() 
