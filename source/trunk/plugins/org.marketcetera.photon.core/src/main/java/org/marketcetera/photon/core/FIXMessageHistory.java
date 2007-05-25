@@ -87,19 +87,31 @@ public class FIXMessageHistory extends PlatformObject {
 				LoggerAdapter.info(Thread.currentThread().getName() + ": sendingTime v systemTime: "+diff, this);
 			}
 		}
-		allMessages.add(new IncomingMessageHolder(fixMessage, messageReferenceCounter++));
+		try {
+			allMessages.getReadWriteLock().writeLock().lock();
+			allMessages.add(new IncomingMessageHolder(fixMessage, messageReferenceCounter++));
+		} finally {
+			allMessages.getReadWriteLock().writeLock().unlock();
+		}
 	}
 
 	public void addOutgoingMessage(quickfix.Message fixMessage) {
 		OutgoingMessageHolder messageHolder = new OutgoingMessageHolder(fixMessage, messageReferenceCounter++);
 		if (FIXMessageUtil.isOrderSingle(fixMessage)){
 			try {
-				orderMap.put(fixMessage.getString(ClOrdID.FIELD), messageHolder);
+				synchronized (orderMap){
+					orderMap.put(fixMessage.getString(ClOrdID.FIELD), messageHolder);
+				}
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
 		}
-		allMessages.add(messageHolder);
+		try {
+			allMessages.getReadWriteLock().writeLock().lock();
+			allMessages.add(messageHolder);
+		} finally {
+			allMessages.getReadWriteLock().writeLock().unlock();
+		}
 	}
 
 
@@ -121,33 +133,43 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public Message getLatestExecutionReport(String clOrdID) {
-		for (MessageHolder holder : latestExecutionReportsList) {
-			try {
-				if(clOrdID.equals(holder.getMessage().getString(ClOrdID.FIELD))) {
-					return holder.getMessage();
+		try {
+			latestExecutionReportsList.getReadWriteLock().readLock().lock();
+			for (MessageHolder holder : latestExecutionReportsList) {
+				try {
+					if(clOrdID.equals(holder.getMessage().getString(ClOrdID.FIELD))) {
+						return holder.getMessage();
+					}
+				} catch (Exception e) {
+					// ignore
 				}
-			} catch (Exception e) {
-				// ignore
 			}
+		} finally {
+			latestExecutionReportsList.getReadWriteLock().readLock().unlock();
 		}
 		return null;
 	}
 
 	// TODO: UUUUUgly
 	public Message getOpenOrder(String clOrdID) {
-		Message returnMessage = null;
-		for (MessageHolder holder : allMessages) {
-			try {
-				Message aMessage = holder.getMessage();
-				if (aMessage.getHeader().getString(MsgType.FIELD).equals(MsgType.ORDER_SINGLE) &&
-						clOrdID.equals(aMessage.getString(ClOrdID.FIELD)))
-				{
-					returnMessage  = aMessage;
+		try {
+			allMessages.getReadWriteLock().readLock().lock();
+			Message returnMessage = null;
+			for (MessageHolder holder : allMessages) {
+				try {
+					Message aMessage = holder.getMessage();
+					if (aMessage.getHeader().getString(MsgType.FIELD).equals(MsgType.ORDER_SINGLE) &&
+							clOrdID.equals(aMessage.getString(ClOrdID.FIELD)))
+					{
+						returnMessage  = aMessage;
+					}
+				} catch (FieldNotFound e) {
 				}
-			} catch (FieldNotFound e) {
 			}
+			return returnMessage;
+		} finally {
+			allMessages.getReadWriteLock().readLock().unlock();
 		}
-		return returnMessage;
 	}
 
 	public EventList<MessageHolder> getAllMessagesList() {
@@ -155,11 +177,16 @@ public class FIXMessageHistory extends PlatformObject {
 	}
 
 	public Message getLatestMessage(String clOrdID) {
-		FilterList<MessageHolder> list = new FilterList<MessageHolder>(latestMessageList,new FIXMatcher<String>(ClOrdID.FIELD, clOrdID));
-		if (list.size()>0){
-			return list.get(0).getMessage();
-		} else {
-			return null;
+		try {
+			latestMessageList.getReadWriteLock().readLock().lock();
+			FilterList<MessageHolder> list = new FilterList<MessageHolder>(latestMessageList,new FIXMatcher<String>(ClOrdID.FIELD, clOrdID));
+			if (list.size()>0){
+				return list.get(0).getMessage();
+			} else {
+				return null;
+			}
+		} finally {
+			latestMessageList.getReadWriteLock().readLock().unlock();
 		}
 	}
 
@@ -177,15 +204,22 @@ public class FIXMessageHistory extends PlatformObject {
 	
 	public void visitOpenOrdersExecutionReports(MessageVisitor visitor)
 	{
-		MessageHolder[] holders = openOrderList.toArray(new MessageHolder[0]);
-		for(MessageHolder holder : holders)
-		{
-			visitor.visitOpenOrderExecutionReports(holder.getMessage());
+		try {
+			openOrderList.getReadWriteLock().readLock().lock();
+			MessageHolder[] holders = openOrderList.toArray(new MessageHolder[0]);
+			for(MessageHolder holder : holders)
+			{
+				visitor.visitOpenOrderExecutionReports(holder.getMessage());
+			}
+		} finally {
+			openOrderList.getReadWriteLock().readLock().unlock();
 		}
 	}
 	
 	public MessageHolder getOrder(String clOrdID){
-		return orderMap.get(clOrdID);
+		synchronized (orderMap){
+			return orderMap.get(clOrdID);
+		}
 	}
 	
 }
