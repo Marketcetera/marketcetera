@@ -1,4 +1,4 @@
-package org.marketcetera.photon.views;
+package org.marketcetera.photon.views.fixmessagedetail;
 
 import quickfix.Message;
 
