@@ -53,6 +53,10 @@ public class FIXMessageUtil {
      */
     public FIXMessageUtil() {
     }
+    
+    public static int getMaxFIXFields() {
+    	return MAX_FIX_FIELDS;
+    }
 
     private static boolean msgTypeHelper(Message fixMessage, String msgType) {
     	if (fixMessage != null){
@@ -196,9 +200,22 @@ public class FIXMessageUtil {
         }
     }
     
+    public static boolean isRequiredField(Message message, int whichField) {
+		boolean required = false;
+		try {
+			String msgType = message.getHeader().getString(MsgType.FIELD);
+			DataDictionary dictionary = FIXDataDictionaryManager
+					.getCurrentFIXDataDictionary().getDictionary();
+			required = dictionary.isRequiredField(msgType, whichField);
+		} catch (Exception anyException) {
+			// Ignore
+		}
+		return required;
+	}
+    
     /**
-     * Copy only required fields.
-     */
+	 * Copy only required fields.
+	 */
     public static void fillFieldsFromExistingMessage(Message outgoingMessage, Message existingMessage) {
     	fillFieldsFromExistingMessage(outgoingMessage, existingMessage, true);
     }
