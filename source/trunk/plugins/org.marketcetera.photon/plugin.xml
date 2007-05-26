@@ -152,6 +152,10 @@
             id="org.marketcetera.photon.preferences.customorderfield"
             name="Custom Order Fields"/>
       <page
+            class="org.marketcetera.photon.preferences.FIXMessageDetailPreferencePage"
+            id="org.marketcetera.photon.preferences.fixmessagedetailpreference"
+            name="FIX Message Detail Preference"/>
+      <page
             class="org.marketcetera.photon.preferences.ScriptRegistryPage"
             id="org.marketcetera.photon.preferences.scriptregistry"
             name="Script Registry"/>
