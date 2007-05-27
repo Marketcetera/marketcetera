@@ -3,6 +3,7 @@ package org.marketcetera.photon.views.fixmessagedetail;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -192,8 +193,10 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		messageDetailLabel.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
-				PreferencesUtil.createPreferenceDialogOn(null,
-						FIXMessageDetailPreferencePage.ID, null, null);
+				PreferenceDialog dialog = PreferencesUtil
+						.createPreferenceDialogOn(null,
+								FIXMessageDetailPreferencePage.ID, null, null);
+				dialog.open();
 			}
 		});
 	}
@@ -375,20 +378,22 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 			// are set on the message.
 			for (int fieldNumber = 1; fieldNumber < FIXMessageUtil
 					.getMaxFIXFields(); ++fieldNumber) {
-				addFIXMessageDetailTableRow(fixMessage, fieldNumber, fixDictionary, rows);
+				addFIXMessageDetailTableRow(fixMessage, fieldNumber,
+						fixDictionary, rows);
 			}
 		} else {
 			hidePreferencesLink();
 			// The user specified fields to show.
 			for (int fieldNumber : fieldsToShow) {
-				addFIXMessageDetailTableRow(fixMessage, fieldNumber, fixDictionary, rows);
+				addFIXMessageDetailTableRow(fixMessage, fieldNumber,
+						fixDictionary, rows);
 			}
 		}
 		return rows;
 	}
 
-	private void addFIXMessageDetailTableRow(Message fixMessage, int fieldNumber,
-			FIXDataDictionary fixDictionary,
+	private void addFIXMessageDetailTableRow(Message fixMessage,
+			int fieldNumber, FIXDataDictionary fixDictionary,
 			ArrayList<FIXMessageDetailTableRow> rows) {
 
 		if (fixMessage.isSetField(fieldNumber)) {
