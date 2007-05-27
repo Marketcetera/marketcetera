@@ -148,13 +148,22 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
     }
     
     public void updateSortIndicatorIconupdateSortIndicatorIcon(int columnIndex) {
-    	TableColumn column = table.getColumn(columnIndex);
-    	columnListener.updateSortIndicatorIcon(column, columnIndex);
-    }
+		TableColumn column = table.getColumn(columnIndex);
+		columnListener.updateSortIndicatorIcon(column, columnIndex);
+	}
+
+	public void removeSortIndicators() {
+		TableColumn[] columns = table.getColumns();
+		if (columns != null) {
+			for (TableColumn column : columns) {
+				column.setImage(null);
+			}
+		}
+	}
 
     /**
-     * Updates the comparator in use and applies it to the table.
-     */
+	 * Updates the comparator in use and applies it to the table.
+	 */
     protected final void rebuildComparator() {
         super.rebuildComparator();
 
