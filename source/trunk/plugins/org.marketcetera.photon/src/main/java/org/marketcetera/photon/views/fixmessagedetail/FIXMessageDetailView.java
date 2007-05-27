@@ -1,9 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -11,6 +9,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -22,10 +21,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.dialogs.PreferencesUtil;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.preferences.FIXMessageDetailPreferencePage;
 import org.marketcetera.photon.preferences.FIXMessageDetailPreferenceParser;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -35,13 +37,20 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.CharField;
 import quickfix.Message;
+import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
+import quickfix.field.Price;
+import quickfix.field.Quantity;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
 public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail {
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessageDetailView";
+
+	private static final char INVALID_ORDER_STATUS = '?';
+
+	private final int MESSAGE_TEXT_WIDTH_HINT = 80;
 
 	private FormToolkit formToolkit;
 
@@ -57,6 +66,14 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 	private Clipboard clipboard;
 
+	private TableComparatorChooser<FIXMessageDetailTableRow> comparatorChooser;
+
+	private FIXMessageDetailLabelProvider labelProvider;
+
+	private Color colorBlue;
+
+	private Color colorOriginal;
+
 	private FormToolkit getFormToolkit() {
 		if (formToolkit == null) {
 			formToolkit = new FormToolkit(Display.getCurrent());
@@ -70,6 +87,9 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 	@Override
 	public void createPartControl(Composite parent) {
+		colorBlue = getSite().getShell().getDisplay().getSystemColor(
+				SWT.COLOR_BLUE);
+
 		createOuterForm(parent);
 		createFieldTable();
 		createMessageDetailComposite();
@@ -77,6 +97,20 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		createLayoutDataForOuterWidgets();
 
 		clipboard = new Clipboard(getSite().getShell().getDisplay());
+
+		setMockPreferences();
+	}
+
+	// This is for testing while the preferences page is in development.
+	private void setMockPreferences() {
+		FIXMessageDetailPreferenceParser parser = new FIXMessageDetailPreferenceParser();
+
+		List<Integer> fixFields = new ArrayList<Integer>();
+		fixFields.add(MsgType.FIELD);
+		fixFields.add(OrdStatus.FIELD);
+		fixFields.add(Price.FIELD);
+		fixFields.add(Quantity.FIELD);
+		parser.setFieldsToShow(OrdStatus.NEW, fixFields);
 	}
 
 	@Override
@@ -115,8 +149,6 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		form.getBody().setLayout(new FormLayout());
 	}
 
-	private FIXMessageDetailLabelProvider labelProvider;
-
 	private void createFieldTable() {
 		messageTable = getFormToolkit().createTable(getDefaultOuterParent(),
 				SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
@@ -129,13 +161,16 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 				.setContentProvider(new EventListContentProvider<FIXMessageDetailTableRow>());
 	}
 
+	private Label messageDetailLabel;
+
 	private void createMessageDetailComposite() {
 		messageTextComposite = getFormToolkit().createComposite(
 				getDefaultOuterParent(), SWT.BORDER);
 
-		Label fullMessageLabel = new Label(messageTextComposite, SWT.NONE);
-		fullMessageLabel.setBackground(getDefaultOuterParent().getBackground());
-		fullMessageLabel.setText("Full Message:");
+		messageDetailLabel = new Label(messageTextComposite, SWT.WRAP);
+		messageDetailLabel.setBackground(getDefaultOuterParent()
+				.getBackground());
+		hidePreferencesLink();
 
 		Button copyRawMessageButton = new Button(messageTextComposite, SWT.FLAT);
 		copyRawMessageButton.setText("Copy Message");
@@ -149,10 +184,18 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 		messageText = getFormToolkit().createText(messageTextComposite, "",
 				SWT.V_SCROLL | SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
-		createLayoutDataForMessageDetailComposite(fullMessageLabel,
+		createLayoutDataForMessageDetailComposite(messageDetailLabel,
 				copyRawMessageButton, copyTableButton);
 		addMessageDetailCompositeListeners(copyRawMessageButton,
 				copyTableButton);
+
+		messageDetailLabel.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent e) {
+				PreferencesUtil.createPreferenceDialogOn(null,
+						FIXMessageDetailPreferencePage.ID, null, null);
+			}
+		});
 	}
 
 	private void createLayoutDataForMessageDetailComposite(
@@ -166,6 +209,10 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 			FormData data = new FormData();
 			data.left = new FormAttachment(0);
 			data.top = new FormAttachment(0);
+			data.right = new FormAttachment(copyRawMessageButton);
+			// Two rows of text are possible when there's a preferences link.
+			data.height = 2 * EclipseUtils.getTextAreaSize(fullMessageLabel,
+					null, 1, 1.2).y;
 			fullMessageLabel.setLayoutData(data);
 		}
 		{
@@ -185,8 +232,8 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 			data.left = new FormAttachment(0);
 			data.right = new FormAttachment(100);
 			data.bottom = new FormAttachment(100);
-			data.top = new FormAttachment(copyTableButton);
-			data.width = 80;
+			data.top = new FormAttachment(fullMessageLabel);
+			data.width = MESSAGE_TEXT_WIDTH_HINT;
 			data.height = 40;
 			messageText.setLayoutData(data);
 		}
@@ -241,13 +288,12 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		clipboard.setContents(data, dataTypes);
 	}
 
-	private TableComparatorChooser<FIXMessageDetailTableRow> comparatorChooser;
-
 	public void showMessage(Message fixMessage) {
 		PhotonPlugin.getMainConsoleLogger().debug(
 				getClass().getName() + ": " + fixMessage);
 
 		ArrayList<FIXMessageDetailTableRow> rows = createRowsFromMessage(fixMessage);
+
 		BasicEventList<FIXMessageDetailTableRow> eventList = new BasicEventList<FIXMessageDetailTableRow>();
 		eventList.addAll(rows);
 		SortedList<FIXMessageDetailTableRow> sortedList = new SortedList<FIXMessageDetailTableRow>(
@@ -260,10 +306,11 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		}
 		comparatorChooser = new TableComparatorChooser<FIXMessageDetailTableRow>(
 				messageTable, labelProvider, sortedList, false);
-		final int initialSortIndex = FIXMessageDetailColumnType.Tag.getIndex();
-		comparatorChooser.appendComparator(initialSortIndex, 0, false);
-		comparatorChooser
-				.updateSortIndicatorIconupdateSortIndicatorIcon(initialSortIndex);
+		// This code sets an initial sort order and is currently disabled.
+		// final int initialSortIndex =
+		// FIXMessageDetailColumnType.Tag.getIndex();
+		// comparatorChooser.appendComparator(initialSortIndex, 0, false);
+		// comparatorChooser.updateSortIndicatorIcon(initialSortIndex);
 
 		messageViewer.setInput(sortedList);
 
@@ -271,7 +318,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		messageText.setText(messageTextStr);
 	}
 
-	private Set<Integer> getFieldsToShow(Message fixMessage) {
+	private char getOrderStatusSafely(Message fixMessage) {
 		char orderStatus = 0;
 		try {
 			CharField orderStatusField = fixMessage.getField(new OrdStatus());
@@ -280,13 +327,36 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 			PhotonPlugin.getMainConsoleLogger().debug(
 					getClass() + " Failed to get order status from message: " // $NON-NLS-1$
 							+ fixMessage);
+			orderStatus = INVALID_ORDER_STATUS;
+		}
+		return orderStatus;
+	}
+
+	/**
+	 * @return null if not set
+	 */
+	private List<Integer> getFieldsToShow(Message fixMessage) {
+		char orderStatus = getOrderStatusSafely(fixMessage);
+		if (orderStatus == INVALID_ORDER_STATUS) {
 			return null;
 		}
 		FIXMessageDetailPreferenceParser parser = new FIXMessageDetailPreferenceParser();
 		List<Integer> fieldsToShowList = parser.getFieldsToShow(orderStatus);
-		HashSet<Integer> fieldsToShow = new HashSet<Integer>();
-		fieldsToShow.addAll(fieldsToShowList);
-		return fieldsToShow;
+		return fieldsToShowList;
+	}
+
+	private String getHumanFieldValueSafely(FIXDataDictionary fixDictionary,
+			int fieldNumber, String fieldValueActual) {
+		String fieldValueReadable = null;
+		if (fieldValueActual != null) {
+			try {
+				fieldValueReadable = fixDictionary.getHumanFieldValue(
+						fieldNumber, fieldValueActual);
+			} catch (Exception anyException) {
+				// Do nothing
+			}
+		}
+		return fieldValueReadable;
 	}
 
 	private ArrayList<FIXMessageDetailTableRow> createRowsFromMessage(
@@ -294,43 +364,83 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		if (fixMessage == null) {
 			return null;
 		}
-		Set<Integer> fieldsToShow = getFieldsToShow(fixMessage);
-		ArrayList<FIXMessageDetailTableRow> rows = new ArrayList<FIXMessageDetailTableRow>();
 
+		ArrayList<FIXMessageDetailTableRow> rows = new ArrayList<FIXMessageDetailTableRow>();
 		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
 				.getFIXDataDictionary();
-		final int maxFIXFields = FIXMessageUtil.getMaxFIXFields();
-		for (int fieldInt = 1; fieldInt < maxFIXFields; fieldInt++) {
-			if (fixMessage.isSetField(fieldInt)
-					&& (fieldsToShow == null || fieldsToShow.contains(fieldInt))) {
-				String fieldValueActual = null;
-				try {
-					fieldValueActual = fixMessage.getString(fieldInt);
-				} catch (Exception anyException) {
-					// Do nothing
-				}
-				String fieldValueReadable = null;
-				if (fieldValueActual != null) {
-					try {
-						fieldValueReadable = fixDictionary.getHumanFieldValue(
-								fieldInt, fieldValueActual);
-					} catch (Exception anyException) {
-						// Do nothing
-					}
-				}
-				String fieldName = fixDictionary.getHumanFieldName(fieldInt);
+		List<Integer> fieldsToShow = getFieldsToShow(fixMessage);
+		if (fieldsToShow == null || fieldsToShow.isEmpty()) {
+			showPreferencesLink(fixMessage);
+			// No fields were set in the preferences by the user. Show all that
+			// are set on the message.
+			for (int fieldNumber = 1; fieldNumber < FIXMessageUtil
+					.getMaxFIXFields(); ++fieldNumber) {
+				addFIXMessageDetailTableRow(fixMessage, fieldNumber, fixDictionary, rows);
+			}
+		} else {
+			hidePreferencesLink();
+			// The user specified fields to show.
+			for (int fieldNumber : fieldsToShow) {
+				addFIXMessageDetailTableRow(fixMessage, fieldNumber, fixDictionary, rows);
+			}
+		}
+		return rows;
+	}
 
-				boolean required = FIXMessageUtil.isRequiredField(fixMessage,
-						fieldInt);
+	private void addFIXMessageDetailTableRow(Message fixMessage, int fieldNumber,
+			FIXDataDictionary fixDictionary,
+			ArrayList<FIXMessageDetailTableRow> rows) {
 
-				FIXMessageDetailTableRow newRow = new FIXMessageDetailTableRow(
-						fieldName, fieldInt, fieldValueActual,
-						fieldValueReadable, required);
-				rows.add(newRow);
+		if (fixMessage.isSetField(fieldNumber)) {
+			String fieldValueActual = null;
+			try {
+				fieldValueActual = fixMessage.getString(fieldNumber);
+			} catch (Exception anyException) {
+				// Do nothing
+			}
+			String fieldValueReadable = getHumanFieldValueSafely(fixDictionary,
+					fieldNumber, fieldValueActual);
+			String fieldName = fixDictionary.getHumanFieldName(fieldNumber);
+
+			boolean required = FIXMessageUtil.isRequiredField(fixMessage,
+					fieldNumber);
+
+			FIXMessageDetailTableRow newRow = new FIXMessageDetailTableRow(
+					fieldName, fieldNumber, fieldValueActual,
+					fieldValueReadable, required);
+			rows.add(newRow);
+		}
+	}
+
+	private void showPreferencesLink(Message fixMessage) {
+		String orderStatusInfoMessage = "Other";
+		{
+			char orderStatus = getOrderStatusSafely(fixMessage);
+			FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
+					.getFIXDataDictionary();
+			String orderStatusReadable = getHumanFieldValueSafely(
+					fixDictionary, OrdStatus.FIELD, "" + orderStatus);
+			if (orderStatusReadable != null) {
+				orderStatusInfoMessage = orderStatusReadable + " ("
+						+ orderStatus + ")";
 			}
 		}
 
-		return rows;
+		String labelText = "You can choose the FIX fields that will be displayed above "
+				+ "by setting \n"
+				+ "Preferences > FIX Message Detail for the order type: "
+				+ orderStatusInfoMessage;
+		messageDetailLabel.setText(labelText);
+		colorOriginal = messageDetailLabel.getForeground();
+		messageDetailLabel.setForeground(colorBlue);
+		messageTextComposite.layout();
+	}
+
+	private void hidePreferencesLink() {
+		if (colorOriginal != null) {
+			messageDetailLabel.setForeground(colorOriginal);
+		}
+		messageDetailLabel.setText("Full message:");
 	}
 
 	private String getFIXMessageDisplayString(Message fixMessage) {
