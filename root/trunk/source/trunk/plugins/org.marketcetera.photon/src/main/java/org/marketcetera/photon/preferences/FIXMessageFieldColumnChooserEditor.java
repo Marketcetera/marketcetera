@@ -40,19 +40,19 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	private char orderType;
 	
-	private Table chooseFromTable;
+	private Table availableFieldsTable;
 
-	private Table chooseToTable;
+	private Table chosenFieldsTable;
 
-	private IndexedTableViewer chooseFromTableViewer;
+	private IndexedTableViewer availableFieldsTableViewer;
 
-	private IndexedTableViewer chooseToTableViewer;
+	private IndexedTableViewer chosenFieldsTableViewer;
 
 	/**
 	 * The button box containing the Add, Add All, Remove, and Remove All
 	 * buttons; <code>null</code> if none (before creation or after disposal).
 	 */
-	private Composite buttonBox;
+	private Composite addRemoveButtonBox;
 
 	private Button addButton;
 
@@ -61,6 +61,12 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	private Button addAllButton;
 
 	private Button removeAllButton;
+	
+	private Composite upDownButtonBox;
+
+	private Button upButton;
+
+	private Button downButton;
 
 	private SelectionListener selectionListener;
 
@@ -82,13 +88,13 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	 */
 	private void addPressed() {
 		setPresentsDefaultValue(false);		
-		List<String> input = getNewInputObject(chooseFromTable);
+		List<String> input = getNewInputObject(availableFieldsTable);
 		if (input != null) {
 			fromEntries.removeAll(input);
 			toEntries.addAll(input);
-			chooseFromTableViewer.refresh(false);
+			availableFieldsTableViewer.refresh(false);
 			//Updates the list starting from the first added entry
-			chooseToTableViewer.refresh(input.get(0), false);
+			chosenFieldsTableViewer.refresh(input.get(0), false);
 			
 			selectionChanged();
 		}
@@ -97,22 +103,21 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	protected void adjustForNumColumns(int numColumns) {
 		Control control = getLabelControl();
 		((GridData) control.getLayoutData()).horizontalSpan = numColumns;
-		((GridData) chooseFromTable.getLayoutData()).horizontalSpan = numColumns - 1;
+		((GridData) availableFieldsTable.getLayoutData()).horizontalSpan = numColumns - 1;
 	}
 
-	/**
-	 * Creates the Add, Remove, Up, and Down button in the given button box.
-	 * 
-	 * @param box
-	 *            the box for the buttons
-	 */
-	private void createButtons(Composite box) {
+	private void createAddRemoveButtons(Composite box) {
 		addButton = createPushButton(box, "Add");//$NON-NLS-1$
 		removeButton = createPushButton(box, "Remove");//$NON-NLS-1$
 		addAllButton = createPushButton(box, "Add All");//$NON-NLS-1$
 		removeAllButton = createPushButton(box, "Remove All");//$NON-NLS-1$
 	}
 
+	private void createUpDownButtons(Composite box) {
+		upButton = createPushButton(box, "Up");//$NON-NLS-1$
+		downButton = createPushButton(box, "Down");//$NON-NLS-1$
+	}
+	
 	/**
 	 * Helper method to create a push button.
 	 */
@@ -130,10 +135,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		return button;
 	}
 
-	/**
-	 * Creates a selection listener.
-	 */
-	public void createSelectionListener() {
+	private void createSelectionListener() {
 		selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				Widget widget = event.widget;
@@ -145,7 +147,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					addAllPressed();
 				} else if (widget == removeAllButton) {
 					removeAllPressed();
-				} else if (widget == chooseFromTable) {
+				} else if (widget == availableFieldsTable) {
 					selectionChanged();
 				}
 			}
@@ -158,75 +160,80 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		gd.horizontalSpan = numColumns;
 		control.setLayoutData(gd);
 
-		chooseFromTable = createChooseFromTable(parent);
+		availableFieldsTable = createAvailableFieldsTable(parent);
 
-		buttonBox = getButtonBoxControl(parent);
+		addRemoveButtonBox = getAddRemoveButtonBoxControl(parent);
 		gd = new GridData();
 		gd.verticalAlignment = GridData.BEGINNING;
 		gd.horizontalSpan = 1;
-		buttonBox.setLayoutData(gd);
+		addRemoveButtonBox.setLayoutData(gd);
 
-		chooseToTable = createChooseToTable(parent);
+		chosenFieldsTable = createChosenFieldsTable(parent);
 		
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.verticalAlignment = GridData.FILL;
 		gd.horizontalSpan = 1;
 		gd.grabExcessHorizontalSpace = true;
-		chooseFromTable.setLayoutData(gd);
-		chooseToTable.setLayoutData(gd);
+		availableFieldsTable.setLayoutData(gd);
+		chosenFieldsTable.setLayoutData(gd);
 
-		chooseFromTableViewer = createTableViewer(chooseFromTable);
-		chooseToTableViewer = createTableViewer(chooseToTable);
+		availableFieldsTableViewer = createTableViewer(availableFieldsTable);
+		chosenFieldsTableViewer = createTableViewer(chosenFieldsTable);
 		
+		upDownButtonBox = getUpDownButtonBoxControl(parent);
+		gd = new GridData();
+		gd.verticalAlignment = GridData.BEGINNING;
+		gd.horizontalSpan = 1;
+		upDownButtonBox.setLayoutData(gd);
 	}
 
 	protected void doLoad() {
 		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
-		if (chooseToTable != null) {
-			loadChooseToTable(savedIntFields);
+		if (chosenFieldsTable != null) {
+			loadChosenFieldsTable(savedIntFields);
 		}		
-		if (chooseFromTable != null) {
-			loadChooseFromTable(savedIntFields);				
+		if (availableFieldsTable != null) {
+			loadAvailableFieldsTable(savedIntFields);				
 		}
 	}
 	
 	protected void doLoadDefault() {
 		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
-		if (chooseToTable != null) {
-			chooseToTable.removeAll();
-			loadChooseToTable(savedIntFields);
+		if (chosenFieldsTable != null) {
+			chosenFieldsTable.removeAll();
+			loadChosenFieldsTable(savedIntFields);
 		}		
-		if (chooseFromTable != null) {
-			chooseFromTable.removeAll();
-			loadChooseFromTable(savedIntFields);				
+		if (availableFieldsTable != null) {
+			availableFieldsTable.removeAll();
+			loadAvailableFieldsTable(savedIntFields);				
 		}
 	}
 
-	private void loadChooseFromTable(List<Integer> savedIntFields) {
+	private void loadAvailableFieldsTable(List<Integer> savedIntFields) {
 		fromEntries = new BasicEventList<String>(); 	
-		for (int i = 0; i < 2000; i++) {
+		for (int i = 0; i < FIXMessageUtil.getMaxFIXFields(); i++) {
 			if (!savedIntFields.contains(i) && FIXMessageUtil.isValidField(i)) {
 				String fieldName = fixDictionary.getHumanFieldName(i);
 				fromEntries.add(fieldName + " (" + i + ")");
 			}
 		}
-		chooseFromTableViewer.setInput(fromEntries);			
+		availableFieldsTableViewer.setInput(fromEntries);			
 	}
 
-	private void loadChooseToTable(List<Integer> savedIntFields) {
+	private void loadChosenFieldsTable(List<Integer> savedIntFields) {
 		if (savedIntFields != null && savedIntFields.size() > 0) {
 			toEntries = new BasicEventList<String>();			
 			for (int intField : savedIntFields) {
 				String fieldName = fixDictionary.getHumanFieldName(intField);
 				toEntries.add(fieldName + " (" + intField + ")");
 			}
-			chooseToTableViewer.setInput(toEntries);
+			chosenFieldsTableViewer.setInput(toEntries);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	protected void doStore() {
-		List<Integer> chosenFields = (List<Integer>) chooseToTableViewer
+		List<Integer> chosenFields = (List<Integer>) chosenFieldsTableViewer
 				.getInput();
 		if (chosenFields != null && chosenFields.size() > 0) {
 			parser.setFieldsToShow(orderType, chosenFields);
@@ -243,78 +250,96 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	/**
 	 * Returns this field editor's button box containing the Add, Remove, Up,
 	 * and Down button.
-	 * 
-	 * @param parent
-	 *            the parent control
-	 * @return the button box
 	 */
-	public Composite getButtonBoxControl(Composite parent) {
-		if (buttonBox == null) {
-			buttonBox = new Composite(parent, SWT.NULL);
+	private Composite getAddRemoveButtonBoxControl(Composite parent) {
+		if (addRemoveButtonBox == null) {
+			addRemoveButtonBox = new Composite(parent, SWT.NULL);
 			GridLayout layout = new GridLayout();
 			layout.marginWidth = 0;
-			buttonBox.setLayout(layout);
-			createButtons(buttonBox);
-			buttonBox.addDisposeListener(new DisposeListener() {
+			addRemoveButtonBox.setLayout(layout);
+			createAddRemoveButtons(addRemoveButtonBox);
+			addRemoveButtonBox.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent event) {
 					addButton = null;
 					removeButton = null;
 					addAllButton = null;
 					removeAllButton = null;
-					buttonBox = null;
+					addRemoveButtonBox = null;
 				}
 			});
 
 		} else {
-			checkParent(buttonBox, parent);
+			checkParent(addRemoveButtonBox, parent);
 		}
 
-		selectionChanged();
-		return buttonBox;
+//		selectionChanged();
+		return addRemoveButtonBox;
 	}
 
-	private Table createChooseFromTable(Composite parent) {
-		if (chooseFromTable == null) {
-			chooseFromTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
-					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
-			chooseFromTable.setHeaderVisible(false);
-			chooseFromTable.setFont(parent.getFont());
-			chooseFromTable.addSelectionListener(getSelectionListener());
-			chooseFromTable.addDisposeListener(new DisposeListener() {
+	private Composite getUpDownButtonBoxControl(Composite parent) {
+		if (upDownButtonBox == null) {
+			upDownButtonBox = new Composite(parent, SWT.NULL);
+			GridLayout layout = new GridLayout();
+			layout.marginWidth = 0;
+			upDownButtonBox.setLayout(layout);
+			createUpDownButtons(upDownButtonBox);
+			upDownButtonBox.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent event) {
-					chooseFromTable = null;
+					upButton = null;
+					downButton = null;
+					upDownButtonBox = null;
+				}
+			});
+
+		} else {
+			checkParent(upDownButtonBox, parent);
+		}
+//		selectionChanged();
+		return upDownButtonBox;
+	}
+
+	private Table createAvailableFieldsTable(Composite parent) {
+		if (availableFieldsTable == null) {
+			availableFieldsTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
+					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
+			availableFieldsTable.setHeaderVisible(false);
+			availableFieldsTable.setFont(parent.getFont());
+			availableFieldsTable.addSelectionListener(getSelectionListener());
+			availableFieldsTable.addDisposeListener(new DisposeListener() {
+				public void widgetDisposed(DisposeEvent event) {
+					availableFieldsTable = null;
 				}
 			});
 			TableColumn column;
-			column = new TableColumn(chooseFromTable, SWT.CENTER);
+			column = new TableColumn(availableFieldsTable, SWT.CENTER);
 			column.setText("Field");
-			column.setWidth(300);
+			column.setWidth(200);
 		} else {
-			checkParent(chooseFromTable, parent);
+			checkParent(availableFieldsTable, parent);
 		}
-		return chooseFromTable;
+		return availableFieldsTable;
 	}
 	
-	private Table createChooseToTable(Composite parent) {
-		if (chooseToTable == null) {
-			chooseToTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
+	private Table createChosenFieldsTable(Composite parent) {
+		if (chosenFieldsTable == null) {
+			chosenFieldsTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
 					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
-			chooseToTable.setHeaderVisible(false);
-			chooseToTable.setFont(parent.getFont());
-			chooseToTable.addSelectionListener(getSelectionListener());
-			chooseToTable.addDisposeListener(new DisposeListener() {
+			chosenFieldsTable.setHeaderVisible(false);
+			chosenFieldsTable.setFont(parent.getFont());
+			chosenFieldsTable.addSelectionListener(getSelectionListener());
+			chosenFieldsTable.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent event) {
-					chooseToTable = null;
+					chosenFieldsTable = null;
 				}
 			});
 			TableColumn column;
-			column = new TableColumn(chooseToTable, SWT.CENTER);
+			column = new TableColumn(chosenFieldsTable, SWT.CENTER);
 			column.setText("Field");
-			column.setWidth(300);
+			column.setWidth(200);
 		} else {
-			checkParent(chooseToTable, parent);
+			checkParent(chosenFieldsTable, parent);
 		}
-		return chooseToTable;
+		return chosenFieldsTable;
 	}
 
 	private IndexedTableViewer createTableViewer(Table aTable) {
@@ -345,14 +370,12 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 	
 	public int getNumberOfControls() {
-		return 3;
+		return 4;
 	}
 
 	/**
 	 * Returns this field editor's selection listener. The listener is created
 	 * if nessessary.
-	 * 
-	 * @return the selection listener
 	 */
 	private SelectionListener getSelectionListener() {
 		if (selectionListener == null) {
@@ -382,7 +405,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	 */
 	private void removePressed() {
 		setPresentsDefaultValue(false);
-		int index = chooseFromTable.getSelectionIndex();
+		int index = availableFieldsTable.getSelectionIndex();
 
 		if (index >= 0) {
 			// table.remove(index);
@@ -392,20 +415,31 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	private void selectionChanged() {
-		if (chooseFromTable != null) {
-			int fromSize = chooseFromTable.getItemCount();
+		if (availableFieldsTable != null) {
+			int fromSize = availableFieldsTable.getItemCount();
 			addAllButton.setEnabled(fromSize > 0);
+		} else {
+			addButton.setEnabled(false);
+			addAllButton.setEnabled(false);
 		}
-		if (chooseToTable != null) {
-			int toSize = chooseToTable.getItemCount();
+		
+		if (chosenFieldsTable != null) {
+			int toSize = chosenFieldsTable.getItemCount();
 			removeButton.setEnabled(toSize > 0);
 			removeAllButton.setEnabled(toSize > 0);
+			upButton.setEnabled(toSize > 0);
+			downButton.setEnabled(toSize > 0);
+		} else {
+			removeButton.setEnabled(false);
+			removeAllButton.setEnabled(false);
+			upButton.setEnabled(false);
+			downButton.setEnabled(false);
 		}
 	}
 
 	public void setFocus() {
-		if (chooseFromTable != null) {
-			chooseFromTable.setFocus();
+		if (availableFieldsTable != null) {
+			availableFieldsTable.setFocus();
 		}
 	}
 
@@ -418,16 +452,16 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	 */
 	private void swap(boolean up) {
 		setPresentsDefaultValue(false);
-		int index = chooseToTable.getSelectionIndex();
+		int index = chosenFieldsTable.getSelectionIndex();
 		int target = up ? index - 1 : index + 1;
 
 		if (index >= 0) {
-			TableItem[] selection = chooseToTable.getSelection();
+			TableItem[] selection = chosenFieldsTable.getSelection();
 			String toReplace = (String) selection[0].getData();
 			Assert.isTrue(selection.length == 1);
 			toEntries.remove(index);
 			toEntries.add(target, toReplace);
-			chooseToTable.setSelection(target);
+			chosenFieldsTable.setSelection(target);
 		}
 		selectionChanged();
 	}
