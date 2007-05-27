@@ -6,6 +6,9 @@ import java.util.List;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -14,6 +17,7 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
@@ -31,13 +35,15 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 
 	public static final String ID = "org.marketcetera.photon.preferences.fixmessagedetailpreference";
 
-	private Combo fixMsgTypeCombo;
+	private Combo msgTypeCombo;
 
 	private Text columnFilterText;
 
 	private Text customFixFieldIDText;
 
 	private Button customFixFieldInputButton;
+
+	private SelectionListener selectionListener;
 
 	private FIXMessageFieldColumnChooserEditor fixMsgFieldsChooser;
 
@@ -56,7 +62,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		createMsgTypesCombo(getFieldEditorParent());
 		createColumnFilterText(getFieldEditorParent());
 
-		char orderType = OrderStatus.getCode(fixMsgTypeCombo.getText());
+		char orderType = OrderStatus.getCode(msgTypeCombo.getText());
 		
 		fixMsgFieldsChooser = new FIXMessageFieldColumnChooserEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
 				"FIX Message Detail Preference", getFieldEditorParent(), orderType);
@@ -77,15 +83,17 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		labelFormData.top = new FormAttachment(0);
 		viewFixMsgTypeLabel.setLayoutData(labelFormData);
 
-		fixMsgTypeCombo = new Combo(parent, SWT.BORDER | SWT.READ_ONLY);
+		msgTypeCombo = new Combo(parent, SWT.BORDER | SWT.READ_ONLY);
 		String[] msgTypes = getFixMsgTypes();
-		fixMsgTypeCombo.setItems(msgTypes);
-		fixMsgTypeCombo.setText(msgTypes[0]);
+		msgTypeCombo.setItems(msgTypes);
+		msgTypeCombo.setText(msgTypes[0]);
 
 		FormData comboFormData = new FormData();
 		comboFormData.left = new FormAttachment(viewFixMsgTypeLabel, 10);
 		comboFormData.top = new FormAttachment(0);
-		fixMsgTypeCombo.setLayoutData(comboFormData);
+		msgTypeCombo.setLayoutData(comboFormData);
+		
+		msgTypeCombo.addSelectionListener(getSelectionListener());
 	}
 
 	private void createColumnFilterText(Composite parent) {
@@ -96,7 +104,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 
 		FormData labelFormData = new FormData();
 		labelFormData.left = new FormAttachment(0);
-		labelFormData.top = new FormAttachment(fixMsgTypeCombo, 20);
+		labelFormData.top = new FormAttachment(msgTypeCombo, 20);
 		availableColumnsLabel.setLayoutData(labelFormData);
 
 		Label columnFilterLabel = new Label(parent, SWT.NONE);
@@ -149,6 +157,28 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		buttonFormData.bottom = new FormAttachment(100);
 		customFixFieldInputButton.setLayoutData(buttonFormData);
 
+	}
+	
+	private SelectionListener getSelectionListener() {
+		if (selectionListener == null) {
+			createSelectionListener();
+		}
+		return selectionListener;
+	}
+	
+	private void createSelectionListener() {
+		selectionListener = new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				Widget widget = event.widget;
+				if (widget == msgTypeCombo) {
+					fixMsgFieldsChooser.refreshOrderType(OrderStatus.getCode(msgTypeCombo.getText()));
+				} 
+//					else if (widget == removeButton) {
+//					removePressed();
+//				} else if (widget == addAllButton) {
+//					addAllPressed();
+			}
+		};
 	}
 
 	@Override
