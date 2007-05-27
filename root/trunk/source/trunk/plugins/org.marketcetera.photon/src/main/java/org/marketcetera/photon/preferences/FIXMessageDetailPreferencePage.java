@@ -1,6 +1,8 @@
 package org.marketcetera.photon.preferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
@@ -17,6 +19,8 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
+
+import quickfix.field.OrdStatus;
 
 public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		implements IWorkbenchPreferencePage {
@@ -52,8 +56,10 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		createMsgTypesCombo(getFieldEditorParent());
 		createColumnFilterText(getFieldEditorParent());
 
+		char orderType = OrderStatus.getCode(fixMsgTypeCombo.getText());
+		
 		fixMsgFieldsChooser = new FIXMessageFieldColumnChooserEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
-				"FIX Message Detail Preference", getFieldEditorParent());
+				"FIX Message Detail Preference", getFieldEditorParent(), orderType);
 		addField(fixMsgFieldsChooser);
 		
 		createCustomFixFieldIDText(getFieldEditorParent());
@@ -156,9 +162,61 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		return super.performOk();
 	}
 
-	//cl todo:fake data for mockup
 	private String[] getFixMsgTypes() {
-		return new String[] { "Open Orders", "Close Orders", "Market Data" };
+		OrderStatus[] orderTypes = OrderStatus.values();
+		List<String> typeNames = new ArrayList<String>();
+		for (OrderStatus type : orderTypes)
+		{
+			typeNames.add(type.toString());			
+		}
+		String[] typeArray = new String[typeNames.size()];
+		return typeNames.toArray(typeArray);
 	}
+	
+	
+	public enum OrderStatus
+	{
+		NEW("New Orders", OrdStatus.NEW),
+		FILLED("Filled Orders", OrdStatus.FILLED),
+		PARTIALLY_FILLED("Partially Field Orders", OrdStatus.PARTIALLY_FILLED),
+		DONE_FOR_DAY("Done for Day Orders", OrdStatus.DONE_FOR_DAY),
+		CANCELED("Canceled Orders", OrdStatus.CANCELED), 
+		PENDING_CANCEL("Pending Cancel Orders", OrdStatus.PENDING_CANCEL),
+		REPLACED("Replaced Orders", OrdStatus.REPLACED),
+		STOPPED("Stopped Orders", OrdStatus.STOPPED),
+		REJECTED("Rejected Orders", OrdStatus.REJECTED),
+		SUSPENDED("Suspended Orders", OrdStatus.SUSPENDED),
+		PENDING_NEW("Pending New Orders", OrdStatus.PENDING_NEW),
+		CALCULATED("Calculated Orders", OrdStatus.CALCULATED),
+		EXPIRED("Expired Orders", OrdStatus.EXPIRED),		
+		ACCEPTED_FOR_BIDDING("Acced for Bidding Orders", OrdStatus.ACCEPTED_FOR_BIDDING), 
+		PENDING_REPLACE("Pending Replace Orders", OrdStatus.PENDING_REPLACE),
+		OTHER("Other Orders", Character.MAX_VALUE);   //special case
+		
+		private String name;
+		private char code;
 
+		OrderStatus(String name, char code){
+			this.name = name;
+			this.code = code;
+		}
+
+		public String toString() {
+			return name;
+		}
+		
+		public char getCode() {
+			return code;
+		}
+		
+		public static char getCode(String name) {
+			for (OrderStatus status : OrderStatus.values()) {
+				if (status.name.equals(name))
+					return status.code;
+			}
+			return Character.MAX_VALUE;
+		}
+		
+	};
+	
 }
