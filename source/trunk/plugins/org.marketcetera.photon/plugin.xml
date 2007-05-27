@@ -306,7 +306,17 @@
             label="&amp;Delete"
             menubarPath="additions"
             style="push"/>
-   </viewerContribution> 
+   </viewerContribution>
+   <objectContribution
+         adaptable="false"
+         id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
+         objectClass="org.marketcetera.photon.core.MessageHolder">
+      <action
+            class="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
+            icon="icons/silk/table_go.png"
+            id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
+            label="View &amp;FIX message details"/>
+   </objectContribution> 
    </extension>
    
    <extension

@@ -29,13 +29,14 @@ import org.marketcetera.photon.ui.TableComparatorChooser;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
-import quickfix.InvalidMessage;
 import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
 public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail {
 
+	public static final String ID = "org.marketcetera.photon.views.FIXMessageDetailView";
+	
 	private FormToolkit formToolkit;
 
 	private ScrolledForm form = null;
@@ -70,8 +71,6 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		createLayoutDataForOuterWidgets();
 
 		clipboard = new Clipboard(getSite().getShell().getDisplay());
-
-		addMockMessage();
 	}
 
 	@Override
@@ -249,6 +248,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 				eventList);
 
 		if (comparatorChooser != null) {
+			comparatorChooser.removeSortIndicators();
 			comparatorChooser.dispose();
 			comparatorChooser = null;
 		}
@@ -317,17 +317,5 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 			messageTextStr = fixStr;
 		}
 		return messageTextStr;
-	}
-
-	// This is temporary - this view is in development.
-	private void addMockMessage() {
-		final String messageAsStr = "8=FIX.4.29=26235=852=20070524-13:01:456=011=1180011613001-leprechaun/192.168.11.21814=017=1175740904625-toli-net-01/127.0.0.120=031=032=039=854=155=AMD58=This OMS was setup to work with FIX.4.2 and cannot handle a FIX.4.4 message.60=20070524-13:01:45150=8151=010=104";
-		Message message = null;
-		try {
-			message = new Message(messageAsStr);
-		} catch (InvalidMessage invalid) {
-			// Do nothing
-		}
-		showMessage(message);
 	}
 }
