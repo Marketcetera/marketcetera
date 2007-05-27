@@ -1,19 +1,12 @@
 package org.marketcetera.photon.preferences;
 
-import java.io.File;
-import java.text.Collator;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -21,7 +14,6 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,9 +30,13 @@ import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
-import ca.odell.glazedlists.gui.AdvancedTableFormat;
+import ca.odell.glazedlists.BasicEventList;
 
 public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
+	
+	private FIXMessageDetailPreferenceParser parser;
+	
+	private FIXDataDictionary fixDictionary;
 
 	private char orderType;
 	
@@ -72,26 +68,12 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	
 	private List<String> fromEntries;
 
-	/**
-	 * Creates a new list field editor
-	 */
-	protected FIXMessageFieldColumnChooserEditor(char orderType) {
-		this.orderType = orderType;
-	}
-
-	/**
-	 * Creates a list field editor.
-	 * 
-	 * @param name
-	 *            the name of the preference this field editor works on
-	 * @param labelText
-	 *            the label text of the field editor
-	 * @param parent
-	 *            the parent of the field edMapFieldEditortrol
-	 */
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
-			Composite parent) {
+			Composite parent, char orderType) {
 		init(name, labelText);
+		this.fixDictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
+		this.orderType = orderType;
+		this.parser = new FIXMessageDetailPreferenceParser();
 		createControl(parent);
 	}
 
@@ -99,16 +81,15 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	 * Notifies that the Add button has been pressed.
 	 */
 	private void addPressed() {
-		setPresentsDefaultValue(false);
-		String input = getNewInputObject();
-
+		setPresentsDefaultValue(false);		
+		List<String> input = getNewInputObject(chooseFromTable);
 		if (input != null) {
-			int index = chooseFromTable.getSelectionIndex();
-			if (index >= 0) {
-				toEntries.add(index + 1, input);
-			} else {
-				toEntries.add(0, input);
-			}
+			fromEntries.removeAll(input);
+			toEntries.addAll(input);
+			chooseFromTableViewer.refresh(false);
+			//Updates the list starting from the first added entry
+			chooseToTableViewer.refresh(input.get(0), false);
+			
 			selectionChanged();
 		}
 	}
@@ -133,35 +114,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	/**
-	 * Combines the given list of items into a single string. This method is the
-	 * converse of <code>parseString</code>.
-	 * <p>
-	 * Subclasses must implement this method.
-	 * </p>
-	 * 
-	 * @param items
-	 *            the list of items
-	 * @return the combined string
-	 * @see #parseString
-	 */
-	protected String createList(String[] items) {
-		StringBuffer fields = new StringBuffer("");//$NON-NLS-1$
-
-		for (int i = 0; i < items.length; i++) {
-			fields.append(items[i]);
-			fields.append(File.pathSeparator);
-		}
-		return fields.toString();
-	}
-
-	/**
 	 * Helper method to create a push button.
-	 * 
-	 * @param parent
-	 *            the parent control
-	 * @param key
-	 *            the resource name used to supply the button's label text
-	 * @return Button
 	 */
 	private Button createPushButton(Composite parent, String key) {
 		Button button = new Button(parent, SWT.PUSH);
@@ -206,11 +159,18 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		control.setLayoutData(gd);
 
 		chooseFromTable = createChooseFromTable(parent);
-		chooseToTable = createChooseFromTable(parent);
+
+		buttonBox = getButtonBoxControl(parent);
+		gd = new GridData();
+		gd.verticalAlignment = GridData.BEGINNING;
+		gd.horizontalSpan = 1;
+		buttonBox.setLayoutData(gd);
+
+		chooseToTable = createChooseToTable(parent);
 		
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		gd.verticalAlignment = GridData.FILL;
-		gd.horizontalSpan = numColumns - 1;
+		gd.horizontalSpan = 1;
 		gd.grabExcessHorizontalSpace = true;
 		chooseFromTable.setLayoutData(gd);
 		chooseToTable.setLayoutData(gd);
@@ -218,50 +178,44 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		chooseFromTableViewer = createTableViewer(chooseFromTable);
 		chooseToTableViewer = createTableViewer(chooseToTable);
 		
-		buttonBox = getButtonBoxControl(parent);
-		gd = new GridData();
-		gd.verticalAlignment = GridData.BEGINNING;
-		buttonBox.setLayoutData(gd);
 	}
 
 	protected void doLoad() {
-		List<Integer> savedIntFields = getUserSelectedFields(orderType);
-		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
+		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
 		if (chooseToTable != null) {
-			loadChooseToTable(savedIntFields, fixDictionary);
+			loadChooseToTable(savedIntFields);
 		}		
 		if (chooseFromTable != null) {
-			loadChooseFromTable(savedIntFields, fixDictionary);				
+			loadChooseFromTable(savedIntFields);				
 		}
 	}
 	
 	protected void doLoadDefault() {
-		List<Integer> savedIntFields = getUserSelectedFields(orderType);
-		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
+		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
 		if (chooseToTable != null) {
 			chooseToTable.removeAll();
-			loadChooseToTable(savedIntFields, fixDictionary);
+			loadChooseToTable(savedIntFields);
 		}		
 		if (chooseFromTable != null) {
 			chooseFromTable.removeAll();
-			loadChooseFromTable(savedIntFields, fixDictionary);				
+			loadChooseFromTable(savedIntFields);				
 		}
 	}
 
-	private void loadChooseFromTable(List<Integer> savedIntFields, FIXDataDictionary fixDictionary) {
-		fromEntries = new ArrayList<String>();		
+	private void loadChooseFromTable(List<Integer> savedIntFields) {
+		fromEntries = new BasicEventList<String>(); 	
 		for (int i = 0; i < 2000; i++) {
 			if (!savedIntFields.contains(i) && FIXMessageUtil.isValidField(i)) {
 				String fieldName = fixDictionary.getHumanFieldName(i);
-				fromEntries.add(fieldName + "(" + i + ")");
+				fromEntries.add(fieldName + " (" + i + ")");
 			}
 		}
 		chooseFromTableViewer.setInput(fromEntries);			
 	}
 
-	private void loadChooseToTable(List<Integer> savedIntFields, FIXDataDictionary fixDictionary) {
+	private void loadChooseToTable(List<Integer> savedIntFields) {
 		if (savedIntFields != null && savedIntFields.size() > 0) {
-			toEntries = new ArrayList<String>();			
+			toEntries = new BasicEventList<String>();			
 			for (int intField : savedIntFields) {
 				String fieldName = fixDictionary.getHumanFieldName(intField);
 				toEntries.add(fieldName + " (" + intField + ")");
@@ -270,17 +224,12 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		}
 	}
 
-	
-	/*
-	 * (non-Javadoc) Method declared on FieldEditor.
-	 */
 	@SuppressWarnings("unchecked")
 	protected void doStore() {
-		String[] items = (String[]) chooseFromTableViewer
+		List<Integer> chosenFields = (List<Integer>) chooseToTableViewer
 				.getInput();
-		String s = createList(items);
-		if (s != null) {
-			getPreferenceStore().setValue(getPreferenceName(), s);
+		if (chosenFields != null && chosenFields.size() > 0) {
+			parser.setFieldsToShow(orderType, chosenFields);
 		}
 	}
 
@@ -324,17 +273,10 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		return buttonBox;
 	}
 
-	/**
-	 * Returns this field editor's list control.
-	 * 
-	 * @param parent
-	 *            the parent control
-	 * @return the list control
-	 */
-	public Table createChooseFromTable(Composite parent) {
+	private Table createChooseFromTable(Composite parent) {
 		if (chooseFromTable == null) {
-			chooseFromTable = new Table(parent, SWT.BORDER | SWT.SINGLE
-					| SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
+			chooseFromTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
+					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
 			chooseFromTable.setHeaderVisible(false);
 			chooseFromTable.setFont(parent.getFont());
 			chooseFromTable.addSelectionListener(getSelectionListener());
@@ -343,21 +285,20 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					chooseFromTable = null;
 				}
 			});
-			// 2nd column with task Description
 			TableColumn column;
-			column = new TableColumn(chooseFromTable, SWT.LEFT);
+			column = new TableColumn(chooseFromTable, SWT.CENTER);
 			column.setText("Field");
-			column.setWidth(100);
+			column.setWidth(300);
 		} else {
 			checkParent(chooseFromTable, parent);
 		}
 		return chooseFromTable;
 	}
 	
-	public Table createChooseToTable(Composite parent) {
+	private Table createChooseToTable(Composite parent) {
 		if (chooseToTable == null) {
-			chooseToTable = new Table(parent, SWT.BORDER | SWT.SINGLE
-					| SWT.V_SCROLL | SWT.H_SCROLL | SWT.FULL_SELECTION);
+			chooseToTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
+					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
 			chooseToTable.setHeaderVisible(false);
 			chooseToTable.setFont(parent.getFont());
 			chooseToTable.addSelectionListener(getSelectionListener());
@@ -366,11 +307,10 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					chooseToTable = null;
 				}
 			});
-			// 2nd column with task Description
 			TableColumn column;
-			column = new TableColumn(chooseToTable, SWT.LEFT);
+			column = new TableColumn(chooseToTable, SWT.CENTER);
 			column.setText("Field");
-			column.setWidth(100);
+			column.setWidth(300);
 		} else {
 			checkParent(chooseToTable, parent);
 		}
@@ -383,8 +323,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		tableViewer.setColumnProperties(new String[] { "Field" });
 
 		CellEditor[] editors = new CellEditor[1];
-		editors[0] = null;
-		editors[1] = new TextCellEditor(aTable);
+		editors[0] = new TextCellEditor(aTable);
 		tableViewer.setContentProvider(new EventListContentProvider<String>());
 		tableViewer.setLabelProvider(new FIXMessageFieldChooserLabelProvider());
 		return tableViewer;
@@ -394,71 +333,19 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	// tableViewer.update(element, null);
 	// }
 
-	protected ITableLabelProvider getTableLabelProvider() {
-		return new ITableLabelProvider() {
-
-			public Image getColumnImage(Object element, int columnIndex) {
-				return null;
+	protected List<String> getNewInputObject(Table aTable) {
+		List<String> itemsAsList = new BasicEventList<String>();
+		TableItem[] selectedItems = aTable.getSelection();
+		if (selectedItems != null && selectedItems.length > 0) {
+			for (TableItem item : selectedItems) {
+				itemsAsList.add(item.getText());
 			}
-
-			@SuppressWarnings("unchecked")
-			public String getColumnText(Object element, int columnIndex) {
-				return (element instanceof Map.Entry) ? columnIndex == 1 ? ((Map.Entry<String, String>) element)
-						.getKey()
-						: ((Map.Entry<String, String>) element).getValue()
-						: null;
-			}
-
-			public void addListener(ILabelProviderListener listener) {
-			}
-
-			public void dispose() {
-			}
-
-			public boolean isLabelProperty(Object element, String property) {
-				return false;
-			}
-
-			public void removeListener(ILabelProviderListener listener) {
-			}
-
-		};
+		}
+		return itemsAsList;
 	}
-
-	/**
-	 * Creates and returns a new item for the list.
-	 * <p>
-	 * Subclasses must implement this method.
-	 * </p>
-	 * 
-	 * @return a new item
-	 */
-	protected String getNewInputObject() {
-//        DirectoryDialog dialog = new DirectoryDialog(getShell());
-//        if (dirChooserLabelText != null) {
-//			dialog.setMessage(dirChooserLabelText);
-//		}
-//        if (lastPath != null) {
-//            if (new File(lastPath).exists()) {
-//				dialog.setFilterPath(lastPath);
-//			}
-//        }
-//        String dir = dialog.open();
-//        if (dir != null) {
-//            dir = dir.trim();
-//            if (dir.length() == 0) {
-//				return null;
-//			}
-//            lastPath = dir;
-//        }
-//        return dir;
-		return "";
-    }
-	/*
-	 * (non-Javadoc) Method declared on FieldEditor.
-	 */
+	
 	public int getNumberOfControls() {
-		return 2;
+		return 3;
 	}
 
 	/**
@@ -504,22 +391,18 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		}
 	}
 
-	/**
-	 * Notifies that the list selection has changed.
-	 */
 	private void selectionChanged() {
-
-		int index = chooseFromTable.getSelectionIndex();
-		int size = chooseFromTable.getItemCount();
-
-		removeButton.setEnabled(index >= 0);
-		addAllButton.setEnabled(size > 1 && index > 0);
-		removeAllButton.setEnabled(size > 1 && index >= 0 && index < size - 1);
+		if (chooseFromTable != null) {
+			int fromSize = chooseFromTable.getItemCount();
+			addAllButton.setEnabled(fromSize > 0);
+		}
+		if (chooseToTable != null) {
+			int toSize = chooseToTable.getItemCount();
+			removeButton.setEnabled(toSize > 0);
+			removeAllButton.setEnabled(toSize > 0);
+		}
 	}
 
-	/*
-	 * (non-Javadoc) Method declared on FieldEditor.
-	 */
 	public void setFocus() {
 		if (chooseFromTable != null) {
 			chooseFromTable.setFocus();
@@ -556,6 +439,13 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		swap(true);
 	}
 
+	protected void refreshOrderType(char newType) {
+		orderType = newType;
+		doLoadDefault();
+	}
+
+	
+
 //	/*
 //	 * @see FieldEditor.setEnabled(boolean,Composite).
 //	 */
@@ -567,47 +457,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 //		addAllButton.setEnabled(enabled);
 //		removeAllButton.setEnabled(enabled);
 //	}
+		
 
-	protected class MapTableFormat implements AdvancedTableFormat {
-
-		public static final int FIELD_COLUMN = 0;
-
-		public int getColumnCount() {
-			return 2;
-		}
-
-		public String getColumnName(int column) {
-			switch (column) {
-			case FIELD_COLUMN:
-				return "Field";
-			default:
-				return null;
-			}
-		}
-
-		public Object getColumnValue(Object obj, int column) {
-			switch (column) {
-			case FIELD_COLUMN:
-				return (String) obj;
-			default:
-				return null;
-			}
-		}
-
-		public Class getColumnClass(int arg0) {
-			return String.class;
-		}
-
-		public Comparator getColumnComparator(int arg0) {
-			return Collator.getInstance();
-		}
-
-	}
-	
-	private void saveUserSelectedFields(char orderType, List<Integer> fields) {
-	}
-	
-	private List<Integer> getUserSelectedFields(char orderType) {
-		return new ArrayList<Integer>();
-	}
 }
