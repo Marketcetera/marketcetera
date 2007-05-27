@@ -35,7 +35,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 
 	private Button customFixFieldInputButton;
 
-	private CustomFieldsMapEditor fixMsgFieldsChooser;
+	private FIXMessageFieldColumnChooserEditor fixMsgFieldsChooser;
 
 	public FIXMessageDetailPreferencePage() {
 		super(FLAT);
@@ -52,7 +52,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		createMsgTypesCombo(getFieldEditorParent());
 		createColumnFilterText(getFieldEditorParent());
 
-		fixMsgFieldsChooser = new CustomFieldsMapEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
+		fixMsgFieldsChooser = new FIXMessageFieldColumnChooserEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
 				"FIX Message Detail Preference", getFieldEditorParent());
 		addField(fixMsgFieldsChooser);
 		
