@@ -213,6 +213,19 @@ public class FIXMessageUtil {
 		return required;
 	}
     
+    //cl todo:need to check if this take care of custom fields
+    public static boolean isValidField(int whichField) {
+		boolean valid = false;
+		try {
+			DataDictionary dictionary = FIXDataDictionaryManager
+					.getCurrentFIXDataDictionary().getDictionary();
+			valid = dictionary.isField(whichField);
+		} catch (Exception anyException) {
+			// Ignore
+		}
+		return valid;
+	}
+    
     /**
 	 * Copy only required fields.
 	 */
