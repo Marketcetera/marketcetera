@@ -1,6 +1,9 @@
 package org.marketcetera.photon.views.fixmessagedetail;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -23,20 +26,23 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.preferences.FIXMessageDetailPreferenceParser;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.TableComparatorChooser;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
+import quickfix.CharField;
 import quickfix.Message;
+import quickfix.field.OrdStatus;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
 public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail {
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessageDetailView";
-	
+
 	private FormToolkit formToolkit;
 
 	private ScrolledForm form = null;
@@ -265,18 +271,38 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		messageText.setText(messageTextStr);
 	}
 
+	private Set<Integer> getFieldsToShow(Message fixMessage) {
+		char orderStatus = 0;
+		try {
+			CharField orderStatusField = fixMessage.getField(new OrdStatus());
+			orderStatus = orderStatusField.getValue();
+		} catch (Exception anyException) {
+			PhotonPlugin.getMainConsoleLogger().debug(
+					getClass() + " Failed to get order status from message: " // $NON-NLS-1$
+							+ fixMessage);
+			return null;
+		}
+		FIXMessageDetailPreferenceParser parser = new FIXMessageDetailPreferenceParser();
+		List<Integer> fieldsToShowList = parser.getFieldsToShow(orderStatus);
+		HashSet<Integer> fieldsToShow = new HashSet<Integer>();
+		fieldsToShow.addAll(fieldsToShowList);
+		return fieldsToShow;
+	}
+
 	private ArrayList<FIXMessageDetailTableRow> createRowsFromMessage(
 			Message fixMessage) {
 		if (fixMessage == null) {
 			return null;
 		}
+		Set<Integer> fieldsToShow = getFieldsToShow(fixMessage);
 		ArrayList<FIXMessageDetailTableRow> rows = new ArrayList<FIXMessageDetailTableRow>();
 
 		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
 				.getFIXDataDictionary();
 		final int maxFIXFields = FIXMessageUtil.getMaxFIXFields();
 		for (int fieldInt = 1; fieldInt < maxFIXFields; fieldInt++) {
-			if (fixMessage.isSetField(fieldInt)) {
+			if (fixMessage.isSetField(fieldInt)
+					&& (fieldsToShow == null || fieldsToShow.contains(fieldInt))) {
 				String fieldValueActual = null;
 				try {
 					fieldValueActual = fixMessage.getString(fieldInt);
