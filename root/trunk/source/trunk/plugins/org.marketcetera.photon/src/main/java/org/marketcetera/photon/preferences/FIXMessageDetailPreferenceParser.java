@@ -7,7 +7,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 
 public class FIXMessageDetailPreferenceParser {
-	private static final String KeySuffixDelimiter = "_";
+	private static final String KeySuffixDelimiter = "_OrdStatus_";
 
 	private static final String FieldDelimiter = ",";
 
@@ -62,6 +62,9 @@ public class FIXMessageDetailPreferenceParser {
 	public List<Integer> getFieldsToShow(char orderStatus) {
 		String key = getKey(orderStatus);
 		String value = getPreferenceStore().getString(key);
+		if( value == null) {
+			return null;
+		}
 		List<Integer> fields = fromValue(value);
 		return fields;
 	}

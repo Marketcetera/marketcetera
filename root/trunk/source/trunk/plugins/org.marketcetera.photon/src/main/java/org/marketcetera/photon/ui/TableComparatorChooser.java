@@ -147,7 +147,7 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
         }
     }
     
-    public void updateSortIndicatorIconupdateSortIndicatorIcon(int columnIndex) {
+    public void updateSortIndicatorIcon(int columnIndex) {
 		TableColumn column = table.getColumn(columnIndex);
 		columnListener.updateSortIndicatorIcon(column, columnIndex);
 	}
