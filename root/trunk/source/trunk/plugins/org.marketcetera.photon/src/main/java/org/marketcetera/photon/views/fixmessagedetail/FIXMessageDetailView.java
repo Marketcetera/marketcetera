@@ -1,7 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail;
 
+import java.util.ArrayList;
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -23,9 +23,16 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.IndexedTableViewer;
+import org.marketcetera.photon.ui.TableComparatorChooser;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.InvalidMessage;
 import quickfix.Message;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.SortedList;
 
 public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail {
 
@@ -35,7 +42,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 	private Table messageTable;
 
-	private TableViewer messageViewer;
+	private IndexedTableViewer messageViewer;
 
 	private Composite messageTextComposite;
 
@@ -63,7 +70,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		createLayoutDataForOuterWidgets();
 
 		clipboard = new Clipboard(getSite().getShell().getDisplay());
-		
+
 		addMockMessage();
 	}
 
@@ -103,16 +110,18 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		form.getBody().setLayout(new FormLayout());
 	}
 
+	private FIXMessageDetailLabelProvider labelProvider;
+
 	private void createFieldTable() {
 		messageTable = getFormToolkit().createTable(getDefaultOuterParent(),
 				SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
 		messageTable.setHeaderVisible(true);
-		messageViewer = new TableViewer(messageTable);
+		messageViewer = new IndexedTableViewer(messageTable);
 		getSite().setSelectionProvider(messageViewer);
-		FIXMessageDetailLabelProvider labelProvider = new FIXMessageDetailLabelProvider(
-				messageTable);
+		labelProvider = new FIXMessageDetailLabelProvider(messageTable);
 		messageViewer.setLabelProvider(labelProvider);
-		messageViewer.setContentProvider(new FIXMessageDetailContentProvider());
+		messageViewer
+				.setContentProvider(new EventListContentProvider<FIXMessageDetailTableRow>());
 	}
 
 	private void createMessageDetailComposite() {
@@ -125,11 +134,13 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 		Button copyRawMessageButton = new Button(messageTextComposite, SWT.FLAT);
 		copyRawMessageButton.setText("Copy Message");
-		copyRawMessageButton.setToolTipText("Copy the raw FIX message below to the clipboard.");
+		copyRawMessageButton
+				.setToolTipText("Copy the raw FIX message below to the clipboard.");
 
 		Button copyTableButton = new Button(messageTextComposite, SWT.FLAT);
 		copyTableButton.setText("Copy Table");
-		copyTableButton.setToolTipText("Copy the formatted table above to the clipboard.");
+		copyTableButton
+				.setToolTipText("Copy the formatted table above to the clipboard.");
 
 		messageText = getFormToolkit().createText(messageTextComposite, "",
 				SWT.V_SCROLL | SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
@@ -189,7 +200,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 				}
 			}
 		});
-		
+
 		copyTableButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent e) {
@@ -198,16 +209,16 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 			}
 		});
 	}
-	
+
 	private String getTableAsFormattedString() {
 		TableItem[] tableItems = messageTable.getItems();
-		if(tableItems == null ) {
+		if (tableItems == null) {
 			return "";
 		}
 		StringBuilder tableAsString = new StringBuilder();
-		for(TableItem tableItem : tableItems) {
+		for (TableItem tableItem : tableItems) {
 			Object dataObj = tableItem.getData();
-			if(dataObj instanceof FIXMessageDetailTableRow) {
+			if (dataObj instanceof FIXMessageDetailTableRow) {
 				FIXMessageDetailTableRow row = (FIXMessageDetailTableRow) dataObj;
 				String rowAsStr = row.toFormattedString();
 				tableAsString.append(rowAsStr);
@@ -215,9 +226,9 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		}
 		return tableAsString.toString();
 	}
-	
+
 	private void copyToClipboard(String textToCopy) {
-		if(textToCopy == null) {
+		if (textToCopy == null) {
 			return;
 		}
 		final Transfer[] dataTypes = { TextTransfer.getInstance() };
@@ -225,13 +236,75 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		clipboard.setContents(data, dataTypes);
 	}
 
+	private TableComparatorChooser<FIXMessageDetailTableRow> comparatorChooser;
+
 	public void showMessage(Message fixMessage) {
 		PhotonPlugin.getMainConsoleLogger().debug(
 				getClass().getName() + ": " + fixMessage);
-		messageViewer.setInput(fixMessage);
+
+		ArrayList<FIXMessageDetailTableRow> rows = createRowsFromMessage(fixMessage);
+		BasicEventList<FIXMessageDetailTableRow> eventList = new BasicEventList<FIXMessageDetailTableRow>();
+		eventList.addAll(rows);
+		SortedList<FIXMessageDetailTableRow> sortedList = new SortedList<FIXMessageDetailTableRow>(
+				eventList);
+
+		if (comparatorChooser != null) {
+			comparatorChooser.dispose();
+			comparatorChooser = null;
+		}
+		comparatorChooser = new TableComparatorChooser<FIXMessageDetailTableRow>(
+				messageTable, labelProvider, sortedList, false);
+		final int initialSortIndex = FIXMessageDetailColumnType.Tag.getIndex();
+		comparatorChooser.appendComparator(initialSortIndex, 0, false);
+		comparatorChooser
+				.updateSortIndicatorIconupdateSortIndicatorIcon(initialSortIndex);
+
+		messageViewer.setInput(sortedList);
 
 		String messageTextStr = getFIXMessageDisplayString(fixMessage);
 		messageText.setText(messageTextStr);
+	}
+
+	private ArrayList<FIXMessageDetailTableRow> createRowsFromMessage(
+			Message fixMessage) {
+		if (fixMessage == null) {
+			return null;
+		}
+		ArrayList<FIXMessageDetailTableRow> rows = new ArrayList<FIXMessageDetailTableRow>();
+
+		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
+				.getFIXDataDictionary();
+		final int maxFIXFields = FIXMessageUtil.getMaxFIXFields();
+		for (int fieldInt = 1; fieldInt < maxFIXFields; fieldInt++) {
+			if (fixMessage.isSetField(fieldInt)) {
+				String fieldValueActual = null;
+				try {
+					fieldValueActual = fixMessage.getString(fieldInt);
+				} catch (Exception anyException) {
+					// Do nothing
+				}
+				String fieldValueReadable = null;
+				if (fieldValueActual != null) {
+					try {
+						fieldValueReadable = fixDictionary.getHumanFieldValue(
+								fieldInt, fieldValueActual);
+					} catch (Exception anyException) {
+						// Do nothing
+					}
+				}
+				String fieldName = fixDictionary.getHumanFieldName(fieldInt);
+
+				boolean required = FIXMessageUtil.isRequiredField(fixMessage,
+						fieldInt);
+
+				FIXMessageDetailTableRow newRow = new FIXMessageDetailTableRow(
+						fieldName, fieldInt, fieldValueActual,
+						fieldValueReadable, required);
+				rows.add(newRow);
+			}
+		}
+
+		return rows;
 	}
 
 	private String getFIXMessageDisplayString(Message fixMessage) {

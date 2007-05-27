@@ -5,10 +5,10 @@ package org.marketcetera.photon.views.fixmessagedetail;
 
 import org.eclipse.core.runtime.Platform;
 
-class FIXMessageDetailTableRow {
+class FIXMessageDetailTableRow implements Comparable {
 	private String field;
 
-	private String tag;
+	private int  tag;
 
 	private String value;
 
@@ -16,7 +16,7 @@ class FIXMessageDetailTableRow {
 
 	private boolean required;
 
-	public FIXMessageDetailTableRow(String field, String tag, String value,
+	public FIXMessageDetailTableRow(String field, int tag, String value,
 			String valueName, boolean required) {
 		this.field = field;
 		this.tag = tag;
@@ -31,9 +31,6 @@ class FIXMessageDetailTableRow {
 		if (field == null) {
 			field = emptyString;
 		}
-		if (tag == null) {
-			tag = emptyString;
-		}
 		if (value == null) {
 			value = emptyString;
 		}
@@ -42,13 +39,13 @@ class FIXMessageDetailTableRow {
 		}
 	}
 
-	public String getColumnValue(int whichColumn) {
+	public Object getColumnValue(int whichColumn) {
 		FIXMessageDetailColumnType columnType = FIXMessageDetailColumnType
 				.fromColumnIndex(whichColumn);
 		return getColumnValue(columnType);
 	}
 
-	public String getColumnValue(FIXMessageDetailColumnType whichColumn) {
+	public Object getColumnValue(FIXMessageDetailColumnType whichColumn) {
 		if (whichColumn == FIXMessageDetailColumnType.Field) {
 			return field;
 		} else if (whichColumn == FIXMessageDetailColumnType.Tag) {
@@ -65,12 +62,12 @@ class FIXMessageDetailTableRow {
 
 	private String getFormattedStringRowEnding() {
 		String osStr = Platform.getOS();
-		if(osStr != null && osStr.equals(Platform.OS_WIN32)) {
+		if (osStr != null && osStr.equals(Platform.OS_WIN32)) {
 			return "\r\n";
 		}
 		return "\n";
 	}
-	
+
 	public String toFormattedString() {
 		final String columnDelimiter = "\t";
 		final String rowEnding = getFormattedStringRowEnding();
@@ -86,5 +83,14 @@ class FIXMessageDetailTableRow {
 		builder.append(required);
 		builder.append(rowEnding);
 		return builder.toString();
+	}
+
+	// implementing Comparable is necessary simply to appease glazed lists which
+	// otherwise
+	// currently blows up when a new message is added to the list with a natural
+	// sort order
+	// (i.e., no comparator)
+	public int compareTo(Object o) {
+		return 0;
 	}
 }

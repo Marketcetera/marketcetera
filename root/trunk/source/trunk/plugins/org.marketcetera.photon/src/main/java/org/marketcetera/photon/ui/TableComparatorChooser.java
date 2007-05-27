@@ -117,7 +117,7 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
             updateSortIndicatorIcon(column, columnIndex);
         }
         
-        private void updateSortIndicatorIcon(TableColumn column, int columnIndex) {
+        void updateSortIndicatorIcon(TableColumn column, int columnIndex) {
         	List<SortingColumn> sortingColumns = sortingState.getColumns();
 			SortingColumn sortingColumn = sortingColumns.get(columnIndex);
 			if (sortingColumn.getComparatorIndex() >= 0) {
@@ -145,6 +145,11 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
         public void widgetDefaultSelected(SelectionEvent e) {
             // Do Nothing
         }
+    }
+    
+    public void updateSortIndicatorIconupdateSortIndicatorIcon(int columnIndex) {
+    	TableColumn column = table.getColumn(columnIndex);
+    	columnListener.updateSortIndicatorIcon(column, columnIndex);
     }
 
     /**

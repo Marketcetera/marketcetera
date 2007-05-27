@@ -11,7 +11,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.photon.EclipseUtils;
 
-class FIXMessageDetailLabelProvider implements ITableLabelProvider {
+import ca.odell.glazedlists.gui.TableFormat;
+
+class FIXMessageDetailLabelProvider implements TableFormat<FIXMessageDetailTableRow>, ITableLabelProvider {
 	private Table underlyingTable;
 
 	public FIXMessageDetailLabelProvider(Table underlyingTable) {
@@ -60,9 +62,13 @@ class FIXMessageDetailLabelProvider implements ITableLabelProvider {
 			return null;
 		}
 		FIXMessageDetailTableRow row = (FIXMessageDetailTableRow) element;
-		return row.getColumnValue(columnIndex);
+		Object columnValue = row.getColumnValue(columnIndex);
+		if(columnValue == null) {
+			return null;
+		}
+		return columnValue.toString();
 	}
-
+	
 	public void addListener(ILabelProviderListener listener) {
 	}
 
@@ -74,5 +80,18 @@ class FIXMessageDetailLabelProvider implements ITableLabelProvider {
 	}
 
 	public void removeListener(ILabelProviderListener listener) {
+	}
+
+	public int getColumnCount() {
+		return underlyingTable.getColumnCount();
+	}
+
+	public String getColumnName(int index) {
+		TableColumn column = underlyingTable.getColumn(index);
+		return column.getText();
+	}
+
+	public Object getColumnValue(FIXMessageDetailTableRow row, int columnIndex) {
+		return row.getColumnValue(columnIndex);
 	}
 }
