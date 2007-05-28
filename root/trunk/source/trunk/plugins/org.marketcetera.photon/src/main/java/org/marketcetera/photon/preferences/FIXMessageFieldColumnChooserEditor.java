@@ -567,6 +567,10 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
     private void swap(boolean up) {
         setPresentsDefaultValue(false);
         int filteredIndex = chosenFieldsTable.getSelectionIndex();
+        if ((up && filteredIndex <= 0)
+				|| (!up && filteredIndex >= chosenFieldsTable.getItemCount() - 1)) {
+			return;   
+		}
         int filteredTargetIndex = up ? filteredIndex - 1 : filteredIndex + 1;
         if(filteredTargetIndex < 0) {
             filteredTargetIndex = 0;
@@ -597,6 +601,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
             
             chosenFieldsTable.setSelection(filteredTargetIndex);
 			chosenFieldsTableViewer.refresh(false);	
+            chosenFieldsTable.setSelection(filteredTargetIndex);
 
         }
         selectionChanged();
