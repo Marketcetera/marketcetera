@@ -134,10 +134,10 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		{
 			clearFilterButton = new Button(parent, SWT.PUSH);
 			FormData data = new FormData();
-			data.left = new FormAttachment(columnFilterText);
+			data.left = new FormAttachment(columnFilterText, 5);
 			data.top = new FormAttachment(availableColumnsLabel, 8); 
 			clearFilterButton.setLayoutData(data);
-			clearFilterButton.setText("x");
+			clearFilterButton.setText("Clear");
 			clearFilterButton.pack();
 		}
 		addFilterListeners();
@@ -204,14 +204,21 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 				Widget widget = event.widget;
 				if (widget == msgTypeCombo) {
 					fixMsgFieldsChooser.refreshOrderType(OrderStatus.getCode(msgTypeCombo.getText()));
-				} 
-//					else if (widget == removeButton) {
-//					removePressed();
-//				} else if (widget == addAllButton) {
-//					addAllPressed();
+				} else if (widget == customFixFieldInputButton) {
+					//createCustomFixField();
+				}
 			}
 		};
 	}
+		
+	private void createCustomFixField() {
+		String idAsText = customFixFieldIDText.getText();
+		if (idAsText != null && idAsText.length() > 0) {
+			
+		}
+		
+	}
+		
 
 	@Override
 	public boolean performOk() {

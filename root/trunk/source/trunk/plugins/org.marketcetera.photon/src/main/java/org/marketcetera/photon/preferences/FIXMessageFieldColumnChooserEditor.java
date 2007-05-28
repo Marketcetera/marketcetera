@@ -79,6 +79,14 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	
 	private static final int TABLE_COLUMN_WIDTH = 205;
 	
+	private static final int TABLE_HEIGHT = 150;
+	
+	//TODO
+	//Look into how to make Add All and Remove All quicker
+	//Multi entries on Up/Down button
+	//Bugs in selectionChanged() - check button states for all buttons, working well with filter
+	//Speed up initial loading of the preference page
+
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
 		init(name, labelText);
@@ -161,13 +169,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 		chosenFieldsTable = createChosenFieldsTable(parent);
 		
-		gd = new GridData(GridData.FILL_HORIZONTAL);
-		gd.verticalAlignment = GridData.FILL;
-		gd.horizontalSpan = 1;
-		gd.grabExcessHorizontalSpace = true;
-		availableFieldsTable.setLayoutData(gd);
-		chosenFieldsTable.setLayoutData(gd);
-
 		availableFieldsTableViewer = createTableViewer(availableFieldsTable);
 		chosenFieldsTableViewer = createTableViewer(chosenFieldsTable);
 		
@@ -352,7 +353,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 				int fieldID = fieldEntryToFieldIDMap.get(chosenField);
 				chosenFieldIDs.add(fieldID);
 			}
-			if (chosenFieldIDs != null && chosenFieldIDs.size() > 0) {
+			if (chosenFieldIDs != null) {
 				parser.setFieldsToShow(orderStatusKey, chosenFieldIDs);
 			}
 		}
@@ -439,6 +440,13 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					availableFieldsTable = null;
 				}
 			});
+			
+			GridData gd = new GridData();
+			gd.verticalAlignment = GridData.BEGINNING;
+			gd.horizontalSpan = 1;
+			gd.heightHint = TABLE_HEIGHT;
+			availableFieldsTable.setLayoutData(gd);
+			
 			TableColumn column;
 			column = new TableColumn(availableFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
 			column.setWidth(TABLE_COLUMN_WIDTH);
@@ -460,6 +468,13 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					chosenFieldsTable = null;
 				}
 			});
+			
+			GridData gd = new GridData();
+			gd.verticalAlignment = GridData.BEGINNING;
+			gd.horizontalSpan = 1;
+			gd.heightHint = TABLE_HEIGHT;
+			chosenFieldsTable.setLayoutData(gd);
+
 			TableColumn column;
 			column = new TableColumn(chosenFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
 			column.setWidth(TABLE_COLUMN_WIDTH);
@@ -569,7 +584,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
         if (filteredIndex >= 0) {
             TableItem[] selection = chosenFieldsTable.getSelection();
 
-            //cl todo:implement multi-select
             if (selection.length != 1) {
     			PhotonPlugin.getMainConsoleLogger().warn("Multi-select has not been implemented for Up/Down button yet.");
             	return;
