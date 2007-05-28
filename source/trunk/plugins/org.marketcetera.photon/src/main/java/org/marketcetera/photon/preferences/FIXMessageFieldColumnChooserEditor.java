@@ -48,10 +48,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	private IndexedTableViewer chosenFieldsTableViewer;
 
-	/**
-	 * The button box containing the Add, Add All, Remove, and Remove All
-	 * buttons; <code>null</code> if none (before creation or after disposal).
-	 */
 	private Composite addRemoveButtonBox;
 
 	private Button addButton;
@@ -69,33 +65,32 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	private Button downButton;
 
 	private SelectionListener selectionListener;
-
-	private List<String> toEntries;
 	
-	private List<String> fromEntries;
+	private BasicEventList<FIXMessageFieldColumnChooserEditorPage> chooserPagesByOrderStatus;	
 
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
 		init(name, labelText);
 		this.fixDictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
 		this.orderType = orderType;
-		this.parser = new FIXMessageDetailPreferenceParser();
+		this.parser = new FIXMessageDetailPreferenceParser();		
+		this.chooserPagesByOrderStatus = new BasicEventList<FIXMessageFieldColumnChooserEditorPage>();
+//		FIXMessageFieldColumnChooserEditorPage defaultPage = new FIXMessageFieldColumnChooserEditorPage(orderType);
+//		chooserPagesByOrderStatus.add(defaultPage);
 		createControl(parent);
 	}
 
-	/**
-	 * Notifies that the Add button has been pressed.
-	 */
 	private void addPressed() {
 		setPresentsDefaultValue(false);		
-		List<String> input = getNewInputObject(availableFieldsTable);
+		BasicEventList<String> input = getNewInputObject(availableFieldsTable);
 		if (input != null) {
-			fromEntries.removeAll(input);
-			toEntries.addAll(input);
+			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			currPage.getAvailableFieldsList().removeAll(input);
+			currPage.getChosenFieldsList().addAll(input);
+			availableFieldsTableViewer.setInput(currPage.getAvailableFieldsList());
+			chosenFieldsTableViewer.setInput(currPage.getChosenFieldsList());
 			availableFieldsTableViewer.refresh(false);
-			//Updates the list starting from the first added entry
-			chosenFieldsTableViewer.refresh(input.get(0), false);
-			
+			chosenFieldsTableViewer.refresh(false);	
 			selectionChanged();
 		}
 	}
@@ -118,9 +113,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		downButton = createPushButton(box, "Down");//$NON-NLS-1$
 	}
 	
-	/**
-	 * Helper method to create a push button.
-	 */
 	private Button createPushButton(Composite parent, String key) {
 		Button button = new Button(parent, SWT.PUSH);
 		button.setText(JFaceResources.getString(key));
@@ -188,13 +180,14 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	protected void doLoad() {
-		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
-		if (chosenFieldsTable != null) {
-			loadChosenFieldsTable(savedIntFields);
-		}		
-		if (availableFieldsTable != null) {
-			loadAvailableFieldsTable(savedIntFields);				
-		}
+		doLoadDefault();
+//		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
+//		if (chosenFieldsTable != null) {
+//			loadChosenFieldsTable(savedIntFields);
+//		}		
+//		if (availableFieldsTable != null) {
+//			loadAvailableFieldsTable(savedIntFields);				
+//		}
 	}
 	
 	protected void doLoadDefault() {
@@ -208,27 +201,81 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			loadAvailableFieldsTable(savedIntFields);				
 		}
 	}
+	
+	private int getLoadedIndex() {
+		return chooserPagesByOrderStatus.indexOf(orderType);
+	}
+
+	private FIXMessageFieldColumnChooserEditorPage loadPageFromMemory(int index) {
+		return chooserPagesByOrderStatus.get(index);
+	}
+	
+	private FIXMessageFieldColumnChooserEditorPage loadPageFromPreference() {
+		FIXMessageFieldColumnChooserEditorPage currPage = new FIXMessageFieldColumnChooserEditorPage(orderType);
+		chooserPagesByOrderStatus.add(currPage);
+		return currPage;
+	}
+
+	private FIXMessageFieldColumnChooserEditorPage getCurrentPage() {
+		FIXMessageFieldColumnChooserEditorPage currPage;
+		int index = getLoadedIndex();
+		if (index > -1) {	
+			currPage = loadPageFromMemory(index);
+		}
+		else {
+			currPage = loadPageFromPreference();
+		}
+		return currPage;
+	}
 
 	private void loadAvailableFieldsTable(List<Integer> savedIntFields) {
-		fromEntries = new BasicEventList<String>(); 	
+		BasicEventList<String> currPageAvailableFieldsEntries = new BasicEventList<String>();
+		FIXMessageFieldColumnChooserEditorPage currPage;
+		int loadedIndex = getLoadedIndex();
+		if ( loadedIndex > -1) {
+			currPage = loadPageFromMemory(loadedIndex);
+			currPageAvailableFieldsEntries = currPage.getAvailableFieldsList();
+		} else {
+			currPage = loadPageFromPreference();  //hasn't been loaded into memory yet
+//			for (int i = 0; i < FIXMessageUtil.getMaxFIXFields(); i++) {
+//				if (!savedIntFields.contains(i) && FIXMessageUtil.isValidField(i)) {
+//					String fieldName = fixDictionary.getHumanFieldName(i);
+//					currPageAvailableFieldsEntries.add(fieldName + " (" + i + ")");
+//				}
+//			}
+		}
 		for (int i = 0; i < FIXMessageUtil.getMaxFIXFields(); i++) {
 			if (!savedIntFields.contains(i) && FIXMessageUtil.isValidField(i)) {
 				String fieldName = fixDictionary.getHumanFieldName(i);
-				fromEntries.add(fieldName + " (" + i + ")");
+				currPageAvailableFieldsEntries.add(fieldName + " (" + i + ")");
 			}
 		}
-		availableFieldsTableViewer.setInput(fromEntries);			
+		currPage.setAvailableFieldsList(currPageAvailableFieldsEntries);
+		availableFieldsTableViewer.setInput(currPageAvailableFieldsEntries);			
 	}
 
 	private void loadChosenFieldsTable(List<Integer> savedIntFields) {
-		if (savedIntFields != null && savedIntFields.size() > 0) {
-			toEntries = new BasicEventList<String>();			
-			for (int intField : savedIntFields) {
-				String fieldName = fixDictionary.getHumanFieldName(intField);
-				toEntries.add(fieldName + " (" + intField + ")");
-			}
-			chosenFieldsTableViewer.setInput(toEntries);
+		BasicEventList<String> currPageChosenFieldsEntries = new BasicEventList<String>();
+		FIXMessageFieldColumnChooserEditorPage currPage;
+		int loadedIndex = getLoadedIndex();
+		if ( loadedIndex > -1) {
+			currPage = loadPageFromMemory(loadedIndex);
+			currPageChosenFieldsEntries = currPage.getChosenFieldsList();
+		} else {
+			currPage = loadPageFromPreference();  //hasn't been loaded into memory yet
+			currPageChosenFieldsEntries = getChosenFields(savedIntFields);
+			currPage.setChosenFieldsList(currPageChosenFieldsEntries);
 		}
+		chosenFieldsTableViewer.setInput(currPageChosenFieldsEntries);
+	}
+
+	private BasicEventList<String> getChosenFields(List<Integer> savedIntFields) {
+		BasicEventList<String> fieldsList = new BasicEventList<String>();			
+		for (int intField : savedIntFields) {
+			String fieldName = fixDictionary.getHumanFieldName(intField);
+			fieldsList.add(fieldName + " (" + intField + ")");
+		}
+		return fieldsList;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -240,9 +287,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		}
 	}
 
-	/**
-	 * Notifies that the Down button has been pressed.
-	 */
 	private void removeAllPressed() {
 		swap(false);
 	}
@@ -271,8 +315,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		} else {
 			checkParent(addRemoveButtonBox, parent);
 		}
-
-//		selectionChanged();
 		return addRemoveButtonBox;
 	}
 
@@ -294,7 +336,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		} else {
 			checkParent(upDownButtonBox, parent);
 		}
-//		selectionChanged();
 		return upDownButtonBox;
 	}
 
@@ -311,9 +352,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 				}
 			});
 			TableColumn column;
-			column = new TableColumn(availableFieldsTable, SWT.CENTER);
-			column.setText("Field");
-			column.setWidth(200);
+			column = new TableColumn(availableFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
+			column.setWidth(205);
 		} else {
 			checkParent(availableFieldsTable, parent);
 		}
@@ -333,9 +373,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 				}
 			});
 			TableColumn column;
-			column = new TableColumn(chosenFieldsTable, SWT.CENTER);
-			column.setText("Field");
-			column.setWidth(200);
+			column = new TableColumn(chosenFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
+			column.setWidth(205);
 		} else {
 			checkParent(chosenFieldsTable, parent);
 		}
@@ -358,8 +397,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	// tableViewer.update(element, null);
 	// }
 
-	protected List<String> getNewInputObject(Table aTable) {
-		List<String> itemsAsList = new BasicEventList<String>();
+	protected BasicEventList<String> getNewInputObject(Table aTable) {
+		BasicEventList<String> itemsAsList = new BasicEventList<String>();
 		TableItem[] selectedItems = aTable.getSelection();
 		if (selectedItems != null && selectedItems.length > 0) {
 			for (TableItem item : selectedItems) {
@@ -386,12 +425,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	/**
 	 * Returns this field editor's shell.
-	 * <p>
 	 * This method is internal to the framework; subclassers should not call
 	 * this method.
-	 * </p>
-	 * 
-	 * @return the shell
 	 */
 	protected Shell getShell() {
 		if (addButton == null) {
@@ -400,16 +435,13 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		return addButton.getShell();
 	}
 
-	/**
-	 * Notifies that the Remove button has been pressed.
-	 */
 	private void removePressed() {
 		setPresentsDefaultValue(false);
 		int index = availableFieldsTable.getSelectionIndex();
 
 		if (index >= 0) {
 			// table.remove(index);
-			toEntries.remove(index);
+			getCurrentPage().getChosenFieldsList().remove(index);
 			selectionChanged();
 		}
 	}
@@ -459,16 +491,14 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			TableItem[] selection = chosenFieldsTable.getSelection();
 			String toReplace = (String) selection[0].getData();
 			Assert.isTrue(selection.length == 1);
-			toEntries.remove(index);
-			toEntries.add(target, toReplace);
+			BasicEventList<String> chosenFieldsList = getCurrentPage().getChosenFieldsList();
+			chosenFieldsList.remove(index);
+			chosenFieldsList.add(target, toReplace);
 			chosenFieldsTable.setSelection(target);
 		}
 		selectionChanged();
 	}
 
-	/**
-	 * Notifies that the Up button has been pressed.
-	 */
 	private void addAllPressed() {
 		swap(true);
 	}
@@ -477,20 +507,5 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		orderType = newType;
 		doLoadDefault();
 	}
-
-	
-
-//	/*
-//	 * @see FieldEditor.setEnabled(boolean,Composite).
-//	 */
-//	public void setEnabled(boolean enabled, Composite parent) {
-//		super.setEnabled(enabled, parent);
-//		getTableControl(parent).setEnabled(enabled);
-//		addButton.setEnabled(enabled);
-//		removeButton.setEnabled(enabled);
-//		addAllButton.setEnabled(enabled);
-//		removeAllButton.setEnabled(enabled);
-//	}
-		
 
 }
