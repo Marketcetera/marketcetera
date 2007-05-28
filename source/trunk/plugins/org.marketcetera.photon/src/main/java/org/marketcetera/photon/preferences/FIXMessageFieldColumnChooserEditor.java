@@ -9,7 +9,6 @@ import java.util.Set;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
@@ -152,7 +151,11 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					removeAllPressed();
 				} else if (widget == availableFieldsTable) {
 					selectionChanged();
-				}
+				} else if (widget == upButton) {
+					upPressed();
+				} else if (widget == downButton) {
+					downPressed();
+				}				
 			}
 		};
 	}
@@ -246,12 +249,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					currPageAvailableFieldsEntries.add(fieldEntry);
 				}
 			}
-//			for (int i = 0; i < FIXMessageUtil.getMaxFIXFields(); i++) {
-//				if (!savedIntFields.contains(i) && FIXMessageUtil.isValidField(i)) {
-//					String fieldName = fixDictionary.getHumanFieldName(i);
-//					currPageAvailableFieldsEntries.add(fieldName + " (" + i + ")");
-//				}
-//			}
 		}
 		currPage.setAvailableFieldsList(currPageAvailableFieldsEntries);
 	}
@@ -482,10 +479,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		return tableViewer;
 	}
 
-	// public void elementChanged(MMapEntry<String, String> element) {
-	// tableViewer.update(element, null);
-	// }
-
 	protected BasicEventList<String> getNewInputObject(Table aTable) {
 		BasicEventList<String> itemsAsList = new BasicEventList<String>();
 		TableItem[] selectedItems = aTable.getSelection();
@@ -571,25 +564,54 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	 *            <code>true</code> if the item should move up, and
 	 *            <code>false</code> if it should move down
 	 */
-	private void swap(boolean up) {
-		setPresentsDefaultValue(false);
-		int index = chosenFieldsTable.getSelectionIndex();
-		int target = up ? index - 1 : index + 1;
+    private void swap(boolean up) {
+        setPresentsDefaultValue(false);
+        int filteredIndex = chosenFieldsTable.getSelectionIndex();
+        int filteredTargetIndex = up ? filteredIndex - 1 : filteredIndex + 1;
+        if(filteredTargetIndex < 0) {
+            filteredTargetIndex = 0;
+        }
+        if (filteredIndex >= 0) {
+            TableItem[] selection = chosenFieldsTable.getSelection();
 
-		if (index >= 0) {
-			TableItem[] selection = chosenFieldsTable.getSelection();
-			String toReplace = (String) selection[0].getData();
-			Assert.isTrue(selection.length == 1);
-			BasicEventList<String> chosenFieldsList = getCurrentPage().getChosenFieldsList();
-			chosenFieldsList.remove(index);
-			chosenFieldsList.add(target, toReplace);
-			chosenFieldsTable.setSelection(target);
-		}
-		selectionChanged();
-	}
+            //cl todo:implement multi-select
+            if (selection.length != 1) {
+    			PhotonPlugin.getMainConsoleLogger().warn("Multi-select has not been implemented for Up/Down button yet.");
+            	return;
+            }
+            String toReplace = (String) selection[0].getData();            	
+            
+            filteredChosenEntries.remove(filteredIndex);
+            filteredChosenEntries.add(filteredTargetIndex, toReplace);
+            
+			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			List<String> chosenFieldsList = currPage.getChosenFieldsList();
+
+            int actualIndex = chosenFieldsList.indexOf(toReplace);
+            int actualTargetIndex = up ? actualIndex - 1 : actualIndex + 1;
+            if(actualTargetIndex < 0) {
+                actualTargetIndex = 0;
+            }
+            chosenFieldsList.remove(actualIndex );
+            chosenFieldsList.add(actualTargetIndex, toReplace);
+            
+            chosenFieldsTable.setSelection(filteredTargetIndex);
+			chosenFieldsTableViewer.refresh(false);	
+
+        }
+        selectionChanged();
+    }
 
 	private void addAllPressed() {
 		swap(true);
+	}
+	
+	private void upPressed() {
+		swap(true);
+	}
+	
+	private void downPressed() {
+		swap(false);
 	}
 
 	protected void refreshOrderType(char newType) {
