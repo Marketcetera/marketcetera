@@ -77,7 +77,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	
 	private Map<String, Integer> fieldEntryToFieldIDMap;
 	
-
+	private static final int TABLE_COLUMN_WIDTH = 205;
+	
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
 		init(name, labelText);
@@ -89,22 +90,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		createControl(parent);
 	}
 
-	private void addPressed() {
-		setPresentsDefaultValue(false);		
-		BasicEventList<String> input = getNewInputObject(availableFieldsTable);
-		if (input != null) {
-			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
-			currPage.getAvailableFieldsList().removeAll(input);
-			currPage.getChosenFieldsList().addAll(input);
-
-			filteredAvailableEntries.removeAll(input);
-			filteredChosenEntries.addAll(input);
-			availableFieldsTableViewer.refresh(false);
-			chosenFieldsTableViewer.refresh(false);	
-			selectionChanged();
-		}
-	}
-
 	protected void adjustForNumColumns(int numColumns) {
 		Control control = getLabelControl();
 		((GridData) control.getLayoutData()).horizontalSpan = numColumns;
@@ -112,10 +97,10 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	private void createAddRemoveButtons(Composite box) {
-		addButton = createPushButton(box, "Add");//$NON-NLS-1$
-		removeButton = createPushButton(box, "Remove");//$NON-NLS-1$
-		addAllButton = createPushButton(box, "Add All");//$NON-NLS-1$
-		removeAllButton = createPushButton(box, "Remove All");//$NON-NLS-1$
+		addButton = createPushButton(box, "Add >");//$NON-NLS-1$
+		removeButton = createPushButton(box, "< Remove");//$NON-NLS-1$
+		addAllButton = createPushButton(box, "Add All >>");//$NON-NLS-1$
+		removeAllButton = createPushButton(box, "<< Remove All");//$NON-NLS-1$
 	}
 
 	private void createUpDownButtons(Composite box) {
@@ -149,7 +134,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 					addAllPressed();
 				} else if (widget == removeAllButton) {
 					removeAllPressed();
-				} else if (widget == availableFieldsTable) {
+				} else if (widget == availableFieldsTable || widget == chosenFieldsTable) {
 					selectionChanged();
 				} else if (widget == upButton) {
 					upPressed();
@@ -373,8 +358,25 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		}
 	}
 
+	private void removePressed() {
+		BasicEventList<String> input = getNewInputObject(chosenFieldsTable);
+		removePressedWithInput(input);		
+	}
+
 	private void removeAllPressed() {
-		swap(false);
+		BasicEventList<String> input = getAllItemsAsInputList(chosenFieldsTable);
+		removePressedWithInput(input);
+	}
+
+	private BasicEventList<String> getAllItemsAsInputList(Table aTable) {
+		BasicEventList<String> input = new BasicEventList<String>();
+		TableItem[] selectedItems = aTable.getItems(); 
+		if (selectedItems != null && selectedItems.length > 0) {
+			for (TableItem item : selectedItems) {
+				input.add(item.getText());
+			}
+		}
+		return input;
 	}
 
 	/**
@@ -428,9 +430,9 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	private Table createAvailableFieldsTable(Composite parent) {
 		if (availableFieldsTable == null) {
 			availableFieldsTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
-					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
+					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI );
 			availableFieldsTable.setHeaderVisible(false);
-			availableFieldsTable.setFont(parent.getFont());
+			availableFieldsTable.setFont(parent.getFont());			
 			availableFieldsTable.addSelectionListener(getSelectionListener());
 			availableFieldsTable.addDisposeListener(new DisposeListener() {
 				public void widgetDisposed(DisposeEvent event) {
@@ -439,7 +441,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			});
 			TableColumn column;
 			column = new TableColumn(availableFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
-			column.setWidth(205);
+			column.setWidth(TABLE_COLUMN_WIDTH);
 		} else {
 			checkParent(availableFieldsTable, parent);
 		}
@@ -460,7 +462,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			});
 			TableColumn column;
 			column = new TableColumn(chosenFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
-			column.setWidth(205);
+			column.setWidth(TABLE_COLUMN_WIDTH);
 		} else {
 			checkParent(chosenFieldsTable, parent);
 		}
@@ -515,17 +517,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			return null;
 		}
 		return addButton.getShell();
-	}
-
-	private void removePressed() {
-		setPresentsDefaultValue(false);
-		int index = availableFieldsTable.getSelectionIndex();
-
-		if (index >= 0) {
-			// table.remove(index);
-			getCurrentPage().getChosenFieldsList().remove(index);
-			selectionChanged();
-		}
 	}
 
 	private void selectionChanged() {
@@ -607,8 +598,45 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
         selectionChanged();
     }
 
-	private void addAllPressed() {
-		swap(true);
+    private void removePressedWithInput(BasicEventList<String> input) {
+		if (input != null && input.size() > 0) {
+			setPresentsDefaultValue(false);		
+			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			currPage.getChosenFieldsList().removeAll(input);
+			currPage.getAvailableFieldsList().addAll(input);
+
+			filteredAvailableEntries.addAll(input);
+			filteredChosenEntries.removeAll(input);
+			availableFieldsTableViewer.refresh(false);
+			chosenFieldsTableViewer.refresh(false);	
+			selectionChanged();
+		}
+	}
+    
+    private void addPressedWithInput(BasicEventList<String> input) {
+		if (input != null && input.size() > 0) {
+			setPresentsDefaultValue(false);		
+			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			currPage.getAvailableFieldsList().removeAll(input);
+			currPage.getChosenFieldsList().addAll(input);
+
+			filteredAvailableEntries.removeAll(input);
+			filteredChosenEntries.addAll(input);
+			availableFieldsTableViewer.refresh(false);
+			chosenFieldsTableViewer.refresh(false);	
+			selectionChanged();
+		}
+	}
+
+    private void addPressed() {
+		BasicEventList<String> input = getNewInputObject(availableFieldsTable);
+		addPressedWithInput(input);
+	}
+    
+	@SuppressWarnings("unchecked")
+	private void addAllPressed() {		
+		BasicEventList<String> input = getAllItemsAsInputList(availableFieldsTable);
+		addPressedWithInput(input);
 	}
 	
 	private void upPressed() {
