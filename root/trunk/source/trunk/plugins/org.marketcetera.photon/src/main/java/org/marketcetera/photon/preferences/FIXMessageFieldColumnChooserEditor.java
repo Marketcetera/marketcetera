@@ -34,6 +34,8 @@ import ca.odell.glazedlists.BasicEventList;
 
 public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	
+	private static final int INVALID_PAGE_INDEX = -1;
+	
 	private FIXMessageDetailPreferenceParser parser;
 	
 	private FIXDataDictionary fixDictionary;
@@ -66,7 +68,12 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	private SelectionListener selectionListener;
 	
-	private BasicEventList<FIXMessageFieldColumnChooserEditorPage> chooserPagesByOrderStatus;	
+	private BasicEventList<FIXMessageFieldColumnChooserEditorPage> chooserPagesByOrderStatus;
+	
+	private BasicEventList<String> filteredAvailableEntries;
+	
+	private BasicEventList<String> filteredChosenEntries;
+	
 
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
@@ -87,8 +94,9 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
 			currPage.getAvailableFieldsList().removeAll(input);
 			currPage.getChosenFieldsList().addAll(input);
-			availableFieldsTableViewer.setInput(currPage.getAvailableFieldsList());
-			chosenFieldsTableViewer.setInput(currPage.getChosenFieldsList());
+
+			filteredAvailableEntries.removeAll(input);
+			filteredChosenEntries.addAll(input);
 			availableFieldsTableViewer.refresh(false);
 			chosenFieldsTableViewer.refresh(false);	
 			selectionChanged();
@@ -193,17 +201,20 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	protected void doLoadDefault() {
 		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
 		if (chosenFieldsTable != null) {
-			chosenFieldsTable.removeAll();
 			loadChosenFieldsTable(savedIntFields);
 		}		
 		if (availableFieldsTable != null) {
-			availableFieldsTable.removeAll();
 			loadAvailableFieldsTable(savedIntFields);				
 		}
+		resetFilter();
 	}
 	
 	private int getLoadedIndex() {
-		return chooserPagesByOrderStatus.indexOf(orderType);
+		int index = chooserPagesByOrderStatus.indexOf(orderType);
+		if(index < 0) {
+			return INVALID_PAGE_INDEX;
+		}
+		return index;
 	}
 
 	private FIXMessageFieldColumnChooserEditorPage loadPageFromMemory(int index) {
@@ -229,6 +240,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	private void loadAvailableFieldsTable(List<Integer> savedIntFields) {
+		availableFieldsTable.removeAll();
 		BasicEventList<String> currPageAvailableFieldsEntries = new BasicEventList<String>();
 		FIXMessageFieldColumnChooserEditorPage currPage;
 		int loadedIndex = getLoadedIndex();
@@ -251,14 +263,14 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			}
 		}
 		currPage.setAvailableFieldsList(currPageAvailableFieldsEntries);
-		availableFieldsTableViewer.setInput(currPageAvailableFieldsEntries);			
 	}
 
 	private void loadChosenFieldsTable(List<Integer> savedIntFields) {
+		chosenFieldsTable.removeAll();
 		BasicEventList<String> currPageChosenFieldsEntries = new BasicEventList<String>();
 		FIXMessageFieldColumnChooserEditorPage currPage;
 		int loadedIndex = getLoadedIndex();
-		if ( loadedIndex > -1) {
+		if ( loadedIndex != INVALID_PAGE_INDEX) {
 			currPage = loadPageFromMemory(loadedIndex);
 			currPageChosenFieldsEntries = currPage.getChosenFieldsList();
 		} else {
@@ -266,9 +278,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			currPageChosenFieldsEntries = getChosenFields(savedIntFields);
 			currPage.setChosenFieldsList(currPageChosenFieldsEntries);
 		}
-		chosenFieldsTableViewer.setInput(currPageChosenFieldsEntries);
 	}
-
+	
 	private BasicEventList<String> getChosenFields(List<Integer> savedIntFields) {
 		BasicEventList<String> fieldsList = new BasicEventList<String>();			
 		for (int intField : savedIntFields) {
@@ -276,6 +287,76 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			fieldsList.add(fieldName + " (" + intField + ")");
 		}
 		return fieldsList;
+	}
+	
+	private FIXMessageFieldColumnChooserEditorPage getCurrentChooserEditorPage() {
+		int loadedIndex = getLoadedIndex();
+		if(loadedIndex == INVALID_PAGE_INDEX) {
+			return null;
+		}
+		FIXMessageFieldColumnChooserEditorPage currentPage = loadPageFromMemory(loadedIndex);
+		return currentPage;
+	}
+	
+	public void resetFilter() {
+		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentChooserEditorPage();
+		resetAvailableFilter(currentPage);
+		resetChosenFilter(currentPage);
+	}
+	
+	private void resetAvailableFilter(FIXMessageFieldColumnChooserEditorPage currentPage) {
+		filteredAvailableEntries = new BasicEventList<String>();
+		if(currentPage != null) {
+			filteredAvailableEntries.addAll(currentPage.getAvailableFieldsList());
+		}
+		availableFieldsTableViewer.setInput(filteredAvailableEntries);
+	}
+	
+	private void resetChosenFilter(FIXMessageFieldColumnChooserEditorPage currentPage) {
+		filteredChosenEntries = new BasicEventList<String>();
+		if(currentPage != null) {
+			filteredChosenEntries.addAll(currentPage.getChosenFieldsList());
+		}
+		chosenFieldsTableViewer.setInput(filteredChosenEntries);
+	}
+	
+	public void applyFilter(String filterText) {
+		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentChooserEditorPage();
+		if(currentPage == null) {
+			return;
+		}
+		applyFilter(filterText, currentPage.getChosenFieldsList(), filteredChosenEntries);
+		applyFilter(filterText, currentPage.getAvailableFieldsList(), filteredAvailableEntries);
+	}
+	
+	private void applyFilter(String filterText,
+			BasicEventList<String> allPossibleEntries,
+			BasicEventList<String> currentFilteredEntries) {
+		if(filterText == null) { 
+			filterText = "";
+		}
+		for (String possibleEntry : allPossibleEntries) {
+			if (isFilterMatch(filterText, possibleEntry)) {
+				if (!currentFilteredEntries.contains(possibleEntry)) {
+					currentFilteredEntries.add(possibleEntry);
+				}
+			} else {
+				currentFilteredEntries.remove(possibleEntry);
+			}
+		}
+	}
+	
+	private boolean isFilterMatch(String filterText, String possibleEntry) {
+		if (possibleEntry != null) {
+			String processedFilterText = filterText.trim().toLowerCase();
+			String processedPossibleEntry = possibleEntry.trim()
+					.toLowerCase();
+			if (processedFilterText.length() == 0
+					|| processedPossibleEntry.indexOf(processedFilterText) >= 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")

@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -15,7 +17,9 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.IWorkbench;
@@ -46,6 +50,8 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	private SelectionListener selectionListener;
 
 	private FIXMessageFieldColumnChooserEditor fixMsgFieldsChooser;
+	
+	private Button clearFilterButton;
 
 	public FIXMessageDetailPreferencePage() {
 		super(FLAT);
@@ -124,6 +130,32 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		filterFormData.width = EclipseUtils.getTextAreaSize(columnFilterText,
 				"account type account type", 0, 1.0).x;
 		columnFilterText.setLayoutData(filterFormData);
+		
+		{
+			clearFilterButton = new Button(parent, SWT.PUSH);
+			FormData data = new FormData();
+			data.left = new FormAttachment(columnFilterText);
+			data.top = new FormAttachment(availableColumnsLabel, 8); 
+			clearFilterButton.setLayoutData(data);
+			clearFilterButton.setText("x");
+			clearFilterButton.pack();
+		}
+		addFilterListeners();
+	}
+	
+	private void addFilterListeners() {
+		clearFilterButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent event) {
+				columnFilterText.setText("");
+				fixMsgFieldsChooser.resetFilter();
+			}
+		});		
+		columnFilterText.addListener(SWT.Modify, new Listener() {
+			public void handleEvent(Event event) {
+				fixMsgFieldsChooser.applyFilter(columnFilterText.getText());
+			}
+		});
 	}
 
 	private void createCustomFixFieldIDText(Composite parent) {
