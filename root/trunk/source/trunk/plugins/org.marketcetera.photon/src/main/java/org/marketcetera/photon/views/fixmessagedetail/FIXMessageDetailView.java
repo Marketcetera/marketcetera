@@ -38,10 +38,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.CharField;
 import quickfix.Message;
-import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.Price;
-import quickfix.field.Quantity;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
@@ -98,20 +95,6 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		createLayoutDataForOuterWidgets();
 
 		clipboard = new Clipboard(getSite().getShell().getDisplay());
-
-		setMockPreferences();
-	}
-
-	// This is for testing while the preferences page is in development.
-	private void setMockPreferences() {
-		FIXMessageDetailPreferenceParser parser = new FIXMessageDetailPreferenceParser();
-
-		List<Integer> fixFields = new ArrayList<Integer>();
-		fixFields.add(MsgType.FIELD);
-		fixFields.add(OrdStatus.FIELD);
-		fixFields.add(Price.FIELD);
-		fixFields.add(Quantity.FIELD);
-		parser.setFieldsToShow(OrdStatus.NEW, fixFields);
 	}
 
 	@Override
