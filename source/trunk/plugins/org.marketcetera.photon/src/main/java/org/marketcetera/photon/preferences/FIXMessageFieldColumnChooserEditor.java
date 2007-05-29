@@ -84,15 +84,14 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	private static final int TABLE_HEIGHT = 150;
 	
 	//TODO
-	//Look into how to make Add All and Remove All quicker
 	//Multi entries on Up/Down button
-	//Bugs in selectionChanged() - check button states for all buttons, working well with filter
+	//Look into how to make Add All and Remove All quicker
 	//Speed up initial loading of the preference page
 	//Order does not get preserved on the availableFieldsTable when doing Add->Remove 
+	//Keep availableFieldsList sorted
 	//(minor) refactor code to create the two tables
 	//Remember which orderStatus was last chosen
-	//Keep availableFieldsList sorted
-	//Move charType for Other OrderType into Parser
+	//Lost saved chosen fields from fieldMap, so won't get loaded again the next time.
 
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
@@ -207,6 +206,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			loadDefaultAvailableFieldsTable(loadedBefore, currPage, savedIntFields);				
 		}
 		resetFilter();
+		selectionChanged();
 	}
 	
 	private FIXMessageFieldColumnChooserEditorPage loadPageFromMemory() {
@@ -304,17 +304,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		return fieldsList;
 	}
 	
-	//cl todo:remove this
-	private FIXMessageFieldColumnChooserEditorPage getCurrentChooserEditorPage() {
-		if (!hasBeenLoaded()) {
-			return null;
-		}
-		FIXMessageFieldColumnChooserEditorPage currentPage = loadPageFromMemory();
-		return currentPage;
-	}
-	
 	public void resetFilter() {
-		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentChooserEditorPage();
+		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentPage();
 		resetAvailableFilter(currentPage);
 		resetChosenFilter(currentPage);
 	}
@@ -336,12 +327,15 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 	
 	public void applyFilter(String filterText) {
-		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentChooserEditorPage();
+		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentPage();
 		if(currentPage == null) {
 			return;
 		}
 		applyFilter(filterText, currentPage.getChosenFieldsList(), filteredChosenEntries);
 		applyFilter(filterText, currentPage.getAvailableFieldsList(), filteredAvailableEntries);
+		availableFieldsTable.deselectAll();
+		chosenFieldsTable.deselectAll();
+		selectionChanged();
 	}
 	
 	private void applyFilter(String filterText,
@@ -382,8 +376,11 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			List<String> chosenFields = chooserPage.getChosenFieldsList();
 			List<Integer> chosenFieldIDs = new BasicEventList<Integer>();
 			for (String chosenField : chosenFields) {
-				int fieldID = fieldEntryToFieldIDMap.get(chosenField);
-				chosenFieldIDs.add(fieldID);
+				Integer foundID = fieldEntryToFieldIDMap.get(chosenField);
+				if (foundID != null) {
+					int fieldID = foundID;
+					chosenFieldIDs.add(fieldID);
+				}
 			}
 			if (chosenFieldIDs != null) {
 				parser.setFieldsToShow(orderStatusKey, chosenFieldIDs);
@@ -568,19 +565,24 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	private void selectionChanged() {
 		if (availableFieldsTable != null) {
-			int fromSize = availableFieldsTable.getItemCount();
-			addAllButton.setEnabled(fromSize > 0);
+			int availableFieldsTableSize = filteredAvailableEntries.size();
+			int availableFieldsTableSelectionCount = availableFieldsTable.getSelectionCount();				
+			addButton.setEnabled(availableFieldsTableSelectionCount > 0);				
+			addAllButton.setEnabled(availableFieldsTableSize > 0);
+			
 		} else {
 			addButton.setEnabled(false);
 			addAllButton.setEnabled(false);
 		}
 		
 		if (chosenFieldsTable != null) {
-			int toSize = chosenFieldsTable.getItemCount();
-			removeButton.setEnabled(toSize > 0);
-			removeAllButton.setEnabled(toSize > 0);
-			upButton.setEnabled(toSize > 0);
-			downButton.setEnabled(toSize > 0);
+			int chosenFieldsTableSize = filteredChosenEntries.size();
+			int chosenFieldsTableSelectionCount = chosenFieldsTable.getSelectionCount();				
+			removeButton.setEnabled(chosenFieldsTableSelectionCount > 0);
+			removeAllButton.setEnabled(chosenFieldsTableSize > 0);
+			upButton.setEnabled(chosenFieldsTableSelectionCount > 0);
+			downButton.setEnabled(chosenFieldsTableSelectionCount > 0);
+
 		} else {
 			removeButton.setEnabled(false);
 			removeAllButton.setEnabled(false);
@@ -590,9 +592,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	public void setFocus() {
-		if (availableFieldsTable != null) {
-			availableFieldsTable.setFocus();
-		}
+		selectionChanged();
 	}
 
 	/**
