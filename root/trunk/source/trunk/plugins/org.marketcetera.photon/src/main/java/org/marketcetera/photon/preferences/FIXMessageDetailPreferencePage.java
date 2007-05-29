@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -55,6 +57,8 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	
 	private MouseListener mouseListener;
 
+	private ModifyListener modifyListener;
+
 	private FIXMessageFieldColumnChooserEditor fixMsgFieldsChooser;
 	
 	private Button clearFilterButton;
@@ -79,7 +83,6 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		addField(fixMsgFieldsChooser);
 		
 		createCustomFixFieldIDText(getFieldEditorParent());
-		
 	}
 
 	private void createMsgTypesCombo(Composite parent) {
@@ -143,7 +146,10 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 			clearFilterButton.setLayoutData(data);
 			clearFilterButton.setText("Clear");
 			clearFilterButton.pack();
+			clearFilterButton.setEnabled(false);	
 		}
+		columnFilterText.addModifyListener(getModifyListener());
+
 		addFilterListeners();
 	}
 	
@@ -181,6 +187,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		fieldIDFormData.width = EclipseUtils.getTextAreaSize(
 				customFixFieldIDText, "1000000", 0, 1.0).x;
 		customFixFieldIDText.setLayoutData(fieldIDFormData);
+		customFixFieldIDText.addModifyListener(getModifyListener());
 
 		customFixFieldInputButton = new Button(parent, SWT.PUSH);
 		customFixFieldInputButton.setText("Add Custom");
@@ -193,8 +200,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		buttonFormData.bottom = new FormAttachment(100);
 		customFixFieldInputButton.setLayoutData(buttonFormData);
 		customFixFieldInputButton.addMouseListener(getMouseListener());
-
-
+		customFixFieldInputButton.setEnabled(false);
 	}
 	
 	private SelectionListener getSelectionListener() {
@@ -214,7 +220,35 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 			}
 		};
 	}
+
+	private ModifyListener getModifyListener() {
+		if (modifyListener == null) {
+			createModifyListener();
+		}
+		return modifyListener;
+	}
 	
+	private void createModifyListener() {
+		modifyListener = new ModifyListener() {
+			public void modifyText(ModifyEvent event) {
+				Widget widget = event.widget;
+				if (widget == customFixFieldIDText) {
+					boolean hasText = hasText(customFixFieldIDText);
+					customFixFieldInputButton.setEnabled(hasText);
+				} else if (widget == columnFilterText) {
+					boolean hasText = hasText(columnFilterText);					
+					clearFilterButton.setEnabled(hasText);					
+				}
+			}
+		};
+	}
+	
+	private boolean hasText(Text textBox) {
+		String text = textBox.getText();
+		boolean hasText = (text != null) && (!text.trim().equals("")); 	
+		return hasText;
+	}
+
 	private MouseListener getMouseListener() {
 		if (mouseListener == null) {
 			createMouseListener();
