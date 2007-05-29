@@ -11,8 +11,9 @@ public class PhotonControllerListenerAdapter extends
 	
 	@Override
 	protected Object doOnMessage(Object convertedMessage) {
-		if (photonController!= null)
+		if (photonController!= null) {
 			photonController.handleCounterpartyMessage((Message) convertedMessage);
+		}
 		return null;
 	}
 
