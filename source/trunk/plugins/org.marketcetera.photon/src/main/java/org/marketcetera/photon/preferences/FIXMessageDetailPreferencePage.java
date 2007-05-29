@@ -8,6 +8,7 @@ import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -27,6 +28,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.field.OrdStatus;
 
@@ -38,6 +40,8 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	public static final String FIX_MESSAGE_DETAIL_PREFERENCE = "fix.message.detail";
 
 	public static final String ID = "org.marketcetera.photon.preferences.fixmessagedetailpreference";
+	
+	private static final int INVALID_FIELD_ID = -1;
 
 	private Combo msgTypeCombo;
 
@@ -48,6 +52,8 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	private Button customFixFieldInputButton;
 
 	private SelectionListener selectionListener;
+	
+	private MouseListener mouseListener;
 
 	private FIXMessageFieldColumnChooserEditor fixMsgFieldsChooser;
 	
@@ -59,8 +65,6 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	}
 
 	public void init(IWorkbench workbench) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override
@@ -188,6 +192,8 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 				customFixFieldIDLabel, 2);
 		buttonFormData.bottom = new FormAttachment(100);
 		customFixFieldInputButton.setLayoutData(buttonFormData);
+		customFixFieldInputButton.addMouseListener(getMouseListener());
+
 
 	}
 	
@@ -204,8 +210,25 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 				Widget widget = event.widget;
 				if (widget == msgTypeCombo) {
 					fixMsgFieldsChooser.refreshOrderType(OrderStatus.getCode(msgTypeCombo.getText()));
-				} else if (widget == customFixFieldInputButton) {
-					//createCustomFixField();
+				} 
+			}
+		};
+	}
+	
+	private MouseListener getMouseListener() {
+		if (mouseListener == null) {
+			createMouseListener();
+		}
+		return mouseListener;
+	}
+	
+	private void createMouseListener() {
+		mouseListener = new MouseAdapter() {
+			@Override
+			public void mouseDown(MouseEvent event) {
+				Widget widget = event.widget;
+				if (widget == customFixFieldInputButton) {
+					createCustomFixField();
 				}
 			}
 		};
@@ -214,9 +237,24 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	private void createCustomFixField() {
 		String idAsText = customFixFieldIDText.getText();
 		if (idAsText != null && idAsText.length() > 0) {
-			
+			int fieldID = INVALID_FIELD_ID;
+			try {
+				fieldID = Integer.parseInt(idAsText);
+			} catch (NumberFormatException e) {
+				PhotonPlugin.getMainConsoleLogger().warn("Custom field ID (" + idAsText + ") is not a valid integer");
+				return;
+			}
+			if (fieldID < 0) {
+				PhotonPlugin.getMainConsoleLogger().warn("Custom field ID (" + idAsText + ") cannot be negative.");				
+			} else if (FIXMessageUtil.isValidField(fieldID)) {
+				String fixField = PhotonPlugin.getDefault().getFIXDataDictionary().getHumanFieldName(fieldID);
+				PhotonPlugin.getMainConsoleLogger().warn("Custom field ID (" + idAsText + ") conflicts with FIX field : " + fixField);				
+				return;
+			} else {
+				fixMsgFieldsChooser.addCustomFieldToAvailableFieldsList(fieldID);
+			}
 		}
-		
+		customFixFieldIDText.setText("");
 	}
 		
 

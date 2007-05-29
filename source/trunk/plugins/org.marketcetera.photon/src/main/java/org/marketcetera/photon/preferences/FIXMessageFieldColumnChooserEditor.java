@@ -36,6 +36,8 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import ca.odell.glazedlists.BasicEventList;
 
 public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
+	
+	protected static final String CUSTOM_FIELD_PREFIX = "Custom Field";
 		
 	private FIXMessageDetailPreferenceParser parser;
 	
@@ -86,6 +88,11 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	//Multi entries on Up/Down button
 	//Bugs in selectionChanged() - check button states for all buttons, working well with filter
 	//Speed up initial loading of the preference page
+	//Order does not get preserved on the availableFieldsTable when doing Add->Remove 
+	//(minor) refactor code to create the two tables
+	//Remember which orderStatus was last chosen
+	//Keep availableFieldsList sorted
+	//Move charType for Other OrderType into Parser
 
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
@@ -249,6 +256,25 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			}
 		}
 	}
+	
+	private void addCustomFieldToFieldEntryMap(String fieldName, int fieldID) {
+		if (fieldEntryToFieldIDMap != null) {
+			fieldEntryToFieldIDMap.put(fieldName, fieldID);
+		}
+	}
+	
+	private String getCustomFieldName(int fieldID) {
+		return CUSTOM_FIELD_PREFIX + " (" + fieldID + ")"; 		
+	}
+	
+	protected void addCustomFieldToAvailableFieldsList(int fieldID) {
+		FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+		String fieldEntry = getCustomFieldName(fieldID);
+		currPage.getAvailableFieldsList().add(fieldEntry);
+		filteredAvailableEntries.add(fieldEntry);
+		addCustomFieldToFieldEntryMap(fieldEntry, fieldID);
+		availableFieldsTableViewer.refresh(false);	
+	}
 
 	private void loadChosenFieldsTable(boolean loadedBefore,
 			FIXMessageFieldColumnChooserEditorPage currPage,
@@ -267,12 +293,18 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	private BasicEventList<String> getChosenFields(List<Integer> savedIntFields) {
 		BasicEventList<String> fieldsList = new BasicEventList<String>();			
 		for (int intField : savedIntFields) {
-			String fieldName = fixDictionary.getHumanFieldName(intField);
+			String fieldName;
+			if (FIXMessageUtil.isValidField(intField)) {
+				fieldName = fixDictionary.getHumanFieldName(intField);				
+			} else {
+				fieldName = CUSTOM_FIELD_PREFIX;
+			}
 			fieldsList.add(fieldName + " (" + intField + ")");
 		}
 		return fieldsList;
 	}
 	
+	//cl todo:remove this
 	private FIXMessageFieldColumnChooserEditorPage getCurrentChooserEditorPage() {
 		if (!hasBeenLoaded()) {
 			return null;
