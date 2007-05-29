@@ -83,16 +83,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	
 	private static final int TABLE_HEIGHT = 150;
 	
-	//TODO
-	//Multi entries on Up/Down button
-	//Look into how to make Add All and Remove All quicker
-	//Speed up initial loading of the preference page
-	//Order does not get preserved on the availableFieldsTable when doing Add->Remove 
-	//Keep availableFieldsList sorted
-	//(minor) refactor code to create the two tables
-	//Remember which orderStatus was last chosen
-	//Lost saved chosen fields from fieldMap, so won't get loaded again the next time.
-
+	private DisposeListener disposeListener;
+	
 	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
 			Composite parent, char orderType) {
 		init(name, labelText);
@@ -420,16 +412,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			layout.marginWidth = 0;
 			addRemoveButtonBox.setLayout(layout);
 			createAddRemoveButtons(addRemoveButtonBox);
-			addRemoveButtonBox.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent event) {
-					addButton = null;
-					removeButton = null;
-					addAllButton = null;
-					removeAllButton = null;
-					addRemoveButtonBox = null;
-				}
-			});
-
+			addRemoveButtonBox.addDisposeListener(getDisposeListener());
 		} else {
 			checkParent(addRemoveButtonBox, parent);
 		}
@@ -443,13 +426,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			layout.marginWidth = 0;
 			upDownButtonBox.setLayout(layout);
 			createUpDownButtons(upDownButtonBox);
-			upDownButtonBox.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent event) {
-					upButton = null;
-					downButton = null;
-					upDownButtonBox = null;
-				}
-			});
+			upDownButtonBox.addDisposeListener(getDisposeListener());
 
 		} else {
 			checkParent(upDownButtonBox, parent);
@@ -459,26 +436,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	private Table createAvailableFieldsTable(Composite parent) {
 		if (availableFieldsTable == null) {
-			availableFieldsTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
-					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI );
-			availableFieldsTable.setHeaderVisible(false);
-			availableFieldsTable.setFont(parent.getFont());			
-			availableFieldsTable.addSelectionListener(getSelectionListener());
-			availableFieldsTable.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent event) {
-					availableFieldsTable = null;
-				}
-			});
-			
-			GridData gd = new GridData();
-			gd.verticalAlignment = GridData.BEGINNING;
-			gd.horizontalSpan = 1;
-			gd.heightHint = TABLE_HEIGHT;
-			availableFieldsTable.setLayoutData(gd);
-			
-			TableColumn column;
-			column = new TableColumn(availableFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
-			column.setWidth(TABLE_COLUMN_WIDTH);
+			availableFieldsTable = createTable(parent);
 		} else {
 			checkParent(availableFieldsTable, parent);
 		}
@@ -487,31 +445,68 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	
 	private Table createChosenFieldsTable(Composite parent) {
 		if (chosenFieldsTable == null) {
-			chosenFieldsTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
-					| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
-			chosenFieldsTable.setHeaderVisible(false);
-			chosenFieldsTable.setFont(parent.getFont());
-			chosenFieldsTable.addSelectionListener(getSelectionListener());
-			chosenFieldsTable.addDisposeListener(new DisposeListener() {
-				public void widgetDisposed(DisposeEvent event) {
-					chosenFieldsTable = null;
-				}
-			});
-			
-			GridData gd = new GridData();
-			gd.verticalAlignment = GridData.BEGINNING;
-			gd.horizontalSpan = 1;
-			gd.heightHint = TABLE_HEIGHT;
-			chosenFieldsTable.setLayoutData(gd);
-
-			TableColumn column;
-			column = new TableColumn(chosenFieldsTable, SWT.BEGINNING | SWT.H_SCROLL);
-			column.setWidth(TABLE_COLUMN_WIDTH);
+			chosenFieldsTable = createTable(parent);
 		} else {
 			checkParent(chosenFieldsTable, parent);
 		}
 		return chosenFieldsTable;
 	}
+
+	private GridData createTableGridData() {
+		GridData gd = new GridData();
+		gd.verticalAlignment = GridData.BEGINNING;
+		gd.horizontalSpan = 1;
+		gd.heightHint = TABLE_HEIGHT;
+		return gd;
+	}
+	
+	private Table createTable(Composite parent) {
+		Table aTable = new Table(parent, SWT.BORDER | SWT.V_SCROLL
+				| SWT.H_SCROLL | SWT.FULL_SELECTION | SWT.MULTI);
+		aTable.setHeaderVisible(false);
+		aTable.setFont(parent.getFont());
+		aTable.addSelectionListener(getSelectionListener());
+		aTable.addDisposeListener(getDisposeListener());
+		GridData gd = createTableGridData();
+		aTable.setLayoutData(gd);
+
+		TableColumn column;
+		column = new TableColumn(aTable, SWT.BEGINNING | SWT.H_SCROLL);
+		column.setWidth(TABLE_COLUMN_WIDTH);
+		return aTable;
+	}
+	
+	private DisposeListener getDisposeListener() {
+		if (disposeListener == null) {
+			createDisposeListener();
+		}
+		return disposeListener;
+	}
+	
+	private void createDisposeListener() {
+		disposeListener = new DisposeListener() {
+			
+			public void widgetDisposed(DisposeEvent event) {
+				Widget widget = event.widget;
+				if (widget == chosenFieldsTable) {
+					chosenFieldsTable = null;
+				} else if (widget == availableFieldsTable) {
+					availableFieldsTable = null;
+				} else if (widget == addRemoveButtonBox) {
+					addButton = null;
+					removeButton = null;
+					addAllButton = null;
+					removeAllButton = null;
+					addRemoveButtonBox = null;
+				} else if (widget == upDownButtonBox) {
+					upButton = null;
+					downButton = null;
+					upDownButtonBox = null;
+				}				
+			}
+		};
+	}
+
 
 	private IndexedTableViewer createTableViewer(Table aTable) {
 		IndexedTableViewer tableViewer = new IndexedTableViewer(aTable);
