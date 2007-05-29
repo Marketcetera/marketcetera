@@ -59,6 +59,8 @@ public class FIXMessageFactory {
     private MessageFactory msgFactory;
     private FIXMessageAugmentor msgAugmentor;
     private String beginString;
+    /*package */static final char SOH_REPLACE_CHAR = '|';
+    private static final char SOH_CHAR = '\001';
 
     public FIXMessageFactory(String beginString, MessageFactory inFactory, FIXMessageAugmentor augmentor) {
         this.beginString = beginString;
@@ -341,7 +343,7 @@ public class FIXMessageFactory {
         reject.setField(origClOrdID);
         reject.setField(new OrdStatus(OrdStatus.REJECTED));
         reject.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
-        reject.setString(Text.FIELD, rejectReasonText);
+        reject.setString(Text.FIELD, rejectReasonText.replace(SOH_CHAR, SOH_REPLACE_CHAR));
         if(cxlRejReason!=null) {
             reject.setField(cxlRejReason);
         }
