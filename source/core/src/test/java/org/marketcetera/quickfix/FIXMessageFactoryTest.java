@@ -1,25 +1,14 @@
 package org.marketcetera.quickfix;
 
-import java.math.BigDecimal;
-
 import junit.framework.Test;
-
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
-
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.Account;
-import quickfix.field.ClOrdID;
-import quickfix.field.MsgType;
-import quickfix.field.OrdType;
-import quickfix.field.OrderQty;
-import quickfix.field.Price;
-import quickfix.field.Side;
-import quickfix.field.Symbol;
-import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
+import quickfix.field.*;
+
+import java.math.BigDecimal;
 
 public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
@@ -81,5 +70,25 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 			basicOrder.getString(TransactTime.FIELD);
 		}			
 	}
+
+
+    /** Verify that if we include a "failing" order as a Text reason in a reject,
+     * the SOH fields get appropriately escaped
+     */
+    public void testNewOrderCancelReject_escapesSOH() throws Exception {
+        Message basicOrder = msgFactory.newBasicOrder();
+		Message reject = msgFactory.newOrderCancelReject(new OrderID("35"), new ClOrdID("36"), new OrigClOrdID("37"),
+                basicOrder.toString(), new CxlRejReason(CxlRejReason.UNKNOWN_ORDER));
+        assertTrue("reject doesn't contain |:" +reject.toString(), reject.toString().indexOf(FIXMessageFactory.SOH_REPLACE_CHAR) != -1);
+        assertNotNull(new Message(reject.toString()));
+    }
+
+    public void testNewOrderCancelReject() throws Exception {
+        Message basicOrder = msgFactory.newBasicOrder();
+		Message reject = msgFactory.newOrderCancelReject(new OrderID("bob"), new ClOrdID("36"), new OrigClOrdID("37"),
+                basicOrder.toString(), new CxlRejReason(CxlRejReason.UNKNOWN_ORDER));
+        assertTrue(reject.isSetField(CxlRejReason.FIELD));
+        assertNotNull(new Message(reject.toString()));
+    }
 
 }
