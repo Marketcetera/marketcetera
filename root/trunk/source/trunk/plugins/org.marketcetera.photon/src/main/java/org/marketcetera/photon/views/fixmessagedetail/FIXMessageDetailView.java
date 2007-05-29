@@ -324,7 +324,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 	private List<Integer> getFieldsToShow(Message fixMessage) {
 		char orderStatus = getOrderStatusSafely(fixMessage);
 		if (orderStatus == INVALID_ORDER_STATUS) {
-			return null;
+			orderStatus = FIXMessageDetailPreferencePage.OrderStatus.OTHER.getCode();
 		}
 		FIXMessageDetailPreferenceParser parser = new FIXMessageDetailPreferenceParser();
 		List<Integer> fieldsToShowList = parser.getFieldsToShow(orderStatus);
