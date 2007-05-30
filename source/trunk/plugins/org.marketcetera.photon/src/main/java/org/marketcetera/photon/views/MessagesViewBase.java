@@ -25,6 +25,7 @@ import org.marketcetera.photon.ui.TableComparatorChooser;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.gui.TableFormat;
 
 public abstract class MessagesViewBase<T> extends ViewPart {
 
@@ -36,7 +37,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 	private Table messageTable;
 	private IndexedTableViewer messagesViewer;
 	private IToolBarManager toolBarManager;
-	private EnumTableFormat<T> tableFormat;
+	private TableFormat<T> tableFormat;
 	private TableComparatorChooser<T> chooser;
 	private Clipboard clipboard;
 	private CopyMessagesAction copyMessagesAction;
@@ -84,7 +85,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
         messageTable = createMessageTable(composite);
 		messagesViewer = createTableViewer(messageTable, getEnumValues());
 		
-		tableFormat = (EnumTableFormat<T>)messagesViewer.getLabelProvider();
+		tableFormat = (TableFormat<T>)messagesViewer.getLabelProvider();
 		formatTable(messageTable);
 		packColumns(messageTable);
 		restoreColumnOrder(viewStateMemento);

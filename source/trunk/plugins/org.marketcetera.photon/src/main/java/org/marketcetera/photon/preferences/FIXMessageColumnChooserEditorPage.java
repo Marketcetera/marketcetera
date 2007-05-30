@@ -2,23 +2,23 @@ package org.marketcetera.photon.preferences;
 
 import ca.odell.glazedlists.BasicEventList;
 
-public class FIXMessageFieldColumnChooserEditorPage {
+public class FIXMessageColumnChooserEditorPage {
 
-	private char orderType;
+	private String subPageID;
 
 	private BasicEventList<String> availableFieldsList;
 
 	private BasicEventList<String> chosenFieldsList;
 
-	public FIXMessageFieldColumnChooserEditorPage(char orderType) {
-		this(orderType, new BasicEventList<String>(),
+	public FIXMessageColumnChooserEditorPage(String subPageID) {
+		this(subPageID, new BasicEventList<String>(),
 				new BasicEventList<String>());
 	}
 
-	public FIXMessageFieldColumnChooserEditorPage(char orderType,
+	public FIXMessageColumnChooserEditorPage(String subPageID,
 			BasicEventList<String> availableFieldsList,
 			BasicEventList<String> chosenFieldsList) {
-		this.orderType = orderType;
+		this.subPageID = subPageID;
 		this.availableFieldsList = availableFieldsList;
 		this.chosenFieldsList = chosenFieldsList;
 	}
@@ -39,12 +39,12 @@ public class FIXMessageFieldColumnChooserEditorPage {
 		this.chosenFieldsList = chosenFieldsList;
 	}
 
-	protected char getOrderType() {
-		return orderType;
+	protected String getSubPageID() {
+		return subPageID;
 	}
 
-	protected void setOrderType(char orderType) {
-		this.orderType = orderType;
+	protected void setSubPageID(String subPageID) {
+		this.subPageID = subPageID;
 	}
 
 	

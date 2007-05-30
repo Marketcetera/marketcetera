@@ -35,15 +35,14 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import ca.odell.glazedlists.BasicEventList;
 
-public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
-	
+public class FIXMessageColumnChooserEditor extends FieldEditor {
 	protected static final String CUSTOM_FIELD_PREFIX = "Custom Field";
 		
-	private FIXMessageDetailPreferenceParser parser;
+	private FIXMessageColumnPreferenceParser parser;
 	
 	private FIXDataDictionary fixDictionary;
 
-	private char orderType;
+	private String currentSubPageID;
 	
 	private Table availableFieldsTable;
 
@@ -71,7 +70,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	private SelectionListener selectionListener;
 	
-	private Map<Character, FIXMessageFieldColumnChooserEditorPage> orderStatusToPageMap;	
+	private Map<String, FIXMessageColumnChooserEditorPage> idToPageMap;	
 	
 	private BasicEventList<String> filteredAvailableEntries;
 	
@@ -84,14 +83,14 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	private static final int TABLE_HEIGHT = 150;
 	
 	private DisposeListener disposeListener;
-	
-	protected FIXMessageFieldColumnChooserEditor(String name, String labelText,
-			Composite parent, char orderType) {
+
+	protected FIXMessageColumnChooserEditor(String name, String labelText,
+			Composite parent, String subPageID) {
 		init(name, labelText);
 		this.fixDictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
-		this.orderType = orderType;
-		this.parser = new FIXMessageDetailPreferenceParser();		
-		this.orderStatusToPageMap = new HashMap<Character, FIXMessageFieldColumnChooserEditorPage>();
+		this.currentSubPageID = subPageID;
+		this.parser = new FIXMessageColumnPreferenceParser();		
+		this.idToPageMap = new HashMap<String, FIXMessageColumnChooserEditorPage>();
 		loadFieldEntryToFieldIDMap();
 		createControl(parent);
 	}
@@ -182,8 +181,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 	
 	protected void doLoadDefault() {
-		List<Integer> savedIntFields = parser.getFieldsToShow(orderType);
-		FIXMessageFieldColumnChooserEditorPage currPage;
+		List<Integer> savedIntFields = parser.getFieldsToShow(currentSubPageID);
+		FIXMessageColumnChooserEditorPage currPage;
 		boolean loadedBefore = hasBeenLoaded();
 		if (loadedBefore) {
 			currPage = loadPageFromMemory();
@@ -201,26 +200,26 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		selectionChanged();
 	}
 	
-	private FIXMessageFieldColumnChooserEditorPage loadPageFromMemory() {
-		return orderStatusToPageMap.get(orderType);
+	private FIXMessageColumnChooserEditorPage loadPageFromMemory() {
+		return idToPageMap.get(currentSubPageID);
 	}
 	
-	private FIXMessageFieldColumnChooserEditorPage loadPageFromPreference() {
-		FIXMessageFieldColumnChooserEditorPage currPage = new FIXMessageFieldColumnChooserEditorPage(orderType);
-		orderStatusToPageMap.put(orderType, currPage);
+	private FIXMessageColumnChooserEditorPage loadPageFromPreference() {
+		FIXMessageColumnChooserEditorPage currPage = new FIXMessageColumnChooserEditorPage(currentSubPageID);
+		idToPageMap.put(currentSubPageID, currPage);
 		return currPage;
 	}
 
-	private FIXMessageFieldColumnChooserEditorPage getCurrentPage() {
+	private FIXMessageColumnChooserEditorPage getCurrentPage() {
 		return loadPageFromMemory();
 	}
 	
 	private boolean hasBeenLoaded() {
-		return orderStatusToPageMap.containsKey(orderType);
+		return idToPageMap.containsKey(currentSubPageID);
 	}
 
 	private void loadDefaultAvailableFieldsTable(boolean loadedBefore,
-			FIXMessageFieldColumnChooserEditorPage currPage,
+			FIXMessageColumnChooserEditorPage currPage,
 			List<Integer> savedIntFields) {
 		availableFieldsTable.removeAll();
 		BasicEventList<String> currPageAvailableFieldsEntries = new BasicEventList<String>();
@@ -248,7 +247,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			}
 		}
 	}
-	
 	private void addCustomFieldToFieldEntryMap(String fieldName, int fieldID) {
 		if (fieldEntryToFieldIDMap != null) {
 			fieldEntryToFieldIDMap.put(fieldName, fieldID);
@@ -260,7 +258,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 	
 	protected void addCustomFieldToAvailableFieldsList(int fieldID) {
-		FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+		FIXMessageColumnChooserEditorPage currPage = getCurrentPage();
 		String fieldEntry = getCustomFieldName(fieldID);
 		currPage.getAvailableFieldsList().add(fieldEntry);
 		filteredAvailableEntries.add(fieldEntry);
@@ -269,7 +267,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 
 	private void loadChosenFieldsTable(boolean loadedBefore,
-			FIXMessageFieldColumnChooserEditorPage currPage,
+			FIXMessageColumnChooserEditorPage currPage,
 			List<Integer> savedIntFields) {
 		chosenFieldsTable.removeAll();
 		BasicEventList<String> currPageChosenFieldsEntries = new BasicEventList<String>();
@@ -296,13 +294,21 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		return fieldsList;
 	}
 	
+	private FIXMessageColumnChooserEditorPage getCurrentChooserEditorPage() {
+		if (!hasBeenLoaded()) {
+			return null;
+		}
+		FIXMessageColumnChooserEditorPage currentPage = loadPageFromMemory();
+		return currentPage;
+	}
+	
 	public void resetFilter() {
-		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentPage();
+		FIXMessageColumnChooserEditorPage currentPage = getCurrentChooserEditorPage();
 		resetAvailableFilter(currentPage);
 		resetChosenFilter(currentPage);
 	}
 	
-	private void resetAvailableFilter(FIXMessageFieldColumnChooserEditorPage currentPage) {
+	private void resetAvailableFilter(FIXMessageColumnChooserEditorPage currentPage) {
 		filteredAvailableEntries = new BasicEventList<String>();
 		if(currentPage != null) {
 			filteredAvailableEntries.addAll(currentPage.getAvailableFieldsList());
@@ -310,7 +316,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		availableFieldsTableViewer.setInput(filteredAvailableEntries);
 	}
 	
-	private void resetChosenFilter(FIXMessageFieldColumnChooserEditorPage currentPage) {
+	private void resetChosenFilter(FIXMessageColumnChooserEditorPage currentPage) {
 		filteredChosenEntries = new BasicEventList<String>();
 		if(currentPage != null) {
 			filteredChosenEntries.addAll(currentPage.getChosenFieldsList());
@@ -319,7 +325,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 	}
 	
 	public void applyFilter(String filterText) {
-		FIXMessageFieldColumnChooserEditorPage currentPage = getCurrentPage();
+		FIXMessageColumnChooserEditorPage currentPage = getCurrentChooserEditorPage();
 		if(currentPage == null) {
 			return;
 		}
@@ -362,9 +368,9 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 
 	@SuppressWarnings("unchecked")
 	protected void doStore() {
-		Set<Character> loadedOrderStatus = orderStatusToPageMap.keySet();
-		for (char orderStatusKey : loadedOrderStatus) {
-			FIXMessageFieldColumnChooserEditorPage chooserPage = orderStatusToPageMap.get(orderStatusKey);			
+		Set<String> loadedSubPageIDs = idToPageMap.keySet();
+		for (String subPageKey : loadedSubPageIDs) {
+			FIXMessageColumnChooserEditorPage chooserPage = idToPageMap.get(subPageKey);			
 			List<String> chosenFields = chooserPage.getChosenFieldsList();
 			List<Integer> chosenFieldIDs = new BasicEventList<Integer>();
 			for (String chosenField : chosenFields) {
@@ -375,7 +381,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 				}
 			}
 			if (chosenFieldIDs != null) {
-				parser.setFieldsToShow(orderStatusKey, chosenFieldIDs);
+				parser.setFieldsToShow(subPageKey, chosenFieldIDs);
 			}
 		}
 	}
@@ -413,6 +419,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 			addRemoveButtonBox.setLayout(layout);
 			createAddRemoveButtons(addRemoveButtonBox);
 			addRemoveButtonBox.addDisposeListener(getDisposeListener());
+
 		} else {
 			checkParent(addRemoveButtonBox, parent);
 		}
@@ -507,7 +514,6 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		};
 	}
 
-
 	private IndexedTableViewer createTableViewer(Table aTable) {
 		IndexedTableViewer tableViewer = new IndexedTableViewer(aTable);
 		tableViewer.setUseHashlookup(true);
@@ -516,7 +522,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		CellEditor[] editors = new CellEditor[1];
 		editors[0] = new TextCellEditor(aTable);
 		tableViewer.setContentProvider(new EventListContentProvider<String>());
-		tableViewer.setLabelProvider(new FIXMessageFieldChooserLabelProvider());
+		tableViewer.setLabelProvider(new FIXMessageColumnChooserLabelProvider());
 		return tableViewer;
 	}
 
@@ -620,7 +626,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
             filteredChosenEntries.remove(filteredIndex);
             filteredChosenEntries.add(filteredTargetIndex, toReplace);
             
-			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			FIXMessageColumnChooserEditorPage currPage = getCurrentPage();
 			List<String> chosenFieldsList = currPage.getChosenFieldsList();
 
             int actualIndex = chosenFieldsList.indexOf(toReplace);
@@ -642,7 +648,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
     private void removePressedWithInput(BasicEventList<String> input) {
 		if (input != null && input.size() > 0) {
 			setPresentsDefaultValue(false);		
-			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			FIXMessageColumnChooserEditorPage currPage = getCurrentPage();
 			currPage.getChosenFieldsList().removeAll(input);
 			currPage.getAvailableFieldsList().addAll(input);
 
@@ -657,7 +663,7 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
     private void addPressedWithInput(BasicEventList<String> input) {
 		if (input != null && input.size() > 0) {
 			setPresentsDefaultValue(false);		
-			FIXMessageFieldColumnChooserEditorPage currPage = getCurrentPage();
+			FIXMessageColumnChooserEditorPage currPage = getCurrentPage();
 			currPage.getAvailableFieldsList().removeAll(input);
 			currPage.getChosenFieldsList().addAll(input);
 
@@ -688,8 +694,8 @@ public class FIXMessageFieldColumnChooserEditor extends FieldEditor {
 		swap(false);
 	}
 
-	protected void refreshOrderType(char newType) {
-		orderType = newType;
+	protected void changeSubPage(String subPageID) {
+		this.currentSubPageID = subPageID;
 		doLoadDefault();
 	}
 

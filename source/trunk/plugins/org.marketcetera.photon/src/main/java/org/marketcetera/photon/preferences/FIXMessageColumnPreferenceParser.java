@@ -6,21 +6,20 @@ import java.util.List;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class FIXMessageDetailPreferenceParser {
-	private static final String KeySuffixDelimiter = "_OrdStatus_";
+public class FIXMessageColumnPreferenceParser {
+	private static final String KeySuffixDelimiter = "_ColumnFieldIds_";
 
 	private static final String FieldDelimiter = ",";
 
-	public FIXMessageDetailPreferenceParser() {
+	public FIXMessageColumnPreferenceParser() {
 	}
 
 	private ScopedPreferenceStore getPreferenceStore() {
 		return PhotonPlugin.getDefault().getPreferenceStore();
 	}
 
-	private String getKey(char orderStatus) {
-		return FIXMessageDetailPreferencePage.ID + KeySuffixDelimiter
-				+ orderStatus;
+	private String getKey(String viewID) {
+		return "" + viewID + KeySuffixDelimiter;
 	}
 
 	private String toValue(List<Integer> fixFields) {
@@ -53,14 +52,14 @@ public class FIXMessageDetailPreferenceParser {
 		return fields;
 	}
 
-	public void setFieldsToShow(char orderStatus, List<Integer> fixFields) {
-		String key = getKey(orderStatus);
+	public void setFieldsToShow(String viewID, List<Integer> fixFields) {
+		String key = getKey(viewID);
 		String value = toValue(fixFields);
 		getPreferenceStore().setValue(key, value);
 	}
 
-	public List<Integer> getFieldsToShow(char orderStatus) {
-		String key = getKey(orderStatus);
+	public List<Integer> getFieldsToShow(String viewID) {
+		String key = getKey(viewID);
 		String value = getPreferenceStore().getString(key);
 		if( value == null) {
 			return null;

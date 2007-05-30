@@ -30,22 +30,23 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.views.AveragePriceView;
+import org.marketcetera.photon.views.FIXMessagesView;
+import org.marketcetera.photon.views.FillsView;
+import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
-import quickfix.field.OrdStatus;
-
-public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
+public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		implements IWorkbenchPreferencePage {
 
 	public static final String COLUMN_FILTER_TEXT = "column.filter.text";
 
 	public static final String FIX_MESSAGE_DETAIL_PREFERENCE = "fix.message.detail";
 
-	public static final String ID = "org.marketcetera.photon.preferences.fixmessagedetailpreference";
-	
+	public static final String ID = "org.marketcetera.photon.preferences.FIXMessageColumnPreferencePage";
 	private static final int INVALID_FIELD_ID = -1;
 
-	private Combo msgTypeCombo;
+	private Combo subPageCombo;
 
 	private Text columnFilterText;
 
@@ -54,21 +55,21 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	private Button customFixFieldInputButton;
 
 	private SelectionListener selectionListener;
-	
 	private MouseListener mouseListener;
 
 	private ModifyListener modifyListener;
-
-	private FIXMessageFieldColumnChooserEditor fixMsgFieldsChooser;
+	private FIXMessageColumnChooserEditor fixMsgFieldsChooser;
 	
 	private Button clearFilterButton;
 
-	public FIXMessageDetailPreferencePage() {
+	public FIXMessageColumnPreferencePage() {
 		super(FLAT);
 		setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
 	}
 
 	public void init(IWorkbench workbench) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
@@ -76,13 +77,14 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		createMsgTypesCombo(getFieldEditorParent());
 		createColumnFilterText(getFieldEditorParent());
 
-		char orderType = OrderStatus.getCode(msgTypeCombo.getText());
+		String subPageID = FIXMessageColumnPrefsSubPageType.getIDFromName(subPageCombo.getText());
 		
-		fixMsgFieldsChooser = new FIXMessageFieldColumnChooserEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
-				"FIX Message Detail Preference", getFieldEditorParent(), orderType);
+		fixMsgFieldsChooser = new FIXMessageColumnChooserEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
+				"FIX Message Detail Preference", getFieldEditorParent(), subPageID);
 		addField(fixMsgFieldsChooser);
 		
 		createCustomFixFieldIDText(getFieldEditorParent());
+		
 	}
 
 	private void createMsgTypesCombo(Composite parent) {
@@ -96,17 +98,17 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		labelFormData.top = new FormAttachment(0);
 		viewFixMsgTypeLabel.setLayoutData(labelFormData);
 
-		msgTypeCombo = new Combo(parent, SWT.BORDER | SWT.READ_ONLY);
-		String[] msgTypes = getFixMsgTypes();
-		msgTypeCombo.setItems(msgTypes);
-		msgTypeCombo.setText(msgTypes[0]);
+		subPageCombo = new Combo(parent, SWT.BORDER | SWT.READ_ONLY);
+		String[] msgTypes = getSubPageTypes();
+		subPageCombo.setItems(msgTypes);
+		subPageCombo.setText(msgTypes[0]);
 
 		FormData comboFormData = new FormData();
 		comboFormData.left = new FormAttachment(viewFixMsgTypeLabel, 10);
 		comboFormData.top = new FormAttachment(0);
-		msgTypeCombo.setLayoutData(comboFormData);
+		subPageCombo.setLayoutData(comboFormData);
 		
-		msgTypeCombo.addSelectionListener(getSelectionListener());
+		subPageCombo.addSelectionListener(getSelectionListener());
 	}
 
 	private void createColumnFilterText(Composite parent) {
@@ -117,7 +119,7 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 
 		FormData labelFormData = new FormData();
 		labelFormData.left = new FormAttachment(0);
-		labelFormData.top = new FormAttachment(msgTypeCombo, 20);
+		labelFormData.top = new FormAttachment(subPageCombo, 20);
 		availableColumnsLabel.setLayoutData(labelFormData);
 
 		Label columnFilterLabel = new Label(parent, SWT.NONE);
@@ -149,7 +151,6 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 			clearFilterButton.setEnabled(false);	
 		}
 		columnFilterText.addModifyListener(getModifyListener());
-
 		addFilterListeners();
 	}
 	
@@ -214,8 +215,9 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		selectionListener = new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
 				Widget widget = event.widget;
-				if (widget == msgTypeCombo) {
-					fixMsgFieldsChooser.refreshOrderType(OrderStatus.getCode(msgTypeCombo.getText()));
+				if (widget == subPageCombo) {
+					String subPageID = FIXMessageColumnPrefsSubPageType.getIDFromName(subPageCombo.getText());
+					fixMsgFieldsChooser.changeSubPage(subPageID);
 				} 
 			}
 		};
@@ -290,8 +292,6 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		}
 		customFixFieldIDText.setText("");
 	}
-		
-
 	@Override
 	public boolean performOk() {
 		try {
@@ -303,10 +303,10 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 		return super.performOk();
 	}
 
-	private String[] getFixMsgTypes() {
-		OrderStatus[] orderTypes = OrderStatus.values();
+	private String[] getSubPageTypes() {
+		FIXMessageColumnPrefsSubPageType[] subPageIDs = FIXMessageColumnPrefsSubPageType.values();
 		List<String> typeNames = new ArrayList<String>();
-		for (OrderStatus type : orderTypes)
+		for (FIXMessageColumnPrefsSubPageType type : subPageIDs)
 		{
 			typeNames.add(type.toString());			
 		}
@@ -315,49 +315,42 @@ public class FIXMessageDetailPreferencePage extends FieldEditorPreferencePage
 	}
 	
 	
-	public enum OrderStatus
+	public enum FIXMessageColumnPrefsSubPageType
 	{
-		NEW("New Orders", OrdStatus.NEW),
-		FILLED("Filled Orders", OrdStatus.FILLED),
-		PARTIALLY_FILLED("Partially Field Orders", OrdStatus.PARTIALLY_FILLED),
-		DONE_FOR_DAY("Done for Day Orders", OrdStatus.DONE_FOR_DAY),
-		CANCELED("Canceled Orders", OrdStatus.CANCELED), 
-		PENDING_CANCEL("Pending Cancel Orders", OrdStatus.PENDING_CANCEL),
-		REPLACED("Replaced Orders", OrdStatus.REPLACED),
-		STOPPED("Stopped Orders", OrdStatus.STOPPED),
-		REJECTED("Rejected Orders", OrdStatus.REJECTED),
-		SUSPENDED("Suspended Orders", OrdStatus.SUSPENDED),
-		PENDING_NEW("Pending New Orders", OrdStatus.PENDING_NEW),
-		CALCULATED("Calculated Orders", OrdStatus.CALCULATED),
-		EXPIRED("Expired Orders", OrdStatus.EXPIRED),		
-		ACCEPTED_FOR_BIDDING("Acced for Bidding Orders", OrdStatus.ACCEPTED_FOR_BIDDING), 
-		PENDING_REPLACE("Pending Replace Orders", OrdStatus.PENDING_REPLACE),
-		OTHER("Other Orders", Character.MAX_VALUE);   //special case
+		AVERAGE_PRICE("Average Price", AveragePriceView.ID),
+		FILLS("Fills", FillsView.ID),
+		FIX_MESSAGES("FIX Messages", FIXMessagesView.ID),
+		OPEN_ORDERS("Open Orders", OpenOrdersView.ID);
 		
 		private String name;
-		private char code;
+		private String id;
 
-		OrderStatus(String name, char code){
+		FIXMessageColumnPrefsSubPageType(String name, String id){
 			this.name = name;
-			this.code = code;
+			this.id = id;
 		}
 
 		public String toString() {
 			return name;
 		}
 		
-		public char getCode() {
-			return code;
+		public String getName() {
+			return name;
 		}
 		
-		public static char getCode(String name) {
-			for (OrderStatus status : OrderStatus.values()) {
-				if (status.name.equals(name))
-					return status.code;
+		public String getID() {
+			return id;
+		}
+		
+		public static String getIDFromName(String name) {
+			FIXMessageColumnPrefsSubPageType[] prefTypes = FIXMessageColumnPrefsSubPageType.values();
+			for(FIXMessageColumnPrefsSubPageType prefType : prefTypes) {
+				if(prefType.getName() != null && prefType.getName().equals(name)) {
+					return prefType.getID();
+				}
 			}
-			return Character.MAX_VALUE;
+			return null;
 		}
-		
 	};
 	
 }
