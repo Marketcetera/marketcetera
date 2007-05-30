@@ -1,5 +1,8 @@
 package org.marketcetera.photon.scripting;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+
 import org.apache.bsf.BSFException;
 import org.apache.log4j.Logger;
 import org.jruby.RubyException;
@@ -21,9 +24,20 @@ public class ScriptLoggingUtil {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
 			logger.error(""+rubyException);
+			String backtraceString = getBacktraceString(rubyException);
+			logger.error(backtraceString);
 		} else {
 			logger.error(targetRaiseException.getMessage(), targetRaiseException);
 		}
+	}
+
+	private static String getBacktraceString(RubyException rubyException) {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		PrintStream ps = new PrintStream(baos);
+		rubyException.printBacktrace(ps);
+		ps.close();
+		String backtraceString = baos.toString();
+		return backtraceString;
 	}
 
 	public static void warn(Logger logger, BSFException e) {
@@ -40,6 +54,8 @@ public class ScriptLoggingUtil {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
 			logger.warn(""+rubyException);
+			String backtraceString = getBacktraceString(rubyException);
+			logger.debug(backtraceString);
 		} else {
 			logger.warn(targetRaiseException.getMessage(), targetRaiseException);
 		}
@@ -59,6 +75,8 @@ public class ScriptLoggingUtil {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
 			logger.info(""+rubyException);
+			String backtraceString = getBacktraceString(rubyException);
+			logger.debug(backtraceString);
 		} else {
 			logger.info(targetRaiseException.getMessage(), targetRaiseException);
 		}
@@ -78,6 +96,8 @@ public class ScriptLoggingUtil {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
 			logger.debug(""+rubyException);
+			String backtraceString = getBacktraceString(rubyException);
+			logger.debug(backtraceString);
 		} else {
 			logger.debug(targetRaiseException.getMessage(), targetRaiseException);
 		}
