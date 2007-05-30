@@ -7,7 +7,8 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 
 public class FIXMessageColumnPreferenceParser {
-	private static final String KeySuffixDelimiter = "_ColumnFieldIds_";
+	private static final String KeyPrefix = "org.marketcetera.photon.preferences.fixcolumnfields";
+	private static final String KeyDelimiter = "_";
 
 	private static final String FieldDelimiter = ",";
 
@@ -18,8 +19,19 @@ public class FIXMessageColumnPreferenceParser {
 		return PhotonPlugin.getDefault().getPreferenceStore();
 	}
 
+	private String getFullPrefix() {
+		return KeyPrefix + KeyDelimiter ;
+	}
 	private String getKey(String viewID) {
-		return "" + viewID + KeySuffixDelimiter;
+		return getFullPrefix() + viewID;
+	}
+	
+	public boolean isPreferenceForView(String preferenceName, String viewID) {
+		String key = getKey(viewID);
+		if(preferenceName != null && preferenceName.startsWith(key)) {
+			return true;
+		}
+		return false;
 	}
 
 	private String toValue(List<Integer> fixFields) {
