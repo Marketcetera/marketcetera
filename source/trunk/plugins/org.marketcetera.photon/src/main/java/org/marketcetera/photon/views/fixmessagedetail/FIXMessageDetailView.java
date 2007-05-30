@@ -2,6 +2,8 @@ package org.marketcetera.photon.views.fixmessagedetail;
 
 import java.util.ArrayList;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
@@ -19,14 +21,18 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.ISelectionListener;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.TableComparatorChooser;
+import org.marketcetera.photon.views.MessagesView;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -34,7 +40,7 @@ import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
-public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail {
+public class FIXMessageDetailView extends ViewPart implements ISelectionListener, IFIXMessageDetail {
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessageDetailView";
 
@@ -71,6 +77,8 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 	@Override
 	public void createPartControl(Composite parent) {
+        getViewSite().getWorkbenchWindow().getSelectionService().addSelectionListener( this );
+
 		createOuterForm(parent);
 		createFieldTable();
 		createMessageDetailComposite();
@@ -80,8 +88,24 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 		clipboard = new Clipboard(getSite().getShell().getDisplay());
 	}
 
+	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
+		if (part instanceof MessagesView) {
+			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+			if (structuredSelection.size() == 1) {  // only display message detail for a single message
+				MessageHolder messageHolder = (MessageHolder) structuredSelection.getFirstElement();
+				Message message = messageHolder.getMessage();
+				showMessage(message);
+			}
+			else {
+				showMessage(null);  // clear the view
+			}
+		}
+	}
+
 	@Override
 	public void dispose() {
+        getViewSite().getWorkbenchWindow().getSelectionService().removeSelectionListener( this );
+
 		if (clipboard != null && !clipboard.isDisposed()) {
 			clipboard.dispose();
 		}
@@ -108,6 +132,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 
 	@Override
 	public void setFocus() {
+		messageTable.setFocus();
 	}
 
 	private void createOuterForm(Composite parent) {
@@ -294,7 +319,7 @@ public class FIXMessageDetailView extends ViewPart implements IFIXMessageDetail 
 	private ArrayList<FIXMessageDetailTableRow> createRowsFromMessage(
 			Message fixMessage) {
 		if (fixMessage == null) {
-			return null;
+			return new ArrayList<FIXMessageDetailTableRow>();
 		}
 
 		ArrayList<FIXMessageDetailTableRow> rows = new ArrayList<FIXMessageDetailTableRow>();
