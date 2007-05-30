@@ -167,12 +167,12 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 		Button copyRawMessageButton = new Button(messageTextComposite, SWT.FLAT);
 		copyRawMessageButton.setText("Copy Message");
 		copyRawMessageButton
-				.setToolTipText("Copy the raw FIX message below to the clipboard.");
+				.setToolTipText("Copy the raw FIX message below to the clipboard");
 
 		Button copyTableButton = new Button(messageTextComposite, SWT.FLAT);
 		copyTableButton.setText("Copy Table");
 		copyTableButton
-				.setToolTipText("Copy the formatted table above to the clipboard.");
+				.setToolTipText("Copy the formatted table above to the clipboard");
 
 		messageText = getFormToolkit().createText(messageTextComposite, "",
 				SWT.V_SCROLL | SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
