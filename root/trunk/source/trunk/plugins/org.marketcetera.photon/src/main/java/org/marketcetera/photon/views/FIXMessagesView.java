@@ -49,7 +49,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author gmiller
  * @author andrei@lissovski.org
  */
-public class FIXMessagesView extends HistoryMessagesView {
+public class FIXMessagesView extends HistoryMessagesView implements IHeartbeatsToggle {
 
 	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
 	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(MsgType.FIELD, MsgType.HEARTBEAT, false);  // filters out heartbeat messages
