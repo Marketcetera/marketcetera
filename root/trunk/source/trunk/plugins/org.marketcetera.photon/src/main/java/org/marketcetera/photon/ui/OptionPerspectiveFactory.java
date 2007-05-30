@@ -11,6 +11,7 @@ import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.OptionMarketDataView;
 import org.marketcetera.photon.views.OptionOrderTicket;
 import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 
 /**
  * Factory responsible for creating and laying out the option perspective.
@@ -66,6 +67,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 				editorArea);
 		leftFolder.addPlaceholder(OptionMarketDataView.ID + ":*");
 		leftFolder.addView(OptionMarketDataView.ID);
+		leftFolder.addPlaceholder(FIXMessageDetailView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,
 				0.85f, editorArea);
