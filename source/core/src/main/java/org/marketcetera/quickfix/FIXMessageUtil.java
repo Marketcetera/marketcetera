@@ -235,7 +235,7 @@ public class FIXMessageUtil {
 
 	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
 		if (fieldMap.isSetField(fieldNumber)){
-			throw new MarketceteraException("Field "+fieldNumber+" is already set in message.");
+			throw new MarketceteraException(MessageKey.FIX_FIELD_ALREADY_SET.getLocalizedMessage(fieldNumber));
 		} else {
 			fieldMap.setField(new StringField(fieldNumber, value));
 		}
@@ -246,12 +246,12 @@ public class FIXMessageUtil {
 		if (aMessage.isSetField(Text.FIELD)){
 			try {
 				text = aMessage.getString(Text.FIELD);
-			} catch (FieldNotFound e) {
+			} catch (FieldNotFound ignored) {
 			}
 		} else {
 			try {
 				text = aMessage.getString(EncodedText.FIELD);
-			} catch (FieldNotFound e) {
+			} catch (FieldNotFound ignored) {
 			}
 		}
 		return text;
@@ -307,10 +307,10 @@ public class FIXMessageUtil {
 
 	public static void mergeMarketDataMessages(Message marketDataSnapshotFullRefresh, Message marketDataIncrementalRefresh, FIXMessageFactory factory){
 		if (!isMarketDataSnapshotFullRefresh(marketDataSnapshotFullRefresh)){
-			throw new IllegalArgumentException("marketDataSnapshotFullRefresh must be a MarketDataSnapshotFullRefresh");
+			throw new IllegalArgumentException(MessageKey.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getLocalizedMessage());
 		}
 		if (!isMarketDataIncrementalRefresh(marketDataIncrementalRefresh)){
-			throw new IllegalArgumentException("marketDataSnapshotFullRefresh must be a MarketDataSnapshotFullRefresh");
+			throw new IllegalArgumentException(MessageKey.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getLocalizedMessage());
 		}
 		
 		HashMap<Character, Group> consolidatingSet = new HashMap<Character, Group>();

@@ -1,57 +1,16 @@
 package org.marketcetera.quickfix;
 
+import junit.framework.Test;
+import org.marketcetera.core.*;
+import quickfix.*;
+import quickfix.field.*;
+
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-
-import junit.framework.Test;
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.MSymbol;
-
-import quickfix.DataDictionary;
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.InvalidMessage;
-import quickfix.Message;
-import quickfix.StringField;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.ClOrdID;
-import quickfix.field.CumQty;
-import quickfix.field.EncodedText;
-import quickfix.field.EncodedTextLen;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.HandlInst;
-import quickfix.field.LastPx;
-import quickfix.field.LastQty;
-import quickfix.field.LeavesQty;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDReqID;
-import quickfix.field.MsgType;
-import quickfix.field.NoMDEntries;
-import quickfix.field.NoMDEntryTypes;
-import quickfix.field.NoRelatedSym;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
-import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.Price;
-import quickfix.field.Side;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
-import quickfix.field.Text;
-import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
 
 /**
  * @author Graham Miller
@@ -420,7 +379,25 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     	assertEquals(1239, tradeGroup.getInt(MDEntryPx.FIELD));
     	assertEquals(4000, tradeGroup.getInt(MDEntrySize.FIELD));
     }
-    
+
+    public void testExceptionsInMergeMarketDataMessages() throws Exception {
+        final FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
+        final Message incremental = messageFactory.createMessage(MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
+        final Message nos = createNOS("IFLI", 23.3, 230, Side.BUY, messageFactory);
+        new ExpectedTestFailure(IllegalArgumentException.class, MessageKey.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getLocalizedMessage()) {
+            protected void execute() throws Throwable {
+                FIXMessageUtil.mergeMarketDataMessages(nos, incremental, messageFactory);
+            }
+        }.run();
+
+        new ExpectedTestFailure(IllegalArgumentException.class, MessageKey.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getLocalizedMessage()) {
+            protected void execute() throws Throwable {
+                FIXMessageUtil.mergeMarketDataMessages(messageFactory.createMessage(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH),
+                        nos, messageFactory);
+            }
+        }.run();
+    }
+
     public void testIsCancellable() throws Exception {
 		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.ACCEPTED_FOR_BIDDING));
 		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.CALCULATED));
