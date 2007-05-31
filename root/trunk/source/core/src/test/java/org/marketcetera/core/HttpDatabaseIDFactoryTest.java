@@ -59,7 +59,7 @@ public class HttpDatabaseIDFactoryTest extends TestCase {
     public void testUnconnectableURL() throws Exception {
         URL url = new URL("http://localhost:3456/no/such/url");
         final HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url);
-        new ExpectedTestFailure(NoMoreIDsException.class, "Connection refused") {
+        new ExpectedTestFailure(NoMoreIDsException.class) {
             protected void execute() throws Throwable {
                 factory.grabIDs();
             }
