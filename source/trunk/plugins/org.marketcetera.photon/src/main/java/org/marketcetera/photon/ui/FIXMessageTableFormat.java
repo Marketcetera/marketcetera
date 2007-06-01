@@ -41,7 +41,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 
 	private static final int INVALID_FIELD_ID = -1;
 
-	private static final int MAX_VISIBLE_COLUMNS = 100;
+	private static final int MAX_VISIBLE_COLUMNS = 400;
 
 	private static final int DEFAULT_COLUMN_WIDTH = 20;
 
@@ -195,6 +195,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		if (fieldsToShowList != null) {
 			fieldsToShow.addAll(fieldsToShowList);
 		}
+		long begin = System.nanoTime();
 		try {
 			underlyingTable.setRedraw(false);
 			TableColumn[] columns = underlyingTable.getColumns();
@@ -213,6 +214,9 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		} finally {
 			underlyingTable.setRedraw(true);
 		}
+		long end = System.nanoTime();
+		long elapsedMillis = (end - begin) / 1000000L;
+		System.out.println("Rendered table: " + elapsedMillis);
 	}
 
 	public int getColumnCount() {
