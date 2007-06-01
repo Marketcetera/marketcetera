@@ -6,6 +6,7 @@ Bundle-Version: 0.3.1
 Bundle-ClassPath: src/main/resources/,
  .
 Eclipse-LazyStart: false
+Eclipse-RegisterBuddy: org.jruby.bsf
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Export-Package: .,
