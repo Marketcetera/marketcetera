@@ -19,6 +19,7 @@ import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
 import quickfix.field.ExecID;
+import quickfix.field.MsgSeqNum;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
@@ -63,6 +64,7 @@ public class PhotonController {
 	public void setMessageFactory(FIXMessageFactory messageFactory) {
 		this.messageFactory = messageFactory;
 	}
+	
 
 	public void handleCounterpartyMessage(final Message aMessage) {
 		fixMessageHistory.addIncomingMessage(aMessage);
@@ -97,6 +99,10 @@ public class PhotonController {
 				cancelOneOrder(aMessage);
 			} else if (FIXMessageUtil.isCancelReplaceRequest(aMessage)) {
 				cancelReplaceOneOrder(aMessage);
+			} else if (FIXMessageUtil.isResendRequest(aMessage)) {
+				requestResend(aMessage);
+			} else {
+				internalMainLogger.warn("Photon controller received message of unknown type: "+aMessage.toString());
 			}
 		} catch (FieldNotFound fnfEx) {
 			MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
@@ -109,6 +115,7 @@ public class PhotonController {
 			ex.printStackTrace();
 		}
 	}
+
 
 	protected void handleExecutionReport(Message aMessage) throws FieldNotFound, NoMoreIDsException {
 		String orderID;
@@ -157,6 +164,10 @@ public class PhotonController {
 		} catch (NoMoreIDsException e) {
 			internalMainLogger.error("Could not send message, no order IDs", e);
 		}
+	}
+
+	private void requestResend(Message message) {
+		convertAndSend(message);
 	}
 
 	protected void cancelReplaceOneOrder(final Message cancelMessage) {

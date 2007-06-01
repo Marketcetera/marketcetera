@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views.fixmessagedetail;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -35,8 +36,13 @@ import org.marketcetera.photon.ui.TableComparatorChooser;
 import org.marketcetera.photon.views.MessagesView;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXValueExtractor;
 
+import quickfix.DataDictionary;
+import quickfix.Field;
+import quickfix.FieldMap;
 import quickfix.Message;
+import quickfix.field.MsgType;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
@@ -302,19 +308,6 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 		messageText.setText(messageTextStr);
 	}
 
-	private String getHumanFieldValueSafely(FIXDataDictionary fixDictionary,
-			int fieldNumber, String fieldValueActual) {
-		String fieldValueReadable = null;
-		if (fieldValueActual != null) {
-			try {
-				fieldValueReadable = fixDictionary.getHumanFieldValue(
-						fieldNumber, fieldValueActual);
-			} catch (Exception anyException) {
-				// Do nothing
-			}
-		}
-		return fieldValueReadable;
-	}
 
 	private ArrayList<FIXMessageDetailTableRow> createRowsFromMessage(
 			Message fixMessage) {
@@ -325,33 +318,45 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 		ArrayList<FIXMessageDetailTableRow> rows = new ArrayList<FIXMessageDetailTableRow>();
 		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
 				.getFIXDataDictionary();
+		
+		String msgType = "";
+		try { msgType = fixMessage.getHeader().getString(MsgType.FIELD); } catch (Exception ex) { /* do nothing */ }
+
 		// Show all fields that are set on the message.
-		for (int fieldNumber = 1; fieldNumber < FIXMessageUtil
-				.getMaxFIXFields(); ++fieldNumber) {
-			addFIXMessageDetailTableRow(fixMessage, fieldNumber, fixDictionary,
-					rows);
-		}
+		addFieldsFromMap(fixMessage.getHeader(), rows, fixDictionary, msgType );
+		addFieldsFromMap(fixMessage, rows, fixDictionary, msgType);
+		addFieldsFromMap(fixMessage.getTrailer(), rows, fixDictionary, msgType);
 
 		return rows;
 	}
 
-	private void addFIXMessageDetailTableRow(Message fixMessage,
-			int fieldNumber, FIXDataDictionary fixDictionary,
-			ArrayList<FIXMessageDetailTableRow> rows) {
+	private void addFieldsFromMap(FieldMap map, ArrayList<FIXMessageDetailTableRow> rows, FIXDataDictionary fixDictionary, String msgType) {
+		Iterator it = map.iterator();
+		while (it.hasNext()){
+			Field aField = (Field) it.next();
+			addFIXMessageDetailTableRow(map, aField.getTag(), rows, fixDictionary,
+					msgType);
+		}
+	}
 
-		if (fixMessage.isSetField(fieldNumber)) {
-			String fieldValueActual = null;
-			try {
-				fieldValueActual = fixMessage.getString(fieldNumber);
-			} catch (Exception anyException) {
-				// Do nothing
+	private void addFIXMessageDetailTableRow(FieldMap map,
+			int fieldNumber,
+			ArrayList<FIXMessageDetailTableRow> rows,
+			FIXDataDictionary fixDictionary, 
+			String msgType
+	) {
+
+		if (map.isSetField(fieldNumber)) {
+			DataDictionary dict = fixDictionary.getDictionary();
+
+			String fieldValueActual = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, false).toString();
+			String fieldValueReadable = "";
+			if (dict.hasFieldValue(fieldNumber)){
+				fieldValueReadable  = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, true).toString();
 			}
-			String fieldValueReadable = getHumanFieldValueSafely(fixDictionary,
-					fieldNumber, fieldValueActual);
 			String fieldName = fixDictionary.getHumanFieldName(fieldNumber);
 
-			boolean required = FIXMessageUtil.isRequiredField(fixMessage,
-					fieldNumber);
+			boolean required = FIXMessageUtil.isRequiredField(msgType, fieldNumber);
 
 			FIXMessageDetailTableRow newRow = new FIXMessageDetailTableRow(
 					fieldName, fieldNumber, fieldValueActual,
