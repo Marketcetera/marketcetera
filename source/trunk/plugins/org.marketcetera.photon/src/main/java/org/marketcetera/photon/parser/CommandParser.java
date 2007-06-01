@@ -7,6 +7,7 @@ import jfun.parsec.FromString;
 import jfun.parsec.FromToken;
 import jfun.parsec.Lexers;
 import jfun.parsec.Map;
+import jfun.parsec.Map2;
 import jfun.parsec.Mapn;
 import jfun.parsec.Parser;
 import jfun.parsec.Parsers;
@@ -30,6 +31,7 @@ import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.FieldType;
@@ -62,7 +64,9 @@ public class CommandParser {
 			whitespaceScanner.many(), tokenLexer).followedBy(Parsers.eof());
 	final Parser<Tok[]> wordLexeme = Lexers.lexeme("wordLexeme",
 			whitespaceScanner.many(), wordLexer).followedBy(Parsers.eof());
-
+	final Parser<Tok[]> numberLexeme = Lexers.lexeme("numberLexeme", 
+			whitespaceScanner.many(), numberLexer).followedBy(Parsers.eof());
+	
 	//////////////////////////////////////////////////////////////
 	// Parsers
 	final Parser<Object> priceParser = Parsers.token(
@@ -105,9 +109,9 @@ public class CommandParser {
 				}
 			});
 
-	final Parser<BigDecimal> integerParser = Terms.integerParser(new FromString<BigDecimal>(){
-		public BigDecimal fromString(int arg0, int arg1, String arg2) {
-			return new BigDecimal(arg2);
+	final Parser<BigInteger> integerParser = Terms.integerParser(new FromString<BigInteger>(){
+		public BigInteger fromString(int arg0, int arg1, String arg2) {
+			return new BigInteger(arg2);
 		}
 	});
 	
@@ -133,6 +137,14 @@ public class CommandParser {
 		}
 	});
 
+	final Parser<IPhotonCommand> resendRequestMapper = Parsers.map2(
+			integerParser, integerParser,
+			new Map2<BigInteger, BigInteger, IPhotonCommand>() {
+				public IPhotonCommand map(BigInteger arg0, BigInteger arg1) {
+					return new SendOrderToOrderManagerCommand(messageFactory.newResendRequest(arg0, arg1));
+				}
+			});
+	
 	final Parser<IPhotonCommand> orderCommandMapper = Parsers.mapn(
 			(Parser<Object>[])new Parser[]{sideImageParser, orderQtyParser, wordParser, priceParser, timeInForceParser.optional(), accountParser.optional()} ,
 		new Mapn<IPhotonCommand>(){
@@ -180,8 +192,14 @@ public class CommandParser {
 	final Parser<IPhotonCommand> cancelCommandParser = Parsers.parseTokens("mainParser",wordLexeme,
 			cancelMapper, "module");
 	
-	final Parser<IPhotonCommand> mainParser = Parsers.plus(getCommandWithPrefix(CommandImage.ORDER,newOrderCommandParser),
-			getCommandWithPrefix(CommandImage.CANCEL,cancelCommandParser));
+	final Parser<IPhotonCommand> resendRequestCommandParser = Parsers.parseTokens("mainParser",numberLexeme,
+			resendRequestMapper, "module");
+
+	final Parser<IPhotonCommand> mainParser = Parsers.plus(
+			getCommandWithPrefix(CommandImage.ORDER,newOrderCommandParser),
+			getCommandWithPrefix(CommandImage.CANCEL,cancelCommandParser),
+			getCommandWithPrefix(CommandImage.RESEND_REQUEST,resendRequestCommandParser)
+			);
 
 	private <T> Parser<T> getCommandWithPrefix(CommandImage image, Parser<T> suffixParser){
 		String theImage = image.getImage();

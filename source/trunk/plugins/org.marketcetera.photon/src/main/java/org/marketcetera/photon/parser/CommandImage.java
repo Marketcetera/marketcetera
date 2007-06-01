@@ -20,7 +20,8 @@ public enum CommandImage implements ILexerImage {
     CANCEL("C"),
     CANCEL_REPLACE("CXR"),
     SET("SET"),
-    UNSET("UNSET");
+    UNSET("UNSET"),
+	RESEND_REQUEST("RR");
 	private static final Map<String, CommandImage> nameMap = new HashMap<String, CommandImage>();
 	private static final String[] images;
 
