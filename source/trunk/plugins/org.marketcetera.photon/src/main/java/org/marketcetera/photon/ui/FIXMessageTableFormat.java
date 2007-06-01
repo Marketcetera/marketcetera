@@ -195,9 +195,10 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		if (fieldsToShowList != null) {
 			fieldsToShow.addAll(fieldsToShowList);
 		}
-		long begin = System.nanoTime();
+		long begin = 0, end = 0;
 		try {
 			underlyingTable.setRedraw(false);
+			begin = System.nanoTime();
 			TableColumn[] columns = underlyingTable.getColumns();
 			int numShownColumns = 0;
 			for (TableColumn column : columns) {
@@ -212,11 +213,11 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 				}
 			}
 		} finally {
+			end = System.nanoTime();
 			underlyingTable.setRedraw(true);
 		}
-		long end = System.nanoTime();
 		long elapsedMillis = (end - begin) / 1000000L;
-		System.out.println("Rendered table: " + elapsedMillis);
+		PhotonPlugin.getMainConsoleLogger().debug("Rendered table: " + elapsedMillis + "ms");
 	}
 
 	public int getColumnCount() {
