@@ -9,6 +9,7 @@ import quickfix.Message;
 import quickfix.field.*;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
@@ -89,6 +90,26 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
                 basicOrder.toString(), new CxlRejReason(CxlRejReason.UNKNOWN_ORDER));
         assertTrue(reject.isSetField(CxlRejReason.FIELD));
         assertNotNull(new Message(reject.toString()));
+    }
+    
+    public void testNewResendRequest() throws Exception {
+    	Message rr;
+    	rr = msgFactory.newResendRequest(null, null);
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(0, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(0, rr.getInt(EndSeqNo.FIELD));
+    	rr = msgFactory.newResendRequest(null, BigInteger.TEN);
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(0, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(9, rr.getInt(EndSeqNo.FIELD));
+    	rr = msgFactory.newResendRequest(BigInteger.TEN, null);
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(9, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(0, rr.getInt(EndSeqNo.FIELD));
+    	rr = msgFactory.newResendRequest(new BigInteger("24"), new BigInteger("38"));
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(24, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(38, rr.getInt(EndSeqNo.FIELD));
     }
 
 }

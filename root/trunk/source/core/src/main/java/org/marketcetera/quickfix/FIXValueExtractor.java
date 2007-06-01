@@ -45,7 +45,7 @@ public class FIXValueExtractor {
 			} else {
 				map = inMap;
 			}
-			value = fieldValueFromMap(map, fieldID, humanReadable);
+			value = fieldValueFromMap(map, fieldID, dataDictionary, humanReadable);
 		}
 		return value;
 	}
@@ -73,11 +73,11 @@ public class FIXValueExtractor {
 		return map;
 	}
 
-	protected Object fieldValueFromMap(FieldMap map, Integer fieldID, boolean humanReadable) {
+	public static Object fieldValueFromMap(FieldMap map, int fieldID, DataDictionary dict, boolean humanReadable) {
 		Object value = null;
 		if (map != null){
 			try {
-				FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
+				FieldType fieldType = dict.getFieldTypeEnum(fieldID);
 				if (fieldType == null){
 					value = map.getString(fieldID);
 				} else if (fieldType.equals(FieldType.UtcTimeOnly)) {
@@ -89,9 +89,14 @@ public class FIXValueExtractor {
 					value = map.getUtcDateOnly(fieldID);
 				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
 					value = new BigDecimal(map.getString(fieldID));
-				} else if (humanReadable && dataDictionary.hasFieldValue(fieldID)){
-					value = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
-				} else if (fieldID.intValue() == ClOrdID.FIELD) {
+				} else if (humanReadable && dict.hasFieldValue(fieldID)){
+					value = map.getString(fieldID);
+					try {
+						value = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
+					} catch (Exception ex){
+						// do nothing, use the string value
+					}
+				} else if (fieldID == ClOrdID.FIELD) {
 					value = new NumericStringSortable(map.getString(fieldID));
 				} else {
 					value = map.getString(fieldID);

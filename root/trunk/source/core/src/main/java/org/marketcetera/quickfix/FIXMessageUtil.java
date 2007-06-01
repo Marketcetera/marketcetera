@@ -126,6 +126,10 @@ public class FIXMessageUtil {
     	return msgTypeHelper(message, MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
 	}
 	
+	public static boolean isResendRequest(Message message) {
+		return msgTypeHelper(message, MsgType.RESEND_REQUEST);
+	}
+	
 	
 	public static boolean isCancellable(char ordStatus) {
 		switch (ordStatus){
@@ -201,9 +205,20 @@ public class FIXMessageUtil {
     }
     
     public static boolean isRequiredField(Message message, int whichField) {
-		boolean required = false;
+    	boolean required = false;
 		try {
-			String msgType = message.getHeader().getString(MsgType.FIELD);
+			String msgType;
+			msgType = message.getHeader().getString(MsgType.FIELD);
+			return isRequiredField(msgType, whichField);
+		} catch (Exception e) {
+			// Ignore
+		}
+		return required;
+    }
+
+    public static boolean isRequiredField(String msgType, int whichField){
+    	boolean required = false;
+		try {
 			DataDictionary dictionary = FIXDataDictionaryManager
 					.getCurrentFIXDataDictionary().getDictionary();
 			required = dictionary.isRequiredField(msgType, whichField);
@@ -343,5 +358,6 @@ public class FIXMessageUtil {
 		}
 
 	}
+
 
 }
