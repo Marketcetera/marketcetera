@@ -101,10 +101,10 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
     	rr = msgFactory.newResendRequest(null, BigInteger.TEN);
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
     	assertEquals(0, rr.getInt(BeginSeqNo.FIELD));
-    	assertEquals(9, rr.getInt(EndSeqNo.FIELD));
+    	assertEquals(10, rr.getInt(EndSeqNo.FIELD));
     	rr = msgFactory.newResendRequest(BigInteger.TEN, null);
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
-    	assertEquals(9, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(10, rr.getInt(BeginSeqNo.FIELD));
     	assertEquals(0, rr.getInt(EndSeqNo.FIELD));
     	rr = msgFactory.newResendRequest(new BigInteger("24"), new BigInteger("38"));
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
