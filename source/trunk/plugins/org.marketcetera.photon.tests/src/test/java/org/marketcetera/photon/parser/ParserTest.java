@@ -1,6 +1,7 @@
 package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 import jfun.parsec.ParserException;
 import junit.framework.Test;
@@ -19,6 +20,9 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.Account;
+import quickfix.field.BeginSeqNo;
+import quickfix.field.EndSeqNo;
+import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.Side;
@@ -196,6 +200,43 @@ public class ParserTest extends FIXVersionedTestCase {
     	} catch (FieldNotFound ex) {
     		assertNull(account);
     	}
+    }
+    
+    public void testResendRequest() throws FieldNotFound {
+    	CommandParser aParser = new CommandParser();
+    	aParser.setIDFactory(new InMemoryIDFactory(10));
+    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	String commandText;  
+    	MessageCommand command;
+    	Message rr;
+
+    	commandText = "RR 0 0";
+		command = (MessageCommand) aParser.parseCommand(commandText);
+		rr = command.getMessage();
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(0, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(0, rr.getInt(EndSeqNo.FIELD));
+
+    	commandText = "RR 0 9";
+		command = (MessageCommand) aParser.parseCommand(commandText);
+		rr = command.getMessage();
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(0, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(9, rr.getInt(EndSeqNo.FIELD));
+
+    	commandText = "RR 9 0";
+		command = (MessageCommand) aParser.parseCommand(commandText);
+		rr = command.getMessage();
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(9, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(0, rr.getInt(EndSeqNo.FIELD));
+
+    	commandText = "RR 24 38";
+		command = (MessageCommand) aParser.parseCommand(commandText);
+		rr = command.getMessage();
+    	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
+    	assertEquals(24, rr.getInt(BeginSeqNo.FIELD));
+    	assertEquals(38, rr.getInt(EndSeqNo.FIELD));
     }
     
     public void testFullOrder() throws FieldNotFound{
