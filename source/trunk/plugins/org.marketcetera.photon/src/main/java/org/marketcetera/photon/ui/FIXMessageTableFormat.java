@@ -6,18 +6,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
-import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
@@ -37,13 +33,9 @@ import ca.odell.glazedlists.gui.TableFormat;
  * preference changes for the assigned view ID and updates the visible columns.
  */
 public class FIXMessageTableFormat<T> implements TableFormat<T>,
-		ITableLabelProvider, IPropertyChangeListener {
+		ITableLabelProvider {
 
 	private static final int INVALID_FIELD_ID = -1;
-
-	private static final int MAX_VISIBLE_COLUMNS = 400;
-
-	private static final int DEFAULT_COLUMN_WIDTH = 20;
 
 	// todo: This constant is duplicated from EnumTableFormat.
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat(
@@ -62,17 +54,11 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 
 	private Table underlyingTable;
 
-	private HashMap<TableColumn, Integer> columnWidthsWhenVisible = new HashMap<TableColumn, Integer>();
-
-	private HashMap<Integer, TableColumn> fieldToColumnMap = new HashMap<Integer, TableColumn>();
-
-	private HashMap<TableColumn, Integer> columnToFieldMap = new HashMap<TableColumn, Integer>();
-
-	private HashMap<Integer, Integer> columnIndexToFieldMap = new HashMap<Integer, Integer>();
-
 	private FIXValueExtractor valueExtractor;
 
 	private Class<T> underlyingClass;
+
+	private ColumnTracker columnTracker = new ColumnTracker();
 
 	public FIXMessageTableFormat(Table table, final String assignedViewID,
 			Class<T> underlyingClass) {
@@ -81,75 +67,100 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		this.underlyingClass = underlyingClass;
 		prefsParser = new FIXMessageColumnPreferenceParser();
 
-		createAllColumns();
 		updateColumnsFromPreferences();
-		addListeners();
 	}
 
-	protected void addListeners() {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault()
-				.getPreferenceStore();
-		thePreferenceStore.addPropertyChangeListener(this);
+	private static class ColumnTracker {
+		private HashMap<Integer, TableColumn> fieldToColumnMap = new HashMap<Integer, TableColumn>();
+
+		private HashMap<TableColumn, Integer> columnToFieldMap = new HashMap<TableColumn, Integer>();
+
+		private HashMap<Integer, Integer> columnIndexToFieldMap = new HashMap<Integer, Integer>();
+
+		private HashMap<Integer, Integer> fieldToColumnIndexMap = new HashMap<Integer, Integer>();
+
+		public void add(int fieldNum, TableColumn column, int columnIndex) {
+			fieldToColumnMap.put(fieldNum, column);
+			columnToFieldMap.put(column, fieldNum);
+			columnIndexToFieldMap.put(columnIndex, fieldNum);
+			fieldToColumnIndexMap.put(fieldNum, columnIndex);
+		}
+
+		public void remove(TableColumn column) {
+			int fieldNum = columnToFieldMap.get(column);
+			int columnIndex = fieldToColumnIndexMap.get(fieldNum);
+
+			fieldToColumnMap.remove(fieldNum);
+			columnToFieldMap.remove(column);
+			columnIndexToFieldMap.remove(columnIndex);
+			fieldToColumnIndexMap.remove(fieldNum);
+		}
+
+		public boolean containsFieldNumber(int fieldNum) {
+			return fieldToColumnMap.containsKey(fieldNum);
+		}
+
+		public int getFieldNumber(int columnIndex) {
+			int fieldNum = INVALID_FIELD_ID;
+			if (columnIndexToFieldMap.containsKey(columnIndex)) {
+				fieldNum = columnIndexToFieldMap.get(columnIndex);
+			}
+			return fieldNum;
+		}
 	}
 
-	protected void removeListeners() {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault()
-				.getPreferenceStore();
-		thePreferenceStore.removePropertyChangeListener(this);
+	public String getAssignedViewID() {
+		return assignedViewID;
 	}
 
-	protected void createAllColumns() {
+	private void createColumn(int fieldNum, DataDictionary dictionary) {
+		int alignment;
+		if (isNumericColumn(fieldNum, dictionary)) {
+			alignment = SWT.RIGHT;
+		} else {
+			alignment = SWT.LEFT;
+		}
+		TableColumn tableColumn = new TableColumn(underlyingTable, alignment);
+		String columnName = getFIXFieldColumnName(fieldNum);
+		String localizedName = FIXFieldLocalizer
+				.getLocalizedMessage(columnName);
+		tableColumn.setText(localizedName);
+		tableColumn.setResizable(true);
+		tableColumn.pack();
+		/**
+		 * todo: Allow column moving to change the order in the column
+		 * preferences. See FIXMessageColumnPreferencePage for what needs to be
+		 * set.
+		 */
+		tableColumn.setMoveable(false);
+
+		int columnIndex = underlyingTable.getColumnCount() - 1;
+		columnTracker.add(fieldNum, tableColumn, columnIndex);
+	}
+
+	private void removeColumn(TableColumn whichColumn) {
+		columnTracker.remove(whichColumn);
+		whichColumn.dispose();
+	}
+
+	private void createAllMissingColumns(List<Integer> fieldsToShow) {
 		// todo: Handle columns that are not FIX fields.
 		// todo: Handle adding custom FIX fields as columns.
-		for (int fieldNum = 1; fieldNum < FIXMessageUtil.getMaxFIXFields(); ++fieldNum) {
-			DataDictionary dictionary = getDataDictionary();
-			if (dictionary.isField(fieldNum)) {
-				int alignment;
-				if (isNumericColumn(fieldNum, dictionary)) {
-					alignment = SWT.RIGHT;
-				} else {
-					alignment = SWT.LEFT;
+		DataDictionary dictionary = getDataDictionary();
+		if (fieldsToShow.isEmpty()) {
+			for (int fieldNum = 1; fieldNum < FIXMessageUtil.getMaxFIXFields(); ++fieldNum) {
+				if (dictionary.isField(fieldNum)) {
+					if (!columnTracker.containsFieldNumber(fieldNum)) {
+						createColumn(fieldNum, dictionary);
+					}
 				}
-				TableColumn tableColumn = new TableColumn(underlyingTable,
-						alignment);
-				String columnName = getFIXFieldColumnName(fieldNum);
-				String localizedName = FIXFieldLocalizer
-						.getLocalizedMessage(columnName);
-				tableColumn.setText(localizedName);
-
-				fieldToColumnMap.put(fieldNum, tableColumn);
-				columnToFieldMap.put(tableColumn, fieldNum);
-
-				int columnIndex = underlyingTable.getColumnCount() - 1;
-				columnIndexToFieldMap.put(columnIndex, fieldNum);
 			}
-		}
-	}
-
-	protected void hideColumn(TableColumn tableColumn) {
-		int currentWidth = tableColumn.getWidth();
-		if (currentWidth > 0) {
-			tableColumn.setResizable(false);
-			columnWidthsWhenVisible.put(tableColumn, currentWidth);
-			tableColumn.setWidth(0);
-		}
-		// Else already hidden
-	}
-
-	protected void showColumn(TableColumn tableColumn) {
-		tableColumn.setResizable(true);
-		if (tableColumn.getWidth() > 0) {
-			// Already shown
-			return;
-		}
-		int width = 0;
-		if (columnWidthsWhenVisible.containsKey(tableColumn)) {
-			width = columnWidthsWhenVisible.get(tableColumn);
-		}
-		if (width > 0) {
-			tableColumn.setWidth(width);
 		} else {
-			tableColumn.setWidth(DEFAULT_COLUMN_WIDTH);
+			for (int fieldNum : fieldsToShow) {
+				if (!columnTracker.containsFieldNumber(fieldNum)) {
+					createColumn(fieldNum, dictionary);
+				}
+			}
 		}
 	}
 
@@ -173,7 +184,6 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 	}
 
 	public void dispose() {
-		removeListeners();
 	}
 
 	public void removeListener(ILabelProviderListener listener) {
@@ -187,37 +197,37 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return null;
 	}
 
+	private void removeAllColumns() {
+		TableColumn[] columns = underlyingTable.getColumns();
+		for (TableColumn column : columns) {
+			removeColumn(column);
+		}
+	}
+
+	private void recreateAllColumns(List<Integer> fieldsToShow) {
+		removeAllColumns();
+		createAllMissingColumns(fieldsToShow);
+	}
+
 	public void updateColumnsFromPreferences() {
 		// todo: This should also dictate column order.
 		List<Integer> fieldsToShowList = prefsParser
 				.getFieldsToShow(assignedViewID);
-		HashSet<Integer> fieldsToShow = new HashSet<Integer>();
-		if (fieldsToShowList != null) {
-			fieldsToShow.addAll(fieldsToShowList);
-		}
 		long begin = 0, end = 0;
 		try {
+			underlyingTable.getParent().setRedraw(false);
 			underlyingTable.setRedraw(false);
 			begin = System.nanoTime();
-			TableColumn[] columns = underlyingTable.getColumns();
-			int numShownColumns = 0;
-			for (TableColumn column : columns) {
-				int fieldNum = columnToFieldMap.get(column);
-				if (numShownColumns < MAX_VISIBLE_COLUMNS
-						&& (fieldsToShow.isEmpty() || fieldsToShow
-								.contains(fieldNum))) {
-					showColumn(column);
-					++numShownColumns;
-				} else {
-					hideColumn(column);
-				}
-			}
+			recreateAllColumns(fieldsToShowList);
 		} finally {
 			end = System.nanoTime();
+			underlyingTable.getParent().setRedraw(true);
 			underlyingTable.setRedraw(true);
+
 		}
 		long elapsedMillis = (end - begin) / 1000000L;
-		PhotonPlugin.getMainConsoleLogger().debug("Rendered table: " + elapsedMillis + "ms");
+		PhotonPlugin.getMainConsoleLogger().debug(
+				"Rendered table: " + elapsedMillis + "ms");
 	}
 
 	public int getColumnCount() {
@@ -242,21 +252,13 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return getFIXFieldColumnName(column);
 	}
 
-	public Object getColumnValue(T baseObject, int column) {
-		int fieldNum = getFieldNumber(baseObject, column);
+	public Object getColumnValue(T baseObject, int columnIndex) {
+		int fieldNum = columnTracker.getFieldNumber(columnIndex);
 		Object columnValue = null;
 		if (fieldNum != INVALID_FIELD_ID) {
-			columnValue = extractValue(fieldNum, baseObject, column);
+			columnValue = extractValue(fieldNum, baseObject, columnIndex);
 		}
 		return columnValue;
-	}
-
-	protected int getFieldNumber(T baseObject, int column) {
-		int fieldNum = INVALID_FIELD_ID;
-		if (columnIndexToFieldMap.containsKey(column)) {
-			fieldNum = columnIndexToFieldMap.get(column);
-		}
-		return fieldNum;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -275,7 +277,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		String textValue = null;
 		if (objValue != null) {
 			DataDictionary dictionary = getDataDictionary();
-			int fieldNum = getFieldNumber(baseObject, columnIndex);
+			int fieldNum = columnTracker.getFieldNumber(columnIndex);
 			FieldType fieldType = dictionary.getFieldTypeEnum(fieldNum);
 			if (objValue instanceof Date) {
 				if (fieldType.equals(FieldType.UtcTimeOnly)
@@ -329,12 +331,5 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		Object value = valueExtractor.extractValue(fieldMap, fieldNum, groupID,
 				groupDiscriminatorID, groupDiscriminatorValue, true);
 		return value;
-	}
-
-	public void propertyChange(PropertyChangeEvent event) {
-		String affectedProperty = event.getProperty();
-		if (prefsParser.isPreferenceForView(affectedProperty, assignedViewID)) {
-			updateColumnsFromPreferences();
-		}
 	}
 }
