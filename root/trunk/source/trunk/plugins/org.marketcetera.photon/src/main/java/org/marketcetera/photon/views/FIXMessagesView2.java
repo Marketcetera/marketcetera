@@ -12,6 +12,7 @@ import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
+import org.marketcetera.photon.ui.FIXMessageTableRefresher;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 
 import quickfix.field.MsgType;
@@ -37,6 +38,8 @@ public class FIXMessagesView2 extends HistoryMessagesView implements
 
 	private ShowHeartbeatsAction showHeartbeatsAction;
 
+	private FIXMessageTableRefresher tableRefresher;
+
 	private static final String SHOW_HEARTBEATS_SAVED_STATE_KEY = "SHOW_HEARTBEATS";
 
 	protected Enum[] getEnumValues() {
@@ -51,6 +54,15 @@ public class FIXMessagesView2 extends HistoryMessagesView implements
 		 * list is not yet available by the time init() is called
 		 */
 		setShowHeartbeats(showHeartbeatsAction.isChecked());
+	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+		if (tableRefresher != null) {
+			tableRefresher.dispose();
+			tableRefresher = null;
+		}
 	}
 
 	/*
@@ -127,9 +139,12 @@ public class FIXMessagesView2 extends HistoryMessagesView implements
 		// todo: Add back the message direction column.
 		// aMessagesViewer.setLabelProvider(new
 		// DirectionalMessageTableFormat(aMessageTable, enums, getSite()));
-		aMessagesViewer
-				.setLabelProvider(new FIXMessageTableFormat<MessageHolder>(
-						aMessageTable, FIXMessagesView.ID, MessageHolder.class));
+		FIXMessageTableFormat<MessageHolder> tableFormat = new FIXMessageTableFormat<MessageHolder>(
+				aMessageTable, FIXMessagesView.ID, MessageHolder.class);
+		aMessagesViewer.setLabelProvider(tableFormat);
+
+		tableRefresher = new FIXMessageTableRefresher(aMessagesViewer,
+				tableFormat);
 		return aMessagesViewer;
 	}
 
