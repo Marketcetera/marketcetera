@@ -1,6 +1,7 @@
 package org.marketcetera.quickfix;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -15,10 +16,12 @@ import quickfix.MessageFactory;
 import quickfix.StringField;
 import quickfix.field.Account;
 import quickfix.field.AvgPx;
+import quickfix.field.BeginSeqNo;
 import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
 import quickfix.field.CxlRejReason;
 import quickfix.field.CxlRejResponseTo;
+import quickfix.field.EndSeqNo;
 import quickfix.field.ExecID;
 import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
@@ -399,4 +402,22 @@ public class FIXMessageFactory {
             msg.setField(new TransactTime(new Date()));
         }
     }
+
+
+	public Message newResendRequest(BigInteger beginSeqNo, BigInteger endSeqNo) {
+		Message rr = msgFactory.create(beginString, MsgType.RESEND_REQUEST);
+		if (beginSeqNo == null){
+			// from 0
+			rr.setField(new BeginSeqNo(0));
+		} else {
+			rr.setField(new StringField(BeginSeqNo.FIELD,beginSeqNo.toString()));
+		}
+		if (endSeqNo == null){
+			// to infinity 
+			rr.setField(new EndSeqNo(0));
+		} else {
+			rr.setField(new StringField(EndSeqNo.FIELD,endSeqNo.toString()));
+		}
+		return rr;
+	}
 }
