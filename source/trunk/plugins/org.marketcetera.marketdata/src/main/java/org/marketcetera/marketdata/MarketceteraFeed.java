@@ -11,12 +11,12 @@ import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.Util;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -50,6 +50,7 @@ import quickfix.field.SenderCompID;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.TargetCompID;
 import quickfix.field.TestMessageIndicator;
+import quickfix.field.Text;
 import quickfix.fix44.MessageFactory;
 
 public class MarketceteraFeed extends MarketDataFeedBase implements Application {
@@ -65,8 +66,10 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
 	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
+	private final Logger logger;
 
-	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties) throws MarketceteraException {
+	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties, Logger logger) throws MarketceteraException {
+		this.logger = logger;
 		try {
 			idFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+ InetAddress.getLocalHost().toString());
 			URI feedURI = new URI(url);
@@ -104,10 +107,12 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			Integer marketDepth = null;
 			try { marketDepth = query.getInt(MarketDepth.FIELD); } catch (FieldNotFound fnf) { /* do nothing */ }
 			String reqID = addReqID(query);
-      sendMessage(query);
-      return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
+			sendMessage(query);
+			return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
 		} catch (SessionNotFound e) {
+			logger.error("Session not found while trying to execute async query: "+query);
 		} catch (FieldNotFound e) {
+			logger.error(e.toString()+" "+query);
 		}
 		return null;
 	}
@@ -210,33 +215,33 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	public void start() {
 
 		synchronized (this){
-		try {
-			if (!isRunning){
-				MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
-				SessionSettings sessionSettings;
-				sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
-				sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
-				sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
-
-				File workspaceDir = Activator.getDefault().getStoreDirectory();
-				File quoteFeedLogDir = new File(workspaceDir, "marketdata");
-				if (!quoteFeedLogDir.exists())
-				{
-					quoteFeedLogDir.mkdir();
+			try {
+				if (!isRunning){
+					MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
+					SessionSettings sessionSettings;
+					sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
+					sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
+					sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
+	
+					File workspaceDir = Activator.getDefault().getStoreDirectory();
+					File quoteFeedLogDir = new File(workspaceDir, "marketdata");
+					if (!quoteFeedLogDir.exists())
+					{
+						quoteFeedLogDir.mkdir();
+					}
+					sessionSettings.setString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH, quoteFeedLogDir.getCanonicalPath());
+	
+	//				LogFactory logFactory = new FileLogFactory(sessionSettings);
+					LogFactory logFactory = new EventLogFactory(sessionSettings);
+					messageFactory = new MessageFactory();
+					socketInitiator = new SocketInitiator(this, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+					socketInitiator.start();
+					isRunning = true;
 				}
-				sessionSettings.setString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH, quoteFeedLogDir.getCanonicalPath());
-
-//				LogFactory logFactory = new FileLogFactory(sessionSettings);
-				LogFactory logFactory = new EventLogFactory(sessionSettings);
-				messageFactory = new MessageFactory();
-				socketInitiator = new SocketInitiator(this, messageStoreFactory, sessionSettings, logFactory, messageFactory);
-				socketInitiator.start();
-				isRunning = true;
+			} catch (Throwable t) {
+				logger.error("Exception trying to start Marketcetera feed: "+t.getLocalizedMessage());
+				setFeedStatus(FeedStatus.ERROR);
 			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			setFeedStatus(FeedStatus.ERROR);
-		}
 		}
 	}
 
@@ -264,6 +269,13 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			} catch (FieldNotFound fnf) {
 				feedType = FeedType.LIVE;
 			}
+			logger.info("Marketcetera feed received Logon");
+		} else if (MsgType.LOGOUT.equals(msgType)){
+			String text = "";
+			try {
+				text = ": "+message.getString(Text.FIELD);
+			} catch (FieldNotFound fnf){ /* do nothing */ }
+			logger.info("Marketcetera feed received Logout"+text);
 		}
 	}
 
@@ -299,6 +311,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	}
 
 	public void onCreate(SessionID sessionID) {
+		logger.info("Marketcetera feed session created "+sessionID);
 	}
 
 	public void onLogon(SessionID sessionID) {
