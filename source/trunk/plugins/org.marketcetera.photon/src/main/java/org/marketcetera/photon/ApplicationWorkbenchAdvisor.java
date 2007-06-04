@@ -19,7 +19,7 @@ import org.eclipse.ui.internal.ide.IDEInternalWorkbenchImages;
 import org.eclipse.ui.internal.ide.IDEWorkbenchPlugin;
 import org.eclipse.ui.internal.ide.model.WorkbenchAdapterBuilder;
 import org.marketcetera.photon.ui.EquityPerspectiveFactory;
-import org.marketcetera.photon.ui.MainConsole;
+import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.Bundle;
 
 /**
@@ -47,7 +47,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	}
 
 	/**
-	 * Creates a new MainConsole and adds it to the ConsoleManager
+	 * Creates a new PhotonConsole and adds it to the ConsoleManager
 	 * 
 	 * @see org.eclipse.ui.application.WorkbenchAdvisor#initialize(org.eclipse.ui.application.IWorkbenchConfigurer)
 	 */
@@ -58,12 +58,16 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		registerIdeAdapters();
 		declareIdeWorkbenchImages();
 		
-		MainConsole mainConsole = new MainConsole();
+		PhotonConsole photonConsole = new PhotonConsole(Messages.MainConsole_Name, PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME);
+		PhotonConsole dataFeedConsole = new PhotonConsole(Messages.MarketDataConsole_Name, PhotonPlugin.MARKETDATA_CONSOLE_LOGGER_NAME);
+
+		// I think the last one in the array is the one that is shown
+		// by default at application startup.
 		ConsolePlugin.getDefault().getConsoleManager().addConsoles(
-				new IConsole[] { mainConsole });
+				new IConsole[] { dataFeedConsole, photonConsole });
 		
-		System.setOut(new PrintStream(mainConsole.getInfoMessageStream(), true));
-		System.setErr(new PrintStream(mainConsole.getErrorMessageStream(), true));
+		System.setOut(new PrintStream(photonConsole.getInfoMessageStream(), true));
+		System.setErr(new PrintStream(photonConsole.getErrorMessageStream(), true));
 	}
 
 	

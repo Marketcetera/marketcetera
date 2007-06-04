@@ -38,6 +38,8 @@ public class Messages extends NLS {
 
 	public static String MainConsole_Name;
 
+	public static String MarketDataConsole_Name;
+
 	public static String ApplicationActionBarAdvisor_OpenPerspectiveMenuName;
 
 	public static String ApplicationActionBarAdvisor_OpenPerspectiveMenuID;

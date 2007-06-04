@@ -72,6 +72,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
 
+	private Logger marketDataLogger = Logger.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
+
 	private ScriptRegistry scriptRegistry;
 
 	private PhotonController photonController;
@@ -81,6 +83,8 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	private BundleContext bundleContext;
 	
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
+
+	public static final String MARKETDATA_CONSOLE_LOGGER_NAME = "marketdata.console.logger";
 
 	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts";
 
@@ -248,6 +252,10 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public Logger getMainLogger()
 	{
 		return mainConsoleLogger;
+	}
+
+	public Logger getMarketDataLogger() {
+		return marketDataLogger;
 	}
 	
 	public static Logger getMainConsoleLogger()
@@ -423,4 +431,5 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public String getNextSecondaryID() {
 		return secondaryIDCreator.getNextSecondaryID();
 	}
+
 }
