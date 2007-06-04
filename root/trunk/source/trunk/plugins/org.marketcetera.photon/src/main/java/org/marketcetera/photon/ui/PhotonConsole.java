@@ -18,7 +18,7 @@ import org.marketcetera.photon.Messages;
  * 
  */
 @ClassVersion("$Id$")
-public class MainConsole extends MessageConsole {
+public class PhotonConsole extends MessageConsole {
 
 	private MessageConsoleStream errorMessageStream;
 
@@ -28,13 +28,16 @@ public class MainConsole extends MessageConsole {
 
 	private MessageConsoleStream debugMessageStream;
 
+	private final String identifier;
+
 	/**
-	 * Creates a new MainConsole and initializes the
+	 * Creates a new PhotonConsole and initializes the
 	 * {@link MessageConsoleStream} obejcts for error, warn, info, and debug
 	 * messages, settin each of them to output text in a different color.
 	 */
-	public MainConsole() {
-		super(Messages.MainConsole_Name, null);
+	public PhotonConsole(String humanReadableName, String identifier) {
+		super(humanReadableName, null);
+		this.identifier = identifier;
 		Display display = Display.getDefault();
 		errorMessageStream = newMessageStream();
 		errorMessageStream.setColor(display.getSystemColor(SWT.COLOR_RED));
@@ -87,6 +90,10 @@ public class MainConsole extends MessageConsole {
 	 */
 	public MessageConsoleStream getWarnMessageStream() {
 		return warnMessageStream;
+	}
+
+	public String getIdentifier() {
+		return identifier;
 	}
 
 }

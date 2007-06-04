@@ -2,6 +2,7 @@ package org.marketcetera.photon;
 
 import java.util.Date;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
@@ -20,11 +21,7 @@ import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.messaging.JMSFeedService;
-import org.marketcetera.photon.ui.MainConsole;
-import org.marketcetera.photon.views.OptionOrderTicket;
-import org.marketcetera.photon.views.OptionOrderTicketController;
-import org.marketcetera.photon.views.StockOrderTicket;
-import org.marketcetera.photon.views.StockOrderTicketController;
+import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
@@ -97,21 +94,36 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 		IConsole[] consoles = ConsolePlugin.getDefault().getConsoleManager()
 				.getConsoles();
-		Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		Logger mainConsoleLogger = plugin.getMainLogger();
+		Logger marketDataLogger = plugin.getMarketDataLogger();
+		PhotonConsole mainConsole = null;
+		// loop through once to find the main console
 		for (IConsole console : consoles) {
-			if (console instanceof MainConsole) {
-				MainConsole mainConsole = (MainConsole) console;
-				PhotonConsoleAppender appender = new PhotonConsoleAppender(
-						mainConsole);
-				mainConsoleLogger.addAppender(appender);
+			if (console instanceof PhotonConsole) {
+				PhotonConsole photonConsole = (PhotonConsole) console;
+				if (PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME.equals(photonConsole.getIdentifier())){
+					mainConsole = photonConsole;
+				}
 			}
-		} 
+		}
+		assert(mainConsole != null);
+		mainConsoleLogger.addAppender(new PhotonConsoleAppender(mainConsole));
+		// loop through a second time to find the secondary consoles.
+		for (IConsole console : consoles) {
+			PhotonConsole photonConsole = (PhotonConsole) console;
+			if (PhotonPlugin.MARKETDATA_CONSOLE_LOGGER_NAME
+					.equals(photonConsole.getIdentifier())) {
+				marketDataLogger.addAppender(new PhotonConsoleAppender(photonConsole));
+				// also output logging to the main console appender if the level is high enough
+				mainConsoleLogger.addAppender(new PhotonConsoleAppender(mainConsole, Level.WARN));
+			}
+		}
 
 
 		mainConsoleLogger.info(
 				"Application initializing: " + new Date());
 
-		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
 		job.schedule();

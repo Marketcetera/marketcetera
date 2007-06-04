@@ -47,7 +47,9 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		Logger logger = PhotonPlugin.getMainConsoleLogger();
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		Logger logger = plugin.getMainLogger();
+		Logger marketDataLogger = plugin.getMarketDataLogger();
 		if (reconnectInProgress.getAndSet(true)){
 			return Status.CANCEL_STATUS;
 		}
@@ -79,12 +81,12 @@ public class ReconnectMarketDataFeedJob extends Job {
 			    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
 			    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
 			    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
-			    		ScopedPreferenceStore store = PhotonPlugin.getDefault().getPreferenceStore();
+			    		ScopedPreferenceStore store = plugin.getPreferenceStore();
 			    		String url = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_URL_SUFFIX);
 			    		String user = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_USER_SUFFIX);
 			    		String password = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_PASSWORD_SUFFIX);
 			    		Map<String, Object> parameters = getParameters(factory, store, pluginName);
-			    		IMarketDataFeed targetQuoteFeed = factory.getInstance(url, user, password, parameters);
+			    		IMarketDataFeed targetQuoteFeed = factory.getInstance(url, user, password, parameters, marketDataLogger);
 			    		// Quote feed must be started before registration so
 						// that resubscription works properly. See bug #213.
 			    		targetQuoteFeed.start();
