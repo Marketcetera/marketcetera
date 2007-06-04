@@ -6,6 +6,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.core.NoOpLogger;
 import org.marketcetera.photon.marketdata.MarketDataUtils;
 import quickfix.Message;
 import quickfix.field.NoRelatedSym;
@@ -62,7 +63,7 @@ public class MarketceteraFeedTest extends TestCase {
         private Vector<Message> messages;
         public MockMarketceteraFeed(String url, String userName, String password, Map<String, Object> properties)
                 throws MarketceteraException {
-            super(url, userName, password, properties);
+            super(url, userName, password, properties, new NoOpLogger(""));
             messages = new Vector<Message>();
         }
 
