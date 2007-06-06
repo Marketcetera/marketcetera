@@ -85,6 +85,10 @@ public class FIXMessageUtil {
     public static boolean isReject(Message message) {
         return msgTypeHelper(message, MsgType.REJECT);
     }
+    
+    public static boolean isBusinessMessageReject(Message message) {
+    	return msgTypeHelper(message, MsgType.BUSINESS_MESSAGE_REJECT);
+    }
 
     public static boolean isCancelReject(Message message) {
         return msgTypeHelper(message, MsgType.ORDER_CANCEL_REJECT);
