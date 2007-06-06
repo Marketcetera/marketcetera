@@ -426,16 +426,3 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

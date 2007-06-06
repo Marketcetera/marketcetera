@@ -10,6 +10,8 @@ import quickfix.field.*;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashSet;
 
 public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
@@ -20,7 +22,8 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 	}
 
 	public static Test suite() {
-		return new FIXVersionTestSuite(FIXMessageFactoryTest.class, FIXVersion.values());
+		return new FIXVersionTestSuite(FIXMessageFactoryTest.class, FIXVersion.values(), 
+                new HashSet<String>(Arrays.asList("testNewBusinessMessageReject")), FIXVersionTestSuite.FIX42_PLUS_VERSIONS);
 	}
 	
 	public void testNewLimitOrder() throws FieldNotFound {
@@ -112,4 +115,10 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
     	assertEquals(38, rr.getInt(EndSeqNo.FIELD));
     }
 
+    public void testNewBusinessMessageReject() throws Exception {
+        Message msg = msgFactory.newBusinessMessageReject(MsgType.BID_REQUEST, BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, "bob");
+        assertEquals(MsgType.BUSINESS_MESSAGE_REJECT, msg.getHeader().getString(MsgType.FIELD));
+        assertEquals(BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, msg.getInt(BusinessRejectReason.FIELD));
+        assertEquals("bob", msg.getString(Text.FIELD));
+    }
 }
