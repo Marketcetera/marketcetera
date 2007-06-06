@@ -62,8 +62,15 @@ public class OutgoingMessageHandler {
 		}
 		orderModifiers.add(new TransactionTimeInsertOrderModifier());
 	}
-	
-	public Message handleMessage(Message message) throws MarketceteraException {
+
+    /** Only supports NewOrderSingle, OrderCancelReplace and OrderCancel orders at this point
+     * Rejects orders that are of the wrong FIX version, or if the OMS is not logged on to a FIX destination.
+     * Runs the incoming orders through message modifiers, and forwards them on to a FIX destination.
+     * @param message Incoming message
+     * @return ExecutionReport for this message
+     * @throws MarketceteraException
+     */
+    public Message handleMessage(Message message) throws MarketceteraException {
         if(message == null) {
             LoggerAdapter.error(OMSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
             return null;
@@ -88,10 +95,15 @@ public class OutgoingMessageHandler {
 
         Message returnVal = null;
         try {
-            if(FIXMessageUtil.isOrderList(message)) {
-                throw new MarketceteraException(OMSMessageKey.ERROR_ORDER_LIST_UNSUPPORTED.getLocalizedMessage());
+            if(!(FIXMessageUtil.isOrderSingle(message) || FIXMessageUtil.isCancelRequest(message) || FIXMessageUtil.isCancelReplaceRequest(message))) {
+                try {
+                    throw new MarketceteraException(OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
+                            FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, message.getHeader().getString(MsgType.FIELD))));
+                } catch (FieldNotFound ignore) {
+                    throw new MarketceteraException(OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
+                }
             }
-            
+
             modifyOrder(message);
             orderLimits.verifyOrderLimits(message);
             // if single, pre-create an executionReport and send it back
@@ -104,11 +116,7 @@ public class OutgoingMessageHandler {
 				returnVal = outReport;
             }
             routeMgr.modifyOrder(message, msgFactory.getMsgAugmentor());
-            if (defaultSessionID != null)
-            	quickFIXSender.sendToTarget(message, defaultSessionID);
-            else 
-            	quickFIXSender.sendToTarget(message);
-            	
+            sendMessage(message);
         } catch (FieldNotFound fnfEx) {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
             returnVal = createRejectionMessage(mfix, message);
@@ -122,7 +130,19 @@ public class OutgoingMessageHandler {
         }
         return returnVal;
 	}
-	
+
+
+    /** Sends the message to the destination
+     * @param message Message to send
+     * @throws SessionNotFound
+     */
+    private void sendMessage(Message message) throws SessionNotFound {
+        if (defaultSessionID != null) {
+            quickFIXSender.sendToTarget(message, defaultSessionID);
+        } else {
+            quickFIXSender.sendToTarget(message);
+        }
+    }
 
 
     /** Creates a rejection message based on the message that causes the rejection
