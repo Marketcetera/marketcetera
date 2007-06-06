@@ -87,6 +87,14 @@ public class OrderManagerTest extends FIXVersionedTestCase
         }).run();
     }
 
+    // verifies that we get an error when an unsupported order type is sent 
+    public void testNotNOSOrder() throws Exception {
+        final OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
+        Message reject = handler.handleMessage(msgFactory.newOrderCancelReject());
+        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
+                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_CANCEL_REJECT));
+    }
+
     private void verifyExecutionReport(Message inExecReport) throws Exception
     {
         FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY, msgFactory, fixDD);
@@ -331,15 +339,13 @@ public class OrderManagerTest extends FIXVersionedTestCase
         verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
     }
 
-    /** we test the order limits in {@link OrderLimitsTest} so here we just need to verify
-     * that having one limit be setup incorrectly will fail
-     */
     public void testOrderListNotSupported() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         Message orderList = msgFactory.createMessage(MsgType.ORDER_LIST);
         orderList.setField(new Symbol("TOLI"));
         Message reject = handler.handleMessage(orderList);
-        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_ORDER_LIST_UNSUPPORTED);
+        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
+                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_LIST));
     }
 
 
