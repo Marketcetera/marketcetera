@@ -96,12 +96,7 @@ public class OutgoingMessageHandler {
         Message returnVal = null;
         try {
             if(!(FIXMessageUtil.isOrderSingle(message) || FIXMessageUtil.isCancelRequest(message) || FIXMessageUtil.isCancelReplaceRequest(message))) {
-                try {
-                    throw new MarketceteraException(OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
-                            FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, message.getHeader().getString(MsgType.FIELD))));
-                } catch (FieldNotFound ignore) {
-                    throw new MarketceteraException(OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
-                }
+                throw new UnsupportedMessageType();
             }
 
             modifyOrder(message);
@@ -123,6 +118,15 @@ public class OutgoingMessageHandler {
         } catch(SessionNotFound snf) {
             MarketceteraException ex = new MarketceteraException(MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(defaultSessionID), snf);
             returnVal = createRejectionMessage(ex, message);
+        } catch(UnsupportedMessageType umt) {
+            try {
+                String msgType = message.getHeader().getString(MsgType.FIELD);
+                returnVal = createBusinessMessageReject(msgType,
+                        OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
+                        FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType)));
+            } catch (FieldNotFound fieldNotFound) {
+                returnVal = createBusinessMessageReject("UNKNOWN", OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
+            }
         } catch (MarketceteraException e) {
         	returnVal = createRejectionMessage(e, message);
         } catch(Exception ex) {
@@ -142,6 +146,26 @@ public class OutgoingMessageHandler {
         } else {
             quickFIXSender.sendToTarget(message);
         }
+    }
+
+    /** Creates a rejection message
+     * If we are using a FIX4.2 or higher, we return a BusinessMessageReject,
+     * otherwise it's a session-level reject.
+     * @param msgType   {@link MsgType} of the offending message
+     * @param rejReason Text string explaining the reason for rejection.
+     * @return  rejection message
+     */
+    protected Message createBusinessMessageReject(String msgType, String rejReason) {
+        Message reject;
+        if(FIXVersion.FIX40.toString().equals(msgFactory.getBeginString()) ||
+           FIXVersion.FIX41.toString().equals(msgFactory.getBeginString())) {
+            reject = msgFactory.createMessage(MsgType.REJECT);
+            reject.setField(new Text(rejReason));
+        } else {
+            reject = msgFactory.newBusinessMessageReject(msgType,
+                    BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, rejReason);
+        }
+        return reject;
     }
 
 

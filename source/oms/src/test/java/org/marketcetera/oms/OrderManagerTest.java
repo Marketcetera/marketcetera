@@ -90,8 +90,10 @@ public class OrderManagerTest extends FIXVersionedTestCase
     // verifies that we get an error when an unsupported order type is sent 
     public void testNotNOSOrder() throws Exception {
         final OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        Message reject = handler.handleMessage(msgFactory.newOrderCancelReject());
-        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
+        Message wrongMsg = msgFactory.newOrderCancelReject();
+        wrongMsg.getHeader().setField(new MsgSeqNum(23));
+        Message reject = handler.handleMessage(wrongMsg);
+        verifyBMRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
                 fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_CANCEL_REJECT));
     }
 
@@ -343,8 +345,9 @@ public class OrderManagerTest extends FIXVersionedTestCase
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         Message orderList = msgFactory.createMessage(MsgType.ORDER_LIST);
         orderList.setField(new Symbol("TOLI"));
+        orderList.getHeader().setField(new MsgSeqNum(23));
         Message reject = handler.handleMessage(orderList);
-        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
+        verifyBMRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
                 fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_LIST));
     }
 
@@ -428,6 +431,19 @@ public class OrderManagerTest extends FIXVersionedTestCase
     	orderModifiers.add(defaultOrderModifier);
     	
     	return orderModifiers;
+    }
+
+    private void verifyBMRejection(Message inMsg, FIXMessageFactory msgFactory, LocalizedMessage msgKey, Object ... args) throws Exception
+    {
+        if(msgFactory.getBeginString().equals(FIXVersion.FIX40.toString()) ||
+                msgFactory.getBeginString().equals(FIXVersion.FIX41.toString())) {
+            assertEquals("didn't get a session-level reject", MsgType.REJECT, inMsg.getHeader().getString(MsgType.FIELD));
+        } else {
+            assertEquals("didn't get a business-message reject", MsgType.BUSINESS_MESSAGE_REJECT, inMsg.getHeader().getString(MsgType.FIELD));
+        }
+        assertEquals("didn't get a right reason",
+                msgKey.getLocalizedMessage(args),
+                inMsg.getString(Text.FIELD));
     }
 
     public static void verifyRejection(Message inMsg, FIXMessageFactory msgFactory, LocalizedMessage msgKey, Object ... args) throws Exception
