@@ -27,7 +27,8 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
 	private PhotonConsole console;
 	private Display display;
-	private Level minimumLogLevel = Level.DEBUG;
+	private Level minimumSecondaryLogLevel = Level.DEBUG;
+	private PhotonConsole secondaryConsole;
 
 	/**
 	 * Create a new PhotonConsoleAppender 
@@ -42,9 +43,10 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
     	setLayout(patternLayout);
     }
 
-	public PhotonConsoleAppender(PhotonConsole pConsole, Level minimumLogLevel){
-		this(pConsole);
-		this.minimumLogLevel = minimumLogLevel;
+	
+	public void setSecondaryConsole(PhotonConsole pConsole, Level minimumLogLevel){
+		this.secondaryConsole = pConsole;
+		this.minimumSecondaryLogLevel = minimumLogLevel;
 	}
 	
     /**
@@ -58,38 +60,61 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
      * 
      * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
      */
-    protected void append(final LoggingEvent loggingEvent) {
+    protected void append(final LoggingEvent loggingEvent) 
+    {
     	Level level = loggingEvent.getLevel();
-		if (level.isGreaterOrEqual(minimumLogLevel)){
-	    	final MessageConsoleStream stream;
-	    	if (Level.FATAL.equals(level)){
-	    		stream = console.getErrorMessageStream();
-	    	} else if (Level.ERROR.equals(level)){
-	    		stream = console.getErrorMessageStream();
-	    	} else if (Level.WARN.equals(level)){
-	    		stream = console.getWarnMessageStream();
-	    	} else if (Level.INFO.equals(level)){
-	    		stream = console.getInfoMessageStream();
-	    	} else {
-	    		stream = console.getDebugMessageStream();
-	    	}
-	        display.asyncExec(new Runnable() {
-	            public void run() {
-	            	String loggableMessage = "";
-	            	Layout theLayout = getLayout();
-					if (theLayout != null){
-	            		loggableMessage = theLayout.format(loggingEvent);
-	            	} else {
-	            		loggableMessage = loggingEvent.getRenderedMessage();
-	            	}
-	                stream.println(loggableMessage);
-	                ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
-	                if (throwableInformation != null){
-						stream.println(throwableInformation.getThrowable().getMessage());
-	                }
-	            }
-	        });
+    	final MessageConsoleStream stream;
+    	if (Level.FATAL.equals(level)){
+    		stream = console.getErrorMessageStream();
+    	} else if (Level.ERROR.equals(level)){
+    		stream = console.getErrorMessageStream();
+    	} else if (Level.WARN.equals(level)){
+    		stream = console.getWarnMessageStream();
+    	} else if (Level.INFO.equals(level)){
+    		stream = console.getInfoMessageStream();
+    	} else {
+    		stream = console.getDebugMessageStream();
     	}
+    	final MessageConsoleStream secondaryStream;
+		if (secondaryConsole != null && level.isGreaterOrEqual(minimumSecondaryLogLevel)){
+	    	if (Level.FATAL.equals(level)){
+	    		secondaryStream = secondaryConsole.getErrorMessageStream();
+	    	} else if (Level.ERROR.equals(level)){
+	    		secondaryStream = secondaryConsole.getErrorMessageStream();
+	    	} else if (Level.WARN.equals(level)){
+	    		secondaryStream = secondaryConsole.getWarnMessageStream();
+	    	} else if (Level.INFO.equals(level)){
+	    		secondaryStream = secondaryConsole.getInfoMessageStream();
+	    	} else {
+	    		secondaryStream = console.getDebugMessageStream();
+	    	}
+		} else {
+			secondaryStream = null;
+		}
+    	display.asyncExec(new Runnable() {
+            public void run() {
+            	String loggableMessage = "";
+            	Layout theLayout = getLayout();
+				if (theLayout != null){
+            		loggableMessage = theLayout.format(loggingEvent);
+            	} else {
+            		loggableMessage = loggingEvent.getRenderedMessage();
+            	}
+                stream.println(loggableMessage);
+                if (secondaryStream != null){
+                	secondaryStream.println(loggableMessage);
+                }
+                ThrowableInformation throwableInformation = loggingEvent.getThrowableInformation();
+                if (throwableInformation != null){
+					String exceptionMessage = throwableInformation.getThrowable().getMessage();
+					stream.println(exceptionMessage);
+	                if (secondaryStream != null){
+	                	secondaryStream.println(exceptionMessage);
+	                }
+                }
+            }
+        	}
+    	);
     }
 
     /* (non-Javadoc)
