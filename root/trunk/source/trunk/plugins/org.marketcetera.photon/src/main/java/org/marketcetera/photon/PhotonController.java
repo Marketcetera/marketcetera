@@ -73,6 +73,9 @@ public class PhotonController {
 				handleExecutionReport(aMessage);
 			} else if (FIXMessageUtil.isCancelReject(aMessage)) {
 				handleCancelReject(aMessage);
+			} else if (FIXMessageUtil.isReject(aMessage) || 
+					FIXMessageUtil.isBusinessMessageReject(aMessage)) {
+				handleReject(aMessage);
 			}
 		} catch (FieldNotFound fnfEx) {
 			MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
@@ -149,6 +152,12 @@ public class PhotonController {
 		String errorMsg = "Cancel rejected for order " + origClOrdID + ": "
 				+ (text == null ? "" : text)
 				+ (reason == null ? "" : " (" + reason + ")");
+		internalMainLogger.error(errorMsg);
+	}
+	
+	protected void handleReject(Message aMessage) throws FieldNotFound {
+		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
+		String errorMsg = "Received reject message: " + (text == null ? "" : text);
 		internalMainLogger.error(errorMsg);
 	}
 
