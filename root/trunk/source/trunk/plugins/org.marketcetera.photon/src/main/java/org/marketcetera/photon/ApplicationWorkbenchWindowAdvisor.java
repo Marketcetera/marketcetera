@@ -114,9 +114,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 			PhotonConsole photonConsole = (PhotonConsole) console;
 			if (PhotonPlugin.MARKETDATA_CONSOLE_LOGGER_NAME
 					.equals(photonConsole.getIdentifier())) {
-				marketDataLogger.addAppender(new PhotonConsoleAppender(photonConsole));
+				PhotonConsoleAppender photonConsoleAppender = new PhotonConsoleAppender(photonConsole);
+				marketDataLogger.addAppender(photonConsoleAppender);
 				// also output logging to the main console appender if the level is high enough
-				mainConsoleLogger.addAppender(new PhotonConsoleAppender(mainConsole, Level.WARN));
+				photonConsoleAppender.setSecondaryConsole(mainConsole, Level.WARN);
 			}
 		}
 
