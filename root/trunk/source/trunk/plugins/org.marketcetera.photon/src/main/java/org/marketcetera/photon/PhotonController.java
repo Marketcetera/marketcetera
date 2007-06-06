@@ -107,11 +107,11 @@ public class PhotonController {
 		} catch (FieldNotFound fnfEx) {
 			MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
 			internalMainLogger.error(
-					"Error decoding incoming message "+mfix.getMessage(), mfix);
+					"Error decoding outgoing message "+mfix.getMessage(), mfix);
 			mfix.printStackTrace();
 		} catch (Throwable ex) {
 			internalMainLogger.error(
-					"Error decoding incoming message "+ex.getMessage(), ex);
+					"Error decoding outgoing message "+ex.getMessage(), ex);
 			ex.printStackTrace();
 		}
 	}
@@ -167,6 +167,7 @@ public class PhotonController {
 	}
 
 	private void requestResend(Message message) {
+		fixMessageHistory.addOutgoingMessage(message);
 		convertAndSend(message);
 	}
 
