@@ -1,51 +1,15 @@
 package org.marketcetera.quickfix;
 
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import quickfix.*;
+import quickfix.field.*;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-
-import quickfix.FieldNotFound;
-import quickfix.Group;
-import quickfix.Message;
-import quickfix.MessageFactory;
-import quickfix.StringField;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.BeginSeqNo;
-import quickfix.field.ClOrdID;
-import quickfix.field.CumQty;
-import quickfix.field.CxlRejReason;
-import quickfix.field.CxlRejResponseTo;
-import quickfix.field.EndSeqNo;
-import quickfix.field.ExecID;
-import quickfix.field.HandlInst;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDReqID;
-import quickfix.field.MarketDepth;
-import quickfix.field.MsgType;
-import quickfix.field.NoMDEntryTypes;
-import quickfix.field.NoRelatedSym;
-import quickfix.field.OrdRejReason;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
-import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.Price;
-import quickfix.field.SendingTime;
-import quickfix.field.Side;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
-import quickfix.field.Text;
-import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
 
 /**
  * Factory class that creates a particular beginString of the FIX message
@@ -332,6 +296,15 @@ public class FIXMessageFactory {
         addTransactionTimeIfNeeded(execReport);
         execReport.setField(rejReason);
         return execReport;
+    }
+
+    /** Creates a new BusinessMessageReject message based on passed-in parameters */ 
+    public Message newBusinessMessageReject(String refMsgType, int rejReason, String textReason) {
+        Message bmReject = createMessage(MsgType.BUSINESS_MESSAGE_REJECT);
+        bmReject.setField(new RefMsgType(refMsgType));
+        bmReject.setField(new BusinessRejectReason(rejReason));
+        bmReject.setField(new Text(textReason));
+        return bmReject;
     }
 
     /** Creates a {@link MsgType#ORDER_CANCEL_REJECT} message
