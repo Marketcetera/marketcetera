@@ -1,10 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
@@ -19,37 +14,26 @@ import org.eclipse.swt.widgets.Event;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
-import org.marketcetera.photon.marketdata.IMarketDataListCallback;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionContractData;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.marketdata.*;
 import org.marketcetera.photon.parser.OpenCloseImage;
-import org.marketcetera.photon.parser.OptionCFICodeImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
+import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.ToggledListener;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
-import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
-import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
-import org.marketcetera.photon.ui.validation.fix.FIXObservables;
-import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
-import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
+import org.marketcetera.photon.ui.validation.fix.*;
 import org.marketcetera.photon.views.OptionContractCacheEntry.OptionCodeUIValues;
-
 import quickfix.DataDictionary;
 import quickfix.Message;
-import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
-import quickfix.field.OpenClose;
-import quickfix.field.OrdType;
-import quickfix.field.OrderCapacity;
-import quickfix.field.StrikePrice;
-import quickfix.field.Symbol;
-import quickfix.field.UnderlyingSymbol;
+import quickfix.FieldNotFound;
+import quickfix.field.*;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
@@ -59,7 +43,7 @@ public class OptionOrderTicketControllerHelper extends
 
 	private EnumStringConverterBuilder<Character> openCloseConverterBuilder;
 
-	private EnumStringConverterBuilder<String> putOrCallConverterBuilder;
+	private EnumStringConverterBuilder<Integer> putOrCallConverterBuilder;
 
 	private PriceConverterBuilder strikeConverterBuilder;
 
@@ -458,7 +442,7 @@ public class OptionOrderTicketControllerHelper extends
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			IObservableValue fixObservable = FIXObservables.observeValue(realm,
-					message, CFICode.FIELD, dictionary);
+					message, PutOrCall.FIELD, dictionary);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), fixObservable, bindingHelper
 					.createToModelUpdateValueStrategy(
@@ -509,7 +493,27 @@ public class OptionOrderTicketControllerHelper extends
 		}
 	}
 
-	public void initOrderCapacityConverterBuilder() {
+    public static final String CFI_CODE_PUT = "OPASPS";
+    public static final String CFI_CODE_CALL = "OCASPS";
+
+    @Override
+    public void handleSend() {
+        if(getDictionary().isField(CFICode.FIELD)) {
+            Message theMsg = getTargetMessage();
+            int putOrCall = 0;
+            try {
+                putOrCall = theMsg.getInt(PutOrCall.FIELD);
+                CFICode cfiCode = (putOrCall == PutOrCall.PUT) ? new CFICode(CFI_CODE_PUT) : new CFICode(CFI_CODE_CALL);
+                theMsg.setField(cfiCode);
+                theMsg.removeField(PutOrCall.FIELD);
+            } catch (FieldNotFound ignored) {
+                //ignored
+            }
+        }
+        super.handleSend();
+    }
+
+    public void initOrderCapacityConverterBuilder() {
 		orderCapacityConverterBuilder = new EnumStringConverterBuilder<Character>(
 				Character.class);
 		bindingHelper.initCharToImageConverterBuilder(
@@ -524,10 +528,10 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	private void initPutOrCallConverterBuilder() {
-		putOrCallConverterBuilder = new EnumStringConverterBuilder<String>(
-				String.class);
-		bindingHelper.initStringToImageConverterBuilder(
-				putOrCallConverterBuilder, OptionCFICodeImage.values());
+		putOrCallConverterBuilder = new EnumStringConverterBuilder<Integer>(
+				Integer.class);
+		bindingHelper.initIntToImageConverterBuilder(
+				putOrCallConverterBuilder, PutOrCallImage.values());
 	}
 
 	private void initStrikeConverterBuilder() {
@@ -566,17 +570,13 @@ public class OptionOrderTicketControllerHelper extends
 	private UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
 		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket
 				.getBookComposite());
-		UnderlyingSymbolInfoComposite symbolComposite = bookComposite
-				.getUnderlyingSymbolInfoComposite();
-		return symbolComposite;
+        return bookComposite.getUnderlyingSymbolInfoComposite();
 	}
 
 	private OptionMessagesComposite getOptionMessagesComposite() {
 		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket
 				.getBookComposite());
-		OptionMessagesComposite messagesComposite = bookComposite
-				.getOptionMessagesComposite();
-		return messagesComposite;
+		return bookComposite.getOptionMessagesComposite();
 	}
 
 	public class MDVMarketDataListener extends MarketDataListener {

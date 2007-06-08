@@ -1,13 +1,14 @@
 package org.marketcetera.photon.parser;
 
+import quickfix.field.PutOrCall;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import quickfix.field.PutOrCall;
-
 /**
- * FIX 4.2. For FIX 4.3 and above see OptionCFICodeImage (CFICode).
+ * We always use PutOrCallImage for all versions of FIX, with a post-processing
+ * step to convert it to {@link quickfix.field.CFICode} later.
  */
 public enum PutOrCallImage implements ILexerFIXImage {
 
