@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
@@ -17,7 +18,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
@@ -31,6 +31,8 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 
 	public static final String COLUMN_ORDER_KEY = "COLUMN_ORDER";  //$NON-NLS-1$
 	public static final String COLUMN_ORDER_DELIMITER = ",";  //$NON-NLS-1$
+	public static final String COLUMN_WIDTH_KEY = "COLUMN_WIDTH";  //$NON-NLS-1$
+	public static final String COLUMN_WIDTH_DELIMITER = ",";  //$NON-NLS-1$
 
 	public static final String SORT_BY_COLUMN_KEY = "SORT_BY_COLUMN";  //$NON-NLS-1$
 
@@ -87,7 +89,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		
 		tableFormat = (TableFormat<T>)messagesViewer.getLabelProvider();
 		formatTable(messageTable);
-		packColumns(messageTable);
+		restoreColumnWidth(viewStateMemento);
 		restoreColumnOrder(viewStateMemento);
 		
         toolBarManager = getViewSite().getActionBars().getToolBarManager();
@@ -132,6 +134,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		
 		saveColumnOrder(memento);
 		saveSortByColumn(memento);
+		saveColumnWidth(memento);
 	}
 
 	protected String serializeColumnOrder(int[] columnOrder) {
@@ -142,19 +145,19 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		}
 		return sb.toString();
 	}
-	
-	protected int[] deserializeColumnOrder(String delimitedValue) {
+
+	protected int[] deserializeDelimitedIntegersIntoArray(String delimiter, String delimitedValue) {
 		if (delimitedValue == null) {
 			return new int[0];
 		}
-		String[] columnNumbers = delimitedValue.split(COLUMN_ORDER_DELIMITER);
-		if (columnNumbers == null || columnNumbers.length == 0) {
+		String[] returnAsStringArray = delimitedValue.split(delimiter);
+		if (returnAsStringArray == null || returnAsStringArray.length == 0) {
 			return new int[0];
 		}
-		int[] columnOrder = new int[columnNumbers.length];
-		for(int index = 0; index < columnOrder.length; ++index)  {
+		int[] returnAsIntArray = new int[returnAsStringArray.length];
+		for(int index = 0; index < returnAsIntArray.length; ++index)  {
 			try {
-				columnOrder[index] = Integer.parseInt(columnNumbers[index]);
+				returnAsIntArray[index] = Integer.parseInt(returnAsStringArray[index]);
 			}
 			catch(Exception anyException) {
 				// TODO Log?
@@ -162,9 +165,13 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 				return new int[0];
 			}
 		}
-		return columnOrder;
+		return returnAsIntArray;
 	}
-	
+
+	protected int[] deserializeColumnOrder(String delimitedValue) {
+		return deserializeDelimitedIntegersIntoArray(COLUMN_ORDER_DELIMITER, delimitedValue);
+	}
+
 	protected void saveColumnOrder(IMemento memento) {
 		if (memento == null) 
 			return;
@@ -204,6 +211,40 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		memento.putString(SORT_BY_COLUMN_KEY, chooser.toString());
 	}
 	
+	protected void saveColumnWidth(IMemento memento) {
+		if (memento == null)
+			return;
+		
+		TableColumn[] columns = messageTable.getColumns();
+		StringBuilder sb = new StringBuilder();
+		for (TableColumn col : columns) {
+			int width = col.getWidth();
+			sb.append(width);
+			sb.append(COLUMN_WIDTH_DELIMITER);
+		}
+		memento.putString(COLUMN_WIDTH_KEY, sb.toString());
+	}
+
+	protected void restoreColumnWidth(IMemento memento) {
+		try {
+			if (memento == null) {
+				packColumns(messageTable);
+				return;
+			}
+			String delimitedColumnWidth = memento.getString(COLUMN_WIDTH_KEY);
+			int[] columnWidth = deserializeDelimitedIntegersIntoArray(
+					COLUMN_WIDTH_DELIMITER, delimitedColumnWidth);
+			if(columnWidth != null && columnWidth.length > 0) {
+				TableColumn[] columns = messageTable.getColumns();
+				for (int i = 0; i < columns.length; i++) {
+					columns[i].setWidth(columnWidth[i]);
+				}					
+			}
+		} catch (Throwable t){
+			// do nothing
+		}
+	}
+
 			
     protected Table createMessageTable(Composite parent) {
         Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
