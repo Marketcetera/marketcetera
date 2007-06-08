@@ -331,104 +331,104 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	protected String getViewID() {
 		return StockOrderTicket.ID;
 	}
-}
 
 /**
  * A mock <code>JmsOperations</code> that retains the last message sent via the 
  * <code>convertAndSend(Object message)</code> method. The stored message can be 
  * retrieved with a call to <code>getStoredMessage()</code>.
  */
-class MockJmsOperations implements JmsOperations {
-	private Object storedMessage;
+	public class MockJmsOperations implements JmsOperations {
+		private Object storedMessage;
+		
+		public void convertAndSend(Object message) throws JmsException {
+			storedMessage = message;
+		}
+		
+		public Object getStoredMessage() {
+			return storedMessage;
+		}
 	
-	public void convertAndSend(Object message) throws JmsException {
-		storedMessage = message;
-	}
+		public void convertAndSend(Destination destination, Object message) throws JmsException {
+		}
 	
-	public Object getStoredMessage() {
-		return storedMessage;
-	}
+		public void convertAndSend(String destinationName, Object message) throws JmsException {
+		}
+	
+		public void convertAndSend(Object message, MessagePostProcessor postProcessor) throws JmsException {
+		}
+	
+		public void convertAndSend(Destination destination, Object message, MessagePostProcessor postProcessor) throws JmsException {
+		}
+	
+		public void convertAndSend(String destinationName, Object message, MessagePostProcessor postProcessor) throws JmsException {
+		}
+	
+		public Object execute(SessionCallback action) throws JmsException {
+			return null;
+		}
+	
+		public Object execute(ProducerCallback action) throws JmsException {
+			return null;
+		}
+	
+		public javax.jms.Message receive() throws JmsException {
+			return null;
+		}
+	
+		public javax.jms.Message receive(Destination destination) throws JmsException {
+			return null;
+		}
+	
+		public javax.jms.Message receive(String destinationName) throws JmsException {
+			return null;
+		}
+	
+		public Object receiveAndConvert() throws JmsException {
+			return null;
+		}
+	
+		public Object receiveAndConvert(Destination destination) throws JmsException {
+			return null;
+		}
+	
+		public Object receiveAndConvert(String destinationName) throws JmsException {
+			return null;
+		}
+	
+		public javax.jms.Message receiveSelected(String messageSelector) throws JmsException {
+			return null;
+		}
+	
+		public javax.jms.Message receiveSelected(Destination destination, String messageSelector) throws JmsException {
+			return null;
+		}
+	
+		public javax.jms.Message receiveSelected(String destinationName, String messageSelector) throws JmsException {
+			return null;
+		}
+	
+		public Object receiveSelectedAndConvert(String messageSelector) throws JmsException {
+			return null;
+		}
+	
+		public Object receiveSelectedAndConvert(Destination destination, String messageSelector) throws JmsException {
+			return null;
+		}
+	
+		public Object receiveSelectedAndConvert(String destinationName, String messageSelector) throws JmsException {
+			return null;
+		}
+	
+		public void send(MessageCreator messageCreator) throws JmsException {
+		}
+	
+		public void send(Destination destination, MessageCreator messageCreator) throws JmsException {
+		}
+	
+		public void send(String destinationName, MessageCreator messageCreator) throws JmsException {
+		}
 
-	public void convertAndSend(Destination destination, Object message) throws JmsException {
 	}
-
-	public void convertAndSend(String destinationName, Object message) throws JmsException {
-	}
-
-	public void convertAndSend(Object message, MessagePostProcessor postProcessor) throws JmsException {
-	}
-
-	public void convertAndSend(Destination destination, Object message, MessagePostProcessor postProcessor) throws JmsException {
-	}
-
-	public void convertAndSend(String destinationName, Object message, MessagePostProcessor postProcessor) throws JmsException {
-	}
-
-	public Object execute(SessionCallback action) throws JmsException {
-		return null;
-	}
-
-	public Object execute(ProducerCallback action) throws JmsException {
-		return null;
-	}
-
-	public javax.jms.Message receive() throws JmsException {
-		return null;
-	}
-
-	public javax.jms.Message receive(Destination destination) throws JmsException {
-		return null;
-	}
-
-	public javax.jms.Message receive(String destinationName) throws JmsException {
-		return null;
-	}
-
-	public Object receiveAndConvert() throws JmsException {
-		return null;
-	}
-
-	public Object receiveAndConvert(Destination destination) throws JmsException {
-		return null;
-	}
-
-	public Object receiveAndConvert(String destinationName) throws JmsException {
-		return null;
-	}
-
-	public javax.jms.Message receiveSelected(String messageSelector) throws JmsException {
-		return null;
-	}
-
-	public javax.jms.Message receiveSelected(Destination destination, String messageSelector) throws JmsException {
-		return null;
-	}
-
-	public javax.jms.Message receiveSelected(String destinationName, String messageSelector) throws JmsException {
-		return null;
-	}
-
-	public Object receiveSelectedAndConvert(String messageSelector) throws JmsException {
-		return null;
-	}
-
-	public Object receiveSelectedAndConvert(Destination destination, String messageSelector) throws JmsException {
-		return null;
-	}
-
-	public Object receiveSelectedAndConvert(String destinationName, String messageSelector) throws JmsException {
-		return null;
-	}
-
-	public void send(MessageCreator messageCreator) throws JmsException {
-	}
-
-	public void send(Destination destination, MessageCreator messageCreator) throws JmsException {
-	}
-
-	public void send(String destinationName, MessageCreator messageCreator) throws JmsException {
-	}
-
 }
 
 

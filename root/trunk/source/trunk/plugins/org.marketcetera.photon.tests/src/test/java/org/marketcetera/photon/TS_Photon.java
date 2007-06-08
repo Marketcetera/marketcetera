@@ -68,7 +68,7 @@ public class TS_Photon {
 		suite.addTestSuite(FIXMessagesViewTest.class);
 		suite.addTestSuite(MarketDataViewTest.class);
 		suite.addTestSuite(StockOrderTicketViewTest.class);
-
+		suite.addTestSuite(OptionOrderTicketViewTest.class);
 		return suite;
 	}
 
