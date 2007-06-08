@@ -50,7 +50,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 		String editorArea = layout.getEditorArea();
 		layout.setEditorAreaVisible(false);
 
-		layout.addPerspectiveShortcut("org.marketcetera.photon.DebugPerspective");
+		layout.addPerspectiveShortcut(EquityPerspectiveFactory.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
 		layout.addShowViewShortcut(StockOrderTicket.ID);
 		layout.addShowViewShortcut(OptionOrderTicket.ID);
