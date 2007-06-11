@@ -4,7 +4,9 @@ package org.marketcetera.photon.views;
 import java.lang.reflect.Field;
 
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.actions.CancelAllOpenOrdersAction;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 
@@ -101,7 +103,7 @@ public class OpenOrdersView extends HistoryMessagesView {
 
 	@Override
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		
+		theToolBarManager.add(new CancelAllOpenOrdersAction());
 	}
 
 	public EventList<MessageHolder> extractList(FIXMessageHistory hist){
