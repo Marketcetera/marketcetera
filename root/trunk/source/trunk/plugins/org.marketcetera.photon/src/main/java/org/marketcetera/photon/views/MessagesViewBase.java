@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
@@ -46,6 +48,8 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 	private EventList<T> rawInputList;
 	private final boolean sortableColumns;
 	private IMemento viewStateMemento; 
+
+    private IAction selectAllAction;
 
 	public MessagesViewBase()
 	{
@@ -107,6 +111,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 			menuManager.add(copyMessagesAction);
 		}
 		
+		createSelectAllAction();
 		hookGlobalActions();
 	}
 
@@ -300,6 +305,8 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 	private void hookGlobalActions(){
 		getViewSite().getActionBars()
 		.setGlobalActionHandler(ActionFactory.COPY.getId(), copyMessagesAction);
+		getViewSite().getActionBars().setGlobalActionHandler(
+				ActionFactory.SELECT_ALL.getId(), selectAllAction);
 	}
 
 	@Override
@@ -323,5 +330,17 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		// TODO Auto-generated method stub
 		
 	}
+	
+    private void createSelectAllAction() {
+        selectAllAction = new Action() {
+
+            @Override
+            public void run() {
+            	getMessagesViewer().getTable().selectAll();
+            }
+        };
+        selectAllAction.setActionDefinitionId( "org.eclipse.ui.edit.selectAll" ); 
+    }
+
 
 }
