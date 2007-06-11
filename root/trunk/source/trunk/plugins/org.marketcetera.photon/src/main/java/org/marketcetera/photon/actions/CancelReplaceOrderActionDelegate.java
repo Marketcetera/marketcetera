@@ -12,8 +12,6 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.IOrderTicketController;
-import org.marketcetera.photon.views.OptionOrderTicket;
-import org.marketcetera.photon.views.StockOrderTicket;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -21,7 +19,6 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
-import quickfix.field.Symbol;
 
 /**
  * CancelOrderActionDelegate is a subclass of {@link ActionDelegate}
@@ -89,7 +86,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 				} else if (firstElement instanceof MessageHolder){
 					theMessage = ((MessageHolder) firstElement).getMessage();
 				}
-				if (theMessage != null && theMessage.isSetField(ClOrdID.FIELD) &&
+				if (theMessage != null && theMessage.isSetField(ClOrdID.FIELD) && (FIXMessageUtil.isCancellable(theMessage)) &&
 						(FIXMessageUtil.isOrderSingle(theMessage) || FIXMessageUtil.isExecutionReport(theMessage))){
 					shouldEnable = true;
 				}
