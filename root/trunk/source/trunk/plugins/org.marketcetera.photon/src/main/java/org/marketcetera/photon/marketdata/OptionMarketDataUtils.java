@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.MarketceteraFIXException;
@@ -135,16 +135,19 @@ public class OptionMarketDataUtils {
 	 *            the UnderlyingSymbol in each message is checked to ensure that
 	 *            it starts with the symbolFilter. Underliers that do not match
 	 *            are not processed. Specify null to process all messages.
+	 * @throws MarketceteraFIXException 
 	 */
 	public static List<OptionContractData> getOptionExpirationMarketData(
-			final String symbolFilter, List<Message> derivativeSecurityList) {
+			final String symbolFilter, List<Message> derivativeSecurityList) 
+			throws MarketceteraException {
 		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
+		String messageUnderlyingSymbolStr = "";
 		for (Message message : derivativeSecurityList) {
 			try {
 				String messageType = message.getHeader().getString(
 						MsgType.FIELD);
 				if (MsgType.DERIVATIVE_SECURITY_LIST.equals(messageType)) {
-					String messageUnderlyingSymbolStr = message
+					messageUnderlyingSymbolStr = message
 							.getString(UnderlyingSymbol.FIELD);
 					if (isApplicableUnderlyingSymbol(
 							messageUnderlyingSymbolStr, symbolFilter)) {
@@ -158,13 +161,12 @@ public class OptionMarketDataUtils {
 							"FIX message was not a DerivativeSecurityList ("
 									+ MsgType.DERIVATIVE_SECURITY_LIST + ").");
 				}
-			} catch (Exception anyException) {
-				// Ignore the error
-				if (PhotonPlugin.getMainConsoleLogger().isDebugEnabled()) {
-					PhotonPlugin.getMainConsoleLogger().debug(
-							"Failed to process option expiration date in message: "
-									+ message, anyException);
-				}
+			} catch (Exception anyException) {				
+				throw new MarketceteraException(
+						"Failed to get option contracts data for underlying symbol \""
+								+ messageUnderlyingSymbolStr + "\" - "
+								+ "\nProblematic message is : [" + message
+								+ "]", anyException);
 			}
 		}
 		return optionExpirations;
