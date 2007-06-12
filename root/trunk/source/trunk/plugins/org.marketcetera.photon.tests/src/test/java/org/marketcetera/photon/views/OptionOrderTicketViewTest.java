@@ -1,16 +1,13 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.internal.ErrorViewPart;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.messaging.JMSFeedService;
-import org.marketcetera.photon.ui.IBookComposite;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
@@ -19,17 +16,11 @@ import org.osgi.framework.ServiceRegistration;
 import org.springframework.jms.core.JmsOperations;
 
 import quickfix.Message;
-import quickfix.field.LastPx;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntryType;
 import quickfix.field.MaturityDate;
-import quickfix.field.NoMDEntries;
 import quickfix.field.PutOrCall;
 import quickfix.field.Side;
 import quickfix.field.StrikePrice;
-import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
-import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 /**
  * @author toli
@@ -70,25 +61,37 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 
 	public void testShowOrder() throws NoSuchFieldException, IllegalAccessException {
 		IOptionOrderTicket ticket = (IOptionOrderTicket) getTestView();
+		/**
+		 * Note the difference between an option contract symbol ("MSQ+GE") and
+		 * an option root ("MSQ"). An OptionOrderTicket has both.
+		 */
+		final String optionContractSymbol = "MSQ+GE";
 		Message message = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol("QWE"), BigDecimal.ONE,
+				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
 				TimeInForce.DAY, null);
 		message.setField(new MaturityDate());
 		message.setField(new StrikePrice(23));
+		final String expectedPutOrCallUIText = "C";
 		message.setField(new PutOrCall(PutOrCall.CALL));
 		controller.showMessage(message);
 		assertEquals("10", ticket.getQuantityText().getText());
 		assertEquals("B", ticket.getSideCombo().getText());
 		assertEquals("1", ticket.getPriceText().getText());
-		assertEquals("QWE", ticket.getSymbolText().getText());
+		assertEquals(optionContractSymbol, ticket.getOptionSymbolControl().getText());
 		assertEquals("DAY", ticket.getTifCombo().getText());
+		/**
+		 * The OptionOrderTicketControllerHelper updates expire, put/call, and
+		 * strike based on market data and ensures those fields match the option
+		 * contract. This test isn't subscribing to any market data, so the
+		 * OptionOrderTicket has no way of properly populating those fields.
+		 */
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
-		assertEquals(PutOrCall.CALL, ticket.getPutOrCallCombo().getText().charAt(0));
-		assertEquals("23", ticket.getStrikePriceControl().getText());
+		//		assertEquals(expectedPutOrCallUIText, ticket.getPutOrCallCombo().getText());
+//		assertEquals("23", ticket.getStrikePriceControl().getText());
 		
 		message = msgFactory.newMarketOrder("2",
-				Side.SELL, BigDecimal.ONE, new MSymbol("QWE"),
+				Side.SELL, BigDecimal.ONE, new MSymbol(optionContractSymbol),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		message.setField(new MaturityDate());
 		message.setField(new PutOrCall(PutOrCall.CALL));
@@ -96,12 +99,11 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("1", ticket.getQuantityText().getText());
 		assertEquals("S", ticket.getSideCombo().getText());
 		assertEquals("MKT", ticket.getPriceText().getText());
-		assertEquals("QWE", ticket.getSymbolText().getText());
+//		assertEquals(expectedPutOrCallUIText, ticket.getPutOrCallCombo().getText());
 		assertEquals("OPG", ticket.getTifCombo().getText());
 		assertEquals("123456789101112", ticket.getAccountText().getText());
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
-		assertEquals(PutOrCall.CALL, ticket.getPutOrCallCombo().getText().charAt(0));
 	}
 
 	// todo: finish up these tests

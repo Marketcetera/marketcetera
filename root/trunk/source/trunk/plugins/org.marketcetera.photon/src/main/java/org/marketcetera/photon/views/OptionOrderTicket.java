@@ -424,7 +424,39 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 			getBookSection().setClient((OptionBookComposite) book);			
 		}
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		try {
+			StringBuilder rval = new StringBuilder();
+			rval.append(getSideCombo().getText());
+			rval.append(" ");
+			rval.append(getQuantityText().getText());
+			rval.append(" ");
+			rval.append(getSymbolText().getText());
+			rval.append(" ");
+			rval.append(getOptionSymbolControl().getText());
+			rval.append(" ");
+			rval.append(getExpireMonthCombo().getText());
+			rval.append(" ");
+			rval.append(getExpireYearCombo().getText());
+			rval.append(" ");
+			rval.append(getStrikePriceControl().getText());
+			rval.append(" ");
+			rval.append(getPutOrCallCombo().getText());
+			rval.append(" ");
+			rval.append(getTifCombo().getText());
+			rval.append(" ");
+			rval.append(getOpenCloseCombo().getText());
+			rval.append(" ");
+			rval.append(getOrderCapacityCombo().getText());
+			rval.append(" (");
+			rval.append(super.toString());
+			rval.append(")");
+			return rval.toString();
+		}
+		catch(Exception anyException ) {
+			return super.toString();
+		}
+	}
 }
