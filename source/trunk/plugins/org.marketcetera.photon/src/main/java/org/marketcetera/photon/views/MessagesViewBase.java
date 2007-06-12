@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.util.List;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
@@ -207,6 +209,10 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		if (sortByColumn != null && sortByColumn.length() > 0 && chooser != null)
 		{
 			chooser.fromString(sortByColumn);
+			List<Integer> sortingCols = chooser.getSortingColumns();
+			for (int col : sortingCols) {
+				chooser.updateSortIndicatorIcon(col);
+			}
 		}
 	}
 
