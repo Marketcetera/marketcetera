@@ -1,5 +1,10 @@
 package org.marketcetera.photon.views;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
@@ -14,7 +19,13 @@ import org.eclipse.swt.widgets.Event;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.MarketDataListener;
-import org.marketcetera.photon.marketdata.*;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.marketdata.IMarketDataListCallback;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionContractData;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
 import org.marketcetera.photon.parser.PriceImage;
@@ -23,17 +34,25 @@ import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.ToggledListener;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
-import org.marketcetera.photon.ui.validation.fix.*;
+import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
+import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.FIXObservables;
+import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 import org.marketcetera.photon.views.OptionContractCacheEntry.OptionCodeUIValues;
-import quickfix.DataDictionary;
-import quickfix.Message;
-import quickfix.FieldNotFound;
-import quickfix.field.*;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import quickfix.DataDictionary;
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.OpenClose;
+import quickfix.field.OrdType;
+import quickfix.field.OrderCapacity;
+import quickfix.field.PutOrCall;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
+import quickfix.field.UnderlyingSymbol;
 
 public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
@@ -217,9 +236,15 @@ public class OptionOrderTicketControllerHelper extends
 
 			public void onMarketDataListAvailable(
 					List<Message> derivativeSecurityList) {
-				List<OptionContractData> optionContracts = OptionMarketDataUtils
+				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
+				try {
+					optionContracts = OptionMarketDataUtils				
 						.getOptionExpirationMarketData(optionRoot
 								.getBaseSymbol(), derivativeSecurityList);
+				} catch (Exception anyException) {
+					PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
+					return;
+				}
 				if (optionContracts == null || optionContracts.isEmpty()) {
 					updateComboChoicesFromDefaults();
 				} else {

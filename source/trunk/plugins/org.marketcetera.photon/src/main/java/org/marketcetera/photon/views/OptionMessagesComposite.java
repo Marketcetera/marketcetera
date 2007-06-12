@@ -10,6 +10,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
@@ -191,6 +192,7 @@ public class OptionMessagesComposite extends Composite {
 		}
 	}
 
+	private Label errorLabel;
 	private Table messageTable;
 	private IndexedTableViewer messagesViewer;
 	private EnumTableFormat<OptionMessageHolder> tableFormat;
@@ -214,6 +216,7 @@ public class OptionMessagesComposite extends Composite {
     	this.sortableColumns = sortableColumns;   	
     	this.site = site;
     	this.viewStateMemento = memento;
+    	createErrorLabel(this);
 		createTable(this);
 		this.setLayout(createBasicGridLayout(1));
 		initializeDataMaps();
@@ -248,7 +251,7 @@ public class OptionMessagesComposite extends Composite {
 		}
     }
 
-	public void createTable(Composite parent) {
+	private void createTable(Composite parent) {
         messageTable = createMessageTable(parent);
 		messagesViewer = createTableViewer(messageTable, getEnumValues());
 		tableFormat = (EnumTableFormat<OptionMessageHolder>)messagesViewer.getLabelProvider();
@@ -256,7 +259,33 @@ public class OptionMessagesComposite extends Composite {
 		packColumns(messageTable);
 		restoreColumnOrder(viewStateMemento);		
 	}
+	
+	private void createErrorLabel(Composite parent) {
+		errorLabel = new Label(parent, SWT.WRAP);
+		errorLabel.setForeground(getDisplay().getSystemColor(SWT.COLOR_RED));
+		errorLabel.setEnabled(false);
+        GridData labelGridData = new GridData();
+        labelGridData.horizontalSpan = 1;
+        labelGridData.verticalSpan = 1;
+        labelGridData.horizontalAlignment = GridData.BEGINNING;
+        labelGridData.verticalAlignment = GridData.END;
+        labelGridData.grabExcessHorizontalSpace = true;
+        errorLabel.setLayoutData(labelGridData);
 
+	}
+	
+	private void disableErrorLabelText() {
+		errorLabel.setText("");
+		errorLabel.pack();
+		errorLabel.setEnabled(false);
+	}
+	
+	private void enableErrorLabelText(String text) {
+		errorLabel.setText(text);
+		errorLabel.pack();
+		errorLabel.setEnabled(true);
+	}
+		
 	protected Enum[] getEnumValues() {
 		return OptionDataColumns.values();
 	}
@@ -522,17 +551,24 @@ public class OptionMessagesComposite extends Composite {
 					List<Message> derivativeSecurityList) {
 				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
 
-				// underlying symbol case
-				if (showAllOptions(filteredByOptionSymbol)) {
-					optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(null,
-							derivativeSecurityList);
-				} else {
-				// option root case
-					optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(
-							underlyingSymbol.getBaseSymbol(),
-							derivativeSecurityList);
-					
+				try {					
+					// underlying symbol case
+					if (showAllOptions(filteredByOptionSymbol)) {
+						optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(null,
+								derivativeSecurityList);
+					} else {
+					// option root case
+						optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(
+								underlyingSymbol.getBaseSymbol(),
+								derivativeSecurityList);						
+					}
+				} catch (Exception anyException) {
+					PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
+					enableErrorLabelText("Error getting option contracts data for " + underlyingSymbol.getBaseSymbol());
+					return;
 				}
+				
+				disableErrorLabelText();
 				if (optionContracts == null || optionContracts.isEmpty()) {
 					// do nothing
 				} else {

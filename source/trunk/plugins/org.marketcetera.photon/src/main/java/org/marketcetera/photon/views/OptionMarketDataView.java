@@ -27,7 +27,6 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker.FeedEventType;
 import org.marketcetera.photon.ui.TextContributionItem;
 
 import quickfix.Message;
