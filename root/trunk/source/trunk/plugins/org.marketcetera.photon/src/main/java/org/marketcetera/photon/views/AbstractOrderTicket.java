@@ -283,6 +283,8 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 			String valueString = event.getNewValue().toString();
 			customFieldsViewPieces.updateCustomFields(valueString);
 		}
+		
+		outermostForm.reflow(true);
 	}
 
 	@Override
