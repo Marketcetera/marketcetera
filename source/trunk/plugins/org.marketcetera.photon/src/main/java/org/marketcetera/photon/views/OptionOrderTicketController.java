@@ -3,6 +3,11 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.util.Assert;
 
 
+/**
+ * 
+ * @author michael.lossos@softwaregoodness.com
+ *
+ */
 public class OptionOrderTicketController extends AbstractOrderTicketController {
 	
 	private OrderTicketControllerHelper controllerHelper;
@@ -19,5 +24,9 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 		}
 		controllerHelper = new OptionOrderTicketControllerHelper(ticket);
 		controllerHelper.init();
+	}
+	
+	public boolean hasBindErrors() {
+		return controllerHelper.hasBindErrors();
 	}
 }

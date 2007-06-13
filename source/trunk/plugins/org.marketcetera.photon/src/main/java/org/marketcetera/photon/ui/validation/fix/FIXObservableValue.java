@@ -6,7 +6,6 @@ import java.util.Date;
 
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
-import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.BooleanField;
 import quickfix.CharField;
@@ -23,25 +22,31 @@ import quickfix.UtcTimeOnlyField;
 import quickfix.UtcTimeStampField;
 import quickfix.field.ClOrdID;
 
+/**
+ * 
+ */
 public class FIXObservableValue extends AbstractObservableValue {
 
 	private static final String QUICKFIX_FIELD_PACKAGE = ClOrdID.class.getPackage().getName()+".";
 	protected final Message message;
 	protected final int fieldNumber;
 	protected final DataDictionary dataDictionary;
-	protected final String fieldName;
-	private final Class fieldClass;
-	private final FieldType fieldTypeEnum;
-	private final FieldMap fieldMap;
+	protected String fieldName;
+	private Class fieldClass;
+	private FieldType fieldTypeEnum;
+	private FieldMap fieldMap;
 	
 	public FIXObservableValue(Realm realm, Message message, int fieldNumber, DataDictionary dataDictionary) {
 		super(realm);
 		this.message = message;
 		this.fieldNumber = fieldNumber;
 		this.dataDictionary = dataDictionary;
-		fieldName = dataDictionary.getFieldName(fieldNumber);
-		fieldTypeEnum = dataDictionary.getFieldTypeEnum(fieldNumber);
-		
+		this.fieldName = dataDictionary.getFieldName(fieldNumber);
+		this.fieldTypeEnum = dataDictionary.getFieldTypeEnum(fieldNumber);
+		init(realm);
+	}
+	
+	private void init(Realm realm){
 		String qualifiedFieldName = QUICKFIX_FIELD_PACKAGE+fieldName;
 		Class myFieldClass = null;
 		try {
@@ -63,6 +68,15 @@ public class FIXObservableValue extends AbstractObservableValue {
 		fieldMap = myFieldMap;
 	}
 	
+	public FIXObservableValue(Realm realm, Message message, int fieldNumber, DataDictionary dataDictionary, String fieldName, FieldType fieldTypeEnum) {
+		super(realm);
+		this.message = message;
+		this.fieldNumber = fieldNumber;
+		this.dataDictionary = dataDictionary;
+		this.fieldName = fieldName;
+		this.fieldTypeEnum = fieldTypeEnum;
+		init(realm);
+	}
 	
 	protected FieldMap getFieldMap() {
 		return fieldMap;
@@ -202,4 +216,7 @@ public class FIXObservableValue extends AbstractObservableValue {
 		}
 	}
 
+	public Class getFieldClass() {
+		return fieldClass;
+	}
 }

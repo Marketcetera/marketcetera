@@ -89,6 +89,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertNotNull(ticket.getExpireYearCombo().getText());
 		//		assertEquals(expectedPutOrCallUIText, ticket.getPutOrCallCombo().getText());
 //		assertEquals("23", ticket.getStrikePriceControl().getText());
+		assertFalse(controller.hasBindErrors());
 		
 		message = msgFactory.newMarketOrder("2",
 				Side.SELL, BigDecimal.ONE, new MSymbol(optionContractSymbol),
@@ -104,6 +105,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("123456789101112", ticket.getAccountText().getText());
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
+		assertFalse(controller.hasBindErrors());
 	}
 
 	// todo: finish up these tests

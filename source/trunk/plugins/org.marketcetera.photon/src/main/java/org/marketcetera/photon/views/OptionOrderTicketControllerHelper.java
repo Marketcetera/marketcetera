@@ -36,13 +36,16 @@ import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.FIXObservableValue;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 import org.marketcetera.photon.views.OptionContractCacheEntry.OptionCodeUIValues;
 
 import quickfix.DataDictionary;
+import quickfix.Field;
 import quickfix.FieldNotFound;
+import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityDate;
@@ -54,6 +57,9 @@ import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
+/**
+ * @author michael.lossos@softwaregoodness.com
+ */
 public class OptionOrderTicketControllerHelper extends
 		OrderTicketControllerHelper {
 	private IOptionOrderTicket optionTicket;
@@ -488,9 +494,15 @@ public class OptionOrderTicketControllerHelper extends
 			// http://trac.marketcetera.org/trac.fcgi/ticket/185
 			final int orderCapacityFIXField = OrderCapacity.FIELD;
 			// final int orderCapacityFIXField = CustomerOrFirm.FIELD;
+			IObservableValue observableValue = FIXObservables.observeValue(
+					realm, message, orderCapacityFIXField, dictionary);
+			// This is a workaround for:
+			// http://trac.marketcetera.org/trac.fcgi/ticket/294
+			observableValue = repairFIXTypeMapping(observableValue,
+					OrderCapacity.class, FieldType.Char, realm, message,
+					orderCapacityFIXField, dictionary);
 			dataBindingContext.bindValue(SWTObservables
-					.observeText(whichControl), FIXObservables.observeValue(
-					realm, message, orderCapacityFIXField, dictionary),
+					.observeText(whichControl), observableValue,
 					bindingHelper.createToModelUpdateValueStrategy(
 							orderCapacityConverterBuilder, validator),
 					bindingHelper.createToTargetUpdateValueStrategy(
@@ -518,7 +530,32 @@ public class OptionOrderTicketControllerHelper extends
 		}
 	}
 
-    public static final String CFI_CODE_PUT = "OPASPS";
+	/**
+	 * If a field such as OrderCapacity is missing from the dictionary it will
+	 * have a null FieldClass in the FIXObservableValue. 
+	 * This is a workaround for http://trac.marketcetera.org/trac.fcgi/ticket/294
+	 */
+	public IObservableValue repairFIXTypeMapping(
+			IObservableValue observableValue, Class<?> fieldClass,
+			FieldType fieldType, Realm realm, Message message, int fieldNumber,
+			DataDictionary dataDictionary) {
+		IObservableValue rval = observableValue;
+		if (fieldClass != null && observableValue != null
+				&& Field.class.isAssignableFrom(fieldClass)) {
+			if (FIXObservableValue.class.isAssignableFrom(observableValue
+					.getClass())) {
+				FIXObservableValue fixObservableValue = (FIXObservableValue) observableValue;
+				if (fixObservableValue.getFieldClass() == null) {
+					String fieldName = fieldClass.getSimpleName();
+					rval = new FIXObservableValue(realm, message, fieldNumber,
+							dataDictionary, fieldName, fieldType);
+				}
+			}
+		}
+		return rval;
+	}
+	
+	public static final String CFI_CODE_PUT = "OPASPS";
     public static final String CFI_CODE_CALL = "OCASPS";
 
     @Override
