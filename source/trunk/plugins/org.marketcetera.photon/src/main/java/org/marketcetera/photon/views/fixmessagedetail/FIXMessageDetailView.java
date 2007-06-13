@@ -97,13 +97,19 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 	public void selectionChanged(IWorkbenchPart part, ISelection selection) {
 		if (part instanceof MessagesView) {
 			IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-			if (structuredSelection.size() == 1 || structuredSelection.size() == 0) {  // only display message detail for a single message or no messages
-				MessageHolder messageHolder = (MessageHolder) structuredSelection.getFirstElement();
-				Message message = messageHolder.getMessage();
-				showMessage(message);
+			boolean shouldClear = true;
+			// only display message detail for a single message
+			if (structuredSelection.size() == 1) {
+				MessageHolder messageHolder = (MessageHolder) structuredSelection
+						.getFirstElement();
+				if (messageHolder != null) {
+					Message message = messageHolder.getMessage();
+					shouldClear = false;
+					showMessage(message);
+				}
 			}
-			else {
-				showMessage(null);  // clear the view
+			if (shouldClear) {
+				showMessage(null); // clear the view
 			}
 		}
 	}
