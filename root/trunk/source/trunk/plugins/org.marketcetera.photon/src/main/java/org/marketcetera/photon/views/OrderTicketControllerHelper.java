@@ -68,6 +68,11 @@ import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 
+/**
+ * 
+ * @author michael.lossos@softwaregoodness.com
+ *
+ */
 public class OrderTicketControllerHelper {
 	private IOrderTicket ticket;
 
@@ -107,6 +112,8 @@ public class OrderTicketControllerHelper {
 
 	private boolean hasRealCharDatatype;
 
+	private boolean bindErrorsOccurred;
+	
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this.ticket = ticket;
 	}
@@ -368,12 +375,18 @@ public class OrderTicketControllerHelper {
 
 	protected void bind(Message message, boolean enableValidators) {
 		try {
+			bindErrorsOccurred = false;
 			bindImpl(message, enableValidators);
 		} catch (Exception ex) {
+			bindErrorsOccurred = true;
 			ex.printStackTrace();
 		}
 	}
-
+	
+	public boolean hasBindErrors() {
+		return bindErrorsOccurred;
+	}
+	
 	/**
 	 * Derived classes can change which FIX field is affected by the Symbol
 	 * control.
