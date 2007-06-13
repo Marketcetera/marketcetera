@@ -5,7 +5,9 @@ package org.marketcetera.photon.core;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -15,6 +17,7 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.Account;
 import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
@@ -40,16 +43,19 @@ import ca.odell.glazedlists.FunctionList.Function;
  * price of a buy of 300 IBM and a sale of 600 MSFT.
  * 
  * @author gmiller
+ * @author caroline.leung@softwaregoodness.com
  *
  */
 @ClassVersion("$Id$")
 public class AveragePriceFunction implements Function<List<MessageHolder>, MessageHolder> {
 
 	private FIXMessageFactory messageFactory;
+	private Set<String> partiallyFilledOrderIDSet;
 	
 	public AveragePriceFunction(FIXMessageFactory messageFactory) {
 		super();
 		this.messageFactory = messageFactory;
+		partiallyFilledOrderIDSet = new HashSet<String>();
 	}
 
 	/**
@@ -102,21 +108,36 @@ public class AveragePriceFunction implements Function<List<MessageHolder>, Messa
 			returnMessage.setField(fillMessage.getField(new Symbol()));
 			returnMessage.setField(fillMessage.getField(new OrderQty()));
 			returnMessage.setField(fillMessage.getField(new LeavesQty()));
+			BigDecimal leavesQty = new BigDecimal(fillMessage.getString(LeavesQty.FIELD));
+			if (leavesQty.compareTo(BigDecimal.ZERO) != 0) {
+				String orderID = fillMessage.getString(ClOrdID.FIELD);
+				partiallyFilledOrderIDSet.add(orderID);
+			}
 			returnMessage.setField(new StringField(CumQty.FIELD, fillMessage.getString(LastShares.FIELD)));
-			returnMessage.setField(new StringField(AvgPx.FIELD, fillMessage.getString(LastPx.FIELD)));
+			returnMessage.setField(new StringField(AvgPx.FIELD, fillMessage.getString(LastPx.FIELD)));			
 			try { returnMessage.setField(fillMessage.getField(new Account())); } catch (FieldNotFound ex) { /* do nothing */ }
 		} else {
-			BigDecimal existingCumQty = new BigDecimal(avgPriceMessage.getString(CumQty.FIELD));
+			BigDecimal existingCumQty = new BigDecimal(avgPriceMessage.getString(CumQty.FIELD));						
 			BigDecimal existingAvgPx = new BigDecimal(avgPriceMessage.getString(AvgPx.FIELD));
 			BigDecimal newLastQty = new BigDecimal(fillMessage.getString(LastShares.FIELD));
 			BigDecimal newLastPx = new BigDecimal(fillMessage.getString(LastPx.FIELD));
 			BigDecimal newTotal = existingCumQty.add(newLastQty);
-			if (newTotal.compareTo(BigDecimal.ZERO) != 0){
+			if (newTotal.compareTo(BigDecimal.ZERO) != 0){				
 				BigDecimal numerator = existingCumQty.multiply(existingAvgPx).add(newLastQty.multiply(newLastPx));
 				numerator = numerator.setScale(10);
 				BigDecimal newAvgPx = numerator.divide(newTotal, RoundingMode.HALF_UP);
 				avgPriceMessage.setString(AvgPx.FIELD, newAvgPx.toPlainString());
 				avgPriceMessage.setString(CumQty.FIELD, newTotal.toPlainString());
+				String orderID = fillMessage.getString(ClOrdID.FIELD);
+				
+				//Only update the order quantity if it's not already included (e.g. if it was previously partially-filled)
+				if (!partiallyFilledOrderIDSet.contains(orderID))
+				{
+					BigDecimal existingOrderQty = new BigDecimal(avgPriceMessage.getString(OrderQty.FIELD));
+					BigDecimal newOrderQty = new BigDecimal(fillMessage.getString(OrderQty.FIELD));
+					BigDecimal newTotalOrderQty = existingOrderQty.add(newOrderQty);
+					avgPriceMessage.setString(OrderQty.FIELD, newTotalOrderQty.toPlainString());				
+				}
 			}
 			returnMessage = avgPriceMessage;
 		}
