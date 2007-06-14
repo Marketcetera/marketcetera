@@ -1,5 +1,7 @@
 package org.marketcetera.photon;
 
+import java.util.Vector;
+
 import org.apache.log4j.Logger;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
@@ -207,7 +209,7 @@ public class PhotonController {
 			if(internalMainLogger.isDebugEnabled()) {
 				internalMainLogger.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD)); 
 			} 
-		} catch (FieldNotFound e1) {	}
+		} catch (FieldNotFound ignored) {	}
 		try {
 			final Message cancelMessage = messageFactory.newCancelFromMessage(latestMessage);
 			cancelMessage.setField(new ClOrdID(idFactory.getNext()));
@@ -224,25 +226,37 @@ public class PhotonController {
 		}
 	}
 
-	/** Panic button: cancel all open orders */
+	/** Panic button: cancel all open orders
+	 * Need to do the cancel in 2 phases: first collect all clOrderIds to cancel, 
+	 * then cancel them.
+	 * Trying to cancel them while collecting results in a deadlock, since we are 
+	 * holding a read lock while collecting, and sending a cancel tries to aquire 
+	 * the write lock to add new messages to message history. 
+	 */
 	public void cancelAllOpenOrders()
 	{
+		final Vector<String> clOrdIdsToCancel = new Vector<String>();
 		fixMessageHistory.visitOpenOrdersExecutionReports(new MessageVisitor() {
             public void visitOpenOrderExecutionReports(Message message) {
                 try {
             		String clOrdId = (String) message.getString(ClOrdID.FIELD);
-            		cancelOneOrderByClOrdID(clOrdId, "PANIC");
-                    if(internalMainLogger.isDebugEnabled()) { internalMainLogger.debug("cancelling order for "+message);} 
-                } catch (NoMoreIDsException ignored) {
-                    // ignore
+            		clOrdIdsToCancel.add(clOrdId);
                 } catch (FieldNotFound fnf){
                 	internalMainLogger.error("Could not send cancel for message "+message.toString(), fnf);
                 }
             }
         });
+		for (String clOrdId: clOrdIdsToCancel) {
+    		try {
+				cancelOneOrderByClOrdID(clOrdId, "PANIC");
+	            if(internalMainLogger.isDebugEnabled()) { internalMainLogger.debug("cancelling order for "+clOrdId);} 
+            } catch (NoMoreIDsException ignored) {
+                // ignore
+			}
+		}
 	}
 
-	private void convertAndSend(Message fixMessage) {
+	protected void convertAndSend(Message fixMessage) {
 		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
 		JmsOperations jmsOperations;
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
