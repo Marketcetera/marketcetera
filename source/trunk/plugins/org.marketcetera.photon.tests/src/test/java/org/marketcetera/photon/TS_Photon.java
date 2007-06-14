@@ -32,6 +32,7 @@ public class TS_Photon {
 		
 		// photon
 		suite.addTestSuite(OrderManagerTest.class);
+		suite.addTestSuite(PhotonControllerTest.class);
 		
 		// marketdata
 		suite.addTestSuite(MarketceteraOptionSymbolTest.class);

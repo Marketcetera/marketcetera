@@ -555,10 +555,13 @@ public class OptionOrderTicketControllerHelper extends
 		return rval;
 	}
 	
-	public static final String CFI_CODE_PUT = "OPASPS";
+    public static final String CFI_CODE_PUT = "OPASPS";
     public static final String CFI_CODE_CALL = "OCASPS";
 
     @Override
+    /** If we are using a version of FIX that has it, need to substitute
+     * {@link PutOrCall} field with {@link CFICode} instead.
+     */
     public void handleSend() {
         if(getDictionary().isField(CFICode.FIELD)) {
             Message theMsg = getTargetMessage();
