@@ -32,6 +32,7 @@ import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.ToggledListener;
+import org.marketcetera.photon.ui.validation.DataDictionaryValidator;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
@@ -468,12 +469,12 @@ public class OptionOrderTicketControllerHelper extends
 		}
 		// PutOrCall (OptionCFICode)
 		{
-			Control whichControl = optionTicket.getPutOrCallCombo();
+            Control whichControl = optionTicket.getPutOrCallCombo();
 			IToggledValidator validator = putOrCallConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
 			IObservableValue fixObservable = FIXObservables.observeValue(realm,
-					message, PutOrCall.FIELD, dictionary);
+					message, PutOrCall.FIELD, dictionary, PutOrCall.class.getSimpleName(), FieldType.Int);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), fixObservable, bindingHelper
 					.createToModelUpdateValueStrategy(
@@ -495,12 +496,7 @@ public class OptionOrderTicketControllerHelper extends
 			final int orderCapacityFIXField = OrderCapacity.FIELD;
 			// final int orderCapacityFIXField = CustomerOrFirm.FIELD;
 			IObservableValue observableValue = FIXObservables.observeValue(
-					realm, message, orderCapacityFIXField, dictionary);
-			// This is a workaround for:
-			// http://trac.marketcetera.org/trac.fcgi/ticket/294
-			observableValue = repairFIXTypeMapping(observableValue,
-					OrderCapacity.class, FieldType.Char, realm, message,
-					orderCapacityFIXField, dictionary);
+					realm, message, orderCapacityFIXField, dictionary, OrderCapacity.class.getSimpleName(), FieldType.Char);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), observableValue,
 					bindingHelper.createToModelUpdateValueStrategy(
