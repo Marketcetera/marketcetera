@@ -45,7 +45,18 @@ public class FIXObservableValue extends AbstractObservableValue {
 		this.fieldTypeEnum = dataDictionary.getFieldTypeEnum(fieldNumber);
 		init(realm);
 	}
-	
+
+    public FIXObservableValue(Realm realm, Message message, int fieldNumber, DataDictionary dataDictionary,
+                              String fieldName, FieldType fieldTypeEnum) {
+        super(realm);
+        this.message = message;
+        this.fieldNumber = fieldNumber;
+        this.dataDictionary = dataDictionary;
+        this.fieldName = fieldName;
+        this.fieldTypeEnum = fieldTypeEnum;
+        init(realm);
+    }
+
 	private void init(Realm realm){
 		String qualifiedFieldName = QUICKFIX_FIELD_PACKAGE+fieldName;
 		Class myFieldClass = null;
@@ -66,16 +77,6 @@ public class FIXObservableValue extends AbstractObservableValue {
 			myFieldMap = message;
 		}
 		fieldMap = myFieldMap;
-	}
-	
-	public FIXObservableValue(Realm realm, Message message, int fieldNumber, DataDictionary dataDictionary, String fieldName, FieldType fieldTypeEnum) {
-		super(realm);
-		this.message = message;
-		this.fieldNumber = fieldNumber;
-		this.dataDictionary = dataDictionary;
-		this.fieldName = fieldName;
-		this.fieldTypeEnum = fieldTypeEnum;
-		init(realm);
 	}
 	
 	protected FieldMap getFieldMap() {
