@@ -32,7 +32,6 @@ import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.ToggledListener;
-import org.marketcetera.photon.ui.validation.DataDictionaryValidator;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
@@ -439,58 +438,54 @@ public class OptionOrderTicketControllerHelper extends
 		// StrikePrice
 		{
 			Control whichControl = optionTicket.getStrikePriceControl();
-			IToggledValidator validator = strikeConverterBuilder
+			IToggledValidator targetAfterGetValidator = strikeConverterBuilder
 					.newTargetAfterGetValidator();
-			validator.setEnabled(enableValidators);
+			targetAfterGetValidator.setEnabled(enableValidators);
+			IToggledValidator modelAfterGetValidator = strikeConverterBuilder.newModelAfterGetValidator();
+			modelAfterGetValidator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
 					realm, message, StrikePrice.FIELD, dictionary),
 					bindingHelper.createToModelUpdateValueStrategy(
-							strikeConverterBuilder, validator), bindingHelper
+							strikeConverterBuilder, targetAfterGetValidator), bindingHelper
 							.createToTargetUpdateValueStrategy(
-									strikeConverterBuilder, validator));
-			addControlStateListeners(whichControl, validator);
+									strikeConverterBuilder, 
+									modelAfterGetValidator));
+			addControlStateListeners(whichControl, targetAfterGetValidator);
+			addControlStateListeners(whichControl, modelAfterGetValidator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
-		}
-		// OptionSymbol (the symbol for the actual option contract)
-		{
-			Control whichControl = optionTicket.getOptionSymbolControl();
-			IToggledValidator validator = new StringRequiredValidator();
-			// todo: This validator will never be enabled because the control
-			// itself is disabled.
-			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables.observeText(
-					whichControl, swtEvent), FIXObservables.observeValue(realm,
-					message, Symbol.FIELD, dictionary),
-					new UpdateValueStrategy().setAfterGetValidator(validator),
-					new UpdateValueStrategy());
-			addControlStateListeners(whichControl, validator);
 		}
 		// PutOrCall (OptionCFICode)
 		{
             Control whichControl = optionTicket.getPutOrCallCombo();
-			IToggledValidator validator = putOrCallConverterBuilder
+			IToggledValidator targetAfterGetValidator = putOrCallConverterBuilder
 					.newTargetAfterGetValidator();
-			validator.setEnabled(enableValidators);
+			targetAfterGetValidator.setEnabled(enableValidators);
+			IToggledValidator modelAfterGetValidator = putOrCallConverterBuilder.newModelAfterGetValidator();
+			modelAfterGetValidator.setEnabled(enableValidators);
 			IObservableValue fixObservable = FIXObservables.observeValue(realm,
 					message, PutOrCall.FIELD, dictionary, PutOrCall.class.getSimpleName(), FieldType.Int);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), fixObservable, bindingHelper
 					.createToModelUpdateValueStrategy(
-							putOrCallConverterBuilder, validator),
+							putOrCallConverterBuilder, targetAfterGetValidator),
 					bindingHelper.createToTargetUpdateValueStrategy(
-							putOrCallConverterBuilder, validator));
-			addControlStateListeners(whichControl, validator);
+							putOrCallConverterBuilder, modelAfterGetValidator
+							));
+			addControlStateListeners(whichControl, targetAfterGetValidator);
+			addControlStateListeners(whichControl, modelAfterGetValidator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
 		}
 		// OrderCapacity
 		{
 			Control whichControl = optionTicket.getOrderCapacityCombo();
-			IToggledValidator validator = orderCapacityConverterBuilder
+			IToggledValidator targetAfterGetValidator = orderCapacityConverterBuilder
 					.newTargetAfterGetValidator();
-			validator.setEnabled(enableValidators);
+			targetAfterGetValidator.setEnabled(enableValidators);
+			IToggledValidator modelAfterGetValidator = orderCapacityConverterBuilder.newModelAfterGetValidator();
+			modelAfterGetValidator.setEnabled(enableValidators);
 			// The FIX field may need to be updated., See
 			// http://trac.marketcetera.org/trac.fcgi/ticket/185
 			final int orderCapacityFIXField = OrderCapacity.FIELD;
@@ -500,38 +495,63 @@ public class OptionOrderTicketControllerHelper extends
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), observableValue,
 					bindingHelper.createToModelUpdateValueStrategy(
-							orderCapacityConverterBuilder, validator),
+							orderCapacityConverterBuilder, targetAfterGetValidator),
 					bindingHelper.createToTargetUpdateValueStrategy(
-							orderCapacityConverterBuilder, validator));
-			addControlStateListeners(whichControl, validator);
+							orderCapacityConverterBuilder, 
+							modelAfterGetValidator ));
+			addControlStateListeners(whichControl, targetAfterGetValidator);
+			addControlStateListeners(whichControl, modelAfterGetValidator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
 		}
 		// OpenClose
 		{
 			Control whichControl = optionTicket.getOpenCloseCombo();
-			IToggledValidator validator = openCloseConverterBuilder
+			IToggledValidator targetAfterGetValidator = openCloseConverterBuilder
 					.newTargetAfterGetValidator();
-			validator.setEnabled(enableValidators);
+			targetAfterGetValidator.setEnabled(enableValidators);
+			IToggledValidator modelAfterGetValidator = openCloseConverterBuilder.newModelAfterGetValidator();
+			modelAfterGetValidator.setEnabled(enableValidators);
 			dataBindingContext.bindValue(SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
 					realm, message, OpenClose.FIELD, dictionary), bindingHelper
 					.createToModelUpdateValueStrategy(
-							openCloseConverterBuilder, validator),
+							openCloseConverterBuilder, targetAfterGetValidator),
 					bindingHelper.createToTargetUpdateValueStrategy(
-							openCloseConverterBuilder, validator));
-			addControlStateListeners(whichControl, validator);
+							openCloseConverterBuilder, 
+							modelAfterGetValidator));
+			addControlStateListeners(whichControl, targetAfterGetValidator);
+			addControlStateListeners(whichControl, modelAfterGetValidator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
 		}
+		// OptionSymbol (the symbol for the actual option contract)
+		/**
+		 * Note that the OptionSymbol value depends on other contract specifiers
+		 * (strike, Put/Call, expiration). OptionSymbol must be bound after the
+		 * others so that if a symbol is present in the FIX message, it is not
+		 * erased.
+		 */
+		{
+			Control whichControl = optionTicket.getOptionSymbolControl();
+			IToggledValidator validator = new StringRequiredValidator();
+			validator.setEnabled(enableValidators);
+			dataBindingContext.bindValue(SWTObservables.observeText(
+					whichControl, swtEvent), FIXObservables.observeValue(realm,
+					message, Symbol.FIELD, dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(validator),
+					new UpdateValueStrategy());
+			addControlStateListeners(whichControl, validator);
+		}
 	}
 
+	// todo: Remove this method if it remains unused.
 	/**
 	 * If a field such as OrderCapacity is missing from the dictionary it will
 	 * have a null FieldClass in the FIXObservableValue. 
 	 * This is a workaround for http://trac.marketcetera.org/trac.fcgi/ticket/294
 	 */
-	public IObservableValue repairFIXTypeMapping(
+	private IObservableValue repairFIXTypeMapping(
 			IObservableValue observableValue, Class<?> fieldClass,
 			FieldType fieldType, Realm realm, Message message, int fieldNumber,
 			DataDictionary dataDictionary) {
