@@ -261,6 +261,9 @@ public class PhotonController {
 		JmsOperations jmsOperations;
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
 			try {
+				if(internalMainLogger.isDebugEnabled()) {
+					internalMainLogger.debug("Sending: " + fixMessage);
+				}
 				jmsOperations.convertAndSend(fixMessage);
 			} catch (Exception ex){
 				service.onException(ex);
