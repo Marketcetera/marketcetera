@@ -18,6 +18,7 @@ import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.preferences.FIXMessageColumnPreferenceParser;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXValueExtractor;
@@ -31,6 +32,8 @@ import ca.odell.glazedlists.gui.TableFormat;
 /**
  * A table format and label provider for FIX message based tables. Listens to
  * preference changes for the assigned view ID and updates the visible columns.
+ * 
+ * @author michael.lossos@softwaregoodness.com
  */
 public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		ITableLabelProvider {
@@ -70,14 +73,14 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		updateColumnsFromPreferences();
 	}
 
-	private static class ColumnTracker {
-		private HashMap<Integer, TableColumn> fieldToColumnMap = new HashMap<Integer, TableColumn>();
+	protected static class ColumnTracker {
+		protected HashMap<Integer, TableColumn> fieldToColumnMap = new HashMap<Integer, TableColumn>();
 
-		private HashMap<TableColumn, Integer> columnToFieldMap = new HashMap<TableColumn, Integer>();
+		protected HashMap<TableColumn, Integer> columnToFieldMap = new HashMap<TableColumn, Integer>();
 
-		private HashMap<Integer, Integer> columnIndexToFieldMap = new HashMap<Integer, Integer>();
+		protected HashMap<Integer, Integer> columnIndexToFieldMap = new HashMap<Integer, Integer>();
 
-		private HashMap<Integer, Integer> fieldToColumnIndexMap = new HashMap<Integer, Integer>();
+		protected HashMap<Integer, Integer> fieldToColumnIndexMap = new HashMap<Integer, Integer>();
 
 		public void add(int fieldNum, TableColumn column, int columnIndex) {
 			fieldToColumnMap.put(fieldNum, column);
@@ -113,7 +116,12 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return assignedViewID;
 	}
 
-	private void createColumn(int fieldNum, DataDictionary dictionary) {
+	protected void createColumn(int fieldNum) {
+		createColumn(fieldNum, null, null);
+	}
+
+	protected void createColumn(int fieldNum, FIXDataDictionary fixDictionary,
+			DataDictionary dictionary) {
 		int alignment;
 		if (isNumericColumn(fieldNum, dictionary)) {
 			alignment = SWT.RIGHT;
@@ -121,9 +129,11 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 			alignment = SWT.LEFT;
 		}
 		TableColumn tableColumn = new TableColumn(underlyingTable, alignment);
-		String columnName = getFIXFieldColumnName(fieldNum);
-		String localizedName = FIXFieldLocalizer
-				.getLocalizedMessage(columnName);
+		String columnName = getFIXFieldColumnName(fieldNum, fixDictionary);
+		String localizedName = "";
+		if (columnName != null) {
+			localizedName = FIXFieldLocalizer.getLocalizedMessage(columnName);
+		}
 		tableColumn.setText(localizedName);
 		tableColumn.setResizable(true);
 		tableColumn.pack();
@@ -138,33 +148,47 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		columnTracker.add(fieldNum, tableColumn, columnIndex);
 	}
 
-	private void removeColumn(TableColumn whichColumn) {
+	protected void removeColumn(TableColumn whichColumn) {
 		columnTracker.remove(whichColumn);
 		whichColumn.dispose();
 	}
 
-	private void createAllMissingColumns(List<Integer> fieldsToShow) {
+	protected void createAllMissingColumns(List<Integer> fieldsToShow) {
 		// todo: Handle columns that are not FIX fields.
 		// todo: Handle adding custom FIX fields as columns.
+		FIXDataDictionary fixDictionary = getFIXDataDictionary();
 		DataDictionary dictionary = getDataDictionary();
 		if (fieldsToShow.isEmpty()) {
 			for (int fieldNum = 1; fieldNum < FIXMessageUtil.getMaxFIXFields(); ++fieldNum) {
 				if (dictionary.isField(fieldNum)) {
 					if (!columnTracker.containsFieldNumber(fieldNum)) {
-						createColumn(fieldNum, dictionary);
+						createColumn(fieldNum, fixDictionary, dictionary);
 					}
 				}
 			}
 		} else {
 			for (int fieldNum : fieldsToShow) {
 				if (!columnTracker.containsFieldNumber(fieldNum)) {
-					createColumn(fieldNum, dictionary);
+					createColumn(fieldNum, fixDictionary, dictionary);
 				}
 			}
 		}
 	}
 
+	/**
+	 * Derived classes can override this method to add columns that are always
+	 * present. Call the createColumn() methods to create the columns and
+	 * override getFIXFieldColumnName(), getColumnValue(), and isNumericColumn()
+	 * methods to provide information about them.
+	 */
+	protected void createExtraColumns() {
+		// Do nothing
+	}
+
 	protected boolean isNumericColumn(int fieldNum, DataDictionary dict) {
+		if (dict == null) {
+			return false;
+		}
 		try {
 			FieldType fieldTypeEnum = dict.getFieldTypeEnum(fieldNum);
 			Class javaType = fieldTypeEnum.getJavaType();
@@ -197,15 +221,18 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return null;
 	}
 
-	private void removeAllColumns() {
+	protected void removeAllColumns() {
 		TableColumn[] columns = underlyingTable.getColumns();
 		for (TableColumn column : columns) {
 			removeColumn(column);
 		}
 	}
 
-	private void recreateAllColumns(List<Integer> fieldsToShow) {
+	protected void recreateAllColumns(List<Integer> fieldsToShow) {
 		removeAllColumns();
+		// Additional static columns come first.
+		createExtraColumns();
+		// Columns chosen by the user come after.
 		createAllMissingColumns(fieldsToShow);
 	}
 
@@ -234,11 +261,14 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return underlyingTable.getColumnCount();
 	}
 
-	public String getFIXFieldColumnName(int fixFieldNum) {
+	public String getFIXFieldColumnName(int fixFieldNum,
+			FIXDataDictionary fixDataDictionary) {
+		if (fixDataDictionary == null) {
+			return null;
+		}
 		String fieldName = null;
 		try {
-			fieldName = PhotonPlugin.getDefault().getFIXDataDictionary()
-					.getHumanFieldName(fixFieldNum);
+			fieldName = fixDataDictionary.getHumanFieldName(fixFieldNum);
 		} catch (Exception anyException) {
 			// Ignore
 		}
@@ -249,13 +279,14 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 	}
 
 	public String getColumnName(int column) {
-		return getFIXFieldColumnName(column);
+		return getFIXFieldColumnName(column, PhotonPlugin.getDefault()
+				.getFIXDataDictionary());
 	}
 
 	public Object getColumnValue(T baseObject, int columnIndex) {
 		int fieldNum = columnTracker.getFieldNumber(columnIndex);
 		Object columnValue = null;
-		if (fieldNum != INVALID_FIELD_ID) {
+		if (fieldNum > INVALID_FIELD_ID) {
 			columnValue = extractValue(fieldNum, baseObject, columnIndex);
 		}
 		return columnValue;
@@ -310,8 +341,12 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return fieldMap;
 	}
 
+	protected FIXDataDictionary getFIXDataDictionary() {
+		return PhotonPlugin.getDefault().getFIXDataDictionary();
+	}
+
 	protected DataDictionary getDataDictionary() {
-		return PhotonPlugin.getDefault().getFIXDataDictionary().getDictionary();
+		return getFIXDataDictionary().getDictionary();
 	}
 
 	protected Object extractValue(int fieldNum, T element, int columnIndex) {
