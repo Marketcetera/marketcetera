@@ -2,35 +2,51 @@ package org.marketcetera.photon.ui;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.core.IncomingMessageHolder;
 import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.quickfix.FIXDataDictionary;
 
-public class DirectionalMessageTableFormat extends MessageListTableFormat {
+/**
+ * 
+ * @author michael.lossos@softwaregoodness.com
+ *
+ */
+public class DirectionalMessageTableFormat<T> extends FIXMessageTableFormat<T> {
 
+	private static final int DirectionFieldNum = -2;
+	
 	private Image arrowInImage;
+
 	private Image arrowOutImage;
 
-	public DirectionalMessageTableFormat(Table table, Enum[] columns, IWorkbenchPartSite site) {
-		super(table, columns, site);
-		arrowInImage = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_IN).createImage();
-		arrowOutImage = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_OUT).createImage();
+	public DirectionalMessageTableFormat(Table table,
+			final String assignedViewID, Class<T> underlyingClass) {
+		super(table, assignedViewID, underlyingClass);
+		arrowInImage = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_IN)
+				.createImage();
+		arrowOutImage = PhotonPlugin.getImageDescriptor(IImageKeys.ARROW_OUT)
+				.createImage();
 	}
 
 	@Override
 	public void dispose() {
-		arrowInImage.dispose();
-		arrowOutImage.dispose();
+		try {
+			arrowInImage.dispose();
+			arrowOutImage.dispose();
+		} catch (Exception anyException) {
+			PhotonPlugin.getMainConsoleLogger().warn(
+					"Failed to dispose of direction arrow images.",
+					anyException);
+		}
 		super.dispose();
 	}
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
-		if (columnIndex == 0 && element instanceof MessageHolder)
-		{
-			if (element instanceof IncomingMessageHolder){
+		if (columnIndex == 0 && element instanceof MessageHolder) {
+			if (element instanceof IncomingMessageHolder) {
 				return arrowInImage;
 			} else {
 				return arrowOutImage;
@@ -38,7 +54,17 @@ public class DirectionalMessageTableFormat extends MessageListTableFormat {
 		}
 		return super.getColumnImage(element, columnIndex);
 	}
-	
-	
 
+	@Override
+	protected void createExtraColumns() {
+		createColumn(DirectionFieldNum);
+	}
+
+	@Override
+	public String getFIXFieldColumnName(int fixFieldNum, FIXDataDictionary fixDataDictionary) {
+		if(fixFieldNum == DirectionFieldNum) {
+			return "D";
+		}
+		return super.getFIXFieldColumnName(fixFieldNum, fixDataDictionary);
+	}
 }
