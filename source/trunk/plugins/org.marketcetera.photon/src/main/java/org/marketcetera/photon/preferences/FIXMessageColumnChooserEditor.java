@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
@@ -27,6 +28,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -35,6 +37,11 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import ca.odell.glazedlists.BasicEventList;
 
+/**
+ * 
+ * @author caroline.leung@softwaregoodness.com
+ *
+ */
 public class FIXMessageColumnChooserEditor extends FieldEditor {
 	protected static final String CUSTOM_FIELD_PREFIX = "Custom Field";
 		
@@ -177,13 +184,20 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 	}
 
 	protected void doLoad() {
-		doLoadDefault();
+		List<Integer> savedIntFields = parser.getFieldsToShow(currentSubPageID);
+		loadTables(savedIntFields, hasBeenLoaded());
 	}
 	
 	protected void doLoadDefault() {
-		List<Integer> savedIntFields = parser.getFieldsToShow(currentSubPageID);
+		ScopedPreferenceStore defaultPrefsStore = new ScopedPreferenceStore(
+				new DefaultScope(), PhotonPlugin.ID);
+		List<Integer> savedIntFields = parser.getFieldsToShow(currentSubPageID,
+				defaultPrefsStore);
+		loadTables(savedIntFields, false);
+	}
+	
+	protected void loadTables(List<Integer> savedIntFields, boolean loadedBefore) {
 		FIXMessageColumnChooserEditorPage currPage;
-		boolean loadedBefore = hasBeenLoaded();
 		if (loadedBefore) {
 			currPage = loadPageFromMemory();
 		} else {
@@ -197,7 +211,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 			loadDefaultAvailableFieldsTable(loadedBefore, currPage, savedIntFields);				
 		}
 		resetFilter();
-		selectionChanged();
+		selectionChanged();	
 	}
 	
 	private FIXMessageColumnChooserEditorPage loadPageFromMemory() {
@@ -696,7 +710,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 
 	protected void changeSubPage(String subPageID) {
 		this.currentSubPageID = subPageID;
-		doLoadDefault();
+		doLoad();
 	}
 
 }

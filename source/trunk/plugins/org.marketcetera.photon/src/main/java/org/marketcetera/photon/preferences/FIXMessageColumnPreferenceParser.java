@@ -70,13 +70,17 @@ public class FIXMessageColumnPreferenceParser {
 		getPreferenceStore().setValue(key, value);
 	}
 
-	public List<Integer> getFieldsToShow(String viewID) {
+	public List<Integer> getFieldsToShow(String viewID, ScopedPreferenceStore prefStore) {
 		String key = getKey(viewID);
-		String value = getPreferenceStore().getString(key);
+		String value = prefStore.getString(key);
 		if( value == null) {
 			return null;
 		}
 		List<Integer> fields = fromValue(value);
 		return fields;
+	}
+	
+	public List<Integer> getFieldsToShow(String viewID) {
+		return getFieldsToShow(viewID, getPreferenceStore());
 	}
 }
