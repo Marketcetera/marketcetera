@@ -36,6 +36,11 @@ import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
+/**
+ * 
+ * @author caroline.leung@softwaregoodness.com
+ *
+ */
 public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		implements IWorkbenchPreferencePage {
 
@@ -351,6 +356,5 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 			}
 			return null;
 		}
-	};
-	
+	}
 }
