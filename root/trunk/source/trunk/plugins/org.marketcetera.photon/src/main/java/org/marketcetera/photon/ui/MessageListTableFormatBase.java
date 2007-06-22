@@ -98,21 +98,7 @@ public class MessageListTableFormatBase<T> extends EnumTableFormat<T> {
 	}
 
 	private void createContextMenu(String name, final Table table) {
-		Menu menu;
-		Menu existingMenu = table.getMenu();
-		MenuManager menuMgr = new MenuManager(name);
-	
-		if (existingMenu != null){
-			menu = existingMenu;
-		} else {
-			menu = menuMgr.createContextMenu(table);
-			menuMgr.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
-		}
-	
-		table.setMenu(menu);
-		table.setData(MenuManager.class.toString(), menuMgr);
-		site.registerContextMenu(menuMgr, selectionProvider);
+		ContextMenuFactory contextMenuFactory = new ContextMenuFactory();
+		contextMenuFactory.createContextMenu(name, table, site);
 	}
-
-
 }
