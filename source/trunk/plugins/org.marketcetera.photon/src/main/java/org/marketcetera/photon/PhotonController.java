@@ -161,6 +161,7 @@ public class PhotonController {
 		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
 		String errorMsg = "Received reject message: " + (text == null ? "" : text);
 		internalMainLogger.error(errorMsg);
+		internalMainLogger.debug("Reject FIX reply: " + aMessage);
 	}
 
 	protected void handleNewOrder(final Message aMessage) {
