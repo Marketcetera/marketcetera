@@ -36,7 +36,6 @@ public class AveragePricesViewTest extends ViewTestBase {
 		AveragePriceView view = (AveragePriceView) getTestView();
 		view.setInput(hist);
 		
-		
 		ExecutionReport fill = new ExecutionReport(
 				new OrderID("orderid1"),
 				new ExecID("execid1"),
@@ -53,6 +52,7 @@ public class AveragePricesViewTest extends ViewTestBase {
 		fill.setField(new LastShares(91));
 		hist.addIncomingMessage(fill);
 		delay(1);
+		assertEquals(1, hist.getAveragePricesList().size());
 		IndexedTableViewer tableViewer = view.getMessagesViewer();
 		Table table = tableViewer.getTable();
 		assertEquals(1, table.getItemCount());
