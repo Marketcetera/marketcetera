@@ -2,6 +2,7 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Table;
 import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.ui.ContextMenuFactory;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableRefresher;
@@ -64,6 +65,14 @@ public abstract class AbstractFIXMessagesView extends HistoryMessagesView {
 
 		tableRefresher = new FIXMessageTableRefresher(aMessagesViewer,
 				tableFormat);
+		
+		createContextMenu(aMessageTable);
+		
 		return aMessagesViewer;
+	}
+	
+	protected void createContextMenu(Table table) {
+		ContextMenuFactory contextMenuFactory = new ContextMenuFactory();
+		contextMenuFactory.createContextMenu("fixMessageContextMenu", table, getSite());
 	}
 }
