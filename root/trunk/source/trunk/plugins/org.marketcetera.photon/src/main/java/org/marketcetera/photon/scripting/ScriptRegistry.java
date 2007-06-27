@@ -3,11 +3,7 @@ package org.marketcetera.photon.scripting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
@@ -141,7 +137,7 @@ public class ScriptRegistry implements InitializingBean {
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Note that this method expects a file name, formatted as an
 	 * argument to the Ruby "require" method.  For example, the workspace
@@ -191,6 +187,34 @@ public class ScriptRegistry implements InitializingBean {
 		}
 	}
 
+    /** Sets up for the {@link Strategy#timeout_callback} function to be called after the specified delay,
+     * passing the clientdata object into it, if the strategy is still registered
+     * @param strategy  The strategy which we are setting up this delayed callback for
+     * @param delay Length of the delay before calling the {@link Strategy#timeout_callback} function
+     * @param unit  Units of the delay
+     * @param clientData    ClientData object passed back to the {@link Strategy#timeout_callback} function.
+     */
+	public ScheduledFuture<?> registerTimedCallback(final Strategy strategy, final long delay,
+                                                    TimeUnit unit, final Object clientData) throws InterruptedException
+	{
+		ScheduledFuture<?> future = getScheduler().schedule(new Runnable(){
+			public void run() {
+				if(logger.isDebugEnabled()) { logger.debug("starting ruby callback on ["+strategy.getName()+"]"); }
+				try {
+                    if(doIsRegistered(strategy.getName())) {
+                        strategy.timeout_callback(clientData);
+                    } else {
+                    	if(logger.isDebugEnabled()) { logger.debug("strategy ["+strategy.getName()+"] is no longer registered"); }
+                    }
+                } catch(RaiseException ex) {
+					logger.error("Error in timeout_callback function: "+ex.getException(), ex.getCause());
+				}
+				if(logger.isDebugEnabled()) { logger.debug("finished ruby callback on ["+strategy.getName()+"]"); }
+			}
+		}, delay, unit);
+		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); }
+		return future;
+	}
 	/**
 	 * Note that this method expects a file name, formatted as an argument to
 	 * the Ruby "require" method. For example, the workspace path "/foo/bar.rb",
@@ -293,7 +317,10 @@ public class ScriptRegistry implements InitializingBean {
 	}
 
 
-	private Boolean doIsRegistered(final String requireString) {
+    /** Override in tests if you need to create strategies on the fly
+     * and don't actually want to regsiter them.
+     */
+    protected Boolean doIsRegistered(final String requireString) {
 		return registeredStrategies.containsKey(requireString);
 	}
 
@@ -309,7 +336,8 @@ public class ScriptRegistry implements InitializingBean {
 			Object strategyObject = bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, classInstanceEvalString);
 			if (strategyObject instanceof Strategy){
 				registeredStrategies.put(fileName, (Strategy) strategyObject);
-			} else {
+                ((Strategy)strategyObject).setName(fileName);
+            } else {
 				throw new IllegalArgumentException("File '"+fileName+"' does not contain a subclass of Strategy");
 			}
 			return null;

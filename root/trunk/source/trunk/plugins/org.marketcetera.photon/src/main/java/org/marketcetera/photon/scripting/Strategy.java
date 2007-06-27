@@ -1,9 +1,5 @@
 package org.marketcetera.photon.scripting;
 
-import java.math.BigDecimal;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.log4j.Logger;
 import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.IDFactory;
@@ -11,7 +7,6 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXValueExtractor;
-
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.LastPx;
@@ -19,20 +14,36 @@ import quickfix.field.MDEntryType;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OrderID;
 
+import java.math.BigDecimal;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 public abstract class Strategy {
 
 	private FIXValueExtractor extractor;
 	private PhotonPlugin plugin;
 	private Logger logger;
-	
-	public Strategy() {
+    private String registrationName;
+
+    public Strategy() {
 		plugin = PhotonPlugin.getDefault();
 		logger = PhotonPlugin.getMainConsoleLogger();
 		extractor = new FIXValueExtractor(plugin.getFIXDataDictionary().getDictionary(), 
 				plugin.getMessageFactory());
 	}
 
-	public void on_fix_message(Message message)
+    /** provide a setter for the strategy registration name so we can check later
+     *  what our own name is
+     */
+    public void setName(String inName) {
+        registrationName = inName;
+    }
+
+    public String getName() {
+        return registrationName;
+    }
+
+    public void on_fix_message(Message message)
 	{
 		if(FIXMessageUtil.isExecutionReport(message)) {
 			if(message.isSetField(LastPx.FIELD) && message.isSetField(OrderID.FIELD)) {
@@ -74,24 +85,23 @@ public abstract class Strategy {
 		return registerTimedCallback(millis, TimeUnit.MILLISECONDS, clientData);
 	}
 	
-	public ScheduledFuture<?> registerTimedCallback(final long timeout, TimeUnit unit, final Object clientData) throws InterruptedException
+    /** Sets up for the {@link #timeout_callback} function to be called after the specified delay,
+     * passing the clientdata object into it
+     * @param delay Length of the delay before calling the {@link #timeout_callback} function
+     * @param unit  Units of the delay
+     * @param clientData    ClientData object passed back to the {@link #timeout_callback} function.
+     */
+	public ScheduledFuture<?> registerTimedCallback(final long delay, TimeUnit unit, final Object clientData) throws InterruptedException
 	{
-		ScheduledFuture<?> future = plugin.getScriptRegistry().getScheduler().schedule(new Runnable(){
-			public void run() {
-				if(logger.isDebugEnabled()) { logger.debug("starting ruby callback"); }
-				try {
-					timeout_callback(clientData);
-				} catch(RaiseException ex) {
-					logger.error("Error in timeout_callback function: "+ex.getException(), ex.getCause());
-				}
-				if(logger.isDebugEnabled()) { logger.debug("finished ruby callback"); }			
-			}
-		}, timeout, unit);
-		if(logger.isDebugEnabled()) { logger.debug("registering timeout callback for "+timeout + " in "+unit); }
-		return future;
+		return getScriptRegistry().registerTimedCallback(this, delay, unit, clientData);
 	}
-	
-	public FIXMessageFactory getMessageFactory() 
+
+    /** to be overridden by tests */
+    protected ScriptRegistry getScriptRegistry() {
+        return plugin.getScriptRegistry();
+    }
+
+    public FIXMessageFactory getMessageFactory()
 	{
 		return plugin.getMessageFactory(); 
 	}
