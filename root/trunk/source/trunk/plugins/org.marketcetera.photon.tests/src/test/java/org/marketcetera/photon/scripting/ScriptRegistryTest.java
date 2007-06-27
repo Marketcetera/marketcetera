@@ -1,11 +1,7 @@
 package org.marketcetera.photon.scripting;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
-
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
@@ -15,9 +11,11 @@ import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonTestPlugin;
-
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
+
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
 
 public class ScriptRegistryTest extends TestCase {
 	public ScriptRegistryTest(){
@@ -129,4 +127,26 @@ public class ScriptRegistryTest extends TestCase {
 		}
 	}
 
+    public void testRegisterTimeoutCallback() throws Exception {
+        final Vector<String> counter = new Vector<String>();
+        ScriptRegistry registry = new ScriptRegistry() {
+            public Boolean doIsRegistered(String requireString) {
+                return counter.size() == 0;
+            }
+        };
+        Strategy strategy = new StrategyTest.TestStrategy() {
+            public void timeout_callback(Object clientData) {
+                ((Vector<String>)clientData).add("inside");
+            }
+        };
+        strategy.setName("bob");
+        registry.registerTimedCallback(strategy, 50, TimeUnit.MILLISECONDS, counter);
+        Thread.sleep(1000);
+        assertEquals(1, counter.size());
+
+        /** Now reset and run with unregistered script */
+        registry.registerTimedCallback(strategy, 50, TimeUnit.MILLISECONDS, counter);
+        Thread.sleep(1000);
+        assertEquals("Shoudln't have called into callback again", 1, counter.size());
+    }
 }
