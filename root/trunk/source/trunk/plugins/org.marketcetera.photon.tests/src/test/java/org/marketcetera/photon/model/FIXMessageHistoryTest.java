@@ -5,17 +5,23 @@ import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.event.ListEvent;
 import ca.odell.glazedlists.event.ListEventListener;
 import junit.framework.Test;
+
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.*;
+import org.marketcetera.photon.ui.IndexedTableViewer;
+import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
+import quickfix.fix42.ExecutionReport;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -393,6 +399,69 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 
 	}
 
+	public void testAveragePriceList2() throws Exception {
+		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
+		
+		ExecutionReport fill = new ExecutionReport(
+				new OrderID("orderid1"),
+				new ExecID("execid1"),
+				new ExecTransType(ExecTransType.STATUS),
+				new ExecType(ExecType.PARTIAL_FILL),
+				new OrdStatus(OrdStatus.PARTIALLY_FILLED),
+				new Symbol("symbol1"),
+				new Side(Side.BUY),
+				new LeavesQty(909),
+				new CumQty(91),
+				new AvgPx(3));
+		fill.setField(new OrderQty(1000));
+		fill.setField(new LastPx(82));
+		fill.setField(new LastShares(91));
+		hist.addIncomingMessage(fill);
+		assertEquals(1, hist.getAveragePricesList().size());
+
+		
+		fill = new ExecutionReport(
+				new OrderID("orderid2"),
+				new ExecID("execid2"),
+				new ExecTransType(ExecTransType.STATUS),
+				new ExecType(ExecType.PARTIAL_FILL),
+				new OrdStatus(OrdStatus.PARTIALLY_FILLED),
+				new Symbol("symbol1"),
+				new Side(Side.BUY),
+				new LeavesQty(909),
+				new CumQty(91),
+				new AvgPx(6));
+		fill.setField(new OrderQty(1000));
+		fill.setField(new LastPx(80));
+		fill.setField(new LastShares(91));
+		hist.addIncomingMessage(fill);
+		assertEquals(1, hist.getAveragePricesList().size());
+		
+		fill = new ExecutionReport(
+				new OrderID("orderid2"),
+				new ExecID("execid2"),
+				new ExecTransType(ExecTransType.STATUS),
+				new ExecType(ExecType.PARTIAL_FILL),
+				new OrdStatus(OrdStatus.PARTIALLY_FILLED),
+				new Symbol("symbol3"),
+				new Side(Side.BUY),
+				new LeavesQty(909),
+				new CumQty(1000),
+				new AvgPx(6));
+		fill.setField(new OrderQty(1000));
+		fill.setField(new LastPx(808));
+		fill.setField(new LastShares(909));
+		hist.addIncomingMessage(fill);
+		assertEquals(2, hist.getAveragePricesList().size());
+		
+		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) hist.getAveragePricesList().get(0);
+		Message message = returnedMessageHolder.getMessage();
+		assertEquals("symbol1", message.getString(Symbol.FIELD));
+		assertEquals(0, new BigDecimal("81").compareTo(new BigDecimal(message.getString(AvgPx.FIELD))));
+		assertEquals(0, new BigDecimal("0").compareTo(new BigDecimal(message.getString(OrderQty.FIELD))));
+		
+	}
+	
 	public void testExecutionReportOrder() throws FieldNotFound
 	{
 		String orderID1 = "1";
