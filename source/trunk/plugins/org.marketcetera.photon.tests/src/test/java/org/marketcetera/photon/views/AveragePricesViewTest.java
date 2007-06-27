@@ -11,19 +11,24 @@ import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Message;
 import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
+import quickfix.field.TransactTime;
 import quickfix.fix42.ExecutionReport;
+import quickfix.fix42.NewOrderSingle;
 
 public class AveragePricesViewTest extends ViewTestBase {
 
@@ -36,6 +41,26 @@ public class AveragePricesViewTest extends ViewTestBase {
 		AveragePriceView view = (AveragePriceView) getTestView();
 		view.setInput(hist);
 		
+		NewOrderSingle order1 = new NewOrderSingle(
+				new ClOrdID("clordid1"),
+				new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+				new Symbol("symbol1"),
+				new Side(Side.BUY),
+				new TransactTime(),
+				new OrdType(OrdType.MARKET));
+		order1.set(new OrderQty(100));
+		hist.addOutgoingMessage(order1);
+		
+		NewOrderSingle order2 = new NewOrderSingle(
+				new ClOrdID("clordid2"),
+				new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+				new Symbol("symbol1"),
+				new Side(Side.BUY),
+				new TransactTime(),
+				new OrdType(OrdType.MARKET));
+		order2.set(new OrderQty(100));
+		hist.addOutgoingMessage(order2);
+
 		ExecutionReport fill = new ExecutionReport(
 				new OrderID("orderid1"),
 				new ExecID("execid1"),
@@ -98,6 +123,8 @@ public class AveragePricesViewTest extends ViewTestBase {
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("symbol1", message.getString(Symbol.FIELD));
 		assertEquals(0, new BigDecimal("81").compareTo(new BigDecimal(message.getString(AvgPx.FIELD))));
+		BigDecimal foundOrdQty = new BigDecimal(message.getString(OrderQty.FIELD));
+		assertEquals("Order quantity incorrect: "+foundOrdQty, 0, new BigDecimal("200").compareTo(foundOrdQty));
 		
 	}
 	
