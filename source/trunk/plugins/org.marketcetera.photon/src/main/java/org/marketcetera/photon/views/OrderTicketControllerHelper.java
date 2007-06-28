@@ -224,7 +224,7 @@ public class OrderTicketControllerHelper {
 		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
 		dataBindingContext.dispose();
-		colorRed.dispose();
+		// don't dispose of system colors
 	}
 
 	protected void listenMarketData(String symbol) {
