@@ -15,6 +15,9 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -76,6 +79,8 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 	private Button downButton;
 
 	private SelectionListener selectionListener;
+	
+	private MouseListener mouseListener;
 	
 	private Map<String, FIXMessageColumnChooserEditorPage> idToPageMap;	
 	
@@ -155,6 +160,28 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 				}				
 			}
 		};
+	}
+	
+	private void createMouseListener() {
+		mouseListener = new MouseAdapter() {
+
+			public void mouseDoubleClick(MouseEvent event) {
+				Widget widget = event.widget;
+				if (widget == availableFieldsTable) {
+					doubleClickAvailableField();
+				} else if (widget == chosenFieldsTable) {
+					doubleClickChosenField();
+				}
+			}
+		};
+	}
+	
+	private void doubleClickAvailableField() {
+		addPressed();
+	}
+	
+	private void doubleClickChosenField() {
+		removePressed();
 	}
 
 	protected void doFillIntoGrid(Composite parent, int numColumns) {
@@ -487,6 +514,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		aTable.setFont(parent.getFont());
 		aTable.addSelectionListener(getSelectionListener());
 		aTable.addDisposeListener(getDisposeListener());
+		aTable.addMouseListener(getMouseListener());
 		GridData gd = createTableGridData();
 		aTable.setLayoutData(gd);
 
@@ -565,6 +593,17 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		return selectionListener;
 	}
 
+	/**
+	 * Returns this field editor's mouse listener. The listener is created
+	 * if nessessary.
+	 */
+	private MouseListener getMouseListener() {
+		if (mouseListener == null) {
+			createMouseListener();
+		}
+		return mouseListener;
+	}
+	
 	/**
 	 * Returns this field editor's shell.
 	 * This method is internal to the framework; subclassers should not call
