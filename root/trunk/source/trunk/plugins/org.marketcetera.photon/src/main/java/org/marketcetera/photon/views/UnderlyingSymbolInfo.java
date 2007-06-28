@@ -147,8 +147,8 @@ public class UnderlyingSymbolInfo {
 	
 	public void dispose()
 	{
-		SYSTEM_COLOR_BLUE.dispose();
-		SYSTEM_COLOR_RED.dispose();		
+		// note: don't dispose of any system colors - the framework handles it
+		// only dispose of colors we create ourselves
 	}
 	
 	private void createFirstRowComposite(Composite parent)
