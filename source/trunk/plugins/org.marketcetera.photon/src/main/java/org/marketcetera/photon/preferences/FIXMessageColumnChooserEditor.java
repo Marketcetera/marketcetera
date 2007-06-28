@@ -343,7 +343,6 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		if(currentPage == null) {
 			return;
 		}
-		applyFilter(filterText, currentPage.getChosenFieldsList(), filteredChosenEntries);
 		applyFilter(filterText, currentPage.getAvailableFieldsList(), filteredAvailableEntries);
 		availableFieldsTable.deselectAll();
 		chosenFieldsTable.deselectAll();
