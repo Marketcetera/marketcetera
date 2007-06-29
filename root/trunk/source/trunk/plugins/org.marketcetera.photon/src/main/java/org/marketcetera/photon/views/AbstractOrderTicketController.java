@@ -1,9 +1,10 @@
 package org.marketcetera.photon.views;
 
+import org.marketcetera.marketdata.IMarketDataListener;
 import quickfix.Message;
 
 public abstract class AbstractOrderTicketController implements
-		IOrderTicketController {
+		IOrderTicketController, IMarketDataListener {
 
 	public AbstractOrderTicketController() {
 	}
@@ -38,6 +39,15 @@ public abstract class AbstractOrderTicketController implements
 		OrderTicketControllerHelper controllerHelper = getOrderTicketControllerHelper();
 		controllerHelper.handleCancel();
 		controllerHelper.showMessage(aMessage);
-
 	}
+
+    public void onMessage(Message aMessage) {
+        // no-op
+    }
+
+    public void onMessages(Message[] messages) {
+        for (Message message : messages) {
+            onMessage(message);
+        }
+    }
 }

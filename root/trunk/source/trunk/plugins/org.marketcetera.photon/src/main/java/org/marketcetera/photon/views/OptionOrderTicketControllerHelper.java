@@ -124,8 +124,8 @@ public class OptionOrderTicketControllerHelper extends
 				}
 			}
 		};
-		optionTicket.getOptionSymbolControl().addListener(SWT.Modify,
-				optionSymbolModifyListener);
+//		optionTicket.getOptionSymbolControl().addListener(SWT.Modify,
+//				optionSymbolModifyListener);
 	}
 
 	@Override
@@ -240,26 +240,12 @@ public class OptionOrderTicketControllerHelper extends
 				updateComboChoicesFromDefaults();
 			}
 
-			public void onMarketDataListAvailable(
-					List<Message> derivativeSecurityList) {
-				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
-				try {
-					optionContracts = OptionMarketDataUtils				
-						.getOptionExpirationMarketData(optionRoot
-								.getBaseSymbol(), derivativeSecurityList);
-				} catch (Exception anyException) {
-					PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
-					return;
-				}
-				if (optionContracts == null || optionContracts.isEmpty()) {
-					updateComboChoicesFromDefaults();
-				} else {
-					OptionContractCacheEntry cacheEntry = new OptionContractCacheEntry(
-							optionContracts);
-					optionContractCache.put(optionRoot, cacheEntry);
+            public void onMessage(Message aMessage) {
+                handleMarketDataList(new Message[] {aMessage}, optionRoot);
+            }
 
-					conditionallyUpdateInputControls(optionRoot);
-				}
+            public void onMessages(Message[] derivativeSecurityList) {
+                handleMarketDataList(derivativeSecurityList, optionRoot);
 			}
 		};
 
@@ -269,8 +255,32 @@ public class OptionOrderTicketControllerHelper extends
 				.getMarketDataFeed(), callback);
 	}
 
-	private void conditionallyUpdateInputControls(MSymbol optionRoot) {
-		if (lastOptionRoot == null || !lastOptionRoot.equals(optionRoot)) {
+    /* package */ void handleMarketDataList(Message[] derivativeSecurityList) {
+        handleMarketDataList(derivativeSecurityList, new MSymbol(optionTicket.getSymbolText().getText()));
+    }
+    /* package */ void handleMarketDataList(Message[] derivativeSecurityList, MSymbol optionRoot) {
+        List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
+        try {
+            String baseSymbol = (optionRoot == null) ? null : optionRoot.getBaseSymbol();
+            optionContracts = OptionMarketDataUtils
+                .getOptionExpirationMarketData(baseSymbol, derivativeSecurityList);
+        } catch (Exception anyException) {
+            PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
+            return;
+        }
+        if (optionContracts == null || optionContracts.isEmpty()) {
+            updateComboChoicesFromDefaults();
+        } else {
+            OptionContractCacheEntry cacheEntry = new OptionContractCacheEntry(
+                    optionContracts);
+            optionContractCache.put(optionRoot, cacheEntry);
+
+            conditionallyUpdateInputControls(optionRoot);
+        }
+    }
+
+    private void conditionallyUpdateInputControls(MSymbol optionRoot) {
+		if (optionRoot != null && (lastOptionRoot == null || !lastOptionRoot.equals(optionRoot))) {
 			lastOptionRoot = optionRoot;
 			OptionContractCacheEntry cacheEntry = optionContractCache
 					.get(optionRoot);

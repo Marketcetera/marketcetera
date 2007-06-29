@@ -1,31 +1,21 @@
 package org.marketcetera.photon.marketdata;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
-
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
-import quickfix.field.MsgType;
-import quickfix.field.NoRelatedSym;
-import quickfix.field.SecurityListRequestType;
-import quickfix.field.SecurityType;
-import quickfix.field.StrikePrice;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
-import quickfix.field.UnderlyingSymbol;
+import quickfix.field.*;
 import quickfix.fix44.DerivativeSecurityList;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class OptionMarketDataUtils {
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
@@ -84,10 +74,6 @@ public class OptionMarketDataUtils {
 		return requestMessage;
 	}
 
-	/**
-	 * @see org.marketcetera.photon.marketdata.MarketDataUtils.getUnderlyingSymbol(String
-	 *      symbol)
-	 */
 	public static String getOptionRootSymbol(String symbol) {
 		if (optionSymbolRootSeparatorPattern == null) {
 			optionSymbolRootSeparatorPattern = Pattern.compile("\\+");
@@ -138,7 +124,7 @@ public class OptionMarketDataUtils {
 	 * @throws MarketceteraFIXException 
 	 */
 	public static List<OptionContractData> getOptionExpirationMarketData(
-			final String symbolFilter, List<Message> derivativeSecurityList) 
+			final String symbolFilter, Message[] derivativeSecurityList) 
 			throws MarketceteraException {
 		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
 		String messageUnderlyingSymbolStr = "";
