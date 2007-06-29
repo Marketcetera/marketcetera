@@ -1,13 +1,9 @@
 package org.marketcetera.photon.marketdata;
 
-import java.util.List;
-
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.IMarketDataListener;
 
-import quickfix.Message;
-
-public interface IMarketDataListCallback {
-	void onMarketDataListAvailable(List<Message> messages);
+public interface IMarketDataListCallback extends IMarketDataListener {
 	
 	void onMarketDataFailure(MSymbol symbol);
 }

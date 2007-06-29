@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.util.Assert;
+import quickfix.Message;
 
 
 /**
@@ -10,7 +11,7 @@ import org.eclipse.jface.util.Assert;
  */
 public class OptionOrderTicketController extends AbstractOrderTicketController {
 	
-	private OrderTicketControllerHelper controllerHelper;
+	private OptionOrderTicketControllerHelper controllerHelper;
 	
 	@Override
 	protected OrderTicketControllerHelper getOrderTicketControllerHelper() {
@@ -29,4 +30,12 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 	public boolean hasBindErrors() {
 		return controllerHelper.hasBindErrors();
 	}
+
+    public void onMessages(Message[] messages) {
+        controllerHelper.handleMarketDataList(messages);
+    }
+
+    public void onMessage(Message aMessage) {
+        controllerHelper.handleMarketDataList(new Message[] {aMessage});
+    }
 }

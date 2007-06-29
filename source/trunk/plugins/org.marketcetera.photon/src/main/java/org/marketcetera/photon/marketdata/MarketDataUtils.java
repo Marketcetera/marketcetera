@@ -98,11 +98,11 @@ public class MarketDataUtils {
 					if (callbackOnUIThread) {
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
-								callback.onMarketDataListAvailable(messages);
+								callback.onMessages(messages.toArray(new Message[messages.size()]));
 							}
 						});
 					} else {
-						callback.onMarketDataListAvailable(messages);
+						callback.onMessages(messages.toArray(new Message[messages.size()]));
 					}
 				} catch (Exception anyException) {
 					if (callbackOnUIThread) {

@@ -1,18 +1,11 @@
 package org.marketcetera.photon.views;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
@@ -20,36 +13,20 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.IMarketDataListCallback;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionContractData;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionMessageHolder;
+import org.marketcetera.photon.marketdata.*;
 import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
-import org.marketcetera.photon.ui.EnumTableFormat;
-import org.marketcetera.photon.ui.EventListContentProvider;
-import org.marketcetera.photon.ui.IndexedTableViewer;
-import org.marketcetera.photon.ui.OptionMessageListTableFormat;
-import org.marketcetera.photon.ui.TableComparatorChooser;
+import org.marketcetera.photon.ui.*;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
-
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.MaturityMonthYear;
-import quickfix.field.NoMDEntries;
-import quickfix.field.StrikePrice;
-import quickfix.field.Symbol;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
+import quickfix.field.*;
+
+import java.util.*;
+import java.util.List;
 
 public class OptionMessagesComposite extends Composite {
 
@@ -544,11 +521,14 @@ public class OptionMessagesComposite extends Composite {
 		IMarketDataListCallback callback = new IMarketDataListCallback() {
 
 			public void onMarketDataFailure(MSymbol symbol) {
-				return; // do nothing
+				// do nothing
 			}
 
-			public void onMarketDataListAvailable(
-					List<Message> derivativeSecurityList) {
+            public void onMessage(Message aMessage) {
+                onMessages(new Message[]{aMessage});
+            }
+
+            public void onMessages(Message[] derivativeSecurityList) {
 				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
 
 				try {					
