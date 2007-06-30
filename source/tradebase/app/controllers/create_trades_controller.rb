@@ -47,6 +47,7 @@ class CreateTradesController < ApplicationController
     
     theTrade.create_equity_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime)
     theTrade.trade_type = TradeTypeTrade
+    theTrade.imported_fix_msg = dbMessage.text
     theTrade.save
     
     logger.debug("created trade: "+theTrade.to_s)

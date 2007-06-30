@@ -10,19 +10,6 @@ module MessageLogsHelper
     return (inMessage.getHeader().isSetField(inField) ) ? inMessage.getHeader().getField(inField).getString() : ''
   end
    
-  # formats the incoming bigDecimal to trim the digits after the decimal
-  # in case they are too wide.
-  def formatBigDecimal(number)
-    if(number.nil?)
-      return nil
-    end
-    
-    if (number.remainder(1).to_s.length > 4)      
-      return sprintf('%.4f', number)
-    end
-    return number.to_s
-  end
-   
 # Human Strings
   StatusFilled = "Filled"
   StatusPartialFilled = "Partial Fill"

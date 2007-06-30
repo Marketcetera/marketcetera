@@ -46,7 +46,11 @@ class CreateTradesControllerTest < MarketceteraTestBase
     assert_not_nil acct, "account was not created"
     assert_equal trade.account, acct
     assert_equal SubAccountType::DESCRIPTIONS.length, trade.account.sub_accounts.length
-    
+
+    # verify the original FIX msg got preserved
+    assert_not_nil trade.imported_fix_msg
+    assert_equal msg.text, trade.imported_fix_msg
+
     # now try creating this again
     assert_nil @controller.create_one_trade(20)
   end

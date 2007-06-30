@@ -36,6 +36,11 @@
         <div class="clear"></div>
         <label for="view_trade_comment" class="view_background">Comment</label>
         <div id="view_trade_comment" class="data view_data"><%=df @trade.send('comment') %></div>
+        <% if(!@trade.imported_fix_msg.nil?) %>
+            <div class="clear"></div>
+            <label for="view_imported_fix_message" class="view_background">Original Imported FIX Message</label>
+            <div id="view_imported_fix_message" class="data view_data"><%=h @trade.send('imported_fix_msg').gsub("\001", " ") %></div>
+        <% end %>
     </fieldset>
 </form>
 
