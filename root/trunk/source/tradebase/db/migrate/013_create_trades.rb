@@ -18,7 +18,7 @@ class CreateTrades < ActiveRecord::Migration
       t.column :tradeable_type, :string
 
       # Stores original FIX message that we imported this trade from
-      t.column :imported_fix_msg, :string, :limit => 10000, :default => nil
+      t.column :imported_fix_msg, :text, :default => nil
 
       t.column :created_on, :datetime
       t.column :updated_on, :datetime
