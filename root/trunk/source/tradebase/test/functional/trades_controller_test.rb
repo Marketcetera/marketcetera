@@ -90,7 +90,10 @@ class TradesControllerTest < MarketceteraTestBase
     assert_tag :tag => "td", :content => "A&nbsp;COU...PACES"
   end
 
+  # bug #123
   def test_show
+    @allTrades[0].imported_fix_msg = nil
+    @allTrades[0].save
     get :show, :id => @allTrades[0].id
 
     assert_response :success
@@ -101,6 +104,22 @@ class TradesControllerTest < MarketceteraTestBase
     
     # also verify the transaction display
     assert_tag :tag => "td", :attributes => {:class => "number"}, :content => "&nbsp; "
+
+    # verify there's no imported FIX message text
+    assert_no_tag :tag => "div", :attributes => {:id => "view_imported_fix_message"}
+  end
+
+  def test_show_imported_trade
+      @allTrades[0].imported_fix_msg = "abcdefg"
+      @allTrades[0].save
+
+      get :show, :id => @allTrades[0].id
+
+      assert_response :success
+      assert_template 'show'
+
+      # verify there's no imported FIX message text
+      assert_tag :tag => "div", :attributes => {:id => "view_imported_fix_message"}
   end
 
   def test_new

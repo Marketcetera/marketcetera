@@ -24,22 +24,7 @@ class MessageLogsHelperTest < Test::Unit::TestCase
     assert_equal "", getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::LocationID.new)   
   end
   
-  def test_formatBigDecimal()
-    assert_equal nil, formatBigDecimal(nil)
-    assert_equal "0.0", formatBigDecimal(BigDecimal("0"))
-    assert_equal "0.0", formatBigDecimal(BigDecimal("0.0"))
-    
-    assert_equal "37.0", formatBigDecimal(BigDecimal("37"))
-    assert_equal "37.0", formatBigDecimal(BigDecimal("37.0"))
-    assert_equal "32.37", formatBigDecimal(BigDecimal("32.37"))
-    assert_equal "32.1234", formatBigDecimal(BigDecimal("32.1234"))
-    assert_equal "32.1234", formatBigDecimal(BigDecimal("32.12341"))
-    assert_equal "32.1235", formatBigDecimal(BigDecimal("32.123456789"))
-  end
-  
-  
-  
-  # verifyt the qf_message field is populated correctly
+  # verify the qf_message field is populated correctly
   def test_qf_message_parsing
     mlog = MessageLog.find(20)
     assert_not_nil mlog.qf_message
