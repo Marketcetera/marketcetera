@@ -36,14 +36,12 @@ import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
-import org.marketcetera.photon.ui.validation.fix.FIXObservableValue;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 import org.marketcetera.photon.views.OptionContractCacheEntry.OptionCodeUIValues;
 
 import quickfix.DataDictionary;
-import quickfix.Field;
 import quickfix.FieldNotFound;
 import quickfix.FieldType;
 import quickfix.Message;
@@ -83,7 +81,9 @@ public class OptionOrderTicketControllerHelper extends
 
 	private MSymbol selectedSymbol;
 
-	private List<ToggledListener> optionSymbolListeners;
+	private List<ToggledListener> optionSpecifierModifyListeners;
+	
+	private ToggledListener optionContractSymbolModifyListener;
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
@@ -107,13 +107,18 @@ public class OptionOrderTicketControllerHelper extends
 		getMarketDataTracker().setMarketDataListener(
 				new MDVMarketDataListener());
 
-		optionSymbolListeners = new ArrayList<ToggledListener>();
+		optionSpecifierModifyListeners = new ArrayList<ToggledListener>();
 		addOptionSpecifierModifyListener(optionTicket.getExpireYearCombo());
 		addOptionSpecifierModifyListener(optionTicket.getExpireMonthCombo());
 		addOptionSpecifierModifyListener(optionTicket.getStrikePriceControl());
 		addOptionSpecifierModifyListener(optionTicket.getPutOrCallCombo());
 
-		ToggledListener optionSymbolModifyListener = new ToggledListener() {
+		/**
+		 * This modify listener ensures that the option contract specifiers
+		 * (month, year, strike, put/call) stay in sync when the user enters an
+		 * option contract symbol (MSQ+HA) directly.
+		 */
+		optionContractSymbolModifyListener = new ToggledListener() {
 			@Override
 			protected void handleEventWhenEnabled(Event event) {
 				try {
@@ -124,10 +129,11 @@ public class OptionOrderTicketControllerHelper extends
 				}
 			}
 		};
-//		optionTicket.getOptionSymbolControl().addListener(SWT.Modify,
-//				optionSymbolModifyListener);
+		optionContractSymbolModifyListener.setEnabled(true);
+		optionTicket.getOptionSymbolControl().addListener(SWT.Modify,
+				optionContractSymbolModifyListener);
 	}
-
+	
 	@Override
 	public void clear() {
 		super.clear();
@@ -186,12 +192,12 @@ public class OptionOrderTicketControllerHelper extends
 				}
 			}
 		};
-		optionSymbolListeners.add(modifyListener);
+		optionSpecifierModifyListeners.add(modifyListener);
 		targetControl.addListener(SWT.Modify, modifyListener);
 	}
 
 	private void setOptionSymbolListenersEnabled(boolean enabled) {
-		for (ToggledListener listener : optionSymbolListeners) {
+		for (ToggledListener listener : optionSpecifierModifyListeners) {
 			listener.setEnabled(enabled);
 		}
 	}
@@ -331,8 +337,13 @@ public class OptionOrderTicketControllerHelper extends
 			MSymbol optionContractSymbol = optionContract.getOptionSymbol();
 			if (optionContractSymbol != null) {
 				String fullSymbol = optionContractSymbol.getFullSymbol();
-				optionTicket.getOptionSymbolControl().setText(fullSymbol);
-				textWasSet = true;
+				try {
+					optionContractSymbolModifyListener.setEnabled(false);
+					optionTicket.getOptionSymbolControl().setText(fullSymbol);
+					textWasSet = true;
+				} finally {
+					optionContractSymbolModifyListener.setEnabled(true);
+				}
 				getOptionMessagesComposite().requestOptionSecurityList(
 						getMarketDataTracker(), selectedSymbol, fullSymbol);
 			}
@@ -354,6 +365,15 @@ public class OptionOrderTicketControllerHelper extends
 				.getExpirationYearsForUI());
 		updateComboChoices(optionTicket.getStrikePriceControl(), cacheEntry
 				.getStrikePricesForUI());
+		updatePutOrCallComboToFirstChoice();
+	}
+	
+	private void updatePutOrCallComboToFirstChoice() {
+		Combo combo = optionTicket.getPutOrCallCombo();
+		String item = combo.getItem(0);
+		if(item != null) {
+			combo.setText(item);
+		}
 	}
 
 	private void updateComboChoicesFromDefaults() {
@@ -561,25 +581,25 @@ public class OptionOrderTicketControllerHelper extends
 	 * have a null FieldClass in the FIXObservableValue. 
 	 * This is a workaround for http://trac.marketcetera.org/trac.fcgi/ticket/294
 	 */
-	private IObservableValue repairFIXTypeMapping(
-			IObservableValue observableValue, Class<?> fieldClass,
-			FieldType fieldType, Realm realm, Message message, int fieldNumber,
-			DataDictionary dataDictionary) {
-		IObservableValue rval = observableValue;
-		if (fieldClass != null && observableValue != null
-				&& Field.class.isAssignableFrom(fieldClass)) {
-			if (FIXObservableValue.class.isAssignableFrom(observableValue
-					.getClass())) {
-				FIXObservableValue fixObservableValue = (FIXObservableValue) observableValue;
-				if (fixObservableValue.getFieldClass() == null) {
-					String fieldName = fieldClass.getSimpleName();
-					rval = new FIXObservableValue(realm, message, fieldNumber,
-							dataDictionary, fieldName, fieldType);
-				}
-			}
-		}
-		return rval;
-	}
+//	private IObservableValue repairFIXTypeMapping(
+//			IObservableValue observableValue, Class<?> fieldClass,
+//			FieldType fieldType, Realm realm, Message message, int fieldNumber,
+//			DataDictionary dataDictionary) {
+//		IObservableValue rval = observableValue;
+//		if (fieldClass != null && observableValue != null
+//				&& Field.class.isAssignableFrom(fieldClass)) {
+//			if (FIXObservableValue.class.isAssignableFrom(observableValue
+//					.getClass())) {
+//				FIXObservableValue fixObservableValue = (FIXObservableValue) observableValue;
+//				if (fixObservableValue.getFieldClass() == null) {
+//					String fieldName = fieldClass.getSimpleName();
+//					rval = new FIXObservableValue(realm, message, fieldNumber,
+//							dataDictionary, fieldName, fieldType);
+//				}
+//			}
+//		}
+//		return rval;
+//	}
 	
     public static final String CFI_CODE_PUT = "OPASPS";
     public static final String CFI_CODE_CALL = "OCASPS";
@@ -653,20 +673,28 @@ public class OptionOrderTicketControllerHelper extends
 
 	private void underlyingSymbolOnQuote(Message message) {
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
-		if (symbolComposite.matchUnderlyingSymbol(message)) {
-			symbolComposite.onQuote(message);
+		if (symbolComposite != null && !symbolComposite.isDisposed()) {
+			if (symbolComposite.matchUnderlyingSymbol(message)) {
+				symbolComposite.onQuote(message);
+			}
 		}
 	}
 
 	private UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
 		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket
 				.getBookComposite());
+		if(bookComposite == null || bookComposite.isDisposed()) {
+			return null;
+		}
         return bookComposite.getUnderlyingSymbolInfoComposite();
 	}
 
 	private OptionMessagesComposite getOptionMessagesComposite() {
 		OptionBookComposite bookComposite = ((OptionBookComposite) optionTicket
 				.getBookComposite());
+		if(bookComposite == null || bookComposite.isDisposed()) {
+			return null;
+		}
 		return bookComposite.getOptionMessagesComposite();
 	}
 
