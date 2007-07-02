@@ -511,8 +511,8 @@ public class OptionOrderTicketControllerHelper extends
 							modelAfterGetValidator ));
 			addControlStateListeners(whichControl, targetAfterGetValidator);
 			addControlStateListeners(whichControl, modelAfterGetValidator);
-			if (!enableValidators)
-				addControlRequiringUserInput(whichControl);
+//			if (!enableValidators)
+//				addControlRequiringUserInput(whichControl);
 		}
 		// OpenClose
 		{
@@ -532,8 +532,8 @@ public class OptionOrderTicketControllerHelper extends
 							modelAfterGetValidator));
 			addControlStateListeners(whichControl, targetAfterGetValidator);
 			addControlStateListeners(whichControl, modelAfterGetValidator);
-			if (!enableValidators)
-				addControlRequiringUserInput(whichControl);
+//			if (!enableValidators)
+//				addControlRequiringUserInput(whichControl);
 		}
 		// OptionSymbol (the symbol for the actual option contract)
 		/**
