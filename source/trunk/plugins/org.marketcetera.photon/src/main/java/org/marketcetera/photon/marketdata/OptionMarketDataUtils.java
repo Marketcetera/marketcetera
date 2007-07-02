@@ -1,5 +1,6 @@
 package org.marketcetera.photon.marketdata;
 
+import org.eclipse.core.runtime.Assert;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -55,6 +56,7 @@ public class OptionMarketDataUtils {
 	 */
 	public static Message newOptionRootQuery(MSymbol optionRoot,
 			boolean subscribe) {
+		Assert.isNotNull(optionRoot, "Parameter optionRoot cannot be null."); //$NON-NLS-1$
 		Message requestMessage = messageFactory
 				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
 		/**

@@ -28,6 +28,10 @@ import quickfix.field.*;
 import java.util.*;
 import java.util.List;
 
+/**
+ * @author caroline.leung@softwaregoodness.com
+ * @author michael.lossos@softwaregoodness.com
+ */
 public class OptionMessagesComposite extends Composite {
 
 	public enum OptionDataColumns implements IFieldIdentifier {
@@ -529,6 +533,9 @@ public class OptionMessagesComposite extends Composite {
             }
 
             public void onMessages(Message[] derivativeSecurityList) {
+            	if(isDisposed()) {
+            		return;
+            	}
 				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
 
 				try {					
