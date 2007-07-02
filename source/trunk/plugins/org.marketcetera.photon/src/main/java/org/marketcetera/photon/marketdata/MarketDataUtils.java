@@ -98,7 +98,11 @@ public class MarketDataUtils {
 					if (callbackOnUIThread) {
 						Display.getDefault().asyncExec(new Runnable() {
 							public void run() {
-								callback.onMessages(messages.toArray(new Message[messages.size()]));
+								Message[] messageArray = null;
+								if(messages != null) {
+									messageArray = messages.toArray(new Message[messages.size()]);
+								}
+								callback.onMessages(messageArray);
 							}
 						});
 					} else {

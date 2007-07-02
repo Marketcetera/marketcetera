@@ -3,14 +3,19 @@ package org.marketcetera.photon.views;
 import java.math.BigDecimal;
 import java.util.Date;
 
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.internal.ErrorViewPart;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.MarketceteraOptionSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.messaging.JMSFeedService;
+import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.IBookComposite;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -19,10 +24,12 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.jms.core.JmsOperations;
 
+import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.CFICode;
+import quickfix.field.DeliverToCompID;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntryType;
@@ -32,6 +39,7 @@ import quickfix.field.MsgType;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
+import quickfix.field.PrevClosePx;
 import quickfix.field.PutOrCall;
 import quickfix.field.SecurityReqID;
 import quickfix.field.SecurityRequestResult;
@@ -161,7 +169,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertFalse(controller.hasBindErrors());
 	}
 
-	// todo: finish up these tests
 	public void testShowQuote() throws Exception {
 		OptionOrderTicket ticket = (OptionOrderTicket) getTestView();
 		final String optionRoot = "MRK";
@@ -239,7 +246,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 /**
 	 * Tests that adding custom fields into preferences makes them appear in the Option Stock Order Ticket view.
 	 */
-/*
 	public void testAddCustomFieldsToPreferences() throws Exception {
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE,
@@ -263,11 +269,9 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("EFGH", item1.getText(2));  //$NON-NLS-1$
 	}
 
-	*/
 /**
 	 * Tests that enabled custom fields (the header and body kind) are inserted into outgoing messages.
 	 */
-/*
 	public void testEnabledCustomFieldsAddedToMessage() throws Exception {
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE,
@@ -329,11 +333,9 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		}
 	}
 
-	*/
 /**
 	 * Tests that disabled custom fields (the header and body kind) are <em>not</em> inserted into outgoing messages.
 	 */
-/*
 	public void testDisabledCustomFieldsNotAddedToMessage() throws Exception {
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE,
@@ -372,7 +374,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 			// expected behavior
 		}
 	}
-*/
+	
     private DerivativeSecurityList createDummySecurityList(String symbol, String[] optionSuffixes, String[] strikePrices) {
         SecurityRequestResult resultCode = new SecurityRequestResult(SecurityRequestResult.VALID_REQUEST);
         DerivativeSecurityList responseMessage = new DerivativeSecurityList();
