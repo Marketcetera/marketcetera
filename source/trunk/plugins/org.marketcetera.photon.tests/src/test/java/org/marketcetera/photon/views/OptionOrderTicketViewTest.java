@@ -1,5 +1,8 @@
 package org.marketcetera.photon.views;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.internal.ErrorViewPart;
 import org.marketcetera.core.ClassVersion;
@@ -15,16 +18,31 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.jms.core.JmsOperations;
+
 import quickfix.Group;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.*;
+import quickfix.field.CFICode;
+import quickfix.field.LastPx;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntryType;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntries;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.PutOrCall;
+import quickfix.field.SecurityReqID;
+import quickfix.field.SecurityRequestResult;
+import quickfix.field.SecurityResponseID;
+import quickfix.field.Side;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
+import quickfix.field.TimeInForce;
+import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
 import quickfix.fix44.MarketDataSnapshotFullRefresh;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
 
 /**
  * @author toli
@@ -35,7 +53,8 @@ import java.util.Date;
 public class OptionOrderTicketViewTest extends ViewTestBase {
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	private OptionOrderTicketController controller;
-
+	private MockMarketDataFeed mockFeed;
+	
 	public OptionOrderTicketViewTest(String name) {
 		super(name);
 	}
@@ -47,6 +66,10 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		if (theTestView instanceof ErrorViewPart){
 			fail("Test view was not created");
 		}
+		
+		MarketDataFeedService feedService = MockMarketDataFeed.registerMockMarketDataFeed();
+		mockFeed = MockMarketDataFeed.getMockMarketDataFeed(feedService);
+		
 		IOptionOrderTicket ticket = (IOptionOrderTicket) theTestView;
 		controller = new OptionOrderTicketController();
 		controller.bind(ticket);
@@ -63,6 +86,23 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		return OptionOrderTicket.ID;
 	}
 
+	/**
+	 * Ensure that the option order ticket controller is primed for use and then
+	 * call showMessage on it. When a user enters an option root, they cause a
+	 * subscription to the specific option contracts.
+	 */
+	private void showMessageInOptionTicket(IOptionOrderTicket ticket, Message message,
+			OptionOrderTicketController optController, String optionRoot,
+			String[] optionContractSpecifiers, String[] strikePrices) {
+		// Set an option root before simulating the subscription response
+		ticket.getSymbolText().setText(optionRoot);
+		// Subscription response has the contract symbols (create a fake quote and send that through)
+        Message dsl = createDummySecurityList(optionRoot, optionContractSpecifiers, strikePrices);
+        optController.onMessage(dsl);
+        // Show the message for the specific contract
+        optController.showMessage(message);
+		
+	}
 	/** Show a basic Option order ticket, then fake an incoming market data quote with a 
 	 * put/call for that underlying symbol
 	 */
@@ -72,20 +112,20 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		 * Note the difference between an option contract symbol ("MSQ+GE") and
 		 * an option root ("MSQ"). An OptionOrderTicket has both.
 		 */
-		final String optionContractSymbol = "MSQ+GE";
+		final String optionRoot = "MSQ";
+		final String optionContractSpecifier = "GE";
+		final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
 		Message message = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
 				TimeInForce.DAY, null);
-        message.setField(new UnderlyingSymbol("MSQ"));
+        message.setField(new UnderlyingSymbol(optionRoot));
         message.setField(new MaturityDate());
 		message.setField(new StrikePrice(23));
-		final String expectedPutOrCallUIText = "C";
 		message.setField(new PutOrCall(PutOrCall.CALL));
-		controller.showMessage(message);
-		// create a fake quote and send that through
-        Message dsl = createDummySecurityList("MSQ", new String[]{"GE"}, new String[]{"10"});
-        controller.onMessage(dsl);
-
+        
+		showMessageInOptionTicket(ticket, message, controller, optionRoot,
+				new String[] { optionContractSpecifier }, new String[] { "10" });
+        
         assertEquals("10", ticket.getQuantityText().getText());
 		assertEquals("B", ticket.getSideCombo().getText());
 		assertEquals("1", ticket.getPriceText().getText());
@@ -99,7 +139,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		 */
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
-		assertEquals(expectedPutOrCallUIText, ticket.getPutOrCallCombo().getText());
+		assertEquals("C", ticket.getPutOrCallCombo().getText());
 		assertEquals("10", ticket.getStrikePriceControl().getText());
         assertEquals("MSQ", ticket.getSymbolText().getText());
         assertFalse(controller.hasBindErrors());
@@ -113,7 +153,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("1", ticket.getQuantityText().getText());
 		assertEquals("S", ticket.getSideCombo().getText());
 		assertEquals("MKT", ticket.getPriceText().getText());
-		assertEquals(expectedPutOrCallUIText, ticket.getPutOrCallCombo().getText());
+		assertEquals("C", ticket.getPutOrCallCombo().getText());
 		assertEquals("OPG", ticket.getTifCombo().getText());
 		assertEquals("123456789101112", ticket.getAccountText().getText());
 		assertNotNull(ticket.getExpireMonthCombo().getText());
@@ -123,33 +163,32 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 
 	// todo: finish up these tests
 	public void testShowQuote() throws Exception {
-		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		MarketDataFeedService marketDataFeed = MarketDataViewTest.getNullQuoteFeedService();
-		bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeed, null);
-
-
-		OptionOrderTicket view = (OptionOrderTicket) getTestView();
+		OptionOrderTicket ticket = (OptionOrderTicket) getTestView();
+		final String optionRoot = "MRK";
+		final String optionContractSpecifier = "GA";
+		final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
 		Message orderMessage = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol("MRK+GA"), BigDecimal.ONE,
+				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
 				TimeInForce.DAY, null);
-		orderMessage.setField(new UnderlyingSymbol("MRKTC"));
+		orderMessage.setField(new UnderlyingSymbol(optionRoot));
 		orderMessage.setField(new MaturityDate());
-		orderMessage.setField(new StrikePrice(23));
+		orderMessage.setField(new StrikePrice(10));
 		orderMessage.setField(new PutOrCall(PutOrCall.CALL));
-		controller.showMessage(orderMessage);
+		
+		showMessageInOptionTicket(ticket, orderMessage, controller, optionRoot,
+				new String[] { optionContractSpecifier }, new String[] { "10" });
 
 
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
-		quoteMessageToSend.set(new Symbol("MRK+GA"));
+		quoteMessageToSend.set(new Symbol(optionContractSymbol));
 
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 
-		MarketDataViewTest.MyMarketDataFeed feed = (MarketDataViewTest.MyMarketDataFeed)marketDataFeed.getMarketDataFeed();
-		feed.sendMessage(quoteMessageToSend);
+		mockFeed.sendMessage(quoteMessageToSend);
 
-		IBookComposite bookComposite = view.getBookComposite();
+		IBookComposite bookComposite = ticket.getBookComposite();
 
 		Message returnedMessage = null;
 		for (int i = 0; i < 10; i ++){
@@ -162,7 +201,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 			}
 		}
 		assertNotNull(returnedMessage);
-		assertEquals("MRK+GA", returnedMessage.getString(Symbol.FIELD));
+		assertEquals(optionContractSymbol, returnedMessage.getString(Symbol.FIELD));
 		int noEntries = returnedMessage.getInt(NoMDEntries.FIELD);
 		for (int i = 1; i < noEntries+1; i++){
 			MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
@@ -192,7 +231,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals(MsgType.ORDER_SINGLE, orderMessage.getHeader().getString(MsgType.FIELD));
 		assertEquals(Side.SELL, orderMessage.getChar(Side.FIELD));
 		assertEquals(45, orderMessage.getInt(OrderQty.FIELD));
-		assertEquals("ABC", orderMessage.getString(Symbol.FIELD));
+		assertEquals("ABC", orderMessage.getString(UnderlyingSymbol.FIELD));
 		assertEquals(OrdType.MARKET, orderMessage.getChar	(OrdType.FIELD));
 		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
 	}

@@ -24,6 +24,8 @@ public class OptionBookComposite extends Composite implements IBookComposite
 
 	private OptionMessagesComposite optionMessagesComposite;
 
+	private Message currentMarketRefresh;
+	
 	public OptionBookComposite(Composite parent, int style, IWorkbenchPartSite site, IMemento viewStateMemento){
 		this(parent, style, null, site, viewStateMemento);
 	}
@@ -82,11 +84,11 @@ public class OptionBookComposite extends Composite implements IBookComposite
 	}
 
 	public void setInput(Message marketRefresh) {				
-		// do nothing, handled by 
+		// do nothing, handled by onQuote
 	}
 	
 	public Message getInput(){
-		return null;
+		return currentMarketRefresh;
 	}
 	
 	public UnderlyingSymbolInfoComposite getUnderlyingSymbolInfoComposite() {
@@ -116,6 +118,8 @@ public class OptionBookComposite extends Composite implements IBookComposite
 	}
 
 	public void onQuote(final Message aMarketRefresh) {
+		currentMarketRefresh = aMarketRefresh;
+		
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()){
 			optionMessagesComposite.updateQuote(aMarketRefresh);
