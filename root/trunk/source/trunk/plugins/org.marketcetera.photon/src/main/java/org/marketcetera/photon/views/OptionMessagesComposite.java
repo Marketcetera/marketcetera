@@ -662,7 +662,8 @@ public class OptionMessagesComposite extends Composite {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()) {
 			OptionMessageHolder newHolder = null;
-			OptionPairKey key = optionSymbolToKeyMap.get(getSymbol(quote));
+			String symbolStr = getSymbol(quote);
+			OptionPairKey key = optionSymbolToKeyMap.get(symbolStr);
 			if (key != null) {
 				OptionMessageHolder holder = optionContractMap.get(key);
 				
