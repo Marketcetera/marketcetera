@@ -388,6 +388,9 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	private void updateComboChoices(Combo combo, Collection<String> choices) {
+		if(combo == null || combo.isDisposed()) {
+			return;
+		}
 		combo.removeAll();
 		boolean first = true;
 		for (String choice : choices) {
