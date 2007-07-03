@@ -2,25 +2,25 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>org.marketcetera</groupId>
-    <artifactId>platform</artifactId>
-    <version>0.3.1</version>
+    <artifactId>marketcetera-platform</artifactId>
+    <version>0.4.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.marketcetera</groupId>
-  <artifactId>orderloader</artifactId>
+  <groupId>${parent.groupId}</groupId>
+  <artifactId>marketcetera-orderloader</artifactId>
   <packaging>jar</packaging>
   <name>Order Loader</name>
     <description>Loads batches of orders directly into the OMS</description>
     <url>http://trac.marketcetera.org</url>
   <dependencies>
     <dependency>
-      <groupId>org.marketcetera</groupId>
-      <artifactId>core</artifactId>
+        <groupId>${project.groupId}</groupId>
+      <artifactId>marketcetera-core</artifactId>
     </dependency>
       <!-- dependency on core test code -->
       <dependency>
           <groupId>${project.groupId}</groupId>
-          <artifactId>core</artifactId>
+          <artifactId>marketcetera-core</artifactId>
           <type>test-jar</type>
           <scope>test</scope>
       </dependency>
