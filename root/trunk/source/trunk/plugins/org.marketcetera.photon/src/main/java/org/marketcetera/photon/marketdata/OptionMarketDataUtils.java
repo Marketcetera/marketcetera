@@ -129,6 +129,9 @@ public class OptionMarketDataUtils {
 			final String symbolFilter, Message[] derivativeSecurityList) 
 			throws MarketceteraException {
 		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
+		if(derivativeSecurityList == null) {
+			return optionExpirations;
+		}
 		String messageUnderlyingSymbolStr = "";
 		for (Message message : derivativeSecurityList) {
 			try {
