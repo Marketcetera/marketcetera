@@ -249,29 +249,36 @@ public class OptionMarketDataView extends ViewPart implements
 		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
 			return;
 		}
-		if (underlyingSymbolInfoComposite.hasSymbol(symbol)) {
-			return; // do nothing, already subscribed
-		}
-		
-		updateTitleFromSymbol(symbol);
-		
-		if (underlyingSymbolInfoComposite.hasUnderlyingSymbolInfo()) {
-			removeUnderlyingSymbol();			
-		}
-		// Step 1 - subscribe to the underlying symbol
-		// Step 2 - retrieve and subscribe to all put/call options 
-		underlyingSymbolInfoComposite.addUnderlyingSymbolInfo(symbol
-				.getBaseSymbol());
 
+		// Request for new option symbol
+		if (!underlyingSymbolInfoComposite.hasSymbol(symbol)) {
+			
+			updateTitleFromSymbol(symbol);			
+			if (underlyingSymbolInfoComposite.hasUnderlyingSymbolInfo()) {
+				// Clear all existing option symbol data
+				underlyingSymbolInfoComposite.removeUnderlyingSymbol();
+			}
+			// Add the requested new option symbol
+			underlyingSymbolInfoComposite.addUnderlyingSymbolInfo(symbol
+					.getBaseSymbol());
+		}
+		renewSubscriptions(symbol);
+		optionMessagesComposite.getMessagesViewer().refresh();
+	}
+
+	private void renewSubscriptions(MSymbol symbol) {
 		try {
+			// Step 1 - unsubscribe all subscribed market data, if there is any
+			// Step 2 - subscribe to the underlying symbol
+			// Step 3 - retrieve and subscribe to all put/call options
+			unsubscribeAllMarketData();
 			marketDataTracker.simpleSubscribe(symbol);
-			optionMessagesComposite.requestOptionSecurityList(marketDataTracker, symbol);
-
+			optionMessagesComposite.requestOptionSecurityList(
+					marketDataTracker, symbol);
 		} catch (MarketceteraException e) {
 			PhotonPlugin.getMainConsoleLogger().error(
 					"Exception subscribing to market data for " + symbol);
 		}
-		optionMessagesComposite.getMessagesViewer().refresh();
 	}
 	
 	private String getTitlePrefix() {
@@ -289,7 +296,7 @@ public class OptionMarketDataView extends ViewPart implements
 		}
 	}
 
-	private void removeUnderlyingSymbol() {
+	private void unsubscribeAllMarketData() {
 		// retrieve all related contract symbols, unsubscribe and remove them
 		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker
 				.getService();
@@ -297,7 +304,7 @@ public class OptionMarketDataView extends ViewPart implements
 			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
 			return;
 		}
-
+		
 		// remove and unsubscribe underlying symbols and all contracts
 		Set<String> subscribedUnderlyingSymbols = underlyingSymbolInfoComposite
 				.getUnderlyingSymbolInfoMap().keySet();
@@ -306,10 +313,9 @@ public class OptionMarketDataView extends ViewPart implements
 			MSymbol symbol = service.symbolFromString(subscribedUnderlyingSymbol);
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
-		underlyingSymbolInfoComposite.removeUnderlyingSymbol(); 
 		optionMessagesComposite.unlistenAllMarketData(marketDataTracker);
 	}
-
+	
 	public class MDVMarketDataListener extends MarketDataListener {
 		public void onMessage(Message aMessage) {
 			OptionMarketDataView.this.onQuote(aMessage);
