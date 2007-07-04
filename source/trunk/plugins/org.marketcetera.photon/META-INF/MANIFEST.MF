@@ -36,7 +36,9 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.rubypeople.rdt.core;resolution:=optional,
  org.eclipse.core.databinding;visibility:=reexport,
  org.eclipse.jface.databinding;bundle-version="1.1.0";visibility:=reexport,
- com.ibm.icu
+ com.ibm.icu,
+ org.eclipse.core.net,
+ org.eclipse.ui.net
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,
