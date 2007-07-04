@@ -199,7 +199,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	private void createExpireMonthBorderComposite() {
 		checkOutermostFormInitialized();
 		expireMonthCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
-		orderTicketViewPieces.assignDefaultGridData(expireMonthCombo, 4);
+		orderTicketViewPieces.assignDefaultGridData(expireMonthCombo, 5);
 		// todo: Dynamically populate expiration choices from market data
 		List<String> monthStrings = optionContractDateHelper
 				.createDefaultMonths();
