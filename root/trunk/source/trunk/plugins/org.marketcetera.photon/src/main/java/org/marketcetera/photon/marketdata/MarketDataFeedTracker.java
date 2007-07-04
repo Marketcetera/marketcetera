@@ -48,12 +48,14 @@ public class MarketDataFeedTracker extends ServiceTracker {
 			MarketDataFeedService marketDataFeed = getMarketDataFeedService();
 			if (marketDataFeed != null){
 				Pair<ISubscription, Message> pair = simpleSubscriptions.remove(symbol);
-				ISubscription subscription = pair.getFirstMember();
-				if (pair != null && subscription!=null){
-					try {
-						marketDataFeed.unsubscribe(subscription);
-					} catch (MarketceteraException e) {
-						PhotonPlugin.getMainConsoleLogger().warn("Error unsubscribing to updates for "+symbol);
+				if (pair != null) {
+					ISubscription subscription = pair.getFirstMember();
+					if (subscription!=null){
+						try {
+							marketDataFeed.unsubscribe(subscription);
+						} catch (MarketceteraException e) {
+							PhotonPlugin.getMainConsoleLogger().warn("Error unsubscribing to updates for "+symbol);
+						}
 					}
 				}
 			}
