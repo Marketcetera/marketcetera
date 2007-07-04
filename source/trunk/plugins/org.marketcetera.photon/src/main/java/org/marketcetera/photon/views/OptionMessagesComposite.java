@@ -325,7 +325,6 @@ public class OptionMessagesComposite extends Composite {
  
 	public void saveTableState(IMemento memento) {		
 		saveColumnOrder(memento);
-		saveSortByColumn(memento);
 	}
 
 	protected String serializeColumnOrder(int[] columnOrder) {
@@ -380,26 +379,6 @@ public class OptionMessagesComposite extends Composite {
 			// do nothing
 		}
 	}
-
-	private void restoreSortByColumn(IMemento memento) {
-		if (memento == null)
-			return;
-		String sortByColumn = memento.getString(SORT_BY_COLUMN_KEY);
-		if (sortByColumn != null && sortByColumn.length() > 0 && chooser != null)
-		{
-			chooser.fromString(sortByColumn);
-			List<Integer> sortingCols = chooser.getSortingColumns();
-			for (int col : sortingCols) {
-				chooser.updateSortIndicatorIcon(col);
-			}
-		}
-	}
-	
-	private void saveSortByColumn(IMemento memento) {
-		if (memento == null) 
-			return;
-		memento.putString(SORT_BY_COLUMN_KEY, chooser.toString());
-	}
 	
     protected Table createMessageTable(Composite parent) {
         Table messageTable = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.BORDER);
@@ -445,8 +424,12 @@ public class OptionMessagesComposite extends Composite {
 			chooser = new TableComparatorChooser<OptionMessageHolder>(
 								messageTable, 
 								tableFormat,
-								extractedList, false);
-			restoreSortByColumn(viewStateMemento);
+								extractedList, true);
+			chooser.disableSortOnColumnHeader();
+			
+			//Sort by Expiration date first, then by Strike 
+			chooser.appendComparator(EXP_DATE_INDEX, 0, false);
+			chooser.appendComparator(STRIKE_INDEX, 0, false);
 		}
 		messagesViewer.setInput(extractedList);
 	}

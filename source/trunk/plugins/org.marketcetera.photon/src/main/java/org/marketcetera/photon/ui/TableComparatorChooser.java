@@ -191,9 +191,14 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
      */
     public void dispose() {
         // stop listening for events on the specified table
+    	disableSortOnColumnHeader();
+        sortIndicatorHelper.dispose();
+    }
+    
+    public void disableSortOnColumnHeader() {
         for(int c = 0; c < table.getColumnCount(); c++) {
             table.getColumn(c).removeSelectionListener(columnListener);
         }
-        sortIndicatorHelper.dispose();
-    }
+    }    
+    
 }
