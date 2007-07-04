@@ -1,5 +1,12 @@
 package org.marketcetera.photon.marketdata;
 
+import java.math.BigDecimal;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
 import org.eclipse.core.runtime.Assert;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
@@ -7,20 +14,29 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.*;
+import quickfix.field.CFICode;
+import quickfix.field.MaturityDate;
+import quickfix.field.MsgType;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.SecurityListRequestType;
+import quickfix.field.SecurityType;
+import quickfix.field.StrikePrice;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
 
 public class OptionMarketDataUtils {
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
+
+	public static final Format MONTH_YEAR_FORMAT = new SimpleDateFormat("yyyyMM");
+	public static final Format DAY_FORMAT = new SimpleDateFormat("dd");
+	public static final Format DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
 
 	private static Pattern optionSymbolRootSeparatorPattern;
 
@@ -166,7 +182,12 @@ public class OptionMarketDataUtils {
 	private static void addExpirationFromMessage(MSymbol underlyingSymbol,
 			Message message, List<OptionContractData> optionExpirations)
 			throws FieldNotFound, MarketceteraFIXException {
-		int numDerivs = message.getInt(NoRelatedSym.FIELD);
+		int numDerivs = 0;
+		try {
+			numDerivs = message.getInt(NoRelatedSym.FIELD);
+		} catch (FieldNotFound fnf){
+			// do nothing...
+		}
 		for (int index = 1; index <= numDerivs; index++) {
 			DerivativeSecurityList.NoRelatedSym optionGroup = new DerivativeSecurityList.NoRelatedSym();
 			message.getGroup(index, optionGroup);

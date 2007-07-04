@@ -30,6 +30,8 @@ public interface IImageKeys {
 	public static final String PLUS_TICK = "icons/silk/arrow_up.png";
 	public static final String ZERO_PLUS_TICK = "icons/silk/arrow_zero_up.png";
 	public static final String ADD_SYMBOL = "icons/silk/add.png";
+	public static final String SHOW_SYMBOL = "icons/silk/shape_square_go.png";
+	public static final String SHOW_SYMBOL_NEW_WINDOW = "icons/silk/shape_square_add.png";
 	public static final String DELETE_ITEM = "icons/silk/cancel.png";
 	public static final String CANCEL_ALL_OPEN_ORDERS = "icons/silk/basket_delete.png";
 	

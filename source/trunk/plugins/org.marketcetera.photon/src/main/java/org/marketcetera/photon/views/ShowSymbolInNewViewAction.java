@@ -13,8 +13,8 @@ import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-public class AddSymbolToNewViewAction extends Action {
-	private static final String ID = "org.marketcetera.photon.actions.AddSymbolToNewViewAction";
+public class ShowSymbolInNewViewAction extends Action {
+	private static final String ID = "org.marketcetera.photon.actions.ShowSymbolInNewViewAction";
 
 	private IWorkbenchWindow targetWindow;
 
@@ -22,13 +22,13 @@ public class AddSymbolToNewViewAction extends Action {
 
 	private String targetViewPrimayID;
 
-	public AddSymbolToNewViewAction(IWorkbenchWindow targetWindow,
+	public ShowSymbolInNewViewAction(IWorkbenchWindow targetWindow,
 			String targetViewPrimayID, TextContributionItem text) {
-		super("Add Symbol to &New View", AS_PUSH_BUTTON);
+		super("Show Symbol in &New View", AS_PUSH_BUTTON);
 		setId(ID);
-		setToolTipText("Add Symbol to New View");
+		setToolTipText("Show Symbol in New View");
 		setImageDescriptor(PhotonPlugin
-				.getImageDescriptor(IImageKeys.ADD_SYMBOL));
+				.getImageDescriptor(IImageKeys.SHOW_SYMBOL_NEW_WINDOW));
 
 		if (targetWindow == null) {
 			PhotonPlugin
