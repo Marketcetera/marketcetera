@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.menus.AbstractWorkbenchTrimWidget;
+import org.eclipse.ui.swt.IFocusService;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.Messages;
@@ -80,6 +81,8 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 		command.setText(Messages.CommandStatusLineContribution_CommandLabel);
 		textArea = new Text(composite, SWT.BORDER);
 
+		IFocusService focusService = (IFocusService) getWorkbenchWindow().getService(IFocusService.class);
+		focusService.addFocusTracker(textArea, ID);
 		
 		Point sizeHint = EclipseUtils.getTextAreaSize(composite, text, charWidth, heightFactor);
 
