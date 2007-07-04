@@ -8,18 +8,18 @@ import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-public class AddSymbolAction extends Action {
-	private static final String ID = "org.marketcetera.photon.actions.AddSymbolAction";
+public class ShowSymbolAction extends Action {
+	private static final String ID = "org.marketcetera.photon.actions.ShowSymbolAction";
 	IMSymbolListener listener;
 	TextContributionItem text;
 	/**
 	 * @param text
 	 */
-	public AddSymbolAction(TextContributionItem text, IMSymbolListener listener) {
-		super("&Set Symbol",AS_PUSH_BUTTON);
+	public ShowSymbolAction(TextContributionItem text, IMSymbolListener listener) {
+		super("&Show Symbol",AS_PUSH_BUTTON);
 		setId(ID);
-		setToolTipText("Set Symbol");
-		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.ADD_SYMBOL));
+		setToolTipText("Show Symbol");
+		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.SHOW_SYMBOL));
 
 		this.text = text;
 		this.listener = listener;

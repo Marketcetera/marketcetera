@@ -194,8 +194,8 @@ public class OptionMarketDataView extends ViewPart implements
 		});
 		
 		theToolBarManager.add(symbolEntryText);
-		theToolBarManager.add(new AddSymbolAction(symbolEntryText, this));
-		theToolBarManager.add(new AddSymbolToNewViewAction(getSite().getWorkbenchWindow(), ID, symbolEntryText));
+		theToolBarManager.add(new ShowSymbolAction(symbolEntryText, this));
+		theToolBarManager.add(new ShowSymbolInNewViewAction(getSite().getWorkbenchWindow(), ID, symbolEntryText));
 	}
 	
 	// todo: This duplicates code from MarketDataView.
