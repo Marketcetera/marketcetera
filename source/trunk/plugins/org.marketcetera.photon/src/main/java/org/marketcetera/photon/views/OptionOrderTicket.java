@@ -166,8 +166,9 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 			tabOrder.add(orderTicketViewPieces.getPriceText());
 			tabOrder.add(orderTicketViewPieces.getTifCombo());
 
-			tabOrder.add(otherExpandableComposite);
 			tabOrder.add(sendButton.getParent());
+			tabOrder.add(otherExpandableComposite);
+			tabOrder.add(orderTicketViewPieces.getSideCombo());
 
 			Composite parent = orderTicketViewPieces.getSideCombo().getParent();
 			parent.setTabList(tabOrder.toArray(new Control[0]));
