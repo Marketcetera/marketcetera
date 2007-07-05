@@ -14,10 +14,12 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.map.IMapChangeListener;
 import org.eclipse.core.databinding.observable.map.IObservableMap;
 import org.eclipse.core.databinding.observable.map.MapChangeEvent;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.ISWTObservable;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -27,6 +29,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -398,6 +401,31 @@ public class OrderTicketControllerHelper {
 		return Symbol.FIELD;
 	}
 
+	protected void bindValue(Control whichControl,
+			IObservableValue targetObservableValue,
+			IObservableValue modelObservableValue,
+			UpdateValueStrategy targetToModel, UpdateValueStrategy modelToTarget) {
+
+		// This is a workaround for a databinding bug that doesn't 
+		// reset ComboObservableValue.currentValue when rebinding.
+		// See http://trac.marketcetera.org/trac.fcgi/ticket/313
+		if (whichControl instanceof Combo) {
+			Combo combo = (Combo) whichControl;
+			combo.setText("");
+		} 
+		else if( whichControl instanceof CCombo) {
+			CCombo combo = (CCombo) whichControl;
+			combo.setText("");
+		} else if (whichControl instanceof Text) {
+			Text text = (Text) whichControl;
+			text.setText("");
+		}
+
+		DataBindingContext context = getDataBindingContext();
+		context.bindValue(targetObservableValue, modelObservableValue,
+				targetToModel, modelToTarget);
+	}
+	
 	protected void bindImpl(Message message, boolean enableValidators) {
 
 		targetMessage = message;
@@ -411,8 +439,7 @@ public class OrderTicketControllerHelper {
 			IToggledValidator validator = sideConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext
-					.bindValue(
+			bindValue( whichControl, 
 							SWTObservables.observeText(whichControl),
 							FIXObservables.observeValue(realm, message,
 									Side.FIELD, dictionary),
@@ -441,7 +468,7 @@ public class OrderTicketControllerHelper {
 				toUIConverter = new BigDecimalToStringConverter();
 			}
 			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables.observeText(
+			bindValue( whichControl, SWTObservables.observeText(
 					whichControl, swtEvent), FIXObservables.observeValue(realm,
 					message, OrderQty.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator)
@@ -455,7 +482,7 @@ public class OrderTicketControllerHelper {
 			Control whichControl = ticket.getSymbolText();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables.observeText(
+			bindValue( whichControl, SWTObservables.observeText(
 					whichControl, swtEvent), FIXObservables.observeValue(realm,
 					message, getSymbolFIXField(), dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator),
@@ -469,8 +496,8 @@ public class OrderTicketControllerHelper {
 			IToggledValidator validator = priceConverterBuilder
 					.newTargetAfterGetValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext
-					.bindValue(SWTObservables.observeText(whichControl,
+			bindValue( whichControl, 
+					SWTObservables.observeText(whichControl,
 							swtEvent), FIXObservables.observePriceValue(realm,
 							message, Price.FIELD, dictionary),
 							new UpdateValueStrategy().setAfterGetValidator(
@@ -497,7 +524,7 @@ public class OrderTicketControllerHelper {
 					dictionary, TimeInForce.FIELD,
 					"Not a valid value for TimeInForce", PhotonPlugin.ID);
 			afterConvertValidator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
 					realm, message, TimeInForce.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(
@@ -511,10 +538,13 @@ public class OrderTicketControllerHelper {
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
 		}
-		dataBindingContext.bindValue(SWTObservables.observeText(ticket
-				.getAccountText(), swtEvent), FIXObservables.observeValue(
-				realm, message, Account.FIELD, dictionary),
-				new UpdateValueStrategy(), new UpdateValueStrategy());
+		{
+			Control whichControl = ticket.getAccountText();
+			bindValue(whichControl, SWTObservables.observeText(whichControl,
+					swtEvent), FIXObservables.observeValue(realm, message,
+					Account.FIELD, dictionary), new UpdateValueStrategy(),
+					new UpdateValueStrategy());
+		}
 
 		dataBindingContext.getValidationStatusMap().addMapChangeListener(
 				createMapChangeListener());
