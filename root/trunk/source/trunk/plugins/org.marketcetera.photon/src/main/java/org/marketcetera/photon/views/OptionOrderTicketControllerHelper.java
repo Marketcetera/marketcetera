@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -84,6 +85,8 @@ public class OptionOrderTicketControllerHelper extends
 	private List<ToggledListener> optionSpecifierModifyListeners;
 	
 	private ToggledListener optionContractSymbolModifyListener;
+	
+	private List<String> putOrCallComboChoices = new ArrayList<String>();
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
 		super(ticket);
@@ -99,8 +102,10 @@ public class OptionOrderTicketControllerHelper extends
 		initOpenCloseConverterBuilder();
 		initPutOrCallConverterBuilder();
 		initStrikeConverterBuilder();
+		
+		initPutOrCallComboChoices();
 	}
-
+	
 	@Override
 	protected void initListeners() {
 		super.initListeners();
@@ -365,15 +370,8 @@ public class OptionOrderTicketControllerHelper extends
 				.getExpirationYearsForUI());
 		updateComboChoices(optionTicket.getStrikePriceControl(), cacheEntry
 				.getStrikePricesForUI());
-		updatePutOrCallComboToFirstChoice();
-	}
-	
-	private void updatePutOrCallComboToFirstChoice() {
-		Combo combo = optionTicket.getPutOrCallCombo();
-		String item = combo.getItem(0);
-		if(item != null) {
-			combo.setText(item);
-		}
+		updateComboChoices(optionTicket.getPutOrCallCombo(),
+				putOrCallComboChoices);
 	}
 
 	private void updateComboChoicesFromDefaults() {
@@ -388,20 +386,27 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	private void updateComboChoices(Combo combo, Collection<String> choices) {
-		if(combo == null || combo.isDisposed()) {
+		if (combo == null || combo.isDisposed()) {
 			return;
 		}
+		String originalText = combo.getText();
+		String newText = "";
 		combo.removeAll();
 		boolean first = true;
 		for (String choice : choices) {
 			if (choice != null) {
 				combo.add(choice);
+				// Use the first choice if none match the original text.
 				if (first) {
-					combo.setText(choice);
+					newText = choice;
 					first = false;
+				}
+				if (choice.equals(originalText)) {
+					newText = choice;
 				}
 			}
 		}
+		combo.setText(newText);
 		if (combo.isFocusControl()) {
 			combo.setSelection(new Point(0, 3));
 		}
@@ -653,6 +658,14 @@ public class OptionOrderTicketControllerHelper extends
 		// todo: Is this mapping correct for strike price?
 		strikeConverterBuilder.addMapping(OrdType.MARKET, PriceImage.MKT
 				.getImage());
+	}
+	
+	private void initPutOrCallComboChoices() {
+		Combo combo = optionTicket.getPutOrCallCombo();
+		String[] items = combo.getItems();
+		if(items != null) {
+			putOrCallComboChoices = Arrays.asList(items);
+		}
 	}
 
 	@Override
