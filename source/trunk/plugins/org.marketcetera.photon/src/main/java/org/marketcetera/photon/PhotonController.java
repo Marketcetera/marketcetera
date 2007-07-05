@@ -16,17 +16,17 @@ import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.jms.core.JmsOperations;
 
+import quickfix.CharField;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.CxlRejReason;
 import quickfix.field.ExecID;
-import quickfix.field.MsgSeqNum;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrigClOrdID;
+import quickfix.field.Side;
 import quickfix.field.Symbol;
-import quickfix.field.Text;
 
 /**
  * OrderManager is the main repository for business logic.  It can be considered
@@ -257,6 +257,23 @@ public class PhotonController {
 		}
 	}
 
+	/**
+	 * For debug purposes only. Logs a debug message if the Side field is
+	 * missing.
+	 */
+	private void checkSideField(Message fixMessage) {
+		try {
+			CharField sideField = fixMessage.getField(new Side());
+			if (sideField == null || sideField.getValue() == 0) {
+				throw new MarketceteraFIXException("Missing side field. Was: "
+						+ sideField);
+			}
+		} catch (Exception anyException) {
+			internalMainLogger.debug("Missing Side field in message: "
+					+ fixMessage);
+		}
+	}
+	
 	protected void convertAndSend(Message fixMessage) {
 		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
 		JmsOperations jmsOperations;
@@ -264,6 +281,7 @@ public class PhotonController {
 			try {
 				if(internalMainLogger.isDebugEnabled()) {
 					internalMainLogger.debug("Sending: " + fixMessage);
+					checkSideField(fixMessage);
 				}
 				jmsOperations.convertAndSend(fixMessage);
 			} catch (Exception ex){

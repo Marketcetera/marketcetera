@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -423,7 +422,7 @@ public class OptionOrderTicketControllerHelper extends
 		super.bindImpl(message, enableValidators);
 
 		Realm realm = getTargetRealm();
-		DataBindingContext dataBindingContext = getDataBindingContext();
+//		DataBindingContext dataBindingContext = getDataBindingContext();
 		DataDictionary dictionary = getDictionary();
 
 		/**
@@ -439,7 +438,7 @@ public class OptionOrderTicketControllerHelper extends
 			Control whichControl = optionTicket.getExpireMonthCombo();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), FIXObservables
 					.observeMonthDateValue(realm, message, MaturityDate.FIELD,
 							dictionary), new UpdateValueStrategy()
@@ -458,7 +457,7 @@ public class OptionOrderTicketControllerHelper extends
 			Control whichControl = optionTicket.getExpireYearCombo();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), FIXObservables
 					.observeMonthDateValue(realm, message, MaturityDate.FIELD,
 							dictionary), new UpdateValueStrategy()
@@ -481,7 +480,7 @@ public class OptionOrderTicketControllerHelper extends
 			targetAfterGetValidator.setEnabled(enableValidators);
 			IToggledValidator modelAfterGetValidator = strikeConverterBuilder.newModelAfterGetValidator();
 			modelAfterGetValidator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
 					realm, message, StrikePrice.FIELD, dictionary),
 					bindingHelper.createToModelUpdateValueStrategy(
@@ -504,7 +503,7 @@ public class OptionOrderTicketControllerHelper extends
 			modelAfterGetValidator.setEnabled(enableValidators);
 			IObservableValue fixObservable = FIXObservables.observeValue(realm,
 					message, PutOrCall.FIELD, dictionary, PutOrCall.class.getSimpleName(), FieldType.Int);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), fixObservable, bindingHelper
 					.createToModelUpdateValueStrategy(
 							putOrCallConverterBuilder, targetAfterGetValidator),
@@ -530,7 +529,7 @@ public class OptionOrderTicketControllerHelper extends
 			// final int orderCapacityFIXField = CustomerOrFirm.FIELD;
 			IObservableValue observableValue = FIXObservables.observeValue(
 					realm, message, orderCapacityFIXField, dictionary, OrderCapacity.class.getSimpleName(), FieldType.Char);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), observableValue,
 					bindingHelper.createToModelUpdateValueStrategy(
 							orderCapacityConverterBuilder, targetAfterGetValidator),
@@ -550,7 +549,7 @@ public class OptionOrderTicketControllerHelper extends
 			targetAfterGetValidator.setEnabled(enableValidators);
 			IToggledValidator modelAfterGetValidator = openCloseConverterBuilder.newModelAfterGetValidator();
 			modelAfterGetValidator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables
+			bindValue( whichControl, SWTObservables
 					.observeText(whichControl), FIXObservables.observeValue(
 					realm, message, OpenClose.FIELD, dictionary), bindingHelper
 					.createToModelUpdateValueStrategy(
@@ -574,7 +573,7 @@ public class OptionOrderTicketControllerHelper extends
 			Control whichControl = optionTicket.getOptionSymbolControl();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			dataBindingContext.bindValue(SWTObservables.observeText(
+			bindValue( whichControl, SWTObservables.observeText(
 					whichControl, swtEvent), FIXObservables.observeValue(realm,
 					message, Symbol.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator),
