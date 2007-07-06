@@ -1,6 +1,5 @@
 package org.marketcetera.photon.commands;
 
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.PhotonPlugin;
 
 import quickfix.Message;

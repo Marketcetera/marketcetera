@@ -1,22 +1,22 @@
 package org.marketcetera.photon.scripting;
 
+import java.math.BigDecimal;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
-import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXValueExtractor;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryType;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OrderID;
-
-import java.math.BigDecimal;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 
 public abstract class Strategy {
 

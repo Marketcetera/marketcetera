@@ -1,7 +1,6 @@
 package org.marketcetera.photon.ui.validation.fix;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.text.NumberFormat;
 
 import org.eclipse.core.databinding.conversion.Converter;

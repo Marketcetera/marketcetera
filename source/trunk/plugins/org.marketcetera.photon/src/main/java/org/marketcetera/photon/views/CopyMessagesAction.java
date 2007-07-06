@@ -1,19 +1,12 @@
 package org.marketcetera.photon.views;
 
-import java.util.Iterator;
-
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.photon.core.MessageHolder;
-
-import quickfix.Message;
 
 public class CopyMessagesAction extends Action {
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");

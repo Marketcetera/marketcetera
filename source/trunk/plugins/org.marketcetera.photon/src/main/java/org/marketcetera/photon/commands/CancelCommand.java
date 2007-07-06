@@ -2,7 +2,6 @@ package org.marketcetera.photon.commands;
 
 import org.apache.log4j.Logger;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.Application;
 import org.marketcetera.photon.IPhotonCommand;
 import org.marketcetera.photon.PhotonPlugin;
 

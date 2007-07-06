@@ -31,7 +31,6 @@ import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.FieldType;

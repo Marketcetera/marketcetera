@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
 import org.marketcetera.photon.PhotonPlugin;
