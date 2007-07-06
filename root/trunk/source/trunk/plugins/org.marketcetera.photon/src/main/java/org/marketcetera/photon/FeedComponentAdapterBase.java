@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.springframework.beans.factory.InitializingBean;
 
 public abstract class FeedComponentAdapterBase implements IFeedComponent,

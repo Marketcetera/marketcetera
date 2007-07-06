@@ -5,7 +5,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.Messages;
 
 /**
  * Specialization of the RCP's {@link MessageConsole} that integrates the

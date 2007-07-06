@@ -3,11 +3,7 @@ package org.marketcetera.photon.views;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.core.FIXMatcher;
 import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
-import quickfix.DataDictionary;
-import quickfix.FieldNotFound;
-import quickfix.Message;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 
