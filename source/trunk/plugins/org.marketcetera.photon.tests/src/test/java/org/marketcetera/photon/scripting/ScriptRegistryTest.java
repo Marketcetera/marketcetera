@@ -1,21 +1,21 @@
 package org.marketcetera.photon.scripting;
 
+import java.util.Vector;
+import java.util.concurrent.TimeUnit;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
-import org.apache.bsf.BSFEngine;
+
 import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFManager;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonTestPlugin;
+
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
-
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 public class ScriptRegistryTest extends TestCase {
 	public ScriptRegistryTest(){
