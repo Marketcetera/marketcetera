@@ -7,14 +7,17 @@ import org.eclipse.core.internal.registry.IRegistryConstants;
 import org.eclipse.core.internal.registry.RegistryProperties;
 import org.eclipse.core.internal.registry.RegistryProviderFactory;
 import org.eclipse.core.internal.registry.osgi.EquinoxRegistryStrategy;
+import org.eclipse.core.internal.registry.osgi.EquinoxUtils;
 import org.eclipse.core.internal.registry.osgi.OSGIUtils;
 import org.eclipse.core.internal.registry.osgi.RegistryProviderOSGI;
+import org.eclipse.core.internal.registry.osgi.RegistryStrategyOSGI;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.RegistryFactory;
+import org.eclipse.core.runtime.spi.RegistryStrategy;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -36,7 +39,7 @@ public class Activator implements BundleActivator {
 	private Object masterRegistryKey = new Object();
 	private Object userRegistryKey = new Object();
 	
-	private BundleContext context;
+	private static BundleContext context;
 
 	private IExtensionRegistry registry;
 	
@@ -127,21 +130,31 @@ public class Activator implements BundleActivator {
 		File[] registryLocations;
 		boolean[] readOnlyLocations;
 
+		RegistryStrategy registryStrategy = null;
 		Location configuration = OSGIUtils.getDefault().getConfigurationLocation();
-		File primaryDir = new File(configuration.getURL().getPath() + '/' + STORAGE_DIR);
-		boolean primaryReadOnly = configuration.isReadOnly();
+		if (configuration == null) {
+			RegistryProperties.setProperty(IRegistryConstants.PROP_NO_REGISTRY_CACHE, "true"); //$NON-NLS-1$
+			RegistryProperties.setProperty(IRegistryConstants.PROP_NO_LAZY_CACHE_LOADING, "true"); //$NON-NLS-1$
 
-		Location parentLocation = configuration.getParentLocation();
-		if (parentLocation != null) {
-			File secondaryDir = new File(parentLocation.getURL().getFile() + '/' + IRegistryConstants.RUNTIME_NAME);
-			registryLocations = new File[] {primaryDir, secondaryDir};
-			readOnlyLocations = new boolean[] {primaryReadOnly, true}; // secondary Eclipse location is always read only
+			registryStrategy = new RegistryStrategyOSGI(null, null, masterRegistryKey);
 		} else {
-			registryLocations = new File[] {primaryDir};
-			readOnlyLocations = new boolean[] {primaryReadOnly};
-		}
 
-		EquinoxRegistryStrategy registryStrategy = new EquinoxRegistryStrategy(registryLocations, readOnlyLocations, masterRegistryKey);
+			File primaryDir = new File(configuration.getURL().getPath() + '/' + STORAGE_DIR);
+			boolean primaryReadOnly = configuration.isReadOnly();
+
+			Location parentLocation = configuration.getParentLocation();
+			if (parentLocation != null) {
+				File secondaryDir = new File(parentLocation.getURL().getFile() + '/' + IRegistryConstants.RUNTIME_NAME);
+				registryLocations = new File[] {primaryDir, secondaryDir};
+				readOnlyLocations = new boolean[] {primaryReadOnly, true}; // secondary Eclipse location is always read only
+			} else {
+				registryLocations = new File[] {primaryDir};
+				readOnlyLocations = new boolean[] {primaryReadOnly};
+			}
+
+			registryStrategy = new EquinoxRegistryStrategy(registryLocations, readOnlyLocations, masterRegistryKey);
+		}
+		
 		registry = RegistryFactory.createRegistry(registryStrategy, masterRegistryKey, userRegistryKey);
 
 		registryRegistration = context.registerService(IExtensionRegistry.class.getName(), registry, new Hashtable());
@@ -149,6 +162,10 @@ public class Activator implements BundleActivator {
 		
 		// Set the registry provider and specify this as a default registry:
 		RegistryProviderFactory.setDefault(registryProvider);
+		EquinoxUtils.registerCommandProvider(Activator.getContext());
 	}
 
+	public static BundleContext getContext() {
+		return context;
+	}
 }
