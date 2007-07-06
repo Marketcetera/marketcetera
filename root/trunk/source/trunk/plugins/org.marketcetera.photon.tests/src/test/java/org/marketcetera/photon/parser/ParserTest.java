@@ -1,11 +1,9 @@
 package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 
 import jfun.parsec.ParserException;
 import junit.framework.Test;
-import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;

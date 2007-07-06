@@ -13,8 +13,6 @@ import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 import quickfix.field.TransactTime;

@@ -1,31 +1,51 @@
 package org.marketcetera.photon.model;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.event.ListEvent;
-import ca.odell.glazedlists.event.ListEventListener;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Vector;
+
 import junit.framework.Test;
 
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.core.*;
-import org.marketcetera.photon.ui.IndexedTableViewer;
-import org.marketcetera.photon.views.AveragePriceView;
+import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.photon.core.MessageVisitor;
+import org.marketcetera.photon.core.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.SendingTime;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.TimeInForce;
 import quickfix.fix42.ExecutionReport;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Vector;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.event.ListEvent;
+import ca.odell.glazedlists.event.ListEventListener;
 
 public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 

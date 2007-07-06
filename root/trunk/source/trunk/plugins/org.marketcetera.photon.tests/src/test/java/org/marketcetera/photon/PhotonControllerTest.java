@@ -1,19 +1,22 @@
 package org.marketcetera.photon;
 
-import junit.framework.Test;
+import java.math.BigDecimal;
+import java.util.Vector;
+
 import junit.framework.TestCase;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import quickfix.Message;
-import quickfix.field.*;
 
-import java.math.BigDecimal;
-import java.util.Vector;
+import quickfix.Message;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Side;
 
 /**
  * Verify the functions in PhotonController
