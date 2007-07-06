@@ -1,11 +1,10 @@
 package org.marketcetera.quickfix.messagefactory;
 
-import org.marketcetera.core.ClassVersion;
-import quickfix.Message;
-import quickfix.field.TransactTime;
-import quickfix.field.MsgType;
-
 import java.util.Arrays;
+
+import org.marketcetera.core.ClassVersion;
+
+import quickfix.field.MsgType;
 
 /**
  * @author toli
