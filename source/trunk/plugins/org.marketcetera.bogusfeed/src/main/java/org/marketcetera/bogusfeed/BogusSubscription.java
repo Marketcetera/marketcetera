@@ -1,9 +1,6 @@
 package org.marketcetera.bogusfeed;
 
-import org.marketcetera.core.MemoizedHashCombinator;
 import org.marketcetera.marketdata.ISubscription;
-
-import quickfix.StringField;
 
 public class BogusSubscription implements ISubscription {
 
