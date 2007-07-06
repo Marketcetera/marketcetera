@@ -1,12 +1,11 @@
 package org.marketcetera.photon.views;
 
+import junit.framework.TestCase;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.console.IConsoleConstants;
-
-import junit.framework.TestCase;
 
 public abstract class ViewTestBase extends TestCase {
 
