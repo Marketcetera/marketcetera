@@ -1,14 +1,18 @@
 package org.marketcetera.quickfix;
 
+import java.util.HashMap;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MessageKey;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.quickfix.messagefactory.*;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_40;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_41;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_42;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_43;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_44;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.BeginString;
-
-import java.util.HashMap;
 
 /**
  * An euym for all the supported FIX versions, with the default URL for the data dictionary file.
