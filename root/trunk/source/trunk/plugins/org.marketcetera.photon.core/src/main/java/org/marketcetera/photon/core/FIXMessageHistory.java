@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -15,7 +14,6 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.MsgType;
-import quickfix.field.OrderID;
 import quickfix.field.SendingTime;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;

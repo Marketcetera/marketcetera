@@ -4,11 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.OrderID;
 import quickfix.field.SendingTime;
 import quickfix.field.TransactTime;
 import ca.odell.glazedlists.FunctionList.Function;
