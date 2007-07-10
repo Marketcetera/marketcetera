@@ -2,6 +2,14 @@ package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jfun.parsec.FromString;
 import jfun.parsec.FromToken;
@@ -31,13 +39,21 @@ import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.FieldType;
 import quickfix.Message;
+import quickfix.field.MaturityMonthYear;
 import quickfix.field.OrderQty;
+import quickfix.field.PutOrCall;
+import quickfix.field.StrikePrice;
 
 public class CommandParser {
+	
+	public static final Pattern optionExpirationPattern = Pattern.compile("([0-9]{2}|[0-9]{4})?([a-zA-Z]+)([0-9]+|[0-9]*\\.[0-9]+)(C|P)");
+	
 	//////////////////////////////////////////////////////////////
 	// Lexer infrastructure
 	final Parser<?> whitespaceScanner = Scanners.isWhitespaces("whitespaceScanner");
@@ -53,7 +69,7 @@ public class CommandParser {
 	// same spot in the parse.
 	final Parser<Tok> numberLexer = Parsers.plus(Parsers.atomize("1",integerLexer),Parsers.atomize("2",decimalLexer));
 
-	final Parser<_> wordScanner = Scanners.isPattern("wordScanner", Patterns.regex("[a-zA-z0-9/.;\\-]").many(1), "expected word");
+	final Parser<_> wordScanner = Scanners.isPattern("wordScanner", Patterns.regex("[a-zA-z0-9/.;\\-+]").many(1), "expected word");
 	final Parser<Tok> wordLexer = Lexers.lexer("wordLexer", wordScanner, Tokenizers.forWord());
 	
 
@@ -84,6 +100,38 @@ public class CommandParser {
 						pi.setImage(stringImage);
 					}
 					return pi;
+				}
+			});
+
+	final Parser<FieldMap> optionExpirationParser = Parsers.token(
+			"optionExpirationParser", new FromToken<FieldMap>() {
+				private static final long serialVersionUID = 625605776498362995L;
+				public FieldMap fromToken(Tok tok) {
+					String stringImage = ((TypedToken<TokenType>)tok.getToken()).getText();
+					Matcher matcher = optionExpirationPattern.matcher(stringImage);
+					if (matcher.matches()){
+						String expirationYearString = matcher.group(1);
+						expirationYearString = (expirationYearString!=null && expirationYearString.length()==2) ? "20"+expirationYearString : expirationYearString;
+						String expirationMonthString = matcher.group(2);
+						String strikeString = matcher.group(3);
+						String callPutString = matcher.group(4);
+						int expirationMonth = monthToInt(expirationMonthString);
+						int expirationYear;
+						if (expirationYearString != null){
+							expirationYear = Integer.parseInt(expirationYearString);
+						} else {
+							expirationYear = calculateYearFromMonth(expirationMonth);	
+						}
+						String maturityMonthYearString = formatMaturityMonthYear(expirationMonth+1, expirationYear);
+						String putOrCall = PutOrCallImage.fromName(callPutString).getFIXStringValue();
+						FieldMap results = new org.marketcetera.photon.parser.FieldMap();
+						results.setString(MaturityMonthYear.FIELD, maturityMonthYearString);
+						results.setString(StrikePrice.FIELD, strikeString);
+						results.setString(PutOrCall.FIELD, putOrCall);
+						return results;
+					} else {
+						return null;
+					}
 				}
 			});
 
@@ -145,14 +193,18 @@ public class CommandParser {
 			});
 	
 	final Parser<IPhotonCommand> orderCommandMapper = Parsers.mapn(
-			(Parser<Object>[])new Parser[]{sideImageParser, orderQtyParser, wordParser, priceParser, timeInForceParser.optional(), accountParser.optional()} ,
+			(Parser<Object>[])new Parser[]{sideImageParser, orderQtyParser, wordParser, 
+					Parsers.atomize("optionExpirationParserAtom", optionExpirationParser).optional(), 
+					priceParser, timeInForceParser.optional(), accountParser.optional()} ,
 		new Mapn<IPhotonCommand>(){
 		  public IPhotonCommand map(Object... vals) {
 					int i = 0;
 					SideImage sideImage = (SideImage) vals[i++];
 					BigDecimal quantity = (BigDecimal) vals[i++];
 					String symbol = (String) vals[i++];
-					PriceImage priceObject = (PriceImage) vals[i++];
+					FieldMap optionSpecifier = (FieldMap) vals[i++];
+					PriceImage priceImage = (PriceImage) vals[i++];
+					
 					TimeInForceImage timeInForce = TimeInForceImage.DAY;
 					String accountID = null;
 					if (vals.length > i && vals[i] != null) {
@@ -165,10 +217,13 @@ public class CommandParser {
 					}
 					Message message=null;
 					try {
-						if (PriceImage.MKT.equals(priceObject))	{
+						if (PriceImage.MKT.equals(priceImage))	{
 							message = messageFactory.newMarketOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
 						} else {
-							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), new BigDecimal(priceObject.getImage()), timeInForce.getFIXValue(), accountID);
+							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
+						}
+						if (optionSpecifier != null){
+							FIXMessageUtil.copyFields(message,optionSpecifier);
 						}
 					} catch (NoMoreIDsException e) {
 						PhotonPlugin.getMainConsoleLogger().error(this, e);
@@ -240,4 +295,46 @@ public class CommandParser {
 		orderQtyIsInt = FieldType.Int == dataDictionary.getFieldTypeEnum(OrderQty.FIELD);
 	}
 
+	public static final DateFormat SHORT_MONTH_FORMAT = new SimpleDateFormat("MMM");
+	public static final DecimalFormat MATURITY_MONTH_FORMAT = new DecimalFormat("00");
+	public static final DecimalFormat MATURITY_YEAR_FORMAT = new DecimalFormat("0000");
+	public static final String [] SHORT_MONTH_STRINGS;
+
+	static {
+		Calendar calendar = GregorianCalendar.getInstance();
+		SHORT_MONTH_STRINGS = new String[12];
+		for (int i = 0; i < 12; i++) {
+			calendar.set(Calendar.MONTH, i);
+			SHORT_MONTH_STRINGS[i] = SHORT_MONTH_FORMAT.format(calendar.getTime()).toUpperCase();
+		}
+	}
+
+	public static int monthToInt(String shortMonthName){
+		for (int i = 0; i < 12; i++){
+			if (SHORT_MONTH_STRINGS[i].equals(shortMonthName)){
+				return i;
+			}
+		}
+		throw new IllegalArgumentException("monthName must be a valid month name");
+	}
+	public static int calculateYearFromMonth(int expirationMonth) {
+		Calendar calendar = GregorianCalendar.getInstance();
+		int thisYear = calendar.get(Calendar.YEAR);
+		if (calendar.get(Calendar.MONTH) > expirationMonth){
+			return thisYear+1;
+		} else {
+			return thisYear;
+		}
+	}
+
+	/**
+	 * 
+	 * @param expirationMonth the month in human readable numbers (that is 1=JAN)
+	 * @param expirationYear
+	 * @return
+	 */
+	public static String formatMaturityMonthYear(int expirationMonth,
+			int expirationYear) {
+		return MATURITY_YEAR_FORMAT.format(expirationYear)+MATURITY_MONTH_FORMAT.format(expirationMonth);
+	}
 }
