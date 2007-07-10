@@ -1,6 +1,9 @@
 package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
 
 import jfun.parsec.ParserException;
 import junit.framework.Test;
@@ -20,10 +23,13 @@ import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.BeginSeqNo;
 import quickfix.field.EndSeqNo;
+import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
+import quickfix.field.PutOrCall;
 import quickfix.field.Side;
+import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 
@@ -185,6 +191,139 @@ public class ParserTest extends FIXVersionedTestCase {
         }).run();
     }
     
+    public void testNewOptionOrder() throws NoMoreIDsException, FieldNotFound {
+    	CommandParser aParser = new CommandParser();
+    	aParser.setIDFactory(new InMemoryIDFactory(10));
+    	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	String order;  
+    	order = "B 100 IBM 08OCT25C 1.";
+    	MessageCommand command = aParser.parseNewOrder(order);
+    	Message result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("1"), TimeInForce.DAY, null, new BigDecimal("25"), "200810", PutOrCall.CALL);
+
+    	order = "SS 1234 IBM 2008JAN12.5C 1.8";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null, new BigDecimal("12.5"), "200801", PutOrCall.CALL);
+
+    	order = "ss 1234 IBM JAN25C 1.8 day";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	// this will break when the year changes...
+    	verifyNewOptionOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null, new BigDecimal("25"), "200801", PutOrCall.CALL);
+
+    	order = "SSE 999 IBM 08FEB0.50P .7";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.SELL_SHORT_EXEMPT, new BigDecimal("999"), "IBM", new BigDecimal(".7"), TimeInForce.DAY, null, new BigDecimal(".50"), "200802", PutOrCall.PUT);
+
+    	order = "S 0 IBM 09MAR1.0P 0.0";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.SELL, new BigDecimal("0"), "IBM", new BigDecimal("0.0"), TimeInForce.DAY, null, new BigDecimal("1.0"), "200903", PutOrCall.PUT);
+
+    	order = "B 100 IBM 08APR7P 94.8\tDAY";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.DAY, null, new BigDecimal("7"), "200804", PutOrCall.PUT);
+
+    	order = "B 100 IBM 13MAY120P 94.8 OPG";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.AT_THE_OPENING, null, new BigDecimal("120"), "201305", PutOrCall.PUT);
+
+    	order = "B 100 IBM 10JUN95P 94.8 CLO";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.AT_THE_CLOSE, null, new BigDecimal("95"), "201006", PutOrCall.PUT);
+
+    	order = "B 100 IBM 10JUL100P 94.8 FOK";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.FILL_OR_KILL, null, new BigDecimal("100"), "201007", PutOrCall.PUT);
+
+    	order = "B 100 IBM 10AUG100C 94.8 IOC";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.IMMEDIATE_OR_CANCEL, null, new BigDecimal("100"), "201008", PutOrCall.CALL);
+
+    	order = "B 100 IBM 08SEP22.5C 94.8 GTC";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.GOOD_TILL_CANCEL, null, new BigDecimal("22.5"), "200809", PutOrCall.CALL);
+
+    	order = "SS 100 IBM 09OCT7.5C 94.8 DAY 123.45";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOptionOrder(result, Side.SELL_SHORT, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.DAY, "123.45", new BigDecimal("7.5"), "200910", PutOrCall.CALL);
+    	
+    	order = "B 100 IBM+RE 94.8 DAY AAA;A/a-A";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM+RE", new BigDecimal("94.8"), TimeInForce.DAY, "AAA;A/a-A");
+
+    	(new ExpectedTestFailure(ParserException.class) {
+            protected void execute() throws Throwable
+            {
+            	String innerOrder = "B 100 IBM 2007ASD45C 94.8 DAY";
+            	CommandParser innerParser = new CommandParser();
+            	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(msgFactory);
+            	innerParser.setDataDictionary(fixDD.getDictionary());
+            	innerParser.parseNewOrder(innerOrder);
+            }
+        }).run();
+
+    	(new ExpectedTestFailure(ParserException.class) {
+            protected void execute() throws Throwable
+            {
+            	String innerOrder = "S IBM 2007DEC44 94.8 DAY";
+            	CommandParser innerParser = new CommandParser();
+            	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(msgFactory);
+            	innerParser.setDataDictionary(fixDD.getDictionary());
+            	innerParser.parseNewOrder(innerOrder);
+            }
+        }).run();
+
+    	(new ExpectedTestFailure(ParserException.class) {
+            protected void execute() throws Throwable
+            {
+            	String innerOrder = "B 100 IBM 2007DEC44T DAY";
+            	CommandParser innerParser = new CommandParser();
+            	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(msgFactory);
+            	innerParser.setDataDictionary(fixDD.getDictionary());
+            	innerParser.parseNewOrder(innerOrder);
+            }
+        }).run();
+
+    	(new ExpectedTestFailure(ParserException.class) {
+            protected void execute() throws Throwable
+            {
+            	String innerOrder = "SS 100 IBM 2007DEC25C 123.45 ASDF AAA?A/a-A";
+            	CommandParser innerParser = new CommandParser();
+            	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(msgFactory);
+            	innerParser.setDataDictionary(fixDD.getDictionary());
+            	innerParser.parseNewOrder(innerOrder);
+            }
+        }).run();
+
+    	(new ExpectedTestFailure(ParserException.class) {
+            protected void execute() throws Throwable
+            {
+            	String innerOrder = "SS 100 IBM 2007DEC25C ";
+            	CommandParser innerParser = new CommandParser();
+            	innerParser.setIDFactory(new InMemoryIDFactory(10));
+            	innerParser.setMessageFactory(msgFactory);
+            	innerParser.setDataDictionary(fixDD.getDictionary());
+            	innerParser.parseNewOrder(innerOrder);
+            }
+        }).run();
+
+    }
+
     void verifyNewOrder(Message message, char side, BigDecimal quantity,
     		String symbol, BigDecimal price, char timeInForce, String account) throws FieldNotFound
     {
@@ -198,6 +337,15 @@ public class ParserTest extends FIXVersionedTestCase {
     	} catch (FieldNotFound ex) {
     		assertNull(account);
     	}
+    }
+    void verifyNewOptionOrder(Message message, char side, BigDecimal quantity,
+    		String symbol, BigDecimal price, char timeInForce, String account, 
+    		BigDecimal strike, String expirationMonthYear, int putOrCall) throws FieldNotFound
+    {
+    	verifyNewOrder(message, side, quantity, symbol, price, timeInForce, account);
+    	assertEquals(strike.toPlainString(), message.getString(StrikePrice.FIELD));
+    	assertEquals(expirationMonthYear, message.getString(MaturityMonthYear.FIELD));
+    	assertEquals(putOrCall, message.getInt(PutOrCall.FIELD));
     }
     
     public void testResendRequest() throws FieldNotFound {
@@ -287,6 +435,124 @@ public class ParserTest extends FIXVersionedTestCase {
     	innerParser.parseNewOrder(innerOrder);
     }
     
+    public void testOptionExpirationPattern() throws Exception {
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("2007OCT25C");
+			assertTrue(matcher.matches());
+			assertEquals(4, matcher.groupCount());
+			assertEquals("2007", matcher.group(1));
+			assertEquals("OCT", matcher.group(2));
+			assertEquals("25", matcher.group(3));
+			assertEquals("C", matcher.group(4));
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("OCT25C");
+			assertTrue(matcher.matches());
+			assertEquals(4, matcher.groupCount());
+			assertEquals(null, matcher.group(1));
+			assertEquals("OCT", matcher.group(2));
+			assertEquals("25", matcher.group(3));
+			assertEquals("C", matcher.group(4));
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("08OCT25.5C");
+			assertTrue(matcher.matches());
+			assertEquals(4, matcher.groupCount());
+			assertEquals("08", matcher.group(1));
+			assertEquals("OCT", matcher.group(2));
+			assertEquals("25.5", matcher.group(3));
+			assertEquals("C", matcher.group(4));
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("08OCT.5C");
+			assertTrue(matcher.matches());
+			assertEquals(4, matcher.groupCount());
+			assertEquals("08", matcher.group(1));
+			assertEquals("OCT", matcher.group(2));
+			assertEquals(".5", matcher.group(3));
+			assertEquals("C", matcher.group(4));
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("OCT.5C");
+			assertTrue(matcher.matches());
+			assertEquals(4, matcher.groupCount());
+			assertEquals(null, matcher.group(1));
+			assertEquals("OCT", matcher.group(2));
+			assertEquals(".5", matcher.group(3));
+			assertEquals("C", matcher.group(4));
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("008OCT25C");
+			assertFalse(matcher.matches());
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("OCT25.5.5C");
+			assertFalse(matcher.matches());
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("2007OCT25");
+			assertFalse(matcher.matches());
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("200725C");
+			assertFalse(matcher.matches());
+    	}
+    	{
+	    	Matcher matcher = CommandParser.optionExpirationPattern.matcher("2007OCTC");
+			assertFalse(matcher.matches());
+    	}
+    
+    }
+    
+    public void testMonthToInt() throws Exception {
+    	// if these fail, we may have internationalized.
+    	assertEquals(0, CommandParser.monthToInt("JAN"));
+    	assertEquals(1, CommandParser.monthToInt("FEB"));
+    	assertEquals(2, CommandParser.monthToInt("MAR"));
+    	assertEquals(3, CommandParser.monthToInt("APR"));
+    	assertEquals(4, CommandParser.monthToInt("MAY"));
+    	assertEquals(5, CommandParser.monthToInt("JUN"));
+    	assertEquals(6, CommandParser.monthToInt("JUL"));
+    	assertEquals(7, CommandParser.monthToInt("AUG"));
+    	assertEquals(8, CommandParser.monthToInt("SEP"));
+    	assertEquals(9, CommandParser.monthToInt("OCT"));
+    	assertEquals(10, CommandParser.monthToInt("NOV"));
+    	assertEquals(11, CommandParser.monthToInt("DEC"));
+    	
+    	new ExpectedTestFailure(IllegalArgumentException.class) {
+			@Override
+			protected void execute() throws Throwable {
+				CommandParser.monthToInt("NOB");
+			}
+    	}.run();
+    	
+    }
+
+    public void testCalculateYearFromMonth() throws Exception {
+    	Calendar calendar = GregorianCalendar.getInstance();
+    	int thisYear = calendar.get(Calendar.YEAR);
+    	int nextYear = thisYear +1;
+    	int thisMonth = calendar.get(Calendar.MONTH);
+    	// will fail when it becomes 2008.
+    	assertEquals(2007, thisYear);
+    	assertEquals(thisMonth > 0 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(0));
+    	assertEquals(thisMonth > 1 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(1));
+    	assertEquals(thisMonth > 2 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(2));
+    	assertEquals(thisMonth > 3 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(3));
+    	assertEquals(thisMonth > 4 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(4));
+    	assertEquals(thisMonth > 5 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(5));
+    	assertEquals(thisMonth > 6 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(6));
+    	assertEquals(thisMonth > 7 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(7));
+    	assertEquals(thisMonth > 8 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(8));
+    	assertEquals(thisMonth > 9 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(9));
+    	assertEquals(thisMonth > 10 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(10));
+    	assertEquals(thisMonth > 11 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(11));
+	}
+
+    public void testFormatMaturityMonthYear() throws Exception {
+    	assertEquals("200708", CommandParser.formatMaturityMonthYear(8, 2007));
+    	assertEquals("200711", CommandParser.formatMaturityMonthYear(11, 2007));
+	}
 //    public void testCancelAll() throws ParserException, NoMoreIDsException, FieldNotFound
 //    {
 //    	CommandParser aParser = new CommandParser();
