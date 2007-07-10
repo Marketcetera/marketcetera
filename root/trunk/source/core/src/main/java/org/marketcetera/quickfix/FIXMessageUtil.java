@@ -1,6 +1,7 @@
 package org.marketcetera.quickfix;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -8,6 +9,7 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
 
 import quickfix.DataDictionary;
+import quickfix.Field;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -134,6 +136,10 @@ public class FIXMessageUtil {
 		return msgTypeHelper(message, MsgType.RESEND_REQUEST);
 	}
 	
+	public static boolean isDerivativeSecurityList(
+			Message message) {
+		return msgTypeHelper(message, MsgType.DERIVATIVE_SECURITY_LIST);
+	}
 	
 	public static boolean isCancellable(char ordStatus) {
 		switch (ordStatus){
@@ -206,6 +212,23 @@ public class FIXMessageUtil {
         } catch (FieldNotFound ex) {
             LoggerAdapter.error(MessageKey.FIX_OUTGOING_NO_MSGTYPE.getLocalizedMessage(), ex, LOGGER_NAME);
         }
+    }
+    /**
+     * Warning! This method does not handle groups.
+     * @param copyTo
+     * @param copyFrom
+     */
+    public static void copyFields(FieldMap copyTo, FieldMap copyFrom){
+    	Iterator iter = copyFrom.iterator();
+    	while (iter.hasNext()){
+    		Field field = (Field) iter.next();
+    		try {
+				copyTo.setField(copyFrom
+						.getField(new StringField(field.getTag())));
+			} catch (FieldNotFound e) {
+				// do nothing
+			}
+    	}
     }
     
     public static boolean isRequiredField(Message message, int whichField) {
@@ -362,6 +385,7 @@ public class FIXMessageUtil {
 		}
 
 	}
+
 
 
 }
