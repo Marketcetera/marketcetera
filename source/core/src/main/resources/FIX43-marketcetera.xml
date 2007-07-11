@@ -696,6 +696,10 @@
       <field name="TradingSessionID" required="N" />
       <field name="TradingSessionSubID" required="N" />
       <field name="SubscriptionRequestType" required="N" />
+    <field name="Symbol" required="N"/>
+    <field name="SecurityType" required="N"/>
+    <field name="CFICode" required="N"/>
+    <field name="Product" required="N"/>
     </message>
     <message name="DerivativeSecurityList" msgtype="AA" msgcat="app">
       <field name="SecurityReqID" required="Y" />
