@@ -546,7 +546,6 @@
       <field name="FinancialStatus" required="N"/>
       <field name="CorporateAction" required="N"/>
       <field name="TotalVolumeTraded" required="N"/>
-      <field name="NoMarketDataSnapshots" required="N"/>
       <group name="NoMDEntries" required="Y">
         <field name="MDEntryType" required="Y"/>
         <field name="MDEntryPx" required="Y"/>
@@ -2613,7 +2612,5 @@
     <field number="444" name="ListStatusText" type="STRING"/>
     <field number="445" name="EncodedListStatusTextLen" type="INT"/>
     <field number="446" name="EncodedListStatusText" type="DATA"/>
-
-    <field number="7601" name="NoMarketDataSnapshots" type="INT"/>
   </fields>
 </fix>

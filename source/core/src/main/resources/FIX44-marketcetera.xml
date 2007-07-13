@@ -775,7 +775,6 @@
     <field name="FinancialStatus" required="N"/>
     <field name="CorporateAction" required="N"/>
     <field name="NetChgPrevDay" required="N"/>
-    <field name="NoMarketDataSnapshots" required="N"/>
     <group name="NoMDEntries" required="Y">
       <field name="MDEntryType" required="Y"/>
       <field name="MDEntryPx" required="N"/>
@@ -6725,7 +6724,5 @@
     <field number="954" name="Nested3PartySubIDType" type="INT"/>
     <field number="955" name="LegContractSettlMonth" type="MONTHYEAR"/>
     <field number="956" name="LegInterestAccrualDate" type="LOCALMKTDATE"/>
-
-    <field number="7601" name="NoMarketDataSnapshots" type="INT"/>
   </fields>
 </fix>

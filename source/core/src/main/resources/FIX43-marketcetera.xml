@@ -502,7 +502,6 @@
       <field name="TotalVolumeTradedDate" required="N" />
       <field name="TotalVolumeTradedTime" required="N" />
       <field name="NetChgPrevDay" required="N" />
-      <field name="NoMarketDataSnapshots" required="N"/>
       <group name="NoMDEntries" required="Y">
         <field name="MDEntryType" required="Y" />
         <field name="MDEntryPx" required="N" />
@@ -3992,7 +3991,5 @@
     <field number="657" name="SettlCurrOfferFxRate" type="FLOAT" />
     <field number="658" name="QuoteRequestRejectReason" type="INT" />
     <field number="659" name="SideComplianceID" type="STRING" />
-
-    <field number="7601" name="NoMarketDataSnapshots" type="INT"/>
   </fields>
 </fix>
