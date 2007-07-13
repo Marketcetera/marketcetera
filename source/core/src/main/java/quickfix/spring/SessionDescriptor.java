@@ -9,6 +9,10 @@ import org.marketcetera.core.MessageKey;
 
 public class SessionDescriptor implements InitializingBean {
 
+	private static final String TARGET_COMP_ID_KEY = "TargetCompID";
+
+	private static final String SENDER_COMP_ID_KEY = "SenderCompID";
+
 	private static final String BEGIN_STRING_KEY = "BeginString";
 
 	private SessionID cachedSessionID;
@@ -59,11 +63,11 @@ public class SessionDescriptor implements InitializingBean {
 		if (!settings.containsKey(BEGIN_STRING_KEY)){
 			settings.put(BEGIN_STRING_KEY, cachedSessionID.getBeginString());
 		}
-		if (!settings.containsKey(SessionSettings.SENDERCOMPID)){
-			settings.put(SessionSettings.SENDERCOMPID, cachedSessionID.getSenderCompID());
+		if (!settings.containsKey(SENDER_COMP_ID_KEY)){
+			settings.put(SENDER_COMP_ID_KEY, cachedSessionID.getSenderCompID());
 		}
-		if (!settings.containsKey(SessionSettings.TARGETCOMPID)){
-			settings.put(SessionSettings.TARGETCOMPID, cachedSessionID.getTargetCompID());
+		if (!settings.containsKey(TARGET_COMP_ID_KEY)){
+			settings.put(TARGET_COMP_ID_KEY, cachedSessionID.getTargetCompID());
 		}
 	}
 
