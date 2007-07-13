@@ -852,7 +852,5 @@
       <value enum="7" description="OTHER"/>
     </field>
     <field number="140" name="PrevClosePx" type="FLOAT"/>
-
-      <field number="7601" name="NoMarketDataSnapshots" type="INT"/>
   </fields>
 </fix>

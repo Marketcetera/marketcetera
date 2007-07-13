@@ -1263,7 +1263,5 @@
     </field>
     <field number="210" name="MaxShow" type="INT"/>
     <field number="211" name="PegDifference" type="FLOAT"/>
-
-    <field number="7601" name="NoMarketDataSnapshots" type="INT"/>
   </fields>
 </fix>

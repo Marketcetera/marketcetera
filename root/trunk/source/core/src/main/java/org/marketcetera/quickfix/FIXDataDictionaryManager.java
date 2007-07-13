@@ -4,6 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Singleton class that is a mapping of all {@link FIXVersion} to their corresponding
@@ -36,7 +37,7 @@ public class FIXDataDictionaryManager {
         setCurrentFIXDataDictionary(fixDD);
     }
 
-    public FIXDataDictionaryManager(HashMap<FIXVersion, String> urlMap) throws FIXFieldConverterNotAvailable {
+    public FIXDataDictionaryManager(Map<FIXVersion, String> urlMap) throws FIXFieldConverterNotAvailable {
         fddMap = new HashMap<FIXVersion, FIXDataDictionary>();
         for (FIXVersion version : urlMap.keySet()) {
             fddMap.put(version, new FIXDataDictionary(urlMap.get(version)));
