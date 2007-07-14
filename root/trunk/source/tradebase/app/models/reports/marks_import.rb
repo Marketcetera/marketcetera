@@ -4,13 +4,13 @@
 class MarksImport < Tableless
 
   # takes an incoming params hash
-  def initialize(file)
+  def initialize(data)
     @line_errors = []
-    @file = file
+    @data = data
   end
 
   def validate
-    errors.add(:file, "Unable to read CSV data from specified file") unless (!@file.nil? && !@file.string.blank?)
+    errors.add(:file, "Unable to read CSV data from the specified file") unless (@data.kind_of?(StringIO) && !@data.nil? && !@data.string.blank?)
   end
 
   def add_error_for_line(line, error)

@@ -23,4 +23,11 @@ class MarksImportTest < MarketceteraTestBase
     assert_equal ["some error"], mi.line_errors[0][:error]
   end
 
+  # try something that's not incoming StringIO class
+  def test_not_string_content
+    data = BigDecimal.new("234")
+    mi = MarksImport.new(data)
+    assert !mi.valid?
+  end
+
 end
