@@ -11,7 +11,7 @@ class ImportMarksController < ApplicationController
       file_data = get_non_empty_string_from_two(params, "import", "file", "import_file")
       @report = MarksImport.new(file_data)
       if(!@report.valid?)
-        render :action => :index
+        render :action => :import
         return
       end
       @total_count, @valid_marks = 0, 0
@@ -29,7 +29,8 @@ class ImportMarksController < ApplicationController
       begin
         text = get_non_empty_string_from_two(params, "import", "text", "import_text")
         @report = MarksImport.new(text)
-        all_lines = text.split("\n")
+        all_lines = text.split("\r\n")
+        logger.debug("original text: #{text}\n, all lines are: #{all_lines}")
         @total_count, @valid_marks = 0, 0
         all_lines[0..-1].each { |line| import_one_mark(line, @report) }
 
