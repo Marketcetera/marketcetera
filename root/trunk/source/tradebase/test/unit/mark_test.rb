@@ -143,4 +143,12 @@ class MarkTest < Test::Unit::TestCase
     assert_equal "Already have a mark on that date. Please update an existing mark instead.", newMark.errors[:mark_date]
   end
 
+  def test_pretty_print_errors
+    mark = Mark.new(:tradeable_id => 1, :mark_date => (Date.today + 2))
+    mark.save
+    assert !mark.valid?
+    assert_equal 3, mark.errors.length, mark.errors.inspect
+    assert_equal "{Value should be a number. Date should not be in the future. }", mark.pretty_print_errors
+  end
+
 end

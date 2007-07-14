@@ -206,7 +206,7 @@ class MarksControllerTest < MarketceteraTestBase
     assert_has_error_box
     assert_equal 1, assigns(:mark).errors.length
     assert_not_nil assigns(:mark).errors[:mark_date]   
-    assert_equal "should not be in the future", assigns(:mark).errors[:mark_date]             
+    assert_equal "should not be in the future.", assigns(:mark).errors[:mark_date]             
   end
 
   def test_edit

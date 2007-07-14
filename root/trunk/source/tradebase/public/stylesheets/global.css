@@ -192,6 +192,7 @@ body {
 #body .right_column #breadcrumbs li {
   float: left;
   padding-bottom: 10px;
+  margin-left: 0;
 }
 
 #body .right_column #breadcrumbs li a {
@@ -349,6 +350,15 @@ body {
 #body .right_column fieldset .date select { 
 	width: 100px; 
 	margin-right: 5px;
+}
+
+/** MarksImport pages */
+#body .right_column .highlightedText {
+  background: #f4f4f4;
+}
+
+#body .right_column li {
+ margin-left: 15px;
 }
 
 /* this doesn't work b/c we can't individually specify day/year/month in date_select code in rails
