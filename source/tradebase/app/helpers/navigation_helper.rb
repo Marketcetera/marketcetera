@@ -17,6 +17,7 @@ module NavigationHelper
     'dividends' => 'db_maintenance',
     'm_symbols' => 'db_maintenance',
     'pnl' => 'pnl',
-    'marks' => 'pnl'
+    'marks' => 'pnl',
+    'import_marks' => 'pnl'
   }
 end

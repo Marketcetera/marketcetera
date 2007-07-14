@@ -57,7 +57,7 @@ module ApplicationHelper
     parent = params[nested_parent]
     if(!parent.nil?)
       child = parent[nested_child]
-      if(!child.nil? && !child.empty?)
+      if(!child.blank?)
         return child
       end
     end
