@@ -6,23 +6,25 @@ import java.util.Date;
 import org.eclipse.core.databinding.conversion.Converter;
 
 public class StringToDateCustomConverter extends Converter {
-	private SimpleDateFormat formatter;
-
-	private String dateFormatStr;
+	private String [] dateFormatStrings;
 
 	private boolean forceUppercase;
 
 	private boolean emptyStringBecomesNullDate;
 
+	private SimpleDateFormat [] formatters;
+
+	private String humanReadableFormatStrings;
+
 	/**
 	 * Force toUpperCase before parsing. Empty strings convert to null dates.
 	 */
-	public StringToDateCustomConverter(String dateFormatStr) {
-		this(dateFormatStr, true, true);
+	public StringToDateCustomConverter(String ... inDateFormatStrings) {
+		this(true, true, inDateFormatStrings);
 	}
 
 	/**
-	 * @param dateFormatStr
+	 * @param dateFormatStrings
 	 *            a date format string of the form specified by
 	 *            SimpleDateFormat. *
 	 * @param forceUppercase
@@ -34,11 +36,21 @@ public class StringToDateCustomConverter extends Converter {
 	 * @see org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter
 	 *      for predefined date formats.
 	 */
-	public StringToDateCustomConverter(String dateFormatStr,
-			boolean forceUppercase, boolean emptyStringBecomesNullDate) {
+	public StringToDateCustomConverter(
+			boolean forceUppercase, boolean emptyStringBecomesNullDate, String ... inDateFormatStrings) {
 		super(String.class, java.util.Date.class);
-		this.dateFormatStr = dateFormatStr;
-		this.formatter = new SimpleDateFormat(dateFormatStr);
+		this.dateFormatStrings = inDateFormatStrings;
+		this.humanReadableFormatStrings = "";
+		this.formatters = new SimpleDateFormat[dateFormatStrings.length];
+		int numFormatStrings = inDateFormatStrings.length;
+		for (int i = 0; i < numFormatStrings; i++) {
+			String aFormatString = inDateFormatStrings[i];
+			this.formatters[i] = new SimpleDateFormat(aFormatString);
+			humanReadableFormatStrings += aFormatString;
+			if (i < numFormatStrings - 1){
+				humanReadableFormatStrings += ", ";
+			}
+		}
 		this.forceUppercase = forceUppercase;
 		this.emptyStringBecomesNullDate = emptyStringBecomesNullDate;
 	}
@@ -56,22 +68,24 @@ public class StringToDateCustomConverter extends Converter {
 		if (emptyStringBecomesNullDate && fromDateString.length() == 0) {
 			return null;
 		}
-		if (fromDateString.length() <= 0
-				|| fromDateString.length() > dateFormatStr.length()) {
-			throw new IllegalArgumentException("The value: " + fromDateString
-					+ " is not a valid date of the form: " + dateFormatStr);
-		}
 		if (forceUppercase) {
 			fromDateString = fromDateString.toUpperCase();
 		}
 		Date toDate = null;
-		try {
-			synchronized (formatter) {
-				toDate = formatter.parse(fromDateString);
+		for (int i = 0; i < formatters.length; i++) {
+			SimpleDateFormat formatter = formatters[i];
+			try {
+				synchronized (formatter) {
+					if (fromDateString.length() == dateFormatStrings[i].length()){
+						toDate = formatter.parse(fromDateString);
+					}
+				}
+			} catch (java.text.ParseException e) {
 			}
-		} catch (java.text.ParseException e) {
+		} 
+		if (toDate == null){
 			throw new IllegalArgumentException("The value: " + fromDateString
-					+ " is not a valid date of the form: " + dateFormatStr);
+					+ " is not a valid date of the form: " + humanReadableFormatStrings);
 		}
 		return toDate;
 	}

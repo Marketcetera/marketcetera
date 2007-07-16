@@ -181,17 +181,12 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	 */
 	public void updateOptionSymbolFromLocalCache() {
 		String symbolText = ticket.getSymbolText().getText();
-		boolean attemptedUpdate = false;
 		if (symbolText != null) {
 			OptionSeriesCollection cacheEntry = optionContractCache
 					.get(symbolText);
 			if (cacheEntry != null) {
-				attemptedUpdate = true;
 				updateOptionSymbol(cacheEntry);
 			}
-		}
-		if (!attemptedUpdate) {
-			clearOptionSymbolControl();
 		}
 	}
 
@@ -403,19 +398,24 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	}
 
 	private void updateComboChoices(OptionSeriesCollection cacheEntry) {
-		updateComboChoices(ticket.getExpireMonthCombo(), cacheEntry
-				.getExpirationMonthsForUI());
-		updateComboChoices(ticket.getExpireYearCombo(), cacheEntry
-				.getExpirationYearsForUI());
-		updateComboChoices(ticket.getStrikePriceControl(), cacheEntry
-				.getStrikePricesForUI());
-		updateComboChoices(ticket.getPutOrCallCombo(),
-				putOrCallComboChoices);
+		try {
+			setOptionSeriesInfoListenersEnabled(false);
+			updateComboChoices(ticket.getExpireMonthCombo(), cacheEntry
+					.getExpirationMonthsForUI());
+			updateComboChoices(ticket.getExpireYearCombo(), cacheEntry
+					.getExpirationYearsForUI());
+			updateComboChoices(ticket.getStrikePriceControl(), cacheEntry
+					.getStrikePricesForUI());
+			updateComboChoices(ticket.getPutOrCallCombo(),
+					putOrCallComboChoices);
+		} finally {
+			setOptionSeriesInfoListenersEnabled(true);
+		}
 	}
 
 
 	private void clearOptionSymbolControl() {
-		ticket.getOptionSymbolControl().setText("");
+		ticket.getOptionSymbolControl().setText(ticket.getSymbolText().getText());
 	}
 
 
