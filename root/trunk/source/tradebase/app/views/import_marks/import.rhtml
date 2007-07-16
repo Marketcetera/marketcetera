@@ -13,7 +13,7 @@
             <% if(!@report.nil? && !@report.errors[:file].nil?) %>
                 <div class="fieldWithErrors">
             <% end -%>
-            <%= file_field("import", "file") %>
+            <%= file_field("import", "file", :size => 50) %>
             <% if(!@report.nil? && !@report.errors[:file].nil?)%>
                 </div>
             <% end -%>

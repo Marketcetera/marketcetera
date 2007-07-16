@@ -29,11 +29,12 @@ class ImportMarksController < ApplicationController
       begin
         text = get_non_empty_string_from_two(params, "import", "text", "import_text")
         @report = MarksImport.new(text)
-        all_lines = text.split("\r\n")
-        logger.debug("original text: #{text}\n, all lines are: #{all_lines}")
         @total_count, @valid_marks = 0, 0
-        all_lines[0..-1].each { |line| import_one_mark(line, @report) }
-
+        if(!text.blank?)
+          all_lines = text.split("\r\n")
+          logger.debug("original text: #{text}\n, all lines are: #{all_lines}")
+          all_lines[0..-1].each { |line| import_one_mark(line, @report) }
+        end
         render :template => 'import_marks/upload_results'
       rescue Exception => ex
         logger.debug("exception in mark import: "+ex.class.to_s + ":" + ex.message+"\n"+ex.backtrace.join("\n"))
