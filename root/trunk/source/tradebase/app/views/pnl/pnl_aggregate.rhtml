@@ -11,7 +11,7 @@
    total = BigDecimal.new("0")
  for cf in @cashflows %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-    <td><%= link_to cf[:account], {:action => :by_account, :nickname => cf[:account], :from_date => @from_date, :to_date => @to_date} %></td>
+    <td><%= link_to cf[:account], {:action => :report, :nickname => cf[:account], :from_date => @from_date, :to_date => @to_date} %></td>
     <td <%= pnl_number_class(cf[:cashflow]) %>><%= fn(cf[:cashflow], 2) %></td>
     <% total += BigDecimal(cf[:cashflow].to_s) %>
   </tr>

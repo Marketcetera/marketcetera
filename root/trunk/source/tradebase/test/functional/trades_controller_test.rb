@@ -512,14 +512,20 @@ class TradesControllerTest < MarketceteraTestBase
   end
   
   def test_destroy
-    assert_not_nil Trade.find( @allTrades[0].id)
-
+    t = Trade.find( @allTrades[0].id)
+    assert_not_nil t
+    journal = t.journal
+    assert_not_nil Journal.find(journal.id)
+    
     post :destroy, :id =>  @allTrades[0].id
     assert_response :redirect
     assert_redirected_to :action => 'list'
 
     assert_raise(ActiveRecord::RecordNotFound) {
       Trade.find( @allTrades[0].id)
+    }
+    assert_raise(ActiveRecord::RecordNotFound) {
+      Journal.find(journal.id)
     }
   end
   

@@ -22,8 +22,8 @@ class CashFlow
   # Returns an unsorted double hashtable, where the first key is an account id pointing to another table of
   # [symbol, cashflow value] pairs.
   # Users should sort the individual per-account cashflows accordingly (probably by symbol)
-  # Ex: To get list of cashflows sorted by symbol for a given account
-  #   cashflows[theAcct.id].values.sort { |x,y| x.symbol <=> y.symbol} 
+  # Ex: To get list of cashflows sorted by symbol for a given account (by acct nickname)
+  #   cashflows[theAcct.nickname].values.sort { |x,y| x.symbol <=> y.symbol}
   #   
   # Essentially, you get back something like this for each account:
   # result[toli] => {sunw=> <sunw cashflow>, goog => <goog cashflow>, etc}
@@ -37,23 +37,23 @@ class CashFlow
     end
 
     results = Journal.find_by_sql(['SELECT sum(p.quantity) as cashflow, t.tradeable_id, '+
-                                          's.root as symbol, a.nickname as account ' +
+                                          's.root as symbol, a.nickname as account_nick, a.id as account_id ' +
               'FROM trades AS t, postings p, journals j, m_symbols s, sub_accounts sa, equities e, accounts a ' +
               'WHERE t.journal_id = j.id AND p.journal_id = j.id AND t.tradeable_id = e.id AND e.m_symbol_id = s.id AND '+
               't.account_id = a.id AND p.sub_account_id = sa.id AND sa.sub_account_type_id = ? AND '+
-              'j.post_date > ? AND j.post_date <= ? '+acctQuery + 
-              ' GROUP BY t.tradeable_id, t.account_id '+ 
+              'j.post_date > ? AND j.post_date <= ? '+acctQuery +
+              ' GROUP BY t.tradeable_id, t.account_id '+
               ' HAVING cashflow != 0 '+
               ' ORDER BY symbol ', params].flatten)
     cashflows = {}
-    results.each { |cf| 
-      openSyntheticCashflow = get_synthetic_cashflow(from_date, cf.account, cf.tradeable_id, cf.symbol)
-      closeSyntheticCashflow = get_synthetic_cashflow(to_date, cf.account, cf.tradeable_id, cf.symbol)
-      if(cashflows[cf.account].nil?)
-        cashflows[cf.account] = {}
+    results.each { |cf|
+      openSyntheticCashflow = get_synthetic_cashflow(from_date, cf.account_id, cf.tradeable_id, cf.symbol)
+      closeSyntheticCashflow = get_synthetic_cashflow(to_date, cf.account_id, cf.tradeable_id, cf.symbol)
+      if(cashflows[cf.account_nick].nil?)
+        cashflows[cf.account_nick] = {}
       end
-      cashflows[cf.account][cf.symbol] = CashFlow.new(BigDecimal.new(cf.cashflow)+closeSyntheticCashflow - openSyntheticCashflow, 
-                                cf.symbol, cf.account, cf.tradeable_id) 
+      cashflows[cf.account_nick][cf.symbol] = CashFlow.new(BigDecimal.new(cf.cashflow)+closeSyntheticCashflow - openSyntheticCashflow,
+                                cf.symbol, cf.account_id, cf.tradeable_id)
     }
     
     # now look at all positions that we had open on P&L start date (ie from_date)
