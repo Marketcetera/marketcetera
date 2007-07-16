@@ -1,14 +1,23 @@
 package org.marketcetera.bogusfeed;
 
 import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.StringField;
 
 public class BogusSubscription implements ISubscription {
 
 	private final String reqID;
 	private String symbol;
+	private StringField correlationField;
 
-	public BogusSubscription(String reqID) {
+
+	public BogusSubscription(String reqID, String subscribeMsgType) {
 		this.reqID = reqID;
+		correlationField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, subscribeMsgType);
 	}
 
 	public String getReqID() {
@@ -33,6 +42,20 @@ public class BogusSubscription implements ISubscription {
 
 	public void setSymbol(String symbol) {
 		this.symbol = symbol;
+	}
+
+	public boolean isResponse(Message possibleResponse) {
+		if (correlationField != null){
+			try {
+				possibleResponse.getField(correlationField);
+			} catch (FieldNotFound e) {
+				return false;
+			}
+			return this.reqID.equals(correlationField.getValue());
+		} else {
+			return false;
+		}
+		
 	}
 
 }
