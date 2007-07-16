@@ -7,6 +7,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageKey;
+import org.marketcetera.quickfix.cficode.OptionCFICode;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -16,6 +17,7 @@ import quickfix.Group;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.Message.Header;
+import quickfix.field.CFICode;
 import quickfix.field.CollReqID;
 import quickfix.field.ConfirmReqID;
 import quickfix.field.EncodedText;
@@ -26,6 +28,7 @@ import quickfix.field.NetworkRequestID;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OrdStatus;
 import quickfix.field.PosReqID;
+import quickfix.field.PutOrCall;
 import quickfix.field.QuoteID;
 import quickfix.field.QuoteReqID;
 import quickfix.field.QuoteStatusReqID;
@@ -33,6 +36,7 @@ import quickfix.field.RFQReqID;
 import quickfix.field.SecurityReqID;
 import quickfix.field.SecurityStatusReqID;
 import quickfix.field.SettlInstReqID;
+import quickfix.field.Symbol;
 import quickfix.field.Text;
 import quickfix.field.TradSesReqID;
 import quickfix.field.TradeRequestID;
@@ -139,6 +143,21 @@ public class FIXMessageUtil {
 	public static boolean isDerivativeSecurityList(
 			Message message) {
 		return msgTypeHelper(message, MsgType.DERIVATIVE_SECURITY_LIST);
+	}
+	
+	public static boolean isEquityOptionOrder(Message message)
+	{
+		try {
+			return isOrderSingle(message)
+			&& (
+					message.isSetField(PutOrCall.FIELD) ||
+					(message.isSetField(Symbol.FIELD) && message.getString(Symbol.FIELD).indexOf("+")>0) ||
+					message.isSetField(CFICode.FIELD) && OptionCFICode.isOptionCFICode(message.getString(CFICode.FIELD))
+				);
+		} catch (FieldNotFound e) {
+			// should never happen
+			return false;
+		}
 	}
 	
 	public static boolean isCancellable(char ordStatus) {
