@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
-public interface ISubscription {
+import quickfix.Message;
 
+public interface ISubscription {
+	public boolean isResponse(Message possibleResponse);
 }

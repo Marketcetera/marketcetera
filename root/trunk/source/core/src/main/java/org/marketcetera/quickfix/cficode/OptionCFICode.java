@@ -180,5 +180,9 @@ public class OptionCFICode extends CFICode {
 		// so we just return true
 		return true;
 	}
+	
+	public static boolean isOptionCFICode(CharSequence seq){
+		return ((seq.length()==6)&& seq.charAt(0)==CFICode.CATEGORY_OPTION);
+	}
 
 }
