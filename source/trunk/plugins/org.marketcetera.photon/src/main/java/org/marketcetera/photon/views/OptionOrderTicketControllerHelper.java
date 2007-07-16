@@ -141,9 +141,6 @@ public class OptionOrderTicketControllerHelper extends
 	@Override
 	protected void listenMarketDataAdditional(final String optionRootStr)
 			throws MarketceteraException {
-
-		// This marketDataTracker variable was unused. Can it be removed?
-//		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
 	}
@@ -435,4 +432,7 @@ public class OptionOrderTicketControllerHelper extends
 		}
 	}
 
+	public OptionSeriesManager getOptionSeriesManager() {
+		return optionSeriesManager;
+	}
 }
