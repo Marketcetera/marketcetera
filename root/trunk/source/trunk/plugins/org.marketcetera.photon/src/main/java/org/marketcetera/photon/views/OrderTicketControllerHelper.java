@@ -682,7 +682,7 @@ public class OrderTicketControllerHelper {
 				.getImage());
 	}
 
-	private Message newNewOrderSingle() {
+	protected Message newNewOrderSingle() {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		Message aMessage = plugin.getMessageFactory().newBasicOrder();
 		aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));

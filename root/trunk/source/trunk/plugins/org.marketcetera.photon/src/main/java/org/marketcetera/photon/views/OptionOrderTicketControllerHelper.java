@@ -123,7 +123,14 @@ public class OptionOrderTicketControllerHelper extends
 		optionSeriesManager.clear();
 	}
 
-
+	@Override
+	protected Message newNewOrderSingle() {
+		Message message = super.newNewOrderSingle();
+		// These fields should match the ones from bindImpl() and the ILexerImage
+		message.setField(new OrderCapacity(OrderCapacityImage.CUSTOMER.getFIXCharValue()));
+		message.setField(new OpenClose(OpenCloseImage.OPEN.getFIXCharValue()));
+		return message;
+	}
 
 	@Override
 	protected MarketDataListener createMarketDataListener() {
@@ -135,7 +142,8 @@ public class OptionOrderTicketControllerHelper extends
 	protected void listenMarketDataAdditional(final String optionRootStr)
 			throws MarketceteraException {
 
-		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
+		// This marketDataTracker variable was unused. Can it be removed?
+//		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
 	}
@@ -165,7 +173,6 @@ public class OptionOrderTicketControllerHelper extends
 		 * to store the data. The code part of the option contract symbol
 		 * represents that data.
 		 */
-		final int swtEvent = SWT.Modify;
 		// ExpireDate Month
 		{
 			Control whichControl = optionTicket.getExpireMonthCombo();
@@ -243,6 +250,8 @@ public class OptionOrderTicketControllerHelper extends
 
 			// The FIX field may need to be updated., See
 			// http://trac.marketcetera.org/trac.fcgi/ticket/185
+			// If the field below is changed the defaults in the 
+			// message created by newNewOrderSingle() must be updated. 
 			final int orderCapacityFIXField = OrderCapacity.FIELD;
 			// final int orderCapacityFIXField = CustomerOrFirm.FIELD;
 			bindValue(
@@ -265,10 +274,13 @@ public class OptionOrderTicketControllerHelper extends
 			IToggledValidator modelAfterGetValidator = openCloseConverterBuilder.newModelAfterGetValidator();
 			modelAfterGetValidator.setEnabled(enableValidators);
 			
+			// If the field below is changed the defaults in the 
+			// message created by newNewOrderSingle() must be updated.
+			final int openCloseField = OpenClose.FIELD;
 			bindValue(
 					whichControl,
 					SWTObservables.observeText(whichControl), 
-					FIXObservables.observeValue(realm, message, OpenClose.FIELD, dictionary),
+					FIXObservables.observeValue(realm, message, openCloseField, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(targetAfterGetValidator).setConverter(openCloseConverterBuilder.newToModelConverter()),
 					new UpdateValueStrategy().setAfterGetValidator(modelAfterGetValidator).setConverter(openCloseConverterBuilder.newToTargetConverter())
 			);
