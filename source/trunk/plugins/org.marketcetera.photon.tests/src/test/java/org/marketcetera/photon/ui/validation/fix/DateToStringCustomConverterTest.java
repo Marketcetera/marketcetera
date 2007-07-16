@@ -28,7 +28,7 @@ public class DateToStringCustomConverterTest extends TestCase {
 	}
 	
 	public void testDateToStringConverter_YearFormat() {
-		String format = DateToStringCustomConverter.YEAR_FORMAT;
+		String format = DateToStringCustomConverter.SHORT_YEAR_FORMAT;
 		int calendarField = Calendar.YEAR;
 		performConvertToString(format, calendarField, 2007, "07");
 		performConvertToString(format, calendarField, 2008, "08");
@@ -56,7 +56,7 @@ public class DateToStringCustomConverterTest extends TestCase {
 	}
 	
 	public void testStringToDateConverter_YearFormat() {
-		String format = DateToStringCustomConverter.YEAR_FORMAT;
+		String format = DateToStringCustomConverter.SHORT_YEAR_FORMAT;
 		int calendarField = Calendar.YEAR;
 		performConvertToDate(format, calendarField, "07", 2007);
 		performConvertToDate(format, calendarField, "08", 2008);
