@@ -6,6 +6,8 @@ import junit.framework.TestSuite;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.marketdata.MarketceteraFeedTest;
 import org.marketcetera.marketdata.MarketceteraOptionSymbolTest;
+import org.marketcetera.photon.marketdata.OptionContractDataTest;
+import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
 import org.marketcetera.photon.model.ClOrdIDComparatorTest;
 import org.marketcetera.photon.model.FIXMessageHistoryTest;
 import org.marketcetera.photon.model.MessageHolderTest;
@@ -37,6 +39,8 @@ public class TS_Photon {
 		// marketdata
 		suite.addTestSuite(MarketceteraOptionSymbolTest.class);
 		suite.addTestSuite(MarketceteraFeedTest.class);
+		suite.addTestSuite(OptionContractDataTest.class);
+		suite.addTestSuite(OptionMessageHolderTest.class);
 
 		// model
 		suite.addTestSuite(ClOrdIDComparatorTest.class);
@@ -70,6 +74,8 @@ public class TS_Photon {
 		suite.addTestSuite(MarketDataViewTest.class);
 		suite.addTestSuite(StockOrderTicketViewTest.class);
 		suite.addTestSuite(OptionOrderTicketViewTest.class);
+		suite.addTestSuite(OptionDateHelperTest.class);
+		suite.addTestSuite(OptionSeriesCollectionTest.class);
 		return suite;
 	}
 

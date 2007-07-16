@@ -504,55 +504,7 @@ public class ParserTest extends FIXVersionedTestCase {
     
     }
     
-    public void testMonthToInt() throws Exception {
-    	// if these fail, we may have internationalized.
-    	assertEquals(0, CommandParser.monthToInt("JAN"));
-    	assertEquals(1, CommandParser.monthToInt("FEB"));
-    	assertEquals(2, CommandParser.monthToInt("MAR"));
-    	assertEquals(3, CommandParser.monthToInt("APR"));
-    	assertEquals(4, CommandParser.monthToInt("MAY"));
-    	assertEquals(5, CommandParser.monthToInt("JUN"));
-    	assertEquals(6, CommandParser.monthToInt("JUL"));
-    	assertEquals(7, CommandParser.monthToInt("AUG"));
-    	assertEquals(8, CommandParser.monthToInt("SEP"));
-    	assertEquals(9, CommandParser.monthToInt("OCT"));
-    	assertEquals(10, CommandParser.monthToInt("NOV"));
-    	assertEquals(11, CommandParser.monthToInt("DEC"));
-    	
-    	new ExpectedTestFailure(IllegalArgumentException.class) {
-			@Override
-			protected void execute() throws Throwable {
-				CommandParser.monthToInt("NOB");
-			}
-    	}.run();
-    	
-    }
 
-    public void testCalculateYearFromMonth() throws Exception {
-    	Calendar calendar = GregorianCalendar.getInstance();
-    	int thisYear = calendar.get(Calendar.YEAR);
-    	int nextYear = thisYear +1;
-    	int thisMonth = calendar.get(Calendar.MONTH);
-    	// will fail when it becomes 2008.
-    	assertEquals(2007, thisYear);
-    	assertEquals(thisMonth > 0 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(0));
-    	assertEquals(thisMonth > 1 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(1));
-    	assertEquals(thisMonth > 2 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(2));
-    	assertEquals(thisMonth > 3 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(3));
-    	assertEquals(thisMonth > 4 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(4));
-    	assertEquals(thisMonth > 5 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(5));
-    	assertEquals(thisMonth > 6 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(6));
-    	assertEquals(thisMonth > 7 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(7));
-    	assertEquals(thisMonth > 8 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(8));
-    	assertEquals(thisMonth > 9 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(9));
-    	assertEquals(thisMonth > 10 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(10));
-    	assertEquals(thisMonth > 11 ? nextYear: thisYear, CommandParser.calculateYearFromMonth(11));
-	}
-
-    public void testFormatMaturityMonthYear() throws Exception {
-    	assertEquals("200708", CommandParser.formatMaturityMonthYear(8, 2007));
-    	assertEquals("200711", CommandParser.formatMaturityMonthYear(11, 2007));
-	}
 //    public void testCancelAll() throws ParserException, NoMoreIDsException, FieldNotFound
 //    {
 //    	CommandParser aParser = new CommandParser();

@@ -103,7 +103,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 			OptionOrderTicketController optController, String optionRoot,
 			String[] optionContractSpecifiers, String[] strikePrices) {
 		// Set an option root before simulating the subscription response
-		ticket.getSymbolText().setText(optionRoot);
+		//ticket.getSymbolText().setText(optionRoot);
 		// Subscription response has the contract symbols (create a fake quote and send that through)
         Message dsl = createDummySecurityList(optionRoot, optionContractSpecifiers, strikePrices);
         optController.onMessage(dsl);
@@ -126,13 +126,13 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		Message message = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
 				TimeInForce.DAY, null);
-        message.setField(new UnderlyingSymbol(optionRoot));
-        message.setField(new MaturityDate());
+        message.setField(new Symbol(optionContractSymbol));
+        message.setField(new MaturityMonthYear("200708"));
 		message.setField(new StrikePrice(23));
 		message.setField(new PutOrCall(PutOrCall.CALL));
         
 		showMessageInOptionTicket(ticket, message, controller, optionRoot,
-				new String[] { optionContractSpecifier }, new String[] { "10" });
+				new String[] { optionContractSpecifier }, new String[] { "10", "23" });
         
         assertEquals("10", ticket.getQuantityText().getText());
 		assertEquals("B", ticket.getSideCombo().getText());
@@ -148,8 +148,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
 		assertEquals("C", ticket.getPutOrCallCombo().getText());
-		assertEquals("10", ticket.getStrikePriceControl().getText());
-        assertEquals("MSQ", ticket.getSymbolText().getText());
+		assertEquals("23", ticket.getStrikePriceControl().getText());
+        assertEquals("MSQ+GE", ticket.getSymbolText().getText());
         assertFalse(controller.hasBindErrors());
 		
 		message = msgFactory.newMarketOrder("2",
@@ -231,6 +231,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		view.getSideCombo().setText("S");
 		view.getQuantityText().setText("45");
 		view.getSymbolText().setText("ABC");
+		assertTrue(view.getSymbolText().forceFocus());
+		assertTrue(view.getPriceText().forceFocus());
 		view.getPriceText().setText("MKT");
 		view.getTifCombo().setText("FOK");
 
@@ -238,8 +240,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals(MsgType.ORDER_SINGLE, orderMessage.getHeader().getString(MsgType.FIELD));
 		assertEquals(Side.SELL, orderMessage.getChar(Side.FIELD));
 		assertEquals(45, orderMessage.getInt(OrderQty.FIELD));
-		assertEquals("ABC", orderMessage.getString(UnderlyingSymbol.FIELD));
-		assertEquals(OrdType.MARKET, orderMessage.getChar	(OrdType.FIELD));
+		assertEquals("ABC", orderMessage.getString(Symbol.FIELD));
+		assertEquals(OrdType.MARKET, orderMessage.getChar(OrdType.FIELD));
 		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
 	}
 
@@ -373,6 +375,21 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		} catch (FieldNotFound e) {
 			// expected behavior
 		}
+	}
+	
+	public void testBindArbitraryOptionOrder() throws Exception {
+		String messageString = "8=FIX.4.29=13435=D11=1184285237034-capybara/192.168.0.10121=138=1040=244=4.554=155=IBM59=060=20070713-00:12:56.781200=200710201=1202=2510=169";
+		Message message = new Message(messageString);
+		OptionOrderTicket optionOrderTicket = ((OptionOrderTicket)getTestView());
+		controller.showMessage(message);
+		assertEquals("B", optionOrderTicket.getSideCombo().getText());
+		assertEquals("10", optionOrderTicket.getQuantityText().getText());
+		assertEquals("IBM", optionOrderTicket.getSymbolText().getText());
+		assertEquals("OCT", optionOrderTicket.getExpireMonthCombo().getText());
+		assertEquals("07", optionOrderTicket.getExpireYearCombo().getText());
+		assertEquals("25", optionOrderTicket.getStrikePriceControl().getText());
+		assertEquals("C", optionOrderTicket.getPutOrCallCombo().getText());
+		assertEquals("4.5", optionOrderTicket.getPriceText().getText());
 	}
 	
     private DerivativeSecurityList createDummySecurityList(String symbol, String[] optionSuffixes, String[] strikePrices) {
