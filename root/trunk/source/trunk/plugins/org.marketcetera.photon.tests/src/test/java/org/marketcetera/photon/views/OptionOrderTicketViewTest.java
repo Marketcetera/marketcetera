@@ -79,8 +79,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		mockFeed = MockMarketDataFeed.getMockMarketDataFeed(feedService);
 		
 		IOptionOrderTicket ticket = (IOptionOrderTicket) theTestView;
-		controller = new OptionOrderTicketController();
-		controller.bind(ticket);
+		controller = (OptionOrderTicketController) ticket.getOrderTicketController();
 	}
 
     @Override
