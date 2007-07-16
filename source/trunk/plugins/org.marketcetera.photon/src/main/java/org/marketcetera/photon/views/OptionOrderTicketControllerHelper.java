@@ -11,13 +11,18 @@ import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
@@ -32,14 +37,16 @@ import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.ToggledListener;
+import org.marketcetera.photon.ui.validation.DecimalRequiredValidator;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
+import org.marketcetera.photon.ui.validation.fix.BigDecimalToStringConverter;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
+import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
-import org.marketcetera.photon.views.OptionContractCacheEntry.OptionCodeUIValues;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -47,6 +54,7 @@ import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityDate;
+import quickfix.field.MaturityMonthYear;
 import quickfix.field.OpenClose;
 import quickfix.field.OrdType;
 import quickfix.field.OrderCapacity;
@@ -68,30 +76,17 @@ public class OptionOrderTicketControllerHelper extends
 
 	private EnumStringConverterBuilder<Integer> putOrCallConverterBuilder;
 
-	private PriceConverterBuilder strikeConverterBuilder;
-
 	private BindingHelper bindingHelper;
 
-	/**
-	 * Map from option root symbol to cache entry.
-	 */
-	private HashMap<MSymbol, OptionContractCacheEntry> optionContractCache = new HashMap<MSymbol, OptionContractCacheEntry>();
+	private OptionSeriesManager optionSeriesManager;
 
-	private MSymbol lastOptionRoot;
-
-	private MSymbol selectedSymbol;
-
-	private List<ToggledListener> optionSpecifierModifyListeners;
-	
-	private ToggledListener optionContractSymbolModifyListener;
-	
-	private List<String> putOrCallComboChoices = new ArrayList<String>();
-
-	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket) {
+	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket, OptionSeriesManager seriesManager) {
 		super(ticket);
 		this.optionTicket = ticket;
 
 		bindingHelper = new BindingHelper();
+		bindSymbolToModelDirection = false;
+		optionSeriesManager = seriesManager;
 	}
 
 	@Override
@@ -100,9 +95,7 @@ public class OptionOrderTicketControllerHelper extends
 		initOrderCapacityConverterBuilder();
 		initOpenCloseConverterBuilder();
 		initPutOrCallConverterBuilder();
-		initStrikeConverterBuilder();
 		
-		initPutOrCallComboChoices();
 	}
 	
 	@Override
@@ -111,100 +104,26 @@ public class OptionOrderTicketControllerHelper extends
 		getMarketDataTracker().setMarketDataListener(
 				new MDVMarketDataListener());
 
-		optionSpecifierModifyListeners = new ArrayList<ToggledListener>();
-		addOptionSpecifierModifyListener(optionTicket.getExpireYearCombo());
-		addOptionSpecifierModifyListener(optionTicket.getExpireMonthCombo());
-		addOptionSpecifierModifyListener(optionTicket.getStrikePriceControl());
-		addOptionSpecifierModifyListener(optionTicket.getPutOrCallCombo());
-
-		/**
-		 * This modify listener ensures that the option contract specifiers
-		 * (month, year, strike, put/call) stay in sync when the user enters an
-		 * option contract symbol (MSQ+HA) directly.
-		 */
-		optionContractSymbolModifyListener = new ToggledListener() {
-			@Override
-			protected void handleEventWhenEnabled(Event event) {
-				try {
-					setOptionSymbolListenersEnabled(false);
-					updateOptionContractSpecifiers();
-				} finally {
-					setOptionSymbolListenersEnabled(true);
+		optionSeriesManager.initListeners();
+		{
+			final Label optionSymbolLabel = optionTicket.getOptionSymbolControl();
+			Text symbolText = optionTicket.getSymbolText();
+			symbolText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					String symbolString = ((Text)e.getSource()).getText();
+					optionSymbolLabel.setText(symbolString);
 				}
-			}
-		};
-		optionContractSymbolModifyListener.setEnabled(true);
-		optionTicket.getOptionSymbolControl().addListener(SWT.Modify,
-				optionContractSymbolModifyListener);
+			});
+		}
 	}
 	
 	@Override
 	public void clear() {
 		super.clear();
-		lastOptionRoot = null;
+		optionSeriesManager.clear();
 	}
 
-	/**
-	 * Update the option contract specifiers (expiration etc.) based on the
-	 * option contract symbol (e.g. MSQ+GE).
-	 */
-	private void updateOptionContractSpecifiers() {
-		String optionContractSymbolStr = optionTicket.getOptionSymbolControl()
-				.getText();
-		if (optionContractSymbolStr == null
-				|| optionContractSymbolStr.length() == 0) {
-			return;
-		}
 
-		String optionRootStr = OptionMarketDataUtils
-				.getOptionRootSymbol(optionContractSymbolStr);
-		MSymbol optionRoot = new MSymbol(optionRootStr);
-		if (optionContractCache.containsKey(optionRoot)) {
-			OptionContractCacheEntry cacheEntry = optionContractCache
-					.get(optionRoot);
-			if (cacheEntry != null) {
-				MSymbol optionContractSymbol = new MSymbol(
-						optionContractSymbolStr);
-				OptionCodeUIValues optionUIValues = cacheEntry
-						.getOptionCodeUIValues(optionContractSymbol);
-				if (optionUIValues != null) {
-					setOptionSpecifiers(optionUIValues);
-				}
-			}
-		}
-	}
-
-	private void setOptionSpecifiers(OptionCodeUIValues optionUIValues) {
-		String expirationYear = optionUIValues.getExpirationYear();
-		optionTicket.getExpireYearCombo().setText(expirationYear);
-		String expirationMonth = optionUIValues.getExpirationMonth();
-		optionTicket.getExpireMonthCombo().setText(expirationMonth);
-		String strikePrice = optionUIValues.getStrikePrice();
-		optionTicket.getStrikePriceControl().setText(strikePrice);
-		boolean optionIsPut = optionUIValues.isPut();
-		optionTicket.setPut(optionIsPut);
-	}
-
-	private void addOptionSpecifierModifyListener(Control targetControl) {
-		ToggledListener modifyListener = new ToggledListener() {
-			public void handleEventWhenEnabled(Event event) {
-				try {
-					setOptionSymbolListenersEnabled(false);
-					attemptUpdateOptionContractSymbol();
-				} finally {
-					setOptionSymbolListenersEnabled(true);
-				}
-			}
-		};
-		optionSpecifierModifyListeners.add(modifyListener);
-		targetControl.addListener(SWT.Modify, modifyListener);
-	}
-
-	private void setOptionSymbolListenersEnabled(boolean enabled) {
-		for (ToggledListener listener : optionSpecifierModifyListeners) {
-			listener.setEnabled(enabled);
-		}
-	}
 
 	@Override
 	protected MarketDataListener createMarketDataListener() {
@@ -217,18 +136,8 @@ public class OptionOrderTicketControllerHelper extends
 			throws MarketceteraException {
 
 		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
-		MSymbol optionRoot = new MSymbol(optionRootStr);
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
-		selectedSymbol = optionRoot;
-
-		if (!optionContractCache.containsKey(optionRoot)) {
-			requestOptionSecurityList(marketDataTracker
-					.getMarketDataFeedService(), optionRoot);
-
-		} else {
-			conditionallyUpdateInputControls(optionRoot);
-		}
 	}
 
 	@Override
@@ -241,181 +150,6 @@ public class OptionOrderTicketControllerHelper extends
 		messagesComposite.unlistenAllMarketData(getMarketDataTracker());
 	}
 
-	private void requestOptionSecurityList(MarketDataFeedService service,
-			final MSymbol optionRoot) {
-
-		IMarketDataListCallback callback = new IMarketDataListCallback() {
-			public void onMarketDataFailure(MSymbol symbol) {
-				// Restore the full expiration choices.
-				updateComboChoicesFromDefaults();
-			}
-
-            public void onMessage(Message aMessage) {
-                handleMarketDataList(new Message[] {aMessage}, optionRoot);
-            }
-
-            public void onMessages(Message[] derivativeSecurityList) {
-                handleMarketDataList(derivativeSecurityList, optionRoot);
-			}
-		};
-
-		Message query = OptionMarketDataUtils.newOptionRootQuery(optionRoot,
-				false);
-		MarketDataUtils.asyncMarketDataQuery(optionRoot, query, service
-				.getMarketDataFeed(), callback);
-	}
-
-    /* package */ void handleMarketDataList(Message[] derivativeSecurityList) {
-        handleMarketDataList(derivativeSecurityList, new MSymbol(optionTicket.getSymbolText().getText()));
-    }
-    /* package */ void handleMarketDataList(Message[] derivativeSecurityList, MSymbol optionRoot) {
-        List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
-        try {
-            String baseSymbol = (optionRoot == null) ? null : optionRoot.getBaseSymbol();
-            optionContracts = OptionMarketDataUtils
-                .getOptionExpirationMarketData(baseSymbol, derivativeSecurityList);
-        } catch (Exception anyException) {
-            PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
-            return;
-        }
-        if (optionContracts == null || optionContracts.isEmpty()) {
-            updateComboChoicesFromDefaults();
-        } else {
-            OptionContractCacheEntry cacheEntry = new OptionContractCacheEntry(
-                    optionContracts);
-            optionContractCache.put(optionRoot, cacheEntry);
-
-            conditionallyUpdateInputControls(optionRoot);
-        }
-    }
-
-    private void conditionallyUpdateInputControls(MSymbol optionRoot) {
-		if (optionRoot != null && (lastOptionRoot == null || !lastOptionRoot.equals(optionRoot))) {
-			lastOptionRoot = optionRoot;
-			OptionContractCacheEntry cacheEntry = optionContractCache
-					.get(optionRoot);
-			if (cacheEntry != null) {
-				updateComboChoices(cacheEntry);
-				updateOptionContractSymbol(cacheEntry);
-			}
-		}
-	}
-
-	/**
-	 * Only update the option contract symbol (e.g. MSQ+GE) based on the option
-	 * specifiers (expiration etc.) if there is market data available for the
-	 * option. If not, clears the option contract symbol text.
-	 */
-	private void attemptUpdateOptionContractSymbol() {
-		String symbolText = optionTicket.getSymbolText().getText();
-		boolean attemptedUpdate = false;
-		if (symbolText != null) {
-			MSymbol optionRoot = new MSymbol(symbolText);
-			OptionContractCacheEntry cacheEntry = optionContractCache
-					.get(optionRoot);
-			if (cacheEntry != null) {
-				attemptedUpdate = true;
-				updateOptionContractSymbol(cacheEntry);
-			}
-		}
-		if (!attemptedUpdate) {
-			clearOptionSymbolControl();
-		}
-	}
-
-	/**
-	 * Update the option contract (e.g. MSQ+GE) based on the option specifiers
-	 * (expiration etc.)
-	 */
-	private boolean updateOptionContractSymbol(
-			OptionContractCacheEntry cacheEntry) {
-		String expirationYear = optionTicket.getExpireYearCombo().getText();
-		String expirationMonth = optionTicket.getExpireMonthCombo().getText();
-		String strikePrice = optionTicket.getStrikePriceControl().getText();
-		boolean putWhenTrue = optionTicket.isPut();
-
-		boolean textWasSet = false;
-		OptionContractData optionContract = cacheEntry.getOptionContractData(
-				expirationYear, expirationMonth, strikePrice, putWhenTrue);
-		if (optionContract != null) {
-			MSymbol optionContractSymbol = optionContract.getOptionSymbol();
-			if (optionContractSymbol != null) {
-				String fullSymbol = optionContractSymbol.getFullSymbol();
-				try {
-					optionContractSymbolModifyListener.setEnabled(false);
-					optionTicket.getOptionSymbolControl().setText(fullSymbol);
-					textWasSet = true;
-				} finally {
-					optionContractSymbolModifyListener.setEnabled(true);
-				}
-				getOptionMessagesComposite().requestOptionSecurityList(
-						getMarketDataTracker(), selectedSymbol, fullSymbol);
-			}
-		}
-		if (!textWasSet) {
-			clearOptionSymbolControl();
-		}
-		return textWasSet;
-	}
-
-	private void clearOptionSymbolControl() {
-		optionTicket.getOptionSymbolControl().setText("");
-	}
-
-	private void updateComboChoices(OptionContractCacheEntry cacheEntry) {
-		updateComboChoices(optionTicket.getExpireMonthCombo(), cacheEntry
-				.getExpirationMonthsForUI());
-		updateComboChoices(optionTicket.getExpireYearCombo(), cacheEntry
-				.getExpirationYearsForUI());
-		updateComboChoices(optionTicket.getStrikePriceControl(), cacheEntry
-				.getStrikePricesForUI());
-		updateComboChoices(optionTicket.getPutOrCallCombo(),
-				putOrCallComboChoices);
-	}
-
-	private void updateComboChoicesFromDefaults() {
-		OptionDateHelper dateHelper = new OptionDateHelper();
-		List<String> months = dateHelper.createDefaultMonths();
-		updateComboChoices(optionTicket.getExpireMonthCombo(), months);
-		List<String> years = dateHelper.createDefaultYears();
-		updateComboChoices(optionTicket.getExpireYearCombo(), years);
-		// todo: What should the defaults be for strike price?
-		List<String> strikePrices = new ArrayList<String>();
-		updateComboChoices(optionTicket.getStrikePriceControl(), strikePrices);
-	}
-
-	private void updateComboChoices(Combo combo, Collection<String> choices) {
-		if (combo == null || combo.isDisposed()) {
-			return;
-		}
-		String originalText = combo.getText();
-		String newText = "";
-		combo.removeAll();
-		boolean first = true;
-		for (String choice : choices) {
-			if (choice != null) {
-				combo.add(choice);
-				// Use the first choice if none match the original text.
-				if (first) {
-					newText = choice;
-					first = false;
-				}
-				if (choice.equals(originalText)) {
-					newText = choice;
-				}
-			}
-		}
-		combo.setText(newText);
-		if (combo.isFocusControl()) {
-			combo.setSelection(new Point(0, 3));
-		}
-	}
-
-	@Override
-	protected int getSymbolFIXField() {
-		// Make the Symbol input control be the option root.
-		return UnderlyingSymbol.FIELD;
-	}
 
 	@Override
 	protected void bindImpl(Message message, boolean enableValidators) {
@@ -431,23 +165,18 @@ public class OptionOrderTicketControllerHelper extends
 		 * to store the data. The code part of the option contract symbol
 		 * represents that data.
 		 */
-
 		final int swtEvent = SWT.Modify;
 		// ExpireDate Month
 		{
 			Control whichControl = optionTicket.getExpireMonthCombo();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			bindValue( whichControl, SWTObservables
-					.observeText(whichControl), FIXObservables
-					.observeMonthDateValue(realm, message, MaturityDate.FIELD,
-							dictionary), new UpdateValueStrategy()
-					.setAfterGetValidator(validator).setConverter(
-							new StringToDateCustomConverter(
-									DateToStringCustomConverter.MONTH_FORMAT)),
-					new UpdateValueStrategy()
-							.setConverter(new DateToStringCustomConverter(
-									DateToStringCustomConverter.MONTH_FORMAT)));
+			bindValue( 
+					whichControl,
+					SWTObservables.observeText(whichControl),
+					FIXObservables.observeMonthDateValue(realm, message, MaturityMonthYear.FIELD,dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(validator).setConverter(new StringToDateCustomConverter(DateToStringCustomConverter.MONTH_FORMAT)),
+					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter(DateToStringCustomConverter.MONTH_FORMAT)));
 			addControlStateListeners(whichControl, validator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
@@ -457,16 +186,11 @@ public class OptionOrderTicketControllerHelper extends
 			Control whichControl = optionTicket.getExpireYearCombo();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			bindValue( whichControl, SWTObservables
-					.observeText(whichControl), FIXObservables
-					.observeMonthDateValue(realm, message, MaturityDate.FIELD,
-							dictionary), new UpdateValueStrategy()
-					.setAfterGetValidator(validator).setConverter(
-							new StringToDateCustomConverter(
-									DateToStringCustomConverter.YEAR_FORMAT)),
-					new UpdateValueStrategy()
-							.setConverter(new DateToStringCustomConverter(
-									DateToStringCustomConverter.YEAR_FORMAT)));
+			bindValue( whichControl,
+					SWTObservables.observeText(whichControl),
+					FIXObservables.observeMonthDateValue(realm, message, MaturityMonthYear.FIELD,dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(validator).setConverter(new StringToDateCustomConverter(DateToStringCustomConverter.YEAR_FORMAT)),
+					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter(DateToStringCustomConverter.YEAR_FORMAT)));
 			addControlStateListeners(whichControl, validator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
@@ -475,41 +199,35 @@ public class OptionOrderTicketControllerHelper extends
 		// StrikePrice
 		{
 			Control whichControl = optionTicket.getStrikePriceControl();
-			IToggledValidator targetAfterGetValidator = strikeConverterBuilder
-					.newTargetAfterGetValidator();
+			IToggledValidator targetAfterGetValidator = new DecimalRequiredValidator();
 			targetAfterGetValidator.setEnabled(enableValidators);
-			IToggledValidator modelAfterGetValidator = strikeConverterBuilder.newModelAfterGetValidator();
-			modelAfterGetValidator.setEnabled(enableValidators);
-			bindValue( whichControl, SWTObservables
-					.observeText(whichControl), FIXObservables.observeValue(
-					realm, message, StrikePrice.FIELD, dictionary),
-					bindingHelper.createToModelUpdateValueStrategy(
-							strikeConverterBuilder, targetAfterGetValidator), bindingHelper
-							.createToTargetUpdateValueStrategy(
-									strikeConverterBuilder, 
-									modelAfterGetValidator));
+			
+			bindValue( whichControl,
+					SWTObservables.observeText(whichControl),
+					FIXObservables.observeValue(realm, message, StrikePrice.FIELD, dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(targetAfterGetValidator).setConverter(new StringToBigDecimalConverter()),
+					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter())
+			);
 			addControlStateListeners(whichControl, targetAfterGetValidator);
-			addControlStateListeners(whichControl, modelAfterGetValidator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
 		}
 		// PutOrCall (OptionCFICode)
 		{
             Control whichControl = optionTicket.getPutOrCallCombo();
-			IToggledValidator targetAfterGetValidator = putOrCallConverterBuilder
-					.newTargetAfterGetValidator();
+			IToggledValidator targetAfterGetValidator = putOrCallConverterBuilder.newTargetAfterGetValidator();
 			targetAfterGetValidator.setEnabled(enableValidators);
 			IToggledValidator modelAfterGetValidator = putOrCallConverterBuilder.newModelAfterGetValidator();
 			modelAfterGetValidator.setEnabled(enableValidators);
-			IObservableValue fixObservable = FIXObservables.observeValue(realm,
-					message, PutOrCall.FIELD, dictionary, PutOrCall.class.getSimpleName(), FieldType.Int);
-			bindValue( whichControl, SWTObservables
-					.observeText(whichControl), fixObservable, bindingHelper
-					.createToModelUpdateValueStrategy(
-							putOrCallConverterBuilder, targetAfterGetValidator),
-					bindingHelper.createToTargetUpdateValueStrategy(
-							putOrCallConverterBuilder, modelAfterGetValidator
-							));
+			
+			bindValue(
+					whichControl, 
+					SWTObservables.observeText(whichControl),
+					FIXObservables.observeValue(realm,
+							message, PutOrCall.FIELD, dictionary, PutOrCall.class.getSimpleName(), FieldType.Int),
+					new UpdateValueStrategy().setAfterGetValidator(targetAfterGetValidator).setConverter(putOrCallConverterBuilder.newToModelConverter()),
+					new UpdateValueStrategy().setAfterGetValidator(modelAfterGetValidator).setConverter(putOrCallConverterBuilder.newToTargetConverter())
+			);
 			addControlStateListeners(whichControl, targetAfterGetValidator);
 			addControlStateListeners(whichControl, modelAfterGetValidator);
 			if (!enableValidators)
@@ -518,24 +236,22 @@ public class OptionOrderTicketControllerHelper extends
 		// OrderCapacity
 		{
 			Control whichControl = optionTicket.getOrderCapacityCombo();
-			IToggledValidator targetAfterGetValidator = orderCapacityConverterBuilder
-					.newTargetAfterGetValidator();
+			IToggledValidator targetAfterGetValidator = orderCapacityConverterBuilder.newTargetAfterGetValidator();
 			targetAfterGetValidator.setEnabled(enableValidators);
 			IToggledValidator modelAfterGetValidator = orderCapacityConverterBuilder.newModelAfterGetValidator();
 			modelAfterGetValidator.setEnabled(enableValidators);
+
 			// The FIX field may need to be updated., See
 			// http://trac.marketcetera.org/trac.fcgi/ticket/185
 			final int orderCapacityFIXField = OrderCapacity.FIELD;
 			// final int orderCapacityFIXField = CustomerOrFirm.FIELD;
-			IObservableValue observableValue = FIXObservables.observeValue(
-					realm, message, orderCapacityFIXField, dictionary, OrderCapacity.class.getSimpleName(), FieldType.Char);
-			bindValue( whichControl, SWTObservables
-					.observeText(whichControl), observableValue,
-					bindingHelper.createToModelUpdateValueStrategy(
-							orderCapacityConverterBuilder, targetAfterGetValidator),
-					bindingHelper.createToTargetUpdateValueStrategy(
-							orderCapacityConverterBuilder, 
-							modelAfterGetValidator ));
+			bindValue(
+					whichControl,
+					SWTObservables.observeText(whichControl),
+					FIXObservables.observeValue(realm, message, orderCapacityFIXField, dictionary, OrderCapacity.class.getSimpleName(), FieldType.Char),
+					new UpdateValueStrategy().setAfterGetValidator(targetAfterGetValidator).setConverter(orderCapacityConverterBuilder.newToModelConverter()),
+					new UpdateValueStrategy().setAfterGetValidator(modelAfterGetValidator).setConverter(orderCapacityConverterBuilder.newToTargetConverter())
+			);
 			addControlStateListeners(whichControl, targetAfterGetValidator);
 			addControlStateListeners(whichControl, modelAfterGetValidator);
 //			if (!enableValidators)
@@ -544,19 +260,18 @@ public class OptionOrderTicketControllerHelper extends
 		// OpenClose
 		{
 			Control whichControl = optionTicket.getOpenCloseCombo();
-			IToggledValidator targetAfterGetValidator = openCloseConverterBuilder
-					.newTargetAfterGetValidator();
+			IToggledValidator targetAfterGetValidator = openCloseConverterBuilder.newTargetAfterGetValidator();
 			targetAfterGetValidator.setEnabled(enableValidators);
 			IToggledValidator modelAfterGetValidator = openCloseConverterBuilder.newModelAfterGetValidator();
 			modelAfterGetValidator.setEnabled(enableValidators);
-			bindValue( whichControl, SWTObservables
-					.observeText(whichControl), FIXObservables.observeValue(
-					realm, message, OpenClose.FIELD, dictionary), bindingHelper
-					.createToModelUpdateValueStrategy(
-							openCloseConverterBuilder, targetAfterGetValidator),
-					bindingHelper.createToTargetUpdateValueStrategy(
-							openCloseConverterBuilder, 
-							modelAfterGetValidator));
+			
+			bindValue(
+					whichControl,
+					SWTObservables.observeText(whichControl), 
+					FIXObservables.observeValue(realm, message, OpenClose.FIELD, dictionary),
+					new UpdateValueStrategy().setAfterGetValidator(targetAfterGetValidator).setConverter(openCloseConverterBuilder.newToModelConverter()),
+					new UpdateValueStrategy().setAfterGetValidator(modelAfterGetValidator).setConverter(openCloseConverterBuilder.newToTargetConverter())
+			);
 			addControlStateListeners(whichControl, targetAfterGetValidator);
 			addControlStateListeners(whichControl, modelAfterGetValidator);
 //			if (!enableValidators)
@@ -573,13 +288,16 @@ public class OptionOrderTicketControllerHelper extends
 			Control whichControl = optionTicket.getOptionSymbolControl();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			bindValue( whichControl, SWTObservables.observeText(
-					whichControl, swtEvent), FIXObservables.observeValue(realm,
-					message, Symbol.FIELD, dictionary),
+			bindValue(
+					whichControl, 
+					SWTObservables.observeText(whichControl),
+					FIXObservables.observeValue(realm, message, Symbol.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator),
-					new UpdateValueStrategy());
+					new UpdateValueStrategy()
+			);
 			addControlStateListeners(whichControl, validator);
 		}
+		optionSeriesManager.updateOptionSymbolFromLocalCache();
 	}
 
 	// todo: Remove this method if it remains unused.
@@ -652,20 +370,6 @@ public class OptionOrderTicketControllerHelper extends
 				putOrCallConverterBuilder, PutOrCallImage.values());
 	}
 
-	private void initStrikeConverterBuilder() {
-		strikeConverterBuilder = new PriceConverterBuilder(getDictionary());
-		// todo: Is this mapping correct for strike price?
-		strikeConverterBuilder.addMapping(OrdType.MARKET, PriceImage.MKT
-				.getImage());
-	}
-	
-	private void initPutOrCallComboChoices() {
-		Combo combo = optionTicket.getPutOrCallCombo();
-		String[] items = combo.getItems();
-		if(items != null) {
-			putOrCallComboChoices = Arrays.asList(items);
-		}
-	}
 
 	@Override
 	public void onQuote(final Message message) {

@@ -100,5 +100,5 @@ public class EclipseUtils {
 		gc.dispose();
 		return sizeHint;
 	}
-
+	
 }

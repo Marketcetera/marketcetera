@@ -21,15 +21,26 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.Pair;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
-import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.IMarketDataListener;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.TextContributionItem;
 
+import quickfix.Group;
 import quickfix.Message;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.NoUnderlyings;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
 import ca.odell.glazedlists.BasicEventList;
 
 /**
@@ -38,7 +49,7 @@ import ca.odell.glazedlists.BasicEventList;
  * @author caroline.leung@softwaregoodness.com
  */
 public class OptionMarketDataView extends ViewPart implements
-		IMSymbolListener {
+		IMSymbolListener, IMarketDataListener{
 
 	public static final String ID = "org.marketcetera.photon.views.OptionMarketDataView";
 
@@ -60,13 +71,16 @@ public class OptionMarketDataView extends ViewPart implements
 
 	private MarketDataFeedTracker marketDataTracker;
 
+	private ISubscription optionListRequest;
+
+	private ISubscription optionMarketDataSubscription;
+
 	public OptionMarketDataView() {
 		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
 				.getBundleContext());
 		marketDataTracker.open();
 
-		marketDataListener = new MDVMarketDataListener();
-		marketDataTracker.setMarketDataListener(marketDataListener);
+		marketDataTracker.setMarketDataListener(this);
 	}
 	
 	@Override
@@ -216,36 +230,53 @@ public class OptionMarketDataView extends ViewPart implements
 	 * 1. Update the underlying info on top if matching the underlying symbol 
 	 * 2. Update the call or put side in the MessagesTable if matching put/call contract in the table row
 	 */
-	private void updateQuote(Message quote) {
-		
-		if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
+	private void onMessageImpl(Message quote) {
+		if (optionListRequest != null && optionListRequest.isResponse(quote)){
+			optionMessagesComposite.handleDerivativeSecuritiyList(quote, marketDataTracker);
+			optionListRequest = null;
+		} else if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
 			underlyingSymbolInfoComposite.onQuote(quote);
 			return;
+		} else {
+			optionMessagesComposite.handleQuote(quote);
 		}
-		optionMessagesComposite.updateQuote(quote);	
 	}
 
-	public void onQuote(final Message aQuote) {
+	private void onMessageImpl(Message [] messages){
+		for (Message message : messages) {
+			onMessageImpl(message);
+		}
+	}
+	
+	public void onMessage(final Message aQuote) {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()) {
-			updateQuote(aQuote);
+			onMessageImpl(aQuote);
 		} else {
 			theDisplay.asyncExec(new Runnable() {
 				public void run() {
 					if (!optionMessagesComposite.getMessagesViewer().getTable().isDisposed())
-						updateQuote(aQuote);
+						onMessageImpl(aQuote);
 				}
 			});
 		}
 	}
 
-	private MDVMarketDataListener marketDataListener;
+	public void onMessages(final Message[] messages) {
+		Display theDisplay = Display.getDefault();
+		if (theDisplay.getThread() == Thread.currentThread()) {
+			onMessageImpl(messages);
+		} else {
+			theDisplay.asyncExec(new Runnable() {
+				public void run() {
+					if (!optionMessagesComposite.getMessagesViewer().getTable().isDisposed())
+						onMessageImpl(messages);
+				}
+			});
+		}
+    }
 
 	public void onAssertSymbol(MSymbol symbol) {
-		addSymbol(symbol);
-	}
-	
-	private void addSymbol(MSymbol symbol) {
 		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
 			return;
 		}
@@ -273,14 +304,24 @@ public class OptionMarketDataView extends ViewPart implements
 			// Step 3 - retrieve and subscribe to all put/call options
 			unsubscribeAllMarketData();
 			marketDataTracker.simpleSubscribe(symbol);
-			optionMessagesComposite.requestOptionSecurityList(
-					marketDataTracker, symbol);
+			requestOptionSecurityList(symbol);
+			requestOptionMarketData(symbol);
 		} catch (MarketceteraException e) {
 			PhotonPlugin.getMainConsoleLogger().error(
 					"Exception subscribing to market data for " + symbol);
 		}
 	}
+
+	private void requestOptionMarketData(MSymbol root) throws MarketceteraException {
+		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
+		MarketDataFeedService marketDataFeed = marketDataTracker.getMarketDataFeedService();
+		if (marketDataFeed != null){
+			optionMarketDataSubscription = marketDataFeed.subscribe(subscribeMessage);
+		}
+
+	}
 	
+
 	private String getTitlePrefix() {
 		return "Options: ";
 	}
@@ -314,13 +355,24 @@ public class OptionMarketDataView extends ViewPart implements
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
 		optionMessagesComposite.unlistenAllMarketData(marketDataTracker);
-	}
-	
-	public class MDVMarketDataListener extends MarketDataListener {
-		public void onMessage(Message aMessage) {
-			OptionMarketDataView.this.onQuote(aMessage);
+		try {
+			service.unsubscribe(optionMarketDataSubscription);
+		} catch (MarketceteraException e) {
 		}
 	}
+
+	protected void requestOptionSecurityList(final MSymbol symbol) throws MarketceteraException {
+		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+
+		Message query = null;
+
+		//Returns a query for all option contracts for the underlying symbol 
+		//symbol = underlyingSymbol  (e.g. MSFT)
+		query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
+
+		optionListRequest = service.getMarketDataFeed().asyncQuery(query);
+	}
+
 
 	@Override
 	public void setFocus() {

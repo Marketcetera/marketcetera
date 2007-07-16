@@ -45,13 +45,12 @@ import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
 
 import quickfix.Message;
-import quickfix.StringField;
-import quickfix.field.Symbol;
 
 /**
  * The main plugin class to be used in the Photon application.
@@ -398,28 +397,13 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	
 	public IOrderTicketController getOrderTicketController(Message orderMessage) {
 		String orderTicketViewID = StockOrderTicket.ID;
-		if (isOptionOrder(orderMessage)) {
+		if (FIXMessageUtil.isEquityOptionOrder(orderMessage)) {
 			orderTicketViewID = OptionOrderTicket.ID;
 		}
 		IOrderTicketController controller = getOrderTicketController(orderTicketViewID);
 		return controller;
 	}
 
-	// todo: This needs to be replaced with an implementation that will work
-	// with any option symbol.
-	private boolean isOptionOrder(Message orderMessage) {
-		boolean rval = false;
-		try {
-			StringField symbolField = orderMessage.getField(new Symbol());
-			String symbol = symbolField.getValue();
-			if (symbol != null && symbol.indexOf("+") >= 0) {
-				rval = true;
-			}
-		} catch (Exception anyException) {
-			// Ignore
-		}
-		return rval;
-	}
 	
 	/**
 	 * @return the next secondary ID for use in IWorkbenchPage.showView()
@@ -427,5 +411,6 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public String getNextSecondaryID() {
 		return secondaryIDCreator.getNextSecondaryID();
 	}
+
 
 }

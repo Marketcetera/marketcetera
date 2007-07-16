@@ -19,8 +19,11 @@ import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
+import quickfix.field.NoUnderlyings;
+import quickfix.field.SecurityType;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
+import quickfix.field.UnderlyingSymbol;
 
 public class MarketDataUtils {
 
@@ -50,6 +53,27 @@ public class MarketDataUtils {
 				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
 		relatedSymGroup.setField(new Symbol(symbol.toString()));
 		message.addGroup(relatedSymGroup);
+		return message;
+	}
+	
+	public static Message newSubscribeOptionUnderlying(MSymbol underlying){
+		Message message = messageFactory.createMessage(MsgType.MARKET_DATA_REQUEST);
+		message.setField(new SubscriptionRequestType(SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
+		message.setField(new NoMDEntryTypes(0));
+		message.setField(new NoRelatedSym(0));
+		message.setField(new MarketDepth(1)); // top-of-book
+		Group relatedSymGroup = messageFactory.createGroup(
+				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
+		Group underlyingGroup = messageFactory.createGroup(
+				MsgType.MARKET_DATA_REQUEST, NoUnderlyings.FIELD);
+		relatedSymGroup.setString(Symbol.FIELD, "[N/A]");
+		relatedSymGroup.setField(new SecurityType(SecurityType.OPTION));
+
+		underlyingGroup.setString(UnderlyingSymbol.FIELD, underlying.toString());
+
+		relatedSymGroup.addGroup(underlyingGroup);
+		message.addGroup(relatedSymGroup);
+
 		return message;
 	}
 

@@ -8,6 +8,7 @@ import org.eclipse.core.databinding.observable.Realm;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
+import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 
@@ -20,8 +21,9 @@ import quickfix.StringField;
  * </p>
  */
 public class StringDateObservableValue extends FIXObservableValue {
-	private SimpleDateFormat fixUTCFormatter;
-
+	private SimpleDateFormat ymdFormatter;
+	private SimpleDateFormat ymFormatter;
+	
 	private int targetCalendarField;
 
 	/**
@@ -35,7 +37,8 @@ public class StringDateObservableValue extends FIXObservableValue {
 		this.targetCalendarField = calendarField;
 		// todo: Quickfix expects a UTC time zone but this uses the local time
 		// zone. See http://www.quickfixj.org/jira/browse/QFJ-104
-		fixUTCFormatter = new SimpleDateFormat("yyyyMMdd");
+		ymdFormatter = new SimpleDateFormat("yyyyMMdd");
+		ymdFormatter = new SimpleDateFormat("yyyyMM");
 	}
 
 	@Override
@@ -43,14 +46,23 @@ public class StringDateObservableValue extends FIXObservableValue {
 		return Date.class;
 	}
 
-	private Date getFIXFieldDate(StringField field, FieldMap fixFieldMap) {
+	private Date getFIXFieldDate(int fieldNumber, FieldMap fixFieldMap) {
 		Date currentDate = null;
-		try {
-			// Get the currently set FIX date
-			String fixDateField = fixFieldMap.getField(field).getValue();
-			currentDate = fixUTCFormatter.parse(fixDateField);
-		} catch (Exception anyException) {
-			currentDate = null;
+		if (fixFieldMap.isSetField(fieldNumber)){
+			String fixDateField;
+			try {
+				fixDateField = fixFieldMap.getString(fieldNumber);
+				try {
+					// Get the currently set FIX date
+					currentDate = ymdFormatter.parse(fixDateField);
+				} catch (Exception anyException) {
+					try {
+						currentDate = ymFormatter.parse(fixDateField);
+					} catch (Exception ex){}
+				}
+			} catch (FieldNotFound e) {
+				/* should never happen */
+			}
 		}
 		return currentDate;
 	}
@@ -75,9 +87,8 @@ public class StringDateObservableValue extends FIXObservableValue {
 
 	@Override
 	protected Object doGetValue() {
-		StringField fixDateField = new StringField(fieldNumber);
 		FieldMap fixFieldMap = getFieldMap();
-		Date currentDate = getFIXFieldDate(fixDateField, fixFieldMap);
+		Date currentDate = getFIXFieldDate(fieldNumber, fixFieldMap);
 		return currentDate;
 	}
 
@@ -87,10 +98,9 @@ public class StringDateObservableValue extends FIXObservableValue {
 			super.doSetValue(value);
 		} else {
 			Date dateToSet = (Date) value;
-			StringField fixDateField = new StringField(fieldNumber);
 
 			FieldMap fixFieldMap = getFieldMap();
-			Date currentDate = getFIXFieldDate(fixDateField, fixFieldMap);
+			Date currentDate = getFIXFieldDate(fieldNumber, fixFieldMap);
 
 			if (currentDate == null) {
 				// If the date field is not set on the fix message, create
@@ -105,9 +115,9 @@ public class StringDateObservableValue extends FIXObservableValue {
 				Date updatedDate = getUpdatedDate(currentDate,
 						targetCalendarField, dateToSet);
 				if (updatedDate != null) {
-					String updatedDateString = fixUTCFormatter
+					String updatedDateString = ymdFormatter
 							.format(updatedDate);
-					fixDateField.setValue(updatedDateString);
+					fixFieldMap.setString(fieldNumber, updatedDateString);
 				}
 			}
 		}

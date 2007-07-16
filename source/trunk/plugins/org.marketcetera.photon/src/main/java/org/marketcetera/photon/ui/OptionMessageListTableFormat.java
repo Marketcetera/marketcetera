@@ -2,8 +2,10 @@ package org.marketcetera.photon.ui;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.marketcetera.photon.marketdata.OptionInfoComponent;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.views.OptionMessagesComposite;
+import org.marketcetera.photon.views.OptionMessagesComposite.OptionDataColumns;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
@@ -18,38 +20,17 @@ public class OptionMessageListTableFormat extends MessageListTableFormatBase<Opt
 
 	@Override
 	public FieldMap getFieldMap(OptionMessageHolder element, int columnIndex) {
-		FieldMap fieldMap = null;
-		if (isCallOption(columnIndex)) {
-			fieldMap = element.getCallMessage();
-		} else {
-			fieldMap = element.getPutMessage();
-		}
-		return fieldMap;
+		OptionMessagesComposite.OptionDataColumns columnEnum = (OptionDataColumns) columns[columnIndex];
+		OptionInfoComponent component = columnEnum.getComponent();
+		return element.get(component);
 	}
 
 	@Override
-	public Object getColumnValue(OptionMessageHolder element, int columnIndex) {
-		if (isStrikeColumn(columnIndex)) {
-			return element.getKey().getStrikePrice();
+	public String getColumnText(Object element, int index) {
+		if (index == 0) {
+			return ""; //$NON-NLS-1$
 		}
-		if (isExpirationColumn(columnIndex)) {
-			return element.getKey().getExpirationYear() + "-"
-					+ element.getKey().getExpirationMonth();
-		}
-		return super.getColumnValue(element, columnIndex);
+		return super.getColumnText(element, index);
 	}
-
-	private boolean isStrikeColumn(int columnIndex) {
-		return columnIndex == OptionMessagesComposite.STRIKE_INDEX;
-	}
-
-	private boolean isExpirationColumn(int columnIndex) {
-		return columnIndex == OptionMessagesComposite.EXP_DATE_INDEX;
-	}
-
-	private boolean isCallOption(int columnIndex) {
-		return (columnIndex < OptionMessagesComposite.FIRST_PUT_DATA_COLUMN_INDEX);
-	}
-
 
 }

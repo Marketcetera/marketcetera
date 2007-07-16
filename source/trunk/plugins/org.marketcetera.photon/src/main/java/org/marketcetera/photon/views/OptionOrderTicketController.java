@@ -1,6 +1,8 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.util.Assert;
+import org.marketcetera.photon.PhotonPlugin;
+
 import quickfix.Message;
 
 
@@ -16,6 +18,7 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 	@Override
 	protected OrderTicketControllerHelper getOrderTicketControllerHelper() {
 		Assert.isNotNull(controllerHelper, "Controller is not yet bound.");
+
 		return controllerHelper;
 	}
 
@@ -23,7 +26,8 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 		if( controllerHelper != null ) {
 			controllerHelper.dispose();
 		}
-		controllerHelper = new OptionOrderTicketControllerHelper(ticket);
+		
+		controllerHelper = new OptionOrderTicketControllerHelper(ticket, new OptionSeriesManager(ticket));
 		controllerHelper.init();
 	}
 	
@@ -32,10 +36,8 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 	}
 
     public void onMessages(Message[] messages) {
-        controllerHelper.handleMarketDataList(messages);
     }
 
     public void onMessage(Message aMessage) {
-        controllerHelper.handleMarketDataList(new Message[] {aMessage});
     }
 }
