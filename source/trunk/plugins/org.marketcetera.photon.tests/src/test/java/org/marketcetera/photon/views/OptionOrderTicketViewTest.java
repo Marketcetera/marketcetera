@@ -134,7 +134,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		message.setField(new PutOrCall(PutOrCall.CALL));
         
 		showMessageInOptionTicket(ticket, message, controller, optionRoot,
-				new String[] { optionContractSpecifier }, new String[] { "10", "23" });
+				new String[] { optionContractSpecifier }, new String[] { "10" });
         
         assertEquals("10", ticket.getQuantityText().getText());
 		assertEquals("B", ticket.getSideCombo().getText());
@@ -150,7 +150,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
 		assertEquals("C", ticket.getPutOrCallCombo().getText());
-		assertEquals("23", ticket.getStrikePriceControl().getText());
+		assertEquals("10", ticket.getStrikePriceControl().getText());
         assertEquals("MSQ+GE", ticket.getSymbolText().getText());
         assertFalse(controller.hasBindErrors());
 		
