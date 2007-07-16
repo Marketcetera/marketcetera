@@ -104,10 +104,12 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeed, null);
 		
 		
+		final String symbolStr = "MRKT";
 		StockOrderTicket view = (StockOrderTicket) getTestView();
 		Message orderMessage = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol("MRKT"), BigDecimal.ONE,
+				Side.BUY, BigDecimal.TEN, new MSymbol(symbolStr), BigDecimal.ONE,
 				TimeInForce.DAY, null);
+		controller.getOrderTicketControllerHelper().listenMarketData(symbolStr);
 		controller.showMessage(orderMessage);
 
 		

@@ -6,7 +6,7 @@ public class StockOrderTicketController extends AbstractOrderTicketController {
 	private OrderTicketControllerHelper controllerHelper;
 
 	@Override
-	protected OrderTicketControllerHelper getOrderTicketControllerHelper() {
+	public OrderTicketControllerHelper getOrderTicketControllerHelper() {
 		Assert.isNotNull(controllerHelper, "Controller is not yet bound.");
 		return controllerHelper;
 	}
