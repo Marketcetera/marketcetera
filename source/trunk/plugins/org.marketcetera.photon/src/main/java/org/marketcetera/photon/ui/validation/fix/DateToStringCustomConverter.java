@@ -8,7 +8,9 @@ import org.eclipse.core.databinding.conversion.Converter;
 public class DateToStringCustomConverter extends Converter {
 	public static final String MONTH_FORMAT = "MMM";
 
-	public static final String YEAR_FORMAT = "yy";
+	public static final String SHORT_YEAR_FORMAT = "yy";
+
+	public static final String LONG_YEAR_FORMAT = "yyyy";
 
 	private SimpleDateFormat formatter;
 

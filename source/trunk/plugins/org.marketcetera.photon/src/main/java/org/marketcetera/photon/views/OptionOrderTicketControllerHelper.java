@@ -47,6 +47,7 @@ import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -192,8 +193,8 @@ public class OptionOrderTicketControllerHelper extends
 			bindValue( whichControl,
 					SWTObservables.observeText(whichControl),
 					FIXObservables.observeMonthDateValue(realm, message, MaturityMonthYear.FIELD,dictionary),
-					new UpdateValueStrategy().setAfterGetValidator(validator).setConverter(new StringToDateCustomConverter(DateToStringCustomConverter.YEAR_FORMAT)),
-					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter(DateToStringCustomConverter.YEAR_FORMAT)));
+					new UpdateValueStrategy().setAfterGetValidator(validator).setConverter(new StringToDateCustomConverter(DateToStringCustomConverter.SHORT_YEAR_FORMAT, DateToStringCustomConverter.LONG_YEAR_FORMAT)),
+					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter(DateToStringCustomConverter.SHORT_YEAR_FORMAT)));
 			addControlStateListeners(whichControl, validator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);
@@ -398,6 +399,19 @@ public class OptionOrderTicketControllerHelper extends
 		optionTicket.getBookComposite().onQuote(message);
 	}
 
+	public void onDerivativeSecurityList(final Message message) {
+		Display theDisplay = Display.getDefault();
+		if (theDisplay.getThread() == Thread.currentThread()) {
+			optionSeriesManager.onMessage(message);
+		} else {
+			theDisplay.asyncExec(new Runnable() {
+			public void run() {
+				optionSeriesManager.onMessage(message);
+			}
+			});
+		}
+	}
+
 	private void underlyingSymbolOnQuote(Message message) {
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		if (symbolComposite != null && !symbolComposite.isDisposed()) {
@@ -426,12 +440,17 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	public class MDVMarketDataListener extends MarketDataListener {
-		public void onMessage(Message aQuote) {
-			OptionOrderTicketControllerHelper.this.onQuote(aQuote);
+		public void onMessage(Message aMessage) {
+			if (FIXMessageUtil.isDerivativeSecurityList(aMessage)){
+				OptionOrderTicketControllerHelper.this.onDerivativeSecurityList(aMessage);
+			} else {
+				OptionOrderTicketControllerHelper.this.onQuote(aMessage);
+			}
 		}
 	}
 
 	public OptionSeriesManager getOptionSeriesManager() {
 		return optionSeriesManager;
 	}
+
 }
