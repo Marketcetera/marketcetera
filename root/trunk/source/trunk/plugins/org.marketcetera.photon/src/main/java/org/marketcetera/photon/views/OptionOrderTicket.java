@@ -48,7 +48,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private static final String REPLACE_OPTION_ORDER = "Replace Option Order";
 
-	private Label optionSymbolControl;
+	private Text optionSymbolControl;
 
 	private Combo expireMonthCombo;
 
@@ -193,8 +193,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 
 	private void createOptionSymbolControl() {
-		optionSymbolControl = getFormToolkit().createLabel(
-				outermostForm.getBody(), null, SWT.SINGLE | SWT.BORDER);
+		optionSymbolControl = getFormToolkit().createText(
+				outermostForm.getBody(), null, SWT.READ_ONLY | SWT.SINGLE | SWT.BORDER);
 		orderTicketViewPieces.assignDefaultGridData(optionSymbolControl, 6);
 	}
 
@@ -358,7 +358,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return orderTicket;
 	}
 
-	public Label getOptionSymbolControl() {
+	public Text getOptionSymbolControl() {
 		return optionSymbolControl;
 	}
 

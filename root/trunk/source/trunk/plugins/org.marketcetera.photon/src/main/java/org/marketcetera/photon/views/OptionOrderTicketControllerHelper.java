@@ -104,9 +104,8 @@ public class OptionOrderTicketControllerHelper extends
 		getMarketDataTracker().setMarketDataListener(
 				new MDVMarketDataListener());
 
-		optionSeriesManager.initListeners();
 		{
-			final Label optionSymbolLabel = optionTicket.getOptionSymbolControl();
+			final Text optionSymbolLabel = optionTicket.getOptionSymbolControl();
 			Text symbolText = optionTicket.getSymbolText();
 			symbolText.addModifyListener(new ModifyListener() {
 				public void modifyText(ModifyEvent e) {
@@ -299,7 +298,7 @@ public class OptionOrderTicketControllerHelper extends
 			validator.setEnabled(enableValidators);
 			bindValue(
 					whichControl, 
-					SWTObservables.observeText(whichControl),
+					SWTObservables.observeText(whichControl, SWT.Modify),
 					FIXObservables.observeValue(realm, message, Symbol.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator),
 					new UpdateValueStrategy()
