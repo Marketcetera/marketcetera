@@ -1,15 +1,24 @@
 package org.marketcetera.marketdata;
 
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.StringField;
+
 public class MarketceteraSubscription implements ISubscription, Comparable<String>, CharSequence {
 
 	private final String value;
 	private final String subscribeMsgType;
 	private Integer marketDepth;
+	private StringField correlationField;
 	
 	public MarketceteraSubscription(String value, String subscribeMsgType, Integer marketDepth) {
 		this.value = value;
 		this.subscribeMsgType = subscribeMsgType;
 		this.marketDepth = marketDepth;
+		correlationField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, subscribeMsgType);
 	}
 
 	public int compareTo(String other) {
@@ -38,5 +47,19 @@ public class MarketceteraSubscription implements ISubscription, Comparable<Strin
 
 	public Integer getMarketDepth() {
 		return marketDepth;
+	}
+	
+	public boolean isResponse(Message possibleResponse) {
+		if (correlationField != null){
+			try {
+				possibleResponse.getField(correlationField);
+			} catch (FieldNotFound e) {
+				return false;
+			}
+			return this.value.equals(correlationField.getValue());
+		} else {
+			return false;
+		}
+		
 	}
 }
