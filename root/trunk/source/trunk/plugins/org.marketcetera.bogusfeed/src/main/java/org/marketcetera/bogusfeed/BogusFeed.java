@@ -28,6 +28,7 @@ import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDMkt;
+import quickfix.field.MsgType;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
@@ -176,7 +177,7 @@ public class BogusFeed extends MarketDataFeedBase {
 	}
 
 	private BogusSubscription subscribe(final String reqID, final String symbol) {
-		final BogusSubscription bogusSubscription = new BogusSubscription(reqID);
+		final BogusSubscription bogusSubscription = new BogusSubscription(reqID, MsgType.MARKET_DATA_REQUEST);
 		bogusSubscription.setSymbol(symbol);
 		executor.submit(new Runnable() {
 			public void run() {
