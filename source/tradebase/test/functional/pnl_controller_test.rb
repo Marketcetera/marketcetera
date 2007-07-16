@@ -27,6 +27,40 @@ class PnlControllerTest < MarketceteraTestBase
     assert_equal 0, assigns(:cashflows).length
   end
 
+  # Marks on 4/25/2006 and 4/26/2006
+  # Txn date: B 100 IBM 70.73 on 5/8/2006
+  # Do P&L from 1/1/2006 to 5/8/2006
+  # Should get an error calculating P&L since don't have a mark on 5/8/2006
+  # this is bug #231
+  def test_pnl_by_account_mark_missing_on_txn_date
+    e = Equity.get_equity("IBM", true)
+    m1 = Mark.new(:mark_value => BigDecimal.new("100"), :mark_date => Date.civil(2006,4,25))
+    m2 = Mark.new(:mark_value => BigDecimal.new("101"), :mark_date => Date.civil(2006,4,26))
+    t = create_test_trade(100, 77.30, Side::QF_SIDE_CODE[:buy], "BOB", Date.civil(2006, 5, 8), "IBM", "4.53", "ZAI")
+    a = Account.new(:nickname => "BOB")
+
+    get :report, { :account=>{:nickname=>"BOB"}, :suffix => "acct",
+                       :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"5", "from(2i)"=>"1",
+                                "from(3i)"=>"1", "to(3i)"=>"8"}}
+    assert_response :success
+    assert_template 'pnl_by_account'
+    assert_has_error_notice
+    assert_equal 0, assigns(:cashflows).length
+    assert_has_error_notice("Error generating cashflow for BOB: Please enter a mark for IBM on 2007-05-08.")
+  end
+
+  # same as above, but we are already missing some marks for FRO for example
+  def test_pnl_by_account_mark_missing_on_txn_date_aggregate
+    get :report, { :suffix => "acct",
+                       :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"5", "from(2i)"=>"1",
+                                "from(3i)"=>"1", "to(3i)"=>"8"}}
+    assert_response :success
+    assert_template 'pnl_aggregate'
+    assert_has_error_notice
+    assert_equal 0, assigns(:cashflows).length
+    assert_has_error_notice("Error generating aggregate cashflow: Please enter a mark for FRO on 2007-05-08.")
+  end
+
   def test_pnl_by_account_no_data_at_all
       Account.delete(Account.find_by_nickname('TOLI'))
       Account.delete(Account.find_by_nickname('GRAHAM'))
@@ -126,9 +160,9 @@ class PnlControllerTest < MarketceteraTestBase
 
     cfs = assigns(:cashflows)
     assert_equal 3, cfs.length
-    assert_equal ["GRAHAM", BigDecimal("44485.12")], [cfs[0][:account], cfs[0][:cashflow]]
-    assert_equal ["TOLI", BigDecimal("0")], [cfs[1][:account], cfs[1][:cashflow]]
-    assert_equal ["[UNASSIGNED]", BigDecimal("0")], [cfs[2][:account], cfs[2][:cashflow]] 
+    assert_equal ["GRAHAM", BigDecimal("285.12").to_s], [cfs[0][:account], cfs[0][:cashflow].to_s]
+    assert_equal ["TOLI", BigDecimal("0").to_s], [cfs[1][:account], cfs[1][:cashflow].to_s]
+    assert_equal ["[UNASSIGNED]", BigDecimal("0").to_s], [cfs[2][:account], cfs[2][:cashflow].to_s]
   end
 
   def test_aggregate_missing_mark

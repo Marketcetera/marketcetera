@@ -43,12 +43,12 @@ class Position < ActiveRecord::Base
   
   private 
   # If the incoming account is nil, returns positions across all accounts
-  def Position.get_position_helper(date, account, tradeable_id=nil)
+  def Position.get_position_helper(date, account_id, tradeable_id=nil)
     params = [date]
     tradeableQuery, accountQuery  = "", ""
-    if(!account.nil?)
+    if(!account_id.nil?)
       accountQuery = 'AND trades.account_id = ? '
-      params << account
+      params << account_id
     end
     if(!tradeable_id.nil?)
       tradeableQuery = 'AND trades.tradeable_id = ? '
