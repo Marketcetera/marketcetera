@@ -4,14 +4,14 @@
 
 <% if (@report.line_errors.length > 0) %>
 <p>Some marks were not imported due to the following errors:</p>
-<p/>
+<p></p>
 <div>
 <% output = ""
    @report.line_errors.each { |row|
    output += "<p><div class='highlightedText'>Failed Import: "+h(row[:line]) + "</div>\n"
    output += "<ul>\n"
-   row[:error].each_full {|msg| output += "<li>"+h(msg)+"</li>" }
-   output += "</ul></p>"
+   row[:error].each_full {|msg| output += "<li>"+h(msg)+"</li>\n" }
+   output += "</ul>\n</p>\n"
    } %>
 <%= output %>
 </div>
