@@ -3,8 +3,6 @@ package org.marketcetera.photon.parser;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -38,6 +36,8 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.views.OptionDateHelper;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -82,6 +82,8 @@ public class CommandParser {
 	final Parser<Tok[]> numberLexeme = Lexers.lexeme("numberLexeme", 
 			whitespaceScanner.many(), numberLexer).followedBy(Parsers.eof());
 	
+	OptionDateHelper optionDateHelper = new OptionDateHelper();
+	
 	//////////////////////////////////////////////////////////////
 	// Parsers
 	final Parser<Object> priceParser = Parsers.token(
@@ -115,14 +117,14 @@ public class CommandParser {
 						String expirationMonthString = matcher.group(2);
 						String strikeString = matcher.group(3);
 						String callPutString = matcher.group(4);
-						int expirationMonth = monthToInt(expirationMonthString);
+						int expirationMonth = optionDateHelper.getMonthNumber(expirationMonthString);
 						int expirationYear;
 						if (expirationYearString != null){
 							expirationYear = Integer.parseInt(expirationYearString);
 						} else {
-							expirationYear = calculateYearFromMonth(expirationMonth);	
+							expirationYear = optionDateHelper.calculateYearFromMonth(expirationMonth);	
 						}
-						String maturityMonthYearString = formatMaturityMonthYear(expirationMonth+1, expirationYear);
+						String maturityMonthYearString = optionDateHelper.formatMaturityMonthYear(expirationMonth, expirationYear);
 						String putOrCall = PutOrCallImage.fromName(callPutString).getFIXStringValue();
 						FieldMap results = new org.marketcetera.photon.parser.FieldMap();
 						results.setString(MaturityMonthYear.FIELD, maturityMonthYearString);
@@ -295,46 +297,4 @@ public class CommandParser {
 		orderQtyIsInt = FieldType.Int == dataDictionary.getFieldTypeEnum(OrderQty.FIELD);
 	}
 
-	public static final DateFormat SHORT_MONTH_FORMAT = new SimpleDateFormat("MMM");
-	public static final DecimalFormat MATURITY_MONTH_FORMAT = new DecimalFormat("00");
-	public static final DecimalFormat MATURITY_YEAR_FORMAT = new DecimalFormat("0000");
-	public static final String [] SHORT_MONTH_STRINGS;
-
-	static {
-		Calendar calendar = GregorianCalendar.getInstance();
-		SHORT_MONTH_STRINGS = new String[12];
-		for (int i = 0; i < 12; i++) {
-			calendar.set(Calendar.MONTH, i);
-			SHORT_MONTH_STRINGS[i] = SHORT_MONTH_FORMAT.format(calendar.getTime()).toUpperCase();
-		}
-	}
-
-	public static int monthToInt(String shortMonthName){
-		for (int i = 0; i < 12; i++){
-			if (SHORT_MONTH_STRINGS[i].equals(shortMonthName)){
-				return i;
-			}
-		}
-		throw new IllegalArgumentException("monthName must be a valid month name");
-	}
-	public static int calculateYearFromMonth(int expirationMonth) {
-		Calendar calendar = GregorianCalendar.getInstance();
-		int thisYear = calendar.get(Calendar.YEAR);
-		if (calendar.get(Calendar.MONTH) > expirationMonth){
-			return thisYear+1;
-		} else {
-			return thisYear;
-		}
-	}
-
-	/**
-	 * 
-	 * @param expirationMonth the month in human readable numbers (that is 1=JAN)
-	 * @param expirationYear
-	 * @return
-	 */
-	public static String formatMaturityMonthYear(int expirationMonth,
-			int expirationYear) {
-		return MATURITY_YEAR_FORMAT.format(expirationYear)+MATURITY_MONTH_FORMAT.format(expirationMonth);
-	}
 }

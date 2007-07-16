@@ -20,6 +20,9 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.ShowOrderInTicketCommand;
 import org.marketcetera.photon.parser.CommandParser;
+import org.marketcetera.quickfix.FIXMessageUtil;
+
+import quickfix.Message;
 
 
 /**
@@ -124,7 +127,10 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 				} else if (e.keyCode == 't' && ((e.stateMask & SWT.CONTROL) != 0)) {
 					theText.setText("");
 					command = commandParser.parseCommand(theInputString);
-					command = new ShowOrderInTicketCommand(((MessageCommand)command).getMessage());
+					Message message = ((MessageCommand)command).getMessage();
+					if (FIXMessageUtil.isOrderSingle(message)){
+						command = new ShowOrderInTicketCommand(message);
+					}
 				}
 				if (command != null){
 					command.execute();

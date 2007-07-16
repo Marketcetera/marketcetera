@@ -1,14 +1,14 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Label;
 
 public interface IOptionOrderTicket extends IOrderTicket {
 
 	/**
 	 * @return symbol for the specific option contract (e.g. "MSQ+GE")
 	 */
-	Text getOptionSymbolControl();
+	Label getOptionSymbolControl();
 
 	Combo getExpireMonthCombo();
 
@@ -22,9 +22,9 @@ public interface IOptionOrderTicket extends IOrderTicket {
 	 * @return true if the user has selected a Put option, false if a Call or if
 	 *         the user has not made a selection.
 	 */
-	boolean isPut();
+	Integer getPutOrCall();
 	
-	void setPut(boolean optionIsPut);
+	void setPutOrCall(Integer putOrCall);
 
 	Combo getStrikePriceControl();
 

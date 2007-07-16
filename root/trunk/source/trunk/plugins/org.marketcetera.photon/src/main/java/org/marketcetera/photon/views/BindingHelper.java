@@ -38,46 +38,4 @@ public class BindingHelper {
 		}
 	}
 
-	public UpdateValueStrategy createToTargetUpdateValueStrategy(
-			IConverterBuilder converterBuilder,
-			IValidator modelAfterGetValidator) {
-		UpdateValueStrategy updateValueStrategy = new UpdateValueStrategy();
-		IValidator validator = modelAfterGetValidator;
-		if (validator == null) {
-			validator = converterBuilder.newModelAfterGetValidator();
-		}
-		if (validator != null) {
-			updateValueStrategy.setAfterGetValidator(validator);
-		}
-		updateValueStrategy.setConverter(converterBuilder
-				.newToTargetConverter());
-		return updateValueStrategy;
-	}
-
-	public UpdateValueStrategy createToTargetUpdateValueStrategy(
-			IConverterBuilder converterBuilder) {
-		return createToTargetUpdateValueStrategy(converterBuilder, null);
-	}
-
-	public UpdateValueStrategy createToModelUpdateValueStrategy(
-			IConverterBuilder converterBuilder,
-			IValidator targetAfterGetValidator) {
-		UpdateValueStrategy updateValueStrategy = new UpdateValueStrategy();
-		IValidator validator = targetAfterGetValidator;
-		if (validator == null) {
-			validator = converterBuilder.newTargetAfterGetValidator();
-		}
-		if (validator != null) {
-			updateValueStrategy.setAfterGetValidator(validator);
-		}
-		updateValueStrategy
-				.setConverter(converterBuilder.newToModelConverter());
-		return updateValueStrategy;
-	}
-
-	public UpdateValueStrategy createToModelUpdateValueStrategy(
-			IConverterBuilder converterBuilder) {
-		return createToModelUpdateValueStrategy(converterBuilder, null);
-	}
-
 }

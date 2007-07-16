@@ -122,13 +122,13 @@ public class OptionBookComposite extends Composite implements IBookComposite
 		
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()){
-			optionMessagesComposite.updateQuote(aMarketRefresh);
+			optionMessagesComposite.handleQuote(aMarketRefresh);
 		} else {
 			theDisplay.asyncExec(
 				new Runnable(){
 					public void run()
 					{
-						optionMessagesComposite.updateQuote(aMarketRefresh);
+						optionMessagesComposite.handleQuote(aMarketRefresh);
 					}
 				}
 			);

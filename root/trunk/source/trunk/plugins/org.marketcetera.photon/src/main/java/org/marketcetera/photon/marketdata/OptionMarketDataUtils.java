@@ -1,47 +1,48 @@
 package org.marketcetera.photon.marketdata;
 
-import java.math.BigDecimal;
-import java.text.Format;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.Pair;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.MarketceteraFIXException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
 
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityDate;
+import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
-import quickfix.field.NoRelatedSym;
+import quickfix.field.PutOrCall;
 import quickfix.field.SecurityListRequestType;
-import quickfix.field.SecurityType;
-import quickfix.field.StrikePrice;
-import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
-import quickfix.fix44.DerivativeSecurityList;
 
 public class OptionMarketDataUtils {
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
 
-	public static final Format MONTH_YEAR_FORMAT = new SimpleDateFormat("yyyyMM");
-	public static final Format DAY_FORMAT = new SimpleDateFormat("dd");
-	public static final Format DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+	public static final DateFormat MONTH_YEAR_FORMAT = new SimpleDateFormat("yyyyMM");
+	public static final DateFormat DAY_FORMAT = new SimpleDateFormat("dd");
+	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+
+	private static final Pattern OPTION_SYMBOL_PATTERN = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
+
+
 
 	private static Pattern optionSymbolRootSeparatorPattern;
 
-	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol,
-			boolean subscribe) {
+	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol) {
 		Message requestMessage = messageFactory
 				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
 		/**
@@ -49,16 +50,9 @@ public class OptionMarketDataUtils {
 		 * more info
 		 */
 		requestMessage.setField(new SecurityListRequestType(1));
-		requestMessage.setField(new SecurityType(SecurityType.OPTION));
+//		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol
 				.getBaseSymbol()));
-		if (subscribe) {
-			requestMessage.setField(new SubscriptionRequestType(
-					SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
-		} else {
-			requestMessage.setField(new SubscriptionRequestType(
-					SubscriptionRequestType.SNAPSHOT));
-		}
 		return requestMessage;
 	}
 
@@ -70,8 +64,7 @@ public class OptionMarketDataUtils {
 	 * @param subscribe
 	 * @return
 	 */
-	public static Message newOptionRootQuery(MSymbol optionRoot,
-			boolean subscribe) {
+	public static Message newOptionRootQuery(String optionRoot) {
 		Assert.isNotNull(optionRoot, "Parameter optionRoot cannot be null."); //$NON-NLS-1$
 		Message requestMessage = messageFactory
 				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
@@ -80,30 +73,26 @@ public class OptionMarketDataUtils {
 		 * more info
 		 */
 		requestMessage.setField(new SecurityListRequestType(0));
-		requestMessage.setField(new SecurityType(SecurityType.OPTION));
-		requestMessage.setField(new Symbol(optionRoot.getBaseSymbol()));
-		if (subscribe) {
-			requestMessage.setField(new SubscriptionRequestType(
-					SubscriptionRequestType.SNAPSHOT_PLUS_UPDATES));
-		} else {
-			requestMessage.setField(new SubscriptionRequestType(
-					SubscriptionRequestType.SNAPSHOT));
-		}
+//		requestMessage.setField(new SecurityType(SecurityType.OPTION));
+		requestMessage.setField(new Symbol(optionRoot));
 		return requestMessage;
 	}
 
+	public static boolean isOptionSymbol(String symbol){
+		Matcher matcher = OPTION_SYMBOL_PATTERN.matcher(symbol);
+		return matcher.matches();
+	}
+	
 	public static String getOptionRootSymbol(String symbol) {
-		if (optionSymbolRootSeparatorPattern == null) {
-			optionSymbolRootSeparatorPattern = Pattern.compile("\\+");
-		}
 		if (symbol == null) {
 			return null;
 		}
-		String[] underlierPieces = optionSymbolRootSeparatorPattern.split(symbol);
-		if (underlierPieces == null || underlierPieces.length == 0) {
-			return symbol;
+		Matcher matcher = OPTION_SYMBOL_PATTERN.matcher(symbol);
+		if (matcher.matches()){
+			return matcher.group(1);
+		} else {
+			return null;
 		}
-		return underlierPieces[0];
 	}
 
 	// todo: This method is irrelevant if MarketceteraOptionSymbol is moved to
@@ -123,106 +112,54 @@ public class OptionMarketDataUtils {
 		return new MSymbol(underlier);
 	}
 
-	private static boolean isApplicableUnderlyingSymbol(
-			String messageUnderlyingSymbolStr, String symbolFilter) {
-		if (messageUnderlyingSymbolStr != null) {
-			if (symbolFilter == null || symbolFilter.trim().length() == 0
-					|| messageUnderlyingSymbolStr.startsWith(symbolFilter)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
-	/**
-	 * @param symbolFilter
-	 *            the UnderlyingSymbol in each message is checked to ensure that
-	 *            it starts with the symbolFilter. Underliers that do not match
-	 *            are not processed. Specify null to process all messages.
-	 * @throws MarketceteraFIXException 
-	 */
-	public static List<OptionContractData> getOptionExpirationMarketData(
-			final String symbolFilter, Message[] derivativeSecurityList) 
-			throws MarketceteraException {
-		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
-		if(derivativeSecurityList == null) {
-			return optionExpirations;
-		}
-		String messageUnderlyingSymbolStr = "";
-		for (Message message : derivativeSecurityList) {
-			try {
-				String messageType = message.getHeader().getString(
-						MsgType.FIELD);
-				if (MsgType.DERIVATIVE_SECURITY_LIST.equals(messageType)) {
-					messageUnderlyingSymbolStr = message
-							.getString(UnderlyingSymbol.FIELD);
-					if (isApplicableUnderlyingSymbol(
-							messageUnderlyingSymbolStr, symbolFilter)) {
-						MSymbol messageUnderlyingSymbol = new MSymbol(
-								messageUnderlyingSymbolStr);
-						addExpirationFromMessage(messageUnderlyingSymbol,
-								message, optionExpirations);
-					}
-				} else {
-					throw new MarketceteraFIXException(
-							"FIX message was not a DerivativeSecurityList ("
-									+ MsgType.DERIVATIVE_SECURITY_LIST + ").");
-				}
-			} catch (Exception anyException) {				
-				throw new MarketceteraException(
-						"Failed to get option contracts data for underlying symbol \""
-								+ messageUnderlyingSymbolStr + "\" - "
-								+ "\nProblematic message is : [" + message
-								+ "]", anyException);
-			}
-		}
-		return optionExpirations;
-	}
 
-	private static void addExpirationFromMessage(MSymbol underlyingSymbol,
-			Message message, List<OptionContractData> optionExpirations)
-			throws FieldNotFound, MarketceteraFIXException {
-		int numDerivs = 0;
+	public static int getOptionType(
+			FieldMap optionGroup)
+			throws FieldNotFound {
+
+		if (optionGroup.isSetField(PutOrCall.FIELD)){
+			return optionGroup.getInt(PutOrCall.FIELD);
+		}
+		OptionCFICode cfiCode = new OptionCFICode(optionGroup
+				.getString(CFICode.FIELD));
+
+		int putOrCall;
+		if (cfiCode.getType() == OptionCFICode.TYPE_PUT) {
+			putOrCall = PutOrCall.PUT;
+		} else if (cfiCode.getType() == OptionCFICode.TYPE_CALL) {
+			putOrCall = PutOrCall.CALL;
+		} else {
+			throw new IllegalArgumentException(
+					"Option data is neither a put nor a call. CFICode="
+							+ cfiCode.getType());
+		}
+		return putOrCall;
+	}
+	
+	public static int getOtherOptionType(int thisOptionType){
+		switch (thisOptionType){
+		case PutOrCall.PUT:
+			return PutOrCall.CALL;
+		case PutOrCall.CALL:
+			return PutOrCall.PUT;
+		default:
+			throw new IllegalArgumentException(""+thisOptionType);
+		}
+	}
+	
+	public static Pair<Integer, Integer> getMaturityMonthYear(FieldMap map) throws ParseException, FieldNotFound
+	{
+		Date parsed;
 		try {
-			numDerivs = message.getInt(NoRelatedSym.FIELD);
+			String maturityDate = map.getString(MaturityDate.FIELD);
+			parsed = DATE_FORMAT.parse(maturityDate);
 		} catch (FieldNotFound fnf){
-			// do nothing...
+			String maturityMonthYear = map.getString(MaturityMonthYear.FIELD);
+			parsed = MONTH_YEAR_FORMAT.parse(maturityMonthYear);
 		}
-		for (int index = 1; index <= numDerivs; index++) {
-			DerivativeSecurityList.NoRelatedSym optionGroup = new DerivativeSecurityList.NoRelatedSym();
-			message.getGroup(index, optionGroup);
-
-			String optionSymbolStr = optionGroup.getString(Symbol.FIELD);
-
-			OptionCFICode cfiCode = new OptionCFICode(optionGroup
-					.getString(CFICode.FIELD));
-
-			boolean optionIsPut = false;
-			if (cfiCode.getType() == OptionCFICode.TYPE_PUT) {
-				optionIsPut = true;
-			} else if (cfiCode.getType() == OptionCFICode.TYPE_CALL) {
-				optionIsPut = false;
-			} else {
-				throw new MarketceteraFIXException(
-						"Option data is neither a put nor a call. CFICode="
-								+ cfiCode.getType());
-			}
-
-			StringField maturityDateField = optionGroup
-					.getField(new MaturityDate());
-			String maturityDateString = maturityDateField.getValue();
-			String year = maturityDateString.substring(0, 4);
-			String month = maturityDateString.substring(4, 6);
-
-			String strikeStr = optionGroup.getString(StrikePrice.FIELD);
-			BigDecimal strike = new BigDecimal(strikeStr);
-
-			MSymbol optionSymbol = new MSymbol(optionSymbolStr);
-			OptionContractData optionData = new OptionContractData(
-					underlyingSymbol, optionSymbol, year, month, strike,
-					optionIsPut);
-
-			optionExpirations.add(optionData);
-		}
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.setTime(parsed);
+		return new Pair<Integer, Integer>(cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR));
 	}
 }

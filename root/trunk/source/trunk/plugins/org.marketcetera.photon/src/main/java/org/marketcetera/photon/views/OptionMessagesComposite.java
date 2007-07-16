@@ -1,32 +1,52 @@
 package org.marketcetera.photon.views;
 
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.SortedList;
+import java.text.ParseException;
+import java.util.HashMap;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.*;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.OptionInfoComponent;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
-import org.marketcetera.photon.ui.*;
+import org.marketcetera.photon.ui.EnumTableFormat;
+import org.marketcetera.photon.ui.EventListContentProvider;
+import org.marketcetera.photon.ui.IndexedTableViewer;
+import org.marketcetera.photon.ui.OptionMessageListTableFormat;
+import org.marketcetera.photon.ui.TableComparatorChooser;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.DataDictionary;
+import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.*;
-
-import java.util.*;
-import java.util.List;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
+import quickfix.field.MDEntryType;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.NoMDEntries;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
+import quickfix.fix44.DerivativeSecurityList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.SortedList;
 
 /**
  * @author caroline.leung@softwaregoodness.com
@@ -36,20 +56,20 @@ public class OptionMessagesComposite extends Composite {
 
 	public enum OptionDataColumns implements IFieldIdentifier {
 		ZEROWIDTH(""), 
-		CVOL("cVol", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME), 
-		CBIDSZ("cBidSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		CBID("cBid", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		CASK("cAsk", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		CASKSZ("cAskSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		CSYM("cSym", Symbol.FIELD, null, null, null),
-		STRIKE("Strike", StrikePrice.FIELD, null, null, null),
-		EXP("Exp", MaturityMonthYear.FIELD, null, null, null),
-		PSYM("pSym", Symbol.FIELD, null, null, null),
-		PBIDSZ("pBidSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		PBID("pBid", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		PASK("pAsk", MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		PASKSZ("pAskSz", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		PVOL("pVol", MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME);
+		CVOL("cVol", OptionInfoComponent.CALL_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME), 
+		CBIDSZ("cBidSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		CBID("cBid", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		CASK("cAsk", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		CASKSZ("cAskSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		CSYM("cSym", OptionInfoComponent.CALL_EXTRA_INFO, Symbol.FIELD, null, null, null),
+		STRIKE("Strike", OptionInfoComponent.STRIKE_INFO, StrikePrice.FIELD, null, null, null),
+		EXP("Exp", OptionInfoComponent.STRIKE_INFO, MaturityMonthYear.FIELD, null, null, null),
+		PSYM("pSym", OptionInfoComponent.PUT_EXTRA_INFO, Symbol.FIELD, null, null, null),
+		PBIDSZ("pBidSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		PBID("pBid", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
+		PASK("pAsk", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		PASKSZ("pAskSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
+		PVOL("pVol", OptionInfoComponent.PUT_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME);
 
 
 		private String name;
@@ -57,13 +77,15 @@ public class OptionMessagesComposite extends Composite {
 		private Integer groupID;
 		private Integer groupDiscriminatorID;
 		private Object groupDiscriminatorValue;
+		private OptionInfoComponent component;
 
 		OptionDataColumns(String name){
 			this.name = name;
 		}
 
-		OptionDataColumns(String name, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+		OptionDataColumns(String name, OptionInfoComponent component, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
 			this.name=name;
+			this.component = component;
 			this.fieldID = fieldID;
 			this.groupID = groupID;
 			this.groupDiscriminatorID = groupDiscriminatorID;
@@ -88,6 +110,10 @@ public class OptionMessagesComposite extends Composite {
 
 		public Object getGroupDiscriminatorValue() {
 			return groupDiscriminatorValue;
+		}
+
+		public OptionInfoComponent getComponent() {
+			return component;
 		}
 	}
 	
@@ -116,62 +142,6 @@ public class OptionMessagesComposite extends Composite {
 	private static final int PUT_VOLUME_INDEX = LAST_NORMAL_COLUMN_INDEX + 14;
 
 	
-	class MarketDataTableFormat extends OptionMessageListTableFormat {
-
-		public MarketDataTableFormat(Table table, IWorkbenchPartSite site, DataDictionary dictionary) {
-			super(table, OptionDataColumns.values(), site, dictionary);
-		}
-
-		@Override
-		public String getColumnName(int index) {
-			if (index == ZERO_WIDTH_COLUMN_INDEX) {
-				return ""; //$NON-NLS-1$
-			}
-			if (index <= LAST_NORMAL_COLUMN_INDEX) {
-				return super.getColumnName(index);
-			}
-			switch (index) {
-			case CALL_VOLUME_INDEX:
-				return "cVol";
-			case CALL_BID_SIZE_INDEX:
-				return "cBidSz";
-			case CALL_BID_PRICE_INDEX:
-				return "cBid";
-			case CALL_ASK_PRICE_INDEX:
-				return "cAsk";
-			case CALL_ASK_SIZE_INDEX:
-				return "cAskSz";
-			case CALL_SYMBOL_INDEX:
-				return "cSym";
-			case STRIKE_INDEX:
-				return "Strike";
-			case EXP_DATE_INDEX:
-				return "Exp";
-			case PUT_SYMBOL_INDEX:
-				return "pSym";
-			case PUT_BID_SIZE_INDEX:
-				return "pBidSz";
-			case PUT_BID_PRICE_INDEX:
-				return "pBid";
-			case PUT_ASK_PRICE_INDEX:
-				return "pAsk";
-			case PUT_ASK_SIZE_INDEX:
-				return "pAskSz";
-			case PUT_VOLUME_INDEX:
-				return "pVol";
-			default:
-				return "";
-			}
-		}
-
-		@Override
-		public String getColumnText(Object element, int index) {
-			if (index == ZERO_WIDTH_COLUMN_INDEX) {
-				return ""; //$NON-NLS-1$
-			}
-			return super.getColumnText(element, index);
-		}
-	}
 
 	private Label errorLabel;
 	private Table messageTable;
@@ -186,8 +156,8 @@ public class OptionMessagesComposite extends Composite {
 
 	private HashMap<OptionPairKey, OptionMessageHolder> optionContractMap;
 	private HashMap<String, OptionPairKey> optionSymbolToKeyMap;
-	private HashMap<String, Boolean> optionSymbolToSideMap;
-
+	private FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
+	
 	public OptionMessagesComposite(Composite parent, IWorkbenchPartSite site, IMemento memento) {
 		this(parent, site, memento, true);
 	}
@@ -215,7 +185,7 @@ public class OptionMessagesComposite extends Composite {
 
 	private void initializeDataMaps() {
 		optionSymbolToKeyMap = new HashMap<String, OptionPairKey>();
-		optionSymbolToSideMap = new HashMap<String, Boolean>();
+//		optionSymbolToSideMap = new HashMap<String, Boolean>();
 		optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
 	}
 
@@ -401,8 +371,9 @@ public class OptionMessagesComposite extends Composite {
 		aMessagesViewer
 				.setContentProvider(new EventListContentProvider<OptionMessageHolder>());
 		FIXDataDictionary dictionary = PhotonPlugin.getDefault().getFIXDataDictionary();
-		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(
-				aMessageTable, getSite(), dictionary.getDictionary()));
+		aMessagesViewer.setLabelProvider(
+				new OptionMessageListTableFormat(
+						aMessageTable, OptionDataColumns.values(), getSite(), dictionary.getDictionary()));
 
 		return aMessagesViewer;
 	}
@@ -451,11 +422,10 @@ public class OptionMessagesComposite extends Composite {
 	protected void clearDataMaps() {
 		optionContractMap.clear();
 		optionSymbolToKeyMap.clear();
-		optionSymbolToSideMap.clear();
+//		optionSymbolToSideMap.clear();
 	}
 
 	public void unlistenAllMarketData(MarketDataFeedTracker marketDataTracker) {
-		unsubscribeOptions(marketDataTracker);
 		getInput().clear();
 		clearDataMaps();
 		getMessagesViewer().refresh();		
@@ -467,254 +437,81 @@ public class OptionMessagesComposite extends Composite {
 		super.dispose();
 	}
 	
-	protected void requestOptionSecurityList(
-			final MarketDataFeedTracker marketDataTracker,
-			final MSymbol underlyingSymbol) {
-		requestOptionSecurityList(marketDataTracker, underlyingSymbol, null);
-	}
-	
-	protected void requestOptionSecurityList(final MarketDataFeedTracker marketDataTracker,
-			final MSymbol symbol, final String filteredByOptionSymbol) {
-
-		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
-
-		IMarketDataListCallback callback = createMarketDataListCallback(
-				marketDataTracker, symbol, filteredByOptionSymbol);
-
-		Message query = null;
-
-		//Returns a query for all option contracts for the underlying symbol 
-		//symbol = underlyingSymbol  (e.g. MSFT)
-		if (showAllOptions(filteredByOptionSymbol)) {			
-			query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol, false);		
-		} 			
-		//Returns a query for all the option contracts for the option root 			
-		//symbol = optionRoot (e.g. MSQ)
-		else {  			
-			query = OptionMarketDataUtils.newOptionRootQuery(symbol, false);
-		}
-		MarketDataUtils.asyncMarketDataQuery(symbol, query, service
-				.getMarketDataFeed(), callback);
-	}
 	
 	private boolean showAllOptions(String filteredByOptionSymbol) {
 		return filteredByOptionSymbol == null;
 	}
 	
 
-	private IMarketDataListCallback createMarketDataListCallback(
-			final MarketDataFeedTracker marketDataTracker,
-			final MSymbol underlyingSymbol, final String filteredByOptionSymbol) {
-		IMarketDataListCallback callback = new IMarketDataListCallback() {
-
-			public void onMarketDataFailure(MSymbol symbol) {
-				// do nothing
-			}
-
-            public void onMessage(Message aMessage) {
-                onMessages(new Message[]{aMessage});
-            }
-
-            public void onMessages(Message[] derivativeSecurityList) {
-            	if(isDisposed()) {
-            		return;
-            	}
-				List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
-
-				try {					
-					// underlying symbol case
-					if (showAllOptions(filteredByOptionSymbol)) {
-						optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(null,
-								derivativeSecurityList);
-					} else {
-					// option root case
-						optionContracts = OptionMarketDataUtils.getOptionExpirationMarketData(
-								underlyingSymbol.getBaseSymbol(),
-								derivativeSecurityList);						
-					}
-				} catch (Exception anyException) {
-					PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
-					enableErrorLabelText("Error getting option contracts data for " + underlyingSymbol.getBaseSymbol());
-					return;
-				}
-				
-				disableErrorLabelText();
-				if (optionContracts == null || optionContracts.isEmpty()) {
-					// do nothing
-				} else {
-					EventList<OptionMessageHolder> list = getInput();
-
-					for (OptionContractData data : optionContracts) {
-						MSymbol optionSymbol = data.getOptionSymbol();
-
-						// construct the option key
-						OptionPairKey optionKey = new OptionPairKey(
-								underlyingSymbol.getBaseSymbol(),
-								OptionMarketDataUtils.getOptionRootSymbol(
-										optionSymbol).getBaseSymbol(), data
-										.getExpirationYear(), data
-										.getExpirationMonth(), data
-										.getStrikePrice());
-
-						Message callMessage = new Message();
-						Message putMessage = new Message();
-
-						if (data.isPut()) {
-							subscribeOption(optionSymbol, putMessage);
-
-							// Since OptionPairKey does not track put/call
-							// option on purpose, need to track this separately with a map
-							getOptionSymbolToSideMap().put(optionSymbol
-									.getBaseSymbol(), true);
-						} else {
-							subscribeOption(optionSymbol, callMessage);
-							getOptionSymbolToSideMap().put(optionSymbol
-									.getBaseSymbol(), false);
-						}
-
-						optionSymbolToKeyMap.put(optionSymbol.getBaseSymbol(),
-								optionKey);
-						updateOptionContractMap(data.isPut(), optionKey,
-								callMessage, putMessage);
-					}
-
-					Set<OptionPairKey> optionKeys = getOptionContractMap().keySet();
-					
-					String callSymbolString = null;
-					String putSymbolString = null;
-					
-					for (OptionPairKey optionPairKey : optionKeys) {
-						OptionMessageHolder optionMessageHolder = getOptionContractMap()
-								.get(optionPairKey);
-						
-						if (showAllOptions(filteredByOptionSymbol)) {
-							list.add(optionMessageHolder);						
-							continue;
-						}
-							
-						callSymbolString = getSymbol(optionMessageHolder.getCallMessage());
-						putSymbolString = getSymbol(optionMessageHolder.getPutMessage());
-						 
-						if (filteredByOptionSymbol
-										.equalsIgnoreCase(callSymbolString)
-								|| filteredByOptionSymbol
-										.equalsIgnoreCase(putSymbolString)) {
-							list.clear();
-							list.add(optionMessageHolder);
-						}						
-					}
-				}
-			}
-
-			private void subscribeOption(MSymbol optionSymbol, Message message) {
-				message.setField(new Symbol(optionSymbol.getBaseSymbol()));
-				try {
-					marketDataTracker.simpleSubscribe(optionSymbol);
-				} catch (MarketceteraException e) {
-					PhotonPlugin.getMainConsoleLogger().warn(
-							"Error subscribing to quotes for " + optionSymbol);
-				}
-			}
-		};
-		return callback;
-	}
-			
-	private void updateOptionContractMap(boolean isPut,
-			OptionPairKey optionKey, Message callMessage, Message putMessage) {
-		OptionMessageHolder newHolder = null;
-
-		// lining up the call and put options
-		if (getOptionContractMap().containsKey(optionKey)) {
-			OptionMessageHolder holder = getOptionContractMap().get(optionKey);
-			if (isPut) {
-				newHolder = new OptionMessageHolder(optionKey, holder
-						.getCallMessage(), putMessage);
-			} else {
-				newHolder = new OptionMessageHolder(optionKey, callMessage,
-						holder.getPutMessage());
-			}
-		} else {
-			newHolder = new OptionMessageHolder(optionKey, callMessage,
-					putMessage);
-		}
-		getOptionContractMap().put(optionKey, newHolder);
-	}
-
-	
-	public void updateQuote(Message quote) {
-		Display theDisplay = Display.getDefault();
-		if (theDisplay.getThread() == Thread.currentThread()) {
-			OptionMessageHolder newHolder = null;
-			String symbolStr = getSymbol(quote);
-			OptionPairKey key = optionSymbolToKeyMap.get(symbolStr);
-			if (key != null) {
-				OptionMessageHolder holder = optionContractMap.get(key);
-				
+	public void handleDerivativeSecuritiyList(Message derivativeSecurityList, MarketDataFeedTracker marketDataTracker){
+		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
+		if (FIXMessageUtil.isDerivativeSecurityList(derivativeSecurityList) && feed != null){
+			try {
+				int numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
 				EventList<OptionMessageHolder> list = getInput();
-				int index = list.indexOf(holder);
-
-				
-				boolean isIncrementalRefresh = FIXMessageUtil
-						.isMarketDataIncrementalRefresh(quote);
-				
-				boolean isPut = isPut(holder, quote);
-				FIXVersion fixVersion = PhotonPlugin.getDefault().getFIXVersion();
-				FIXMessageFactory messageFactory = fixVersion.getMessageFactory();
-				
-				
-				if (isPut) {
-					if (isIncrementalRefresh) {
-						System.out.println("Incremental");
-						FIXMessageUtil.mergeMarketDataMessages(quote, holder
-								.getPutMessage(), messageFactory);
+				for (int i = 1; i <= numDerivs; i++)
+				{
+					try {
+						DerivativeSecurityList.NoRelatedSym info = new DerivativeSecurityList.NoRelatedSym();
+						derivativeSecurityList.getGroup(i, info);
+	
+						int putOrCall = OptionMarketDataUtils.getOptionType(info);
+						MSymbol optionSymbol = feed.symbolFromString(info.getString(Symbol.FIELD));
+						OptionPairKey optionKey;
+							optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
+						optionSymbolToKeyMap.put(optionSymbol.getFullSymbol(), optionKey);
+						OptionMessageHolder holder;
+						if (optionContractMap.containsKey(optionKey)){
+							holder = optionContractMap.get(optionKey);
+						} else {
+							holder = new OptionMessageHolder(optionSymbol, info);
+							optionContractMap.put(optionKey, holder);
+							list.add(holder);
+						}
+						
+						holder.setExtraInfo(putOrCall, info);
+					} catch (ParseException e) {
+						PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
 					}
-					newHolder = new OptionMessageHolder(key, holder
-							.getCallMessage(), quote);
-				} else {  
-					//isCall
-					if (isIncrementalRefresh) {
-						System.out.println("Incremental");
-						FIXMessageUtil.mergeMarketDataMessages(quote, holder
-								.getCallMessage(), messageFactory);
-					}
-					newHolder = new OptionMessageHolder(key, quote, holder
-							.getPutMessage());
 				}
-				optionContractMap.put(key, newHolder);
-				if (index >= 0) {
-					list.set(index, newHolder);
-					getMessagesViewer().update(newHolder, null);
-				}
+				getMessagesViewer().refresh();
+			} catch (FieldNotFound e) {
+				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
 			}
 		}
 	}
 	
-	protected void unsubscribeOptions(MarketDataFeedTracker marketDataTracker) {
-		 MarketDataFeedService service = marketDataTracker
-				.getMarketDataFeedService();
-		Set<String> contractSymbols = getOptionSymbolToKeyMap().keySet();
-		MSymbol contractSymbolToUnsubscribe = null;
-		for (String optionSymbol : contractSymbols) {
-			contractSymbolToUnsubscribe = service
-					.symbolFromString(optionSymbol);
-			marketDataTracker.simpleUnsubscribe(contractSymbolToUnsubscribe);
-		}
-	}
-
-	private boolean isPut(OptionMessageHolder holder, Message quote) {
-		Boolean isPut = optionSymbolToSideMap.get(getSymbol(quote));
-		if (isPut != null)
-			return isPut;
-		return false;
-	}
-
-	private static String getSymbol(Message message) {
+	public void handleQuote(Message marketDataRefresh){
+		String symbol;
 		try {
-			return message.getString(Symbol.FIELD).trim();
+			symbol = marketDataRefresh.getString(Symbol.FIELD);
+			OptionPairKey key = optionSymbolToKeyMap.get(symbol);
+			if (key != null){
+				OptionMessageHolder line = optionContractMap.get(key);
+				FieldMap existingMessage = line.getMarketDataForSymbol(symbol);
+				if (FIXMessageUtil.isMarketDataIncrementalRefresh(marketDataRefresh)
+						&& existingMessage != null){
+					FIXMessageUtil.mergeMarketDataMessages(marketDataRefresh, 
+							(Message)existingMessage, messageFactory);
+				} else {
+					existingMessage = marketDataRefresh;
+				}
+				int putOrCall = line.symbolOptionType(symbol);
+				line.setMarketData(putOrCall, existingMessage);
+		
+				getMessagesViewer().update(line, null);
+			} else {
+				PhotonPlugin.getDefault().getMarketDataLogger().info("Uknown symbol: "+symbol);
+			}
 		} catch (FieldNotFound e) {
-			return null;
+			PhotonPlugin.getDefault().getMarketDataLogger().info("Symbol missing from option quote.");
 		}
 	}
+	
+	
+			
+	
+
 
 
 	protected HashMap<OptionPairKey, OptionMessageHolder> getOptionContractMap() {
@@ -727,9 +524,9 @@ public class OptionMessagesComposite extends Composite {
 	}
 
 
-	protected HashMap<String, Boolean> getOptionSymbolToSideMap() {
-		return optionSymbolToSideMap;
-	}
+//	protected HashMap<String, Boolean> getOptionSymbolToSideMap() {
+//		return optionSymbolToSideMap;
+//	}
 	
 	
 	

@@ -32,6 +32,7 @@ import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.OpenClose;
 import quickfix.field.OrderCapacity;
+import quickfix.field.PutOrCall;
 
 /**
  * Option order ticket view.
@@ -47,7 +48,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private static final String REPLACE_OPTION_ORDER = "Replace Option Order";
 
-	private Text optionSymbolControl;
+	private Label optionSymbolControl;
 
 	private Combo expireMonthCombo;
 
@@ -117,11 +118,11 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		Composite formBody = outermostForm.getBody();
 		getFormToolkit().createLabel(formBody, "Side");
 		getFormToolkit().createLabel(formBody, "Quantity");
-		getFormToolkit().createLabel(formBody, "Option Root");
+		getFormToolkit().createLabel(formBody, "Symbol/Root");
 		getFormToolkit().createLabel(formBody, "Option Symbol");
 		getFormToolkit().createLabel(formBody, "Expiration");
-		getFormToolkit().createLabel(formBody, "Strike");
 		getFormToolkit().createLabel(formBody, "Year");
+		getFormToolkit().createLabel(formBody, "Strike");
 		getFormToolkit().createLabel(formBody, "C/P");
 		getFormToolkit().createLabel(formBody, "Price");
 		getFormToolkit().createLabel(formBody, "TIF");
@@ -131,8 +132,8 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		orderTicketViewPieces.createSymbolInput();
 		createOptionSymbolControl();
 		createExpireMonthBorderComposite();
-		createStrikeBorderComposite();
 		createExpireYearBorderComposite();
+		createStrikeBorderComposite();
 		createPutOrCallBorderComposite();
 		orderTicketViewPieces.createPriceInput();
 		orderTicketViewPieces.createTifInput();
@@ -192,7 +193,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	}
 
 	private void createOptionSymbolControl() {
-		optionSymbolControl = getFormToolkit().createText(
+		optionSymbolControl = getFormToolkit().createLabel(
 				outermostForm.getBody(), null, SWT.SINGLE | SWT.BORDER);
 		orderTicketViewPieces.assignDefaultGridData(optionSymbolControl, 6);
 	}
@@ -357,7 +358,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return orderTicket;
 	}
 
-	public Text getOptionSymbolControl() {
+	public Label getOptionSymbolControl() {
 		return optionSymbolControl;
 	}
 
@@ -385,18 +386,21 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		return putOrCallCombo;
 	}
 
-	public boolean isPut() {
+	public Integer getPutOrCall() {
 		String putOrCallStr = putOrCallCombo.getText();
-		if (putOrCallStr != null
-				&& putOrCallStr.equals(PutOrCallImage.PUT.getImage())) {
-			return true;
+		if (PutOrCallImage.PUT.getImage().equals(putOrCallStr)) {
+			return PutOrCall.PUT;
+		} else if (PutOrCallImage.CALL.getImage().equals(putOrCallStr)) {
+			return PutOrCall.CALL;
 		}
-		return false;
+		return null;
 	}
 	
-	public void setPut(boolean optionIsPut) {
-		String putOrCallStr = PutOrCallImage.PUT.getImage();
-		if(!optionIsPut) {
+	public void setPutOrCall(Integer putOrCall) {
+		String putOrCallStr = "";
+		if (putOrCall == PutOrCall.PUT){
+			putOrCallStr = PutOrCallImage.PUT.getImage();
+		} else if (putOrCall == PutOrCall.CALL){
 			putOrCallStr = PutOrCallImage.CALL.getImage();
 		}
 		putOrCallCombo.setText(putOrCallStr);

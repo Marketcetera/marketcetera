@@ -1,31 +1,62 @@
 package org.marketcetera.photon.marketdata;
 
 import java.math.BigDecimal;
+import java.text.ParseException;
+import java.util.EnumMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import quickfix.Message;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.Pair;
 
-public class OptionMessageHolder implements Comparable {
+import quickfix.FieldMap;
+import quickfix.FieldNotFound;
+import quickfix.field.PutOrCall;
+import quickfix.field.StrikePrice;
+import quickfix.field.Symbol;
 
+public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> implements Comparable {
+
+	
 	private OptionPairKey key;
 
-	private Message callMessage;
+	EnumMap<OptionInfoComponent, MSymbol> strikeSymbols = new EnumMap<OptionInfoComponent, MSymbol>(OptionInfoComponent.class);
 
-	private Message putMessage;
-
-	public OptionMessageHolder(OptionPairKey key, Message callMessage,
-			Message putMessage) {
-		this.key = key;
-		this.callMessage = callMessage;
-		this.putMessage = putMessage;
+	private static Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+[a-zA-Z]{2}");
+	
+	
+	public OptionMessageHolder(MSymbol symbol,
+			FieldMap strikeInfo) throws ParseException, FieldNotFound
+	{
+		super(OptionInfoComponent.class);
+		Pair<Integer, Integer> monthYear = OptionMarketDataUtils.getMaturityMonthYear(strikeInfo);
+		String optionRootSymbol = getRootSymbol(symbol.getBaseSymbol());
+		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, new BigDecimal(strikeInfo.getString(StrikePrice.FIELD)));
+		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);
+	}
+	
+	public OptionMessageHolder(MSymbol symbol,
+			FieldMap strikeInfo, FieldMap callExtraInfo,
+			FieldMap putExtraInfo) throws ParseException, FieldNotFound {
+		super(OptionInfoComponent.class);
+		Pair<Integer, Integer> monthYear = OptionMarketDataUtils.getMaturityMonthYear(strikeInfo);
+		String optionRootSymbol = getRootSymbol(symbol.getBaseSymbol());
+		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, new BigDecimal(strikeInfo.getString(StrikePrice.FIELD)));
+		
+		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);
+		this.put(OptionInfoComponent.CALL_EXTRA_INFO, callExtraInfo);
+		this.put(OptionInfoComponent.PUT_EXTRA_INFO, putExtraInfo);
 	}
 
-	public Message getCallMessage() {
-		return callMessage;
+	private static String getRootSymbol(String baseSymbol) {
+		Matcher matcher = optionSymbolPattern.matcher(baseSymbol);
+		if (matcher.matches()){
+			return matcher.group(1);
+		} else {
+			return baseSymbol;
+		}
 	}
 
-	public Message getPutMessage() {
-		return putMessage;
-	}
 
 	public OptionPairKey getKey() {
 		return key;
@@ -38,35 +69,121 @@ public class OptionMessageHolder implements Comparable {
 		if (otherKey == null)
 			return 0;
 		return this.key.compareTo(otherKey);
-
+	}
+	
+	public FieldMap getMarketData(int putOrCall){
+		switch (putOrCall){
+		case PutOrCall.PUT:
+			return get(OptionInfoComponent.PUT_MARKET_DATA);
+		case PutOrCall.CALL:
+			return get(OptionInfoComponent.CALL_MARKET_DATA);
+		default:
+			throw new IllegalArgumentException(""+putOrCall);
+		}
+	}
+	
+	public void setMarketData(int putOrCall, FieldMap marketData){
+		switch (putOrCall){
+		case PutOrCall.PUT:
+			this.put(OptionInfoComponent.PUT_MARKET_DATA, marketData);
+			break;
+		case PutOrCall.CALL:
+			this.put(OptionInfoComponent.CALL_MARKET_DATA, marketData);
+			break;
+		default:
+			throw new IllegalArgumentException(""+putOrCall);
+		}
+		
+	}
+	
+	public void setExtraInfo(int putOrCall, FieldMap otherData)
+	{
+		switch (putOrCall){
+		case PutOrCall.PUT:
+			this.put(OptionInfoComponent.PUT_EXTRA_INFO, otherData);
+			break;
+		case PutOrCall.CALL:
+			this.put(OptionInfoComponent.CALL_EXTRA_INFO, otherData);
+			break;
+		default:
+			throw new IllegalArgumentException(""+putOrCall);
+		}
+	}
+	
+	public int symbolOptionType(String symbol){
+		FieldMap fieldMap = get(OptionInfoComponent.CALL_EXTRA_INFO);
+		try {
+			if (fieldMap != null && symbol.equals(fieldMap.getString(Symbol.FIELD))){
+				return PutOrCall.CALL;
+			}
+		} catch (FieldNotFound e) {
+		}
+		
+		fieldMap = get(OptionInfoComponent.PUT_EXTRA_INFO);
+		try {
+			if (fieldMap != null && symbol.equals(fieldMap.getString(Symbol.FIELD))){
+				return PutOrCall.PUT;
+			}
+		} catch (FieldNotFound e) {
+		}
+		return Integer.MAX_VALUE;
+	}
+	
+	public FieldMap getMarketDataForSymbol(String symbol){
+		FieldMap fieldMap = get(OptionInfoComponent.CALL_EXTRA_INFO);
+		try {
+			if (fieldMap != null && symbol.equals(fieldMap.getString(Symbol.FIELD))){
+				return get(OptionInfoComponent.CALL_MARKET_DATA);
+			}
+		} catch (FieldNotFound e) {
+		}
+		
+		fieldMap = get(OptionInfoComponent.PUT_EXTRA_INFO);
+		try {
+			if (fieldMap != null && symbol.equals(fieldMap.getString(Symbol.FIELD))){
+				return get(OptionInfoComponent.PUT_MARKET_DATA);
+			}
+		} catch (FieldNotFound e) {
+		}
+		return null;
 	}
 
 	/**
 	 * key for option message holders.
 	 */
 	public static class OptionPairKey implements Comparable {
-		private String expirationYear;
 
-		private String expirationMonth;
+		
+		private final int expirationYear;
 
-		private BigDecimal strikePrice;
+		private final int expirationMonth;
 
-		private String optionRoot;
+		private final int expirationDay;
 
-		public OptionPairKey(String underlyingSymbol, String optionRoot,
-				String expirationYear, String expirationMonth,
+		private final BigDecimal strikePrice;
+
+		private final String optionRoot;
+
+		public OptionPairKey(String optionRoot,
+				int expirationYear, int expirationMonth,
+				int expirationDay,
 				BigDecimal strikePrice) {
 			this.optionRoot = optionRoot;
 			this.expirationYear = expirationYear;
 			this.expirationMonth = expirationMonth;
+			this.expirationDay = expirationDay;
 			this.strikePrice = strikePrice;
 		}
 
-		public String getExpirationMonth() {
+		public int getExpirationMonth() {
 			return expirationMonth;
 		}
 
-		public String getExpirationYear() {
+		public int getExpirationDay() {
+			return expirationDay;
+		}
+
+		public int getExpirationYear() {
 			return expirationYear;
 		}
 
@@ -80,13 +197,23 @@ public class OptionMessageHolder implements Comparable {
 
 		public int compareTo(Object o) {
 			if (!(o instanceof OptionPairKey))
-				return 0;
+				return 1;
 			OptionPairKey other = (OptionPairKey) o;
 
-			int compareStrike = this.getStrikePrice().compareTo(
-					other.getStrikePrice());
-			if (compareStrike != 0)
-				return compareStrike;
+			int compareExpYear = this.getExpirationYear() - other.getExpirationYear();
+			if (compareExpYear != 0){
+				return compareExpYear;
+			}
+
+			int compareExpMonth = this.getExpirationMonth() - other.getExpirationMonth();
+			if (compareExpMonth != 0){
+				return compareExpMonth;
+			}
+
+			int compareExpDay = this.getExpirationDay() - other.getExpirationDay();
+			if (compareExpDay != 0){
+				return compareExpDay;
+			}
 
 			String thisOptionRoot = this.getOptionRoot();
 			String otherOptionRoot = other.getOptionRoot();
@@ -95,14 +222,10 @@ public class OptionMessageHolder implements Comparable {
 			if (compareOptionRoot != 0)
 				return compareOptionRoot;
 
-			int compareExpYear = this.getExpirationYear().compareTo(
-					other.getExpirationYear());
-			if (compareExpYear != 0)
-				return compareExpYear;
+			int compareStrike = this.getStrikePrice().compareTo(
+					other.getStrikePrice());
 
-			int compareExpMonth = this.getExpirationMonth().compareTo(
-					other.getExpirationMonth());
-			return compareExpMonth;
+			return compareStrike;
 
 		}
 
@@ -112,11 +235,13 @@ public class OptionMessageHolder implements Comparable {
 			int result = 1;
 			result = PRIME
 					* result
-					+ ((expirationMonth == null) ? 0 : expirationMonth
-							.hashCode());
+					+ (expirationDay);
 			result = PRIME
 					* result
-					+ ((expirationYear == null) ? 0 : expirationYear.hashCode());
+					+ (expirationMonth);
+			result = PRIME
+					* result
+					+ (expirationYear);
 			result = PRIME * result
 					+ ((strikePrice == null) ? 0 : strikePrice.hashCode());
 			result = PRIME * result
@@ -143,18 +268,23 @@ public class OptionMessageHolder implements Comparable {
 					return false;
 			} else if (!optionRoot.equals(other.optionRoot))
 				return false;
-			if (expirationMonth == null) {
-				if (other.expirationMonth != null)
-					return false;
-			} else if (!expirationMonth.equals(other.expirationMonth))
+			if (expirationMonth != other.expirationMonth)
 				return false;
-			if (expirationYear == null) {
-				if (other.expirationYear != null)
-					return false;
-			} else if (!expirationYear.equals(other.expirationYear))
+			if (expirationYear != other.expirationYear)
 				return false;
 			return true;
 		}
 
+		public static OptionPairKey fromFieldMap(MSymbol optionSymbol, FieldMap info) throws ParseException, FieldNotFound{
+			Pair<Integer, Integer> maturityMonthYear = OptionMarketDataUtils.getMaturityMonthYear(info);
+			OptionPairKey optionKey = new OptionPairKey(
+					getRootSymbol(optionSymbol.getBaseSymbol()),
+					maturityMonthYear.getSecondMember(), //year
+					maturityMonthYear.getFirstMember(), //month
+					0,
+					new BigDecimal(info.getString(StrikePrice.FIELD)));
+			return optionKey;
+
+		}
 	}
 }

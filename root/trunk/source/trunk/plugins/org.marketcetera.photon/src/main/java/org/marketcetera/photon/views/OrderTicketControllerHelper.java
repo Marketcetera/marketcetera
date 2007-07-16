@@ -57,6 +57,7 @@ import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -117,6 +118,8 @@ public class OrderTicketControllerHelper {
 
 	private boolean bindErrorsOccurred;
 	
+	protected boolean bindSymbolToModelDirection = true;
+	
 	public OrderTicketControllerHelper(IOrderTicket ticket) {
 		this.ticket = ticket;
 	}
@@ -166,15 +169,15 @@ public class OrderTicketControllerHelper {
 			}
 		});
 
-		ticket.getSymbolText().addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				Text symbolText = (Text) e.widget;
-				if (!symbolText.isFocusControl()) {
-					String symbolTextString = symbolText.getText();
-					listenMarketData(symbolTextString);
-				}
-			}
-		});
+//		ticket.getSymbolText().addModifyListener(new ModifyListener() {
+//			public void modifyText(ModifyEvent e) {
+//				Text symbolText = (Text) e.widget;
+//				if (!symbolText.isFocusControl()) {
+//					String symbolTextString = symbolText.getText();
+//					listenMarketData(symbolTextString);
+//				}
+//			}
+//		});
 
 		ticket.getCancelButton().addSelectionListener(new SelectionListener() {
 			public void widgetDefaultSelected(SelectionEvent e) {
@@ -297,7 +300,10 @@ public class OrderTicketControllerHelper {
 
 	public void onQuote(Message message) {
 		try {
-			if (listenedSymbol != null) {
+			if (listenedSymbol != null && 
+					(FIXMessageUtil.isMarketDataIncrementalRefresh(message)
+					|| FIXMessageUtil.isMarketDataSnapshotFullRefresh(message))
+					) {
 				String listenedSymbolString = listenedSymbol.toString();
 				if (message.isSetField(Symbol.FIELD)
 						&& listenedSymbolString.equals(message
@@ -390,17 +396,6 @@ public class OrderTicketControllerHelper {
 		return bindErrorsOccurred;
 	}
 	
-	/**
-	 * Derived classes can change which FIX field is affected by the Symbol
-	 * control.
-	 * 
-	 * @return the int FIX field that the Symbol control will be bound to in the
-	 *         message.
-	 */
-	protected int getSymbolFIXField() {
-		return Symbol.FIELD;
-	}
-
 	protected void bindValue(Control whichControl,
 			IObservableValue targetObservableValue,
 			IObservableValue modelObservableValue,
@@ -482,11 +477,14 @@ public class OrderTicketControllerHelper {
 			Control whichControl = ticket.getSymbolText();
 			IToggledValidator validator = new StringRequiredValidator();
 			validator.setEnabled(enableValidators);
-			bindValue( whichControl, SWTObservables.observeText(
-					whichControl, swtEvent), FIXObservables.observeValue(realm,
-					message, getSymbolFIXField(), dictionary),
-					new UpdateValueStrategy().setAfterGetValidator(validator),
-					new UpdateValueStrategy());
+			int toModelUpdatePolicy = bindSymbolToModelDirection ? UpdateValueStrategy.POLICY_UPDATE : UpdateValueStrategy.POLICY_NEVER;
+			bindValue( 
+					whichControl,
+					SWTObservables.observeText(whichControl, swtEvent),
+					FIXObservables.observeValue(realm, message, Symbol.FIELD, dictionary),
+					new UpdateValueStrategy(toModelUpdatePolicy).setAfterGetValidator(validator),
+					new UpdateValueStrategy()
+					);
 			addControlStateListeners(whichControl, validator);
 			if (!enableValidators)
 				addControlRequiringUserInput(whichControl);

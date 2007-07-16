@@ -76,7 +76,9 @@ public class MarketDataFeedService implements IFeedComponentListener, IFeedCompo
 	}
 
 	public final void unsubscribe(ISubscription subscription) throws MarketceteraException {
-		feed.asyncUnsubscribe(subscription);
+		if (subscription != null){
+			feed.asyncUnsubscribe(subscription);
+		}
 	}
 	
 	public final IMarketDataFeed getMarketDataFeed()
