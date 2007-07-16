@@ -195,7 +195,7 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 	
 	protected IBookComposite createBookComposite(Composite parent, int style,
 			FormToolkit formToolkit, IWorkbenchPartSite site, IMemento memento) {
-		return new BookComposite(bookSection, style, formToolkit);
+		return new BookComposite(parent, style, formToolkit);
 	}
 			
 	protected void addCustomFieldsExpansionListener()

@@ -233,7 +233,7 @@ public class OrderTicketControllerHelper {
 		// don't dispose of system colors
 	}
 
-	protected void listenMarketData(String symbol) {
+	public void listenMarketData(String symbol) {
 		unlisten();
 		if (symbol != null && !"".equals(symbol.trim())) {
 			MSymbol newListenedSymbol = new MSymbol(symbol);
