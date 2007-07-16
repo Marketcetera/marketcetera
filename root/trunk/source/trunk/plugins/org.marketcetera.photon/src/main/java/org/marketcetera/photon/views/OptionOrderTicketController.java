@@ -16,7 +16,7 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 	private OptionOrderTicketControllerHelper controllerHelper;
 	
 	@Override
-	protected OrderTicketControllerHelper getOrderTicketControllerHelper() {
+	public OrderTicketControllerHelper getOrderTicketControllerHelper() {
 		Assert.isNotNull(controllerHelper, "Controller is not yet bound.");
 
 		return controllerHelper;
@@ -36,8 +36,13 @@ public class OptionOrderTicketController extends AbstractOrderTicketController {
 	}
 
     public void onMessages(Message[] messages) {
+    	if(messages == null || messages.length < 1) {
+    		return;
+    	}
+        controllerHelper.getOptionSeriesManager().onMessages(messages);
     }
 
     public void onMessage(Message aMessage) {
+        controllerHelper.getOptionSeriesManager().onMessage(aMessage);
     }
 }

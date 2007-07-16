@@ -103,9 +103,11 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 			OptionOrderTicketController optController, String optionRoot,
 			String[] optionContractSpecifiers, String[] strikePrices) {
 		// Set an option root before simulating the subscription response
-		//ticket.getSymbolText().setText(optionRoot);
+		ticket.getSymbolText().setText(optionRoot);
+		// listenMarketData is normally called on focus lost
+		optController.getOrderTicketControllerHelper().listenMarketData(optionRoot);
 		// Subscription response has the contract symbols (create a fake quote and send that through)
-        Message dsl = createDummySecurityList(optionRoot, optionContractSpecifiers, strikePrices);
+		Message dsl = createDummySecurityList(optionRoot, optionContractSpecifiers, strikePrices);
         optController.onMessage(dsl);
         // Show the message for the specific contract
         optController.showMessage(message);
@@ -127,6 +129,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
 				TimeInForce.DAY, null);
         message.setField(new Symbol(optionContractSymbol));
+//        message.setField(new UnderlyingSymbol(optionRoot)); // Used to be UnderlyingSymbol instead of Symbol
         message.setField(new MaturityMonthYear("200708"));
 		message.setField(new StrikePrice(23));
 		message.setField(new PutOrCall(PutOrCall.CALL));

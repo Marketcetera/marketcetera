@@ -29,6 +29,7 @@ import org.marketcetera.quickfix.MarketceteraFIXException;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.StringField;
 import quickfix.field.MsgType;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.UnderlyingSymbol;
@@ -195,7 +196,7 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	}
 
 	
-	private void requestOptionRootInfo(String optionRoot) {
+	public void requestOptionRootInfo(String optionRoot) {
 		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 
 		if (!optionContractCache.containsKey(optionRoot)) {
@@ -228,14 +229,32 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 //		}
 //	}
 
-	/* package */ void handleMarketDataList(Message derivativeSecurityList) {
-        String symbolText = ticket.getSymbolText().getText();
-        if (OptionMarketDataUtils.isOptionSymbol(symbolText)){
-        	symbolText = OptionMarketDataUtils.getOptionRootSymbol(symbolText);
-        }
-		handleMarketDataList(derivativeSecurityList, symbolText);
+	private void handleMarketDataList(Message derivativeSecurityList) {
+		String optionRoot = null;
+		try {
+			StringField underlyingSymbolField = derivativeSecurityList.getField(new UnderlyingSymbol());
+			if(underlyingSymbolField != null) {
+				optionRoot = underlyingSymbolField.getValue();
+			}
+		}
+		catch(Exception anyException) {
+			PhotonPlugin.getMainConsoleLogger().debug("Failed to find underlying symbol in DerivativeSecurityList: " + derivativeSecurityList, anyException);
+		}
+		if(optionRoot == null || optionRoot.length() == 0) {
+			// todo: Should we throw an exception here?
+			return;
+		}
+		// This old code assumed the derivativeSecurityList coming back 
+		// was for the same underlying symbol as the current SymbolText.
+		//
+//        String symbolText = ticket.getSymbolText().getText();
+//        if (OptionMarketDataUtils.isOptionSymbol(symbolText)){
+//        	symbolText = OptionMarketDataUtils.getOptionRootSymbol(symbolText);
+//        }
+		handleMarketDataList(derivativeSecurityList, optionRoot);
     }
-    /* package */ void handleMarketDataList(Message derivativeSecurityList, String optionRoot) {
+	
+	private void handleMarketDataList(Message derivativeSecurityList, String optionRoot) {
         List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
         try {
             optionContracts = getOptionExpirationMarketData(optionRoot, derivativeSecurityList);
