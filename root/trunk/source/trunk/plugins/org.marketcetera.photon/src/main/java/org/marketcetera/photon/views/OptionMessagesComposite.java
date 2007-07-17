@@ -2,6 +2,7 @@ package org.marketcetera.photon.views;
 
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -13,6 +14,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
@@ -32,9 +34,9 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 
-import quickfix.DataDictionary;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
@@ -204,7 +206,7 @@ public class OptionMessagesComposite extends Composite {
 
 	private void createTable(Composite parent) {
         messageTable = createMessageTable(parent);
-		messagesViewer = createTableViewer(messageTable, getEnumValues());
+		messagesViewer = createTableViewer(messageTable);
 		tableFormat = (EnumTableFormat<OptionMessageHolder>)messagesViewer.getLabelProvider();
 		formatTable(messageTable);
 		packColumns(messageTable);
@@ -235,10 +237,6 @@ public class OptionMessagesComposite extends Composite {
 		errorLabel.setText(text);
 		errorLabel.pack();
 		errorLabel.setEnabled(true);
-	}
-		
-	protected Enum[] getEnumValues() {
-		return OptionDataColumns.values();
 	}
 	
 	// cl todo: duplicated code from MarketDataView, need to refactor
@@ -363,8 +361,7 @@ public class OptionMessagesComposite extends Composite {
         return messageTable;
     }
     	    
-	protected IndexedTableViewer createTableViewer(Table aMessageTable,
-			Enum[] enums) {
+	protected IndexedTableViewer createTableViewer(Table aMessageTable) {
 		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(
 				aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
@@ -426,6 +423,7 @@ public class OptionMessagesComposite extends Composite {
 	}
 
 	public void unlistenAllMarketData(MarketDataFeedTracker marketDataTracker) {
+		unsubscribeOptions(marketDataTracker);
 		getInput().clear();
 		clearDataMaps();
 		getMessagesViewer().refresh();		
@@ -437,12 +435,18 @@ public class OptionMessagesComposite extends Composite {
 		super.dispose();
 	}
 	
-	
-	private boolean showAllOptions(String filteredByOptionSymbol) {
-		return filteredByOptionSymbol == null;
+	protected void unsubscribeOptions(MarketDataFeedTracker marketDataTracker) {
+		 MarketDataFeedService service = marketDataTracker
+				.getMarketDataFeedService();
+		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();
+		MSymbol contractSymbolToUnsubscribe = null;
+		for (String optionSymbol : contractSymbols) {
+			contractSymbolToUnsubscribe = service
+					.symbolFromString(optionSymbol);
+			marketDataTracker.simpleUnsubscribe(contractSymbolToUnsubscribe);
+		}
 	}
 	
-
 	public void handleDerivativeSecuritiyList(Message derivativeSecurityList, MarketDataFeedTracker marketDataTracker){
 		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
 		if (FIXMessageUtil.isDerivativeSecurityList(derivativeSecurityList) && feed != null){
@@ -457,6 +461,7 @@ public class OptionMessagesComposite extends Composite {
 	
 						int putOrCall = OptionMarketDataUtils.getOptionType(info);
 						MSymbol optionSymbol = feed.symbolFromString(info.getString(Symbol.FIELD));
+						subscribeOption(optionSymbol, info, marketDataTracker);
 						OptionPairKey optionKey;
 							optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
 						optionSymbolToKeyMap.put(optionSymbol.getFullSymbol(), optionKey);
@@ -471,13 +476,27 @@ public class OptionMessagesComposite extends Composite {
 						
 						holder.setExtraInfo(putOrCall, info);
 					} catch (ParseException e) {
+						MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
 						PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
+						enableErrorLabelText("Error getting option contracts data for " + underlying.getBaseSymbol());
 					}
 				}
+				disableErrorLabelText();
 				getMessagesViewer().refresh();
 			} catch (FieldNotFound e) {
 				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
+				enableErrorLabelText("Exception parsing option info - " + e);
 			}
+		}
+	}
+	
+	private void subscribeOption(MSymbol optionSymbol, Group message, MarketDataFeedTracker marketDataTracker) {
+		message.setField(new Symbol(optionSymbol.getBaseSymbol()));
+		try {
+			marketDataTracker.simpleSubscribe(optionSymbol);
+		} catch (MarketceteraException e) {
+			PhotonPlugin.getMainConsoleLogger().warn(
+					"Error subscribing to quotes for " + optionSymbol);
 		}
 	}
 	
