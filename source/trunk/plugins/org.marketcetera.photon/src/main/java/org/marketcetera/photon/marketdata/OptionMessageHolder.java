@@ -15,13 +15,9 @@ import quickfix.field.PutOrCall;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
-public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> implements Comparable {
+public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> implements Comparable<OptionMessageHolder> {
 
-	
 	private OptionPairKey key;
-
-	EnumMap<OptionInfoComponent, MSymbol> strikeSymbols = new EnumMap<OptionInfoComponent, MSymbol>(OptionInfoComponent.class);
-
 	private static Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+[a-zA-Z]{2}");
 	
 	
@@ -62,12 +58,10 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		return key;
 	}
 
-	public int compareTo(Object o) {
-		if (!(o instanceof OptionMessageHolder))
-			return 0;
-		OptionPairKey otherKey = ((OptionMessageHolder) o).getKey();
+	public int compareTo(OptionMessageHolder o) {
+		OptionPairKey otherKey = o.getKey();
 		if (otherKey == null)
-			return 0;
+			return 1;
 		return this.key.compareTo(otherKey);
 	}
 	
@@ -151,7 +145,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 	/**
 	 * key for option message holders.
 	 */
-	public static class OptionPairKey implements Comparable {
+	public static class OptionPairKey implements Comparable<OptionPairKey> {
 
 		
 		private final int expirationYear;
@@ -193,40 +187,6 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 
 		public String getOptionRoot() {
 			return optionRoot;
-		}
-
-		public int compareTo(Object o) {
-			if (!(o instanceof OptionPairKey))
-				return 1;
-			OptionPairKey other = (OptionPairKey) o;
-
-			int compareExpYear = this.getExpirationYear() - other.getExpirationYear();
-			if (compareExpYear != 0){
-				return compareExpYear;
-			}
-
-			int compareExpMonth = this.getExpirationMonth() - other.getExpirationMonth();
-			if (compareExpMonth != 0){
-				return compareExpMonth;
-			}
-
-			int compareExpDay = this.getExpirationDay() - other.getExpirationDay();
-			if (compareExpDay != 0){
-				return compareExpDay;
-			}
-
-			String thisOptionRoot = this.getOptionRoot();
-			String otherOptionRoot = other.getOptionRoot();
-			int compareOptionRoot = thisOptionRoot
-					.compareToIgnoreCase(otherOptionRoot);
-			if (compareOptionRoot != 0)
-				return compareOptionRoot;
-
-			int compareStrike = this.getStrikePrice().compareTo(
-					other.getStrikePrice());
-
-			return compareStrike;
-
 		}
 
 		@Override
@@ -285,6 +245,35 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 					new BigDecimal(info.getString(StrikePrice.FIELD)));
 			return optionKey;
 
+		}
+
+		public int compareTo(OptionPairKey other) {
+			int compareExpYear = this.getExpirationYear() - other.getExpirationYear();
+			if (compareExpYear != 0){
+				return compareExpYear;
+			}
+
+			int compareExpMonth = this.getExpirationMonth() - other.getExpirationMonth();
+			if (compareExpMonth != 0){
+				return compareExpMonth;
+			}
+
+			int compareExpDay = this.getExpirationDay() - other.getExpirationDay();
+			if (compareExpDay != 0){
+				return compareExpDay;
+			}
+
+			String thisOptionRoot = this.getOptionRoot();
+			String otherOptionRoot = other.getOptionRoot();
+			int compareOptionRoot = thisOptionRoot
+					.compareToIgnoreCase(otherOptionRoot);
+			if (compareOptionRoot != 0)
+				return compareOptionRoot;
+
+			int compareStrike = this.getStrikePrice().compareTo(
+					other.getStrikePrice());
+
+			return compareStrike;
 		}
 	}
 }
