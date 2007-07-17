@@ -15,6 +15,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 
 public class EclipseUtils {
@@ -100,5 +101,27 @@ public class EclipseUtils {
 		gc.dispose();
 		return sizeHint;
 	}
-	
+
+	/**
+	 * Determines the width hint for a combo box control that would fully fit a specified string. 
+	 */
+	public static int getComboWidthHint(Combo combo, String defaultString) {
+		GC gc = new GC(combo);
+		int textWidth = gc.textExtent(defaultString).x;
+		FontMetrics fm = gc.getFontMetrics();
+		int averageCharWidth = fm.getAverageCharWidth();
+
+		int widthHint = textWidth + 1 * averageCharWidth;
+
+		if (isMacSWT()) {
+			widthHint = textWidth + 5 * averageCharWidth;
+		}
+		else if (isWindowsSWT()) {
+			widthHint = textWidth;
+		}
+
+		gc.dispose();
+
+		return widthHint;
+	}	
 }

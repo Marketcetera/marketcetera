@@ -224,7 +224,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createStrikeBorderComposite() {
 		strikePriceControl = new Combo(outermostForm.getBody(), SWT.BORDER);
-		orderTicketViewPieces.assignDefaultGridData(strikePriceControl, 4);
+		orderTicketViewPieces.assignDefaultComboGridData(strikePriceControl, "STR");  //$NON-NLS-1$
 		// addSelectAllFocusListener(strikePriceControl);
 
 		orderTicketViewPieces
@@ -233,7 +233,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createExpireYearBorderComposite() {
 		expireYearCombo = new Combo(outermostForm.getBody(), SWT.BORDER);
-		orderTicketViewPieces.assignDefaultGridData(expireYearCombo, 3);
+		orderTicketViewPieces.assignDefaultComboGridData(expireYearCombo, "09");  //$NON-NLS-1$
 		// todo: Dynamically populate year choices from market data.
 		List<String> years = optionContractDateHelper.createDefaultYears();
 		for (String year : years) {
@@ -248,7 +248,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 		putOrCallCombo.add(PutOrCallImage.PUT.getImage());
 		putOrCallCombo.add(PutOrCallImage.CALL.getImage());
 
-		orderTicketViewPieces.assignDefaultGridData(putOrCallCombo, 3);
+		orderTicketViewPieces.assignDefaultComboGridData(putOrCallCombo, PutOrCallImage.CALL.getImage());
 
 		orderTicketViewPieces.addInputControlErrorDecoration(putOrCallCombo);
 	}
