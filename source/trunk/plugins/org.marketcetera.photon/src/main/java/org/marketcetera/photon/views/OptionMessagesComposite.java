@@ -501,7 +501,7 @@ public class OptionMessagesComposite extends Composite {
 		
 				getMessagesViewer().update(line, null);
 			} else {
-				PhotonPlugin.getDefault().getMarketDataLogger().info("Uknown symbol: "+symbol);
+				PhotonPlugin.getDefault().getMarketDataLogger().debug("Unknown symbol: "+symbol);
 			}
 		} catch (FieldNotFound e) {
 			PhotonPlugin.getDefault().getMarketDataLogger().info("Symbol missing from option quote.");
