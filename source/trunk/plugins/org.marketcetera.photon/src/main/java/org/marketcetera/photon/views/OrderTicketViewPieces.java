@@ -110,6 +110,16 @@ public class OrderTicketViewPieces {
 		return gridData;
 	}
 
+	public GridData createDefaultComboGridData(Combo combo, String widestString) {
+		GridData gridData = new GridData();
+		gridData.widthHint = EclipseUtils.getComboWidthHint(sideCombo, widestString);
+		gridData.grabExcessHorizontalSpace = false;
+		gridData.grabExcessVerticalSpace = false;
+		gridData.verticalAlignment = SWT.FILL;
+		gridData.horizontalAlignment = SWT.FILL;
+		return gridData;
+	}
+
 	public GridData assignDefaultGridData(Control toAssignGridData,
 			int charWidthHint) {
 		GridData gridData = createDefaultGridData(toAssignGridData,
@@ -118,6 +128,14 @@ public class OrderTicketViewPieces {
 		return gridData;
 	}
 
+	public GridData assignDefaultComboGridData(Combo toAssignGridData,
+			String widestString) {
+		GridData gridData = createDefaultComboGridData(toAssignGridData,
+				widestString);
+		toAssignGridData.setLayoutData(gridData);
+		return gridData;
+	}
+	
 	public void createSideInput() {
 
 		sideCombo = new Combo(defaultParent, SWT.BORDER);
@@ -126,7 +144,8 @@ public class OrderTicketViewPieces {
 		sideCombo.add(SideImage.SELL_SHORT.getImage());
 		sideCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
 
-		assignDefaultGridData(sideCombo, 4);
+		assignDefaultComboGridData(sideCombo, SideImage.SELL_SHORT_EXEMPT.getImage());
+
 		// Force Side to be uppercase
 		sideCombo.addVerifyListener(createToUpperCaseVerifyListener());
 		
@@ -181,7 +200,7 @@ public class OrderTicketViewPieces {
 		tifCombo.add(TimeInForceImage.GTC.getImage());
 		tifCombo.add(TimeInForceImage.IOC.getImage());
 
-		assignDefaultGridData(tifCombo, 4);
+		assignDefaultComboGridData(tifCombo, TimeInForceImage.OPG.getImage());  
 		
 		tifCombo.addVerifyListener(createToUpperCaseVerifyListener());
 		addInputControlErrorDecoration(tifCombo);
