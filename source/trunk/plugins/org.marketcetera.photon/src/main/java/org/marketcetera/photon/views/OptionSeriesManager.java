@@ -195,8 +195,6 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 
 		if (!optionContractCache.containsKey(optionRoot)) {
-			updateComboChoicesFromDefaults();
-
 			Message query = OptionMarketDataUtils.newOptionRootQuery(optionRoot);
 			try {
 				service.getMarketDataFeed().asyncQuery(query);
@@ -257,9 +255,7 @@ public class OptionSeriesManager implements IMarketDataListCallback {
             PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
             return;
         }
-        if (optionContracts == null || optionContracts.isEmpty()) {
-            updateComboChoicesFromDefaults();
-        } else {
+        if (optionContracts != null && !optionContracts.isEmpty()) {
         	OptionSeriesCollection cacheEntry = new OptionSeriesCollection(
                     optionContracts);
             optionContractCache.put(optionRoot, cacheEntry);
@@ -359,16 +355,16 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		}
 	}
     
-	private void updateComboChoicesFromDefaults() {
-		OptionDateHelper dateHelper = new OptionDateHelper();
-		List<String> months = dateHelper.createDefaultMonths();
-		updateComboChoices(ticket.getExpireMonthCombo(), months);
-		List<String> years = dateHelper.createDefaultYears();
-		updateComboChoices(ticket.getExpireYearCombo(), years);
-		// todo: What should the defaults be for strike price?
-		List<String> strikePrices = new ArrayList<String>();
-		updateComboChoices(ticket.getStrikePriceControl(), strikePrices);
-	}
+//	private void updateComboChoicesFromDefaults() {
+//		OptionDateHelper dateHelper = new OptionDateHelper();
+//		List<String> months = dateHelper.createDefaultMonths();
+//		updateComboChoices(ticket.getExpireMonthCombo(), months);
+//		List<String> years = dateHelper.createDefaultYears();
+//		updateComboChoices(ticket.getExpireYearCombo(), years);
+//		// todo: What should the defaults be for strike price?
+//		List<String> strikePrices = new ArrayList<String>();
+//		updateComboChoices(ticket.getStrikePriceControl(), strikePrices);
+//	}
 
 	private void updateComboChoices(Combo combo, Collection<String> choices) {
 		if (combo == null || combo.isDisposed()) {

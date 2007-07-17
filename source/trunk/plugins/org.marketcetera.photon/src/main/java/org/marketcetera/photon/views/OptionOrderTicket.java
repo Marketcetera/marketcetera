@@ -194,7 +194,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createOptionSymbolControl() {
 		optionSymbolControl = getFormToolkit().createText(
-				outermostForm.getBody(), null, SWT.READ_ONLY | SWT.SINGLE | SWT.BORDER);
+				outermostForm.getBody(), null, SWT.READ_ONLY | SWT.SINGLE );
 		orderTicketViewPieces.assignDefaultGridData(optionSymbolControl, 6);
 	}
 
