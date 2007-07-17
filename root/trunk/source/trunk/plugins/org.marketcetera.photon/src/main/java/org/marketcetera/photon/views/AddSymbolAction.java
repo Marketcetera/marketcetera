@@ -33,7 +33,7 @@ public class AddSymbolAction extends Action {
 	}
 	
 	protected void handleKeyReleased(KeyEvent e) {
-		if ('\r' == e.keyCode && e.stateMask == 0) {
+		if ('\r' == e.character && e.stateMask == 0) {
 			run();
 		}
 	}
