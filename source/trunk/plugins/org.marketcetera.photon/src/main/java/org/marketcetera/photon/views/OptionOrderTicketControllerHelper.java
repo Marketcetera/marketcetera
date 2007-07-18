@@ -48,6 +48,7 @@ import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -126,9 +127,14 @@ public class OptionOrderTicketControllerHelper extends
 	@Override
 	protected Message newNewOrderSingle() {
 		Message message = super.newNewOrderSingle();
-		// These fields should match the ones from bindImpl() and the ILexerImage
-		message.setField(new OrderCapacity(OrderCapacityImage.CUSTOMER.getFIXCharValue()));
-		message.setField(new OpenClose(OpenCloseImage.OPEN.getFIXCharValue()));
+		// These fields should match the ones from bindImpl() and the
+		// ILexerImage
+		if (isOrderCapacityAndOpenCloseAllowed()) {
+			message.setField(new OrderCapacity(OrderCapacityImage.CUSTOMER
+					.getFIXCharValue()));
+			message.setField(new OpenClose(OpenCloseImage.OPEN
+					.getFIXCharValue()));
+		}
 		return message;
 	}
 
@@ -155,6 +161,9 @@ public class OptionOrderTicketControllerHelper extends
 		messagesComposite.unlistenAllMarketData(getMarketDataTracker());
 	}
 
+	private boolean isOrderCapacityAndOpenCloseAllowed() {
+		return PhotonPlugin.getDefault().getFIXVersion().getVersionAsDouble() >= FIXVersion.FIX43.getVersionAsDouble();
+	}
 
 	@Override
 	protected void bindImpl(Message message, boolean enableValidators) {
@@ -238,6 +247,7 @@ public class OptionOrderTicketControllerHelper extends
 				addControlRequiringUserInput(whichControl);
 		}
 		// OrderCapacity
+		if(isOrderCapacityAndOpenCloseAllowed())
 		{
 			Control whichControl = optionTicket.getOrderCapacityCombo();
 			IToggledValidator targetAfterGetValidator = orderCapacityConverterBuilder.newTargetAfterGetValidator();
@@ -264,6 +274,7 @@ public class OptionOrderTicketControllerHelper extends
 //				addControlRequiringUserInput(whichControl);
 		}
 		// OpenClose
+		if(isOrderCapacityAndOpenCloseAllowed())
 		{
 			Control whichControl = optionTicket.getOpenCloseCombo();
 			IToggledValidator targetAfterGetValidator = openCloseConverterBuilder.newTargetAfterGetValidator();
