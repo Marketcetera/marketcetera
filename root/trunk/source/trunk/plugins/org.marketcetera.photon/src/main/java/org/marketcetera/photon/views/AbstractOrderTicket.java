@@ -239,19 +239,24 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		return formToolkit;
 	}
 
-	protected void createSendAndCancelButtons() {
+	protected void createSendAndCancelButtons(Composite parent) {
 		checkOutermostFormInitialized();
 		Composite okCancelComposite = getFormToolkit().createComposite(
-				outermostForm.getBody());
+				parent);
 		okCancelComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
-		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END);
-		gd.horizontalSpan = getNumColumnsInForm();
+		GridData gd = createSendAndCancelGridData();
 		okCancelComposite.setLayoutData(gd);
 		sendButton = getFormToolkit().createButton(okCancelComposite, "Send",
 				SWT.PUSH);
 		sendButton.setEnabled(false);
 		cancelButton = getFormToolkit().createButton(okCancelComposite,
 				"Cancel", SWT.PUSH);
+	}
+	
+	protected GridData createSendAndCancelGridData() {
+		GridData gd = new GridData(GridData.HORIZONTAL_ALIGN_END);
+		gd.horizontalSpan = getNumColumnsInForm();
+		return gd;
 	}
 
 	protected void createErrorLabel() {

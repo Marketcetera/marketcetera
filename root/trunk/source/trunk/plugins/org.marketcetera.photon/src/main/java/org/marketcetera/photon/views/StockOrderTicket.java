@@ -73,7 +73,7 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 		orderTicketViewPieces.createPriceInput();
 		orderTicketViewPieces.createTifInput();
 
-		createSendAndCancelButtons();
+		createSendAndCancelButtons(formBody);
 
 		createOtherExpandableComposite();
 		customFieldsViewPieces.createCustomFieldsExpandableComposite(3);
