@@ -35,6 +35,9 @@ import quickfix.field.NoRelatedSym;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
 
+/**
+ * @author michael.lossos@softwaregoodness.com
+ */
 public class OptionSeriesManager implements IMarketDataListCallback {
 	IOptionOrderTicket ticket;
 	
@@ -55,9 +58,13 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 
 	private MarketDataFeedTracker marketDataTracker;
 
-
-
-
+	/**
+	 * When the user requests an option contract symbol that we don't yet have
+	 * cached, we need to remember it for when the market data for it arrives.
+	 * This will be "MSQ+HB" for example.
+	 */
+	private String lastUncachedOptionContractSymbol;
+	
 	public OptionSeriesManager(IOptionOrderTicket ticket) {
 		this.ticket = ticket;
 		initPutOrCallComboChoices();
@@ -97,13 +104,15 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 			public void focusGained(FocusEvent e) {
 			}
 			public void focusLost(FocusEvent e) {
-				String requestSymbol = ((Text)e.getSource()).getText();
-				if (OptionMarketDataUtils.isOptionSymbol(requestSymbol)){
-					requestSymbol = OptionMarketDataUtils.getOptionRootSymbol(requestSymbol);
+				String optionRoot = ((Text)e.getSource()).getText();
+				String optionContractSymbol = null;
+				if (OptionMarketDataUtils.isOptionSymbol(optionRoot)){
+					optionContractSymbol = optionRoot;
+					optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionRoot);
 					// Ensure that if the user enters "MSQ+TA" the option root is "MSQ" 
-					ticket.getSymbolText().setText(requestSymbol);
+					ticket.getSymbolText().setText(optionRoot);
 				}
-				requestOptionRootInfo(requestSymbol);
+				requestOptionRootInfo(optionRoot, optionContractSymbol);
 				
 				// Looks like the following code was causing: http://trac.marketcetera.org/trac.fcgi/ticket/327
 //				try {
@@ -193,11 +202,15 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		}
 	}
 
-	
-	public void requestOptionRootInfo(String optionRoot) {
+	private void requestOptionRootInfo(String optionRoot, String optionContractSymbol) {
 		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 
 		if (!optionContractCache.containsKey(optionRoot)) {
+			// Remember the option contract e.g. "MSQ+HB" so that when the
+			// market data arrives later, we can update the combo choices
+			// accordingly.
+			lastUncachedOptionContractSymbol = optionContractSymbol;
+			
 			Message query = OptionMarketDataUtils.newOptionRootQuery(optionRoot);
 			try {
 				service.getMarketDataFeed().asyncQuery(query);
@@ -205,10 +218,11 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception getting market data: "+e);
 			}
 		} else {
-			conditionallyUpdateInputControls(optionRoot);
+			conditionallyUpdateInputControls(optionRoot, optionContractSymbol);
 		}
 	}
 	
+	// todo: Remove this method if it remains unused 
 //	private void requestOptionInfoForUnderlying() {
 //		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 //
@@ -268,7 +282,8 @@ public class OptionSeriesManager implements IMarketDataListCallback {
             			optionContractData);
 			}
             
-            conditionallyUpdateInputControls(optionRoot);
+            conditionallyUpdateInputControls(optionRoot, lastUncachedOptionContractSymbol);
+            lastUncachedOptionContractSymbol = null;
         }
     }
     
@@ -346,13 +361,30 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 //		return false;
 //	}
 
-    private void conditionallyUpdateInputControls(String optionRoot) {
-		if (optionRoot != null && (lastOptionRoot == null || !lastOptionRoot.equals(optionRoot))) {
+	/**
+	 * @param optionRoot
+	 *            the option root must always be specified, for example "MSQ"
+	 * @param optionContractSymbol
+	 *            the option contract can optionall be specified, for example
+	 *            "MSQ+HB". This results in the combo choices being updated to
+	 *            reflect the specific option contract.
+	 */
+    private void conditionallyUpdateInputControls(String optionRoot,
+			String optionContractSymbol) {
+		if (optionRoot == null) {
+			return;
+		}
+		boolean doUpdate = lastOptionRoot == null
+				|| !lastOptionRoot.equals(optionRoot);
+		if (optionContractSymbol != null) {
+			doUpdate = true;
+		}
+		if (doUpdate) {
 			lastOptionRoot = optionRoot;
 			OptionSeriesCollection cacheEntry = optionContractCache
 					.get(optionRoot);
 			if (cacheEntry != null) {
-				updateComboChoices(cacheEntry);
+				updateComboChoices(cacheEntry, optionContractSymbol);
 				updateOptionSymbol(cacheEntry);
 			}
 		}
@@ -396,7 +428,12 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		}
 	}
 
-	private void updateComboChoices(OptionSeriesCollection cacheEntry) {
+	/**
+	 * @param optionContractSymbol
+	 *            can be null. When non-null, the current combo choices are
+	 *            updated to reflect the contract symbol.
+	 */
+	private void updateComboChoices(OptionSeriesCollection cacheEntry, String optionContractSymbol) {
 		try {
 			setOptionSeriesInfoListenersEnabled(false);
 			updateComboChoices(ticket.getExpireMonthCombo(), cacheEntry
@@ -407,9 +444,34 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 					.getStrikePricesForUI());
 			updateComboChoices(ticket.getPutOrCallCombo(),
 					putOrCallComboChoices);
+			
+			// Assign the current combo choice to match an option contract such as "MSQ+HB"
+			if (optionContractSymbol != null
+					&& optionContractSymbol.length() > 0) {
+				
+				OptionContractData contractData = cacheEntry
+						.getOptionInfoForSymbol(new MSymbol(
+								optionContractSymbol));
+				if (contractData != null) {
+					assignComboTextIfNonEmpty(ticket.getExpireMonthCombo(),
+							contractData.getExpirationMonthUIString());
+					assignComboTextIfNonEmpty(ticket.getExpireYearCombo(),
+							contractData.getExpirationYearUIString());
+					assignComboTextIfNonEmpty(ticket.getStrikePriceControl(),
+							contractData.getStrikePriceUIString());
+					ticket.setPutOrCall(contractData.getPutOrCall());
+				}
+			}
 		} finally {
 			setOptionSeriesInfoListenersEnabled(true);
 		}
+	}
+	
+	private void assignComboTextIfNonEmpty(Combo whichCombo, String text) {
+		if(text == null || text.length() == 0) {
+			return;
+		}
+		whichCombo.setText(text);
 	}
 
 
