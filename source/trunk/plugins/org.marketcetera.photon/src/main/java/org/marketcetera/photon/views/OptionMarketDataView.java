@@ -21,26 +21,15 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.Pair;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataListener;
-import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-import quickfix.Group;
 import quickfix.Message;
-import quickfix.field.MsgType;
-import quickfix.field.NoMDEntryTypes;
-import quickfix.field.NoRelatedSym;
-import quickfix.field.NoUnderlyings;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
 import ca.odell.glazedlists.BasicEventList;
 
 /**
@@ -71,9 +60,9 @@ public class OptionMarketDataView extends ViewPart implements
 
 	private MarketDataFeedTracker marketDataTracker;
 
-	private ISubscription optionListRequest;
+//	private ISubscription optionListRequest;
 
-	private ISubscription optionMarketDataSubscription;
+//	private ISubscription optionMarketDataSubscription;
 
 	public OptionMarketDataView() {
 		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
@@ -103,7 +92,7 @@ public class OptionMarketDataView extends ViewPart implements
 		underlyingSymbolInfoComposite
 				.setLayoutData(createTopAlignedHorizontallySpannedGridData());
 
-		optionMessagesComposite = new OptionMessagesComposite(form.getBody(), getSite(), viewStateMemento);
+		optionMessagesComposite = new OptionMessagesComposite(form.getBody(), getSite(), viewStateMemento, false);
 		GridData tableGridData = createTopAlignedHorizontallySpannedGridData();
 		tableGridData.grabExcessVerticalSpace = true;
 		optionMessagesComposite.setLayoutData(tableGridData);		
@@ -231,15 +220,13 @@ public class OptionMarketDataView extends ViewPart implements
 	 * 2. Update the call or put side in the MessagesTable if matching put/call contract in the table row
 	 */
 	private void onMessageImpl(Message quote) {
-		if (optionListRequest != null && optionListRequest.isResponse(quote)){
-			optionMessagesComposite.handleDerivativeSecuritiyList(quote, marketDataTracker);
-			optionListRequest = null;
-		} else if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
+		optionMessagesComposite.onQuote(quote, marketDataTracker);
+		
+		if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
 			underlyingSymbolInfoComposite.onQuote(quote);
-			return;
 		} else {
 			optionMessagesComposite.handleQuote(quote);
-		}
+		}		
 	}
 
 	private void onMessageImpl(Message [] messages){
@@ -304,22 +291,15 @@ public class OptionMarketDataView extends ViewPart implements
 			// Step 3 - retrieve and subscribe to all put/call options
 			unsubscribeAllMarketData();
 			marketDataTracker.simpleSubscribe(symbol);
-			requestOptionSecurityList(symbol);
-			requestOptionMarketData(symbol);
+			optionMessagesComposite.requestOptionSecurityList(symbol, marketDataTracker);
+			optionMessagesComposite.requestOptionMarketData(symbol, marketDataTracker);
 		} catch (MarketceteraException e) {
 			PhotonPlugin.getMainConsoleLogger().error(
 					"Exception subscribing to market data for " + symbol);
 		}
 	}
 
-	private void requestOptionMarketData(MSymbol root) throws MarketceteraException {
-		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
-		MarketDataFeedService marketDataFeed = marketDataTracker.getMarketDataFeedService();
-		if (marketDataFeed != null){
-			optionMarketDataSubscription = marketDataFeed.subscribe(subscribeMessage);
-		}
 
-	}
 	
 
 	private String getTitlePrefix() {
@@ -355,23 +335,8 @@ public class OptionMarketDataView extends ViewPart implements
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
 		optionMessagesComposite.unlistenAllMarketData(marketDataTracker);
-		try {
-			service.unsubscribe(optionMarketDataSubscription);
-		} catch (MarketceteraException e) {
-		}
 	}
 
-	protected void requestOptionSecurityList(final MSymbol symbol) throws MarketceteraException {
-		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
-
-		Message query = null;
-
-		//Returns a query for all option contracts for the underlying symbol 
-		//symbol = underlyingSymbol  (e.g. MSFT)
-		query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
-
-		optionListRequest = service.getMarketDataFeed().asyncQuery(query);
-	}
 
 
 	@Override

@@ -51,7 +51,7 @@ public class OptionBookComposite extends Composite implements IBookComposite
 		underlyingSymbolInfoComposite
 				.setLayoutData(createUnderlyingSymbolInfoGridData());
 
-		optionMessagesComposite = new OptionMessagesComposite(this, site, viewStateMemento);
+		optionMessagesComposite = new OptionMessagesComposite(this, site, viewStateMemento, true);
 		GridData tableGridData = createOptionMessagesGridData();
 		optionMessagesComposite.setLayoutData(tableGridData);		
 		optionMessagesComposite.setInput(new BasicEventList<OptionMessageHolder>());
