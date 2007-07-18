@@ -88,5 +88,18 @@ public class BigDecimalUtils {
 	    if (a == null) return (b == null) ? BigDecimal.ZERO : b;
 	    return a.divide (b, context);
 	}
+	
+	// Returns the BigDecimal value n with trailing 
+	// zeroes removed.
+	static BigDecimal trim(BigDecimal n) {
+		try {
+			while (true) {
+				n = n.setScale(n.scale() - 1);
+			}
+		} catch (ArithmeticException e) {
+			// no more trailing zeroes so exit.
+		}
+		return n;
+	}
 
 }

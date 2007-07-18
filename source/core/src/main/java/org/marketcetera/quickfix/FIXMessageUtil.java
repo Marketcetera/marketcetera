@@ -144,7 +144,11 @@ public class FIXMessageUtil {
 			Message message) {
 		return msgTypeHelper(message, MsgType.DERIVATIVE_SECURITY_LIST);
 	}
-	
+
+	public static boolean isDerivativeSecurityListRequest(Message message) {
+		return msgTypeHelper(message, MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+	}
+
 	public static boolean isEquityOptionOrder(Message message)
 	{
 		try {

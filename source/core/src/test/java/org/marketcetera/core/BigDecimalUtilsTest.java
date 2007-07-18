@@ -128,6 +128,14 @@ public class BigDecimalUtilsTest extends TestCase {
         assertEquals(new BigDecimal("11").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_UP).toPlainString());
         assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_DOWN).toPlainString());
     }
+
+    public void testTrim() throws Exception {
+		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.5")).toPlainString());
+		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1.0")).toPlainString());
+		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1")).toPlainString());
+		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.50")).toPlainString());
+
+    }
     
     /**
      * Test the assumption that the String constructor for BigDecimal preserves
@@ -146,5 +154,9 @@ public class BigDecimalUtilsTest extends TestCase {
 		    	assertEquals("23.5", new BigDecimal("23.46").setScale(1).toPlainString());
 			}
     	}.run();
+    	
     }
+    
+    
+    
 }
