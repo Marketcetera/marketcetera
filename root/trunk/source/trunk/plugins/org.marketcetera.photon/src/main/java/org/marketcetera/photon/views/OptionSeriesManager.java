@@ -102,12 +102,13 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 					requestSymbol = OptionMarketDataUtils.getOptionRootSymbol(requestSymbol);
 				}
 				requestOptionRootInfo(requestSymbol);
-				try {
-					optionContractSymbolModifyListener.setEnabled(false);
-					ticket.getOptionSymbolControl().setText(requestSymbol);
-				} finally {
-					optionContractSymbolModifyListener.setEnabled(true);
-				}
+				// Looks like the following code was causing: http://trac.marketcetera.org/trac.fcgi/ticket/327
+//				try {
+//					optionContractSymbolModifyListener.setEnabled(false);
+//					ticket.getOptionSymbolControl().setText(requestSymbol);
+//				} finally {
+//					optionContractSymbolModifyListener.setEnabled(true);
+//				}
 			}
 			
 		});
