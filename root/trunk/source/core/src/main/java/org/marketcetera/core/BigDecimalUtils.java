@@ -91,7 +91,7 @@ public class BigDecimalUtils {
 	
 	// Returns the BigDecimal value n with trailing 
 	// zeroes removed.
-	static BigDecimal trim(BigDecimal n) {
+	public static BigDecimal trim(BigDecimal n) {
 		try {
 			while (true) {
 				n = n.setScale(n.scale() - 1);
