@@ -99,6 +99,9 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 	}
 
 	protected void addUnderlyingSymbolInfo(String underlyingSymbol) {
+		if (underlyingSymbolInfoMap.get(underlyingSymbol) != null) {
+			removeUnderlyingSymbol();
+		}
 		if (underlyingSymbolInfoMap.size() > 0) {
 			Label separator = new Label(underlyingSymbolsContainer,
 					SWT.SEPARATOR | SWT.HORIZONTAL);
@@ -200,6 +203,7 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 			symbolInfo.setTradeValueLabelText(extractStockValue(
 					UnderlyingSymbolDataFields.TRADEVOL, quote));
 			underlyingSymbolsContainer.pack(true);
+			underlyingSymbolsContainer.layout(true, true);
 		}
 	}
 
@@ -264,19 +268,6 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 					groupDiscriminatorID, groupDiscriminatorValue, true);
 		}
 		return convertExtractedValue(value, fieldID);
-	}
-
-	protected void addSymbol(MSymbol symbol) {
-		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
-			return;
-		}
-		if (hasSymbol(symbol)) {
-			return; // do nothing, already subscribed
-		}
-		if (hasUnderlyingSymbolInfo()) {
-			removeUnderlyingSymbol();
-		}
-		addUnderlyingSymbolInfo(symbol.getBaseSymbol());
 	}
 
 	protected boolean hasSymbol(final MSymbol symbol) {

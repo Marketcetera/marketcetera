@@ -1,42 +1,29 @@
 package org.marketcetera.photon.views;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.observable.Realm;
-import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
-import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
-import org.marketcetera.photon.parser.PriceImage;
 import org.marketcetera.photon.parser.PutOrCallImage;
 import org.marketcetera.photon.ui.OptionBookComposite;
-import org.marketcetera.photon.ui.ToggledListener;
 import org.marketcetera.photon.ui.validation.DecimalRequiredValidator;
 import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.StringRequiredValidator;
@@ -44,7 +31,6 @@ import org.marketcetera.photon.ui.validation.fix.BigDecimalToStringConverter;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverter;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
-import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
 import org.marketcetera.photon.ui.validation.fix.StringToDateCustomConverter;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -55,15 +41,12 @@ import quickfix.FieldNotFound;
 import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.OpenClose;
-import quickfix.field.OrdType;
 import quickfix.field.OrderCapacity;
 import quickfix.field.PutOrCall;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
-import quickfix.field.UnderlyingSymbol;
 
 /**
  * @author michael.lossos@softwaregoodness.com
@@ -105,6 +88,7 @@ public class OptionOrderTicketControllerHelper extends
 		super.initListeners();
 		getMarketDataTracker().setMarketDataListener(
 				new MDVMarketDataListener());
+
 
 		// All listeners that update option symbols or contract specifiers
 		// should be in OptionSeriesManager. Centralizing them allows us to
@@ -148,21 +132,38 @@ public class OptionOrderTicketControllerHelper extends
 		return dataListener;
 	}
 
-	@Override
-	protected void listenMarketDataAdditional(final String optionRootStr)
+
+	protected void listenOptionMarketData(final String optionRootStr)
 			throws MarketceteraException {
+		unlisten();
+		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
+		MSymbol optionSymbol = new MSymbol(optionRootStr);
+		marketDataTracker.simpleSubscribe(optionSymbol);
+		OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();
+		optionMessagesComposote.requestOptionSecurityList(optionSymbol, marketDataTracker);
+		optionMessagesComposote.requestOptionMarketData(optionSymbol, marketDataTracker);
+		optionMessagesComposote.getMessagesViewer().refresh();
 	}
+	
 
 	@Override
 	protected void unlistenMarketDataAdditional() throws MarketceteraException {
 		super.unlistenMarketDataAdditional();
-
+		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
+		// remove and unsubscribe underlying symbols and all contracts
+		Set<String> subscribedUnderlyingSymbols = symbolComposite
+				.getUnderlyingSymbolInfoMap().keySet();
+		for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
+			// unsubscribe and remove the underlying symbol
+			MSymbol symbol = marketDataTracker.getMarketDataFeedService().symbolFromString(subscribedUnderlyingSymbol);
+			marketDataTracker.simpleUnsubscribe(symbol);
+		}
 		symbolComposite.removeUnderlyingSymbol();
 		OptionMessagesComposite messagesComposite = getOptionMessagesComposite();
-		messagesComposite.unlistenAllMarketData(getMarketDataTracker());
+		messagesComposite.unlistenAllMarketData(marketDataTracker);
 	}
 
 	private boolean isOrderCapacityAndOpenCloseAllowed() {
@@ -320,8 +321,32 @@ public class OptionOrderTicketControllerHelper extends
 					new UpdateValueStrategy()
 			);
 			addControlStateListeners(whichControl, validator);
+			addModifyListener(whichControl);
 		}
 		optionSeriesManager.updateOptionSymbolFromLocalCache();
+	}
+	
+	public void addModifyListener(final Control control) {
+
+		control.addListener(SWT.Modify, new Listener() {
+
+			public void handleEvent(Event event) {
+				Text optionSymbolControl = (Text) control;
+				String optionSymbol = "" + optionSymbolControl.getText();
+				if (OptionMarketDataUtils.isOptionSymbol(optionSymbol)) {
+					String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
+					getOptionMessagesComposite().setFilterOptionContractSymbol(optionSymbol);
+					try {
+						listenOptionMarketData(root);
+					} catch (MarketceteraException e) {
+						PhotonPlugin.getMainConsoleLogger().error(
+								"Exception requesting quotes for "
+										+ optionSymbol);
+					}
+				}
+			}
+		});
+
 	}
 
 	// todo: Remove this method if it remains unused.
@@ -393,8 +418,7 @@ public class OptionOrderTicketControllerHelper extends
 		bindingHelper.initIntToImageConverterBuilder(
 				putOrCallConverterBuilder, PutOrCallImage.values());
 	}
-
-
+	
 	@Override
 	public void onQuote(final Message message) {
 		Display theDisplay = Display.getDefault();
@@ -410,8 +434,14 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	private void onQuoteHelper(Message message) {
-		underlyingSymbolOnQuote(message); // todo:message
-		optionTicket.getBookComposite().onQuote(message);
+		UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite = getUnderlyingSymbolInfoComposite();
+		if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(message)) {
+			underlyingSymbolInfoComposite.onQuote(message);
+		} else {
+			getOptionMessagesComposite().handleQuote(message);
+		}
+		
+
 	}
 
 	public void onDerivativeSecurityList(final Message message) {
@@ -424,15 +454,6 @@ public class OptionOrderTicketControllerHelper extends
 				optionSeriesManager.onMessage(message);
 			}
 			});
-		}
-	}
-
-	private void underlyingSymbolOnQuote(Message message) {
-		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
-		if (symbolComposite != null && !symbolComposite.isDisposed()) {
-			if (symbolComposite.matchUnderlyingSymbol(message)) {
-				symbolComposite.onQuote(message);
-			}
 		}
 	}
 
@@ -455,14 +476,33 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 	public class MDVMarketDataListener extends MarketDataListener {
-		public void onMessage(Message aMessage) {
+		
+		public void onMessageHelper(Message aMessage) {
 			if (FIXMessageUtil.isDerivativeSecurityList(aMessage)){
 				OptionOrderTicketControllerHelper.this.onDerivativeSecurityList(aMessage);
+				OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();
+				optionMessagesComposote.onQuote(aMessage, getMarketDataTracker());
 			} else {
 				OptionOrderTicketControllerHelper.this.onQuote(aMessage);
 			}
 		}
+
+		public void onMessage(final Message aQuote) {
+			Display theDisplay = Display.getDefault();
+			if (theDisplay.getThread() == Thread.currentThread()) {
+				onMessageHelper(aQuote);
+			} else {
+				theDisplay.asyncExec(new Runnable() {
+					public void run() {
+//						if (!getOptionMessagesComposite().getMessagesViewer().getTable().isDisposed())
+							onMessageHelper(aQuote);
+					}
+				});
+			}
+		}
+		
 	}
+
 
 	public OptionSeriesManager getOptionSeriesManager() {
 		return optionSeriesManager;
