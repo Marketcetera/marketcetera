@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
-      version="0.3.1"
+      version="0.4"
       provider-name="Marketcetera LLC">
 
    <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">
@@ -22,12 +22,12 @@
    </url>
 
    <includes
-         id="org.eclipse.rcp"	
-         version="0.0.0"/>
+         id="org.eclipse.rcp"
+         version="3.3.0.v20070607-8y8eE8NEbsN3X_fjWS8HPNG"/>
 
    <includes
          id="org.rubypeople.rdt"
-         version="0.0.0"/>
+         version="0.8.1.609062100PRD"/>
 
    <plugin
          id="net.java.dev.glazedlists"
@@ -54,28 +54,28 @@
          id="org.marketcetera.marketdata"
          download-size="0"
          install-size="0"
-         version="0.3.1"
+         version="0.4.0"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.core"
          download-size="0"
          install-size="0"
-         version="0.3.1"
+         version="0.4.0"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon"
          download-size="0"
          install-size="0"
-         version="0.3.1"
+         version="0.4.0"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon.core"
          download-size="0"
          install-size="0"
-         version="0.3.1"
+         version="0.4.0"
          unpack="false"/>
 
    <plugin
@@ -103,287 +103,287 @@
          id="jfun.parsec"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.1.0"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.console"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20070530"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.views"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.I20070319-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.resources"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070604"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.net"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.I20070531"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070615"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070615"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.forms"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070511"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.filesystem"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.1.0.v20070606"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.runtime.compatibility"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.1.200.v20070502"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.variables"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.0.v20070426"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jface.text"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.workbench.texteditor"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.text"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.ide"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.I20070620"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.debug.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070607-1800"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.I20070614-0800"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.net"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.0.0.I20070516"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.search"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.editors"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.filebuffers"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.debug.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070607-1800"
          unpack="false"/>
 
    <plugin
          id="org.jruby.bsf"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.9.9"
          unpack="false"/>
 
    <plugin
          id="org.apache.lucene"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="1.9.1.v200706111724"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ant.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.1.200.v20070522"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.contenttype"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070319"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.team.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.I20070607"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.runtime.compatibility.auth"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070502"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.core.expressions"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.common"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070426"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.equinox.preferences"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070522"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.help"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070524"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.jface"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.I20070606-0010"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.osgi"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070530"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.swt"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v3346"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.workbench"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.I20070608-1100"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.update.configurator"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070615"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.cheatsheets"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.3.0.v20070507"
          unpack="false"/>
 
    <plugin
          id="org.eclipse.ui.intro"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.v20070530"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon.registry"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.4.0"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.bogusfeed"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="0.4.0"
          unpack="false"/>
 
    <plugin
@@ -391,7 +391,7 @@
          os="macosx"
          download-size="0"
          install-size="0"
-         version="0.0.0"
+         version="3.2.100.I20070605-0010"
          fragment="true"
          unpack="false"/>
 
