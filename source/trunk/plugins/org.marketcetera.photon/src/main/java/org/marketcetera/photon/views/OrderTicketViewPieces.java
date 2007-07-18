@@ -103,10 +103,12 @@ public class OrderTicketViewPieces {
 		gridData.horizontalAlignment = SWT.FILL;
 		gridData.grabExcessHorizontalSpace = false;
 		gridData.verticalAlignment = SWT.CENTER;
-		Point sizeHint = EclipseUtils.getTextAreaSize(controlWithFont, null,
-				charWidthHint, 1.0);
-		// textGridData.heightHint = sizeHint.y;
-		gridData.widthHint = sizeHint.x;
+		if (controlWithFont != null) {
+			Point sizeHint = EclipseUtils.getTextAreaSize(controlWithFont,
+					null, charWidthHint, 1.0);
+			// textGridData.heightHint = sizeHint.y;
+			gridData.widthHint = sizeHint.x;
+		}
 		return gridData;
 	}
 
@@ -297,4 +299,7 @@ public class OrderTicketViewPieces {
 		}
 	}
 
+	public Composite getDefaultParent() {
+		return defaultParent;
+	}
 }
