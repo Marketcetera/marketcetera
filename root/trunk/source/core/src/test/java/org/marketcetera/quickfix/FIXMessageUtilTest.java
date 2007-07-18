@@ -106,6 +106,21 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         return newSingle;
     }
 
+    public static Message createOptionNOS(String optionRoot, String optionContractSpecifier,
+                                          String maturityMonthYear, double strikePrice,
+                                          int putOrCall, double price, double qty,
+                                          char side, FIXMessageFactory msgFactory)
+    {
+        String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
+        Message newSingle = createNOS(optionRoot, price, qty, side, msgFactory);
+        newSingle.setField(new Symbol(optionContractSymbol));
+        newSingle.setField(new MaturityMonthYear(maturityMonthYear));
+        newSingle.setField(new StrikePrice(strikePrice));
+        newSingle.setField(new PutOrCall(putOrCall));
+
+        return newSingle;
+    }
+
     /** This actually creats a NewOrderSingle with a *set* OrderID - which isn't how
      * it comes in through FIX connection originallY
      */
