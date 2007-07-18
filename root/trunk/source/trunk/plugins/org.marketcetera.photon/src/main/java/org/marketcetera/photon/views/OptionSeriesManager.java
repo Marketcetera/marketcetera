@@ -100,8 +100,11 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 				String requestSymbol = ((Text)e.getSource()).getText();
 				if (OptionMarketDataUtils.isOptionSymbol(requestSymbol)){
 					requestSymbol = OptionMarketDataUtils.getOptionRootSymbol(requestSymbol);
+					// Ensure that if the user enters "MSQ+TA" the option root is "MSQ" 
+					ticket.getSymbolText().setText(requestSymbol);
 				}
 				requestOptionRootInfo(requestSymbol);
+				
 				// Looks like the following code was causing: http://trac.marketcetera.org/trac.fcgi/ticket/327
 //				try {
 //					optionContractSymbolModifyListener.setEnabled(false);
@@ -110,7 +113,6 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 //					optionContractSymbolModifyListener.setEnabled(true);
 //				}
 			}
-			
 		});
 	}
 	

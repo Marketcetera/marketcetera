@@ -106,16 +106,20 @@ public class OptionOrderTicketControllerHelper extends
 		getMarketDataTracker().setMarketDataListener(
 				new MDVMarketDataListener());
 
-		{
-			final Text optionSymbolLabel = optionTicket.getOptionSymbolControl();
-			Text symbolText = optionTicket.getSymbolText();
-			symbolText.addModifyListener(new ModifyListener() {
-				public void modifyText(ModifyEvent e) {
-					String symbolString = ((Text)e.getSource()).getText();
-					optionSymbolLabel.setText(symbolString);
-				}
-			});
-		}
+		// All listeners that update option symbols or contract specifiers
+		// should be in OptionSeriesManager. Centralizing them allows us to
+		// enable/disable them as appropriate when setting one of them.
+		
+//		{
+//			final Text optionSymbolLabel = optionTicket.getOptionSymbolControl();
+//			Text symbolText = optionTicket.getSymbolText();
+//			symbolText.addModifyListener(new ModifyListener() {
+//				public void modifyText(ModifyEvent e) {
+//					String symbolString = ((Text)e.getSource()).getText();
+//					optionSymbolLabel.setText(symbolString);
+//				}
+//			});
+//		}
 	}
 	
 	@Override
