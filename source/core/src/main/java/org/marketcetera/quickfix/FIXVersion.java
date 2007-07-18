@@ -22,15 +22,15 @@ import quickfix.field.BeginString;
 
 @ClassVersion("$Id$")
 public enum FIXVersion {
-    FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, "FIX40.xml",
+    FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, 4.0, "FIX40.xml",
           new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING, new quickfix.fix40.MessageFactory(), new FIXMessageAugmentor_40())),
-    FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING, "FIX41.xml",
+    FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING, 4.1, "FIX41.xml",
             new FIXMessageFactory(FIXDataDictionary.FIX_4_1_BEGIN_STRING, new quickfix.fix41.MessageFactory(), new FIXMessageAugmentor_41())),
-    FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING, "FIX42.xml",
+    FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING, 4.2, "FIX42.xml",
             new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING, new quickfix.fix42.MessageFactory(), new FIXMessageAugmentor_42())),
-    FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, "FIX43.xml",
+    FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, 4.3, "FIX43.xml",
             new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new quickfix.fix43.MessageFactory(), new FIXMessageAugmentor_43())),
-    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, "FIX44.xml",
+    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44.xml",
             new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
@@ -57,8 +57,9 @@ public enum FIXVersion {
     }
 
 
-    private FIXVersion (String inVersion, String inDDURL, FIXMessageFactory inFactory) {
+    private FIXVersion (String inVersion, double versionAsDouble, String inDDURL, FIXMessageFactory inFactory) {
         version = inVersion;
+        this.versionAsDouble = versionAsDouble; 
         msgFactory = inFactory;
         dataDictionaryURL = inDDURL;
     }
@@ -66,13 +67,18 @@ public enum FIXVersion {
 
     private FIXMessageFactory msgFactory;
     private final String version;
+    private final double versionAsDouble;
     private final String dataDictionaryURL;
 
     public String toString() {
         return version;
     }
 
-    public FIXMessageFactory getMessageFactory() {
+    public double getVersionAsDouble() {
+		return versionAsDouble;
+	}
+
+	public FIXMessageFactory getMessageFactory() {
         return msgFactory;
     }
 
