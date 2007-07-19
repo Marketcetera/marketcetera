@@ -6,7 +6,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -17,6 +19,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.IMarketDataListCallback;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -32,6 +35,7 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.MsgType;
 import quickfix.field.NoRelatedSym;
+import quickfix.field.SecurityReqID;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
 
@@ -64,6 +68,8 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	 * This will be "MSQ+HB" for example.
 	 */
 	private String lastUncachedOptionContractSymbol;
+
+	private ISubscription lastSubscription;
 	
 	public OptionSeriesManager(IOptionOrderTicket ticket) {
 		this.ticket = ticket;
@@ -109,8 +115,8 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 				if (OptionMarketDataUtils.isOptionSymbol(optionRoot)){
 					optionContractSymbol = optionRoot;
 					optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionRoot);
-					// Ensure that if the user enters "MSQ+TA" the option root is "MSQ" 
-					ticket.getSymbolText().setText(optionRoot);
+					// What the user enters in the "Symbol/Root" field should never be changed by the application 
+					//ticket.getSymbolText().setText(optionRoot);
 				}
 				requestOptionRootInfo(optionRoot, optionContractSymbol);
 				
@@ -162,11 +168,16 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		String expirationMonth = ticket.getExpireMonthCombo().getText();
 		String strikePrice = ticket.getStrikePriceControl().getText();
 		Integer putOrCall = ticket.getPutOrCall();
-		String optionRoot = ticket.getSymbolText().getText();
+		String optionSymbolOrRoot = ticket.getSymbolText().getText();
 
 		boolean textWasSet = false;
-		OptionContractData optionContract = cacheEntry.getOptionContractData(
-				optionRoot, expirationYear, expirationMonth, strikePrice, putOrCall);
+		OptionContractData optionContract;
+		if (OptionMarketDataUtils.isOptionSymbol(optionSymbolOrRoot)){
+			optionContract = symbolToContractMap.get(optionSymbolOrRoot);
+		} else {
+			optionContract = cacheEntry.getOptionContractData(
+					optionSymbolOrRoot, expirationYear, expirationMonth, strikePrice, putOrCall);
+		}
 		if (optionContract != null) {
 			MSymbol optionContractSymbol = optionContract.getOptionSymbol();
 			if (optionContractSymbol != null) {
@@ -203,9 +214,12 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	}
 
 	private void requestOptionRootInfo(String optionRoot, String optionContractSymbol) {
-		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 
 		if (!optionContractCache.containsKey(optionRoot)) {
+			PhotonPlugin.getMainConsoleLogger().debug("Requesting option root info for :"+optionRoot+"("+optionContractSymbol+")");
+
+			MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+
 			// Remember the option contract e.g. "MSQ+HB" so that when the
 			// market data arrives later, we can update the combo choices
 			// accordingly.
@@ -213,7 +227,9 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 			
 			Message query = OptionMarketDataUtils.newOptionRootQuery(optionRoot);
 			try {
-				service.getMarketDataFeed().asyncQuery(query);
+				synchronized (this){
+					lastSubscription = service.getMarketDataFeed().asyncQuery(query);
+				}
 			} catch (MarketceteraException e) {
 				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception getting market data: "+e);
 			}
@@ -241,61 +257,68 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 
 	private void handleMarketDataList(Message derivativeSecurityList) {
 		String optionRoot = null;
+		Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
 		try {
-			StringField underlyingSymbolField = derivativeSecurityList.getField(new UnderlyingSymbol());
-			if(underlyingSymbolField != null) {
-				optionRoot = underlyingSymbolField.getValue();
+			optionRoot = derivativeSecurityList.getString(UnderlyingSymbol.FIELD);
+			
+			if (mainConsoleLogger.isDebugEnabled()){
+				String reqID = "";
+				try { reqID = derivativeSecurityList.getString(SecurityReqID.FIELD); } catch (FieldNotFound fnf) {}
+				mainConsoleLogger.debug("Received derivative list for "+optionRoot+" ("+reqID+")");
 			}
+			// This old code assumed the derivativeSecurityList coming back 
+			// was for the same underlying symbol as the current SymbolText.
+			//
+//	        String symbolText = ticket.getSymbolText().getText();
+//	        if (OptionMarketDataUtils.isOptionSymbol(symbolText)){
+//	        	symbolText = OptionMarketDataUtils.getOptionRootSymbol(symbolText);
+//	        }
+			handleMarketDataList(derivativeSecurityList, optionRoot);
 		}
-		catch(Exception anyException) {
-			PhotonPlugin.getMainConsoleLogger().debug("Failed to find underlying symbol in DerivativeSecurityList: " + derivativeSecurityList, anyException);
+		catch(FieldNotFound anyException) {
+			mainConsoleLogger.debug("Failed to find underlying symbol in DerivativeSecurityList: " + derivativeSecurityList, anyException);
 		}
-		if(optionRoot == null || optionRoot.length() == 0) {
-			// todo: Should we throw an exception here?
-			return;
-		}
-		// This old code assumed the derivativeSecurityList coming back 
-		// was for the same underlying symbol as the current SymbolText.
-		//
-//        String symbolText = ticket.getSymbolText().getText();
-//        if (OptionMarketDataUtils.isOptionSymbol(symbolText)){
-//        	symbolText = OptionMarketDataUtils.getOptionRootSymbol(symbolText);
-//        }
-		handleMarketDataList(derivativeSecurityList, optionRoot);
     }
 	
-	private void handleMarketDataList(Message derivativeSecurityList, String optionRoot) {
+	private void handleMarketDataList(Message derivativeSecurityList, String optionRootToDisplay) {
         List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
+        ISubscription subscription;
+        synchronized (this){
+        	subscription = lastSubscription;
+        	lastSubscription = null;
+        }
+        
         try {
-            optionContracts = getOptionExpirationMarketData(optionRoot, derivativeSecurityList);
+            optionContracts = getOptionExpirationMarketData(derivativeSecurityList);
         } catch (Exception anyException) {
             PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - ", anyException);
             return;
         }
-        if (optionContracts != null && !optionContracts.isEmpty()) {
+        if (optionContracts != null) {
         	OptionSeriesCollection cacheEntry = new OptionSeriesCollection(
                     optionContracts);
-            optionContractCache.put(optionRoot, cacheEntry);
+        	Set<String> optionRoots = cacheEntry.getOptionRoots();
+        	for (String optionRoot : optionRoots) {
+            	optionContractCache.put(optionRoot, cacheEntry);
+			}
             for (OptionContractData optionContractData : optionContracts) {
             	symbolToContractMap.put(
             			optionContractData.getOptionSymbol(),
             			optionContractData);
 			}
             
-            conditionallyUpdateInputControls(optionRoot, lastUncachedOptionContractSymbol);
             lastUncachedOptionContractSymbol = null;
+        }
+        if (subscription == null || subscription.isResponse(derivativeSecurityList)){
+        	conditionallyUpdateInputControls(optionRootToDisplay, lastUncachedOptionContractSymbol);
         }
     }
     
 	/**
-	 * @param symbolFilter
-	 *            the UnderlyingSymbol in each message is checked to ensure that
-	 *            it starts with the symbolFilter. Underliers that do not match
-	 *            are not processed. Specify null to process all messages.
 	 * @throws MarketceteraFIXException 
 	 */
 	private List<OptionContractData> getOptionExpirationMarketData(
-			final String symbolFilter, Message derivativeSecurityListMessage) 
+			Message derivativeSecurityListMessage) 
 			throws MarketceteraException {
 		List<OptionContractData> optionExpirations = new ArrayList<OptionContractData>();
 		if(derivativeSecurityListMessage == null) {
@@ -408,15 +431,15 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		String originalText = combo.getText();
 		String newText = "";
 		combo.removeAll();
-		boolean first = true;
+//		boolean first = true;
 		for (String choice : choices) {
 			if (choice != null) {
 				combo.add(choice);
-				// Use the first choice if none match the original text.
-				if (first) {
-					newText = choice;
-					first = false;
-				}
+//				// Use the first choice if none match the original text.
+//				if (first) {
+//					newText = choice;
+//					first = false;
+//				}
 				if (choice.equals(originalText)) {
 					newText = choice;
 				}

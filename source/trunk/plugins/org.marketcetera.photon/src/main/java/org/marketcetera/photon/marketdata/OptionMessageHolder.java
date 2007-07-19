@@ -21,22 +21,20 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 	private static Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+[a-zA-Z]{2}");
 	
 	
-	public OptionMessageHolder(MSymbol symbol,
+	public OptionMessageHolder(String optionRootSymbol,
 			FieldMap strikeInfo) throws ParseException, FieldNotFound
 	{
 		super(OptionInfoComponent.class);
 		Pair<Integer, Integer> monthYear = OptionMarketDataUtils.getMaturityMonthYear(strikeInfo);
-		String optionRootSymbol = getRootSymbol(symbol.getBaseSymbol());
 		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, new BigDecimal(strikeInfo.getString(StrikePrice.FIELD)));
 		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);
 	}
 	
-	public OptionMessageHolder(MSymbol symbol,
+	public OptionMessageHolder(String optionRootSymbol,
 			FieldMap strikeInfo, FieldMap callExtraInfo,
 			FieldMap putExtraInfo) throws ParseException, FieldNotFound {
 		super(OptionInfoComponent.class);
 		Pair<Integer, Integer> monthYear = OptionMarketDataUtils.getMaturityMonthYear(strikeInfo);
-		String optionRootSymbol = getRootSymbol(symbol.getBaseSymbol());
 		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, new BigDecimal(strikeInfo.getString(StrikePrice.FIELD)));
 		
 		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);

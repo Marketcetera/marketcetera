@@ -334,7 +334,7 @@ public class OptionMarketDataView extends ViewPart implements
 			MSymbol symbol = service.symbolFromString(subscribedUnderlyingSymbol);
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
-		optionMessagesComposite.unlistenAllMarketData(marketDataTracker);
+		optionMessagesComposite.clear();
 	}
 
 

@@ -193,7 +193,6 @@ public class OptionMessagesComposite extends Composite {
 
 	private void initializeDataMaps() {
 		optionSymbolToKeyMap = new HashMap<String, OptionPairKey>();
-//		optionSymbolToSideMap = new HashMap<String, Boolean>();
 		optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
 	}
 
@@ -210,6 +209,7 @@ public class OptionMessagesComposite extends Composite {
 		}
     }
 
+	@SuppressWarnings("unchecked")
 	private void createTable(Composite parent) {
         messageTable = createMessageTable(parent);
 		messagesViewer = createTableViewer(messageTable);
@@ -428,8 +428,7 @@ public class OptionMessagesComposite extends Composite {
 //		optionSymbolToSideMap.clear();
 	}
 
-	public void unlistenAllMarketData(MarketDataFeedTracker marketDataTracker) {
-		unsubscribeOptions(marketDataTracker);
+	public void clear() {
 		EventList<OptionMessageHolder> inputList = getInput();
 		if (inputList != null && inputList.size() > 0) {
 			getInput().clear();
@@ -444,22 +443,6 @@ public class OptionMessagesComposite extends Composite {
 		super.dispose();
 	}
 	
-	protected void unsubscribeOptions(MarketDataFeedTracker marketDataTracker) {
-		 MarketDataFeedService service = marketDataTracker
-				.getMarketDataFeedService();
-		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();
-		MSymbol contractSymbolToUnsubscribe = null;
-		for (String optionSymbol : contractSymbols) {
-			contractSymbolToUnsubscribe = service
-					.symbolFromString(optionSymbol);
-			marketDataTracker.simpleUnsubscribe(contractSymbolToUnsubscribe);
-		}
-		try {
-			service.unsubscribe(optionMarketDataSubscription);
-		} catch (MarketceteraException e) {
-		}
-	}
-	
 	public void onQuote(Message quote, MarketDataFeedTracker marketDataTracker) {
 		if (optionListRequest != null && optionListRequest.isResponse(quote)) {
 			handleDerivativeSecuritiyList(quote, marketDataTracker);
@@ -471,7 +454,10 @@ public class OptionMessagesComposite extends Composite {
 		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
 		if (FIXMessageUtil.isDerivativeSecurityList(derivativeSecurityList) && feed != null){
 			try {
-				int numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
+				int numDerivs = 0;
+				if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
+					numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
+				}
 				EventList<OptionMessageHolder> list = getInput();
 				for (int i = 1; i <= numDerivs; i++)
 				{
@@ -480,8 +466,8 @@ public class OptionMessagesComposite extends Composite {
 						derivativeSecurityList.getGroup(i, info);
 	
 						int putOrCall = OptionMarketDataUtils.getOptionType(info);
-						MSymbol optionSymbol = feed.symbolFromString(info.getString(Symbol.FIELD));
-						subscribeOption(optionSymbol, info, marketDataTracker);
+						String optionSymbolString = info.getString(Symbol.FIELD);
+						MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
 						OptionPairKey optionKey;
 							optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
 						optionSymbolToKeyMap.put(optionSymbol.getFullSymbol(), optionKey);
@@ -489,7 +475,7 @@ public class OptionMessagesComposite extends Composite {
 						if (optionContractMap.containsKey(optionKey)){
 							holder = optionContractMap.get(optionKey);
 						} else {
-							holder = new OptionMessageHolder(optionSymbol, info);
+							holder = new OptionMessageHolder(OptionMarketDataUtils.getOptionRootSymbol(optionSymbolString), info);
 							optionContractMap.put(optionKey, holder);
 							if (!showSingleLineOptionData) {							
 								list.add(holder);
@@ -524,16 +510,6 @@ public class OptionMessagesComposite extends Composite {
 		}
 	}
 
-	
-	private void subscribeOption(MSymbol optionSymbol, Group message, MarketDataFeedTracker marketDataTracker) {
-		message.setField(new Symbol(optionSymbol.getBaseSymbol()));
-		try {
-			marketDataTracker.simpleSubscribe(optionSymbol);
-		} catch (MarketceteraException e) {
-			PhotonPlugin.getMainConsoleLogger().warn(
-					"Error subscribing to quotes for " + optionSymbol);
-		}
-	}
 	
 	public void handleQuote(Message marketDataRefresh){
 		String symbol;
@@ -573,6 +549,8 @@ public class OptionMessagesComposite extends Composite {
 	}
 
 	public void requestOptionSecurityList(final MSymbol symbol, MarketDataFeedTracker marketDataTracker) throws MarketceteraException {
+		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: "+symbol);
+
 		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
 
 		Message query = null;

@@ -49,7 +49,7 @@ public class OptionMarketDataUtils {
 		 * specifies that the receiver should look in SecurityType field for
 		 * more info
 		 */
-		requestMessage.setField(new SecurityListRequestType(1));
+		requestMessage.setField(new SecurityListRequestType(SecurityListRequestType.SECURITYTYPE_AND_OR_CFICODE));
 //		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new UnderlyingSymbol(underlyingSymbol
 				.getBaseSymbol()));
@@ -72,7 +72,7 @@ public class OptionMarketDataUtils {
 		 * specifies that the receiver should look in SecurityType field for
 		 * more info
 		 */
-		requestMessage.setField(new SecurityListRequestType(0));
+		requestMessage.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));
 //		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new Symbol(optionRoot));
 		return requestMessage;
