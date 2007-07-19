@@ -32,7 +32,7 @@ public class OptionMessageHolderTest extends TestCase {
 		FieldMap putMessage = new MarketDataSnapshotFullRefresh();
 		callMessage.setField(new Symbol("IBM+RE"));
 
-		OptionMessageHolder holder = new OptionMessageHolder(symbol, strikeInfo, callMessage, putMessage);
+		OptionMessageHolder holder = new OptionMessageHolder("IBM", strikeInfo, callMessage, putMessage);
 		OptionPairKey key = holder.getKey();
 		assertEquals(0, key.getExpirationDay());
 		assertEquals(11, key.getExpirationMonth());
@@ -59,7 +59,7 @@ public class OptionMessageHolderTest extends TestCase {
 		FieldMap putExtraInfo = new DerivativeSecurityList.NoRelatedSym();
 		putExtraInfo.setField(new Symbol("IBM+RE"));
 
-		OptionMessageHolder holder = new OptionMessageHolder(symbol, strikeInfo, callExtraInfo, putExtraInfo);
+		OptionMessageHolder holder = new OptionMessageHolder("IBM", strikeInfo, callExtraInfo, putExtraInfo);
 		holder.setMarketData(PutOrCall.CALL, callMessage);
 		holder.setMarketData(PutOrCall.PUT, putMessage);
 		assertTrue(callMessage == holder.getMarketDataForSymbol("IBM+AE"));
