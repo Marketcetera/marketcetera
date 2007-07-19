@@ -286,7 +286,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 
 	private void createStrikeBorderComposite(Composite parent) {
 		strikePriceControl = new Combo(parent, SWT.BORDER);
-		orderTicketViewPieces.assignDefaultComboGridData(strikePriceControl, "STR");  //$NON-NLS-1$
+		orderTicketViewPieces.assignDefaultComboGridData(strikePriceControl, "123.5");  //$NON-NLS-1$
 		// addSelectAllFocusListener(strikePriceControl);
 
 		orderTicketViewPieces
