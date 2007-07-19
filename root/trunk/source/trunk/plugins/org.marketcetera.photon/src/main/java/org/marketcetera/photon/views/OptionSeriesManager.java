@@ -255,6 +255,9 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 //		}
 //	}
 
+	/**
+	 * This method must be called from the UI thread.
+	 */
 	private void handleMarketDataList(Message derivativeSecurityList) {
 		String optionRoot = null;
 		Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
@@ -280,13 +283,12 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		}
     }
 	
+	/**
+	 * This method must be called from the UI thread.
+	 * todo: Add check.
+	 */
 	private void handleMarketDataList(Message derivativeSecurityList, String optionRootToDisplay) {
         List<OptionContractData> optionContracts = new ArrayList<OptionContractData>();
-        ISubscription subscription;
-        synchronized (this){
-        	subscription = lastSubscription;
-        	lastSubscription = null;
-        }
         
         try {
             optionContracts = getOptionExpirationMarketData(derivativeSecurityList);
@@ -295,6 +297,8 @@ public class OptionSeriesManager implements IMarketDataListCallback {
             return;
         }
         if (optionContracts != null) {
+        	// Always cache the new contract market data, even if it's not what
+			// was requested.
         	OptionSeriesCollection cacheEntry = new OptionSeriesCollection(
                     optionContracts);
         	Set<String> optionRoots = cacheEntry.getOptionRoots();
@@ -306,16 +310,30 @@ public class OptionSeriesManager implements IMarketDataListCallback {
             			optionContractData.getOptionSymbol(),
             			optionContractData);
 			}
-            
-            lastUncachedOptionContractSymbol = null;
-        }
-        if (subscription == null || subscription.isResponse(derivativeSecurityList)){
-        	conditionallyUpdateInputControls(optionRootToDisplay, lastUncachedOptionContractSymbol);
+
+            boolean doUpdateInputControls = false;
+            // todo: This method must always be called from the UI thread, so
+			// this doesn't need to be synchronized.
+			synchronized (this) {
+				// Only update the combo boxes if the option contracts match
+				// what was last requested.
+				if (lastSubscription != null
+						&& lastSubscription.isResponse(derivativeSecurityList)) {
+					doUpdateInputControls = true;
+					lastSubscription = null;
+				}
+			}
+			
+			if (doUpdateInputControls) {
+				conditionallyUpdateInputControls(optionRootToDisplay,
+						lastUncachedOptionContractSymbol);
+				lastUncachedOptionContractSymbol = null;
+			}
         }
     }
     
 	/**
-	 * @throws MarketceteraFIXException 
+	 * @throws MarketceteraFIXException
 	 */
 	private List<OptionContractData> getOptionExpirationMarketData(
 			Message derivativeSecurityListMessage) 
