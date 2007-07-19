@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,13 +61,13 @@ public class OptionSeriesCollection {
 
 		// Use ints for the months so they're chronologically sortable.
 		HashSet<Integer> monthsSet = new HashSet<Integer>();
-		HashSet<String> strikePricesSet = new HashSet<String>();
+		HashSet<BigDecimal> strikePricesSet = new HashSet<BigDecimal>();
 
 		for (OptionContractData optionContract : optionContracts) {
 			logContractSpecs(optionContract);
 			yearsSet.add(optionContract.getExpirationYearUIString());
 			monthsSet.add(optionContract.getExpirationMonth());
-			strikePricesSet.add(optionContract.getStrikePriceUIString());
+			strikePricesSet.add(optionContract.getStrikePrice());
 			optionSymbolToInfoMap.put(optionContract.getOptionSymbol(), optionContract);
 			uiInfoSet.put(optionContract, optionContract);
 			optionRoots.add(optionContract.getOptionRoot());
@@ -89,8 +90,15 @@ public class OptionSeriesCollection {
 			expirationMonthsForUI.add(monthAbbrev);
 		}
 
-		strikePricesForUI.addAll(strikePricesSet);
-		Collections.sort(strikePricesForUI);
+		ArrayList<BigDecimal> strikeDecimalsList = new ArrayList<BigDecimal>();
+		strikeDecimalsList.addAll(strikePricesSet);
+		
+		Collections.sort(strikeDecimalsList);
+		for (BigDecimal strike : strikeDecimalsList) {
+			String strikeString = strike.toPlainString();
+			strikePricesForUI.add(strikeString);
+		}
+
 	}
 
 	public OptionContractData getOptionInfoForSymbol(MSymbol optionContractSymbol) {
