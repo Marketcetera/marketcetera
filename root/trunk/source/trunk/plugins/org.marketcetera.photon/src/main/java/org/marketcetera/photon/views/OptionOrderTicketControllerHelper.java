@@ -19,6 +19,7 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
@@ -39,12 +40,14 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.FieldType;
+import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.OpenClose;
 import quickfix.field.OrderCapacity;
 import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
@@ -94,16 +97,18 @@ public class OptionOrderTicketControllerHelper extends
 		// should be in OptionSeriesManager. Centralizing them allows us to
 		// enable/disable them as appropriate when setting one of them.
 		
-//		{
-//			final Text optionSymbolLabel = optionTicket.getOptionSymbolControl();
-//			Text symbolText = optionTicket.getSymbolText();
-//			symbolText.addModifyListener(new ModifyListener() {
-//				public void modifyText(ModifyEvent e) {
-//					String symbolString = ((Text)e.getSource()).getText();
-//					optionSymbolLabel.setText(symbolString);
-//				}
-//			});
-//		}
+		{
+			final Text optionSymbolLabel = optionTicket.getOptionSymbolControl();
+			Text symbolText = optionTicket.getSymbolText();
+			symbolText.addModifyListener(new ModifyListener() {
+				public void modifyText(ModifyEvent e) {
+					String symbolString = ((Text)e.getSource()).getText();
+					optionSymbolLabel.setText(symbolString);
+					//only listens if it's an option symbol
+					listenMarketData(symbolString);
+				}
+			});
+		}
 	}
 	
 	@Override
@@ -141,10 +146,11 @@ public class OptionOrderTicketControllerHelper extends
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
 		MSymbol optionSymbol = new MSymbol(optionRootStr);
 		marketDataTracker.simpleSubscribe(optionSymbol);
-		OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();
-		optionMessagesComposote.requestOptionSecurityList(optionSymbol, marketDataTracker);
-		optionMessagesComposote.requestOptionMarketData(optionSymbol, marketDataTracker);
-		optionMessagesComposote.getMessagesViewer().refresh();
+		OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
+		optionMessagesComposite.requestOptionSecurityList(optionSymbol, marketDataTracker);
+		optionMessagesComposite.requestOptionMarketData(optionSymbol, marketDataTracker);
+		optionMessagesComposite.getMessagesViewer().refresh();
+		
 	}
 	
 
@@ -163,7 +169,7 @@ public class OptionOrderTicketControllerHelper extends
 		}
 		symbolComposite.removeUnderlyingSymbol();
 		OptionMessagesComposite messagesComposite = getOptionMessagesComposite();
-		messagesComposite.unlistenAllMarketData(marketDataTracker);
+		
 	}
 
 	private boolean isOrderCapacityAndOpenCloseAllowed() {
@@ -508,4 +514,14 @@ public class OptionOrderTicketControllerHelper extends
 		return optionSeriesManager;
 	}
 
+	
+	@Override
+	public void listenMarketData(String symbol) {
+		if (OptionMarketDataUtils.isOptionSymbol(symbol)){
+			PhotonPlugin.getMainConsoleLogger().debug("Listening for option market data for: "+symbol);
+			super.listenMarketData(symbol);
+		}
+	}
+	
+	
 }

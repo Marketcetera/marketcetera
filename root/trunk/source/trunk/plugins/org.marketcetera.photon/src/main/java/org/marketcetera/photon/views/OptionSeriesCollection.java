@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import org.marketcetera.core.MSymbol;
@@ -31,6 +32,8 @@ public class OptionSeriesCollection {
 	
 	private TreeMap<OptionContractData, OptionContractData> uiInfoSet;
 
+	private Set<String> optionRoots;
+
 	public OptionSeriesCollection(List<OptionContractData> optionContracts) {
 		parseOptionContracts(optionContracts);
 	}
@@ -53,16 +56,20 @@ public class OptionSeriesCollection {
 		expirationMonthsForUI = new ArrayList<String>();
 		strikePricesForUI = new ArrayList<String>();
 		HashSet<String> yearsSet = new HashSet<String>();
+		optionRoots = new HashSet<String>();
+
 		// Use ints for the months so they're chronologically sortable.
 		HashSet<Integer> monthsSet = new HashSet<Integer>();
 		HashSet<String> strikePricesSet = new HashSet<String>();
 
 		for (OptionContractData optionContract : optionContracts) {
+			logContractSpecs(optionContract);
 			yearsSet.add(optionContract.getExpirationYearUIString());
 			monthsSet.add(optionContract.getExpirationMonth());
 			strikePricesSet.add(optionContract.getStrikePriceUIString());
 			optionSymbolToInfoMap.put(optionContract.getOptionSymbol(), optionContract);
 			uiInfoSet.put(optionContract, optionContract);
+			optionRoots.add(optionContract.getOptionRoot());
 		}
 
 		// Ensure that the months/years/strikes appear in ascending order when
@@ -107,5 +114,9 @@ public class OptionSeriesCollection {
 
 	public List<String> getStrikePricesForUI() {
 		return strikePricesForUI;
+	}
+
+	public Set<String> getOptionRoots() {
+		return optionRoots;
 	}
 }
