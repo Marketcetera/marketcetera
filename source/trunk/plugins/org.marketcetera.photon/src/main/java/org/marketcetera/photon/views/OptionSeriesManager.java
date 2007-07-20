@@ -71,8 +71,16 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	 * This will be "MSQ+HB" for example.
 	 */
 	private String lastUncachedOptionContractSymbol;
+	
+	/**
+	 * When the user requests an option symbol in the alternate format "MSQ October-07 75 Calls",
+	 * we need to remember it to populate the combo box choices.
+	 */
+	private OptionContractData lastAltFormatOptionContract;
 
 	private ISubscription lastSubscription;
+	
+	private OptionSymbolAlternateFormatParser altFormatParser = new OptionSymbolAlternateFormatParser();
 	
 	public OptionSeriesManager(IOptionOrderTicket ticket) {
 		this.ticket = ticket;
@@ -115,13 +123,30 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 			public void focusLost(FocusEvent e) {
 				String optionRoot = ((Text)e.getSource()).getText();
 				String optionContractSymbol = null;
-				if (OptionMarketDataUtils.isOptionSymbol(optionRoot)){
-					optionContractSymbol = optionRoot;
-					optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionRoot);
-					// What the user enters in the "Symbol/Root" field should never be changed by the application 
-					//ticket.getSymbolText().setText(optionRoot);
+				if(altFormatParser.isOptionContractSymbolInAlternateFormat(optionRoot)) {
+					OptionContractData contractData = altFormatParser.parseOptionContractDataAlternateFormat(optionRoot);
+					if(contractData == null) {
+						// todo: Is there a better way to handle this error?
+						optionRoot = null;
+					}
+					else {
+						optionRoot = contractData.getOptionRoot();
+						lastAltFormatOptionContract = contractData;
+					}
 				}
-				requestOptionRootInfo(optionRoot, optionContractSymbol);
+				else {
+					lastAltFormatOptionContract = null;
+					
+					if (OptionMarketDataUtils.isOptionSymbol(optionRoot)){
+						optionContractSymbol = optionRoot;
+						optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionRoot);
+						// What the user enters in the "Symbol/Root" field should never be changed by the application 
+						//ticket.getSymbolText().setText(optionRoot);
+					}
+				}
+				if(optionRoot != null) {
+					requestOptionRootInfo(optionRoot, optionContractSymbol);
+				}
 				
 				// Looks like the following code was causing: http://trac.marketcetera.org/trac.fcgi/ticket/327
 //				try {
@@ -171,16 +196,31 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		String expirationMonth = ticket.getExpireMonthCombo().getText();
 		String strikePrice = ticket.getStrikePriceControl().getText();
 		Integer putOrCall = ticket.getPutOrCall();
-		String optionSymbolOrRoot = ticket.getSymbolText().getText();
-
-		boolean textWasSet = false;
-		OptionContractData optionContract;
-		if (OptionMarketDataUtils.isOptionSymbol(optionSymbolOrRoot)){
-			optionContract = symbolToContractMap.get(optionSymbolOrRoot);
-		} else {
-			optionContract = cacheEntry.getOptionContractData(
-					optionSymbolOrRoot, expirationYear, expirationMonth, strikePrice, putOrCall);
+		
+		OptionContractData optionContract = null;
+		
+		{
+			String optionSymbolOrRoot = ticket.getSymbolText().getText();
+			if (OptionMarketDataUtils.isOptionSymbol(optionSymbolOrRoot)) {
+				// MSQ+HB
+				optionContract = symbolToContractMap.get(optionSymbolOrRoot);
+			} else if (altFormatParser
+					.isOptionContractSymbolInAlternateFormat(optionSymbolOrRoot)) {
+				// MSQ August-07 30 Puts
+				OptionContractData contractDataWithUIValues = altFormatParser
+						.parseOptionContractDataAlternateFormat(optionSymbolOrRoot);
+				optionContract = cacheEntry
+						.getOptionContractDataFromUIValues(contractDataWithUIValues);
+			} 
+			else {
+				// MSQ
+				optionContract = cacheEntry.getOptionContractData(
+						optionSymbolOrRoot, expirationYear, expirationMonth,
+						strikePrice, putOrCall);
+			}
 		}
+		
+		boolean textWasSet = false;
 		if (optionContract != null) {
 			MSymbol optionContractSymbol = optionContract.getOptionSymbol();
 			if (optionContractSymbol != null) {
@@ -492,9 +532,11 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	 *            can be null. When non-null, the current combo choices are
 	 *            updated to reflect the contract symbol.
 	 */
-	private void updateComboChoices(OptionSeriesCollection cacheEntry, String optionContractSymbol) {
+	private void updateComboChoices(OptionSeriesCollection cacheEntry,
+			String optionContractSymbol) {
 		try {
 			setOptionSeriesInfoListenersEnabled(false);
+
 			updateComboChoices(ticket.getExpireMonthCombo(), cacheEntry
 					.getExpirationMonthsForUI());
 			updateComboChoices(ticket.getExpireYearCombo(), cacheEntry
@@ -503,14 +545,13 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 					.getStrikePricesForUI());
 			updateComboChoices(ticket.getPutOrCallCombo(),
 					putOrCallComboChoices);
-			
-			// Assign the current combo choice to match an option contract such as "MSQ+HB"
+
 			if (optionContractSymbol != null
 					&& optionContractSymbol.length() > 0) {
-				
+				// Assign the current combo choice to match an option contract
+				// such as "MSQ+HB"
 				OptionContractData contractData = cacheEntry
-						.getOptionInfoForSymbol(new MSymbol(
-								optionContractSymbol));
+						.getOptionContractData(new MSymbol(optionContractSymbol));
 				if (contractData != null) {
 					assignComboTextIfNonEmpty(ticket.getExpireMonthCombo(),
 							contractData.getExpirationMonthUIString());
@@ -520,6 +561,19 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 							contractData.getStrikePriceUIString());
 					ticket.setPutOrCall(contractData.getPutOrCall());
 				}
+			} else if (lastAltFormatOptionContract != null) {
+				// Assign the current combo choice to match an option contract
+				// such as "MSQ October-07 75 Calls"
+				final OptionContractData contractData = lastAltFormatOptionContract;
+				lastAltFormatOptionContract = null;
+				
+				assignComboTextIfNonEmpty(ticket.getExpireMonthCombo(),
+						contractData.getExpirationMonthUIString());
+				assignComboTextIfNonEmpty(ticket.getExpireYearCombo(),
+						contractData.getExpirationYearUIString());
+				assignComboTextIfNonEmpty(ticket.getStrikePriceControl(),
+						contractData.getStrikePriceUIString());
+				ticket.setPutOrCall(contractData.getPutOrCall());
 			}
 		} finally {
 			setOptionSeriesInfoListenersEnabled(true);

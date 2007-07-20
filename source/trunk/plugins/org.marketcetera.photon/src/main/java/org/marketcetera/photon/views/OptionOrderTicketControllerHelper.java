@@ -486,8 +486,9 @@ public class OptionOrderTicketControllerHelper extends
 		public void onMessageHelper(Message aMessage) {
 			if (FIXMessageUtil.isDerivativeSecurityList(aMessage)){
 				OptionOrderTicketControllerHelper.this.onDerivativeSecurityList(aMessage);
-				OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();
-				optionMessagesComposote.onQuote(aMessage, getMarketDataTracker());
+				// don't commit this change!
+//				OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();
+//				optionMessagesComposote.onQuote(aMessage, getMarketDataTracker());
 			} else {
 				OptionOrderTicketControllerHelper.this.onQuote(aMessage);
 			}

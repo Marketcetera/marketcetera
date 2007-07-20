@@ -82,6 +82,9 @@ public class OptionDateHelper {
 		return getMonthAbbreviation(monthNumber);
 	}
 	
+	/**
+	 * @param monthNumber 1 for JAN, 7 for JUL, this is the usual value of Calendar.MONTH + 1   
+	 */
 	public String getMonthAbbreviation(int monthNumber)
 			throws NumberFormatException {
 		return SHORT_MONTH_STRINGS[monthNumber-1];
