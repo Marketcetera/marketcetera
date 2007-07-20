@@ -46,10 +46,13 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 	IOptionOrderTicket ticket;
 	
 	/**
-	 * Map from option root symbol to cache entry.
+	 * Map from option root symbol (e.g. MSQ) to cache entry.
 	 */
 	private HashMap<String, OptionSeriesCollection> optionContractCache = new HashMap<String, OptionSeriesCollection>();
 
+	/**
+	 * Map from option contract symbol (e.g. MSQ+HB) to cache entry.
+	 */
 	private HashMap<MSymbol, OptionContractData> symbolToContractMap = new HashMap<MSymbol, OptionContractData>();
 
 	private String lastOptionRoot;
@@ -301,17 +304,29 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 			// was requested.
         	OptionSeriesCollection cacheEntry = new OptionSeriesCollection(
                     optionContracts);
+        	boolean doUpdateInputControls = false;
         	Set<String> optionRoots = cacheEntry.getOptionRoots();
         	for (String optionRoot : optionRoots) {
             	optionContractCache.put(optionRoot, cacheEntry);
 			}
             for (OptionContractData optionContractData : optionContracts) {
+            	MSymbol optionContractSymbol = optionContractData
+						.getOptionSymbol();
+				OptionContractData existingOptionContractData = symbolToContractMap
+						.get(optionContractSymbol);
+				if (existingOptionContractData != null
+						&& !existingOptionContractData
+								.equals(optionContractData)) {
+					// The contract has different, presumably newer, information
+					// than the existing cache entry. We need to update the
+					// combo choices.
+					doUpdateInputControls = true;
+				}
             	symbolToContractMap.put(
-            			optionContractData.getOptionSymbol(),
+            			optionContractSymbol,
             			optionContractData);
 			}
 
-            boolean doUpdateInputControls = false;
             // todo: This method must always be called from the UI thread, so
 			// this doesn't need to be synchronized.
 			synchronized (this) {
@@ -325,8 +340,7 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 			}
 			
 			if (doUpdateInputControls) {
-				conditionallyUpdateInputControls(optionRootToDisplay,
-						lastUncachedOptionContractSymbol);
+				forceUpdateInputControls(optionRootToDisplay, lastUncachedOptionContractSymbol);
 				lastUncachedOptionContractSymbol = null;
 			}
         }
@@ -422,12 +436,16 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		}
 		if (doUpdate) {
 			lastOptionRoot = optionRoot;
-			OptionSeriesCollection cacheEntry = optionContractCache
-					.get(optionRoot);
-			if (cacheEntry != null) {
-				updateComboChoices(cacheEntry, optionContractSymbol);
-				updateOptionSymbol(cacheEntry);
-			}
+			forceUpdateInputControls(optionRoot, optionContractSymbol);
+		}
+	}
+    
+    private void forceUpdateInputControls(String optionRoot,
+			String optionContractSymbol) {
+		OptionSeriesCollection cacheEntry = optionContractCache.get(optionRoot);
+		if (cacheEntry != null) {
+			updateComboChoices(cacheEntry, optionContractSymbol);
+			updateOptionSymbol(cacheEntry);
 		}
 	}
     
