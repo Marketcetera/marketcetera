@@ -30,17 +30,17 @@ public class OptionSeriesCollectionTest extends TestCase {
 	}
 
 	public void testGetOptionInfoForSymbol() {
-		OptionContractData optionInfo = optionSeriesCollection.getOptionInfoForSymbol(new MSymbol("IBM+AE"));
+		OptionContractData optionInfo = optionSeriesCollection.getOptionContractData(new MSymbol("IBM+AE"));
 		assertEquals(PutOrCall.CALL, optionInfo.getPutOrCall());
 		assertEquals(BigDecimal.TEN, optionInfo.getStrikePrice());
 		assertEquals((Integer)2008, optionInfo.getExpirationYear());
 
-		optionInfo = optionSeriesCollection.getOptionInfoForSymbol(new MSymbol("IBM+RF"));
+		optionInfo = optionSeriesCollection.getOptionContractData(new MSymbol("IBM+RF"));
 		assertEquals(PutOrCall.PUT, optionInfo.getPutOrCall());
 		assertEquals(BigDecimal.ONE, optionInfo.getStrikePrice());
 		assertEquals((Integer)2007, optionInfo.getExpirationYear());
 
-		assertNull(optionSeriesCollection.getOptionInfoForSymbol(new MSymbol("POI")));
+		assertNull(optionSeriesCollection.getOptionContractData(new MSymbol("POI")));
 	}
 
 	public void testGetOptionContractData() {
@@ -84,16 +84,5 @@ public class OptionSeriesCollectionTest extends TestCase {
 		checkGetCorrespondingPutOrCallContract(series.get(1), series.get(0));
 		checkGetCorrespondingPutOrCallContract(series.get(2), series.get(3));
 		checkGetCorrespondingPutOrCallContract(series.get(3), series.get(2));
-	}
-
-	/**
-	 * Get using an alternate format: MSQ October-07 75 Calls
-	 */
-	public void testGetContractFromAlternateFormat() {
-		String optionContractSymbolAltFormat = "IBM July-08 10 Calls";
-		OptionContractData actualContractData = optionSeriesCollection
-				.getOptionContractDataAlternateFormat(optionContractSymbolAltFormat);
-		OptionContractData expectedContractData = series.get(0);
-		assertSame(expectedContractData, actualContractData);
 	}
 }

@@ -140,37 +140,20 @@ public class OptionSeriesCollection {
 	/**
 	 * @param optionContractSymbol e.g. MSQ+HB 
 	 */
-	public OptionContractData getOptionInfoForSymbol(MSymbol optionContractSymbol) {
+	public OptionContractData getOptionContractData(MSymbol optionContractSymbol) {
 		return optionSymbolToInfoMap.get(optionContractSymbol);
 	}
 	
-	/**
-	 * @param optionContractSymbolAltFormat e.g. "MSQ October-07 75 Calls"
-	 */
-	public OptionContractData getOptionContractDataAlternateFormat(
-			String optionContractSymbolAltFormat) {
-		OptionContractData key = parseOptionContractDataAlternateFormat(optionContractSymbolAltFormat);
-		return uiInfoSet.get(key);
-	}
-	
-	private OptionContractData parseOptionContractDataAlternateFormat(String optionContractSymbolAltFormat) {
-		// todo: implement -- this is in progress
-		String optionRoot = null;
-		String uiExpirationYear = null;
-		String uiExpirationMonth = null;
-		String uiStrikePrice = null;
-		Integer putOrCall = null;
-		
-		OptionContractData contractData = new OptionContractData(optionRoot, uiExpirationYear,
-				uiExpirationMonth, uiStrikePrice, putOrCall);
-		return contractData;
-	}
-	
+
 	public OptionContractData getOptionContractData(String optionRoot, String uiExpirationYear,
 			String uiExpirationMonth, String uiStrikePrice, Integer putOrCall) {
 		OptionContractData key = new OptionContractData(optionRoot, uiExpirationYear,
 				uiExpirationMonth, uiStrikePrice, putOrCall);
 		return uiInfoSet.get(key);
+	}
+	
+	public OptionContractData getOptionContractDataFromUIValues(OptionContractData  contractDataWithUIValues) {
+		return uiInfoSet.get(contractDataWithUIValues);
 	}
 
 	public List<String> getExpirationMonthsForUI() {
