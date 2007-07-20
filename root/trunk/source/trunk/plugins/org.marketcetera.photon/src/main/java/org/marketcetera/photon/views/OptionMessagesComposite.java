@@ -14,14 +14,11 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionInfoComponent;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
@@ -38,7 +35,6 @@ import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
-import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
@@ -161,9 +157,6 @@ public class OptionMessagesComposite extends Composite {
 	private HashMap<OptionPairKey, OptionMessageHolder> optionContractMap;
 	private HashMap<String, OptionPairKey> optionSymbolToKeyMap;
 	private FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
-	
-	private ISubscription optionListRequest;
-	private ISubscription optionMarketDataSubscription;
 	
 	private String filterOptionContractSymbol;
 	private boolean showSingleLineOptionData;
@@ -428,7 +421,8 @@ public class OptionMessagesComposite extends Composite {
 //		optionSymbolToSideMap.clear();
 	}
 
-	public void clear() {
+	public void clear(MarketDataFeedTracker marketDataTracker) {
+		unsubscribeOptions(marketDataTracker);
 		EventList<OptionMessageHolder> inputList = getInput();
 		if (inputList != null && inputList.size() > 0) {
 			getInput().clear();
@@ -437,20 +431,25 @@ public class OptionMessagesComposite extends Composite {
 		getMessagesViewer().refresh();		
 	}
 	
+	private void unsubscribeOptions(MarketDataFeedTracker marketDataTracker) {
+		 MarketDataFeedService service = marketDataTracker
+				.getMarketDataFeedService();
+		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();
+		MSymbol contractSymbolToUnsubscribe = null;
+		for (String optionSymbol : contractSymbols) {
+			contractSymbolToUnsubscribe = service
+					.symbolFromString(optionSymbol);
+			marketDataTracker.simpleUnsubscribe(contractSymbolToUnsubscribe);
+		}
+	}
+	
 	@Override
 	public void dispose() {
 		clearDataMaps();
 		super.dispose();
 	}
-	
-	public void onQuote(Message quote, MarketDataFeedTracker marketDataTracker) {
-		if (optionListRequest != null && optionListRequest.isResponse(quote)) {
-			handleDerivativeSecuritiyList(quote, marketDataTracker);
-			optionListRequest = null;
-		}
-	}
 
-	private void handleDerivativeSecuritiyList(Message derivativeSecurityList, MarketDataFeedTracker marketDataTracker){
+	public void handleDerivativeSecuritiyList(Message derivativeSecurityList, MarketDataFeedTracker marketDataTracker){
 		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
 		if (FIXMessageUtil.isDerivativeSecurityList(derivativeSecurityList) && feed != null){
 			try {
@@ -496,11 +495,11 @@ public class OptionMessagesComposite extends Composite {
 					if (matchingOptionKey != null) {
 						selectedHolder = optionContractMap.get(matchingOptionKey);
 					}
-					list.clear();
-					list.add(selectedHolder);
-				}
-					
-//				optionListRequest = null;
+					if (selectedHolder != null) {
+						list.clear();
+						list.add(selectedHolder);
+					}
+				}					
 				disableErrorLabelText();
 				getMessagesViewer().refresh();
 			} catch (FieldNotFound e) {
@@ -516,8 +515,10 @@ public class OptionMessagesComposite extends Composite {
 		try {
 			symbol = marketDataRefresh.getString(Symbol.FIELD);
 			OptionPairKey key = optionSymbolToKeyMap.get(symbol);
+			OptionMessageHolder line = null;
 			if (key != null){
-				OptionMessageHolder line = optionContractMap.get(key);
+				
+				line = optionContractMap.get(key);
 				FieldMap existingMessage = line.getMarketDataForSymbol(symbol);
 				if (FIXMessageUtil.isMarketDataIncrementalRefresh(marketDataRefresh)
 						&& existingMessage != null){
@@ -527,8 +528,14 @@ public class OptionMessagesComposite extends Composite {
 					existingMessage = marketDataRefresh;
 				}
 				int putOrCall = line.symbolOptionType(symbol);
-				line.setMarketData(putOrCall, existingMessage);
-		
+				line.setMarketData(putOrCall, existingMessage);		
+				
+				if (showSingleLineOptionData && symbol.equals(filterOptionContractSymbol)) {
+					EventList<OptionMessageHolder> list = getInput();
+					list.clear();
+					list.add(line);
+				}
+				
 				getMessagesViewer().update(line, null);
 			} else {
 				PhotonPlugin.getDefault().getMarketDataLogger().debug("Unknown symbol: "+symbol);
@@ -536,30 +543,6 @@ public class OptionMessagesComposite extends Composite {
 		} catch (FieldNotFound e) {
 			PhotonPlugin.getDefault().getMarketDataLogger().debug("Symbol missing from option quote.");
 		}
-	}
-	
-	
-			
-	public void requestOptionMarketData(MSymbol root, MarketDataFeedTracker marketDataTracker) throws MarketceteraException {
-		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
-		MarketDataFeedService marketDataFeed = marketDataTracker.getMarketDataFeedService();
-		if (marketDataFeed != null){
-			optionMarketDataSubscription = marketDataFeed.subscribe(subscribeMessage);
-		}
-	}
-
-	public void requestOptionSecurityList(final MSymbol symbol, MarketDataFeedTracker marketDataTracker) throws MarketceteraException {
-		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: "+symbol);
-
-		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
-
-		Message query = null;
-
-		//Returns a query for all option contracts for the underlying symbol 
-		//symbol = underlyingSymbol  (e.g. MSFT)
-		query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
-
-		optionListRequest = service.getMarketDataFeed().asyncQuery(query);
 	}
 
 	protected HashMap<OptionPairKey, OptionMessageHolder> getOptionContractMap() {

@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
@@ -15,11 +17,11 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
 import org.marketcetera.photon.parser.OrderCapacityImage;
@@ -40,14 +42,12 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.FieldType;
-import quickfix.Group;
 import quickfix.Message;
 import quickfix.field.CFICode;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.OpenClose;
 import quickfix.field.OrderCapacity;
 import quickfix.field.PutOrCall;
-import quickfix.field.SecurityType;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
@@ -67,6 +67,8 @@ public class OptionOrderTicketControllerHelper extends
 	private BindingHelper bindingHelper;
 
 	private OptionSeriesManager optionSeriesManager;
+	
+	private List<ISubscription> putCallSubscriptions;
 
 	public OptionOrderTicketControllerHelper(IOptionOrderTicket ticket, OptionSeriesManager seriesManager) {
 		super(ticket);
@@ -75,6 +77,7 @@ public class OptionOrderTicketControllerHelper extends
 		bindingHelper = new BindingHelper();
 		bindSymbolToModelDirection = false;
 		optionSeriesManager = seriesManager;
+		putCallSubscriptions = new ArrayList<ISubscription>();
 	}
 
 	@Override
@@ -138,28 +141,36 @@ public class OptionOrderTicketControllerHelper extends
 	}
 
 
-	protected void listenOptionMarketData(final String optionRootStr)
+	protected void listenOptionMarketData(final String optionRootStr, final String optionContractStr)
 			throws MarketceteraException {
-		unlisten();
+		unlistenMarketDataAdditional();
 		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
 		symbolComposite.addUnderlyingSymbolInfo(optionRootStr);
 		MSymbol optionSymbol = new MSymbol(optionRootStr);
 		marketDataTracker.simpleSubscribe(optionSymbol);
 		OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
-		optionMessagesComposite.requestOptionSecurityList(optionSymbol, marketDataTracker);
-		optionMessagesComposite.requestOptionMarketData(optionSymbol, marketDataTracker);
-		optionMessagesComposite.getMessagesViewer().refresh();
-		
+		subscribeToPutCallContracts(optionRootStr, optionContractStr);
+		optionMessagesComposite.getMessagesViewer().refresh();		
 	}
 	
+	private void subscribeToPutCallContracts(String optionRootStr, String optionContractStr) throws MarketceteraException {
+		MSymbol optionContractSymbol = new MSymbol(optionContractStr);
+		putCallSubscriptions.add(getMarketDataTracker().simpleSubscribe(optionContractSymbol));
+		OptionSeriesCollection collection = optionSeriesManager.getOptionSeriesCollection(optionRootStr);
+		OptionContractData data = collection.getCorrespondingPutOrCallContract(optionContractSymbol);
+		if (data != null) {
+			MSymbol correspondingSymbol = data.getOptionSymbol();
+			putCallSubscriptions.add(getMarketDataTracker().simpleSubscribe(correspondingSymbol));
+		}
+	}
 
 	@Override
 	protected void unlistenMarketDataAdditional() throws MarketceteraException {
 		super.unlistenMarketDataAdditional();
 		MarketDataFeedTracker marketDataTracker = getMarketDataTracker();
 		UnderlyingSymbolInfoComposite symbolComposite = getUnderlyingSymbolInfoComposite();
-		// remove and unsubscribe underlying symbols and all contracts
+
 		Set<String> subscribedUnderlyingSymbols = symbolComposite
 				.getUnderlyingSymbolInfoMap().keySet();
 		for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
@@ -168,8 +179,20 @@ public class OptionOrderTicketControllerHelper extends
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
 		symbolComposite.removeUnderlyingSymbol();
-		OptionMessagesComposite messagesComposite = getOptionMessagesComposite();
+
+//		OptionMessagesComposite messagesComposite = getOptionMessagesComposite();
+//		messagesComposite.clear(marketDataTracker);
 		
+		try {
+			for (ISubscription subscription : putCallSubscriptions) {
+
+				marketDataTracker.getMarketDataFeedService().unsubscribe(
+						subscription);
+			}
+		} catch (MarketceteraException e) {
+		}
+		putCallSubscriptions = new ArrayList<ISubscription>();
+
 	}
 
 	private boolean isOrderCapacityAndOpenCloseAllowed() {
@@ -343,7 +366,7 @@ public class OptionOrderTicketControllerHelper extends
 					String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
 					getOptionMessagesComposite().setFilterOptionContractSymbol(optionSymbol);
 					try {
-						listenOptionMarketData(root);
+						listenOptionMarketData(root, optionSymbol);
 					} catch (MarketceteraException e) {
 						PhotonPlugin.getMainConsoleLogger().error(
 								"Exception requesting quotes for "
@@ -486,9 +509,8 @@ public class OptionOrderTicketControllerHelper extends
 		public void onMessageHelper(Message aMessage) {
 			if (FIXMessageUtil.isDerivativeSecurityList(aMessage)){
 				OptionOrderTicketControllerHelper.this.onDerivativeSecurityList(aMessage);
-				// don't commit this change!
-//				OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();
-//				optionMessagesComposote.onQuote(aMessage, getMarketDataTracker());
+				OptionMessagesComposite optionMessagesComposote = getOptionMessagesComposite();		
+				optionMessagesComposote.handleDerivativeSecuritiyList(aMessage, getMarketDataTracker());
 			} else {
 				OptionOrderTicketControllerHelper.this.onQuote(aMessage);
 			}
