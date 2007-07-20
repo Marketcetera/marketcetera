@@ -135,7 +135,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	protected void createFormContents() {
 		createOrderTicketInputControls();
 		createOtherExpandableComposite();
-		customFieldsViewPieces.createCustomFieldsExpandableComposite(6);
+		customFieldsViewPieces.createCustomFieldsExpandableComposite(3);
 	
 		createBookSection();
 
@@ -332,7 +332,7 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 	 */
 	private void createOtherExpandableComposite() {
 		GridData gridData3 = new GridData();
-		gridData3.horizontalSpan = 2;
+		gridData3.horizontalSpan = 1;
 		gridData3.verticalAlignment = GridData.BEGINNING;
 		// gridData3.grabExcessHorizontalSpace = true;
 		gridData3.horizontalAlignment = GridData.FILL;
