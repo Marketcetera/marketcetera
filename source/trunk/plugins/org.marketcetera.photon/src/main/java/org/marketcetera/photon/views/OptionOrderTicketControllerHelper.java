@@ -20,7 +20,9 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.parser.OpenCloseImage;
@@ -48,6 +50,7 @@ import quickfix.field.MaturityMonthYear;
 import quickfix.field.OpenClose;
 import quickfix.field.OrderCapacity;
 import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
@@ -108,11 +111,36 @@ public class OptionOrderTicketControllerHelper extends
 					String symbolString = ((Text)e.getSource()).getText();
 					optionSymbolLabel.setText(symbolString);
 					//only listens if it's an option symbol
-					listenMarketData(symbolString);
+					//listenMarketData(symbolString);
 				}
 			});
+			addModifyListener(optionSymbolLabel);
 		}
 	}
+
+	public void addModifyListener(final Control control) {
+
+		control.addListener(SWT.Modify, new Listener() {
+
+			public void handleEvent(Event event) {
+				Text optionSymbolControl = (Text) control;
+				String optionSymbol = "" + optionSymbolControl.getText();
+				if (OptionMarketDataUtils.isOptionSymbol(optionSymbol)) {
+					String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
+					getOptionMessagesComposite().setFilterOptionContractSymbol(optionSymbol);
+					try {
+						listenOptionMarketData(root, optionSymbol);
+					} catch (MarketceteraException e) {
+						PhotonPlugin.getMainConsoleLogger().error(
+								"Exception requesting quotes for "
+										+ optionSymbol);
+					}
+				}
+			}
+		});
+
+	}
+
 	
 	@Override
 	public void clear() {
@@ -155,13 +183,20 @@ public class OptionOrderTicketControllerHelper extends
 	}
 	
 	private void subscribeToPutCallContracts(String optionRootStr, String optionContractStr) throws MarketceteraException {
+		PhotonPlugin.getMainConsoleLogger().error("Requesting put call for " + optionRootStr+" "+optionContractStr);
 		MSymbol optionContractSymbol = new MSymbol(optionContractStr);
-		putCallSubscriptions.add(getMarketDataTracker().simpleSubscribe(optionContractSymbol));
-		OptionSeriesCollection collection = optionSeriesManager.getOptionSeriesCollection(optionRootStr);
-		OptionContractData data = collection.getCorrespondingPutOrCallContract(optionContractSymbol);
-		if (data != null) {
-			MSymbol correspondingSymbol = data.getOptionSymbol();
-			putCallSubscriptions.add(getMarketDataTracker().simpleSubscribe(correspondingSymbol));
+
+        Message subscriptionMessage = MarketDataUtils.newSubscribeBBO(optionContractSymbol, SecurityType.OPTION);
+		MarketDataFeedService marketDataFeedService = getMarketDataTracker().getMarketDataFeedService();
+		if (marketDataFeedService != null){
+			putCallSubscriptions.add(marketDataFeedService.subscribe(subscriptionMessage));
+			OptionSeriesCollection collection = optionSeriesManager.getOptionSeriesCollection(optionRootStr);
+			OptionContractData data = collection.getCorrespondingPutOrCallContract(optionContractSymbol);
+			if (data != null) {
+				MSymbol correspondingSymbol = data.getOptionSymbol();
+		        Message otherSubscriptionMessage = MarketDataUtils.newSubscribeBBO(correspondingSymbol, SecurityType.OPTION);
+				putCallSubscriptions.add(marketDataFeedService.subscribe(otherSubscriptionMessage));
+			}
 		}
 	}
 
@@ -350,33 +385,10 @@ public class OptionOrderTicketControllerHelper extends
 					new UpdateValueStrategy()
 			);
 			addControlStateListeners(whichControl, validator);
-			addModifyListener(whichControl);
 		}
 		optionSeriesManager.updateOptionSymbolFromLocalCache();
 	}
 	
-	public void addModifyListener(final Control control) {
-
-		control.addListener(SWT.Modify, new Listener() {
-
-			public void handleEvent(Event event) {
-				Text optionSymbolControl = (Text) control;
-				String optionSymbol = "" + optionSymbolControl.getText();
-				if (OptionMarketDataUtils.isOptionSymbol(optionSymbol)) {
-					String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
-					getOptionMessagesComposite().setFilterOptionContractSymbol(optionSymbol);
-					try {
-						listenOptionMarketData(root, optionSymbol);
-					} catch (MarketceteraException e) {
-						PhotonPlugin.getMainConsoleLogger().error(
-								"Exception requesting quotes for "
-										+ optionSymbol);
-					}
-				}
-			}
-		});
-
-	}
 
 	// todo: Remove this method if it remains unused.
 	/**

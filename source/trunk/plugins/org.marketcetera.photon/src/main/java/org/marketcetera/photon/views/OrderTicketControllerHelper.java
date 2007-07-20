@@ -76,6 +76,32 @@ import quickfix.field.TimeInForce;
  *
  */
 public class OrderTicketControllerHelper {
+	private final class InitialStateListener implements Listener {
+		private IToggledValidator validator;
+		private boolean initialState = true;
+
+		private InitialStateListener(IToggledValidator validator) {
+			this.validator = validator;
+		}
+
+		public void handleEvent(Event event) {
+			if (initialState) {
+				initialState = false;
+				validator.setEnabled(true);
+			}
+			updateSendButtonState();
+		}
+		
+		public void setValidator(IToggledValidator pValidator) {
+			initialState = true;
+			validator = pValidator;
+		}
+	}
+
+	private static final String INITIAL_STATE_LISTENER = "INITIAL_STATE_LISTENER";
+
+	private static final String UPDATE_SEND_BUTTON_LISTENER = "UPDATE_SEND_BUTTON_LISTENER";
+
 	private IOrderTicket ticket;
 
 	private MarketDataFeedTracker marketDataTracker;
@@ -105,8 +131,6 @@ public class OrderTicketControllerHelper {
 	private HashSet<Control> controlsRequiringUserInput;
 
 	private HashMap<Control, IStatus> inputControlErrorStatus;
-
-	private HashSet<IToggledValidator> allValidators;
 
 	private Realm targetRealm;
 
@@ -144,7 +168,6 @@ public class OrderTicketControllerHelper {
 		hasRealCharDatatype = FieldType.Char.equals(dictionary
 				.getFieldTypeEnum(Side.FIELD));
 
-		allValidators = new HashSet<IToggledValidator>();
 	}
 
 	protected void initListeners() {
@@ -549,33 +572,32 @@ public class OrderTicketControllerHelper {
 	public void addControlStateListeners(Control control,
 			final IToggledValidator validator) {
 
-		allValidators.add(validator);
+		InitialStateListener initialStateListener = (InitialStateListener) control.getData(INITIAL_STATE_LISTENER);
+		if (initialStateListener == null){
+			initialStateListener = new InitialStateListener(validator);
+			control.setData(INITIAL_STATE_LISTENER, initialStateListener);
+			control.addListener(SWT.FocusIn, initialStateListener);
+		} else {
+			initialStateListener.setValidator(validator);
+		}
 
-		control.addListener(SWT.FocusIn, new Listener() {
-			private boolean initialState = true;
-
-			public void handleEvent(Event event) {
-				if (initialState) {
-					initialState = false;
-					validator.setEnabled(true);
+		Listener updateSendButtonListener = (Listener) control.getData(UPDATE_SEND_BUTTON_LISTENER);
+		if (updateSendButtonListener == null){
+			updateSendButtonListener = new Listener() {
+				public void handleEvent(Event event) {
+					if (!controlsRequiringUserInput.isEmpty()
+							&& event.widget instanceof Control) {
+						Control aControl = (Control) event.widget;
+						controlsRequiringUserInput.remove(aControl);
+					}	
+					updateSendButtonState();
 				}
-				updateSendButtonState();
-			}
-
-		});
-
-		control.addListener(SWT.Modify, new Listener() {
-			public void handleEvent(Event event) {
-				if (!controlsRequiringUserInput.isEmpty()
-						&& event.widget instanceof Control) {
-					Control aControl = (Control) event.widget;
-					controlsRequiringUserInput.remove(aControl);
-				}
-				updateSendButtonState();
-			}
-
-		});
+			};
+			control.setData(UPDATE_SEND_BUTTON_LISTENER, updateSendButtonListener);
+			control.addListener(SWT.Modify, updateSendButtonListener);
+		}
 	}
+	
 
 	private IMapChangeListener createMapChangeListener() {
 		return new IMapChangeListener() {
