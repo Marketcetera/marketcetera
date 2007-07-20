@@ -187,7 +187,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		showMessageInOptionTicket(ticket, orderMessage, controller, optionRoot,
 				new String[] { optionContractSpecifier }, new String[] { "10" });
 
-
+		ticket.getOptionSymbolControl().setText(optionContractSymbol);
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol(optionContractSymbol));
 
