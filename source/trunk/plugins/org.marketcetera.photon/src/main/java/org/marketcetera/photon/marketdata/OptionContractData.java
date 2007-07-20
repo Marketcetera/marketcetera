@@ -116,12 +116,13 @@ public class OptionContractData {
 				return false;
 		} else if (!expirationYear.equals(other.expirationYear))
 			return false;
-		if (optionSymbol == null) {
-			if (other.optionSymbol != null)
+		if (!ignorePutOrCall) {
+			if (optionSymbol == null) {
+				if (other.optionSymbol != null)
+					return false;
+			} else if (!optionSymbol.equals(other.optionSymbol))
 				return false;
-		} else if (!optionSymbol.equals(other.optionSymbol))
-			return false;
-		if(!ignorePutOrCall) {
+
 			if (putOrCall != other.putOrCall)
 				return false;
 		}
