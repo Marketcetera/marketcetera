@@ -109,6 +109,19 @@ public class OptionDateHelper {
 			MATURITY_MONTH_NUMBER_FORMAT.format(expirationMonthNumber);
 	}
 
+	/**
+	 * 
+	 * @param expirationMonth the month in human readable numbers (that is 1=JAN)
+	 * @param expirationYear
+	 * @return
+	 */
+	public String formatMaturityDate(int expirationDayNumber, int expirationMonthNumber,
+			int expirationYear) {
+		return formatYear(expirationYear)+
+			MATURITY_MONTH_NUMBER_FORMAT.format(expirationMonthNumber) +
+			MATURITY_MONTH_NUMBER_FORMAT.format(expirationDayNumber);
+	}
+
 	public String formatYear(int expirationYear) {
 		return MATURITY_YEAR_NUMBER_FORMAT.format(expirationYear);
 	}
