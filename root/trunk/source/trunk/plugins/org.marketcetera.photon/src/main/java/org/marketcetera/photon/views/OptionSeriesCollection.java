@@ -2,6 +2,7 @@ package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,19 +18,25 @@ import org.marketcetera.photon.marketdata.OptionContractData;
  * Cache entry of option contract information for display in the UI.
  */
 public class OptionSeriesCollection {
-	private MSymbol underlyingSymbol;
-
 	private List<String> expirationYearsForUI;
 
 	private List<String> expirationMonthsForUI;
 
 	private List<String> strikePricesForUI;
 
-	private String yearPrefix;
-
 	private OptionDateHelper optionDateHelper = new OptionDateHelper();
 	
+	/**
+	 * Map between option contract symbols (MSQ+HB) to the full option contract
+	 * information.
+	 */
 	private HashMap<MSymbol, OptionContractData> optionSymbolToInfoMap;
+	
+	/**
+	 * Map between an option contract symbol (MSQ+HB) to its corresponding
+	 * put/call contract (MSQ+TB) with the same expiration and strike.
+	 */
+	private HashMap<MSymbol, OptionContractData> optionSymbolToPutOrCallMap;
 	
 	private TreeMap<OptionContractData, OptionContractData> uiInfoSet;
 
@@ -58,6 +65,7 @@ public class OptionSeriesCollection {
 		strikePricesForUI = new ArrayList<String>();
 		HashSet<String> yearsSet = new HashSet<String>();
 		optionRoots = new HashSet<String>();
+		optionSymbolToPutOrCallMap = new HashMap<MSymbol, OptionContractData>();
 
 		// Use ints for the months so they're chronologically sortable.
 		HashSet<Integer> monthsSet = new HashSet<Integer>();
@@ -99,8 +107,38 @@ public class OptionSeriesCollection {
 			strikePricesForUI.add(strikeString);
 		}
 
+		createOptionSymbolToPutOrCallMap();
+	}
+	
+	/**
+	 * Create the map between corresponding put and call contracts.
+	 */
+	private void createOptionSymbolToPutOrCallMap() {
+		Collection<OptionContractData> contractsCollection = optionSymbolToInfoMap
+				.values();
+		ArrayList<OptionContractData> contracts = new ArrayList<OptionContractData>();
+		contracts.addAll(contractsCollection);
+		
+		for (OptionContractData targetContract : contracts) {
+			if (targetContract != null
+					&& !optionSymbolToPutOrCallMap.containsKey(targetContract
+							.getOptionSymbol())) {
+				for (OptionContractData checkContract : contracts) {
+					if (targetContract.equalsIgnorePutOrCall(checkContract)) {
+						optionSymbolToPutOrCallMap.put(targetContract
+								.getOptionSymbol(), checkContract);
+						optionSymbolToPutOrCallMap.put(checkContract
+								.getOptionSymbol(), targetContract);
+						break;
+					}
+				}
+			}
+		}
 	}
 
+	/**
+	 * @param optionContractSymbol e.g. MSQ+HB 
+	 */
 	public OptionContractData getOptionInfoForSymbol(MSymbol optionContractSymbol) {
 		return optionSymbolToInfoMap.get(optionContractSymbol);
 	}
@@ -126,5 +164,14 @@ public class OptionSeriesCollection {
 
 	public Set<String> getOptionRoots() {
 		return optionRoots;
+	}
+	
+	/**
+	 * @param optionContractSymbol
+	 *            e.g. MSQ+HB
+	 */
+	public OptionContractData getCorrespondingPutOrCallContract(
+			MSymbol optionContractSymbol) {
+		return optionSymbolToPutOrCallMap.get(optionContractSymbol);
 	}
 }

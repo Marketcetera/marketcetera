@@ -98,8 +98,7 @@ public class OptionContractData {
 		return result;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
+	private boolean equalsImpl(Object obj, boolean ignorePutOrCall) {
 		if (this == obj)
 			return true;
 		if (obj == null)
@@ -122,8 +121,10 @@ public class OptionContractData {
 				return false;
 		} else if (!optionSymbol.equals(other.optionSymbol))
 			return false;
-		if (putOrCall != other.putOrCall)
-			return false;
+		if(!ignorePutOrCall) {
+			if (putOrCall != other.putOrCall)
+				return false;
+		}
 		if (strikePrice == null) {
 			if (other.strikePrice != null)
 				return false;
@@ -135,6 +136,22 @@ public class OptionContractData {
 		} else if (!underlyingSymbol.equals(other.underlyingSymbol))
 			return false;
 		return true;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return equalsImpl(obj, false);
+	}
+	
+	/**
+	 * Use this method to help find the corresponding put for a call contract,
+	 * and vice versa.
+	 * 
+	 * @return true if this OptionContractData equals obj while ignoring
+	 *         put/call.
+	 */
+	public boolean equalsIgnorePutOrCall(Object obj) {
+		return equalsImpl(obj, true);
 	}
 
 	public static OptionContractData fromFieldMap(MSymbol underlyingSymbol, FieldMap optionGroup) throws FieldNotFound, ParseException{

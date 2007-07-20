@@ -585,4 +585,7 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 		}
 	}
 
+	public OptionSeriesCollection getOptionSeriesCollection(String optionRoot) {
+		return optionContractCache.get(optionRoot);
+	}
 }
