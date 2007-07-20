@@ -31,19 +31,25 @@ public class MarketDataUtils {
 			.getMessageFactory();
 
 	public static Message newSubscribeLevel2(MSymbol symbol) {
-		Message message = newSubscribeHelper(symbol);
+		Message message = newSubscribeHelper(symbol, null);
 		message.setField(new MarketDepth(0)); // full book
 
 		return message;
 	}
 
 	public static Message newSubscribeBBO(MSymbol symbol) {
-		Message message = newSubscribeHelper(symbol);
+		Message message = newSubscribeHelper(symbol, null);
 		message.setField(new MarketDepth(1)); // top-of-book
 		return message;
 	}
 
-	private static Message newSubscribeHelper(MSymbol symbol) {
+	public static Message newSubscribeBBO(MSymbol symbol, String securityType) {
+		Message message = newSubscribeHelper(symbol, securityType);
+		message.setField(new MarketDepth(1)); // top-of-book
+		return message;
+	}
+
+	private static Message newSubscribeHelper(MSymbol symbol, String securityType) {
 		Message message = messageFactory
 				.createMessage(MsgType.MARKET_DATA_REQUEST);
 		message.setField(new SubscriptionRequestType(
@@ -52,6 +58,9 @@ public class MarketDataUtils {
 		Group relatedSymGroup = messageFactory.createGroup(
 				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
 		relatedSymGroup.setField(new Symbol(symbol.toString()));
+		if (securityType != null && !"".equals(securityType)){
+			relatedSymGroup.setField(new SecurityType(securityType));
+		}
 		message.addGroup(relatedSymGroup);
 		return message;
 	}
