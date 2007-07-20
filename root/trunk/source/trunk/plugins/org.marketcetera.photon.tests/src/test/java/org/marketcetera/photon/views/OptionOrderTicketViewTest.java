@@ -18,6 +18,7 @@ import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.photon.ui.IBookComposite;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -124,15 +125,9 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		final String optionRoot = "MSQ";
 		final String optionContractSpecifier = "GE";
 		final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
-		Message message = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
-				TimeInForce.DAY, null);
-        message.setField(new Symbol(optionContractSymbol));
-//        message.setField(new UnderlyingSymbol(optionRoot)); // Used to be UnderlyingSymbol instead of Symbol
-        message.setField(new MaturityMonthYear("200708"));
-		message.setField(new StrikePrice(23));
-		message.setField(new PutOrCall(PutOrCall.CALL));
-        
+		Message message = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", 23,
+				PutOrCall.CALL, 1, 10, Side.BUY, msgFactory);
+
 		showMessageInOptionTicket(ticket, message, controller, optionRoot,
 				new String[] { optionContractSpecifier }, new String[] { "10" });
         
@@ -176,14 +171,9 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		final String optionRoot = "MRK";
 		final String optionContractSpecifier = "GA";
 		final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
-		Message orderMessage = msgFactory.newLimitOrder("1",
-				Side.BUY, BigDecimal.TEN, new MSymbol(optionContractSymbol), BigDecimal.ONE,
-				TimeInForce.DAY, null);
-		orderMessage.setField(new UnderlyingSymbol(optionRoot));
-		orderMessage.setField(new MaturityDate());
-		orderMessage.setField(new StrikePrice(10));
-		orderMessage.setField(new PutOrCall(PutOrCall.CALL));
-		
+		Message orderMessage = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "", 10,
+				PutOrCall.CALL, 1, 10, Side.BUY, msgFactory);
+
 		showMessageInOptionTicket(ticket, orderMessage, controller, optionRoot,
 				new String[] { optionContractSpecifier }, new String[] { "10" });
 
@@ -233,8 +223,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		view.getSideCombo().setText("S");
 		view.getQuantityText().setText("45");
 		view.getSymbolText().setText("ABC");
-		assertTrue(view.getSymbolText().forceFocus());
-		assertTrue(view.getPriceText().forceFocus());
 		view.getPriceText().setText("MKT");
 		view.getTifCombo().setText("FOK");
 
