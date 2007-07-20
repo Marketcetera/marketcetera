@@ -124,7 +124,8 @@ public class OptionSeriesCollection {
 					&& !optionSymbolToPutOrCallMap.containsKey(targetContract
 							.getOptionSymbol())) {
 				for (OptionContractData checkContract : contracts) {
-					if (targetContract.equalsIgnorePutOrCall(checkContract)) {
+					if (targetContract.equalsIgnorePutOrCall(checkContract)
+							&& !targetContract.equals(checkContract)) {
 						optionSymbolToPutOrCallMap.put(targetContract
 								.getOptionSymbol(), checkContract);
 						optionSymbolToPutOrCallMap.put(checkContract
@@ -141,6 +142,28 @@ public class OptionSeriesCollection {
 	 */
 	public OptionContractData getOptionInfoForSymbol(MSymbol optionContractSymbol) {
 		return optionSymbolToInfoMap.get(optionContractSymbol);
+	}
+	
+	/**
+	 * @param optionContractSymbolAltFormat e.g. "MSQ October-07 75 Calls"
+	 */
+	public OptionContractData getOptionContractDataAlternateFormat(
+			String optionContractSymbolAltFormat) {
+		OptionContractData key = parseOptionContractDataAlternateFormat(optionContractSymbolAltFormat);
+		return uiInfoSet.get(key);
+	}
+	
+	private OptionContractData parseOptionContractDataAlternateFormat(String optionContractSymbolAltFormat) {
+		// todo: implement -- this is in progress
+		String optionRoot = null;
+		String uiExpirationYear = null;
+		String uiExpirationMonth = null;
+		String uiStrikePrice = null;
+		Integer putOrCall = null;
+		
+		OptionContractData contractData = new OptionContractData(optionRoot, uiExpirationYear,
+				uiExpirationMonth, uiStrikePrice, putOrCall);
+		return contractData;
 	}
 	
 	public OptionContractData getOptionContractData(String optionRoot, String uiExpirationYear,

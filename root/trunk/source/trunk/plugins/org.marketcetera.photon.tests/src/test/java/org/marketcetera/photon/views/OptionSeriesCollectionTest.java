@@ -64,5 +64,36 @@ public class OptionSeriesCollectionTest extends TestCase {
 		List<String> expectedList = Arrays.asList(new String [] {"1", "10"});
 		assertEquals(expectedList, optionSeriesCollection.getStrikePricesForUI());
 	}
+	
+	private void checkGetCorrespondingPutOrCallContract(
+			OptionContractData whichOptionContract,
+			OptionContractData expectedContractData) {
+		MSymbol whichOptionContractSymbol = whichOptionContract
+				.getOptionSymbol();
+		OptionContractData actualContractData = optionSeriesCollection
+				.getCorrespondingPutOrCallContract(whichOptionContractSymbol);
+		String message = ""
+				+ (actualContractData != null ? actualContractData
+						.getOptionSymbol() : null) + " != "
+				+ expectedContractData.getOptionSymbol();
+		assertSame(message, expectedContractData, actualContractData);
+	}
+	
+	public void testGetCorrespondingPutOrCallContract() {
+		checkGetCorrespondingPutOrCallContract(series.get(0), series.get(1));
+		checkGetCorrespondingPutOrCallContract(series.get(1), series.get(0));
+		checkGetCorrespondingPutOrCallContract(series.get(2), series.get(3));
+		checkGetCorrespondingPutOrCallContract(series.get(3), series.get(2));
+	}
 
+	/**
+	 * Get using an alternate format: MSQ October-07 75 Calls
+	 */
+	public void testGetContractFromAlternateFormat() {
+		String optionContractSymbolAltFormat = "IBM July-08 10 Calls";
+		OptionContractData actualContractData = optionSeriesCollection
+				.getOptionContractDataAlternateFormat(optionContractSymbolAltFormat);
+		OptionContractData expectedContractData = series.get(0);
+		assertSame(expectedContractData, actualContractData);
+	}
 }
