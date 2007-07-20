@@ -467,7 +467,7 @@ public class OptionOrderTicketControllerHelper extends
 		if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(message)) {
 			underlyingSymbolInfoComposite.onQuote(message);
 		} else {
-			getOptionMessagesComposite().handleQuote(message);
+			optionTicket.getBookComposite().onQuote(message);  
 		}
 		
 
