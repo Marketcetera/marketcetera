@@ -25,6 +25,8 @@ import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
 import quickfix.field.PutOrCall;
 import quickfix.field.SecurityListRequestType;
+import quickfix.field.SecurityRequestType;
+import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
@@ -74,6 +76,17 @@ public class OptionMarketDataUtils {
 		 */
 		requestMessage.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));
 //		requestMessage.setField(new SecurityType(SecurityType.OPTION));
+		requestMessage.setField(new Symbol(optionRoot));
+		return requestMessage;
+	}
+
+	public static Message newUnderlyingQuery(String optionRoot) {
+		Message requestMessage = messageFactory
+				.createMessage(MsgType.SECURITY_DEFINITION_REQUEST);
+
+		requestMessage.setField(new SecurityRequestType(
+				SecurityRequestType.REQUEST_SECURITY_IDENTITY_AND_SPECIFICATIONS));
+		requestMessage.setField(new SecurityType(SecurityType.OPTION));
 		requestMessage.setField(new Symbol(optionRoot));
 		return requestMessage;
 	}
