@@ -280,20 +280,20 @@ public class OrderTicketControllerHelper {
 				.getMarketDataFeedService();
 
 		if (service != null) {
-			if (currentSubscription != null) {
-				try {
+			try {
+				unlistenMarketDataAdditional();
+				if (currentSubscription != null) {
 					service.unsubscribe(currentSubscription);
+
 					listenedSymbol = null;
 					currentSubscription = null;
-					unlistenMarketDataAdditional();
-				} catch (MarketceteraException e) {
-					PhotonPlugin.getMainConsoleLogger().warn(
-							"Error unsubscribing to quotes for "
-									+ listenedSymbol);
 				}
+			} catch (MarketceteraException e) {
+				PhotonPlugin.getMainConsoleLogger().warn(
+						"Error unsubscribing to quotes for " + listenedSymbol);
 			}
 		}
-		ticket.getBookComposite().setInput(null);
+		// ticket.getBookComposite().setInput(null);
 	}
 
 	public void onQuote(Message message) {

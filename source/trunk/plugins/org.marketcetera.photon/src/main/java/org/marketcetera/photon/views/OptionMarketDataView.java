@@ -23,9 +23,12 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataListener;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.TextContributionItem;
 
@@ -60,9 +63,9 @@ public class OptionMarketDataView extends ViewPart implements
 
 	private MarketDataFeedTracker marketDataTracker;
 
-//	private ISubscription optionListRequest;
+	private ISubscription optionListRequest;
 
-//	private ISubscription optionMarketDataSubscription;
+	private ISubscription optionMarketDataSubscription;
 
 	public OptionMarketDataView() {
 		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
@@ -220,10 +223,13 @@ public class OptionMarketDataView extends ViewPart implements
 	 * 2. Update the call or put side in the MessagesTable if matching put/call contract in the table row
 	 */
 	private void onMessageImpl(Message quote) {
-		optionMessagesComposite.onQuote(quote, marketDataTracker);
-		
-		if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
+		if (optionListRequest != null && optionListRequest.isResponse(quote)) {
+			optionMessagesComposite.handleDerivativeSecuritiyList(quote, marketDataTracker);
+			optionListRequest = null;
+		}		
+		else if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
 			underlyingSymbolInfoComposite.onQuote(quote);
+			return;
 		} else {
 			optionMessagesComposite.handleQuote(quote);
 		}		
@@ -274,6 +280,7 @@ public class OptionMarketDataView extends ViewPart implements
 			updateTitleFromSymbol(symbol);			
 			if (underlyingSymbolInfoComposite.hasUnderlyingSymbolInfo()) {
 				// Clear all existing option symbol data
+				unsubscribeAllMarketData();
 				underlyingSymbolInfoComposite.removeUnderlyingSymbol();
 			}
 			// Add the requested new option symbol
@@ -291,15 +298,31 @@ public class OptionMarketDataView extends ViewPart implements
 			// Step 3 - retrieve and subscribe to all put/call options
 			unsubscribeAllMarketData();
 			marketDataTracker.simpleSubscribe(symbol);
-			optionMessagesComposite.requestOptionSecurityList(symbol, marketDataTracker);
-			optionMessagesComposite.requestOptionMarketData(symbol, marketDataTracker);
+			requestOptionSecurityList(symbol);
+			requestOptionMarketData(symbol);
 		} catch (MarketceteraException e) {
 			PhotonPlugin.getMainConsoleLogger().error(
 					"Exception subscribing to market data for " + symbol);
 		}
 	}
 
+	private void requestOptionMarketData(MSymbol root) throws MarketceteraException {
+		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
+		MarketDataFeedService marketDataFeed = marketDataTracker.getMarketDataFeedService();
+		if (marketDataFeed != null){
+			optionMarketDataSubscription = marketDataFeed.subscribe(subscribeMessage);
+		}
+	}
 
+	private void requestOptionSecurityList(final MSymbol symbol) throws MarketceteraException {
+		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: " + symbol);
+		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+		//Returns a query for all option contracts for the underlying symbol 
+		//symbol = underlyingSymbol  (e.g. MSFT)
+		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
+
+		optionListRequest = service.getMarketDataFeed().asyncQuery(query);
+	}
 	
 
 	private String getTitlePrefix() {
@@ -334,7 +357,11 @@ public class OptionMarketDataView extends ViewPart implements
 			MSymbol symbol = service.symbolFromString(subscribedUnderlyingSymbol);
 			marketDataTracker.simpleUnsubscribe(symbol);
 		}
-		optionMessagesComposite.clear();
+		try {
+			service.unsubscribe(optionMarketDataSubscription);
+		} catch (MarketceteraException e) {
+		}
+		optionMessagesComposite.clear(marketDataTracker);
 	}
 
 
