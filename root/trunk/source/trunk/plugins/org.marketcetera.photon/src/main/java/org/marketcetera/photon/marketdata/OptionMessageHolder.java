@@ -140,6 +140,25 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		return null;
 	}
 
+	public FieldMap getExtraInfoForSymbol(String symbol){
+		FieldMap fieldMap = get(OptionInfoComponent.CALL_EXTRA_INFO);
+		try {
+			if (fieldMap != null && symbol.equals(fieldMap.getString(Symbol.FIELD))){
+				return fieldMap;
+			}
+		} catch (FieldNotFound e) {
+		}
+		
+		fieldMap = get(OptionInfoComponent.PUT_EXTRA_INFO);
+		try {
+			if (fieldMap != null && symbol.equals(fieldMap.getString(Symbol.FIELD))){
+				return fieldMap;
+			}
+		} catch (FieldNotFound e) {
+		}
+		return null;
+	}
+
 	/**
 	 * key for option message holders.
 	 */

@@ -127,7 +127,8 @@ public class OptionOrderTicketControllerHelper extends
 				String optionSymbol = "" + optionSymbolControl.getText();
 				if (OptionMarketDataUtils.isOptionSymbol(optionSymbol)) {
 					String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
-					getOptionMessagesComposite().setFilterOptionContractSymbol(optionSymbol);
+					OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
+					optionMessagesComposite.setFilterOptionContractSymbol(new MSymbol(optionSymbol));
 					try {
 						listenOptionMarketData(root, optionSymbol);
 					} catch (MarketceteraException e) {
