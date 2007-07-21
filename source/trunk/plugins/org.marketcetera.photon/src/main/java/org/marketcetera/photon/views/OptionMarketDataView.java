@@ -31,6 +31,7 @@ import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
@@ -62,8 +63,6 @@ public class OptionMarketDataView extends ViewPart implements
 	private TextContributionItem symbolEntryText;
 
 	private MarketDataFeedTracker marketDataTracker;
-
-	private ISubscription optionListRequest;
 
 	private ISubscription optionMarketDataSubscription;
 
@@ -222,16 +221,15 @@ public class OptionMarketDataView extends ViewPart implements
 	 * 1. Update the underlying info on top if matching the underlying symbol 
 	 * 2. Update the call or put side in the MessagesTable if matching put/call contract in the table row
 	 */
-	private void onMessageImpl(Message quote) {
-		if (optionListRequest != null && optionListRequest.isResponse(quote)) {
-			optionMessagesComposite.handleDerivativeSecuritiyList(quote, marketDataTracker);
-			optionListRequest = null;
-		}		
-		else if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(quote)) {
-			underlyingSymbolInfoComposite.onQuote(quote);
+	private void onMessageImpl(Message message) {
+		if (FIXMessageUtil.isDerivativeSecurityList(message)) {
+			optionMessagesComposite.handleDerivativeSecuritiyList(message, marketDataTracker);
+		} else if (underlyingSymbolInfoComposite.matchUnderlyingSymbol(message)) {
+			underlyingSymbolInfoComposite.onQuote(message);
 			return;
-		} else {
-			optionMessagesComposite.handleQuote(quote);
+		} else if (FIXMessageUtil.isMarketDataIncrementalRefresh(message)
+				|| FIXMessageUtil.isMarketDataSnapshotFullRefresh(message)){
+			optionMessagesComposite.handleQuote(message);
 		}		
 	}
 
@@ -321,7 +319,8 @@ public class OptionMarketDataView extends ViewPart implements
 		//symbol = underlyingSymbol  (e.g. MSFT)
 		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
 
-		optionListRequest = service.getMarketDataFeed().asyncQuery(query);
+		ISubscription optionListRequest = service.getMarketDataFeed().asyncQuery(query);
+		optionMessagesComposite.setDerivativeSecurityListSubscription(optionListRequest);
 	}
 	
 

@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
@@ -46,7 +47,12 @@ import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.fix44.DerivativeSecurityList;
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.SortedList;
+import ca.odell.glazedlists.impl.swt.SWTThreadProxyEventList;
+import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
+import ca.odell.glazedlists.matchers.Matcher;
+import ca.odell.glazedlists.util.concurrent.Lock;
 
 /**
  * @author caroline.leung@softwaregoodness.com
@@ -154,12 +160,12 @@ public class OptionMessagesComposite extends Composite {
 	private final IWorkbenchPartSite site;
 	private IMemento viewStateMemento; 
 
-	private HashMap<OptionPairKey, OptionMessageHolder> optionContractMap;
-	private HashMap<String, OptionPairKey> optionSymbolToKeyMap;
 	private FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
 	
-	private String filterOptionContractSymbol;
 	private boolean showSingleLineOptionData;
+	private OptionSymbolMatcherEditor optionSymbolMatcherEditor;
+	private ISubscription derivativeSecurityListSubscription;
+	private HashMap<MSymbol, OptionMessageHolder> optionSymbolToSeriesMap;
 
 	
     public OptionMessagesComposite(Composite parent, IWorkbenchPartSite site, IMemento memento, boolean showSingleLineOptionData) {
@@ -185,8 +191,7 @@ public class OptionMessagesComposite extends Composite {
 	}
 
 	private void initializeDataMaps() {
-		optionSymbolToKeyMap = new HashMap<String, OptionPairKey>();
-		optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
+		optionSymbolToSeriesMap = new HashMap<MSymbol, OptionMessageHolder>();
 	}
 
 	protected void formatTable(Table messageTable) {
@@ -380,7 +385,7 @@ public class OptionMessagesComposite extends Composite {
 	
 	public void setInput(EventList<OptionMessageHolder> input)
 	{
-		SortedList<OptionMessageHolder> extractedList = 
+		SortedList<OptionMessageHolder> sortedList = 
 			new SortedList<OptionMessageHolder>(rawInputList = input);
 
 		if (sortableColumns){
@@ -391,14 +396,22 @@ public class OptionMessagesComposite extends Composite {
 			chooser = new TableComparatorChooser<OptionMessageHolder>(
 								messageTable, 
 								tableFormat,
-								extractedList, true);
+								sortedList, true);
 			chooser.disableSortOnColumnHeader();
 			
 			//Sort by Expiration date first, then by Strike 
 			chooser.appendComparator(EXP_DATE_INDEX, 0, false);
 			chooser.appendComparator(STRIKE_INDEX, 0, false);
 		}
-		messagesViewer.setInput(extractedList);
+		EventList<OptionMessageHolder> inputList;
+		if (showSingleLineOptionData){
+			optionSymbolMatcherEditor = new OptionSymbolMatcherEditor();
+			inputList = new FilterList<OptionMessageHolder>(sortedList, optionSymbolMatcherEditor);
+		} else {
+			inputList = sortedList;
+		}
+		inputList = new SWTThreadProxyEventList(inputList, this.getDisplay());
+		messagesViewer.setInput(inputList);
 	}
 	
 	public EventList<OptionMessageHolder> getInput()
@@ -416,9 +429,7 @@ public class OptionMessagesComposite extends Composite {
 	}
 	
 	protected void clearDataMaps() {
-		optionContractMap.clear();
-		optionSymbolToKeyMap.clear();
-//		optionSymbolToSideMap.clear();
+		optionSymbolToSeriesMap.clear();
 	}
 
 	public void clear(MarketDataFeedTracker marketDataTracker) {
@@ -432,14 +443,9 @@ public class OptionMessagesComposite extends Composite {
 	}
 	
 	private void unsubscribeOptions(MarketDataFeedTracker marketDataTracker) {
-		 MarketDataFeedService service = marketDataTracker
-				.getMarketDataFeedService();
-		Set<String> contractSymbols = optionSymbolToKeyMap.keySet();
-		MSymbol contractSymbolToUnsubscribe = null;
-		for (String optionSymbol : contractSymbols) {
-			contractSymbolToUnsubscribe = service
-					.symbolFromString(optionSymbol);
-			marketDataTracker.simpleUnsubscribe(contractSymbolToUnsubscribe);
+		Set<MSymbol> contractSymbols = optionSymbolToSeriesMap.keySet();
+		for (MSymbol optionSymbol : contractSymbols) {
+			marketDataTracker.simpleUnsubscribe(optionSymbol);
 		}
 	}
 	
@@ -450,14 +456,19 @@ public class OptionMessagesComposite extends Composite {
 	}
 
 	public void handleDerivativeSecuritiyList(Message derivativeSecurityList, MarketDataFeedTracker marketDataTracker){
+		clearDataMaps();
+		
 		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
-		if (FIXMessageUtil.isDerivativeSecurityList(derivativeSecurityList) && feed != null){
+		if (derivativeSecurityListSubscription != null && derivativeSecurityListSubscription.isResponse(derivativeSecurityList) && feed != null){
+			derivativeSecurityListSubscription = null;
 			try {
 				int numDerivs = 0;
 				if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
 					numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
 				}
-				EventList<OptionMessageHolder> list = getInput();
+				HashMap<OptionPairKey, OptionMessageHolder> optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
+				HashMap<MSymbol, OptionPairKey> optionSymbolToKeyMap = new HashMap<MSymbol, OptionPairKey>();
+
 				for (int i = 1; i <= numDerivs; i++)
 				{
 					try {
@@ -469,37 +480,31 @@ public class OptionMessagesComposite extends Composite {
 						MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
 						OptionPairKey optionKey;
 							optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
-						optionSymbolToKeyMap.put(optionSymbol.getFullSymbol(), optionKey);
+						optionSymbolToKeyMap.put(optionSymbol, optionKey);
 						OptionMessageHolder holder;
 						if (optionContractMap.containsKey(optionKey)){
 							holder = optionContractMap.get(optionKey);
 						} else {
 							holder = new OptionMessageHolder(OptionMarketDataUtils.getOptionRootSymbol(optionSymbolString), info);
 							optionContractMap.put(optionKey, holder);
-							if (!showSingleLineOptionData) {							
-								list.add(holder);
+
+							Lock writeLock = rawInputList.getReadWriteLock().writeLock();
+							try {
+								writeLock.lock();
+								rawInputList.add(holder);
+							} finally {
+								writeLock.lock();
 							}
 						}						
-						holder.setExtraInfo(putOrCall, info);
 						
+						holder.setExtraInfo(putOrCall, info);
+						optionSymbolToSeriesMap.put(optionSymbol, holder);
 					} catch (ParseException e) {
 						MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
 						PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
 						enableErrorLabelText("Error getting option contracts data for " + underlying.getBaseSymbol());
 					}
 				}
-				//For OptionOrderTicket market data section
-				if (showSingleLineOptionData && filterOptionContractSymbol != null) {
-					OptionPairKey matchingOptionKey = optionSymbolToKeyMap.get(filterOptionContractSymbol);
-					OptionMessageHolder selectedHolder = null;
-					if (matchingOptionKey != null) {
-						selectedHolder = optionContractMap.get(matchingOptionKey);
-					}
-					if (selectedHolder != null) {
-						list.clear();
-						list.add(selectedHolder);
-					}
-				}					
 				disableErrorLabelText();
 				getMessagesViewer().refresh();
 			} catch (FieldNotFound e) {
@@ -514,11 +519,9 @@ public class OptionMessagesComposite extends Composite {
 		String symbol;
 		try {
 			symbol = marketDataRefresh.getString(Symbol.FIELD);
-			OptionPairKey key = optionSymbolToKeyMap.get(symbol);
-			OptionMessageHolder line = null;
-			if (key != null){
+			OptionMessageHolder line = optionSymbolToSeriesMap.get(new MSymbol(symbol));
+			if (line != null){
 				
-				line = optionContractMap.get(key);
 				FieldMap existingMessage = line.getMarketDataForSymbol(symbol);
 				if (FIXMessageUtil.isMarketDataIncrementalRefresh(marketDataRefresh)
 						&& existingMessage != null){
@@ -530,12 +533,6 @@ public class OptionMessagesComposite extends Composite {
 				int putOrCall = line.symbolOptionType(symbol);
 				line.setMarketData(putOrCall, existingMessage);		
 				
-				if (showSingleLineOptionData && symbol.equals(filterOptionContractSymbol)) {
-					EventList<OptionMessageHolder> list = getInput();
-					list.clear();
-					list.add(line);
-				}
-				
 				getMessagesViewer().update(line, null);
 			} else {
 				PhotonPlugin.getDefault().getMarketDataLogger().debug("Unknown symbol: "+symbol);
@@ -545,17 +542,38 @@ public class OptionMessagesComposite extends Composite {
 		}
 	}
 
-	protected HashMap<OptionPairKey, OptionMessageHolder> getOptionContractMap() {
-		return optionContractMap;
+	public MSymbol getFilterOptionContractSymbol() {
+		return this.optionSymbolMatcherEditor == null ? null : optionSymbolMatcherEditor.getFilterSymbol();
 	}
 
-	public String getFilterOptionContractSymbol() {
-		return filterOptionContractSymbol;
-	}
-
-	public void setFilterOptionContractSymbol(String filterOptionContractSymbol) {
-		this.filterOptionContractSymbol = filterOptionContractSymbol;
+	public void setFilterOptionContractSymbol(MSymbol filterOptionContractSymbol) {
+		if (optionSymbolMatcherEditor != null){
+			optionSymbolMatcherEditor.setFilterSymbol(filterOptionContractSymbol);
+		}
 	}
 	
+	public void setDerivativeSecurityListSubscription(ISubscription sub){
+		derivativeSecurityListSubscription = sub;
+	}
+	
+	
+	private class OptionSymbolMatcherEditor extends AbstractMatcherEditor<OptionMessageHolder>{
+
+		private MSymbol filterSymbol;
+
+		public void setFilterSymbol(final MSymbol filterSymbol){
+			this.filterSymbol = filterSymbol;
+			fireChanged(new Matcher<OptionMessageHolder>() {
+				public boolean matches(OptionMessageHolder item) {
+					return filterSymbol != null && item != null && item.getExtraInfoForSymbol(filterSymbol.toString())!=null;
+				}
+			});
+		}
+
+		public MSymbol getFilterSymbol() {
+			return filterSymbol;
+		}
+		
+	}
 	
 }

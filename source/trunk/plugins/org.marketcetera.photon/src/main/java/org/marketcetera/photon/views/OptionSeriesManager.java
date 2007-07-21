@@ -26,6 +26,7 @@ import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.OptionContractData;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.ui.OptionBookComposite;
 import org.marketcetera.photon.ui.ToggledListener;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
@@ -272,6 +273,7 @@ public class OptionSeriesManager implements IMarketDataListCallback {
 			try {
 				synchronized (this){
 					lastSubscription = service.getMarketDataFeed().asyncQuery(query);
+					((OptionBookComposite)ticket.getBookComposite()).getOptionMessagesComposite().setDerivativeSecurityListSubscription(lastSubscription);
 				}
 			} catch (MarketceteraException e) {
 				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception getting market data: "+e);
