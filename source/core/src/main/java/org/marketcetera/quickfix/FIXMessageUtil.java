@@ -149,6 +149,16 @@ public class FIXMessageUtil {
 		return msgTypeHelper(message, MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
 	}
 
+	public static boolean isSecurityDefinitionRequest(Message message) {
+		return msgTypeHelper(message, MsgType.SECURITY_DEFINITION_REQUEST);
+	}
+
+	public static boolean isSecurityDefnition(Message message) {
+		return msgTypeHelper(message, MsgType.SECURITY_DEFINITION);
+	}
+
+
+	
 	public static boolean isEquityOptionOrder(Message message)
 	{
 		try {
