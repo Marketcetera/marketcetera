@@ -344,8 +344,10 @@ public class OrderTicketControllerHelper {
 			plugin.getPhotonController().handleInternalMessage(targetMessage);
 			clear();
 		} catch (Exception e) {
+			String errorMessage = "Error sending order: " + e.getMessage();
 			PhotonPlugin.getMainConsoleLogger().error(
-					"Error sending order: " + e.getMessage(), e);
+					errorMessage, e);
+			ticket.showErrorMessage(errorMessage, IStatus.ERROR);
 		}
 	}
 
