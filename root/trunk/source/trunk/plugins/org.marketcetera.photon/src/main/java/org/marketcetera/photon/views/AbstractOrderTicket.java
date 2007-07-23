@@ -283,13 +283,23 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 	}
 
 	public void propertyChange(PropertyChangeEvent event) {
-		String property = event.getProperty();
-		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(property)) {
-			String valueString = event.getNewValue().toString();
-			customFieldsViewPieces.updateCustomFields(valueString);
+		final String property = event.getProperty();
+		final String valueString = event.getNewValue().toString();
+		Runnable runnable = new Runnable() {
+			public void run() {
+				if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(property)) {
+					customFieldsViewPieces.updateCustomFields(valueString);
+				}
+				outermostForm.reflow(true);
+			}
+		};
+		Display theDisplay = Display.getDefault();
+		if (Thread.currentThread() != theDisplay.getThread()){
+			theDisplay.asyncExec(runnable);
+		} else {
+			runnable.run();
 		}
 		
-		outermostForm.reflow(true);
 	}
 
 	@Override
