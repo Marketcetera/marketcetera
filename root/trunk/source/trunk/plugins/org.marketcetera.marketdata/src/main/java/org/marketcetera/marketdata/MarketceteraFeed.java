@@ -67,9 +67,11 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	private MessageFactory messageFactory;
 	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
 	private final Logger logger;
+	private String url;
 
 	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties, Logger logger) throws MarketceteraException {
 		this.logger = logger;
+		this.url = url;
 		try {
 			idFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+ InetAddress.getLocalHost().toString());
 			URI feedURI = new URI(url);
@@ -217,6 +219,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 		synchronized (this){
 			try {
 				if (!isRunning){
+					logger.info("Starting connection to: "+url);
 					MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
 					SessionSettings sessionSettings;
 					sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
@@ -248,6 +251,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	public void stop() {
 		synchronized (this) {
 			if (isRunning){
+				logger.info("Stopping connection to: "+url);
 				socketInitiator.stop(true);
 			}
 		}
