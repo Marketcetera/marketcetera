@@ -18,10 +18,6 @@
              <property name="archiveName" value="${archiveNamePrefix}-linux.gtk.x86.tar.gz"/>
              <ant antfile="${assembleScriptName}"/>
         </target>
-        <target name="assemble.org.eclipse.pde.build.container.feature.linux.motif.x86">
-             <property name="archiveName" value="${archiveNamePrefix}-linux.motif.x86.tar.gz"/>
-             <ant antfile="${assembleScriptName}"/>
-        </target>
         <target name="assemble.org.eclipse.pde.build.container.feature.macosx.carbon.ppc">
              <property name="archiveName" value="${archiveNamePrefix}-macosx.carbon.tar.gz"/>
              <ant antfile="${assembleScriptName}"/>
@@ -150,9 +146,6 @@
 	   <property name="tarballDir" value="${buildDirectory}/${buildType}.${buildId}"/>
 	   <antcall target="updateLinuxLauncherPerms">
 	      <param name="fileToUpdate" value="${archiveNamePrefix}-linux.gtk.x86.tar.gz"/>
-	   </antcall>
-	   <antcall target="updateLinuxLauncherPerms">
-	      <param name="fileToUpdate" value="${archiveNamePrefix}-linux.motif.x86.tar.gz"/>
 	   </antcall>
 	   <antcall target="manuallyAdd_photon.ini"/>
 	</target>
