@@ -171,7 +171,7 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.marketcetera.photon.application"
-            description="Marketcetera Photon 0.3.1 (Plugin)"
+            description="Marketcetera Photon 0.4.0 (Plugin)"
             name="Photon 0.4">
          <property
                name="aboutImage"
@@ -196,7 +196,7 @@
                value="225,75,170,20"/>
          <property
                name="appName"
-               value="Photon 0.4">
+               value="Photon 0.4.0">
          </property>
       </product>
    </extension>
