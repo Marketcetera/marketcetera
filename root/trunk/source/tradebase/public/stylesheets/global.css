@@ -40,7 +40,7 @@ body {
   float: right;
 }
 
-#errorExplanation {
+.errorExplanation {
   margin-top: 10px;
   border: 1px solid #880000;
   background: #ffeeee;

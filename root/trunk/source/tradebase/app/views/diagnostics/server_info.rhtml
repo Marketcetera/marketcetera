@@ -1,0 +1,74 @@
+<%= render :partial => 'shared/breadcrumbs',
+           :locals=> { :top_level => "Diagnostics", :top_level_controller => 'diagnostics', :action_name=>'Server Diagnostics'} %>
+<h1>Server Diagnostics</h1>
+<% if(!@report.nil? && !@report.valid?) %>
+<div class="errorExplanation" id="errorExplanation">
+<h2>Diagnostics encountered the following errors</h2>
+<ul>
+<% @report.errors.each_full {|msg| %>
+<li><%= msg %></li>
+<% } %>
+</ul>
+</div>
+<% end %>
+<p>
+This is a set of diagnostic checks that may only make sense if you are running Tradebase on the
+<a href="http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/Appliance">Marketcetera Appliance</a>,
+or if you have the rest of the Marketcetera Platform running on the same server as the Tradebase.<br>
+</p>
+<p/>
+<h3>OMS Information</h3>
+<%     if (@jmx_info[0].index("Error") != nil)
+      @jmx_info = ["There was an error connecting to the OMS on this machine so it appears to be down.<br/>
+                Please verify that you have an OMS running on the same machine as Tradebase.</p>
+                <p>If you are running the Marketcetera Appliance, please see the
+                <a href='http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/Appliance#ApplianceConfiguration'>
+                appliance configuration</a> writeup for more information."]
+    end
+%>
+<p><% @jmx_info.each {|s| %>
+      <%= s %><br/>
+    <% } %>
+</p>
+
+<p/>
+<h3>Server Info</h3>
+<p/>
+<h4>Time Check</h4>
+For the underlying FIX connection to correctly the server needs to have its time synced with a valid NTP server.<br>
+Otherwise, if the local server is more than a minute off, Quickfix/J may not be able to setup the FIX connection correctly.<br>
+Local server time: <%= @local_time.to_s %><br>
+Official Time Server time: <%= @xml_time.to_s %><br>
+Difference: <%=  (@local_time - @xml_time).to_s %> seconds.<br>
+<%
+if( (@local_time - @xml_time).abs > 30) %>
+<div class="errorExplanation">WARNING: there's a more than a 30 second difference between local time and what we think the correct time should be.</div>
+This may cause Quickfix/J connectivity issues. Please check to make sure the time is set correctly on this server.
+<% end %>
+<p/>
+<h4>Network Check</h4>
+<% if(@networking_eth0 == "") %>
+<div class="errorExplanation">WARNING: Networking is not configured on eth0. This is unexpected and could cause problems</div>
+<% else %>
+Networking configured on eth0.
+<% end %>
+<p/>
+<h4>Host Connectivity:</h4>
+<% @host_resolution.each_key { |key|
+    if(@host_resolution[key])
+%>
+Host [<%= key %>]  resolves<br>
+<% else %>
+<div class="errorExplanation">Host [<%= key %>] DOES NOT resolve</div>
+<% end
+} %>
+<p/>
+<h4>Process Check</h4>
+<% @process_info.each_key { |key|
+    if(@process_info[key] != "")
+  %>
+Process [<%= key %>] is running<br>
+ <% else %>
+<div class="errorExplanation">Process [<%= key %>] IS NOT running</div>
+<% end
+} %>
