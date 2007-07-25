@@ -89,13 +89,13 @@ public class BigDecimalUtils {
 	    return a.divide (b, context);
 	}
 	
-	// Returns the BigDecimal value n with trailing 
-	// zeroes removed.
+	/** Returns the BigDecimal value n with trailing zeroes removed. */
 	public static BigDecimal trim(BigDecimal n) {
 		try {
-			while (true) {
-				n = n.setScale(n.scale() - 1);
-			}
+            int scale;
+            while((scale = n.scale()) > 0) {
+                n = n.setScale(scale - 1);
+            }
 		} catch (ArithmeticException e) {
 			// no more trailing zeroes so exit.
 		}

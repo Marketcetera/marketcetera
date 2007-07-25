@@ -80,11 +80,11 @@ public class BigDecimalUtilsTest extends TestCase {
         assertEquals((double)123.0/87.5, BigDecimalUtils.divide((double)123.0, (double)87.5).doubleValue(), .000001);
         assertEquals((double)-123.0/87.5, BigDecimalUtils.divide((double)-123.0, (double)87.5).doubleValue(), .000001);
         assertEquals((double)8888.0/.0001, BigDecimalUtils.divide((double)8888.0, (double)0.0001).doubleValue(), .000001);
-        try {
-            BigDecimalUtils.divide((double)92384.5, (double)0).doubleValue();
-            assertTrue("ArithmeticException expected", false);
-        } catch (ArithmeticException e) {
-        }
+        new ExpectedTestFailure(ArithmeticException.class) {
+            protected void execute() throws Throwable {
+                BigDecimalUtils.divide((double)92384.5, (double)0).doubleValue();
+            }
+        }.run();
     }
 
     /*
@@ -94,11 +94,12 @@ public class BigDecimalUtilsTest extends TestCase {
         assertEquals((double)123.0/87.5, BigDecimalUtils.divide(new BigDecimal(123.0), (double)87.5).doubleValue(), .000001);
         assertEquals((double)-123.0/87.5, BigDecimalUtils.divide(new BigDecimal(-123.0), (double)87.5).doubleValue(), .000001);
         assertEquals((double)8888.0/.0001, BigDecimalUtils.divide(new BigDecimal(8888.0), (double)0.0001).doubleValue(), .000001);
-        try {
-            BigDecimalUtils.divide(new BigDecimal(92384.5), (double)0).doubleValue();
-            assertTrue("ArithmeticException expected", false);
-        } catch (ArithmeticException e) {
-        }
+        new ExpectedTestFailure(ArithmeticException.class) {
+            protected void execute() throws Throwable {
+                BigDecimalUtils.divide(new BigDecimal(92384.5), (double)0).doubleValue();
+            }
+        }.run();
+
     }
 
     /*
@@ -108,11 +109,12 @@ public class BigDecimalUtilsTest extends TestCase {
         assertEquals((double)123.0/87.5, BigDecimalUtils.divide(new BigDecimal(123.0), new BigDecimal(87.5)).doubleValue(), .000001);
         assertEquals((double)-123.0/87.5, BigDecimalUtils.divide(new BigDecimal(-123.0), new BigDecimal(87.5)).doubleValue(), .000001);
         assertEquals((double)8888.0/.0001, BigDecimalUtils.divide(new BigDecimal(8888.0), new BigDecimal(0.0001)).doubleValue(), .000001);
-        try {
-            BigDecimalUtils.divide(new BigDecimal(92384.5), new BigDecimal(0)).doubleValue();
-            assertTrue("ArithmeticException expected", false);
-        } catch (ArithmeticException e) {
-        }
+        new ExpectedTestFailure(ArithmeticException.class) {
+            protected void execute() throws Throwable {
+                BigDecimalUtils.divide(new BigDecimal(92384.5), new BigDecimal(0)).doubleValue();
+            }
+        }.run();
+
     }
 
     public void testBigDecimalAssumptions() throws Exception {
@@ -134,6 +136,9 @@ public class BigDecimalUtilsTest extends TestCase {
 		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1.0")).toPlainString());
 		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1")).toPlainString());
 		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.50")).toPlainString());
+		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("0")).toPlainString());
+		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("-0")).toPlainString());
+		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("0.0")).toPlainString());
 
     }
     
