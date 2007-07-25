@@ -18,6 +18,7 @@ module NavigationHelper
     'm_symbols' => 'db_maintenance',
     'pnl' => 'pnl',
     'marks' => 'pnl',
-    'import_marks' => 'pnl'
+    'import_marks' => 'pnl',
+    'diagnostics' => 'help'
   }
 end

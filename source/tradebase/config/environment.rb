@@ -13,6 +13,10 @@ require File.join(File.dirname(__FILE__), 'boot')
 # Number of items to list per page 
 MaxPerPage=25
 
+# Location of the Java library for running JMX reader connector code
+# The default location is in lib directory
+JAVA_JMX_CONNECTOR_LIB='lib/marketcetera-jmx-connector-1.0.jar'
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence those specified here
   
