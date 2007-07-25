@@ -15,8 +15,7 @@ class DiagnosticsController < ApplicationController
     @local_time = Time.new
     server = XMLRPC::Client.new2("http://time.xmlrpc.com/RPC2")
     result = server.call("currentTime.getCurrentTime")
-    #@xml_time  = Time.local(*result.to_a)
-    @xml_time  = Time.new + 200
+    @xml_time  = Time.local(*result.to_a)
 
     @process_info = {}
     @process_info['OMS'] = %x{ps auxww|grep OrderManagementSystem | grep -v grep}
