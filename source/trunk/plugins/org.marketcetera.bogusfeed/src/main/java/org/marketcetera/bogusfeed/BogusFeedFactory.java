@@ -19,5 +19,9 @@ public class BogusFeedFactory implements IMarketDataFeedFactory {
 	public String[] getAllowedPropertyKeys() {
 		return new String[0];
 	}
+	
+	public String getProviderName(){
+		return "Marketcetera (Bogus)";
+	}
 
 }
