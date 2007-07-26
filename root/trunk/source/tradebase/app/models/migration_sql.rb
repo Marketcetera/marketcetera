@@ -41,7 +41,8 @@ class MigrationSql
              write_sql(connection, output_dir, file, :up)
              write_sql(connection, output_dir, file, :down)
              # Run it a 3rd time if you need to actually have it be at last version when you are done.
-             # write_sql(connection, output_dir, file, :up)
+             # otherwise you'll end up having constraint violations when you create subsquent tables 
+             write_sql(connection, output_dir, file, :up)
          end
      end
 
