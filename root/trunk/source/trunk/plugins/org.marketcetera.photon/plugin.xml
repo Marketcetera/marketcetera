@@ -172,13 +172,13 @@
       <product
             application="org.marketcetera.photon.application"
             description="Marketcetera Photon 0.4.0 (Plugin)"
-            name="Photon 0.4">
+            name="Photon 0.4.0">
          <property
                name="aboutImage"
                value="icons/marketcetera/logo-150x55.gif"/>
          <property
                name="aboutText"
-               value="Marketcetera Photon&#x0A;&#x0A;Version: 0.4&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006 2007.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
+               value="Marketcetera Photon&#x0A;&#x0A;Version: 0.4.0&#x0A;&#x0A;(c) Copyright Marketcetera LLC 2006 2007.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
                value="photon_customization.ini"/>
