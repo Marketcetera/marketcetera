@@ -10,4 +10,5 @@ public interface IMarketDataFeedFactory {
 	public IMarketDataFeed getInstance(String url, String userName, String password, Map<String, Object> properties, Logger logger) throws MarketceteraException;
 
 	public String [] getAllowedPropertyKeys();
+	public String getProviderName();
 }
