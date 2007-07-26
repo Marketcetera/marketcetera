@@ -179,7 +179,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE, 
 				"" + DeliverToCompID.FIELD + "=ABCD" + "&" + PrevClosePx.FIELD + "=EFGH");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
-		delay(1);
+		delay(10);
 		
 		StockOrderTicket view = (StockOrderTicket) getTestView();
 		Table customFieldsTable = view.getCustomFieldsTable();
