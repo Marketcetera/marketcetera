@@ -3,7 +3,13 @@ package org.marketcetera.photon.scripting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.bsf.BSFEngine;
 import org.apache.bsf.BSFException;
@@ -357,7 +363,10 @@ public class ScriptRegistry implements InitializingBean {
 			evalString = "require_dependency '" + fileName + "'";
 			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
 			if (reregister) {
-				doRegister(fileName);
+				BSFException e = doRegister(fileName);
+				if (e != null){
+					logger.error("Script unregistered due to exception, see previous errors");
+				}
 			}
 			return null;
 		} catch (BSFException e) {

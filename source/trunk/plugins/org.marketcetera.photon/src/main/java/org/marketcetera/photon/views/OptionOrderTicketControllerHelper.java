@@ -125,18 +125,19 @@ public class OptionOrderTicketControllerHelper extends
 			public void handleEvent(Event event) {
 				Text optionSymbolControl = (Text) control;
 				String optionSymbol = "" + optionSymbolControl.getText();
-				if (OptionMarketDataUtils.isOptionSymbol(optionSymbol)) {
-					String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
-					OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
-					optionMessagesComposite.setFilterOptionContractSymbol(new MSymbol(optionSymbol));
-					try {
+				try {
+					if (OptionMarketDataUtils.isOptionSymbol(optionSymbol)) {
+						String root = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol);
+						OptionMessagesComposite optionMessagesComposite = getOptionMessagesComposite();
+						optionMessagesComposite.setFilterOptionContractSymbol(new MSymbol(optionSymbol));
 						listenOptionMarketData(root, optionSymbol);
-					} catch (MarketceteraException e) {
-						PhotonPlugin.getMainConsoleLogger().error(
-								"Exception requesting quotes for "
-										+ optionSymbol);
 					}
+				} catch (Exception e) {
+					PhotonPlugin.getMainConsoleLogger().error(
+							"Exception requesting quotes for "
+									+ optionSymbol);
 				}
+
 			}
 		});
 
@@ -184,7 +185,7 @@ public class OptionOrderTicketControllerHelper extends
 	}
 	
 	private void subscribeToPutCallContracts(String optionRootStr, String optionContractStr) throws MarketceteraException {
-		PhotonPlugin.getMainConsoleLogger().error("Requesting put call for " + optionRootStr+" "+optionContractStr);
+		PhotonPlugin.getMainConsoleLogger().debug("Requesting put call for " + optionRootStr+" "+optionContractStr);
 		MSymbol optionContractSymbol = new MSymbol(optionContractStr);
 
         Message subscriptionMessage = MarketDataUtils.newSubscribeBBO(optionContractSymbol, SecurityType.OPTION);
@@ -192,11 +193,13 @@ public class OptionOrderTicketControllerHelper extends
 		if (marketDataFeedService != null){
 			putCallSubscriptions.add(marketDataFeedService.subscribe(subscriptionMessage));
 			OptionSeriesCollection collection = optionSeriesManager.getOptionSeriesCollection(optionRootStr);
-			OptionContractData data = collection.getCorrespondingPutOrCallContract(optionContractSymbol);
-			if (data != null) {
-				MSymbol correspondingSymbol = data.getOptionSymbol();
-		        Message otherSubscriptionMessage = MarketDataUtils.newSubscribeBBO(correspondingSymbol, SecurityType.OPTION);
-				putCallSubscriptions.add(marketDataFeedService.subscribe(otherSubscriptionMessage));
+			if (collection != null){
+				OptionContractData data = collection.getCorrespondingPutOrCallContract(optionContractSymbol);
+				if (data != null) {
+					MSymbol correspondingSymbol = data.getOptionSymbol();
+			        Message otherSubscriptionMessage = MarketDataUtils.newSubscribeBBO(correspondingSymbol, SecurityType.OPTION);
+					putCallSubscriptions.add(marketDataFeedService.subscribe(otherSubscriptionMessage));
+				}
 			}
 		}
 	}
