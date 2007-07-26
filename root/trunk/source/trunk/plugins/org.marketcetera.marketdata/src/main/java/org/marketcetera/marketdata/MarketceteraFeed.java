@@ -81,7 +81,8 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 			server = feedURI.getHost();
 			String senderCompID;
 			String targetCompID;
-			if (!properties.containsKey(SETTING_SENDER_COMP_ID))
+			if (!properties.containsKey(SETTING_SENDER_COMP_ID)
+					|| properties.get(SETTING_SENDER_COMP_ID).toString().length()==0)
 			{
 				senderCompID = idFactory.getNext();
 			} else {
@@ -226,7 +227,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 					sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
 					sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
 	
-					File workspaceDir = Activator.getDefault().getStoreDirectory();
+					File workspaceDir = MarketceteraFeedPlugin.getDefault().getStoreDirectory();
 					File quoteFeedLogDir = new File(workspaceDir, "marketdata");
 					if (!quoteFeedLogDir.exists())
 					{

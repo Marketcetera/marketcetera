@@ -6,4 +6,12 @@
       <feed
             feedFactoryClass="org.marketcetera.marketdata.MarketceteraFeedFactory"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.marketcetera.marketdata.MarketceteraFeedPreferencePage"
+            id="org.marketcetera.marketdata.preferences"
+            name="Marketcetera Feed">
+      </page>
+   </extension>
 </plugin>

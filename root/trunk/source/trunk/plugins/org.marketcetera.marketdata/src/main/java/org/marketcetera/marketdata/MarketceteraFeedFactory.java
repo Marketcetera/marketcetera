@@ -21,6 +21,9 @@ public class MarketceteraFeedFactory implements IMarketDataFeedFactory {
 	public String[] getAllowedPropertyKeys() {
 		return new String [] {MarketceteraFeed.SETTING_SENDER_COMP_ID, MarketceteraFeed.SETTING_TARGET_COMP_ID};
 	}
-	
+
+	public String getProviderName() {
+		return "Marketcetera";
+	}
 
 }

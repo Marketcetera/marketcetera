@@ -2,26 +2,27 @@ package org.marketcetera.marketdata;
 
 import java.io.File;
 
-import org.eclipse.core.runtime.Plugin;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.osgi.framework.BundleContext;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class Activator extends Plugin {
+public class MarketceteraFeedPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.marketcetera.marketdata";
 
 	// The shared instance
-	private static Activator plugin;
+	private static MarketceteraFeedPlugin plugin;
 
 	private BundleContext bundleContext;
 	
 	/**
 	 * The constructor
 	 */
-	public Activator() {
+	public MarketceteraFeedPlugin() {
 		plugin = this;
 	}
 
@@ -48,7 +49,7 @@ public class Activator extends Plugin {
 	 *
 	 * @return the shared instance
 	 */
-	public static Activator getDefault() {
+	public static MarketceteraFeedPlugin getDefault() {
 		return plugin;
 	}
 
@@ -58,4 +59,10 @@ public class Activator extends Plugin {
 	public File getStoreDirectory(){
 		return bundleContext.getDataFile("");
 	}
+
+	@Override
+	public ScopedPreferenceStore getPreferenceStore() {
+		return (ScopedPreferenceStore) super.getPreferenceStore();
+	}
+
 }
