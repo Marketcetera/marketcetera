@@ -2,6 +2,9 @@ package org.marketcetera.photon.preferences;
 
 import java.io.IOException;
 
+import javax.swing.ComboBoxEditor;
+
+import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
@@ -12,6 +15,7 @@ import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.quickfix.ConnectionConstants;
 
 @ClassVersion("$Id$")
@@ -27,6 +31,8 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 	private UrlFieldEditor webAppHostEditor;
 	
 	private IntegerFieldEditor webAppPortEditor;
+
+	private ComboFieldEditor quoteFeedNameEditor;
 	
 	
     public ConnectionsPreferencePage() {
@@ -97,6 +103,11 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
                 getFieldEditorParent()
                 );
 		addField(webAppPortEditor);
+		
+		String[][] namesValues = ReconnectMarketDataFeedJob.getFeedNames();
+		quoteFeedNameEditor = new ComboFieldEditor(ConnectionConstants.MARKETDATA_STARTUP_KEY, "Market Data Feed", namesValues, getFieldEditorParent());
+		addField(quoteFeedNameEditor);
+		
 //        StringFieldEditor stringEditor = new StringFieldEditor(
 //                ConfigPropertiesLoader.DB_URL_KEY, "Database URL",
 //                getFieldEditorParent()
