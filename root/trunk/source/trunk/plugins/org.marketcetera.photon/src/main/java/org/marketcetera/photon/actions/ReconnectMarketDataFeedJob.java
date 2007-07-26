@@ -10,6 +10,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IContributor;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.IExtensionRegistry;
@@ -18,6 +19,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
@@ -80,10 +82,10 @@ public class ReconnectMarketDataFeedJob extends Job {
 			    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
 			    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
 			    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
-			    		ScopedPreferenceStore store = plugin.getPreferenceStore();
-			    		String url = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_URL_SUFFIX);
-			    		String user = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_USER_SUFFIX);
-			    		String password = getPreference(store, pluginName, ConnectionConstants.MARKETDATA_PASSWORD_SUFFIX);
+			    		ScopedPreferenceStore store = new ScopedPreferenceStore(new InstanceScope(), pluginName);
+			    		String url = getPreference(store, ConnectionConstants.MARKETDATA_URL_SUFFIX);
+			    		String user = getPreference(store, ConnectionConstants.MARKETDATA_USER_SUFFIX);
+			    		String password = getPreference(store, ConnectionConstants.MARKETDATA_PASSWORD_SUFFIX);
 			    		Map<String, Object> parameters = getParameters(factory, store, pluginName);
 			    		IMarketDataFeed targetQuoteFeed = factory.getInstance(url, user, password, parameters, marketDataLogger);
 			    		// Quote feed must be started before registration so
@@ -122,7 +124,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 		String[] keys = factory.getAllowedPropertyKeys();
 		Map<String, Object> map = new HashMap<String, Object>();
 		for (String key : keys) {
-			String fqKey = constructKey(pluginName, key);
+			String fqKey = key;
 			if (store.contains(fqKey)){
 				map.put(key, store.getString(fqKey));
 			}
@@ -135,8 +137,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	}
 
 	private String constructKey(String... pieces) {
-		StringBuilder builder = new StringBuilder(ConnectionConstants.MARKETDATA_KEY_BASE);
-		builder.append('.');
+		StringBuilder builder = new StringBuilder();
 		int i;
 		for (i = 0; i < pieces.length-1; i++) {
 			builder.append(pieces[i]);
@@ -175,6 +176,38 @@ public class ReconnectMarketDataFeedJob extends Job {
 		}
 	}
 	
+	// TODO: refactor this and run()
+	public static String [][] getFeedNames() {
+		IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
+    	IExtensionPoint extensionPoint =
+    	extensionRegistry.getExtensionPoint(IMarketDataConstants.EXTENSION_POINT_ID);
+    	IExtension[] extensions = extensionPoint.getExtensions();
 
+    	String[][] result = new String[extensions.length][2];
+    	int i = 0;
+    	for (IExtension anExtension : extensions) {
+			IContributor contributor = anExtension.getContributor();
+
+			String pluginName = contributor.getName();
+			String providerName = pluginName;
+			try {
+    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
+	    		IConfigurationElement feedElement = configurationElements[0];
+
+	    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
+	    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
+	    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
+	    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
+	    		providerName = factory.getProviderName();
+			} catch (Exception ex){
+				// do nothing.
+			}
+			
+			result[i][0] = providerName;
+			result[i][1] = pluginName;
+			i++;
+		}
+    	return result;
+	}
 
 }
