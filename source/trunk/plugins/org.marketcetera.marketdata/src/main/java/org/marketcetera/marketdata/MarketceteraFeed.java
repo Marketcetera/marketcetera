@@ -162,7 +162,7 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 				throw new MarketceteraException(e);
 			}
 		} else {
-			throw new IllegalArgumentException();
+			// Ignore
 		}
 	}
 
