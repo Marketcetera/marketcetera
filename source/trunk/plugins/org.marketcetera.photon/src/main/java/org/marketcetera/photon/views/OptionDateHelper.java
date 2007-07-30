@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -16,19 +17,7 @@ public class OptionDateHelper {
 	public static final DecimalFormat MATURITY_YEAR_NUMBER_FORMAT = new DecimalFormat("0000");
 
 	public List<String> createDefaultMonths() {
-		List<String> monthStrings = new ArrayList<String>();
-
-		GregorianCalendar calendar = new GregorianCalendar();
-		final int minMonth = calendar.getMinimum(Calendar.MONTH);
-		final int maxMonth = calendar.getMaximum(Calendar.MONTH);
-		for (int month = minMonth; month <= maxMonth; ++month) {
-			calendar.set(Calendar.MONTH, month);
-			java.util.Date monthTime = calendar.getTime();
-			String monthStr = monthFormatter.format(monthTime);
-			monthStr = monthStr.toUpperCase();
-			monthStrings.add(monthStr);
-		}
-		return monthStrings;
+		return Arrays.asList(SHORT_MONTH_STRINGS);
 	}
 	
 	public List<String> createDefaultYears() {
