@@ -52,6 +52,7 @@ public class OptionDateHelper {
 	static {
 		Calendar calendar = GregorianCalendar.getInstance();
 		SHORT_MONTH_STRINGS = new String[12];
+		calendar.set(Calendar.DAY_OF_MONTH, 1);
 		for (int i = 0; i < 12; i++) {
 			calendar.set(Calendar.MONTH, i);
 			SHORT_MONTH_STRINGS[i] = SHORT_MONTH_FORMAT.format(calendar.getTime()).toUpperCase();
