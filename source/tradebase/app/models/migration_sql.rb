@@ -6,7 +6,7 @@
 # Goes through all the migrations, and outputs the resulting SQL to file and
 # also runs the migrations.
 # It makes sense to start with an empty (version=0) database before running this tool.
-# The files will be placed in db/migration_sql directory.
+# The files will be placed in db/marketcetera_tables directory.
 
 require 'find'
 
@@ -30,7 +30,7 @@ class MigrationSql
      define_execute(connection) { |*args| SqlWriter.write(@sql_write_path, args.first, old_method, self) }
 
      root = RAILS_ROOT + "/db/migrate"
-     output_dir = root + "/../migration_sql"
+     output_dir = root + "/../marketcetera_tables"
      Dir.mkdir output_dir unless File.exists? output_dir
 
      Dir.foreach(root) do |path|
@@ -38,19 +38,21 @@ class MigrationSql
              fullPath = root + '/'+path
              require fullPath
              file = File.basename(fullPath, ".rb")
-             write_sql(connection, output_dir, file, :up)
-             write_sql(connection, output_dir, file, :down)
+             write_sql(connection, output_dir, file, :up, false)
+             #write_sql(connection, output_dir, file, :up)
+             #write_sql(connection, output_dir, file, :down)
              # Run it a 3rd time if you need to actually have it be at last version when you are done.
              # otherwise you'll end up having constraint violations when you create subsquent tables 
-             write_sql(connection, output_dir, file, :up)
+             #write_sql(connection, output_dir, file, :up)
          end
      end
 
      define_execute(connection) { |*args| old_method.bind(self).call(*args) }
    end
 
-   def write_sql(connection, output_dir, file, direction)
-     destFile = output_dir + "/" + file  + "_#{direction}.sql"
+   def write_sql(connection, output_dir, file, direction, use_direction = true)
+     suffix = (use_direction) ? "_#{direction}" : ""
+     destFile = output_dir + "/" + file  + suffix +".sql"
      File.delete(destFile) unless (!File.exists?(destFile)) 
      connection.instance_variable_set :@sql_write_path, destFile
      file.gsub(/^\d\d\d_/,'').camelize.constantize.send direction
