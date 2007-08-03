@@ -70,6 +70,7 @@ public class OutgoingMessageHandler {
      * @return ExecutionReport for this message
      * @throws MarketceteraException
      */
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public Message handleMessage(Message message) throws MarketceteraException {
         if(message == null) {
             LoggerAdapter.error(OMSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
@@ -101,6 +102,7 @@ public class OutgoingMessageHandler {
 
             modifyOrder(message);
             orderLimits.verifyOrderLimits(message);
+            routeMgr.modifyOrder(message, msgFactory.getMsgAugmentor());
             // if single, pre-create an executionReport and send it back
             if (FIXMessageUtil.isOrderSingle(message))
             {
@@ -110,7 +112,6 @@ public class OutgoingMessageHandler {
                 }
 				returnVal = outReport;
             }
-            routeMgr.modifyOrder(message, msgFactory.getMsgAugmentor());
             sendMessage(message);
         } catch (FieldNotFound fnfEx) {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
