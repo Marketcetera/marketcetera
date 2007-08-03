@@ -143,6 +143,26 @@ public class OrderManagerTest extends FIXVersionedTestCase
         fixDD.getDictionary().validate(response, true);
     }
 
+    public void testImmediateReportAfterRouteMgr() throws Exception {
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
+        OrderRouteManager routeManager = new OrderRouteManager();
+        routeManager.setSeparateSuffix(true);
+        handler.setOrderRouteManager(routeManager);
+        handler.setOrderModifiers(new LinkedList<OrderModifier>());
+        NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
+		handler.setQuickFIXSender(quickFIXSender);
+
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"),
+                                                      TimeInForce.DAY, "bob");
+        Message response = handler.handleMessage(msg);
+        assertNotNull(quickFIXSender.getCapturedMessages().get(0));
+        assertEquals("no symbol suffix in sent msg", "USD", quickFIXSender.getCapturedMessages().get(0).getString(SymbolSfx.FIELD));
+
+        assertNotNull(response);
+        assertEquals("verify symbol has been separated", "EUR", response.getString(Symbol.FIELD));
+        //assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD));
+    }
+
     /** Send a generic event and a single-order event.
      * Verify get an executionReport (not content of it) and that the msg come out
      * on the sink
