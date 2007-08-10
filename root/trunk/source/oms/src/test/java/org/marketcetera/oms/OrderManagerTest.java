@@ -160,6 +160,8 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         assertNotNull(response);
         assertEquals("verify symbol has been separated", "EUR", response.getString(Symbol.FIELD));
+
+        // this is to test #362
         //assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD));
     }
 
@@ -384,7 +386,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         // now set it to be logged out and verify a reject
         sender.getCapturedMessages().clear();
-        handler.getQFApp().onLogout(null);
+        handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
         execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
         assertEquals(0, sender.getCapturedMessages().size());
         verifyRejection(execReport, msgFactory, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
@@ -496,13 +498,13 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-            super(settings, inFactory, OrderLimitsTest.createBasicOrderLimits(), new QuickFIXApplication());
+            super(settings, inFactory, OrderLimitsTest.createBasicOrderLimits(), new QuickFIXApplication(inFactory));
             // simulate logon
             qfApp.onLogon(null);
         }
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits limits)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-            super(settings, inFactory, limits, new QuickFIXApplication());
+            super(settings, inFactory, limits, new QuickFIXApplication(inFactory));
             // simulate logon
             qfApp.onLogon(null);
         }

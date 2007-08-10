@@ -77,7 +77,8 @@
     <bean id="quickfixSender" class="org.marketcetera.quickfix.NullQuickFIXSender"/>
 
     <bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
-      <property name="jmsOperations" ref="outgoingJmsTemplate"/>
+        <constructor-arg ref="fixMessageFactory"/>
+        <property name="jmsOperations" ref="outgoingJmsTemplate"/>
     </bean>
 
     <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>
