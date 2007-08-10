@@ -44,8 +44,7 @@ public class FIXDataDictionaryManager {
         }
     }
 
-    public static FIXDataDictionary getFIXDataDictionary(FIXVersion
-        version) {
+    public static FIXDataDictionary getFIXDataDictionary(FIXVersion version) {
         return fddMap.get(version);
     }
 
