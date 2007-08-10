@@ -11,9 +11,7 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
     <bean id="jdbcLogFactory" class="quickfix.JdbcLogFactory">
-        <constructor-arg>
-            <ref bean="sessionSettings"/>
-        </constructor-arg>
+        <constructor-arg ref="sessionSettings"/>
     </bean>
 
     <!-- Currently unused but there if you want to swap out SLF4j -->
@@ -25,9 +23,7 @@
     </bean>
 
     <bean id="slf4jLogFactory" class="quickfix.SLF4JLogFactory">
-        <constructor-arg>
-            <ref bean="sessionSettings"/>
-        </constructor-arg>
+        <constructor-arg ref="sessionSettings"/>
     </bean>
 
     <bean id="comboLogFactory" class="quickfix.CompositeLogFactory">
@@ -47,7 +43,7 @@
                 <entry key="FileStorePath" value="store"/>
                 <entry key="StartTime" value="00:00:00"/>
                 <entry key="EndTime" value="00:00:00"/>
-                <entry><key><value>DataDictionary</value></key><ref bean="fixDictionaryPath" /></entry>
+                <entry key="DataDictionary" value-ref="fixDictionaryPath"/>
                 <entry key="UseDataDictionary" value="Y"/>
                 <entry key="ReconnectInterval" value="15"/>
                 <entry key="ResetOnLogout" value="Y"/>
@@ -78,9 +74,7 @@
 	</bean>
 	
     <bean id="messageStoreFactory" class="quickfix.FileStoreFactory">
-        <constructor-arg>
-        	<ref bean="sessionSettings"/>
-        </constructor-arg>		
+        <constructor-arg ref="sessionSettings"/>
     </bean>
 
     <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory" />
@@ -90,8 +84,9 @@
     <!-- There is no use of the standard QF configuration file -->
 
 	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
-	  <property name="jmsOperations" ref="outgoingJmsTemplate"/>
-	</bean>
+        <constructor-arg ref="fixMessageFactory"/>
+        <property name="jmsOperations" ref="outgoingJmsTemplate"/>
+    </bean>
 
     <bean id="socketInitiator" class="quickfix.spring.SocketInitiator">
 		<constructor-arg ref="qfApplication"/>
