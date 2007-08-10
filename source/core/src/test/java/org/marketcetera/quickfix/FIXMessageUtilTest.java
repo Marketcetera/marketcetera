@@ -153,30 +153,34 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                                              BigDecimal lastQty, BigDecimal cumQty, BigDecimal lastPrice,
                                              BigDecimal avgPrice, char ordStatus, char execType, char execTransType,
                                              FIXMessageFactory msgFactory, FIXDataDictionary fixDD) throws Exception {
-        assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD));
-        assertEquals("side", side, inExecReport.getChar(Side.FIELD));
-        assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
-        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
-        }
-		if (lastQty != null) {
-        assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
-		}
-		if (lastPrice != null) {
-	        assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
-		}
-        assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getString(CumQty.FIELD)));
-        assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
-        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
-        }
-        assertNotNull(inExecReport.getString(TransactTime.FIELD));
+        try {
+            assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD));
+            assertEquals("side", side, inExecReport.getChar(Side.FIELD));
+            assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
+            if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+                assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
+            }
+            if (lastQty != null) {
+            assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
+            }
+            if (lastPrice != null) {
+                assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
+            }
+            assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getString(CumQty.FIELD)));
+            assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
+            if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+                assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
+            }
+            assertNotNull(inExecReport.getString(TransactTime.FIELD));
 
-        assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
-        if(version42orBelow(msgFactory)) {
-            assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
+            assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
+            if(version42orBelow(msgFactory)) {
+                assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
+            }
+            fixDD.getDictionary().validate(inExecReport, true);
+        } catch(FieldNotFound fnf) {
+            fail("Field "+fixDD.getHumanFieldName(fnf.field) + " not found in message: "+inExecReport);
         }
-        fixDD.getDictionary().validate(inExecReport, true);
     }
 
 
