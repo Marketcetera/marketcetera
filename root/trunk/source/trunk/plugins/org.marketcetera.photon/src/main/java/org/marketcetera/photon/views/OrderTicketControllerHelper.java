@@ -341,6 +341,7 @@ public class OrderTicketControllerHelper {
 		try {
 			PhotonPlugin plugin = PhotonPlugin.getDefault();
 			ticket.updateMessage(targetMessage);
+			plugin.getMessageFactory().addTransactionTimeIfNeeded(targetMessage);
 			plugin.getPhotonController().handleInternalMessage(targetMessage);
 			clear();
 		} catch (Exception e) {
