@@ -48,11 +48,7 @@ public class StrategyTest extends TestCase {
         TestStrategy strategy = new TestStrategy() {
 			public void timeout_callback(Object clientData) {
 				((ArrayList<String>)clientData).add("in-call-back");
-                try {
-                    registerTimedCallback(100, clientData);
-                } catch (InterruptedException e) {
-                    fail("strategy interrupted in callback");
-                }
+                registerTimedCallback(100, clientData);
             }
 		};
         assertEquals(0, callbackCounter.size());
