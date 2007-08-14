@@ -201,7 +201,7 @@ public class ScriptRegistry implements InitializingBean {
      * @param clientData    ClientData object passed back to the {@link Strategy#timeout_callback} function.
      */
 	public ScheduledFuture<?> registerTimedCallback(final Strategy strategy, final long delay,
-                                                    TimeUnit unit, final Object clientData) throws InterruptedException
+                                                    TimeUnit unit, final Object clientData)
 	{
 		ScheduledFuture<?> future = getScheduler().schedule(new Runnable(){
 			public void run() {
