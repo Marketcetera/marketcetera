@@ -38,6 +38,7 @@ import quickfix.field.PrevClosePx;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 
@@ -326,6 +327,46 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	@Override
 	protected String getViewID() {
 		return StockOrderTicket.ID;
+	}
+	
+	public void testTransactTimeCorrect() throws Exception {
+		MockJmsOperations mockJmsOperations = new MockJmsOperations();
+		setUpJMSFeedService(mockJmsOperations);
+
+		StockOrderTicket view = (StockOrderTicket) getTestView();
+
+		// Attempt to get a message ID. This currently has the side effect of
+		// initializing an in memory ID generator if the database backed one is
+		// unavailable. This allows the subsequent ID generation to succeed,
+		// which is required for handleSend() below.
+		try {
+			IDFactory idFactory = PhotonPlugin.getDefault()
+					.getPhotonController().getIDFactory();
+			idFactory.getNext();
+		} catch (Exception anyException) {
+			// Ignore
+		}
+		
+		view.clear();
+
+		delay(5000);
+
+		view.getSideCombo().setText("S");
+		view.getQuantityText().setText("45");
+		view.getSymbolText().setText("ASDF");
+		view.getPriceText().setText("MKT");
+		view.getTifCombo().setText("FOK");
+
+		controller.handleSend();
+
+		delay(1);
+		
+		Message sentMessage = (Message) mockJmsOperations.getStoredMessage();
+		assertNotNull( sentMessage );
+
+		long sentTime = sentMessage.getUtcTimeStamp(TransactTime.FIELD).getTime();
+		long diff = System.currentTimeMillis() - sentTime;
+		assertTrue(diff > 0 && diff < 1000);
 	}
 }
 
