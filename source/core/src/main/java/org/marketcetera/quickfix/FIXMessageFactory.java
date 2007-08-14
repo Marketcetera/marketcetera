@@ -372,7 +372,7 @@ public class FIXMessageFactory {
     }
 
     /** Only add the transaction time if it's necessary for this message */
-    protected void addTransactionTimeIfNeeded(Message msg)
+    public void addTransactionTimeIfNeeded(Message msg)
     {
         if(msgAugmentor.needsTransactTime(msg)) {
             msg.setField(new TransactTime(new Date()));
