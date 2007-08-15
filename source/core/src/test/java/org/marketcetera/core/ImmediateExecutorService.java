@@ -10,6 +10,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+/* normally several methods in this class would be templatized...
+ * http://permalink.gmane.org/gmane.comp.java.jsr.166-concurrency/4132
+ * http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6267833
+ */
 public class ImmediateExecutorService implements ExecutorService {
 
 
@@ -18,22 +22,22 @@ public class ImmediateExecutorService implements ExecutorService {
 		return true;
 	}
 
-	public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks)
+	public List invokeAll(Collection tasks)
 			throws InterruptedException {
 		throw new UnsupportedOperationException();
 	}
 
-	public <T> List<Future<T>> invokeAll(Collection<Callable<T>> tasks,
+	public List invokeAll(Collection tasks,
 			long timeout, TimeUnit unit) throws InterruptedException {
 		throw new UnsupportedOperationException();
 	}
 
-	public <T> T invokeAny(Collection<Callable<T>> tasks)
+	public Object invokeAny(Collection tasks)
 			throws InterruptedException, ExecutionException {
 		throw new UnsupportedOperationException();
 	}
 
-	public <T> T invokeAny(Collection<Callable<T>> tasks, long timeout,
+	public Object invokeAny(Collection tasks, long timeout,
 			TimeUnit unit) throws InterruptedException, ExecutionException,
 			TimeoutException {
 		throw new UnsupportedOperationException();
