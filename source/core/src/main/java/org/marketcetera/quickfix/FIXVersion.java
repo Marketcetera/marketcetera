@@ -30,7 +30,7 @@ public enum FIXVersion {
             new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING, new quickfix.fix42.MessageFactory(), new FIXMessageAugmentor_42())),
     FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, 4.3, "FIX43.xml",
             new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new quickfix.fix43.MessageFactory(), new FIXMessageAugmentor_43())),
-    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44.xml",
+    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44-marketcetera.xml",
             new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
