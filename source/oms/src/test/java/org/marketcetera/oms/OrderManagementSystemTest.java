@@ -5,6 +5,7 @@ import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
+import org.marketcetera.quickfix.OrderRouteManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
@@ -83,6 +84,13 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.BUY);
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.SELL);
         oneOrderRoundtripHelper(topicMsgs,  sema, Side.SELL_SHORT);
+    }
+
+    /** verify bug #361 - separateSuffix should be off by default */
+    public void testSpringCreation() throws Exception {
+        ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("/order-modifiers.xml");
+        OrderRouteManager orm = (OrderRouteManager) appCtx.getBean("orderRouting", OrderRouteManager.class);
+        assertFalse(orm.isSeparateSuffix());
     }
 
     /** Generates a JMS message from the fix order
