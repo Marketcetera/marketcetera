@@ -6,7 +6,7 @@ Bundle-Version: 0.4
 Bundle-ClassPath: src/main/resources/,
  .
 Eclipse-LazyStart: false
-Eclipse-RegisterBuddy: org.jruby.bsf
+Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Export-Package: .,
@@ -24,4 +24,5 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.skife.kasparov.csv;visibility:=reexport,
  org.apache.commons.i18n;visibility:=reexport,
  org.jruby.bsf;visibility:=reexport,
- org.junit;resolution:=optional
+ org.junit;resolution:=optional,
+ org.quickfixj;visibility:=reexport
