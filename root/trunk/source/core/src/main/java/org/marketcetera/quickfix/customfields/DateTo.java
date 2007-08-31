@@ -19,7 +19,7 @@ public class DateTo extends UtcTimeStampField {
         super(FIELD, new Date());
     }
 
-    protected DateTo(Date data) {
+    public DateTo(Date data) {
         super(FIELD, data);
     }
 }

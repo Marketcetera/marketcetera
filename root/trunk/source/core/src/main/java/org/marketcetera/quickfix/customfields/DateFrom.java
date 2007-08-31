@@ -18,7 +18,7 @@ public class DateFrom extends UtcTimeStampField {
         super(FIELD, new Date());
     }
 
-    protected DateFrom(Date date) {
+    public DateFrom(Date date) {
         super(FIELD, date);
     }
 }
