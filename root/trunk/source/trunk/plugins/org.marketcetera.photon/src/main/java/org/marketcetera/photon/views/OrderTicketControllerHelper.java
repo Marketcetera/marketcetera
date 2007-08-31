@@ -66,6 +66,7 @@ import quickfix.field.MsgType;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
+import quickfix.field.SecurityType;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
@@ -708,6 +709,7 @@ public class OrderTicketControllerHelper {
 	protected Message newNewOrderSingle() {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		Message aMessage = plugin.getMessageFactory().newBasicOrder();
+		aMessage.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
 		aMessage.getHeader().setField(new MsgType(MsgType.ORDER_SINGLE));
 		return aMessage;
 	}
