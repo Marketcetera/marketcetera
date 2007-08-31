@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.MessageKey;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -50,14 +51,17 @@ public class OrderRouteManager implements OrderModifier {
         routeMethod = inMethod;
         if (routeMethod != null &&
             (!(FIELD_57_METHOD.equals(routeMethod) || FIELD_100_METHOD.equals(routeMethod)))) {
-                throw new IllegalArgumentException(
-                        "Could not recognize route method " + routeMethod);
+                throw new IllegalArgumentException(MessageKey.ERROR_UNRECOGNIZED_ROUTE.getLocalizedMessage(routeMethod));
         }
     }
 
     public void setSeparateSuffix(boolean inSeparateSuffix)
     {
         separateSuffix = inSeparateSuffix;
+    }
+
+    public boolean isSeparateSuffix() {
+        return separateSuffix;
     }
 
     protected Map<String,String> getRoutesMap() { return mRoutes; }
@@ -73,7 +77,9 @@ public class OrderRouteManager implements OrderModifier {
                 MsgType msgTypeField = new MsgType();
                 anOrder.getHeader().getField(msgTypeField);
                 if (routeMethod != null
-                        && MsgType.ORDER_SINGLE.equals(msgTypeField.getValue())) {
+                        && (MsgType.ORDER_SINGLE.equals(msgTypeField.getValue())  ||
+                            MsgType.ORDER_CANCEL_REPLACE_REQUEST.equals(msgTypeField.getValue()) ||
+                            MsgType.ORDER_CANCEL_REQUEST.equals(msgTypeField.getValue()))) {
                     int periodPosition;
                     if ((periodPosition = symbolString.lastIndexOf('.')) > 0) {
                         String routeKey = symbolString.substring(periodPosition + 1);
@@ -90,7 +96,7 @@ public class OrderRouteManager implements OrderModifier {
                     }
                     isModified = true;
                 }
-                if (separateSuffix) {
+                if (isSeparateSuffix()) {
                     int suffixEnd = symbolString.length();
                     int slashPosition = 0;
                     if ((slashPosition = symbolString.lastIndexOf('/')) > 0) {
