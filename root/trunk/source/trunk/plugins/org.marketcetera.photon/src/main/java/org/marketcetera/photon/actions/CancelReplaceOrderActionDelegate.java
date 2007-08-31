@@ -19,6 +19,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.ClOrdID;
+import quickfix.field.OrderID;
 
 /**
  * CancelOrderActionDelegate is a subclass of {@link ActionDelegate}
@@ -118,10 +119,22 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 				if (originalOrderMessage == null) {
 					originalOrderMessage = oldMessage;
 				}
+				String orderID = null;
+				try {
+					FIXMessageHistory fixMessageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
+					Message latestMessage = fixMessageHistory.getLatestExecutionReport(clOrdId.getValue());
+					orderID = latestMessage.getString(OrderID.FIELD);
+				} catch (Exception ex){
+					// use null
+				}
+
 				Message cancelReplaceMessage = messageFactory
 						.newCancelReplaceFromMessage(originalOrderMessage);
 				cancelReplaceMessage.setField(new ClOrdID(PhotonPlugin
 						.getDefault().getIDFactory().getNext()));
+				if (orderID != null){
+					cancelReplaceMessage.setField(new OrderID(orderID));
+				}
 				IOrderTicketController controller = PhotonPlugin.getDefault()
 						.getOrderTicketController(originalOrderMessage);
 				if (controller != null) {
