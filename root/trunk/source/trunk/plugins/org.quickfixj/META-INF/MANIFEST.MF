@@ -16,6 +16,7 @@ Bundle-ClassPath: lib/mina-core-1.0.1.jar,
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.jruby.bsf
+Eclipse-BuddyPolicy: registered
 Export-Package: .,
  org.quickfixj,
  org.quickfixj.jmx,
