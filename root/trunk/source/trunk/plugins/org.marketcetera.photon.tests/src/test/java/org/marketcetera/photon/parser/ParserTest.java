@@ -1,8 +1,6 @@
 package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 
 import jfun.parsec.ParserException;
@@ -28,6 +26,7 @@ import quickfix.field.MsgType;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
 import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
 import quickfix.field.Side;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
@@ -56,66 +55,79 @@ public class ParserTest extends FIXVersionedTestCase {
     	MessageCommand command = aParser.parseNewOrder(order);
     	Message result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("1"), TimeInForce.DAY, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "SS 1234 IBM 1.8";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "ss 1234 IBM 1.8 day";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "SSE 999 IBM .7";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.SELL_SHORT_EXEMPT, new BigDecimal("999"), "IBM", new BigDecimal(".7"), TimeInForce.DAY, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "S 0 IBM 0.0";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.SELL, new BigDecimal("0"), "IBM", new BigDecimal("0.0"), TimeInForce.DAY, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "B 100 IBM 94.8\tDAY";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.DAY, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "B 100 IBM 94.8 OPG";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.AT_THE_OPENING, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "B 100 IBM 94.8 CLO";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.AT_THE_CLOSE, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "B 100 IBM 94.8 FOK";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.FILL_OR_KILL, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "B 100 IBM 94.8 IOC";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.IMMEDIATE_OR_CANCEL, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "B 100 IBM 94.8 GTC";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.GOOD_TILL_CANCEL, null);
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	order = "SS 100 IBM 94.8 DAY 123.45";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.SELL_SHORT, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.DAY, "123.45");
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
     	
     	order = "B 100 IBM 94.8 DAY AAA;A/a-A";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("94.8"), TimeInForce.DAY, "AAA;A/a-A");
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
     	(new ExpectedTestFailure(ParserException.class) {
             protected void execute() throws Throwable
@@ -200,7 +212,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	MessageCommand command = aParser.parseNewOrder(order);
     	Message result = command.getMessage();
     	verifyNewOptionOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("1"), TimeInForce.DAY, null, new BigDecimal("25"), "200810", PutOrCall.CALL);
-
+    	
     	order = "SS 1234 IBM 2008JAN12.5C 1.8";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
@@ -346,6 +358,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	assertEquals(strike.toPlainString(), message.getString(StrikePrice.FIELD));
     	assertEquals(expirationMonthYear, message.getString(MaturityMonthYear.FIELD));
     	assertEquals(putOrCall, message.getInt(PutOrCall.FIELD));
+    	assertEquals(message.getString(SecurityType.FIELD), SecurityType.OPTION);
     }
     
     public void testResendRequest() throws FieldNotFound {
@@ -396,7 +409,8 @@ public class ParserTest extends FIXVersionedTestCase {
     	MessageCommand command = (MessageCommand) aParser.parseCommand(order);
     	Message result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM", new BigDecimal("1"), TimeInForce.DAY, null);
-    	
+    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
+
     }
 
     public void testCancelOrder() throws NoMoreIDsException, FieldNotFound{

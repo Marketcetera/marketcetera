@@ -35,6 +35,7 @@ import quickfix.field.NoMDEntries;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.PrevClosePx;
+import quickfix.field.SecurityType;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
@@ -168,8 +169,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals(Side.SELL, orderMessage.getChar(Side.FIELD));
 		assertEquals(45, orderMessage.getInt(OrderQty.FIELD));
 		assertEquals("ASDF", orderMessage.getString(Symbol.FIELD));
-		assertEquals(OrdType.MARKET, orderMessage.getChar	(OrdType.FIELD));
+		assertEquals(OrdType.MARKET, orderMessage.getChar(OrdType.FIELD));
 		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
+		assertEquals(SecurityType.COMMON_STOCK, orderMessage.getString(SecurityType.FIELD));
 	}
 
 	/**
