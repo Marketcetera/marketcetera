@@ -155,12 +155,15 @@ public class OptionOrderTicketControllerHelper extends
 		Message message = super.newNewOrderSingle();
 		// These fields should match the ones from bindImpl() and the
 		// ILexerImage
-		if (isOrderCapacityAndOpenCloseAllowed()) {
+		if (isOrderCapacityAllowed()){
 			message.setField(new OrderCapacity(OrderCapacityImage.CUSTOMER
 					.getFIXCharValue()));
+		}
+		if (isOpenCloseAllowed()) {
 			message.setField(new OpenClose(OpenCloseImage.OPEN
 					.getFIXCharValue()));
 		}
+		message.setString(SecurityType.FIELD, SecurityType.OPTION);
 		return message;
 	}
 
@@ -234,10 +237,14 @@ public class OptionOrderTicketControllerHelper extends
 
 	}
 
-	private boolean isOrderCapacityAndOpenCloseAllowed() {
+	private boolean isOrderCapacityAllowed() {
 		return PhotonPlugin.getDefault().getFIXVersion().getVersionAsDouble() >= FIXVersion.FIX43.getVersionAsDouble();
 	}
 
+	private boolean isOpenCloseAllowed() {
+		return PhotonPlugin.getDefault().getFIXVersion().getVersionAsDouble() >= FIXVersion.FIX42.getVersionAsDouble();
+		
+	}
 	@Override
 	protected void bindImpl(Message message, boolean enableValidators) {
 		super.bindImpl(message, enableValidators);
@@ -320,7 +327,7 @@ public class OptionOrderTicketControllerHelper extends
 				addControlRequiringUserInput(whichControl);
 		}
 		// OrderCapacity
-		if(isOrderCapacityAndOpenCloseAllowed())
+		if(isOrderCapacityAllowed())
 		{
 			Control whichControl = optionTicket.getOrderCapacityCombo();
 			IToggledValidator targetAfterGetValidator = orderCapacityConverterBuilder.newTargetAfterGetValidator();
@@ -347,7 +354,7 @@ public class OptionOrderTicketControllerHelper extends
 //				addControlRequiringUserInput(whichControl);
 		}
 		// OpenClose
-		if(isOrderCapacityAndOpenCloseAllowed())
+		if(isOpenCloseAllowed())
 		{
 			Control whichControl = optionTicket.getOpenCloseCombo();
 			IToggledValidator targetAfterGetValidator = openCloseConverterBuilder.newTargetAfterGetValidator();

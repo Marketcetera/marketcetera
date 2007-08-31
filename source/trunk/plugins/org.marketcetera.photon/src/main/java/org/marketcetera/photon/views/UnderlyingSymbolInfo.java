@@ -51,7 +51,7 @@ public class UnderlyingSymbolInfo {
 		ASKSZ(OfferSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
 
 		//cl todo:sending time or lastUpdateTime?  also, what should the last field be?
-		LASTUPDATEDTIME(SendingTime.class, MDEntryTime.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
+		LASTUPDATEDTIME(SendingTime.class, MDEntryTime.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
 		TRADEVOL(TotalVolumeTraded.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME),
 		OPENPX(OpenClose.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OPENING_PRICE),
 		HI(HighPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADING_SESSION_HIGH_PRICE), 

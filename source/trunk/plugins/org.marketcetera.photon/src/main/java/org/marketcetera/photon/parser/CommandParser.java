@@ -48,6 +48,7 @@ import quickfix.Message;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.OrderQty;
 import quickfix.field.PutOrCall;
+import quickfix.field.SecurityType;
 import quickfix.field.StrikePrice;
 
 public class CommandParser {
@@ -130,6 +131,7 @@ public class CommandParser {
 						results.setString(MaturityMonthYear.FIELD, maturityMonthYearString);
 						results.setString(StrikePrice.FIELD, strikeString);
 						results.setString(PutOrCall.FIELD, putOrCall);
+						results.setString(SecurityType.FIELD, SecurityType.OPTION);
 						return results;
 					} else {
 						return null;
@@ -226,6 +228,8 @@ public class CommandParser {
 						}
 						if (optionSpecifier != null){
 							FIXMessageUtil.copyFields(message,optionSpecifier);
+						} else {
+							message.setString(SecurityType.FIELD, SecurityType.COMMON_STOCK);
 						}
 					} catch (NoMoreIDsException e) {
 						PhotonPlugin.getMainConsoleLogger().error(this, e);
