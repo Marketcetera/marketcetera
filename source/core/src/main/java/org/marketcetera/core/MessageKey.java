@@ -44,6 +44,7 @@ public enum MessageKey implements LocalizedMessage {
     IN_MEMORY_ID_FACTORY_OVERRUN("core.error.inmmemory_id_factory_overrun"),
     ERROR_NULL_ID("core.error.null_id"),
     ERROR_NULL_MSYMBOL("core.error.null_msymbol"),
+    ERROR_UNRECOGNIZED_ROUTE("core.error.unrecognized_route"),
 
     LOGGER_MISSING_CAT("core.logger.missing_cat"),
     LOGGER_INIT("core.logger.init"),

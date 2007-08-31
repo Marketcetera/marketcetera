@@ -3,6 +3,9 @@ package org.marketcetera.quickfix;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.*;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -26,9 +29,14 @@ public class OrderRouteManagerTest extends TestCase
     }
 
     public static Test suite() {
+        try {
+            FIXDataDictionaryManager.initialize(FIXVersion.FIX42, FIXVersion.FIX42.getDataDictionaryURL());
+        } catch (FIXFieldConverterNotAvailable ignored) {
+
+        }
         return new MarketceteraTestSuite(OrderRouteManagerTest.class);
     }
-        
+
     public void testModifyOrderSeparateSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
     {
         OrderRouteManager routeManager = getORMWithOrderRouting();
@@ -73,7 +81,7 @@ public class OrderRouteManagerTest extends TestCase
             }
         }.run();
 
-        message = message =msgFactory.newLimitOrder("12347",
+        message =msgFactory.newLimitOrder("12347",
             Side.SELL_SHORT,
             new BigDecimal(2000),
             new MSymbol("VOD/.LN"),
@@ -246,6 +254,31 @@ public class OrderRouteManagerTest extends TestCase
                 routeManager.setRouteMethod("bob");
             }
         }).run();
+    }
+
+    // Create a NOS and CancelReplaceRequest and verify they come out
+    // with symbol changed and route method added
+    public void testOrderRouting() throws Exception {
+        FIXMessageAugmentor augmentor = new NoOpFIXMessageAugmentor();
+        OrderRouteManager routeManager = getORMWithOrderRouting();
+
+        // new order single
+        Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
+        routeManager.modifyOrder(buy, augmentor);
+        assertEquals("IBM", buy.getString(Symbol.FIELD));
+        assertEquals("SIGMA", buy.getString(ExDestination.FIELD));
+
+        // cancel replace request
+        Message crq = msgFactory.newCancelReplaceFromMessage(FIXMessageUtilTest.createNOS("TOLI.N", 10.1, 100, Side.BUY,  msgFactory));
+        routeManager.modifyOrder(crq, augmentor);
+        assertEquals("TOLI", crq.getString(Symbol.FIELD));
+        assertEquals("SIGMA", crq.getString(ExDestination.FIELD));
+
+        // cancel  request
+        Message cancel = msgFactory.newCancelFromMessage(FIXMessageUtilTest.createNOS("BOB.N", 10.1, 100, Side.BUY,  msgFactory));
+        routeManager.modifyOrder(cancel, augmentor);
+        assertEquals("BOB", cancel.getString(Symbol.FIELD));
+        assertEquals("SIGMA", cancel.getString(ExDestination.FIELD));
     }
 
     /**
