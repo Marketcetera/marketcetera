@@ -281,6 +281,8 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 				text = ": "+message.getString(Text.FIELD);
 			} catch (FieldNotFound fnf){ /* do nothing */ }
 			logger.info("Marketcetera feed received Logout"+text);
+		} else if (!MsgType.HEARTBEAT.equals(msgType)){
+			logger.info("Admin message for Marketcetera feed: "+message);
 		}
 	}
 
