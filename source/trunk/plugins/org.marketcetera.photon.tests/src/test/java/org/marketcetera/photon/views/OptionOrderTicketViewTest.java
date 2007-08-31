@@ -45,6 +45,7 @@ import quickfix.field.PutOrCall;
 import quickfix.field.SecurityReqID;
 import quickfix.field.SecurityRequestResult;
 import quickfix.field.SecurityResponseID;
+import quickfix.field.SecurityType;
 import quickfix.field.Side;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
@@ -233,6 +234,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("ABC", orderMessage.getString(Symbol.FIELD));
 		assertEquals(OrdType.MARKET, orderMessage.getChar(OrdType.FIELD));
 		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
+		assertEquals(SecurityType.OPTION, orderMessage.getString(SecurityType.FIELD));
 	}
 
 /**
