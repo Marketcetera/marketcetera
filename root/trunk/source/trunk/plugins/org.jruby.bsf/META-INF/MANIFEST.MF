@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JRuby BSF Plug-in
 Bundle-SymbolicName: org.jruby.bsf
-Bundle-Version: 0.9.9
+Bundle-Version: 1.0.1
 Bundle-Activator: org.jruby.bsf.JRubyPlugin
 Bundle-Vendor: Marketcetera LLC
 Bundle-Localization: plugin
@@ -62,7 +62,6 @@ Export-Package: org.apache.bsf,
  org.jruby.javasupport.util,
  org.jruby.lexer.yacc,
  org.jruby.libraries,
- org.jruby.main,
  org.jruby.parser,
  org.jruby.runtime,
  org.jruby.runtime.builtin,
