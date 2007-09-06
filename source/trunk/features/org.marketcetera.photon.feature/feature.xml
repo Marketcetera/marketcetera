@@ -257,7 +257,7 @@
          id="org.jruby.bsf"
          download-size="0"
          install-size="0"
-         version="0.9.9"
+         version="1.0.1"
          unpack="false"/>
 
    <plugin
