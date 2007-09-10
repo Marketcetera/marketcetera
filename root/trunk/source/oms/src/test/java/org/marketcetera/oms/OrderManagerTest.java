@@ -52,6 +52,8 @@ public class OrderManagerTest extends FIXVersionedTestCase
         handler.setOrderRouteManager(new MessageRouteManager());
     	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
+        // add symbol sfx
+        newOrder.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
         Message execReport = handler.executionReportFromNewOrder(newOrder);
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
         execReport.setField(new OrderID("fake-order-id"));
@@ -59,6 +61,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         // verify the acount id is present
         assertEquals("bob", execReport.getString(Account.FIELD));
         assertTrue("sendingTime not set", execReport.getHeader().isSetField(SendingTime.FIELD));
+        assertEquals(SymbolSfx.WHEN_ISSUED, execReport.getString(SymbolSfx.FIELD));
 
         // on a non-single order should get back null
         assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob",
@@ -162,7 +165,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals("verify symbol has been separated", "EUR", response.getString(Symbol.FIELD));
 
         // this is to test #362
-        //assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD));
+        assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD));
     }
 
     /** Send a generic event and a single-order event.
