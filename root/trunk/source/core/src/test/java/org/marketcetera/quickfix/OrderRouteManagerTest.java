@@ -5,7 +5,6 @@ import junit.framework.TestCase;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -39,7 +38,7 @@ public class OrderRouteManagerTest extends TestCase
 
     public void testModifyOrderSeparateSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
     {
-        OrderRouteManager routeManager = getORMWithOrderRouting();
+        MessageRouteManager routeManager = getORMWithOrderRouting();
 
         Message message =msgFactory.newLimitOrder("12345",
             Side.BUY,
@@ -49,7 +48,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
@@ -67,7 +66,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
@@ -89,7 +88,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.AT_THE_OPENING,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
@@ -112,10 +111,10 @@ public class OrderRouteManagerTest extends TestCase
 
     public void testModifyOrderAttachedSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
     {
-        OrderRouteManager routeManager = new OrderRouteManager();
+        MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(false);
         routeManager.addOneRoute("N", "SIGMA");
-        routeManager.setRouteMethod(OrderRouteManager.FIELD_100_METHOD);
+        routeManager.setRouteMethod(MessageRouteManager.FIELD_100_METHOD);
 
         Message message =msgFactory.newLimitOrder("12345",
             Side.BUY,
@@ -125,7 +124,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
@@ -148,7 +147,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.DAY,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
@@ -174,7 +173,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.AT_THE_OPENING,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
@@ -200,7 +199,7 @@ public class OrderRouteManagerTest extends TestCase
             TimeInForce.AT_THE_OPENING,
             null
             );
-        routeManager.modifyOrder(message, null);
+        routeManager.modifyMessage(message, null);
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
@@ -221,7 +220,7 @@ public class OrderRouteManagerTest extends TestCase
 
     public void testAddOneRoute() throws Exception
     {
-        OrderRouteManager orMgr = new OrderRouteManager();
+        MessageRouteManager orMgr = new MessageRouteManager();
         orMgr.addOneRoute("A","B");
         orMgr.addOneRoute("S", "SIGMA");
         assertEquals("A", "B", orMgr.getRoutesMap().get("A"));
@@ -231,7 +230,7 @@ public class OrderRouteManagerTest extends TestCase
     /** tests when routes come from properties */
     public void testRouteParsingPropsBased() throws Exception
     {
-        OrderRouteManager mgr = new OrderRouteManager();
+        MessageRouteManager mgr = new MessageRouteManager();
         mgr.addOneRoute("A", "B");
         mgr.addOneRoute("S", "SIGMA");
         mgr.addOneRoute("N", "M");
@@ -249,7 +248,7 @@ public class OrderRouteManagerTest extends TestCase
         (new ExpectedTestFailure(IllegalArgumentException.class, "bob") {
             protected void execute() throws Throwable
             {
-                OrderRouteManager routeManager = new OrderRouteManager();
+                MessageRouteManager routeManager = new MessageRouteManager();
                 routeManager.setSeparateSuffix(false);
                 routeManager.setRouteMethod("bob");
             }
@@ -260,29 +259,29 @@ public class OrderRouteManagerTest extends TestCase
     // with symbol changed and route method added
     public void testOrderRouting() throws Exception {
         FIXMessageAugmentor augmentor = new NoOpFIXMessageAugmentor();
-        OrderRouteManager routeManager = getORMWithOrderRouting();
+        MessageRouteManager routeManager = getORMWithOrderRouting();
 
         // new order single
         Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
-        routeManager.modifyOrder(buy, augmentor);
+        routeManager.modifyMessage(buy, augmentor);
         assertEquals("IBM", buy.getString(Symbol.FIELD));
         assertEquals("SIGMA", buy.getString(ExDestination.FIELD));
 
         // cancel replace request
         Message crq = msgFactory.newCancelReplaceFromMessage(FIXMessageUtilTest.createNOS("TOLI.N", 10.1, 100, Side.BUY,  msgFactory));
-        routeManager.modifyOrder(crq, augmentor);
+        routeManager.modifyMessage(crq, augmentor);
         assertEquals("TOLI", crq.getString(Symbol.FIELD));
         assertEquals("SIGMA", crq.getString(ExDestination.FIELD));
 
         // cancel  request
         Message cancel = msgFactory.newCancelFromMessage(FIXMessageUtilTest.createNOS("BOB.N", 10.1, 100, Side.BUY,  msgFactory));
-        routeManager.modifyOrder(cancel, augmentor);
+        routeManager.modifyMessage(cancel, augmentor);
         assertEquals("BOB", cancel.getString(Symbol.FIELD));
         assertEquals("SIGMA", cancel.getString(ExDestination.FIELD));
     }
 
     /**
-     * Creates a basic OrderRouteManager using the {@link OrderRouteManager#FIELD_100_METHOD}
+     * Creates a basic MessageRouteManager using the {@link MessageRouteManager#FIELD_100_METHOD}
      * # enable class share separate
      * separate.suffix=true
      * order.route.type=field:100
@@ -291,9 +290,9 @@ public class OrderRouteManagerTest extends TestCase
      * 2. IM Milan
      * 3. A B
      */
-    public static OrderRouteManager getORMWithOrderRouting() {
-        OrderRouteManager orm = new OrderRouteManager();
-        orm.setRouteMethod(OrderRouteManager.FIELD_100_METHOD);
+    public static MessageRouteManager getORMWithOrderRouting() {
+        MessageRouteManager orm = new MessageRouteManager();
+        orm.setRouteMethod(MessageRouteManager.FIELD_100_METHOD);
         orm.setSeparateSuffix(true);
         HashMap<String, String> routesMap = new HashMap<String, String>();
         routesMap.put("N", "SIGMA");

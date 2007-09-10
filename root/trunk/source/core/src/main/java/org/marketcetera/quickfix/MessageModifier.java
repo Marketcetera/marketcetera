@@ -13,16 +13,16 @@ import quickfix.Message;
  * containing the value of the {@link quickfix.field.Symbol} field.
  */
 @ClassVersion("$Id$")
-public interface OrderModifier {
+public interface MessageModifier {
 
     /**
      * Implement the function to make in-line modifications to the incoming message.
      *
      *
-     * @param order the order to be modified
+     * @param message the message to be modified
      * @param augmentor FIX-version specific augmentor to apply to this message
-     * @return true if the modifier has modified the order, false otherwise
+     * @return true if the modifier has modified the message, false otherwise
      * @throws MarketceteraException
      */
-    public boolean modifyOrder(Message order, FIXMessageAugmentor augmentor) throws MarketceteraException;
+    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException;
 }

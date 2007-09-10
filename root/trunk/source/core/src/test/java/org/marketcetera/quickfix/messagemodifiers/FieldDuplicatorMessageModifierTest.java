@@ -1,0 +1,53 @@
+package org.marketcetera.quickfix.messagemodifiers;
+
+import junit.framework.Test;
+import junit.framework.TestCase;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MarketceteraTestSuite;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtilTest;
+import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
+import quickfix.Message;
+import quickfix.field.Price;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+
+/**
+ * @author toli
+ * @version $Id$
+ */
+
+@ClassVersion("$Id$")
+public class FieldDuplicatorMessageModifierTest extends TestCase {
+    private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+
+    public FieldDuplicatorMessageModifierTest(String inName) {
+        super(inName);
+    }
+
+    public static Test suite() {
+        return new MarketceteraTestSuite(FieldDuplicatorMessageModifierTest.class);
+    }
+
+    public void testFieldExists() throws Exception {
+        Message msg = FIXMessageUtilTest.createNOS("ABC", 23.33, 100, Side.BUY, msgFactory);
+        FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(Symbol.FIELD, 7632);
+        assertTrue(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertEquals("ABC", msg.getString(7632));
+    }
+
+    public void testFieldDNE() throws Exception {
+        Message msg = FIXMessageUtilTest.createNOS("ABC", 23.33, 100, Side.BUY, msgFactory);
+        FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(7631, 7632);
+        assertFalse(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertFalse(msg.isSetField(7632));
+    }
+
+    public void testNotStringField() throws Exception {
+        Message msg = FIXMessageUtilTest.createNOS("ABC", 23.33, 100, Side.BUY, msgFactory);
+        FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(Price.FIELD, 7632);
+        assertTrue(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertEquals("23.33", msg.getString(7632));
+    }
+}

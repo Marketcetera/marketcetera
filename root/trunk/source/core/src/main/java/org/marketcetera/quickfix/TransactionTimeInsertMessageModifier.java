@@ -14,12 +14,12 @@ import quickfix.field.TransactTime;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class TransactionTimeInsertOrderModifier implements OrderModifier
+public class TransactionTimeInsertMessageModifier implements MessageModifier
 {
-    public TransactionTimeInsertOrderModifier() {
+    public TransactionTimeInsertMessageModifier() {
     }
 
-    public boolean modifyOrder(Message order, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message order, FIXMessageAugmentor augmentor) throws MarketceteraException {
         /** Only put the field in if it's not present */
         try {
             // test for presence

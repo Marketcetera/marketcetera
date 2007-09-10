@@ -25,7 +25,7 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
     }
 
     public void testTTNotSetOnUnapplicable() throws Exception {
-        TransactionTimeInsertOrderModifier mod = new TransactionTimeInsertOrderModifier();
+        TransactionTimeInsertMessageModifier mod = new TransactionTimeInsertMessageModifier();
         final Message msg = new Message();
         msg.getHeader().setField(new MsgType(MsgType.DERIVATIVE_SECURITY_LIST));
 
@@ -35,7 +35,7 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
             }
         }.run();
 
-        mod.modifyOrder(msg, msgFactory.getMsgAugmentor());
+        mod.modifyMessage(msg, msgFactory.getMsgAugmentor());
         new ExpectedTestFailure(FieldNotFound.class) {
             protected void execute() throws Throwable {
                 msg.getString(TransactTime.FIELD);
@@ -44,7 +44,7 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
     }
 
     public void testTTSet() throws Exception {
-        TransactionTimeInsertOrderModifier mod = new TransactionTimeInsertOrderModifier();
+        TransactionTimeInsertMessageModifier mod = new TransactionTimeInsertMessageModifier();
         final Message msg = new Message();
 
         msg.getHeader().setField(new MsgType(MsgType.EXECUTION_REPORT));
@@ -56,7 +56,7 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
         }.run();
 
 
-        mod.modifyOrder(msg, msgFactory.getMsgAugmentor());
+        mod.modifyMessage(msg, msgFactory.getMsgAugmentor());
 
         assertNotNull("TransactTime was not set", msg.getString(TransactTime.FIELD));
     }
