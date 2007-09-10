@@ -4,7 +4,7 @@
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans>
 
-    <!-- Order modifiers can be in the following format:
+    <!-- Message modifiers can be in the following format:
     Which makes the following examples valid property names.
  The syntax of the Regular Expression for the property name is as follows:
 ([0-9]+)(\((\*|[0-9a-z]|admin|app)\))?
@@ -33,7 +33,7 @@ So the sample map entries can look like this:
   </map>
    -->
 
-    <bean id="defaultOrderModifier" class="org.marketcetera.quickfix.DefaultOrderModifier">
+    <bean id="defaultMessageModifier" class="org.marketcetera.quickfix.DefaultMessageModifier">
         <property name="headerFields">
             <map>
 <!--
@@ -52,7 +52,7 @@ So the sample map entries can look like this:
         </property>
     </bean>
 
-    <bean id="orderRouting" class="org.marketcetera.quickfix.OrderRouteManager">
+    <bean id="orderRouting" class="org.marketcetera.quickfix.MessageRouteManager">
         <property name="separateSuffix" value="false"/>
         <property name="routeMethod" value="field:57"/>
         <property name="routes">
