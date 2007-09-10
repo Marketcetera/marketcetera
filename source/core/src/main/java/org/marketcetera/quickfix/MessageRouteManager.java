@@ -16,7 +16,7 @@ import java.util.Map;
  * @author gmiller
  */
 @ClassVersion("$Id$")
-public class OrderRouteManager implements OrderModifier {
+public class MessageRouteManager implements MessageModifier {
 
 
     public static final String FIELD_57_METHOD = "field:57";
@@ -26,8 +26,8 @@ public class OrderRouteManager implements OrderModifier {
     private String routeMethod;
     private boolean separateSuffix;
 
-    /** Creates a new instance of OrderRouteManager */
-    public OrderRouteManager() {
+    /** Creates a new instance of MessageRouteManager */
+    public MessageRouteManager() {
         mRoutes = new HashMap<String, String>();
     }
 
@@ -66,7 +66,7 @@ public class OrderRouteManager implements OrderModifier {
 
     protected Map<String,String> getRoutesMap() { return mRoutes; }
 
-    public boolean modifyOrder(Message anOrder, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message anOrder, FIXMessageAugmentor augmentor) throws MarketceteraException {
         try {
             boolean isModified = false;
 

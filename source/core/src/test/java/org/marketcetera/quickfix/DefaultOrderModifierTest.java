@@ -42,12 +42,12 @@ public class DefaultOrderModifierTest extends TestCase {
 
     public void testModifyOrder() throws Exception {
         String testValue = "A value";
-        DefaultOrderModifier modifier = new DefaultOrderModifier();
-        modifier.addDefaultField(111, testValue, DefaultOrderModifier.MessageFieldType.MESSAGE);
+        DefaultMessageModifier modifier = new DefaultMessageModifier();
+        modifier.addDefaultField(111, testValue, DefaultMessageModifier.MessageFieldType.MESSAGE);
 
         Message aMessage = msgFactory.newBasicOrder();
 
-        modifier.modifyOrder(aMessage, null);
+        modifier.modifyMessage(aMessage, null);
         StringField outField = new StringField(111);
         assertEquals(testValue, aMessage.getField(outField).getValue());
         final Message outerMessage = aMessage;
@@ -61,7 +61,7 @@ public class DefaultOrderModifierTest extends TestCase {
 
     public void testIncorrectModiferListingFormat()
     {
-        final DefaultOrderModifier mod = new DefaultOrderModifier();
+        final DefaultMessageModifier mod = new DefaultMessageModifier();
         new ExpectedTestFailure(MarketceteraException.class,
                                 MessageKey.ORDER_MODIFIER_WRONG_FIELD_FORMAT.getLocalizedMessage("27(app")) {
             protected void execute() throws Throwable {
@@ -73,21 +73,21 @@ public class DefaultOrderModifierTest extends TestCase {
     
     public void testModifyOrderValueExists() throws Exception {
         String replacementValue = "Replacement value";
-        DefaultOrderModifier modifier = new DefaultOrderModifier();
-        modifier.addDefaultField(111, replacementValue, DefaultOrderModifier.MessageFieldType.MESSAGE);
+        DefaultMessageModifier modifier = new DefaultMessageModifier();
+        modifier.addDefaultField(111, replacementValue, DefaultMessageModifier.MessageFieldType.MESSAGE);
 
         String originalValue = "Original value";
         Message aMessage = msgFactory.newBasicOrder();
         aMessage.setField(new StringField(111, originalValue));
 
-        modifier.modifyOrder(aMessage, null);
+        modifier.modifyMessage(aMessage, null);
         StringField outField = new StringField(111);
         assertEquals(originalValue, aMessage.getField(outField).getValue());
 
     }
 
     public void testModifyOrderWithPredicate() throws BackingStoreException, FieldNotFound, MarketceteraException {
-        DefaultOrderModifier mod = new DefaultOrderModifier();
+        DefaultMessageModifier mod = new DefaultMessageModifier();
         mod.setHeaderFields(createFieldsMap(new String[][]{{"57(*)", HEADER_57_VAL}}));
         mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}}));
@@ -100,9 +100,9 @@ public class DefaultOrderModifierTest extends TestCase {
         
         Message logon = msgFactory.createMessage(MsgType.LOGON);
 
-        assertTrue(mod.modifyOrder(heartbeat, null));
-        assertTrue(mod.modifyOrder(newOrderSingle, null));
-        assertTrue(mod.modifyOrder(logon, null));
+        assertTrue(mod.modifyMessage(heartbeat, null));
+        assertTrue(mod.modifyMessage(newOrderSingle, null));
+        assertTrue(mod.modifyMessage(logon, null));
 
         assertEquals(HEADER_57_VAL, heartbeat.getHeader().getString(57));
         assertFalse(heartbeat.isSetField(21));
@@ -127,7 +127,7 @@ public class DefaultOrderModifierTest extends TestCase {
      */
     public void testModifyOrderWithAllMessageTypeModifiers() throws Exception
     {
-        DefaultOrderModifier mod = new DefaultOrderModifier();
+        DefaultMessageModifier mod = new DefaultMessageModifier();
         mod.setHeaderFields(createFieldsMap(new String[][]{{"57", HEADER_57_VAL}}));
         mod.setMsgFields(createFieldsMap(new String[][]{{"21", FIELD_21_VAL}}));
         mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}}));
@@ -135,7 +135,7 @@ public class DefaultOrderModifierTest extends TestCase {
         Message msg = msgFactory.newBasicOrder();
         // taking this out explicitly to allow the order modifier to set it.
         msg.removeField(HandlInst.FIELD);
-        assertTrue(mod.modifyOrder(msg, null));
+        assertTrue(mod.modifyMessage(msg, null));
         assertEquals(HEADER_57_VAL, msg.getHeader().getString(57));
         assertEquals(FIELD_21_VAL, msg.getString(21));
         assertEquals(TRAILER_28_VAL, msg.getTrailer().getString(28));

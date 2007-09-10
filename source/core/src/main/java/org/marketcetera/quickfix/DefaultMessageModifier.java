@@ -22,7 +22,7 @@ import java.util.regex.Pattern;
  */
 
 @ClassVersion("$Id$")
-public class DefaultOrderModifier implements OrderModifier {
+public class DefaultMessageModifier implements MessageModifier {
     private static final String ADMIN_MODIFIER_KEY = "ADMIN";
     private static final String APP_MODIFIER_KEY = "APP";
     private static final String GLOBAL_MODIFIER_KEY = "*";
@@ -83,7 +83,7 @@ public class DefaultOrderModifier implements OrderModifier {
 
     public enum MessageFieldType { MESSAGE, HEADER, TRAILER }
 
-    public DefaultOrderModifier()
+    public DefaultMessageModifier()
     {
         messageModifiers = new HashMap<String, MessageModifier>();
     }
@@ -100,7 +100,7 @@ public class DefaultOrderModifier implements OrderModifier {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
-    public boolean modifyOrder(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException {
         String msgType = null;
         boolean modified = false;
 
@@ -164,7 +164,7 @@ public class DefaultOrderModifier implements OrderModifier {
      * @param fields    Map of key-value pairs
      * @param fieldType       Which particular kind of field we are modifying: trailer/header/message
      */
-    protected void setFieldsHelper(Map<String, String> fields, DefaultOrderModifier.MessageFieldType fieldType) throws MarketceteraException {
+    protected void setFieldsHelper(Map<String, String> fields, DefaultMessageModifier.MessageFieldType fieldType) throws MarketceteraException {
         Set<String> keys = fields.keySet();
         for (String oneKey : keys) {
             String value = fields.get(oneKey);
