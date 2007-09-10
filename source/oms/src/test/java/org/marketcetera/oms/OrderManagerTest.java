@@ -3,7 +3,7 @@ package org.marketcetera.oms;
 import junit.framework.Test;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
-import org.marketcetera.quickfix.DefaultOrderModifier.MessageFieldType;
+import org.marketcetera.quickfix.DefaultMessageModifier.MessageFieldType;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -49,7 +49,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     public void testNewExecutionReportFromOrder() throws Exception
     {
     	OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
     	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
         Message execReport = handler.executionReportFromNewOrder(newOrder);
@@ -69,7 +69,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     public void testNewExecutionReportFromOrder_noAccount() throws Exception
     {
     	OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
         Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
                                                       TimeInForce.DAY, "bob");
         // remove account ID
@@ -108,8 +108,8 @@ public class OrderManagerTest extends FIXVersionedTestCase
     public void testInsertDefaultFields() throws Exception
     {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        handler.setOrderRouteManager(new OrderRouteManager());
-        handler.setOrderModifiers(getOrderModifiers());
+        handler.setOrderRouteManager(new MessageRouteManager());
+        handler.setMessageModifiers(getOrderModifiers());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -145,10 +145,10 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
     public void testImmediateReportAfterRouteMgr() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        OrderRouteManager routeManager = new OrderRouteManager();
+        MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
         handler.setOrderRouteManager(routeManager);
-        handler.setOrderModifiers(new LinkedList<OrderModifier>());
+        handler.setMessageModifiers(new LinkedList<MessageModifier>());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -179,7 +179,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     public void testHandleEvents() throws Exception
     {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -214,7 +214,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         buyOrder.removeField(Side.FIELD);
 
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -242,7 +242,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
      */
     public void testMalformedPrice() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), fixVersion.getMessageFactory());
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -267,7 +267,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     public void testHandleFIXMessages() throws Exception
     {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -288,7 +288,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
     public void testInvalidSessionID() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        handler.setOrderRouteManager(new OrderRouteManager());
+        handler.setOrderRouteManager(new MessageRouteManager());
         SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target");
         handler.setDefaultSessionID(sessionID);
         QuickFIXSender quickFIXSender = new QuickFIXSender();
@@ -308,7 +308,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
      */
     public void testWithOrderRouteManager() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
-        OrderRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
+        MessageRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
         handler.setOrderRouteManager(orm);
 
         final NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
@@ -428,31 +428,31 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
 
     /** Helper method for creating a set of properties with defaults to be reused   */
-    public static List<OrderModifier> getOrderModifiers()
+    public static List<MessageModifier> getOrderModifiers()
     {
-    	List<OrderModifier> orderModifiers = new LinkedList<OrderModifier>();
+    	List<MessageModifier> messageModifiers = new LinkedList<MessageModifier>();
 
-    	DefaultOrderModifier defaultOrderModifier = new DefaultOrderModifier();
+    	DefaultMessageModifier defaultOrderModifier = new DefaultMessageModifier();
     	defaultOrderModifier.addDefaultField(57, HEADER_57_VAL, MessageFieldType.HEADER);
-    	orderModifiers.add(defaultOrderModifier);
+    	messageModifiers.add(defaultOrderModifier);
 
-    	defaultOrderModifier = new DefaultOrderModifier();
+    	defaultOrderModifier = new DefaultMessageModifier();
     	defaultOrderModifier.addDefaultField(12, HEADER_12_VAL, MessageFieldType.HEADER);
-    	orderModifiers.add(defaultOrderModifier);
+    	messageModifiers.add(defaultOrderModifier);
 
-    	defaultOrderModifier = new DefaultOrderModifier();
+    	defaultOrderModifier = new DefaultMessageModifier();
     	defaultOrderModifier.addDefaultField(2, TRAILER_2_VAL, MessageFieldType.TRAILER);
-    	orderModifiers.add(defaultOrderModifier);
+    	messageModifiers.add(defaultOrderModifier);
 
-    	defaultOrderModifier = new DefaultOrderModifier();
+    	defaultOrderModifier = new DefaultMessageModifier();
     	defaultOrderModifier.addDefaultField(37, FIELDS_37_VAL, MessageFieldType.MESSAGE);
-    	orderModifiers.add(defaultOrderModifier);
+    	messageModifiers.add(defaultOrderModifier);
 
-    	defaultOrderModifier = new DefaultOrderModifier();
+    	defaultOrderModifier = new DefaultMessageModifier();
     	defaultOrderModifier.addDefaultField(14, FIELDS_14_VAL, MessageFieldType.MESSAGE);
-    	orderModifiers.add(defaultOrderModifier);
+    	messageModifiers.add(defaultOrderModifier);
     	
-    	return orderModifiers;
+    	return messageModifiers;
     }
 
     private void verifyBMRejection(Message inMsg, FIXMessageFactory msgFactory, LocalizedMessage msgKey, Object ... args) throws Exception

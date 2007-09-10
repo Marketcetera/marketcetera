@@ -34,9 +34,9 @@
         <constructor-arg ref="qfApplication"/>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="orderRouteManager" ref="orderRouting"/>
-        <property name="orderModifiers">
+        <property name="messageModifiers">
             <list>
-                <ref bean="defaultOrderModifier"/>
+                <ref bean="defaultMessageModifier"/>
             </list>
         </property>
         <property name="quickFIXSender" ref="quickfixSender"/>

@@ -22,8 +22,8 @@ import java.util.List;
 @ClassVersion("$Id$")
 public class OutgoingMessageHandler {
 
-	private List<OrderModifier> orderModifiers;
-    private OrderRouteManager routeMgr;
+	private List<MessageModifier> messageModifiers;
+    private MessageRouteManager routeMgr;
     private SessionID defaultSessionID;         // used to store the SessionID so that FIX sender can find it
     private IQuickFIXSender quickFIXSender = new QuickFIXSender();
     private IDFactory idFactory;
@@ -36,8 +36,8 @@ public class OutgoingMessageHandler {
     public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits inLimits,
                                   QuickFIXApplication inQFApp)
             throws ConfigError, FieldConvertError, MarketceteraException {
-        setOrderModifiers(new LinkedList<OrderModifier>());
-        setOrderRouteManager(new OrderRouteManager());
+        setMessageModifiers(new LinkedList<MessageModifier>());
+        setOrderRouteManager(new MessageRouteManager());
         msgFactory = inFactory;
         idFactory = createDatabaseIDFactory(settings);
         orderLimits = inLimits;
@@ -50,17 +50,17 @@ public class OutgoingMessageHandler {
         }
     }
 
-    public void setOrderRouteManager(OrderRouteManager inMgr)
+    public void setOrderRouteManager(MessageRouteManager inMgr)
     {
         routeMgr = inMgr;
     }
 
-    public void setOrderModifiers(List<OrderModifier> mods){
-		orderModifiers = new LinkedList<OrderModifier>();
-		for (OrderModifier mod : mods) {
-			orderModifiers.add(mod);
+    public void setMessageModifiers(List<MessageModifier> mods){
+		messageModifiers = new LinkedList<MessageModifier>();
+		for (MessageModifier mod : mods) {
+			messageModifiers.add(mod);
 		}
-		orderModifiers.add(new TransactionTimeInsertOrderModifier());
+		messageModifiers.add(new TransactionTimeInsertMessageModifier());
 	}
 
     /** Only supports NewOrderSingle, OrderCancelReplace and OrderCancel orders at this point
@@ -96,13 +96,14 @@ public class OutgoingMessageHandler {
 
         Message returnVal = null;
         try {
-            if(!(FIXMessageUtil.isOrderSingle(message) || FIXMessageUtil.isCancelRequest(message) || FIXMessageUtil.isCancelReplaceRequest(message))) {
+            if(!(FIXMessageUtil.isOrderSingle(message) || FIXMessageUtil.isCancelRequest(message)
+                    || FIXMessageUtil.isCancelReplaceRequest(message))) {
                 throw new UnsupportedMessageType();
             }
 
             modifyOrder(message);
             orderLimits.verifyOrderLimits(message);
-            routeMgr.modifyOrder(message, msgFactory.getMsgAugmentor());
+            routeMgr.modifyMessage(message, msgFactory.getMsgAugmentor());
             // if single, pre-create an executionReport and send it back
             if (FIXMessageUtil.isOrderSingle(message))
             {
@@ -263,8 +264,8 @@ public class OutgoingMessageHandler {
     /** Apply all the order modifiers to this message */
     protected void modifyOrder(Message inOrder) throws MarketceteraException
     {
-        for (OrderModifier oneModifier : orderModifiers) {
-            oneModifier.modifyOrder(inOrder, msgFactory.getMsgAugmentor());
+        for (MessageModifier oneModifier : messageModifiers) {
+            oneModifier.modifyMessage(inOrder, msgFactory.getMsgAugmentor());
         }
     }
 

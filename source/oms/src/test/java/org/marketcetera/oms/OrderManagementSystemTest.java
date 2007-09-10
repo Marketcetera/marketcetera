@@ -5,7 +5,7 @@ import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
-import org.marketcetera.quickfix.OrderRouteManager;
+import org.marketcetera.quickfix.MessageRouteManager;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
@@ -49,7 +49,7 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
 	protected void setUp() throws Exception {
         super.setUp();
         try {
-        	appContext = new ClassPathXmlApplicationContext(new String[]{"order-modifiers.xml", "order-limits.xml",
+        	appContext = new ClassPathXmlApplicationContext(new String[]{"message-modifiers.xml", "order-limits.xml",
                     "oms-shared.xml", "it-oms.xml"});
 			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
@@ -88,8 +88,8 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
 
     /** verify bug #361 - separateSuffix should be off by default */
     public void testSpringCreation() throws Exception {
-        ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("/order-modifiers.xml");
-        OrderRouteManager orm = (OrderRouteManager) appCtx.getBean("orderRouting", OrderRouteManager.class);
+        ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("/message-modifiers.xml");
+        MessageRouteManager orm = (MessageRouteManager) appCtx.getBean("orderRouting", MessageRouteManager.class);
         assertFalse(orm.isSeparateSuffix());
     }
 
