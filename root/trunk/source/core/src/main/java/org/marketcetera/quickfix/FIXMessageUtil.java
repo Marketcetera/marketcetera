@@ -232,7 +232,8 @@ public class FIXMessageUtil {
                 if ((!onlyCopyRequiredFields || dict.isRequiredField(msgType,
 						fieldInt))
 						&& existingMessage.isSetField(fieldInt)
-						&& !outgoingMessage.isSetField(fieldInt)) {
+						&& !outgoingMessage.isSetField(fieldInt)
+                        && dict.isMsgField(msgType, fieldInt)) {
 					try {
 						outgoingMessage.setField(existingMessage
 								.getField(new StringField(fieldInt)));

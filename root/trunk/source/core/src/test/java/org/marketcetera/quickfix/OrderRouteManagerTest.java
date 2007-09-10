@@ -274,8 +274,11 @@ public class OrderRouteManagerTest extends TestCase
         assertEquals("SIGMA", crq.getString(ExDestination.FIELD));
 
         // cancel  request
-        Message cancel = msgFactory.newCancelFromMessage(FIXMessageUtilTest.createNOS("BOB.N", 10.1, 100, Side.BUY,  msgFactory));
+        Message buyOrder = FIXMessageUtilTest.createNOS("BOB.N", 10.1, 100, Side.BUY, msgFactory);
+        buyOrder.setField(new SecurityType(SecurityType.COMMON_STOCK));
+        Message cancel = msgFactory.newCancelFromMessage(buyOrder);
         routeManager.modifyMessage(cancel, augmentor);
+        assertEquals(SecurityType.COMMON_STOCK, cancel.getString(SecurityType.FIELD));
         assertEquals("BOB", cancel.getString(Symbol.FIELD));
         assertEquals("SIGMA", cancel.getString(ExDestination.FIELD));
     }

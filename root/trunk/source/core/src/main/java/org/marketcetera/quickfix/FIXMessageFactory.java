@@ -73,7 +73,7 @@ public class FIXMessageFactory {
     }
     
     public Message newCancelFromMessage(Message oldMessage) throws FieldNotFound {
-    	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage, true);
+    	return newCancelHelper(MsgType.ORDER_CANCEL_REQUEST, oldMessage, false);
     }
 
 	public Message newCancelReplaceFromMessage(Message oldMessage) throws FieldNotFound {
