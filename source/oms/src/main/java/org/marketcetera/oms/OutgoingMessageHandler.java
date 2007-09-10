@@ -255,6 +255,7 @@ public class OutgoingMessageHandler {
                         new MSymbol(symbol),
                         inAccount);
             execReport.getHeader().setField(new SendingTime());
+            FIXMessageUtil.fillFieldsFromExistingMessage(execReport, newOrder, false);
             return execReport;
         } else {
             return null;
