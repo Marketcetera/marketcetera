@@ -263,7 +263,32 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertTrue(execReport.isSetField(OrderID.FIELD));
         assertTrue(execReport.isSetField(ExecID.FIELD));
     }
-    
+
+    public void testFillFieldsFromExistingMessage_ExtraInvalidFields() throws Exception {
+        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+        buy.removeField(Side.FIELD);
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            buy.setString(LeavesQty.FIELD, "33");
+        }
+        buy.setChar(ExecTransType.FIELD, ExecTransType.NEW);
+        buy.setChar(OrdStatus.FIELD, OrdStatus.NEW);
+        buy.setString(ClOrdID.FIELD, "someClOrd");
+        buy.setString(ExecID.FIELD, "anExecID");
+        buy.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC));
+        buy.setString(1900, "bogusField");
+        buy.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
+
+        Message execReport = msgFactory.newExecutionReport("orderID", "clOrderID", "1234", OrdStatus.CANCELED, Side.BUY, 
+                new BigDecimal(2385), new BigDecimal(23.45), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                new MSymbol("GAP"), "account");
+        execReport.setString(Text.FIELD, "dummyMessage");
+
+        FIXMessageUtil.fillFieldsFromExistingMessage(execReport, buy, false);
+        fixDD.getDictionary().validate(execReport, true);
+        assertFalse(execReport.isSetField(1900));
+        assertEquals(SymbolSfx.WHEN_ISSUED, execReport.getString(SymbolSfx.FIELD));
+    }
+
     public void testGetTextOrEncodedText() throws InvalidMessage {
     	{
 	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
