@@ -485,7 +485,7 @@ public class OrderTicketControllerHelper {
 			} else {
 				validator = new DecimalRequiredValidator();
 				toModelConverter = new StringToBigDecimalConverter();
-				toUIConverter = new BigDecimalToStringConverter();
+				toUIConverter = new BigDecimalToStringConverter(false);
 			}
 			validator.setEnabled(enableValidators);
 			bindValue( whichControl, SWTObservables.observeText(
