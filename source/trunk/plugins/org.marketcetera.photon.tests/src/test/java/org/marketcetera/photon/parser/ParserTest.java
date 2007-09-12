@@ -50,6 +50,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	aParser.setDataDictionary(fixDD.getDictionary());
     	String order;  
     	order = "B 100 IBM 1.";
     	MessageCommand command = aParser.parseNewOrder(order);
@@ -207,6 +208,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	aParser.setDataDictionary(fixDD.getDictionary());
     	String order;  
     	order = "B 100 IBM 08OCT25C 1.";
     	MessageCommand command = aParser.parseNewOrder(order);
@@ -365,6 +367,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	CommandParser aParser = new CommandParser();
     	aParser.setIDFactory(new InMemoryIDFactory(10));
     	aParser.setMessageFactory(FIXVersion.FIX42.getMessageFactory());
+    	aParser.setDataDictionary(fixDD.getDictionary());
     	String commandText;  
     	MessageCommand command;
     	Message rr;
