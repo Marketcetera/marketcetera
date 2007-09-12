@@ -22,7 +22,7 @@ import org.marketcetera.photon.views.*;
 
 public class TS_Photon {
 	public static Test suite() {
-		TestSuite suite = new WithRealmTestSuite(){
+		TestSuite suite = new TestSuite(){
 
 			@Override
 			public void run(TestResult result) {
