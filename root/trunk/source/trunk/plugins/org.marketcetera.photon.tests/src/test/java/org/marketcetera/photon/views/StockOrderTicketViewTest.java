@@ -98,6 +98,13 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals("QWER", ticket.getSymbolText().getText());
 		assertEquals("OPG", ticket.getTifCombo().getText());
 		assertEquals("123456789101112", ticket.getAccountText().getText());
+
+		// bug #393 - verify quantity doesn't have commas in them
+		message = msgFactory.newMarketOrder("3",
+				Side.SELL_SHORT_EXEMPT, new BigDecimal(2000), new MSymbol("QWER"),
+				TimeInForce.AT_THE_OPENING, "123456789101112");
+		controller.showMessage(message);
+		assertEquals("2000", ticket.getQuantityText().getText());
 	}
 	
 	public void testShowQuote() throws Exception {

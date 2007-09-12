@@ -165,6 +165,16 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertNotNull(ticket.getExpireMonthCombo().getText());
 		assertNotNull(ticket.getExpireYearCombo().getText());
 		assertFalse(controller.hasBindErrors());
+		
+		// bug #393 - verify quantity doesn't have commas in them
+		message = msgFactory.newMarketOrder("3",
+				Side.SELL_SHORT_EXEMPT, new BigDecimal(2000), new MSymbol(optionContractSymbol),
+				TimeInForce.AT_THE_OPENING, "123456789101112");
+		message.setField(new MaturityDate());
+		message.setField(new PutOrCall(PutOrCall.CALL));
+		controller.showMessage(message);
+		assertEquals("2000", ticket.getQuantityText().getText());
+		
 	}
 
 	public void testShowQuote() throws Exception {

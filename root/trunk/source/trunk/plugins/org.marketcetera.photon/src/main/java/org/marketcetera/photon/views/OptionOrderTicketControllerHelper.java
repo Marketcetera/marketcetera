@@ -299,7 +299,7 @@ public class OptionOrderTicketControllerHelper extends
 					SWTObservables.observeText(whichControl),
 					FIXObservables.observeValue(realm, message, StrikePrice.FIELD, dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(targetAfterGetValidator).setConverter(new StringToBigDecimalConverter()),
-					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter())
+					new UpdateValueStrategy().setConverter(new BigDecimalToStringConverter(false))
 			);
 			addControlStateListeners(whichControl, targetAfterGetValidator);
 			if (!enableValidators)

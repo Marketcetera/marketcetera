@@ -9,15 +9,16 @@ public class BigDecimalToStringConverter extends Converter {
 
 	private NumberFormat numberFormat;
 
-	public BigDecimalToStringConverter(){
+	public BigDecimalToStringConverter(boolean useGrouping){
 		// todo: Shouldn't we call super(BigDecimal.class, String.class);
-		this(NumberFormat.getNumberInstance());
+		this(NumberFormat.getNumberInstance(), useGrouping);
 	}
 	
-	public BigDecimalToStringConverter(NumberFormat numberFormat) {
+	public BigDecimalToStringConverter(NumberFormat numberFormat, boolean useGrouping) {
 		super(BigDecimal.class, String.class);
 		
 		this.numberFormat = numberFormat;
+		this.numberFormat.setGroupingUsed(useGrouping);
 	}
 	
 	public Object convert(Object fromObject) {
