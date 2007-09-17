@@ -26,15 +26,6 @@
         <constructor-arg ref="sessionSettings"/>
     </bean>
 
-    <bean id="comboLogFactory" class="quickfix.CompositeLogFactory">
-        <constructor-arg>
-            <list>
-                <ref bean="jdbcLogFactory"/>
-                <ref bean="slf4jLogFactory"/>
-            </list>
-        </constructor-arg>
-    </bean>
-
 	<bean id="sessionSettings" class="quickfix.spring.SessionSettings">
 		<property name="defaults">
 			<map>
@@ -48,7 +39,6 @@
                 <entry key="ReconnectInterval" value="15"/>
                 <entry key="ResetOnLogout" value="Y"/>
                 <entry key="ResetOnDisconnect" value="Y"/>
-                <entry key="SendResetSeqNumFlag" value="Y"/>
                 <entry key="JdbcDriver" value="com.mysql.jdbc.Driver"/>
                 <entry key="JdbcURL" value="jdbc:mysql://localhost/marketcetera"/>
                 <entry key="JdbcUser" value="marketcetera"/>
@@ -85,6 +75,7 @@
 
 	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
         <constructor-arg ref="fixMessageFactory"/>
+        <constructor-arg ref="jdbcLogFactory"/>
         <property name="jmsOperations" ref="outgoingJmsTemplate"/>
     </bean>
 
@@ -92,7 +83,7 @@
 		<constructor-arg ref="qfApplication"/>
 		<constructor-arg ref="messageStoreFactory"/>
 		<constructor-arg ref="sessionSettings"/>
-		<constructor-arg ref="comboLogFactory"/>
+		<constructor-arg ref="slf4jLogFactory"/>
 		<constructor-arg ref="messageFactory"/>
     </bean>
 </beans>

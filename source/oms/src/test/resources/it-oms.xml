@@ -78,6 +78,7 @@
 
     <bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
         <constructor-arg ref="fixMessageFactory"/>
+        <constructor-arg><null/></constructor-arg>
         <property name="jmsOperations" ref="outgoingJmsTemplate"/>
     </bean>
 
