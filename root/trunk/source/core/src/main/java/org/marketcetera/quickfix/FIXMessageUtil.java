@@ -157,6 +157,9 @@ public class FIXMessageUtil {
 		return msgTypeHelper(message, MsgType.SECURITY_DEFINITION);
 	}
 
+	public static boolean isHeartbeat(Message message) {
+		return msgTypeHelper(message, MsgType.HEARTBEAT);
+	}
 
 	
 	public static boolean isEquityOptionOrder(Message message)
@@ -185,13 +188,13 @@ public class FIXMessageUtil {
 		case OrdStatus.PENDING_REPLACE:
 		case OrdStatus.STOPPED:
 		case OrdStatus.SUSPENDED:
+		case OrdStatus.REPLACED:
 			return true;
 		case OrdStatus.CANCELED:
 		case OrdStatus.DONE_FOR_DAY:
 		case OrdStatus.EXPIRED:
 		case OrdStatus.FILLED:
 		case OrdStatus.REJECTED:
-		case OrdStatus.REPLACED:
 		default:
 			return false;
 		}
