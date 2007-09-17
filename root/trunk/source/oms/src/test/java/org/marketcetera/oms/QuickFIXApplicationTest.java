@@ -4,14 +4,20 @@ import junit.framework.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
+import quickfix.JdbcLogFactory;
+import quickfix.Log;
 import quickfix.Message;
 import quickfix.SessionID;
-import quickfix.field.*;
+import quickfix.field.MsgType;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.TargetCompID;
 
 import java.util.Vector;
 
@@ -38,7 +44,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
 
     public void testMessageSendWhenJMSBarfs() throws Exception {
-        QuickFIXApplication qfApp = new QuickFIXApplication(null);
+        QuickFIXApplication qfApp = new MockQuickFIXApplication(null, null);
         JmsOperations ops = new JmsTemplate() {
 
             public void convertAndSend(Object message) throws JmsException {
@@ -53,7 +59,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public void testLogoutPropagated() throws Exception {
-        QuickFIXApplication qfApp = new QuickFIXApplication(fixVersion.getMessageFactory());
+        QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
         qfApp.setJmsOperations(jmsTemplate);
 
@@ -70,6 +76,16 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         private Vector<Message> sentMessages = new Vector<Message>();
         public void convertAndSend(Object message) throws JmsException {
             sentMessages.add((Message)message);
+        }
+    }
+
+    public static class MockQuickFIXApplication extends QuickFIXApplication {
+        public MockQuickFIXApplication(FIXMessageFactory fixMessageFactory, JdbcLogFactory logFactory) {
+            super(fixMessageFactory, logFactory);
+        }
+
+        protected void logMessage(Message message, SessionID sessionID) {
+            // noop
         }
     }
 }

@@ -3,14 +3,13 @@ package org.marketcetera.oms;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.springframework.jms.core.JmsOperations;
-import quickfix.Application;
-import quickfix.DoNotSend;
-import quickfix.Message;
-import quickfix.SessionID;
+import quickfix.*;
 import quickfix.field.*;
 
 import java.util.Date;
+import java.util.HashMap;
 
 /**
  * @author gmiller
@@ -22,10 +21,14 @@ public class QuickFIXApplication implements Application {
     private JmsOperations jmsOperations;
     private FIXMessageFactory fixMesageFactory;
     private boolean fLoggedOn;
+    private HashMap<SessionID, Log> logMap;
+    private JdbcLogFactory logFactory;
 
-    public QuickFIXApplication(FIXMessageFactory fixMessageFactory) {
+    public QuickFIXApplication(FIXMessageFactory fixMessageFactory, JdbcLogFactory logFactory) {
         fLoggedOn = false;
-        this.fixMesageFactory = fixMessageFactory; 
+        this.fixMesageFactory = fixMessageFactory;
+        this.logFactory = logFactory;
+        logMap = new HashMap<SessionID, Log>();
     }
 	
 	public void fromAdmin(Message message, SessionID session)  {
@@ -48,14 +51,30 @@ public class QuickFIXApplication implements Application {
 		if (jmsOperations != null){
             try {
                 jmsOperations.convertAndSend(message);
+                if(FIXMessageUtil.isExecutionReport(message)) {
+                    char ordStatus = message.getChar(OrdStatus.FIELD);
+                    if((ordStatus == OrdStatus.FILLED) || (ordStatus == OrdStatus.PARTIALLY_FILLED)) {
+                        logMessage(message, session);
+                    }
+                }
             } catch (Exception ex) {
-                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
+                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
             }
         }
 	}
 
-	public void onCreate(SessionID session) {
+    /** Wrapper around logging a message to be overridden by tests with a noop */
+    protected void logMessage(Message message, SessionID sessionID) {
+        Log log = logMap.get(sessionID);
+        if(log == null) {
+            log = logFactory.create(sessionID);
+            logMap.put(sessionID, log);
+        }
+        log.onIncoming(message.toString());
+    }
+
+    public void onCreate(SessionID session) {
 	}
 
 	public void onLogon(SessionID session) {
