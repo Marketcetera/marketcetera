@@ -25,6 +25,7 @@ import quickfix.field.Account;
 import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
+import quickfix.field.CxlRejResponseTo;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
@@ -37,6 +38,7 @@ import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
 import quickfix.field.SendingTime;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
@@ -160,22 +162,22 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 	}
 
 	
-	public void testGetOpenOrder() throws FieldNotFound {
-		long currentTime = System.currentTimeMillis();
-		FIXMessageHistory history = getMessageHistory();
-		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
-		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
-		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
-		
-		history.addOutgoingMessage(order1);
-		history.addIncomingMessage(executionReportForOrder1);
-
-		Message openOrder = history.getOpenOrder("1");
-		assertEquals(MsgType.ORDER_SINGLE, openOrder.getHeader().getString(MsgType.FIELD));
-		assertEquals("1", openOrder.getString(ClOrdID.FIELD));
-		assertEquals(Side.BUY, openOrder.getChar(Side.FIELD));
-		assertEquals(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, openOrder.getChar(HandlInst.FIELD));
-	}
+//	public void testGetOpenOrder() throws FieldNotFound {
+//		long currentTime = System.currentTimeMillis();
+//		FIXMessageHistory history = getMessageHistory();
+//		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+//		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+//		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
+//		
+//		history.addOutgoingMessage(order1);
+//		history.addIncomingMessage(executionReportForOrder1);
+//
+//		Message openOrder = history.getOpenOrder("1");
+//		assertEquals(MsgType.ORDER_SINGLE, openOrder.getHeader().getString(MsgType.FIELD));
+//		assertEquals("1", openOrder.getString(ClOrdID.FIELD));
+//		assertEquals(Side.BUY, openOrder.getChar(Side.FIELD));
+//		assertEquals(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, openOrder.getChar(HandlInst.FIELD));
+//	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.getLatestExecutionReports()'
@@ -192,19 +194,16 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		Message secondExecutionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"), null);
 		secondExecutionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 7000)));
 
-		EventList<MessageHolder> historyList = history.getLatestExecutionReportsList();
 		history.addOutgoingMessage(order1);
-		assertEquals(0, historyList.size());
 		history.addIncomingMessage(executionReportForOrder1);
-		assertEquals(1, historyList.size());
 		history.addOutgoingMessage(order2);
 		history.addIncomingMessage(executionReportForOrder2);
-		assertEquals(2, historyList.size());
 		history.addIncomingMessage(secondExecutionReportForOrder1);
-		assertEquals(2, historyList.size());
-		
-		Message historyExecutionReportForOrder1 = historyList.get(0).getMessage();
-		Message historyExecutionReportForOrder2 = historyList.get(1).getMessage();
+
+		Message historyExecutionReportForOrder1 = history.getLatestExecutionReport("1");
+		assertNotNull(historyExecutionReportForOrder1);
+		Message historyExecutionReportForOrder2 = history.getLatestExecutionReport("3");
+		assertNotNull(historyExecutionReportForOrder2);
 
 		assertEquals("1001", historyExecutionReportForOrder1.getString(OrderID.FIELD));
 		assertEquals("2004", historyExecutionReportForOrder1.getString(ExecID.FIELD));
@@ -219,7 +218,27 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(order2.getString(Side.FIELD), historyExecutionReportForOrder2.getString(Side.FIELD));
 		assertEquals(order2.getString(OrderQty.FIELD), historyExecutionReportForOrder2.getString(OrderQty.FIELD));
 		assertEquals(order2.getString(Symbol.FIELD), historyExecutionReportForOrder2.getString(Symbol.FIELD));
-}
+	}
+	
+	public void testOrderCancelReject() throws Exception {
+		FIXMessageHistory history = getMessageHistory();
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		history.addOutgoingMessage(order1);
+		history.addIncomingMessage(executionReportForOrder1);
+
+		assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+
+		Message cancelReject = msgFactory.createMessage(MsgType.ORDER_CANCEL_REJECT);
+		cancelReject.setField(new OrderID("1001"));
+		cancelReject.setField(new ClOrdID("2"));
+		cancelReject.setField(new OrigClOrdID("1"));
+		cancelReject.setField(new OrdStatus(OrdStatus.FILLED));
+		cancelReject.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
+		history.addIncomingMessage(cancelReject);
+		
+		assertEquals(OrdStatus.FILLED, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+	}
 
 	/*
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.addFIXMessageListener(IFIXMessageListener)'
