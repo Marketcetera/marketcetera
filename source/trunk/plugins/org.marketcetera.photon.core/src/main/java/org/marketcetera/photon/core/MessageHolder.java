@@ -1,21 +1,20 @@
 package org.marketcetera.photon.core;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import org.marketcetera.core.ClassVersion;
 
 import quickfix.Message;
 
 @ClassVersion("$Id$")
-public class MessageHolder implements Comparable {
+public class MessageHolder implements Comparable<MessageHolder> {
 	private Message message;
 	private long messageReference;
-
+	private static AtomicLong counter = new AtomicLong();
+	
 	public MessageHolder(Message message) {
 		this.message = message;
-	}
-
-	public MessageHolder(Message message, long referenceNo) {
-		this.message = message;
-		this.messageReference = referenceNo;
+		this.messageReference = counter.incrementAndGet();
 	}
 
 	public Message getMessage() {
@@ -27,10 +26,7 @@ public class MessageHolder implements Comparable {
 		return messageReference;
 	}
 
-	// implementing Comparable is necessary simply to appease glazed lists which otherwise 
-	// currently blows up when a new message is added to the list with a natural sort order 
-	// (i.e., no comparator)
-	public int compareTo(Object o) {  
-		return 0;
+	public int compareTo(MessageHolder mh) {  
+		return (int)(messageReference - mh.messageReference);
 	}
 }

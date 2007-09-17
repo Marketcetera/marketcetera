@@ -9,7 +9,4 @@ public class OutgoingMessageHolder extends MessageHolder {
 	public OutgoingMessageHolder(Message message) {
 		super(message);
 	}
-	public OutgoingMessageHolder(Message message, long referenceNo) {
-		super(message, referenceNo);
-	}	
 }

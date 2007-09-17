@@ -18,17 +18,7 @@ public class OpenOrderMatcher implements Matcher<MessageHolder> {
 			if (FIXMessageUtil.isExecutionReport(message)){
 				try {
 					char ordStatus = message.getChar(OrdStatus.FIELD);
-					switch (ordStatus){
-					case OrdStatus.ACCEPTED_FOR_BIDDING:
-					case OrdStatus.CALCULATED:
-					case OrdStatus.NEW:
-					case OrdStatus.PARTIALLY_FILLED:
-					case OrdStatus.PENDING_CANCEL:
-					case OrdStatus.PENDING_NEW:
-					case OrdStatus.PENDING_REPLACE:
-					case OrdStatus.SUSPENDED:
-						return true;
-					}
+					return FIXMessageUtil.isCancellable(ordStatus);
 				} catch (FieldNotFound e) {
 					// do nothing
 				}
