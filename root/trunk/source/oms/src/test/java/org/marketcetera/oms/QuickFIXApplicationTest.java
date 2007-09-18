@@ -83,7 +83,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
                 BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("BOB"), "account");
         msg.getHeader().setField(new MsgSeqNum(1000));
         msg.getHeader().setField(new SenderCompID("sender"));
-        msg.getHeader().setField(new TargequickfixtCompID("target"));
+        msg.getHeader().setField(new TargetCompID("target"));
         msg.getHeader().setField(new DeliverToCompID("bob"));
         SessionID session = new SessionID(FIXVersion.FIX42.toString(), "sender", "target");
         qfApp.fromApp(msg, session);
