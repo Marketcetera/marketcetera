@@ -4,21 +4,21 @@ import junit.framework.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.quickfix.NullQuickFIXSender;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 import quickfix.JdbcLogFactory;
-import quickfix.Log;
 import quickfix.Message;
 import quickfix.SessionID;
-import quickfix.field.MsgType;
-import quickfix.field.SenderCompID;
-import quickfix.field.SendingTime;
-import quickfix.field.TargetCompID;
+import quickfix.field.*;
 
+import java.math.BigDecimal;
 import java.util.Vector;
 
 /**
@@ -46,7 +46,6 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     public void testMessageSendWhenJMSBarfs() throws Exception {
         QuickFIXApplication qfApp = new MockQuickFIXApplication(null, null);
         JmsOperations ops = new JmsTemplate() {
-
             public void convertAndSend(Object message) throws JmsException {
                 throw new UncategorizedJmsException("testing exception handling: we always throw an exception");
             }
@@ -72,6 +71,35 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         assertNotNull(received.getHeader().getString(SendingTime.FIELD));
     }
 
+    /** This is a test for OpenFix certification. Our app should reject everything
+     * that has a DeliverToCompID present in it
+     */
+    public void testWithDeliverToCompID() throws Exception {
+        QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        MockJmsTemplate jmsTemplate = new MockJmsTemplate();
+        qfApp.setJmsOperations(jmsTemplate);
+
+        Message msg = msgFactory.newExecutionReport("200", "300", "400", OrdStatus.CANCELED, Side.BUY, BigDecimal.ZERO,
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("BOB"), "account");
+        msg.getHeader().setField(new MsgSeqNum(1000));
+        msg.getHeader().setField(new SenderCompID("sender"));
+        msg.getHeader().setField(new TargequickfixtCompID("target"));
+        msg.getHeader().setField(new DeliverToCompID("bob"));
+        SessionID session = new SessionID(FIXVersion.FIX42.toString(), "sender", "target");
+        qfApp.fromApp(msg, session);
+
+        assertEquals(2, jmsTemplate.sentMessages.size());
+        assertEquals(MsgType.REJECT, jmsTemplate.sentMessages.get(1).getHeader().getString(MsgType.FIELD));
+        assertEquals(SessionRejectReason.COMPID_PROBLEM, jmsTemplate.sentMessages.get(1).getInt(SessionRejectReason.FIELD));
+        assertEquals(1000, jmsTemplate.sentMessages.get(1).getInt(RefSeqNum.FIELD));
+        assertEquals(MsgType.EXECUTION_REPORT, jmsTemplate.sentMessages.get(1).getString(RefMsgType.FIELD));
+        assertTrue(jmsTemplate.sentMessages.get(1).getString(Text.FIELD),
+                jmsTemplate.sentMessages.get(1).getString(Text.FIELD).contains("bob"));
+        assertEquals(1, ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().size());
+        assertEquals(MsgType.REJECT,
+                ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().get(0).getHeader().getString(MsgType.FIELD));
+     }
+
     private class MockJmsTemplate extends JmsTemplate {
         private Vector<Message> sentMessages = new Vector<Message>();
         public void convertAndSend(Object message) throws JmsException {
@@ -86,6 +114,10 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
         protected void logMessage(Message message, SessionID sessionID) {
             // noop
+        }
+
+        protected IQuickFIXSender createQuickFIXSender() {
+            return new NullQuickFIXSender();
         }
     }
 }
