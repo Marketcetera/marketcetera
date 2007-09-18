@@ -375,7 +375,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 		long sentTime = sentMessage.getUtcTimeStamp(TransactTime.FIELD).getTime();
 		long diff = System.currentTimeMillis() - sentTime;
-		assertTrue(diff > 0 && diff < 1000);
+		assertTrue("Found diff of: "+diff, diff > 0 && diff < 1000);
 	}
 }
 

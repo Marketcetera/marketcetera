@@ -281,7 +281,7 @@ public class OptionOrderTicketControllerHelper extends
 			validator.setEnabled(enableValidators);
 			bindValue( whichControl,
 					SWTObservables.observeText(whichControl),
-					FIXObservables.observeMonthDateValue(realm, message, MaturityMonthYear.FIELD,dictionary),
+					FIXObservables.observeYearDateValue(realm, message, MaturityMonthYear.FIELD,dictionary),
 					new UpdateValueStrategy().setAfterGetValidator(validator).setConverter(new StringToDateCustomConverter(DateToStringCustomConverter.SHORT_YEAR_FORMAT, DateToStringCustomConverter.LONG_YEAR_FORMAT)),
 					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter(DateToStringCustomConverter.SHORT_YEAR_FORMAT)));
 			addControlStateListeners(whichControl, validator);
