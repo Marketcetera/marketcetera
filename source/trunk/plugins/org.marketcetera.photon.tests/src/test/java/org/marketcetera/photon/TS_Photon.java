@@ -18,6 +18,7 @@ import org.marketcetera.photon.quickfix.QuickFIXTest;
 import org.marketcetera.photon.scripting.*;
 import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverterTest;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilderTest;
+import org.marketcetera.photon.ui.validation.fix.StringDateObservableValueTest;
 import org.marketcetera.photon.views.*;
 
 public class TS_Photon {
@@ -66,7 +67,7 @@ public class TS_Photon {
 		// ui.validation.fix
 		suite.addTestSuite(DateToStringCustomConverterTest.class);
 		suite.addTestSuite(PriceConverterBuilderTest.class);
-
+		suite.addTest(StringDateObservableValueTest.suite());
 		// views
 		suite.addTestSuite(AveragePricesViewTest.class);
 		suite.addTestSuite(FillsViewTest.class);
@@ -76,6 +77,7 @@ public class TS_Photon {
 		suite.addTestSuite(OptionOrderTicketViewTest.class);
 		suite.addTestSuite(OptionDateHelperTest.class);
 		suite.addTestSuite(OptionSeriesCollectionTest.class);
+
 		return suite;
 	}
 

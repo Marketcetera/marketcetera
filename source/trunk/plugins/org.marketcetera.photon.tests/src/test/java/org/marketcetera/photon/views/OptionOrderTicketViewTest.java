@@ -234,6 +234,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		view.getSideCombo().setText("S");
 		view.getQuantityText().setText("45");
 		view.getSymbolText().setText("ABC");
+		view.getExpireMonthCombo().setText("NOV");
+		view.getExpireYearCombo().setText("2012");
 		view.getPriceText().setText("MKT");
 		view.getTifCombo().setText("FOK");
 
@@ -243,6 +245,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals(45, orderMessage.getInt(OrderQty.FIELD));
 		assertEquals("ABC", orderMessage.getString(Symbol.FIELD));
 		assertEquals(OrdType.MARKET, orderMessage.getChar(OrdType.FIELD));
+		assertEquals("201211", orderMessage.getString(MaturityMonthYear.FIELD));
 		assertEquals(TimeInForce.FILL_OR_KILL, orderMessage.getChar(TimeInForce.FIELD));
 		assertEquals(SecurityType.OPTION, orderMessage.getString(SecurityType.FIELD));
 	}
