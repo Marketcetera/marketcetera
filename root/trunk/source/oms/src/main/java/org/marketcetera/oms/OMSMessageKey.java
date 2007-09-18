@@ -23,6 +23,7 @@ public enum OMSMessageKey implements LocalizedMessage {
     ERROR_ORDER_LIST_UNSUPPORTED("oms.error.order_list_unsupported"),
     ERROR_UNSUPPORTED_ORDER_TYPE("oms.error.unsupported_msg_type"),
     ERROR_NO_DESTINATION_CONNECTION("oms.error.no_destination_connection"),
+    ERROR_DELIVER_TO_COMP_ID_NOT_HANDLED("oms.error.no_delivertocompid_field"),
 
     // order limits
     ERROR_OL_MAX_QTY("oms.error.ol.max_qty"),

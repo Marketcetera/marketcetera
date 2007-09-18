@@ -4,6 +4,8 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.IQuickFIXSender;
+import org.marketcetera.quickfix.QuickFIXSender;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.*;
 import quickfix.field.*;
@@ -19,19 +21,21 @@ import java.util.HashMap;
 public class QuickFIXApplication implements Application {
 
     private JmsOperations jmsOperations;
-    private FIXMessageFactory fixMesageFactory;
+    private FIXMessageFactory fixMessageFactory;
     private boolean fLoggedOn;
     private HashMap<SessionID, Log> logMap;
     private JdbcLogFactory logFactory;
+    protected IQuickFIXSender quickFIXSender;
 
     public QuickFIXApplication(FIXMessageFactory fixMessageFactory, JdbcLogFactory logFactory) {
         fLoggedOn = false;
-        this.fixMesageFactory = fixMessageFactory;
+        this.fixMessageFactory = fixMessageFactory;
         this.logFactory = logFactory;
         logMap = new HashMap<SessionID, Log>();
+        quickFIXSender = createQuickFIXSender();
     }
-	
-	public void fromAdmin(Message message, SessionID session)  {
+
+    public void fromAdmin(Message message, SessionID session)  {
 		if (jmsOperations != null){
             try {
                 if(MsgType.REJECT.equals(message.getHeader().getString(MsgType.FIELD))) {
@@ -51,6 +55,16 @@ public class QuickFIXApplication implements Application {
 		if (jmsOperations != null){
             try {
                 jmsOperations.convertAndSend(message);
+                if (message.getHeader().isSetField(DeliverToCompID.FIELD)) {
+                    // Support OpenFIX certification - we reject all DeliverToCompID since we don't redilever
+                    Message reject = fixMessageFactory.createSessionReject(message, SessionRejectReason.COMPID_PROBLEM);
+                    reject.setString(Text.FIELD,
+                            OMSMessageKey.ERROR_DELIVER_TO_COMP_ID_NOT_HANDLED.getLocalizedMessage(message.getHeader().getString(DeliverToCompID.FIELD)));
+                    quickFIXSender.sendToTarget(reject);
+                    jmsOperations.convertAndSend(reject);
+                    return;
+                }
+
                 if(FIXMessageUtil.isExecutionReport(message)) {
                     char ordStatus = message.getChar(OrdStatus.FIELD);
                     if((ordStatus == OrdStatus.FILLED) || (ordStatus == OrdStatus.PARTIALLY_FILLED)) {
@@ -84,7 +98,7 @@ public class QuickFIXApplication implements Application {
 
 	public void onLogout(SessionID session) {
         fLoggedOn = false;
-        Message logout = fixMesageFactory.createMessage(MsgType.LOGOUT);
+        Message logout = fixMessageFactory.createMessage(MsgType.LOGOUT);
         logout.getHeader().setField(new SenderCompID(session.getSenderCompID()));
         logout.getHeader().setField(new TargetCompID(session.getTargetCompID()));
         logout.getHeader().setField(new SendingTime(new Date()));
@@ -115,5 +129,10 @@ public class QuickFIXApplication implements Application {
 
     public boolean isLoggedOn() {
         return fLoggedOn;
+    }
+
+    /** To be overridden by tests */
+    protected IQuickFIXSender createQuickFIXSender() {
+        return new QuickFIXSender();
     }
 }
