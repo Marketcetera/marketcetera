@@ -396,4 +396,32 @@ public class FIXMessageFactory {
 		}
 		return rr;
 	}
+
+    /** Creates a new session-level reject with the given reason to return
+     * to the sender of the incomingMsg
+     * @param incomingMsg   Message that generated this session-level reject
+     * @param rejectReason  Reason for reject
+     * @return Session-level reject message to send out
+     * @throws FieldNotFound
+     * @throws SessionNotFound
+     */
+    public Message createSessionReject(Message incomingMsg, int rejectReason) throws FieldNotFound,
+            SessionNotFound {
+        Message reply = createMessage(MsgType.REJECT);
+        reverseRoute(incomingMsg, reply);
+        String refSeqNum = incomingMsg.getHeader().getString(MsgSeqNum.FIELD);
+        reply.setString(RefSeqNum.FIELD, refSeqNum);
+        reply.setString(RefMsgType.FIELD, incomingMsg.getHeader().getString(MsgType.FIELD));
+        reply.setInt(SessionRejectReason.FIELD, rejectReason);
+        return reply;
+    }
+
+    /** Reverses the sender/target compIDs from reply and sets them in the outgoing outgoingMsg */
+    public void reverseRoute(Message outgoingMsg, Message reply) throws FieldNotFound {
+        reply.getHeader().setString(SenderCompID.FIELD,
+                outgoingMsg.getHeader().getString(TargetCompID.FIELD));
+        reply.getHeader().setString(TargetCompID.FIELD,
+                outgoingMsg.getHeader().getString(SenderCompID.FIELD));
+    }
+
 }
