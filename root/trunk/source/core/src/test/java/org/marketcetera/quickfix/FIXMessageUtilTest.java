@@ -452,13 +452,13 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.PENDING_REPLACE));
 		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.STOPPED));
 		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.SUSPENDED));
-    
+		assertTrue(FIXMessageUtil.isCancellable(OrdStatus.REPLACED));
+		
 		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.CANCELED));
 		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.DONE_FOR_DAY));
 		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.EXPIRED));
 		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.FILLED));
 		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.REJECTED));
-		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.REPLACED));
 		
 		
 		Message aMessage = msgFactory.newExecutionReport("ordid", "clordid",
