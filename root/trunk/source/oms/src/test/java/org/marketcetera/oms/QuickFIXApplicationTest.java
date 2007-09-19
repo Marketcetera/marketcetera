@@ -1,10 +1,7 @@
 package org.marketcetera.oms;
 
 import junit.framework.Test;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.core.FIXVersionedTestCase;
-import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.*;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IQuickFIXSender;
@@ -16,6 +13,7 @@ import org.springframework.jms.core.JmsTemplate;
 import quickfix.JdbcLogFactory;
 import quickfix.Message;
 import quickfix.SessionID;
+import quickfix.UnsupportedMessageType;
 import quickfix.field.*;
 
 import java.math.BigDecimal;
@@ -54,7 +52,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
         // these should not fail
         qfApp.fromAdmin(new Message(), new SessionID());
-        qfApp.fromApp(new Message(), new SessionID());
+        qfApp.fromApp(msgFactory.createMessage(MsgType.EXECUTION_REPORT), new SessionID());
     }
 
     public void testLogoutPropagated() throws Exception {
@@ -88,17 +86,31 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         SessionID session = new SessionID(FIXVersion.FIX42.toString(), "sender", "target");
         qfApp.fromApp(msg, session);
 
-        assertEquals(2, jmsTemplate.sentMessages.size());
-        assertEquals(MsgType.REJECT, jmsTemplate.sentMessages.get(1).getHeader().getString(MsgType.FIELD));
-        assertEquals(SessionRejectReason.COMPID_PROBLEM, jmsTemplate.sentMessages.get(1).getInt(SessionRejectReason.FIELD));
-        assertEquals(1000, jmsTemplate.sentMessages.get(1).getInt(RefSeqNum.FIELD));
-        assertEquals(MsgType.EXECUTION_REPORT, jmsTemplate.sentMessages.get(1).getString(RefMsgType.FIELD));
-        assertTrue(jmsTemplate.sentMessages.get(1).getString(Text.FIELD),
-                jmsTemplate.sentMessages.get(1).getString(Text.FIELD).contains("bob"));
+        assertEquals(1, jmsTemplate.sentMessages.size());
+
         assertEquals(1, ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().size());
-        assertEquals(MsgType.REJECT,
-                ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().get(0).getHeader().getString(MsgType.FIELD));
+        Message reject = ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().get(0);
+        assertEquals(MsgType.REJECT, reject.getHeader().getString(MsgType.FIELD));
+        assertEquals(SessionRejectReason.COMPID_PROBLEM, reject.getInt(SessionRejectReason.FIELD));
+        assertEquals(1000, reject.getInt(RefSeqNum.FIELD));
+        assertEquals(MsgType.EXECUTION_REPORT, reject.getString(RefMsgType.FIELD));
+        assertTrue(reject.getString(Text.FIELD), reject.getString(Text.FIELD).contains("bob"));
      }
+
+    public void testUnsupportedMessageType_AllocationAck() throws Exception {
+        final QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        MockJmsTemplate jmsTemplate = new MockJmsTemplate();
+        qfApp.setJmsOperations(jmsTemplate);
+
+        final Message ack = msgFactory.createMessage(MsgType.ALLOCATION_INSTRUCTION_ACK);
+        new ExpectedTestFailure(UnsupportedMessageType.class) {
+            protected void execute() throws Throwable {
+                qfApp.fromApp(ack, new SessionID(FIXVersion.FIX42.toString(), "sender", "target"));
+            }
+        }.run();
+
+        assertEquals(0, jmsTemplate.sentMessages.size());
+    }
 
     private class MockJmsTemplate extends JmsTemplate {
         private Vector<Message> sentMessages = new Vector<Message>();
