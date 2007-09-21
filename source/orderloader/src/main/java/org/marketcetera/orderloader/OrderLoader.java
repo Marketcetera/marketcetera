@@ -157,7 +157,7 @@ public class OrderLoader extends ApplicationBase
         throws NoMoreIDsException
     {
         if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("processing row "+Util.getStringFromArray(inOrderRow), this);
+            LoggerAdapter.debug("processing row "+Arrays.toString(inOrderRow), this);
         }
         Message message = msgFactory.newBasicOrder();
         // set defaults first b/c they may be overridden for MKT orders
@@ -189,9 +189,9 @@ public class OrderLoader extends ApplicationBase
             }
         } catch (Exception e) {
             LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(
-                    Util.getStringFromArray(inOrderRow),e.getMessage()), this);
+                    Arrays.toString(inOrderRow),e.getMessage()), this);
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(e.getMessage(), e, this); }
-            failedOrders.add(Util.getStringFromArray(inOrderRow) + ": " + e.getMessage());
+            failedOrders.add(Arrays.toString(inOrderRow) + ": " + e.getMessage());
         }
     }
 
