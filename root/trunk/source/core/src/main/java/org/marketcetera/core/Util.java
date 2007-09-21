@@ -13,28 +13,6 @@ import java.io.File;
 @ClassVersion("$Id$")
 public class Util
 {
-    public static final String EMPTY_ARR_STRING = "[empty]";
-
-    public static <T> String getStringFromArray(T[] inArr)
-    {
-        return getStringFromArray(inArr, ",");
-    }
-
-    public static <T> String getStringFromArray(T[] inArr, String delim)
-    {
-        if(inArr == null) return EMPTY_ARR_STRING;
-
-        int size = inArr.length;
-        StringBuffer buf = new StringBuffer(512);
-        for(int i=0; i < size; i++)
-        {
-            if(i!=0) buf.append(delim);
-            buf.append(inArr[i]);
-        }
-
-        return(buf.toString());
-    }
-
     /** Tries to load the named file from a classpath
      * If the file name doesn't start with a leading / then
      * if we fail to load it we prepend the / and try again
