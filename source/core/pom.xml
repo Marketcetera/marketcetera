@@ -12,11 +12,6 @@
     <name>Marketcetera Core</name>
     <dependencies>
         <dependency>
-            <groupId>org.skife.kasparov</groupId>
-            <artifactId>csv</artifactId>
-            <version>1.0</version>
-        </dependency>
-        <dependency>
             <groupId>commons-i18n</groupId>
             <artifactId>commons-i18n</artifactId>
             <version>20060814</version>
