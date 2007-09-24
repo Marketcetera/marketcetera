@@ -54,28 +54,28 @@
          id="org.marketcetera.marketdata"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.core"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon.core"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
    <plugin
@@ -376,14 +376,14 @@
          id="org.marketcetera.photon.registry"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.bogusfeed"
          download-size="0"
          install-size="0"
-         version="0.4.0"
+         version="0.4.1"
          unpack="false"/>
 
    <plugin
