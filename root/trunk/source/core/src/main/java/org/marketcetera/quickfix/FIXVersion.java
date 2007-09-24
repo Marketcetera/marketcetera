@@ -15,7 +15,7 @@ import quickfix.Message;
 import quickfix.field.BeginString;
 
 /**
- * An euym for all the supported FIX versions, with the default URL for the data dictionary file.
+ * An enum for all the supported FIX versions, with the default URL for the data dictionary file.
  * @author toli
  * @version $Id$
  */
