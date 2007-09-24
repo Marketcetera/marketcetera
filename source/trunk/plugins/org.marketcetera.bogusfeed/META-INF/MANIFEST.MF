@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Bogus Feed Plug-in
 Bundle-SymbolicName: org.marketcetera.bogusfeed;singleton:=true
-Bundle-Version: 0.4
+Bundle-Version: 0.4.1
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.marketcetera.photon
