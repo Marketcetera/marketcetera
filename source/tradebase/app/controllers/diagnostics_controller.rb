@@ -6,6 +6,7 @@ class DiagnosticsController < ApplicationController
   end
 
   def server_info
+    PROXY = nil
     @host_resolution = {}
     @host_resolution['localhost'] = check_hostname_resolution('localhost')
     @host_resolution['marketcetera'] = check_hostname_resolution('marketcetera')
@@ -13,7 +14,7 @@ class DiagnosticsController < ApplicationController
     @host_resolution['time.xmlrpc.com'] = check_hostname_resolution('time.xmlrpc.com')
 
     @local_time = Time.new
-    server = XMLRPC::Client.new2("http://time.xmlrpc.com/RPC2")
+    server = XMLRPC::Client.new2("http://time.xmlrpc.com/RPC2", PROXY)
     result = server.call("currentTime.getCurrentTime")
     @xml_time  = Time.local(*result.to_a)
 
