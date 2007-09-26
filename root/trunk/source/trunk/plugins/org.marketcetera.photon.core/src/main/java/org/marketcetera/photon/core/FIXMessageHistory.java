@@ -14,6 +14,7 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
 import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
 import quickfix.field.LastForwardPoints;
 import quickfix.field.LastMkt;
@@ -105,6 +106,8 @@ public class FIXMessageHistory extends PlatformObject {
 			updateOrderIDMappings(fixMessage);
 			allMessages.add(new IncomingMessageHolder(fixMessage));
 			if (FIXMessageUtil.isCancelReject(fixMessage) && fixMessage.isSetField(ClOrdID.FIELD) && fixMessage.isSetField(OrdStatus.FIELD)){
+				// Add a new execution report to the stream to update the order status, using the values from the 
+				// previous execution report.
 				try {
 					Message executionReport = getLatestExecutionReport(fixMessage.getString(ClOrdID.FIELD));
 					Message newExecutionReport = messageFactory.createMessage(MsgType.EXECUTION_REPORT);
@@ -113,8 +116,11 @@ public class FIXMessageHistory extends PlatformObject {
 					if (fixMessage.isSetField(Text.FIELD)){
 						newExecutionReport.setField(fixMessage.getField(new Text()));
 					}
+					if (newExecutionReport.isSetField(ExecTransType.FIELD)){
+						newExecutionReport.setField(new ExecTransType(ExecTransType.STATUS));
+					}
 					if (newExecutionReport.isSetField(ExecType.FIELD)){
-						newExecutionReport.setField(new ExecType(ExecType.REJECTED));
+						newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
 					}
 					if (newExecutionReport.isSetField(TransactTime.FIELD)) {
 						newExecutionReport.setField(new TransactTime());
