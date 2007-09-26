@@ -208,7 +208,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	
 	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
 		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
-		String versionString = thePreferenceStore.getString(ConnectionsPreferencePage.FIX_VERSION_PREFERENCE);
+		String versionString = thePreferenceStore.getString(ConnectionConstants.FIX_VERSION_KEY);
 		fixVersion = FIXVersion.FIX42;
 		try {
 			fixVersion = FIXVersion.valueOf(versionString);

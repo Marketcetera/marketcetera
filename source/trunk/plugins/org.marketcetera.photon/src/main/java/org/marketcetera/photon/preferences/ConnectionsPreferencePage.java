@@ -24,7 +24,6 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 
 	public static final String ID = "org.marketcetera.photon.preferences.connections";
 
-	public static final String FIX_VERSION_PREFERENCE = "fix.version";
 	
 	private UrlFieldEditor jmsServerUrlEditor;
 
@@ -33,7 +32,8 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 	private IntegerFieldEditor webAppPortEditor;
 
 	private ComboFieldEditor quoteFeedNameEditor;
-	
+
+	private StringFieldEditor orderIDPrefixEditor;
 	
     public ConnectionsPreferencePage() {
         super(GRID);
@@ -123,6 +123,13 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 //                getFieldEditorParent()
 //                );
 //        addField(stringEditor);
+		
+        orderIDPrefixEditor = new StringFieldEditor(
+                ConnectionConstants.ORDER_ID_PREFIX_KEY, "Order ID Prefix\n(Requires restart)",
+                getFieldEditorParent()
+                );
+		addField(orderIDPrefixEditor);
+		
     }
 
     /**
