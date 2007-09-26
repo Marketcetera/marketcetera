@@ -11,6 +11,26 @@ import quickfix.StringField;
 /**
  * Copies the string value of one field to another.
  * Will only copy the source field if it's present.
+ * This examples copies Symbol (55) to SecurityID (48):
+ * <pre>
+ *  &lt;bean id="fieldDuplicator" class="org.marketcetera.quickfix.messagemodifiers.FieldDuplicatorMessageModifier"&gt;
+ *      &lt;contructor-arg&gt;55&lt;/constructor-arg&gt;
+ *      &lt;contructor-arg&gt;48&lt;/constructor-arg&gt;
+ *  &lt;/bean&gt;
+ * </pre>
+ *
+ * Add the modifier to teh list of other message modifiers in the OutgoingMessageHandler bean in oms-shared.xml:
+ * <pre>
+ *  &lt;bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype"&gt;
+ *  ...
+ *      &lt;property name="orderModifiers"&gt;
+ *          &lt;list>
+ *              &lt;ref bean="defaultOrderModifier"/&gt;
+ *              &lt;ref bean="fieldDuplicator"/&gt;
+ *          &lt;/list>
+ *      &lt;/property>
+ *  ...
+ * </pre>
  * @author toli
  * @version $Id$
  */
