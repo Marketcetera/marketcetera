@@ -20,7 +20,13 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
     private Connection dbConnection;
 
     public DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
-                                String column, int quantity) {
+                             String column, int quantity) {
+        this(dburl, driver, login, password, table, column, quantity, "");
+    }
+
+    public DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
+                             String column, int quantity, String prefix) {
+        super(prefix);
         mCacheQuantity = quantity;
         dbColumn = column;
         dbDriver = driver;
