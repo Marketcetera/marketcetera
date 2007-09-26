@@ -123,15 +123,22 @@ public class PhotonController {
 
 
 	protected void handleExecutionReport(Message aMessage) throws FieldNotFound, NoMoreIDsException {
-		String orderID;
-		ClOrdID clOrdID = new ClOrdID();
-		aMessage.getField(clOrdID);
-		orderID = clOrdID.getValue();
 		char ordStatus = aMessage.getChar(OrdStatus.FIELD);
 
 		if (ordStatus == OrdStatus.REJECTED) {
 			String rejectReason = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
 			
+			String orderID = "";
+			try {
+				orderID = aMessage.getString(ClOrdID.FIELD);
+			} catch (Exception ex){
+				try {
+					orderID = aMessage.getString(OrderID.FIELD);
+				} catch (Exception ex2){
+					// do nothing
+				}
+			}
+
 			String rejectMsg = "Order rejected " + orderID + " "
 					+ aMessage.getString(Symbol.FIELD) + ": "+ rejectReason;
 			internalMainLogger.error(rejectMsg);
