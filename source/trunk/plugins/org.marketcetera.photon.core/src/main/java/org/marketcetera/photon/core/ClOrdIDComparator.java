@@ -9,13 +9,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.ClOrdID;
-import quickfix.field.MsgSeqNum;
-import quickfix.field.OrigClOrdID;
+import quickfix.field.OrderID;
 
 /**
  * Compares messages by the value of {@link ClOrdID}
@@ -59,7 +57,15 @@ public class ClOrdIDComparator implements Comparator<MessageHolder>, Serializabl
 				return 1;
 			}
 		} else {
-			return message1.isSetField(ClOrdID.FIELD) ? -1 : 0;
+			if (message0.isSetField(OrderID.FIELD) && message1.isSetField(OrderID.FIELD)){
+				try {
+					return message0.getString(OrderID.FIELD).compareTo(message1.getString(OrderID.FIELD));
+				} catch (Exception e) {
+					throw new RuntimeException("Should never happen in ClOrdIDComparator.compare()");
+				}
+			} else {
+				return message1.isSetField(ClOrdID.FIELD) ? -1 : 0;
+			}
 		}
 		
 //		try {
