@@ -13,7 +13,8 @@ import java.net.UnknownHostException;
 public abstract class DBBackedIDFactory extends ExternalIDFactory {
     protected InMemoryIDFactory inMemoryFactory;
 
-    protected DBBackedIDFactory() {
+    protected DBBackedIDFactory(String prefix) {
+        super(prefix);
     }
 
     /** Lock the table to prevent concurrent access with {@link java.sql.ResultSet#CONCUR_UPDATABLE} */
@@ -34,7 +35,7 @@ public abstract class DBBackedIDFactory extends ExternalIDFactory {
 	    } finally {
 			if (!succeeded){
 				try {
-					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+ InetAddress.getLocalHost().toString());
+					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis(),InetAddress.getLocalHost().toString()+"-");
 				} catch (UnknownHostException e) {
 					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis());
 				}

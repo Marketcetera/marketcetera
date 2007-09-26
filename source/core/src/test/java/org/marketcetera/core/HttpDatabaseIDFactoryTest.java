@@ -33,6 +33,17 @@ public class HttpDatabaseIDFactoryTest extends TestCase {
         }
     }
 
+    public void testFactory_existingURL_withPrefix() throws Exception {
+        URL url= new File("src/test/resources/next_id_batch.xml").toURL();
+        HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url, "prefix");
+        factory.grabIDs();
+        assertEquals("prefix1", factory.getNext());
+        for(int i=2;i<100; i++)
+        {
+            assertEquals("comparing for " +i, "prefix"+i, factory.getNext());
+        }
+    }
+
     /** Verify that when a DB is inaccessible we still get an in-memory set of ids */
     public void testInvalidURL() throws Exception
     {

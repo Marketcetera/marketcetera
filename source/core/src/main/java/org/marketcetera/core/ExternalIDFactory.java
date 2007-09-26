@@ -8,12 +8,16 @@ package org.marketcetera.core;
 public abstract class ExternalIDFactory implements IDFactory {
     private int mUpTo = 0;
     private int mNextID = 0;
+    private String prefix = "";
+
+    protected ExternalIDFactory(String prefix)
+    {
+        this.prefix = prefix;
+    }
 
     /**
      * This method is responsible for grabbing another set of
      * allowed ID's, calling both setMaxAllowedID, and setNextID.
-     *
-     *
      */
     protected abstract void grabIDs() throws NoMoreIDsException;
 
@@ -33,7 +37,7 @@ public abstract class ExternalIDFactory implements IDFactory {
             if (mNextID >= mUpTo) {
                 grabIDs();
             }
-            return "" + (mNextID++);
+            return prefix + (mNextID++);
         }
     }
 

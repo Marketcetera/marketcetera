@@ -85,7 +85,7 @@ public enum MessageKey implements LocalizedMessage {
     }
 
     /**
-     * Corresponds to the suffix in the message bundle file. Currently, we are not distinguishing between different
+     * Corresponds to the prefix in the message bundle file. Currently, we are not distinguishing between different
      * kids of entries (title, summary, detail, etc) so we just use 'msg'.
      */
     private static String MESSAGE_BUNDLE_ENTRY = "msg";

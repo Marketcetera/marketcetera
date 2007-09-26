@@ -35,7 +35,11 @@ public class HttpDatabaseIDFactory extends DBBackedIDFactory {
     private Reader inputReader = null;
 
     public HttpDatabaseIDFactory(URL url) {
-		this.url = url;
+        this(url, "");
+    }
+    public HttpDatabaseIDFactory(URL url, String prefix) {
+        super(prefix);
+        this.url = url;
         try {
 			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e) {

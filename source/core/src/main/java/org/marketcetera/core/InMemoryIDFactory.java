@@ -12,7 +12,7 @@ package org.marketcetera.core;
 public class InMemoryIDFactory implements IDFactory {
 
     long mNextID = 0;
-    String suffix;
+    String prefix;
     /**
      * Creates a new instance of InMemoryOrderIDFactory, with the given starting
      * number.
@@ -24,12 +24,12 @@ public class InMemoryIDFactory implements IDFactory {
 
     /**
      * Creates a new instance of InMemoryOrderIDFactory, with the given starting
-     * number, and a suffix for the identifiers
+     * number, and a prefix for the identifiers
      * @param startAt the value at which to start the unique identifiers.
      */
     public InMemoryIDFactory(long startAt, String suffix) {
         mNextID = startAt;
-	this.suffix = suffix;
+	this.prefix = suffix;
     }
 
     /**
@@ -45,7 +45,7 @@ public class InMemoryIDFactory implements IDFactory {
         if (retVal == Long.MAX_VALUE){
         	throw new NoMoreIDsException(MessageKey.IN_MEMORY_ID_FACTORY_OVERRUN.getLocalizedMessage());
         }
-        return retVal+suffix;
+        return prefix+retVal;
     }
 
 
