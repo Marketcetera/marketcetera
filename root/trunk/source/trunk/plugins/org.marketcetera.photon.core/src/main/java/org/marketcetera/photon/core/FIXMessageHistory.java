@@ -57,19 +57,18 @@ public class FIXMessageHistory extends PlatformObject {
 	private FilterList<MessageHolder> openOrderList;
 	
 	private Map<String, MessageHolder> orderMap;
-
-	private ClOrdIDComparator clOrdIDComparator;
+	
+	private Map<String, String> orderIDToGroupMap;
 
 	private final FIXMessageFactory messageFactory;
 
 	public FIXMessageHistory(FIXMessageFactory messageFactory) {
 		this.messageFactory = messageFactory;
-		clOrdIDComparator = new ClOrdIDComparator();
 
 		allMessages = new BasicEventList<MessageHolder>();
 		allFilteredMessages = new FilterList<MessageHolder>(allMessages);
 		fillMessages = new FilterList<MessageHolder>(allFilteredMessages, new FillMatcher());
-		orderIDList = new GroupingList<MessageHolder>(allMessages, clOrdIDComparator);
+		orderIDList = new GroupingList<MessageHolder>(allMessages, new GroupIDComparator());
 		latestExecutionReportsList = new FilterList<MessageHolder>(
 			new FunctionList<List<MessageHolder>, MessageHolder>(orderIDList,
 				new LatestExecutionReportsFunction()), new NotNullMatcher());
@@ -83,6 +82,7 @@ public class FIXMessageHistory extends PlatformObject {
 		openOrderList = new FilterList<MessageHolder>(latestExecutionReportsList, new OpenOrderMatcher());
 		
 		orderMap = new HashMap<String, MessageHolder>();
+		orderIDToGroupMap = new HashMap<String, String>();
 	}
 	
 	public void addIncomingMessage(quickfix.Message fixMessage) {
@@ -104,7 +104,8 @@ public class FIXMessageHistory extends PlatformObject {
 //			}
 			allMessages.getReadWriteLock().writeLock().lock();
 			updateOrderIDMappings(fixMessage);
-			allMessages.add(new IncomingMessageHolder(fixMessage));
+			String groupID = getGroupID(fixMessage);
+			allMessages.add(new IncomingMessageHolder(fixMessage, groupID));
 			if (FIXMessageUtil.isCancelReject(fixMessage) && fixMessage.isSetField(ClOrdID.FIELD) && fixMessage.isSetField(OrdStatus.FIELD)){
 				// Add a new execution report to the stream to update the order status, using the values from the 
 				// previous execution report.
@@ -135,7 +136,7 @@ public class FIXMessageHistory extends PlatformObject {
 					newExecutionReport.removeField(LastForwardPoints.FIELD);
 					newExecutionReport.removeField(LastMkt.FIELD);
 					
-					allMessages.add(new IncomingMessageHolder(newExecutionReport));
+					allMessages.add(new IncomingMessageHolder(newExecutionReport, groupID));
 				} catch (FieldNotFound e) {
 					throw new RuntimeException("Should never happen in FIXMessageHistory.addIncomingMessage", e);
 				}
@@ -149,7 +150,18 @@ public class FIXMessageHistory extends PlatformObject {
 		if (fixMessage.isSetField(ClOrdID.FIELD) && fixMessage.isSetField(OrigClOrdID.FIELD))
 		{
 			try {
-				clOrdIDComparator.addIDMap(fixMessage.getString(ClOrdID.FIELD), fixMessage.getString(OrigClOrdID.FIELD));
+				String origClOrdID = fixMessage.getString(OrigClOrdID.FIELD);
+				String clOrdID = fixMessage.getString(ClOrdID.FIELD);
+				String groupID;
+				// first check to see if the orig is in the map, and if so, use
+				// whatever it maps to as the groupID
+				if (orderIDToGroupMap.containsKey(origClOrdID)){
+					groupID = getGroupID(origClOrdID);
+				} else {
+					// otherwise, do a mapping from clOrdId -> origClOrdID
+					groupID = origClOrdID;
+				}
+				orderIDToGroupMap.put(clOrdID, groupID);
 			} catch (FieldNotFound e) {
 				throw new RuntimeException("Should never happen in FIXMessageHistory.updateOrderIDMappings()");
 			}
@@ -158,7 +170,10 @@ public class FIXMessageHistory extends PlatformObject {
 
 	public void addOutgoingMessage(quickfix.Message fixMessage) {
 		updateOrderIDMappings(fixMessage);
-		OutgoingMessageHolder messageHolder = new OutgoingMessageHolder(fixMessage);
+		String groupID = null;
+		groupID = getGroupID(fixMessage);
+
+		OutgoingMessageHolder messageHolder = new OutgoingMessageHolder(fixMessage, groupID);
 		if (FIXMessageUtil.isOrderSingle(fixMessage) || FIXMessageUtil.isOrderList(fixMessage)){
 			try {
 				synchronized (orderMap){
@@ -173,6 +188,24 @@ public class FIXMessageHistory extends PlatformObject {
 			allMessages.add(messageHolder);
 		} finally {
 			allMessages.getReadWriteLock().writeLock().unlock();
+		}
+	}
+
+	private String getGroupID(quickfix.Message fixMessage) {
+		String groupID = null;
+		try {
+			groupID  = getGroupID(fixMessage.getString(ClOrdID.FIELD));
+		}catch (FieldNotFound fnf) {
+			/* do nothing */
+		}
+		return groupID;
+	}
+
+	private String getGroupID(String clOrdID) {
+		if (orderIDToGroupMap.containsKey(clOrdID)){
+			return orderIDToGroupMap.get(clOrdID);
+		} else {
+			return clOrdID;
 		}
 	}
 
@@ -193,14 +226,12 @@ public class FIXMessageHistory extends PlatformObject {
 	public Message getLatestExecutionReport(String clOrdID) {
 		try {
 			latestExecutionReportsList.getReadWriteLock().readLock().lock();
-			for (MessageHolder holder : latestExecutionReportsList) {
-				Message aMessage = holder.getMessage();
-				try {
-					if (0 == clOrdIDComparator.compareIDAndMessage(clOrdID, aMessage)){
-						return aMessage;
+			String groupID = getGroupID(clOrdID);
+			if (groupID != null){
+				for (MessageHolder holder : latestExecutionReportsList) {
+					if (0 == groupID.compareTo(holder.getGroupID())){
+						return holder.getMessage();
 					}
-				} catch (FieldNotFound e) {
-					// do nothing
 				}
 			}
 			return null;
@@ -208,6 +239,7 @@ public class FIXMessageHistory extends PlatformObject {
 			latestExecutionReportsList.getReadWriteLock().readLock().unlock();
 		}
 	}
+
 
 //	// TODO: UUUUUgly
 //	public Message getOpenOrder(String clOrdID) {
@@ -238,14 +270,12 @@ public class FIXMessageHistory extends PlatformObject {
 	public Message getLatestMessage(String clOrdID) {
 		try {
 			latestMessageList.getReadWriteLock().readLock().lock();
-			for (MessageHolder holder : latestMessageList) {
-				Message aMessage = holder.getMessage();
-				try {
-					if (0 == clOrdIDComparator.compareIDAndMessage(clOrdID, aMessage)){
-						return aMessage;
+			String groupID = getGroupID(clOrdID);
+			if (groupID != null){
+				for (MessageHolder holder : latestMessageList) {
+					if (0 == groupID.compareTo(holder.getGroupID())){
+						return holder.getMessage();
 					}
-				} catch (FieldNotFound e) {
-					// do nothing
 				}
 			}
 			return null;
