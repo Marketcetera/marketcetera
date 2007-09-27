@@ -20,6 +20,7 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
+import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.field.Account;
 import quickfix.field.AvgPx;
@@ -29,7 +30,6 @@ import quickfix.field.CxlRejResponseTo;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
-import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
 import quickfix.field.LastShares;
@@ -64,7 +64,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 	protected FIXMessageHistory getMessageHistory(){
 		return new FIXMessageHistory(msgFactory);
 	}
-
 	/*
 	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.addIncomingMessage(Message)'
 	 */
@@ -679,5 +678,46 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
         };
         history.visitOpenOrdersExecutionReports(visitor);
         assertEquals(3, visited.size());
+    }
+    
+    public void testOpenOrderDupes() throws InvalidMessage
+    {
+    	String openOrder1String = "8=FIX.4.2\u00019=293\u000135=8\u000134=1624\u000149=VTRD1\u000152=20070926-18:23:56\u000156=VTrader\u000157=VTRD:TEST\u00011=VTRDT:VTRDM:VTRDS:VTRDC\u00016=0.0\u000111=bob95001\u000114=0\u000117=65002:1011722479.0:0.1\u000120=0\u000121=2\u000130=CBOE\u000137=RDC6688-20070926\u000138=10\u000139=0\u000140=2\u000144=7.0\u000154=1\u000155=MOT\u000159=0\u000160=20070926-18:23:56\u000177=O\u0001150=0\u0001151=10\u0001167=OPT\u0001200=200710\u0001201=1\u0001202=22.5\u000110=240\u0001";
+    	String openOrder2String = "8=FIX.4.2\u00019=293\u000135=8\u000134=1625\u000149=VTRD1\u000152=20070926-18:24:10\u000156=VTrader\u000157=VTRD:TEST\u00011=VTRDT:VTRDM:VTRDS:VTRDC\u00016=0.0\u000111=bob95003\u000114=0\u000117=65002:1011722485.0:0.1\u000120=0\u000121=2\u000130=CBOE\u000137=RDC6689-20070926\u000138=20\u000139=0\u000140=2\u000144=7.0\u000154=1\u000155=MOT\u000159=0\u000160=20070926-18:24:10\u000177=O\u0001150=0\u0001151=20\u0001167=OPT\u0001200=200710\u0001201=1\u0001202=22.5\u000110=225\u0001";
+    	String openOrder1PendingReplaceString = "8=FIX.4.2\u00019=305\u000135=8\u000134=1626\u000149=VTRD1\u000152=20070926-18:24:13\u000156=VTrader\u000157=VTRD:TEST\u00011=VTRDT:VTRDM:VTRDS:VTRDC\u00016=0.0\u000111=bob95005\u000114=0\u000117=65002:1011722479.37647492.0\u000120=0\u000121=2\u000130=CBOE\u000137=RDC6690-20070926\u000138=10\u000139=6\u000140=2\u000141=bob95001\u000144=7.0\u000154=1\u000155=MOT\u000159=0\u000160=20070926-18:24:13\u0001150=6\u0001151=10\u0001167=OPT\u0001200=200710\u0001201=1\u0001202=22.5\u000110=210\u0001";
+
+    	Message openOrder1 = new Message(openOrder1String, fixDD.getDictionary());
+    	Message openOrder2 = new Message(openOrder2String, fixDD.getDictionary());
+    	Message openOrder1PendingReplace = new Message(openOrder1PendingReplaceString, fixDD.getDictionary());
+    	
+    	FIXMessageHistory history = new FIXMessageHistory(fixVersion.getMessageFactory());
+    	history.addIncomingMessage(openOrder1);
+    	history.addIncomingMessage(openOrder2);
+    	assertEquals(2, history.getOpenOrdersList().size());
+    	history.addIncomingMessage(openOrder1PendingReplace);
+    	assertEquals(2, history.getOpenOrdersList().size());
+    }
+    
+    public void testChainReplaces() throws Exception
+    {
+    	Message executionReportA = msgFactory.newExecutionReport("ORD1", "A", "EXEC1", OrdStatus.NEW, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ABC"), null);
+    	Message executionReportB = msgFactory.newExecutionReport("ORD2", "B", "EXEC2", OrdStatus.NEW, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ABC"), null);
+    	Message executionReportC = msgFactory.newExecutionReport("ORD1", "C", "EXEC3", OrdStatus.REPLACED, Side.BUY, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ABC"), null);
+    	executionReportC.setField(new OrigClOrdID("A"));
+    	Message executionReportD = msgFactory.newExecutionReport("ORD2", "D", "EXEC4", OrdStatus.REPLACED, Side.BUY, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ABC"), null);
+    	executionReportD.setField(new OrigClOrdID("C"));
+
+    	FIXMessageHistory history = new FIXMessageHistory(fixVersion.getMessageFactory());
+    	history.addIncomingMessage(executionReportA);
+    	assertEquals(1, history.getOpenOrdersList().size());
+    	history.addIncomingMessage(executionReportB);
+    	assertEquals(2, history.getOpenOrdersList().size());
+    	history.addIncomingMessage(executionReportC);
+    	assertEquals(2, history.getOpenOrdersList().size());
+    	history.addIncomingMessage(executionReportD);
+    	assertEquals(2, history.getOpenOrdersList().size());
+
+    	assertEquals("D", history.getOpenOrdersList().get(0).getMessage().getString(ClOrdID.FIELD));
+    	assertEquals("B", history.getOpenOrdersList().get(1).getMessage().getString(ClOrdID.FIELD));
     }
 }

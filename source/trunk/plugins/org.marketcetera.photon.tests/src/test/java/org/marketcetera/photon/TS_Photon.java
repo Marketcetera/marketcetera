@@ -8,7 +8,7 @@ import org.marketcetera.marketdata.MarketceteraFeedTest;
 import org.marketcetera.marketdata.MarketceteraOptionSymbolTest;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
-import org.marketcetera.photon.model.ClOrdIDComparatorTest;
+import org.marketcetera.photon.model.GroupIDComparatorTest;
 import org.marketcetera.photon.model.FIXMessageHistoryTest;
 import org.marketcetera.photon.model.MessageHolderTest;
 import org.marketcetera.photon.model.SymbolSideComparatorTest;
@@ -44,7 +44,7 @@ public class TS_Photon {
 		suite.addTestSuite(OptionMessageHolderTest.class);
 
 		// model
-		suite.addTestSuite(ClOrdIDComparatorTest.class);
+		suite.addTestSuite(GroupIDComparatorTest.class);
 		suite.addTest(FIXMessageHistoryTest.suite());
 		suite.addTestSuite(MessageHolderTest.class);
 		suite.addTestSuite(SymbolSideComparatorTest.class);
