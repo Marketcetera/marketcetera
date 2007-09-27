@@ -202,7 +202,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 				preferenceStore.getInt(ConnectionConstants.WEB_APP_PORT_KEY),
 				"/id_repository/get_next_batch"
 		);
-		idFactory = new HttpDatabaseIDFactory(url);
+		idFactory = new HttpDatabaseIDFactory(url, preferenceStore.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY));
 
 	}
 	
