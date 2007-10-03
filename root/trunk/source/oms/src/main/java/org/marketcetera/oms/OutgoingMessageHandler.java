@@ -94,7 +94,7 @@ public class OutgoingMessageHandler {
                     message);
         }
 
-        Message returnVal = null;
+        Message returnExecReport = null;
         try {
             if(!(FIXMessageUtil.isOrderSingle(message) || FIXMessageUtil.isCancelRequest(message)
                     || FIXMessageUtil.isCancelReplaceRequest(message))) {
@@ -107,34 +107,33 @@ public class OutgoingMessageHandler {
             // if single, pre-create an executionReport and send it back
             if (FIXMessageUtil.isOrderSingle(message))
             {
-                Message outReport = executionReportFromNewOrder(message);
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Sending immediate execReport:  "+outReport, this);
-                }
-				returnVal = outReport;
+                returnExecReport = executionReportFromNewOrder(message);
             }
             sendMessage(message);
+            if(returnExecReport != null && LoggerAdapter.isDebugEnabled(this)) {
+                LoggerAdapter.debug("Sending immediate execReport:  "+returnExecReport, this);
+            }
         } catch (FieldNotFound fnfEx) {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
-            returnVal = createRejectionMessage(mfix, message);
+            returnExecReport = createRejectionMessage(mfix, message);
         } catch(SessionNotFound snf) {
             MarketceteraException ex = new MarketceteraException(MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(defaultSessionID), snf);
-            returnVal = createRejectionMessage(ex, message);
+            returnExecReport = createRejectionMessage(ex, message);
         } catch(UnsupportedMessageType umt) {
             try {
                 String msgType = message.getHeader().getString(MsgType.FIELD);
-                returnVal = createBusinessMessageReject(msgType,
+                returnExecReport = createBusinessMessageReject(msgType,
                         OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
                         FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType)));
             } catch (FieldNotFound fieldNotFound) {
-                returnVal = createBusinessMessageReject("UNKNOWN", OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
+                returnExecReport = createBusinessMessageReject("UNKNOWN", OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
             }
         } catch (MarketceteraException e) {
-        	returnVal = createRejectionMessage(e, message);
+        	returnExecReport = createRejectionMessage(e, message);
         } catch(Exception ex) {
-        	returnVal = createRejectionMessage(ex, message);
+        	returnExecReport = createRejectionMessage(ex, message);
         }
-        return returnVal;
+        return returnExecReport;
 	}
 
 
