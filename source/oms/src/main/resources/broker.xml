@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans>
-  <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
+<beans xmlns:util="http://www.springframework.org/schema/util">
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
 
-  <broker useJmx="true" brokerName="OMS_BROKER" persistent="false" xmlns="http://activemq.org/config/1.0">
+    <broker useJmx="true" brokerName="OMS_BROKER" persistent="false" xmlns="http://activemq.org/config/1.0">
 
-<!--  
-    <persistenceAdapter>
-      <journaledJDBC journalLogFiles="5" dataDirectory="foo"/>
-    </persistenceAdapter>
---> 
- 
-    <transportConnectors>
-      <transportConnector uri="tcp://localhost:61616"/>
-    </transportConnectors>
-  </broker>
-  
+
+        <plugins>
+            <simpleAuthenticationPlugin userGroups="#groups" userPasswords="#users"/>
+        </plugins>
+
+        <!--
+            <persistenceAdapter>
+              <journaledJDBC journalLogFiles="5" dataDirectory="foo"/>
+            </persistenceAdapter>
+        -->
+
+        <transportConnectors>
+            <transportConnector uri="tcp://localhost:61616"/>
+        </transportConnectors>
+    </broker>
+
+    <util:map id="users">
+        <entry key="user1" value="password1"/>
+    </util:map>
+    
+    <util:map id="groups">
+        <entry key="user1">
+            <ref bean="group1"/>
+        </entry>
+    </util:map>
+    <util:set id="group1"/>
+
+
 </beans>
