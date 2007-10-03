@@ -4,9 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.CxlType;
-import quickfix.field.ExecTransType;
-import quickfix.field.MsgType;
+import quickfix.field.*;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -33,6 +31,27 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
                 MsgType.ALLOCATION_INSTRUCTION_ACK,
                 MsgType.ALLOCATION_INSTRUCTION
     };
+
+    /**
+     * MarketOnClose order handling: FIX up to 4.2 doesn't have {@link TimeInForce#AT_THE_CLOSE}
+     * so we need to check if the order is a market order and of {@link OrdType#MARKET}
+     * and modify it appropriately to set the OrdType to be {@link OrdType#MARKET_ON_CLOSE}
+     * @param inMessage
+     * @return
+     */
+    public Message newOrderSingleAugment(Message inMessage) {
+        inMessage = super.newOrderSingleAugment(inMessage);
+        try {
+            if((OrdType.MARKET == inMessage.getChar(OrdType.FIELD)) &&
+               (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
+                inMessage.setField(new OrdType(OrdType.MARKET_ON_CLOSE));
+                inMessage.setField(new TimeInForce(TimeInForce.DAY));
+            }
+        } catch (FieldNotFound fieldNotFound) {
+            return inMessage;
+        }
+        return inMessage;
+    }
 
     public Message executionReportAugment(Message inMessage) throws FieldNotFound {
         inMessage.setField(new ExecTransType(ExecTransType.NEW));

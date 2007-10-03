@@ -1,10 +1,12 @@
 package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
-import quickfix.Message;
 import quickfix.FieldNotFound;
+import quickfix.Message;
 import quickfix.field.ExecTransType;
 import quickfix.field.MsgType;
+import quickfix.field.OrdType;
+import quickfix.field.TimeInForce;
 
 import java.util.Arrays;
 
@@ -35,6 +37,26 @@ public class FIXMessageAugmentor_43 extends FIXMessageAugmentor_42 {
         applicableMsgTypes.addAll(Arrays.asList(TT_APPLICABLE_MESSAGE_CODES));
     }
 
+
+    /** Undo the changes made in FIX_40 augmentor
+     * Starting with FIX.4.3, the {@link OrdType#MARKET_ON_CLOSE} is deprecated
+     * so we want to use {@link TimeInForce#AT_THE_CLOSE} instead
+     * @param inMessage
+     * @return
+     */
+    public Message newOrderSingleAugment(Message inMessage) {
+        inMessage = super.newOrderSingleAugment(inMessage);
+        try {
+            if((OrdType.MARKET_ON_CLOSE == inMessage.getChar(OrdType.FIELD)) &&
+               (TimeInForce.DAY == inMessage.getChar(TimeInForce.FIELD))) {
+                inMessage.setField(new OrdType(OrdType.MARKET));
+                inMessage.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
+            }
+        } catch (FieldNotFound fieldNotFound) {
+            return inMessage;
+        }
+        return inMessage;
+    }
 
     /** As of FIX43, we no longer use {@link quickfix.field.ExecTransType} so override this method to not do anything */
     public Message executionReportAugment(Message inMessage) throws FieldNotFound {
