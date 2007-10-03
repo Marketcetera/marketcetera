@@ -358,7 +358,8 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 			String fieldValueActual = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, false).toString();
 			String fieldValueReadable = "";
 			if (dict.hasFieldValue(fieldNumber)){
-				fieldValueReadable  = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, true).toString();
+				Object fieldValueFromMap = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, true);
+				fieldValueReadable  = (fieldValueFromMap == null) ? fieldValueActual : fieldValueFromMap.toString();
 			}
 			String fieldName = fixDictionary.getHumanFieldName(fieldNumber);
 
