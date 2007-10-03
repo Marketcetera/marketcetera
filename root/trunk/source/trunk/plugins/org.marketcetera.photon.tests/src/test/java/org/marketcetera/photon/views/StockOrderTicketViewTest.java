@@ -377,6 +377,35 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		long diff = System.currentTimeMillis() - sentTime;
 		assertTrue("Found diff of: "+diff, diff > 0 && diff < 1000);
 	}
+	
+	/** Verify that MarketOnClose orders are translated correctly 
+	 * Setup the outgoing order to be Market and CLO (at the close)
+	 * in FIX.4.2 Photon
+	 */
+	public void testMarketOnCloseCorrect() throws Exception {
+		MockJmsOperations mockJmsOperations = new MockJmsOperations();
+		setUpJMSFeedService(mockJmsOperations);
+
+		StockOrderTicket view = (StockOrderTicket) getTestView();
+		view.clear();
+		delay(5000);
+
+		view.getSideCombo().setText("S");
+		view.getQuantityText().setText("45");
+		view.getSymbolText().setText("ASDF");
+		view.getPriceText().setText("MKT");
+		view.getTifCombo().setText("CLO");
+
+		controller.handleSend();
+
+		delay(1);
+		
+		Message sentMessage = (Message) mockJmsOperations.getStoredMessage();
+		assertNotNull( sentMessage );
+
+		assertEquals(TimeInForce.DAY, sentMessage.getChar(TimeInForce.FIELD));
+		assertEquals(OrdType.MARKET_ON_CLOSE, sentMessage.getChar(OrdType.FIELD));
+	}
 }
 
 
