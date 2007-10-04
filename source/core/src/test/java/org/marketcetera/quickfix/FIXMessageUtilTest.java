@@ -469,4 +469,21 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", 10, Side.BUY, msgFactory)));
 
     }
+
+    public void testIsEquityOptionOrder() throws Exception {
+        Message equity = FIXMessageUtilTest.createNOS("bob", 23.11, 100, Side.BUY, msgFactory);
+        assertFalse(equity.getString(Symbol.FIELD), FIXMessageUtil.isEquityOptionOrder(equity));
+        equity.setField(new Symbol("FRED.A"));
+        assertFalse("equity with route doesn't work: FRED.A", FIXMessageUtil.isEquityOptionOrder(equity));
+        equity.setField(new Symbol("FRED.+"));
+        assertFalse("equity with route doesn't work: FRED.+", FIXMessageUtil.isEquityOptionOrder(equity));
+
+        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "GE", "200708", 10.25, PutOrCall.CALL,
+                                                             33.23, 10, Side.BUY, msgFactory);
+        assertTrue("option didn't work", FIXMessageUtil.isEquityOptionOrder(option));
+        assertTrue("didn't work on IBM+IB plain order",
+                FIXMessageUtil.isEquityOptionOrder(FIXMessageUtilTest.createNOS("IBM+IB", 22.22, 100, Side.BUY, msgFactory)));
+        equity.setField(new CFICode("OCASPS"));
+        assertTrue("option CFICode didn't work", FIXMessageUtil.isEquityOptionOrder(equity));
+    }
 }
