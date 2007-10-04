@@ -2,6 +2,7 @@ package org.marketcetera.quickfix;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -53,6 +54,7 @@ public class FIXMessageUtil {
 
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();
     private static final int MAX_FIX_FIELDS = 2000;     // What we think the ID of the last fix field is
+    public static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
 
     /**
      * Creates a new instance of FIXMessageUtil
@@ -168,7 +170,7 @@ public class FIXMessageUtil {
 			return isOrderSingle(message)
 			&& (
 					message.isSetField(PutOrCall.FIELD) ||
-					(message.isSetField(Symbol.FIELD) && message.getString(Symbol.FIELD).indexOf("+")>0) ||
+					(message.isSetField(Symbol.FIELD) && optionSymbolPattern.matcher(message.getString(Symbol.FIELD)).matches()) ||
 					message.isSetField(CFICode.FIELD) && OptionCFICode.isOptionCFICode(message.getString(CFICode.FIELD))
 				);
 		} catch (FieldNotFound e) {
