@@ -6,6 +6,7 @@ import quickfix.*;
 import quickfix.field.*;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -214,7 +215,7 @@ public class OutgoingMessageHandler {
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(mfix.getLocalizedMessage(), fieldNotFound, this); }
             // ignore the exception since we are already sending a reject
         }
-        rejection.getHeader().setField(new SendingTime());
+        rejection.getHeader().setField(new SendingTime(new Date()));
         return rejection;
     }
 
@@ -253,7 +254,7 @@ public class OutgoingMessageHandler {
                         BigDecimal.ZERO,
                         new MSymbol(symbol),
                         inAccount);
-            execReport.getHeader().setField(new SendingTime());
+            execReport.getHeader().setField(new SendingTime(new Date()));
             FIXMessageUtil.fillFieldsFromExistingMessage(execReport, newOrder, false);
             return execReport;
         } else {
