@@ -4,11 +4,11 @@
 
     <broker useJmx="true" brokerName="OMS_BROKER" persistent="false" xmlns="http://activemq.org/config/1.0">
 
-
+<!--
         <plugins>
             <simpleAuthenticationPlugin userGroups="#groups" userPasswords="#users"/>
         </plugins>
-
+-->
         <!--
             <persistenceAdapter>
               <journaledJDBC journalLogFiles="5" dataDirectory="foo"/>
@@ -19,7 +19,7 @@
             <transportConnector uri="tcp://localhost:61616"/>
         </transportConnectors>
     </broker>
-
+<!--
     <util:map id="users">
         <entry key="user1" value="password1"/>
     </util:map>
@@ -30,6 +30,6 @@
         </entry>
     </util:map>
     <util:set id="group1"/>
-
+-->
 
 </beans>

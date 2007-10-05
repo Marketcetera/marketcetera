@@ -22,8 +22,10 @@
 
     <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
         <property name="brokerURL" value="tcp://localhost:61616"/>
+<!--
         <property name="userName" value="user1"/>
         <property name="password" value="password1"/>
+-->
     </bean>
 
     <!-- Spring JMS Template -->
