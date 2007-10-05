@@ -68,6 +68,27 @@ public class OrderManagerTest extends FIXVersionedTestCase
                                                                   Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty")));
     }
 
+    /** Bug #416 - make sure sending time changes between messages */
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    public void testSendingTimeChanges() throws Exception {
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
+        handler.setOrderRouteManager(new MessageRouteManager());
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
+                                                      TimeInForce.DAY, "bob");
+        Message execReport = handler.executionReportFromNewOrder(newOrder);
+        Message reject1 = handler.createRejectionMessage(new Exception(), newOrder);
+        Thread.sleep(3000);
+        Message execReport2 = handler.executionReportFromNewOrder(newOrder);
+        Message reject2 = handler.createRejectionMessage(new Exception(), newOrder);
+        String sendTime1 = execReport.getHeader().getString(SendingTime.FIELD);
+        String sendTime2 = execReport2.getHeader().getString(SendingTime.FIELD);
+        assertFalse("sending times are equal: "+ sendTime1 + "/"+ sendTime2,
+                sendTime1.equals(sendTime2));
+
+        assertFalse("reject sending times are equal",
+                reject1.getHeader().getString(SendingTime.FIELD).equals(reject2.getHeader().getString(SendingTime.FIELD)));
+    }
+
     // test one w/out incoming account
     public void testNewExecutionReportFromOrder_noAccount() throws Exception
     {
