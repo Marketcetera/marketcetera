@@ -93,7 +93,7 @@ public class FIXMessageFactory {
 			cancelMessage.setField(oldMessage.getField(new OrderQty()));
 		}
         addTransactionTimeIfNeeded(cancelMessage);
-        cancelMessage.getHeader().setField(new SendingTime());
+        cancelMessage.getHeader().setField(new SendingTime(new Date()));
 		return cancelMessage;
 
 	}
