@@ -7,6 +7,8 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.TransactTime;
 
+import java.util.Date;
+
 /**
  * Inserts the {@link TransactTime} field into an order if it's not currently present
  *
@@ -27,7 +29,7 @@ public class TransactionTimeInsertMessageModifier implements MessageModifier
             return false;
         } catch (FieldNotFound ex){
             if(augmentor.needsTransactTime(order)) {
-                order.setField(new TransactTime());
+                order.setField(new TransactTime(new Date()));
                 return true;
             }
             return false;

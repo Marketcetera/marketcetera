@@ -7,10 +7,7 @@ import quickfix.field.*;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Graham Miller
@@ -137,7 +134,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         newSingle.setField(new ClOrdID("123-"+(++nosSuffixCounter)+"-"+suffix));
         newSingle.setField(new Symbol(symbol));
         newSingle.setField(new Side(side));
-        newSingle.setField(new TransactTime());
+        newSingle.setField(new TransactTime(new Date()));
         newSingle.setField(ordType);
         // technically, the OrderID is set by the exchange but for tests we'll set it too b/c OrderProgress expects it
         newSingle.setField(new OrderID("456"+suffix));
