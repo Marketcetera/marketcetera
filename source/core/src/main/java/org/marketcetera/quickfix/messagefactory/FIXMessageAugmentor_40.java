@@ -46,6 +46,10 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
                (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
                 inMessage.setField(new OrdType(OrdType.MARKET_ON_CLOSE));
                 inMessage.setField(new TimeInForce(TimeInForce.DAY));
+            } else if((OrdType.LIMIT == inMessage.getChar(OrdType.FIELD)) &&
+               (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
+                inMessage.setField(new OrdType(OrdType.LIMIT_ON_CLOSE));
+                inMessage.setField(new TimeInForce(TimeInForce.DAY));
             }
         } catch (FieldNotFound fieldNotFound) {
             return inMessage;

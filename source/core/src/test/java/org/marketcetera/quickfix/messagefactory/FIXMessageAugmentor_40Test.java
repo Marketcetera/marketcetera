@@ -49,11 +49,32 @@ public class FIXMessageAugmentor_40Test extends TestCase {
         assertEquals(OrdType.MARKET_ON_CLOSE, buy.getChar(OrdType.FIELD));
         assertEquals(TimeInForce.DAY, buy.getChar(TimeInForce.FIELD));
 
-        // now send a non-market order make sure no changes are made
+        // now send a non-MoC order make sure no changes are made
         buy = FIXMessageUtilTest.createMarketNOS("TOLI", 213, Side.BUY, factory);
         buy.setField(new TimeInForce(TimeInForce.DAY));
         buy = augmentor.newOrderSingleAugment(buy);
         assertEquals(OrdType.MARKET, buy.getChar(OrdType.FIELD));
+        assertEquals(TimeInForce.DAY, buy.getChar(TimeInForce.FIELD));
+    }
+
+    public void testLimitOnClose() throws Exception
+    {
+        FIXMessageFactory factory = FIXVersion.FIX40.getMessageFactory();
+        Message buy = FIXMessageUtilTest.createNOS("TOLI", 123, 100, Side.BUY, factory);
+        assertEquals(OrdType.LIMIT, buy.getChar(OrdType.FIELD));
+        buy.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
+
+        FIXMessageAugmentor_40 augmentor = new FIXMessageAugmentor_40();
+        buy = augmentor.newOrderSingleAugment(buy);
+
+        assertEquals(OrdType.LIMIT_ON_CLOSE, buy.getChar(OrdType.FIELD));
+        assertEquals(TimeInForce.DAY, buy.getChar(TimeInForce.FIELD));
+
+        // now send a non-LoC order make sure no changes are made
+        buy = FIXMessageUtilTest.createNOS("TOLI", 213, 100, Side.BUY, factory);
+        buy.setField(new TimeInForce(TimeInForce.DAY));
+        buy = augmentor.newOrderSingleAugment(buy);
+        assertEquals(OrdType.LIMIT, buy.getChar(OrdType.FIELD));
         assertEquals(TimeInForce.DAY, buy.getChar(TimeInForce.FIELD));
     }
 
