@@ -42,6 +42,8 @@ public class PriceConverterBuilderTest extends TestCase {
 		assertEquals(Object.class, converter.getToType());
 
 		assertEquals(OrdType.MARKET, converter.convert(PriceImage.MKT.getImage()));
+		assertEquals(OrdType.MARKET, converter.convert("mkt"));
+		assertEquals(OrdType.MARKET, converter.convert("Mkt"));
 		assertEquals(BigDecimal.TEN, converter.convert("10"));
 		assertEquals(null, converter.convert(null));
 		assertEquals(null, converter.convert("_"));
@@ -51,6 +53,9 @@ public class PriceConverterBuilderTest extends TestCase {
 	public void testNewTargetAfterGetValidator() {
 		IValidator validator = priceConverterBuilder.newTargetAfterGetValidator();
 		assertEquals(IStatus.OK, validator.validate("MKT").getSeverity());
+		assertEquals(IStatus.OK, validator.validate("mkt").getSeverity());
+		assertEquals(IStatus.OK, validator.validate("MKT").getSeverity());
+		assertEquals(IStatus.OK, validator.validate("mkT").getSeverity());
 		assertEquals(IStatus.OK, validator.validate("123.4").getSeverity());
 		assertEquals(IStatus.OK, validator.validate("-1123.4").getSeverity());
 		
@@ -91,7 +96,6 @@ public class PriceConverterBuilderTest extends TestCase {
 		assertEquals(IStatus.ERROR, validator.validate("1.2.3.4.5").getSeverity());
 		assertEquals(IStatus.ERROR, validator.validate("1a").getSeverity());
 		assertEquals(IStatus.ERROR, validator.validate("ASD").getSeverity());
-		
 	}
 
 }

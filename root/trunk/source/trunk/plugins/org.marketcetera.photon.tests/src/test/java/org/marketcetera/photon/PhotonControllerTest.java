@@ -11,12 +11,15 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.core.FIXMessageHistory;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.FIXMessageUtilTest;
 
 import quickfix.Message;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.Side;
+import quickfix.field.TimeInForce;
 
 /**
  * Verify the functions in PhotonController
@@ -58,6 +61,16 @@ public class PhotonControllerTest extends TestCase {
         assertEquals("10002", photonController.sentMessages.get(1).getString(OrigClOrdID.FIELD));
     }
 
+    public void testNewOrderAugmentorApplied() throws Exception {
+    	Message msg = FIXMessageUtilTest.createMarketNOS("IBM", 100, Side.BUY, msgFactory);
+    	msg.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
+    	photonController.handleInternalMessage(msg);
+    	
+    	assertEquals(1, photonController.sentMessages.size());
+    	assertEquals(OrdType.MARKET_ON_CLOSE, photonController.sentMessages.get(0).getChar(OrdType.FIELD));
+    	assertEquals(TimeInForce.DAY, photonController.sentMessages.get(0).getChar(TimeInForce.FIELD));
+    }
+    
     /** Store the messages that are meant to go out */
     private class MyPhotonController extends PhotonController {
         private Vector<Message> sentMessages = new Vector<Message>();
