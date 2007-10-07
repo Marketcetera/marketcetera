@@ -178,6 +178,7 @@ public class PhotonController {
 			if (!aMessage.isSetField(ClOrdID.FIELD)){
 				aMessage.setField(new ClOrdID(orderID));
 			}
+			messageFactory.getMsgAugmentor().newOrderSingleAugment(aMessage);
 			fixMessageHistory.addOutgoingMessage(aMessage);
 			convertAndSend(aMessage);
 		} catch (NoMoreIDsException e) {

@@ -63,7 +63,7 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 					new BigDecimal((String) obj);
 					return Status.OK_STATUS;
 				} catch (Throwable t){
-					return super.validate(obj);
+					return (obj instanceof String) ? super.validate(((String)obj).toUpperCase()) : super.validate(obj);
 				}
 			}
 		};
@@ -76,7 +76,7 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 				try {
 					return new BigDecimal((String)from);
 				} catch (Throwable t) {
-					return super.convert(from);
+					return (from instanceof String) ? super.convert(((String)from).toUpperCase()) : super.convert(from);
 				}
 			}
 			@Override

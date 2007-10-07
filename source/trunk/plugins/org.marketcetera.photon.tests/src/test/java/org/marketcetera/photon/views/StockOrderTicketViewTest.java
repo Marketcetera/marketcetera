@@ -406,6 +406,30 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals(TimeInForce.DAY, sentMessage.getChar(TimeInForce.FIELD));
 		assertEquals(OrdType.MARKET_ON_CLOSE, sentMessage.getChar(OrdType.FIELD));
 	}
+
+	public void testMKTOrderCaseInsensitive() throws Exception {
+		MockJmsOperations mockJmsOperations = new MockJmsOperations();
+		setUpJMSFeedService(mockJmsOperations);
+
+		StockOrderTicket view = (StockOrderTicket) getTestView();
+		view.clear();
+		delay(5000);
+
+		view.getSideCombo().setText("S");
+		view.getQuantityText().setText("45");
+		view.getSymbolText().setText("ASDF");
+		view.getPriceText().setText("mkt");
+		view.getTifCombo().setText("DAY");
+
+		controller.handleSend();
+
+		delay(1);
+		
+		Message sentMessage = (Message) mockJmsOperations.getStoredMessage();
+		assertNotNull( sentMessage );
+		assertEquals(OrdType.MARKET, sentMessage.getChar(OrdType.FIELD));
+	}
+
 }
 
 

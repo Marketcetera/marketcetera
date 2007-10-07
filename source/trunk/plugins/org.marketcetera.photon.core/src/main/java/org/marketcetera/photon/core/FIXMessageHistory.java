@@ -1,39 +1,20 @@
 package org.marketcetera.photon.core;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import ca.odell.glazedlists.*;
+import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
-
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.ClOrdID;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.LastForwardPoints;
-import quickfix.field.LastMkt;
-import quickfix.field.LastPx;
-import quickfix.field.LastShares;
-import quickfix.field.LastSpotRate;
-import quickfix.field.MsgSeqNum;
-import quickfix.field.MsgType;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrigClOrdID;
-import quickfix.field.SendingTime;
-import quickfix.field.Text;
-import quickfix.field.TransactTime;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.FunctionList;
-import ca.odell.glazedlists.GroupingList;
-import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
+import quickfix.field.*;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @ClassVersion("$Id$")
 public class FIXMessageHistory extends PlatformObject {
@@ -124,9 +105,9 @@ public class FIXMessageHistory extends PlatformObject {
 						newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
 					}
 					if (newExecutionReport.isSetField(TransactTime.FIELD)) {
-						newExecutionReport.setField(new TransactTime());
+						newExecutionReport.setField(new TransactTime(new Date()));
 					}
-					newExecutionReport.getHeader().setField(new SendingTime());
+					newExecutionReport.getHeader().setField(new SendingTime(new Date()));
 					
 					newExecutionReport.getHeader().removeField(MsgSeqNum.FIELD);
 					newExecutionReport.removeField(ExecID.FIELD);

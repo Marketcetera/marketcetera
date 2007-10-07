@@ -343,7 +343,6 @@ public class OrderTicketControllerHelper {
 			PhotonPlugin plugin = PhotonPlugin.getDefault();
 			ticket.updateMessage(targetMessage);
 			plugin.getMessageFactory().addTransactionTimeIfNeeded(targetMessage);
-			plugin.getMessageFactory().getMsgAugmentor().newOrderSingleAugment(targetMessage);
 			plugin.getPhotonController().handleInternalMessage(targetMessage);
 			clear();
 		} catch (Exception e) {
