@@ -221,22 +221,46 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 	
 	public void testOrderCancelReject() throws Exception {
 		FIXMessageHistory history = getMessageHistory();
-		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
-		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
-		history.addOutgoingMessage(order1);
-		history.addIncomingMessage(executionReportForOrder1);
-
-		assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
-
-		Message cancelReject = msgFactory.createMessage(MsgType.ORDER_CANCEL_REJECT);
-		cancelReject.setField(new OrderID("1001"));
-		cancelReject.setField(new ClOrdID("2"));
-		cancelReject.setField(new OrigClOrdID("1"));
-		cancelReject.setField(new OrdStatus(OrdStatus.FILLED));
-		cancelReject.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
-		history.addIncomingMessage(cancelReject);
+		{
+			Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+			Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, 
+					new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+			history.addOutgoingMessage(order1);
+			history.addIncomingMessage(executionReportForOrder1);
+	
+			assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+	
+			Message cancelReject = msgFactory.createMessage(MsgType.ORDER_CANCEL_REJECT);
+			cancelReject.setField(new OrderID("1001"));
+			cancelReject.setField(new ClOrdID("2"));
+			cancelReject.setField(new OrigClOrdID("1"));
+			cancelReject.setField(new OrdStatus(OrdStatus.FILLED));
+			cancelReject.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
+			history.addIncomingMessage(cancelReject);
+			
+			assertEquals(OrdStatus.FILLED, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+		}
 		
-		assertEquals(OrdStatus.FILLED, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+		{
+			Message order2 = msgFactory.newMarketOrder("2", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+			Message executionReportForOrder2 = msgFactory.newExecutionReport("1002", "2", "2002", OrdStatus.NEW, Side.BUY, 
+					new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+			history.addOutgoingMessage(order2);
+			history.addIncomingMessage(executionReportForOrder2);
+	
+			assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+	
+			Message cancelReject = msgFactory.createMessage(MsgType.ORDER_CANCEL_REJECT);
+			cancelReject.setField(new OrderID("1001"));
+			cancelReject.setField(new ClOrdID("2"));
+			cancelReject.setField(new OrigClOrdID("1"));
+			// Don't set ord-status
+			cancelReject.setField(new CxlRejResponseTo(CxlRejResponseTo.ORDER_CANCEL_REQUEST));
+			history.addIncomingMessage(cancelReject);
+			
+			assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD));
+		}
+		
 	}
 
 	/*
