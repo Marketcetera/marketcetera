@@ -323,7 +323,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         // verify we got an execReport that's a rejection with the sessionNotfound error message
         Message result = handler.handleMessage(newOrder);
-        verifyRejection(result, msgFactory, MessageKey.SESSION_NOT_FOUND, sessionID);
+        verifyRejection(result, msgFactory, true, MessageKey.SESSION_NOT_FOUND, sessionID);
     }
 
     /** Create props with a route manager entry, and make sure the FIX message is
@@ -384,7 +384,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
         // now test it with no fix version at all
         reject = handler.handleMessage(new Message());
-        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
+        verifyRejection(reject, msgFactory, true, OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
     }
 
     public void testOrderListNotSupported() throws Exception {
@@ -413,7 +413,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
         execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
         assertEquals(0, sender.getCapturedMessages().size());
-        verifyRejection(execReport, msgFactory, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
+        verifyRejection(execReport, msgFactory, false, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
 
         // verify goes through again after log on
         sender.getCapturedMessages().clear();
@@ -423,6 +423,27 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
     }
+
+    /** bug #433 - need to modify the reject being sent back in case the OMS is not logged on
+     * verify the reject coming back does not have the OrdStatus set
+     */
+    public void testOrderCancelRejectWhenOMSNotLoggedOn() throws Exception {
+        MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
+        NullQuickFIXSender sender = new NullQuickFIXSender();
+        handler.setQuickFIXSender(sender);
+
+        // now set it to be logged out and verify a reject
+        sender.getCapturedMessages().clear();
+        handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
+        Message reject = handler.handleMessage(msgFactory.newCancelFromMessage(
+                FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory)));
+        assertEquals(0, sender.getCapturedMessages().size());
+        assertEquals(MsgType.ORDER_CANCEL_REJECT, reject.getHeader().getString(MsgType.FIELD));
+        assertFalse("OrdStatus should not be set", reject.isSetField(OrdStatus.FIELD));
+        assertEquals("didn't get a right reason", OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage(),
+                reject.getString(Text.FIELD));
+    }
+
 
     /** Helper method that takes an OrderManager, the stock symbol and the expect exchange
      * and verifies that the route parsing comes back correct
@@ -492,10 +513,15 @@ public class OrderManagerTest extends FIXVersionedTestCase
                 inMsg.getString(Text.FIELD));
     }
 
-    public static void verifyRejection(Message inMsg, FIXMessageFactory msgFactory, LocalizedMessage msgKey, Object ... args) throws Exception
+    public static void verifyRejection(Message inMsg, FIXMessageFactory msgFactory, boolean ordStatusExpected,
+                                       LocalizedMessage msgKey, Object... args) throws Exception
     {
         assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, inMsg.getHeader().getString(MsgType.FIELD));
-        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", inMsg.getString(OrdStatus.FIELD));
+        if(ordStatusExpected) {
+            assertEquals("didn't get a reject", OrdStatus.REJECTED+"", inMsg.getString(OrdStatus.FIELD));
+        } else {
+            assertFalse("not expected to have OrdStatus", inMsg.isSetField(OrdStatus.FIELD));
+        }
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
             assertEquals("execType should be a reject", ExecType.REJECTED, inMsg.getChar(ExecType.FIELD));
         }

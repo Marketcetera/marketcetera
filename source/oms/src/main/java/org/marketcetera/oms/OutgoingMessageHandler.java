@@ -79,8 +79,11 @@ public class OutgoingMessageHandler {
         }
 
         if(!qfApp.isLoggedOn()) {
-            return createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
+            Message notLoggedOnReject = createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
                     message);
+            // explicitly remove the OrdStatus b/c we don't know what it is - we aren't logged on
+            notLoggedOnReject.removeField(OrdStatus.FIELD);
+            return notLoggedOnReject;
         }
 
 
