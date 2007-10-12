@@ -2,6 +2,7 @@ package org.marketcetera.oms;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.IQuickFIXSender;
@@ -26,6 +27,7 @@ public class QuickFIXApplication implements Application {
     private HashMap<SessionID, Log> logMap;
     private JdbcLogFactory logFactory;
     protected IQuickFIXSender quickFIXSender;
+    private MessageModifierManager messageModifierMgr;
 
     public QuickFIXApplication(FIXMessageFactory fixMessageFactory, JdbcLogFactory logFactory) {
         fLoggedOn = false;
@@ -119,8 +121,14 @@ public class QuickFIXApplication implements Application {
         }
     }
 
-	public void toAdmin(Message message, SessionID session) {
-	}
+    /** Apply message modifiers to all outgoing to-admin messages (such as logout/login) */
+    public void toAdmin(Message message, SessionID session) {
+        try {
+            messageModifierMgr.modifyMessage(message);
+        } catch (MarketceteraException ex) {
+            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error modifying message: "+message, ex, this); }
+        }
+    }
 
 	public void toApp(Message message, SessionID session) throws DoNotSend {
 	}
@@ -133,6 +141,9 @@ public class QuickFIXApplication implements Application {
 		this.jmsOperations = jmsOperations;
 	}
 
+    public void setMessageModifierMgr(MessageModifierManager inMgr){
+		messageModifierMgr = inMgr;
+	}
 
     public boolean isLoggedOn() {
         return fLoggedOn;

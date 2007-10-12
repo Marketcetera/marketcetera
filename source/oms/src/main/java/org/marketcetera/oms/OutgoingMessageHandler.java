@@ -8,7 +8,6 @@ import quickfix.field.*;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * OutgoingMessageHandler is the "middle" stage that recieves an incoming order request
@@ -23,7 +22,7 @@ import java.util.List;
 @ClassVersion("$Id$")
 public class OutgoingMessageHandler {
 
-	private List<MessageModifier> messageModifiers;
+    private MessageModifierManager messageModifierMgr;
     private MessageRouteManager routeMgr;
     private SessionID defaultSessionID;         // used to store the SessionID so that FIX sender can find it
     private IQuickFIXSender quickFIXSender = new QuickFIXSender();
@@ -37,12 +36,12 @@ public class OutgoingMessageHandler {
     public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits inLimits,
                                   QuickFIXApplication inQFApp)
             throws ConfigError, FieldConvertError, MarketceteraException {
-        setMessageModifiers(new LinkedList<MessageModifier>());
         setOrderRouteManager(new MessageRouteManager());
         msgFactory = inFactory;
         idFactory = createDatabaseIDFactory(settings);
         orderLimits = inLimits;
         qfApp = inQFApp;
+        setMessageModifierMgr(new MessageModifierManager(new LinkedList<MessageModifier>(), msgFactory));
         try {
             idFactory.init();
         } catch (Exception ex) {
@@ -56,13 +55,10 @@ public class OutgoingMessageHandler {
         routeMgr = inMgr;
     }
 
-    public void setMessageModifiers(List<MessageModifier> mods){
-		messageModifiers = new LinkedList<MessageModifier>();
-		for (MessageModifier mod : mods) {
-			messageModifiers.add(mod);
-		}
-		messageModifiers.add(new TransactionTimeInsertMessageModifier());
-	}
+    public void setMessageModifierMgr(MessageModifierManager inMgr){
+		messageModifierMgr = inMgr;
+        qfApp.setMessageModifierMgr(inMgr);
+    }
 
     /** Only supports NewOrderSingle, OrderCancelReplace and OrderCancel orders at this point
      * Rejects orders that are of the wrong FIX version, or if the OMS is not logged on to a FIX destination.
@@ -105,7 +101,7 @@ public class OutgoingMessageHandler {
                 throw new UnsupportedMessageType();
             }
 
-            modifyOrder(message);
+            messageModifierMgr.modifyMessage(message);
             orderLimits.verifyOrderLimits(message);
             routeMgr.modifyMessage(message, msgFactory.getMsgAugmentor());
             // if single, pre-create an executionReport and send it back
@@ -262,14 +258,6 @@ public class OutgoingMessageHandler {
             return execReport;
         } else {
             return null;
-        }
-    }
-
-    /** Apply all the order modifiers to this message */
-    protected void modifyOrder(Message inOrder) throws MarketceteraException
-    {
-        for (MessageModifier oneModifier : messageModifiers) {
-            oneModifier.modifyMessage(inOrder, msgFactory.getMsgAugmentor());
         }
     }
 

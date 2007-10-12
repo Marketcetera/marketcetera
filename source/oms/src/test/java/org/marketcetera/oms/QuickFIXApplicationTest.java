@@ -2,10 +2,7 @@ package org.marketcetera.oms;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.quickfix.NullQuickFIXSender;
+import org.marketcetera.quickfix.*;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsOperations;
@@ -17,6 +14,7 @@ import quickfix.UnsupportedMessageType;
 import quickfix.field.*;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Vector;
 
 /**
@@ -110,6 +108,18 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         }.run();
 
         assertEquals(0, jmsTemplate.sentMessages.size());
+    }
+
+    public void testMessageModifiersAppliedToOutgoingAdminMessages() throws Exception {
+        final QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        DefaultMessageModifier modifier = new DefaultMessageModifier();
+        modifier.setHeaderFields(DefaultMessageModifierTest.createFieldsMap(new String[][] {{"50(A)", "headerValue"}}));
+        modifier.setMsgFields(DefaultMessageModifierTest.createFieldsMap(new String[][] {{"37(A)", "messageValue"}}));
+        qfApp.setMessageModifierMgr(new MessageModifierManager(Arrays.asList((MessageModifier) modifier), msgFactory));
+        Message msg = msgFactory.createMessage(MsgType.LOGON);
+        qfApp.toAdmin(msg, new SessionID(fixVersion.toString(), "sender", "target"));
+        assertEquals("field 37 not present in message", "messageValue", msg.getString(37));
+        assertEquals("field 50 not present in header", "headerValue", msg.getHeader().getString(50));
     }
 
     private class MockJmsTemplate extends JmsTemplate {
