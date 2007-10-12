@@ -133,7 +133,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(getDummySessionSettings(), msgFactory);
         handler.setOrderRouteManager(new MessageRouteManager());
-        handler.setMessageModifiers(getOrderModifiers());
+        handler.setMessageModifierMgr(new MessageModifierManager(getMessageModifiers(), msgFactory));
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -172,7 +172,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         MessageRouteManager routeManager = new MessageRouteManager();
         routeManager.setSeparateSuffix(true);
         handler.setOrderRouteManager(routeManager);
-        handler.setMessageModifiers(new LinkedList<MessageModifier>());
+        handler.setMessageModifierMgr(new MessageModifierManager(new LinkedList<MessageModifier>(), msgFactory));
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
@@ -473,7 +473,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
 
     /** Helper method for creating a set of properties with defaults to be reused   */
-    public static List<MessageModifier> getOrderModifiers()
+    public static List<MessageModifier> getMessageModifiers()
     {
     	List<MessageModifier> messageModifiers = new LinkedList<MessageModifier>();
 
