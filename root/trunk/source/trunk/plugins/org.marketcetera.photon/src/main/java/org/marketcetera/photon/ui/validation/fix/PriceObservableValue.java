@@ -38,8 +38,20 @@ public class PriceObservableValue extends FIXObservableValue {
 	@Override
 	protected void doSetValue(Object value) {
 		if (value instanceof Character){
-			message.setField(new OrdType((Character)value));
-		} else if (value instanceof BigDecimal){
+			char ordType = (Character)value;
+			message.setField(new OrdType(ordType));
+			switch (ordType){
+			case OrdType.FOREX_MARKET:
+			case OrdType.MARKET:
+			case OrdType.MARKET_IF_TOUCHED:
+			case OrdType.MARKET_ON_CLOSE:
+			case OrdType.MARKET_WITH_LEFTOVER_AS_LIMIT:
+			case OrdType.NEXT_FUND_VALUATION_POINT:
+			case OrdType.PREVIOUS_FUND_VALUATION_POINT:
+				message.removeField(Price.FIELD);
+			default:
+			}
+		} else if (value instanceof Number){
 			message.setField(new OrdType(OrdType.LIMIT));
 			message.setField(new StringField(Price.FIELD, value.toString()));
 		}
