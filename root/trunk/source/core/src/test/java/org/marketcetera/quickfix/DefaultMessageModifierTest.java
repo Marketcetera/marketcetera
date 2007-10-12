@@ -24,7 +24,7 @@ import quickfix.field.MsgType;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class DefaultOrderModifierTest extends TestCase {
+public class DefaultMessageModifierTest extends TestCase {
     private static final String HEADER_57_VAL = "asdf";
     private static final String FIELD_21_VAL = "qwer";
     private static final String TRAILER_28_VAL = "ppp";
@@ -32,12 +32,12 @@ public class DefaultOrderModifierTest extends TestCase {
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
-    public DefaultOrderModifierTest(String inName) {
+    public DefaultMessageModifierTest(String inName) {
         super(inName);
     }
 
     public static Test suite() {
-        return new MarketceteraTestSuite(DefaultOrderModifierTest.class);
+        return new MarketceteraTestSuite(DefaultMessageModifierTest.class);
     }
 
     public void testModifyOrder() throws Exception {
