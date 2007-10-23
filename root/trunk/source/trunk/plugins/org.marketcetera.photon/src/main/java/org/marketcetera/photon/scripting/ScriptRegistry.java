@@ -332,7 +332,10 @@ public class ScriptRegistry implements InitializingBean {
 
 
 	private void doUnregister(final String fileName) {
-		registeredStrategies.remove(fileName);
+		Strategy strategy = registeredStrategies.remove(fileName);
+		if (strategy != null){
+			strategy.on_dispose();
+		}
 	}
 
 
@@ -342,7 +345,9 @@ public class ScriptRegistry implements InitializingBean {
 			Object strategyObject = bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, classInstanceEvalString);
 			if (strategyObject instanceof Strategy){
 				registeredStrategies.put(fileName, (Strategy) strategyObject);
-                ((Strategy)strategyObject).setName(fileName);
+                Strategy strategy = ((Strategy)strategyObject);
+				strategy.setName(fileName);
+				strategy.on_create();
             } else {
 				throw new IllegalArgumentException("File '"+fileName+"' does not contain a subclass of Strategy");
 			}
