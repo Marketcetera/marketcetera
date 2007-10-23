@@ -62,6 +62,21 @@ public abstract class Strategy {
     }
 
     /**
+     * This callback is invoked after the strategy object is fully instantiated.
+     */
+    public void on_create()
+    {
+    }
+    
+    /**
+     * This callback is invoked before the strategy object is disposed, in order
+     * to allow for cleanup of resources.
+     */
+    public void on_dispose()
+    {
+    }
+    
+    /**
      * This callback is invoked every time an order-related (that is non-market data)
      * FIX message is received by the application for the strategy.  The default implementation
      * decides whether the message represents a trade (based on whether a LastPx is specified
