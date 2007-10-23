@@ -185,11 +185,16 @@ public class ScriptRegistry implements InitializingBean {
 			// no-op
 		} catch (ExecutionException ex) {
 			Throwable cause = ex.getCause();
-			Throwable toLog = ex;
-			if (cause != null){
-				toLog = cause;
+			if (cause instanceof RaiseException){
+				RaiseException re = (RaiseException) cause;
+				ScriptLoggingUtil.error(logger, re);
+			} else {
+				Throwable toLog = ex;
+				if (cause != null){
+					toLog = cause;
+				}
+				logger.error("Unable to register script", toLog);
 			}
-			logger.warn("Unable to register script", toLog);
 		}
 	}
 
@@ -213,7 +218,8 @@ public class ScriptRegistry implements InitializingBean {
                     	if(logger.isDebugEnabled()) { logger.debug("strategy ["+strategy.getName()+"] is no longer registered"); }
                     }
                 } catch(RaiseException ex) {
-					logger.error("Error in timeout_callback function: "+ex.getException(), ex.getCause());
+					logger.error("Error in timeout_callback function: "+ex.getException());
+					ScriptLoggingUtil.error(logger, ex);
 				}
 				if(logger.isDebugEnabled()) { logger.debug("finished ruby callback on ["+strategy.getName()+"]"); }
 			}
@@ -245,7 +251,12 @@ public class ScriptRegistry implements InitializingBean {
 			// no-op
 		} catch (ExecutionException ex) {
 			// TODO: internationalize this
-			logger.warn("Unable to get a result of Ruby script change", ex);
+			Throwable cause = ex.getCause();
+			if (cause instanceof RaiseException) {
+				ScriptLoggingUtil.error(logger, (RaiseException) cause);
+			} else {
+				logger.warn("Unable to get a result of Ruby script change", cause);
+			}
 		}
 	}
 
