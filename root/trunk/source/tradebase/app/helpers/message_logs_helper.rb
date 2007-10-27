@@ -1,5 +1,5 @@
 module MessageLogsHelper
-
+  require 'quickfix'
   
   # if the field is present in the message returns the string value of it
   # else returns a space

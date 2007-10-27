@@ -2,9 +2,9 @@
 # $Id$
 class DataDictionaryMgr
   private_class_method :new
-  @@mgr = Quickfix::DataDictionary.new("lib/FIX42.xml")
+  @@mgr = Quickfix::DataDictionary.new("#{RAILS_ROOT}/lib/FIX42.xml")
   
-  
+
   def DataDictionaryMgr.get_field_name(field)
     @@mgr.getFieldName(field.getField)
   end
