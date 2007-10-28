@@ -26,8 +26,8 @@ class MessagesLogControllerTest < MarketceteraTestBase
     assert_response :success
     assert_template 'list'
 
-    assert_not_nil assigns("exec_report_pages")
-    assert_equal 8, assigns("exec_report_pages").length
+    assert_not_nil assigns(:exec_report_pages)
+    assert_equal 8, assigns(:exec_reports).length
     assert_has_show_edit_delete_links(true, false, false)
     assert_nil flash[:error]
   end
@@ -56,12 +56,12 @@ class MessagesLogControllerTest < MarketceteraTestBase
   end
   
   def test_conditional_date_list
-    # there are 2 messages that  are done on Sept 23-24, shoudl find just these 2
+    # there are 2 messages that  are done on Sept 23-24, should find just these 2
     get :list, {:suffix => 'date', :date_date => { "from(1i)"=>"2006", "from(2i)"=>"9", "from(3i)"=>"16",
                             "to(1i)"=>"2006", "to(2i)"=>"9", "to(3i)"=>"27"}, "search_type"=>"s"}
     assert_response :success
     assert_template 'list'
-    assert_equal 2, assigns(:exec_report_pages).length
+    assert_equal 2, assigns(:exec_reports).length
   end
 
   def test_subset_invalid_dates
@@ -82,7 +82,7 @@ class MessagesLogControllerTest < MarketceteraTestBase
   end
 
   # test if the account is empty we still display an &nbsp
-  # this is essentially a test for the display_heper::df function, but since
+  # this is essentially a test for the display_helper::df function, but since
   # the h() function is not loaded in unit test we can't test it directly.'
   def test_empty_account_name_results_in_space
       # get goog_20 message
@@ -108,10 +108,10 @@ class MessagesLogControllerTest < MarketceteraTestBase
     assert_response :success
     assert_template 'list'
 
-    assert_not_nil assigns("exec_report_pages")
-    assert_equal 8, assigns("exec_report_pages").length
-    assert_not_nil assigns("failed_msg")
-    assert_equal 1, assigns("failed_msg").length
+    assert_not_nil assigns(:exec_report_pages)
+    assert_equal 8, assigns(:exec_reports).length
+    assert_not_nil assigns(:failed_msg)
+    assert_equal 1, assigns(:failed_msg).length
     assert flash[:error] = "Failed to parse 1 message(s)."
     
     # verify the row with unparseable message shows up
