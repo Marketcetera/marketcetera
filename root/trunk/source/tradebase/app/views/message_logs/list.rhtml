@@ -1,5 +1,5 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Trades", :action_name => "Import Trades", :top_level_controller => 'trades' } %>
+    :locals=> { :top_level => "Trades", :action_name => "List Execution Reports", :top_level_controller => 'trades' } %>
 <h1>Import Trades</h1>
 <%= if(!@report.nil?)
        error_messages_for_report :report
@@ -31,10 +31,8 @@
   <div class="clear"></div>
 <% end -%>
 
-<% form_tag( {:action => 'create_trades', :controller => 'create_trades'},  {:id => "selectTrades"}) do -%>
 <table>
   <tr>
-    <th/>
     <th>SendingTime</th>
     <th>ClOrdID</th>
     <th>Status</th>
@@ -77,10 +75,8 @@
 <% end %>
 <!-- Display timportable messages -->
 <% i=0
-    for message in @exec_report_pages %>
+    for qf_message in @exec_reports %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
-    <% qf_message = Quickfix::Message.new(message.text) %>
-    <td><%= check_box('trades', message.id.to_s) %></td>
     <td><%=h DateTime.parse(getHeaderStringFieldValueIfPresent(qf_message, sendingTime)).to_s %></td>
     <td><%=h contract_string(getStringFieldValueIfPresent(qf_message, clOrdID), 10) %></td>
     <td><%=h getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
@@ -99,12 +95,7 @@
     <% end %>
 </table>
 <p/>
-Select: <a href="javascript:toggleCheckboxes('selectTrades', 1);">All</a> <a href="javascript:toggleCheckboxes('selectTrades', 0);">None</a>
-<p/>
-<%= submit_tag 'Import Trades', :class => "submit floatright" %>
-<% end -%>
-<p/>
-<%= if(!@paginator.nil?)
-  link_to 'Previous page', { :page => @paginator.current.previous } if @paginator.current.previous
-  link_to 'Next page', { :page => @paginator.current.next } if @paginator.current.next
- end%> 
+
+<%= if(!@exec_report_pages.nil?)
+  pagination_links(@exec_report_pages,  :params => { @param_name => @param_value, :on_date => @on_date })
+ end %>

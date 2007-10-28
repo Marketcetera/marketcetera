@@ -15,7 +15,7 @@ class MessageLogsController < ApplicationController
   # get a slice of data from DB since not every message is going to be displayed.
   def list
     fSubsetSearch = params[:search_type] == 's'
-    @failed_msg, @exec_report_pages = [], []
+    @failed_msg, @exec_reports, read_messages = [], []
     if(fSubsetSearch)
         suffix = (params[:suffix].nil?) ? '' : params[:suffix]
         @report = ReportWithToFromDates.new(params, suffix)
@@ -24,43 +24,31 @@ class MessageLogsController < ApplicationController
           render :action => :list
           return
         end
-      @startDate, @endDate  = @report.from_date.as_date, @report.to_date.as_date
+      @startDate, @endDate = @report.from_date.as_date, @report.to_date.as_date + 1
+      @exec_report_pages, read_messages = paginate :message_log, :per_page => MaxPerPage,
+              :conditions => ['time >= ? AND time <= ?', @startDate, @endDate ]
+    else
+      @exec_report_pages, read_messages = paginate :message_log, :per_page => MaxPerPage
     end
-    all_exec_reports = []
-    msgTypeField = Quickfix::MsgType.new
-    ordStatusField = Quickfix::OrdStatus.new
-    sendingTimeField = Quickfix::SendingTime.new
-    all_messages = MessageLog.find(:all, :conditions => [ 'processed = false' ])
-    all_messages.each { |msg| 
-      begin 
-        if(msg.executed_trade?)
-          if(fSubsetSearch) 
-             logger.error("checking "+msg.sending_time.to_s + " against [" + @startDate.to_s + " to "+@endDate.to_s+"]")
-             if((msg.sending_time >= @startDate) && (msg.sending_time <= @endDate))
-               all_exec_reports << msg
-             else 
-              logger.error("discarding date "+msg.sending_time.to_s)
-             end
-          else 
-             all_exec_reports << msg
-          end
-        end
+
+    # pre-parse all the messages to populate the failed msg list
+    read_messages.each {|msg|
+      begin
+        @exec_reports << Quickfix::Message.new(msg.text)
       rescue => ex
-         logger.debug("encountered error parsing QF message["+msg.id.to_s+"]: "+ex.message)
-         logger.debug("malformed message: "+msg.text)
-         @failed_msg << msg
+        @failed_msg << msg
       end
     }
-  
-    if(all_exec_reports.empty?)
+
+    logger.debug("found #{read_messages.length} in SQL and got #{@exec_reports.length} execReports")
+
+    if(@exec_reports.empty?)
       flash.now[:error] = "No matching messages found"
     end
-    if(!@failed_msg.empty?) 
+    if(!@failed_msg.empty?)
       flash.now[:error] = "Failed to parse " + @failed_msg.size.to_s + " message(s)."
     end
-    # paginate manually
-    @paginator = Paginator.new(self, all_exec_reports.length, MaxPerPage, params[:page])
-    @exec_report_pages = all_exec_reports[@paginator.current.offset .. @paginator.current.offset + MaxPerPage-1] 
+
   end
 
   def show

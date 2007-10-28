@@ -11,21 +11,22 @@ module MessageLogsHelper
   end
    
 # Human Strings
-  StatusFilled = "Filled"
-  StatusPartialFilled = "Partial Fill"
-  StatusCanceled = "Canceled"
-  StatusRejected = "Rejected"
-  StatusNew = "New"
-  StatusPendingCancel = "Pending Cancel"
-  
-  # codes
-  FilledCode = Quickfix::OrdStatus_FILLED()
-  PartialFilledCode = Quickfix::OrdStatus_PARTIALLY_FILLED()
-  CanceledCode = Quickfix::OrdStatus_CANCELED()
-  RejectedCode = Quickfix::OrdStatus_REJECTED()
-  NewCode = Quickfix::OrdStatus_NEW()
-  PendingCancelCode = Quickfix::OrdStatus_PENDING_CANCEL()
-       
+  unless defined?(StatusFilled)
+    StatusFilled = "Filled"
+    StatusPartialFilled = "Partial Fill"
+    StatusCanceled = "Canceled"
+    StatusRejected = "Rejected"
+    StatusNew = "New"
+    StatusPendingCancel = "Pending Cancel"
+
+    # codes
+    FilledCode = Quickfix::OrdStatus_FILLED()
+    PartialFilledCode = Quickfix::OrdStatus_PARTIALLY_FILLED()
+    CanceledCode = Quickfix::OrdStatus_CANCELED()
+    RejectedCode = Quickfix::OrdStatus_REJECTED()
+    NewCode = Quickfix::OrdStatus_NEW()
+    PendingCancelCode = Quickfix::OrdStatus_PENDING_CANCEL()
+  end       
    
    def getHumanOrdStatus(inStatusCode)
     case inStatusCode
