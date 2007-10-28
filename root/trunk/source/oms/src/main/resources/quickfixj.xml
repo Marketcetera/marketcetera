@@ -10,9 +10,6 @@
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-    <bean id="jdbcLogFactory" class="quickfix.JdbcLogFactory">
-        <constructor-arg ref="sessionSettings"/>
-    </bean>
 
     <!-- Currently unused but there if you want to swap out SLF4j -->
     <bean id="screenLogFactory" class="quickfix.ScreenLogFactory">
@@ -75,8 +72,8 @@
 
 	<bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
         <constructor-arg ref="fixMessageFactory"/>
-        <constructor-arg ref="jdbcLogFactory"/>
         <property name="jmsOperations" ref="outgoingJmsTemplate"/>
+        <property name="tradeRecorderJMS" ref="tradeRecorderJMSTemplate"/>
     </bean>
 
     <bean id="socketInitiator" class="quickfix.spring.SocketInitiator">
