@@ -12,7 +12,6 @@ import quickfix.*;
 import quickfix.field.*;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * @author gmiller
@@ -22,18 +21,15 @@ import java.util.HashMap;
 public class QuickFIXApplication implements Application {
 
     private JmsOperations jmsOperations;
+    private JmsOperations tradeRecorderJMS;
     private FIXMessageFactory fixMessageFactory;
     private boolean fLoggedOn;
-    private HashMap<SessionID, Log> logMap;
-    private JdbcLogFactory logFactory;
     protected IQuickFIXSender quickFIXSender;
     private MessageModifierManager messageModifierMgr;
 
-    public QuickFIXApplication(FIXMessageFactory fixMessageFactory, JdbcLogFactory logFactory) {
+    public QuickFIXApplication(FIXMessageFactory fixMessageFactory) {
         fLoggedOn = false;
         this.fixMessageFactory = fixMessageFactory;
-        this.logFactory = logFactory;
-        logMap = new HashMap<SessionID, Log>();
         quickFIXSender = createQuickFIXSender();
     }
 
@@ -88,13 +84,10 @@ public class QuickFIXApplication implements Application {
 	}
 
     /** Wrapper around logging a message to be overridden by tests with a noop */
-    protected void logMessage(Message message, SessionID sessionID) {
-        Log log = logMap.get(sessionID);
-        if(log == null) {
-            log = logFactory.create(sessionID);
-            logMap.put(sessionID, log);
+    protected void logMessage(final Message message, SessionID sessionID) {
+        if(tradeRecorderJMS != null) {
+            tradeRecorderJMS.convertAndSend(message);
         }
-        log.onIncoming(message.toString());
     }
 
     public void onCreate(SessionID session) {
@@ -124,7 +117,9 @@ public class QuickFIXApplication implements Application {
     /** Apply message modifiers to all outgoing to-admin messages (such as logout/login) */
     public void toAdmin(Message message, SessionID session) {
         try {
-            messageModifierMgr.modifyMessage(message);
+            if(messageModifierMgr != null) {
+                messageModifierMgr.modifyMessage(message);
+            }
         } catch (MarketceteraException ex) {
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error modifying message: "+message, ex, this); }
         }
@@ -140,6 +135,10 @@ public class QuickFIXApplication implements Application {
 	public void setJmsOperations(JmsOperations jmsOperations) {
 		this.jmsOperations = jmsOperations;
 	}
+
+    public void setTradeRecorderJMS(JmsOperations tradeRecorderJMS) {
+        this.tradeRecorderJMS = tradeRecorderJMS;
+    }
 
     public void setMessageModifierMgr(MessageModifierManager inMgr){
 		messageModifierMgr = inMgr;

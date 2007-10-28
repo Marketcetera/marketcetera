@@ -7,7 +7,6 @@ import org.springframework.jms.JmsException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
-import quickfix.JdbcLogFactory;
 import quickfix.Message;
 import quickfix.SessionID;
 import quickfix.UnsupportedMessageType;
@@ -40,7 +39,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
 
     public void testMessageSendWhenJMSBarfs() throws Exception {
-        QuickFIXApplication qfApp = new MockQuickFIXApplication(null, null);
+        QuickFIXApplication qfApp = new MockQuickFIXApplication(null);
         JmsOperations ops = new JmsTemplate() {
             public void convertAndSend(Object message) throws JmsException {
                 throw new UncategorizedJmsException("testing exception handling: we always throw an exception");
@@ -54,7 +53,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public void testLogoutPropagated() throws Exception {
-        QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory());
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
         qfApp.setJmsOperations(jmsTemplate);
 
@@ -71,7 +70,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
      * that has a DeliverToCompID present in it
      */
     public void testWithDeliverToCompID() throws Exception {
-        QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory());
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
         qfApp.setJmsOperations(jmsTemplate);
 
@@ -96,7 +95,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
      }
 
     public void testUnsupportedMessageType_AllocationAck() throws Exception {
-        final QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        final QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory());
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
         qfApp.setJmsOperations(jmsTemplate);
 
@@ -111,7 +110,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public void testMessageModifiersAppliedToOutgoingAdminMessages() throws Exception {
-        final QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory(), null);
+        final QuickFIXApplication qfApp = new MockQuickFIXApplication(fixVersion.getMessageFactory());
         DefaultMessageModifier modifier = new DefaultMessageModifier();
         modifier.setHeaderFields(DefaultMessageModifierTest.createFieldsMap(new String[][] {{"50(A)", "headerValue"}}));
         modifier.setMsgFields(DefaultMessageModifierTest.createFieldsMap(new String[][] {{"37(A)", "messageValue"}}));
@@ -130,8 +129,8 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public static class MockQuickFIXApplication extends QuickFIXApplication {
-        public MockQuickFIXApplication(FIXMessageFactory fixMessageFactory, JdbcLogFactory logFactory) {
-            super(fixMessageFactory, logFactory);
+        public MockQuickFIXApplication(FIXMessageFactory fixMessageFactory) {
+            super(fixMessageFactory);
         }
 
         protected void logMessage(Message message, SessionID sessionID) {

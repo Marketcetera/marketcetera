@@ -549,13 +549,13 @@ public class OrderManagerTest extends FIXVersionedTestCase
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory)
                 throws ConfigError, FieldConvertError, MarketceteraException {
             super(settings, inFactory, OrderLimitsTest.createBasicOrderLimits(),
-                    new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory, null));
+                    new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory));
             // simulate logon
             qfApp.onLogon(null);
         }
         public MyOutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits limits)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-        super(settings, inFactory, limits, new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory, null));
+        super(settings, inFactory, limits, new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory));
             // simulate logon
             qfApp.onLogon(null);
         }
