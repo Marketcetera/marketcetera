@@ -62,6 +62,21 @@ Host [<%= key %>]  resolves<br>
 <div class="errorExplanation">Host [<%= key %>] DOES NOT resolve</div>
 <% end
 } %>
+<% if (@marketcetera_line.blank?) %>
+  <div class="errorExplanation">WARNING: Did not find an entry for host 'marketcetera' in '/etc/hosts'.
+      You should probably fix that unless you renamed the host.</div>
+<% else if (!@report.errors['/etc/hosts'].nil?) %>
+       <div class="errorExplanation">WARNING: /etc/hosts does not appear to have a valid IP address for host 'marketcetera'.
+           Please check and modify if necessary.</div>
+  <% end %>
+<% end %>
+<% if(!@host_resolution['marketcetera'])
+    if(!@marketcetera_line.blank?) %>
+      <div class="errorExplanation">We found this entry with 'marketcetera' in /etc/hosts file:  <%= @marketcetera_line %></div>
+    <% else  %>
+      <div class="errorExplanation">We did not find an entry with 'marketcetera' in /etc/hosts file.</div>
+    <% end %>
+<% end %>
 <p/>
 <h4>Process Check</h4>
 <% @process_info.each_key { |key|
