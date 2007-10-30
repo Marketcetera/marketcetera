@@ -5,11 +5,12 @@
 class ServerInfo < Tableless
 
   # takes an incoming params hash
-  def initialize(eth0, time_diff, host_resolution, process_info)
+  def initialize(eth0, time_diff, host_resolution, process_info, etc_hosts_line)
     @eth0 = eth0
     @time_diff = time_diff
     @host_resolution  = host_resolution
     @process_info = process_info
+    @etc_hosts_line = etc_hosts_line
   end
 
   def validate
@@ -21,5 +22,7 @@ class ServerInfo < Tableless
     @process_info.each_key {|key|
       errors.add("Process [#{key}]", "is not running") unless !@process_info[key].blank? 
     }
+    errors.add("/etc/hosts", "does not contain valid IP for 'marketcetera'") \
+      unless (!@etc_hosts_line.index(/^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}\w+.*marketcetera.*/).nil?)
   end
 end
