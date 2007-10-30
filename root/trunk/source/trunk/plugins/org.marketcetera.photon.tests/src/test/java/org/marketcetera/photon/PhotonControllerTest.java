@@ -74,7 +74,7 @@ public class PhotonControllerTest extends TestCase {
     /** Store the messages that are meant to go out */
     private class MyPhotonController extends PhotonController {
         private Vector<Message> sentMessages = new Vector<Message>();
-        protected void convertAndSend(Message fixMessage) {
+        public void convertAndSend(Message fixMessage) {
             sentMessages.add(fixMessage);
         }
     }
