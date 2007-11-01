@@ -49,7 +49,9 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
         // these should not fail
         qfApp.fromAdmin(new Message(), new SessionID());
-        qfApp.fromApp(msgFactory.createMessage(MsgType.EXECUTION_REPORT), new SessionID());
+        Message execReport = msgFactory.newExecutionReport("123", "456", "789", OrdStatus.FILLED, Side.BUY, new BigDecimal(100), new BigDecimal("10.10"),
+                new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new MSymbol("XYZ"), "bob");
+        qfApp.fromApp(execReport, new SessionID());
     }
 
     public void testLogoutPropagated() throws Exception {
@@ -119,6 +121,29 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         qfApp.toAdmin(msg, new SessionID(fixVersion.toString(), "sender", "target"));
         assertEquals("field 37 not present in message", "messageValue", msg.getString(37));
         assertEquals("field 50 not present in header", "headerValue", msg.getHeader().getString(50));
+    }
+
+    public void testExecutionReportGoesToTradeTopic() throws Exception {
+        final QuickFIXApplication qfApp = new QuickFIXApplication(fixVersion.getMessageFactory());
+        MockJmsTemplate jmsTemplate = new MockJmsTemplate();
+        qfApp.setJmsOperations(jmsTemplate);
+        MockJmsTemplate tradeRecorderJMS = new MockJmsTemplate();
+        qfApp.setTradeRecorderJMS(tradeRecorderJMS);
+
+        Message msg = msgFactory.newExecutionReport("123", "456", "789", OrdStatus.FILLED, Side.BUY, new BigDecimal(100), new BigDecimal("10.10"),
+                new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new MSymbol("XYZ"), "bob");
+
+        qfApp.fromApp(msg, new SessionID(fixVersion.toString(), "sender", "target"));
+        assertEquals(1, jmsTemplate.sentMessages.size());
+        assertEquals(1, tradeRecorderJMS.sentMessages.size());
+        jmsTemplate.sentMessages.clear();
+        tradeRecorderJMS.sentMessages.clear();
+
+        // now set JMS ops to null, but trade recorder should still get a message
+        qfApp.setJmsOperations(null);
+        qfApp.fromApp(msg, new SessionID(fixVersion.toString(), "sender", "target"));
+        assertEquals(0, jmsTemplate.sentMessages.size());        
+        assertEquals(1, tradeRecorderJMS.sentMessages.size());
     }
 
     private class MockJmsTemplate extends JmsTemplate {
