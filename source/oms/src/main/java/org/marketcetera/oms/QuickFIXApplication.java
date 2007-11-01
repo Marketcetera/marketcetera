@@ -50,7 +50,7 @@ public class QuickFIXApplication implements Application {
 	}
 
 	public void fromApp(Message message, SessionID session) throws UnsupportedMessageType, FieldNotFound {
-        /** This is specifically for OpenFIX certification - we need to white list/black list all
+        /** This check is specifically for OpenFIX certification - we need to white list/black list all
          * supported messages to implement this for real, and make that configurable
          */
         if(MsgType.ALLOCATION_INSTRUCTION_ACK.equals(message.getHeader().getString(MsgType.FIELD))) {
@@ -68,17 +68,16 @@ public class QuickFIXApplication implements Application {
                     quickFIXSender.sendToTarget(reject);
                     return;
                 }
-
-                if(FIXMessageUtil.isExecutionReport(message)) {
-                    char ordStatus = message.getChar(OrdStatus.FIELD);
-                    if((ordStatus == OrdStatus.FILLED) || (ordStatus == OrdStatus.PARTIALLY_FILLED)) {
-                        logMessage(message, session);
-                    }
-                }
-
             } catch (Exception ex) {
                 LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
+            }
+        }
+
+        if(FIXMessageUtil.isExecutionReport(message)) {
+            char ordStatus = message.getChar(OrdStatus.FIELD);
+            if((ordStatus == OrdStatus.FILLED) || (ordStatus == OrdStatus.PARTIALLY_FILLED)) {
+                logMessage(message, session);
             }
         }
 	}
