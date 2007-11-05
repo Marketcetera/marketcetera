@@ -97,7 +97,14 @@
             class="org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView"
             icon="icons/silk/application_view_list.png"
             id="org.marketcetera.photon.views.FIXMessageDetailView"
-            name="FIX Message Details"/>   
+            name="FIX Message Details"/>
+      <view
+            category="org.marketcetera.photon.category"
+            class="org.marketcetera.photon.views.TradeRecommendationView"
+            icon="icons/silk/flag_green.png"
+            id="org.marketcetera.photon.views.TradeRecommendationView"
+            name="Trade Recommendations">
+      </view>   
    </extension>
 
    <extension

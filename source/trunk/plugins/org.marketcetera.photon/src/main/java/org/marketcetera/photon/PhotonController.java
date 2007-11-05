@@ -239,7 +239,7 @@ public class PhotonController {
 	 * Need to do the cancel in 2 phases: first collect all clOrderIds to cancel, 
 	 * then cancel them.
 	 * Trying to cancel them while collecting results in a deadlock, since we are 
-	 * holding a read lock while collecting, and sending a cancel tries to aquire 
+	 * holding a read lock while collecting, and sending a cancel tries to acquire 
 	 * the write lock to add new messages to message history. 
 	 */
 	public void cancelAllOpenOrders()
@@ -282,7 +282,7 @@ public class PhotonController {
 		}
 	}
 	
-	protected void convertAndSend(Message fixMessage) {
+	public void convertAndSend(Message fixMessage) {
 		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
 		JmsOperations jmsOperations;
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){

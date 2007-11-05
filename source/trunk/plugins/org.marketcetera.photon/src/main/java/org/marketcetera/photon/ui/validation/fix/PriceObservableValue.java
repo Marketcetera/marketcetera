@@ -19,6 +19,10 @@ public class PriceObservableValue extends FIXObservableValue {
 
 	@Override
 	protected Object doGetValue() {
+		return extractValue(message);
+	}
+
+	public static Object extractValue(Message message) {
 		try {
 			char ordType = message.getChar(OrdType.FIELD);
 			switch (ordType){
