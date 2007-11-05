@@ -24,7 +24,7 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 		this.dictionary = dictionary;
 	}
 
-
+	@Override
 	public IToggledValidator newModelAfterGetValidator() {
 		return new AbstractToggledValidator(){
 			public IStatus validate(Object obj) {

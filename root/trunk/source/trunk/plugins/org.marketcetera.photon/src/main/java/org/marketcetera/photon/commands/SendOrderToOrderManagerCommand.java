@@ -14,10 +14,15 @@ public class SendOrderToOrderManagerCommand extends MessageCommand {
 
 	public void execute() {
 		try {
-			PhotonPlugin.getDefault().getPhotonController().handleInternalMessage(getMessage());
+			Message theMessage = getMessage();
+			sendOrder(theMessage);
 		} catch (Exception ex){
 			PhotonPlugin.getMainConsoleLogger().error("Exception sending order", ex);
 		}
+	}
+
+	public static void sendOrder(Message theMessage) {
+			PhotonPlugin.getDefault().getPhotonController().handleInternalMessage(theMessage);
 	}
 
 }

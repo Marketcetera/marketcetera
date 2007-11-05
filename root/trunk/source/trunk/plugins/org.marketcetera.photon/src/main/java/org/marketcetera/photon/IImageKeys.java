@@ -33,9 +33,12 @@ public interface IImageKeys {
 	public static final String SHOW_SYMBOL = "icons/silk/shape_square_go.png";
 	public static final String SHOW_SYMBOL_NEW_WINDOW = "icons/silk/shape_square_add.png";
 	public static final String DELETE_ITEM = "icons/silk/cancel.png";
+	public static final String DELETE_ALL = "icons/silk/exclamation.png";
+	public static final String SEND_ITEM = "icons/silk/accept.png";
 	public static final String CANCEL_ALL_OPEN_ORDERS = "icons/silk/basket_delete.png";
 	
 	public static final String STATUS_OFFLINE = "icons/other/grayled.gif";
 	public static final String STATUS_AVAILABLE = "icons/other/greenled.gif";
 	public static final String STATUS_ERROR = "icons/other/redled.gif";
+	public static final String RECOVER_MESSAGES = "icons/silk/application_get.png";
 }

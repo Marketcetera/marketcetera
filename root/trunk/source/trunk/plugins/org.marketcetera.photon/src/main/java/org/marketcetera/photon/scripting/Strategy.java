@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.views.TradeRecommendationView;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXValueExtractor;
@@ -167,6 +168,14 @@ public abstract class Strategy {
 	public void sendFIXMessage(quickfix.Message message)
 	{
 		plugin.getPhotonController().handleInternalMessage(message);
+	}
+	
+	public void addTradeRecommendation(quickfix.Message message){
+		addTradeRecommendation(message, null);
+	}
+
+	public void addTradeRecommendation(quickfix.Message message, Double score){
+		TradeRecommendationView.addTradeRecommendation(message, score);
 	}
 
 	
