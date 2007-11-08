@@ -19,6 +19,10 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
     private int mCacheQuantity;
     private Connection dbConnection;
 
+    public DatabaseIDFactory(String dburl, String driver, String login, String password) {
+        this(dburl, driver, login, password, TABLE_NAME, COL_NAME, NUM_IDS_GRABBED);
+    }
+
     public DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
                              String column, int quantity) {
         this(dburl, driver, login, password, table, column, quantity, "");
@@ -38,11 +42,12 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
     }
 
     public final void init() throws ClassNotFoundException, NoMoreIDsException {
-        Class.forName(dbDriver);
-
         try {
-            dbConnection = DriverManager.getConnection(dbURL, dbLogin, dbPassword);
-            dbConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            Class.forName(dbDriver);
+            if(dbConnection ==null) {
+                dbConnection= DriverManager.getConnection(dbURL, dbLogin, dbPassword);
+                dbConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+            }
         } catch(Exception ex) {
             if(LoggerAdapter.isInfoEnabled(this)) {
                 LoggerAdapter.info(MessageKey.ERROR_DB_ID_FACTORY_INIT.getLocalizedMessage(ex.getMessage()), this);

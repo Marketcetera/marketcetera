@@ -159,7 +159,11 @@ public class FIXMessageUtil {
 		return msgTypeHelper(message, MsgType.SECURITY_DEFINITION);
 	}
 
-	public static boolean isHeartbeat(Message message) {
+    public static boolean isTradingSessionStatus(Message message) {
+        return msgTypeHelper(message, MsgType.TRADING_SESSION_STATUS);
+    }
+
+    public static boolean isHeartbeat(Message message) {
 		return msgTypeHelper(message, MsgType.HEARTBEAT);
 	}
 
