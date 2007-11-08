@@ -38,7 +38,6 @@
 
     <!-- a thread safe non-pooled MessageListener -->
     <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
-        <constructor-arg ref="sessionSettings"/>
         <constructor-arg ref="fixMessageFactory"/>
         <constructor-arg ref="orderLimits"/>
         <constructor-arg ref="qfApplication"/>
@@ -46,6 +45,7 @@
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="messageModifierMgr" ref="messageModifierMgr"/>
         <property name="quickFIXSender" ref="quickfixSender"/>
+        <property name="idFactory" ref="idFactory"/>
     </bean>
 
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
@@ -64,5 +64,12 @@
 -->
         <constructor-arg ref="fixVersionEnum"/>
         <constructor-arg ref="fixDictionaryPath"/>
+    </bean>
+
+    <!-- MBean for managing OMS -->
+    <bean id="omsAdmin" class="org.marketcetera.oms.mbeans.OMSAdmin">
+        <constructor-arg ref="quickfixSender"/>
+        <constructor-arg ref="fixMessageFactory"/>
+        <constructor-arg ref="idFactory"/>
     </bean>
 </beans>

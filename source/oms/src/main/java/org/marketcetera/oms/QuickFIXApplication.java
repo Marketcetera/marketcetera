@@ -3,10 +3,7 @@ package org.marketcetera.oms;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.quickfix.QuickFIXSender;
+import org.marketcetera.quickfix.*;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.*;
 import quickfix.field.*;
@@ -34,7 +31,7 @@ public class QuickFIXApplication implements Application {
     }
 
     public void fromAdmin(Message message, SessionID session)  {
-		if (jmsOperations != null){
+        if (jmsOperations != null){
             try {
                 if(MsgType.REJECT.equals(message.getHeader().getString(MsgType.FIELD))) {
                     // bug #219
@@ -80,7 +77,15 @@ public class QuickFIXApplication implements Application {
                 logMessage(message, session);
             }
         }
-	}
+
+        if (FIXMessageUtil.isTradingSessionStatus(message)) {
+            if (LoggerAdapter.isDebugEnabled(this)) {
+                LoggerAdapter.debug(OMSMessageKey.TRADE_SESSION_STATUS.getLocalizedMessage(
+                        FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD,
+                                message.getString(TradSesStatus.FIELD))), this);
+            }
+        }
+    }
 
     /** Wrapper around logging a message to be overridden by tests with a noop */
     protected void logMessage(final Message message, SessionID sessionID) {

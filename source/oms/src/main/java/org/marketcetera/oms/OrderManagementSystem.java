@@ -1,13 +1,16 @@
 package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
-import org.springframework.context.ApplicationContext;
+import org.marketcetera.oms.mbeans.OMSAdmin;
 import org.quickfixj.jmx.JmxExporter;
+import org.springframework.context.ApplicationContext;
 import quickfix.SocketInitiator;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import java.lang.management.ManagementFactory;
 import java.util.LinkedList;
 import java.util.List;
-import java.lang.management.ManagementFactory;
 
 /**
  * OrderManagementSystem
@@ -52,9 +55,11 @@ public class OrderManagementSystem extends ApplicationBase {
             }
 
             SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class);
-            JmxExporter exporter = new JmxExporter(ManagementFactory.getPlatformMBeanServer());
+            MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
+            JmxExporter exporter = new JmxExporter(mbeanServer);
             exporter.export(initiator);
-
+            OMSAdmin omsAdmin = (OMSAdmin) appCtx.getBean("omsAdmin", OMSAdmin.class);
+            mbeanServer.registerMBean(omsAdmin, new ObjectName("org.marketcetera.oms.mbean:type=OMSAdmin"));
 
             oms.startWaitingForever();
             if(LoggerAdapter.isDebugEnabled(LOGGER_NAME)) { LoggerAdapter.debug("OMS main finishing", LOGGER_NAME); }

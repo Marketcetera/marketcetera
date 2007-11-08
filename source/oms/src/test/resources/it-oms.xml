@@ -86,6 +86,9 @@
     <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
       <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
     </bean>
+
+	<!-- Create the in-memory id factory for outgoing messages -->
+	<bean id="idFactory" class="org.marketcetera.core.InMemoryIDFactory"><constructor-arg value="1000"/></bean>
 </beans>
 
         <!-- END SNIPPET: spring -->

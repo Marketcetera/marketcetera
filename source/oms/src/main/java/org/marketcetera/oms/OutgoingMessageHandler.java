@@ -33,12 +33,11 @@ public class OutgoingMessageHandler {
     // this is temporary, until we have much better JMX visibility
     protected QuickFIXApplication qfApp;
     
-    public OutgoingMessageHandler(SessionSettings settings, FIXMessageFactory inFactory, OrderLimits inLimits,
+    public OutgoingMessageHandler(FIXMessageFactory inFactory, OrderLimits inLimits,
                                   QuickFIXApplication inQFApp)
             throws ConfigError, FieldConvertError, MarketceteraException {
         setOrderRouteManager(new MessageRouteManager());
         msgFactory = inFactory;
-        idFactory = createDatabaseIDFactory(settings);
         orderLimits = inLimits;
         qfApp = inQFApp;
         setMessageModifierMgr(new MessageModifierManager(new LinkedList<MessageModifier>(), msgFactory));
@@ -267,6 +266,10 @@ public class OutgoingMessageHandler {
         defaultSessionID = inSessionID;
     }
 
+    public void setIdFactory(IDFactory idFactory) {
+        this.idFactory = idFactory;
+    }
+
     public SessionID getDefaultSessionID() {
         return defaultSessionID;
     }
@@ -278,14 +281,6 @@ public class OutgoingMessageHandler {
 	public void setQuickFIXSender(IQuickFIXSender quickFIXSender) {
 		this.quickFIXSender = quickFIXSender;
 	}
-
-    protected IDFactory createDatabaseIDFactory(SessionSettings settings) throws ConfigError, FieldConvertError {
-        return new DatabaseIDFactory(settings.getString(JdbcSetting.SETTING_JDBC_CONNECTION_URL),
-                settings.getString(JdbcSetting.SETTING_JDBC_DRIVER), settings.getString(JdbcSetting.SETTING_JDBC_USER),
-                settings.getString(JdbcSetting.SETTING_JDBC_PASSWORD), DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME,
-                DatabaseIDFactory.NUM_IDS_GRABBED);
-    }
-
 
     /** Returns the next ExecID from the factory, or a hardcoded ZZ-internal if we have
      * problems creating an execID
