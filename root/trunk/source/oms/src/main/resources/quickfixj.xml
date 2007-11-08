@@ -36,10 +36,10 @@
                 <entry key="ReconnectInterval" value="15"/>
                 <entry key="ResetOnLogout" value="Y"/>
                 <entry key="ResetOnDisconnect" value="Y"/>
-                <entry key="JdbcDriver" value="com.mysql.jdbc.Driver"/>
-                <entry key="JdbcURL" value="jdbc:mysql://localhost/marketcetera"/>
-                <entry key="JdbcUser" value="marketcetera"/>
-                <entry key="JdbcPassword" value="marketcetera"/>
+                <entry key="JdbcDriver" value-ref="JdbcDriver"/>
+                <entry key="JdbcURL" value-ref="JdbcURL"/>
+                <entry key="JdbcUser" value-ref="JdbcUser"/>
+                <entry key="JdbcPassword" value-ref="JdbcPassword"/>
                 <entry key="JdbcLogHeartBeats" value="N"/>
                 <!-- leave the heartbeats out for slf4j logger -->
                 <entry key="SLF4JLogHeartbeats" value="N"/>
