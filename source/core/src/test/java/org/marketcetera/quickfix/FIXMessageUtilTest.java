@@ -483,4 +483,13 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         equity.setField(new CFICode("OCASPS"));
         assertTrue("option CFICode didn't work", FIXMessageUtil.isEquityOptionOrder(equity));
     }
+
+    public void testIsTradingSessionStatus() throws Exception {
+        Message nos = FIXMessageUtilTest.createNOS("bob", 23.11, 100, Side.BUY, msgFactory);
+        assertFalse(FIXMessageUtil.isTradingSessionStatus(nos));
+
+        Message msg = new Message();
+        msg.getHeader().setField(new MsgType(MsgType.TRADING_SESSION_STATUS));
+        assertTrue(FIXMessageUtil.isTradingSessionStatus(msg));
+    }
 }
