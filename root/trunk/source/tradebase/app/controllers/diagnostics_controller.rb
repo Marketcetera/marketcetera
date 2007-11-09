@@ -21,7 +21,9 @@ class DiagnosticsController < ApplicationController
 
     @process_info = {}
     @process_info['OMS'] = %x{ps auxww|grep OrderManagementSystem | grep -v grep}
+    @process_info['JMS_Poller'] = %x{ps auxww|grep poller | grep -v grep}
     @process_info['ActiveMQ'] = %x{netstat -an | grep 61616}
+    @process_info['STOMP'] = %x{netstat -an | grep 61613}
     @process_info['MySQL'] = %x{ps auxww|grep mysqld | grep -v grep}
 
     @networking_eth0 = %x{ifconfig eth0}
