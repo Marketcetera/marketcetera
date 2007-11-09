@@ -539,14 +539,14 @@ public class OrderManagerTest extends FIXVersionedTestCase
         public MyOutgoingMessageHandler(FIXMessageFactory inFactory)
                 throws ConfigError, FieldConvertError, MarketceteraException {
             super(inFactory, OrderLimitsTest.createBasicOrderLimits(),
-                    new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory));
+                    new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory), new InMemoryIDFactory(factoryStart));
             // simulate logon
             qfApp.onLogon(null);
-            setIdFactory(new InMemoryIDFactory(factoryStart));
         }
         public MyOutgoingMessageHandler(FIXMessageFactory inFactory, OrderLimits limits)
                 throws ConfigError, FieldConvertError, MarketceteraException {
-        super(inFactory, limits, new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory));
+            super(inFactory, limits, new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory),
+                    new InMemoryIDFactory(factoryStart));
             // simulate logon
             qfApp.onLogon(null);
         }
