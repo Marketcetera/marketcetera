@@ -19,7 +19,7 @@ for trade in @trades %>
     <td><%=h Side.get_short_side(trade.side) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.quantity, 2, true) %></td>
     <td><%= make_spaces_hard(h(trade.tradeable_m_symbol_root)) %></td>
-    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.price_per_share, 2) %></td>
+    <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.price_per_share, 4) %></td>
     <td><%=h trade.trade_type %></td>
     <td><%= make_spaces_hard(h(contract_string(trade.account.nickname, ApplicationHelper::ACCOUNT_LENGTH))) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.total_commission, 2) %></td>
