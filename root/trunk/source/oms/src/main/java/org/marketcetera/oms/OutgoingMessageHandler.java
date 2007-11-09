@@ -34,13 +34,14 @@ public class OutgoingMessageHandler {
     protected QuickFIXApplication qfApp;
     
     public OutgoingMessageHandler(FIXMessageFactory inFactory, OrderLimits inLimits,
-                                  QuickFIXApplication inQFApp)
+                                  QuickFIXApplication inQFApp, IDFactory inIdFactory)
             throws ConfigError, FieldConvertError, MarketceteraException {
         setOrderRouteManager(new MessageRouteManager());
         msgFactory = inFactory;
         orderLimits = inLimits;
         qfApp = inQFApp;
         setMessageModifierMgr(new MessageModifierManager(new LinkedList<MessageModifier>(), msgFactory));
+        idFactory = inIdFactory;
         try {
             idFactory.init();
         } catch (Exception ex) {

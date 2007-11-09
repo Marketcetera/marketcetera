@@ -41,11 +41,11 @@
         <constructor-arg ref="fixMessageFactory"/>
         <constructor-arg ref="orderLimits"/>
         <constructor-arg ref="qfApplication"/>
+        <constructor-arg ref="idFactory"/>
         <property name="defaultSessionID" ref="defaultSessionID"/>
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="messageModifierMgr" ref="messageModifierMgr"/>
         <property name="quickFIXSender" ref="quickfixSender"/>
-        <property name="idFactory" ref="idFactory"/>
     </bean>
 
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
