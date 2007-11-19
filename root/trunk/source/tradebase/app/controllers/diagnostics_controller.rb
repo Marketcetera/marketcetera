@@ -1,4 +1,5 @@
 class DiagnosticsController < ApplicationController
+  require 'tzinfo'
 
   def index
     server_info
@@ -15,9 +16,11 @@ class DiagnosticsController < ApplicationController
     @host_resolution['time.xmlrpc.com'] = check_hostname_resolution('time.xmlrpc.com')
 
     @local_time = Time.new
+    # time coming back from XMLRPC server is always in Pacific Timezone
+    pacificTZ = TZInfo::Timezone.get('America/Los_Angeles')
     server = XMLRPC::Client.new2("http://time.xmlrpc.com/RPC2", proxy)
     result = server.call("currentTime.getCurrentTime")
-    @xml_time  = Time.local(*result.to_a)
+    @xml_time  = pacificTZ.local_to_utc(Time.local(*result.to_a))
 
     @process_info = {}
     @process_info['OMS'] = %x{ps auxww|grep OrderManagementSystem | grep -v grep}
@@ -30,8 +33,8 @@ class DiagnosticsController < ApplicationController
 
     output = %x{java -cp #{JAVA_JMX_CONNECTOR_LIB}  com.marketcetera.tools.JMXReader}
     @jmx_info = output.split("\n")
-
-    @report = ServerInfo.new(@networking_eth0, (@xml_time - @local_time).abs, @host_resolution, @process_info, @marketcetera_line)
+    @time_diff = (@xml_time - @local_time).abs
+    @report = ServerInfo.new(@networking_eth0, @time_diff, @host_resolution, @process_info, @marketcetera_line)
   end
 
 

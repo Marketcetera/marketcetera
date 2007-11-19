@@ -39,9 +39,9 @@ For the underlying FIX connection to correctly the server needs to have its time
 Otherwise, if the local server is more than a minute off, Quickfix/J may not be able to setup the FIX connection correctly.<br>
 Local server time: <%= @local_time.to_s %><br>
 Official Time Server time: <%= @xml_time.to_s %><br>
-Difference: <%=  (@local_time - @xml_time).to_s %> seconds.<br>
+Difference: <%=  @time_diff.to_s %> seconds.<br>
 <%
-if( (@local_time - @xml_time).abs > 30) %>
+if( !@report.errors['Server clock'].nil?) %>
 <div class="errorExplanation">WARNING: there's a more than a 30 second difference between local time and what we think the correct time should be.</div>
 This may cause Quickfix/J connectivity issues. Please check to make sure the time is set correctly on this server.
 <% end %>
