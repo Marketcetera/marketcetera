@@ -4,6 +4,9 @@ module TradesHelper
   TradeTypeReconciliation = 'R'
   TradeTypeCorporateAction = 'C'
   TradeTypeExerciseOrExpire = 'E'
+
+  SecurityTypeEquity = 'E'
+  SecurityTypeForex = 'F'
   
   def get_human_trade_type(trade_type)
     case (trade_type)
@@ -17,6 +20,17 @@ module TradesHelper
       return "Corporate action"
     else
       return "Unknown: "+trade_type.to_s
+    end
+  end    
+
+  def get_human_security_type(security_type)
+    case (security_type)
+    when SecurityTypeEquity:
+      return "Equity"
+    when SecurityTypeForex:
+      return "Forex"
+    else
+      return "Unknown: "+security_type.to_s
     end
   end    
   
