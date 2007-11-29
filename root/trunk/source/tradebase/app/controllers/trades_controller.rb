@@ -44,15 +44,24 @@ class TradesController < ApplicationController
         total_commission = params[:trade][:total_commission]
         currency_alpha_code = get_non_empty_string_from_two(params, :currency, :alpha_code, nil)
         account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil) 
-	#if (params[:security_type] == TradesHelper::SecurityTypeEquity)
-          @trade.create_equity_trade(@trade.quantity, 
+	if (params[:security_type] == TradesHelper::SecurityTypeEquity)
+          @trade.create_equity_trade(
+              @trade.quantity, 
               symbol,
               @trade.price_per_share, 
               total_commission,
               currency_alpha_code,
               account_nickname,
               trade_date)
-        #end
+        else if (params[:security_type] == TradesHelper::SecurityTypeForex)
+          @trade.create_forex_trade(
+              @trade.quantity,
+              symbol,
+              @trade.price_per_share,
+              total_commission,
+              account_nickname,
+              trade_date)
+        end
       
         logger.debug("after createEqtyTrade, qty is: "+@trade.quantity.to_s)
           

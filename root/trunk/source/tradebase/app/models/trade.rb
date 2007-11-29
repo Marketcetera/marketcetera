@@ -190,7 +190,7 @@ class Trade < ActiveRecord::Base
  end
 
  def create_forex_trade(inQuantity, symbol, price_per_share, 
-                          total_commission, currency_alpha_code, account_nickname, trade_date)
+                          total_commission, account_nickname, trade_date)
     create_trade(inQuantity, symbol, price_per_share, total_commission, currency_alpha_code, account_nickname, trade_date, CurrencyPair.get_currency_pair(symbol)) {
 #    notional = self.quantity * self.price_per_share
 #    logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
