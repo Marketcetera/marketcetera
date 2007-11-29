@@ -44,10 +44,6 @@
     </fieldset>
 </form>
 
-<%
-total_credits = BigDecimal('0')
-total_debits = BigDecimal('0')
-%>
 <h2>Accounting</h2>
 <table>
     <tr>
@@ -61,26 +57,12 @@ total_debits = BigDecimal('0')
     <tr>
     <td><%= (accounting_account_type == :credit ? '&nbsp;&nbsp;&nbsp;&nbsp;' : '' ) %>
     <%=df posting.sub_account.sub_account_type.description %> </td>
-    <%if (accounting_account_type == :credit)
-    total_credits += posting_quantity
-    %>
-    <td></td>
-    <%end%>
+    <%if (accounting_account_type == :credit) %><td/><%end%>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df fn(display_non_zero_value(BigDecimal(posting_quantity.abs.to_s)), 2) %> </td>
-    <%if (accounting_account_type == :debit)
-    total_debits += posting_quantity
-    %>
-    <td></td>
-    <%end%>
+    <%if (accounting_account_type == :debit) %><td/><%end%>
     <td><%=df posting.currency.alpha_code%></td>
     </tr>
 <% end %>
-    <tr>
-        <td><em>Totals</em></td>
-        <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df fn(total_debits.abs(), 2)%></td>
-        <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=df fn(total_credits.abs(), 2)%></td>
-    <td/>
-    </tr>
 </table>
 <div class="clear"></div>
 <%= button_to "Edit", {:action => 'edit', :id => @trade}, {:class => "submit floatright"} %>

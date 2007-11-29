@@ -105,7 +105,7 @@ class MarketceteraTestBase < Test::Unit::TestCase
   def create_test_trade(qty, price, side, account, date, symbol, commission, cur)
       theTrade = Trade.new(:quantity => qty, :price_per_share => price, :side => side)
     theTrade.tradeable = Equity.get_equity(symbol)
-    assert theTrade.create_equity_trade(theTrade.quantity, symbol, theTrade.price_per_share, 
+    assert theTrade.create_trade(theTrade.quantity, symbol, theTrade.price_per_share, 
                                         commission,  cur, account, date)
     theTrade.save
     return theTrade  

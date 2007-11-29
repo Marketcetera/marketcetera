@@ -83,7 +83,7 @@ class TradeTest < MarketceteraTestBase
     theTrade.tradeable = @equity
     tradeDate = Date.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
-    assert theTrade.create_equity_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
+    assert theTrade.create_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
     theTrade.save
     
     # now start verifying everything
@@ -103,14 +103,14 @@ class TradeTest < MarketceteraTestBase
     theTrade.tradeable = @equity
     tradeDate = Date.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
-    assert theTrade.create_equity_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate), 
+    assert theTrade.create_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate),
           "did not accept negative incoming qty - we should do an abs on the incoming qty"
     assert nTrades, Trade.count
   
     theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])
     tradeDate = Date.civil(2006, 7, 8)
     account = "beer money-"+Date.new.to_s
-    assert !theTrade.create_equity_trade(theTrade.quantity, '', theTrade.price_per_share, 19.99,  "USD", account, tradeDate), 
+    assert !theTrade.create_trade(theTrade.quantity, '', theTrade.price_per_share, 19.99,  "USD", account, tradeDate),
       "accepted empty symbol"
     assert !theTrade.save, "no symbol: " + theTrade.tradeable_m_symbol_root
     assert_equal nTrades, Trade.count
@@ -135,7 +135,7 @@ class TradeTest < MarketceteraTestBase
   
   def test_update_price_per_share
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
-    assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert_nums_equal 4.99, t.price_per_share
     assert_nums_equal 4.99*10, t.total_price
     
@@ -149,7 +149,7 @@ class TradeTest < MarketceteraTestBase
   
   def test_update_qty
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
-    assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert_nums_equal 10, t.quantity
     assert_nums_equal 4.99*10, t.total_price
     
@@ -163,7 +163,7 @@ class TradeTest < MarketceteraTestBase
   
   def test_update_commission
     t = Trade.new(:quantity => 11, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
-    assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert_nums_equal 11, t.quantity
     assert_nums_equal 4.99*11, t.total_price
     
@@ -189,7 +189,7 @@ class TradeTest < MarketceteraTestBase
   
   def test_update_price_and_qty_and_commission
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
-    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert_nums_equal 10, t.quantity
     assert_nums_equal 4.99*10, t.total_price
     
@@ -208,22 +208,22 @@ class TradeTest < MarketceteraTestBase
   # verify that position qty is set to neg of the qty for Sell situations
   def test_position_qty_set_correctly
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy], :tradeable => @equity)
-    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert t.save, "wasn't able tos save b 10 GOOG 4.99"
     assert_nums_equal 10, t.position_qty
     
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sell], :tradeable => @equity)
-    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert t.save, "wasn't able tos save b 10 GOOG 4.99"
     assert_nums_equal -10, t.position_qty
     
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShort], :tradeable => @equity)
-    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert t.save, "wasn't able tos save b 10 GOOG 4.99"
     assert_nums_equal -10, t.position_qty
     
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShortExempt], :tradeable => @equity)
-    t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert t.save, "wasn't able tos save b 10 GOOG 4.99"
     assert_nums_equal -10, t.position_qty
   end
@@ -240,7 +240,7 @@ class TradeTest < MarketceteraTestBase
   
   def test_to_s
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
-    assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+    assert t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     t.side = Side::QF_SIDE_CODE[:sellShort]
     assert_equal "[SELL SHORT] -10.0 <TOLI> @4.99 in acct [some-account]", t.to_s
   end
@@ -255,14 +255,14 @@ class TradeTest < MarketceteraTestBase
   def test_currency_alpha_code
    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
    assert_nil t.currency_alpha_code
-   assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "ZAI", "some-account", Date.civil(2006, 10,10))
+   assert t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "ZAI", "some-account", Date.civil(2006, 10,10))
    assert_equal currencies(:ZAI).alpha_code, t.currency_alpha_code 
   end
   
   def test_currency_update 
    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:buy])
    assert_nil t.currency_alpha_code
-   assert t.create_equity_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
+   assert t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
    assert t.save
    
    # now, update trade currency

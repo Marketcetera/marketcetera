@@ -15,7 +15,7 @@ class CreateTradeWithDanglingSymbolTest < ActionController::IntegrationTest
     ifli = MSymbol.create(:root => "IFLI")
     assert_not_nil ifli.id
     theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])
-    assert theTrade.create_equity_trade(theTrade.quantity, "IFLI", theTrade.price_per_share, 19.99,  "USD", 
+    assert theTrade.create_trade(theTrade.quantity, "IFLI", theTrade.price_per_share, 19.99,  "USD", 
                                         'beer', Date.today)
     assert theTrade.save
     
