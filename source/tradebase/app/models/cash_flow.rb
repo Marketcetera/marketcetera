@@ -94,12 +94,12 @@ class CashFlow < ActiveRecord::Base
     if(posOnDate.nil? || posOnDate.empty?)
       return 0
     end
-    if(posOnDate[0].journal.post_date == date)
-      markOnDate = Mark.new(:tradeable_id => tradeable_id, :mark_value => posOnDate[0].price_per_share, :mark_date => date)
-      logger.debug("Trade happened on posOnDate so using that for mark #{markOnDate.to_s}")
-    else
+#    if(posOnDate[0].journal.post_date == date)
+#      markOnDate = Mark.new(:tradeable_id => tradeable_id, :mark_value => posOnDate[0].price_per_share, :mark_date => date)
+#      logger.debug("Trade happened on posOnDate so using that for mark #{markOnDate.to_s}")
+#    else
       markOnDate = Mark.find(:first, :conditions => ['tradeable_id = ? AND mark_date =? ', tradeable_id, date])
-    end
+#    end
     if(markOnDate.blank?)
       raise Exception.new("Please enter a mark for #{symbol} on #{date}.")
     end
