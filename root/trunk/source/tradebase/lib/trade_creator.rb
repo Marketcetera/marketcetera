@@ -30,7 +30,7 @@ module TradeCreator
     logger.debug("creating trade for "+Side.get_human_side(@side) + " " + quantity + " " +
             symbol + " @ "+price + "/["+commission+"] in <"+account+">")
 
-    theTrade.create_equity_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime)
+    theTrade.create_trade(quantity, symbol, BigDecimal(price), BigDecimal(commission),  currency, account, sendingTime)
     theTrade.trade_type = TradeTypeTrade
     theTrade.imported_fix_msg = dbMessage.text
     theTrade.save

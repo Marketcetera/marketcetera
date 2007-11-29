@@ -32,10 +32,19 @@ class TradesController < ApplicationController
   end
 
   def create
-    @trade = Trade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil), 
-                       :comment => params[:trade][:comment], 
-                       :trade_type => params[:trade][:trade_type], :side => params[:trade][:side], 
-                       :price_per_share => params[:trade][:price_per_share])
+    if (params[:security_type] == TradesHelper::SecurityTypeEquity)
+      @trade = Trade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
+                         :comment => params[:trade][:comment],
+                         :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
+                         :price_per_share => params[:trade][:price_per_share])
+    else
+      if (params[:security_type] == TradesHelper::SecurityTypeForex)
+      @trade = ForexTrade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
+                         :comment => params[:trade][:comment],
+                         :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
+                         :price_per_share => params[:trade][:price_per_share])
+      end
+    end
     logger.debug("initial trade creation, qty is: "+@trade.quantity.to_s)
     begin
       Trade.transaction() do
@@ -43,26 +52,15 @@ class TradesController < ApplicationController
         symbol = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
         total_commission = params[:trade][:total_commission]
         currency_alpha_code = get_non_empty_string_from_two(params, :currency, :alpha_code, nil)
-        account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil) 
-#	if (params[:security_type] == TradesHelper::SecurityTypeEquity)
-          @trade.create_equity_trade(
-              @trade.quantity, 
-              symbol,
-              @trade.price_per_share, 
-              total_commission,
-              currency_alpha_code,
-              account_nickname,
-              trade_date)
-#        else if (params[:security_type] == TradesHelper::SecurityTypeForex)
-#          @trade.create_forex_trade(
-#              @trade.quantity,
-#              symbol,
-#              @trade.price_per_share,
-#              total_commission,
-#              account_nickname,
-#              trade_date)
-#        end
-
+        account_nickname = get_non_empty_string_from_two(params, :account, :nickname, nil)
+        @trade.create_trade(
+                          @trade.quantity,
+                          symbol,
+                          @trade.price_per_share,
+                          total_commission,
+                          currency_alpha_code,
+                          account_nickname,
+                          trade_date)
         logger.debug("after createEqtyTrade, qty is: "+@trade.quantity.to_s)
           
         if @trade.save

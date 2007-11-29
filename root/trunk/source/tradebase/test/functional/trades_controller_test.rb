@@ -73,7 +73,7 @@ class TradesControllerTest < MarketceteraTestBase
     t = Trade.new(:quantity => 10, :comment => "very long comment with spaces",
                    :trade_type => "T", :side => Side::QF_SIDE_CODE[:buy], 
                        :price_per_share => "50.12")
-    t.create_equity_trade(t.quantity, "SYMBOL WITH SPACES", t.price_per_share, 19.99,  "USD", 
+    t.create_trade(t.quantity, "SYMBOL WITH SPACES", t.price_per_share, 19.99,  "USD",
                           "A COUNT WITH SPACES", Date.new)
     t.save
     
@@ -535,7 +535,7 @@ class TradesControllerTest < MarketceteraTestBase
   def prefilled_test_helper(side, symbol, price, qty, account, cur, commission, date)
     # create some trade with ZAI currency
     t = Trade.new(:quantity => qty, :price_per_share => price, :side => side)
-    assert t.create_equity_trade(t.quantity, symbol, t.price_per_share, commission, cur, account, date)
+    assert t.create_trade(t.quantity, symbol, t.price_per_share, commission, cur, account, date)
     assert t.save, "couldn't save the trade"
     get :edit, :id => t.id
 
