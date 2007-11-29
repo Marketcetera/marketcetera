@@ -13,7 +13,7 @@ class CashFlowTest < MarketceteraTestBase
   
   def test_to_s
     cf = CashFlow.new(BigDecimal("22.33"), "XYZ", "Goldman", nil)
-    assert_equal "22.33 for XYZ in Goldman", cf.to_s
+    assert_equal "22.33 for XYZ in account [Goldman]", cf.to_s
   end
   
   def test_get_synthetic_cashflow_exception_thrown_nonexisting_mark

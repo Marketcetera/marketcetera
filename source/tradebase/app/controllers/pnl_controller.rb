@@ -36,7 +36,9 @@ class PnlController < ApplicationController
             
     begin
       byAcctCashflows = CashFlow.get_cashflows_from_to_in_acct(theAcct, @from_date, @to_date)
-      logger.debug("byAccount got cfs: "+byAcctCashflows.inspect)
+      byAcctCashflows.keys.each {|key|
+        logger.debug("got cashflow from #{@from_date.to_s} to #{@to_date.to_s} of $" + byAcctCashflows[key].values.to_s)
+      }
       # Check to make sure we get some cashflow back
       cashflows = (byAcctCashflows.length != 1) ? [] \
                                                 : byAcctCashflows[theAcct.nickname].values.sort { |x,y| x.symbol <=> y.symbol}
@@ -65,6 +67,7 @@ class PnlController < ApplicationController
       pnls.keys.sort.each { |key| cashflows << {:account => key, :cashflow => pnls[key]} }
     rescue Exception => ex
       logger.debug("Error generating aggregate cashflow: " + ex);
+      logger.debug(ex.backtrace)
       flash.now[:error] = "Error generating aggregate cashflow: " + ex.to_s
       cashflows = []
     end

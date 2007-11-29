@@ -18,7 +18,7 @@ class TradeTest < MarketceteraTestBase
     assert t.valid?, "regular buy 20"
     
     # empty trade
-    assert !(Trade.new.valid?), "empty trade"
+    assert !Trade.new.valid?, "empty trade"
     assert !Trade.new(:quantity => 20).valid?, "only qty specified"
     assert !Trade.new(:quantity => 20, :price_per_share => 234.3).valid?, "no symbol"
     
