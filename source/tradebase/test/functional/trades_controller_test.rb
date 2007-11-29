@@ -136,7 +136,8 @@ class TradesControllerTest < MarketceteraTestBase
     num_trades = Trade.count
 
     # todo: remove date arg once we switch to date validation
-    post :create, :trade => {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"}
+    post :create, :trade => {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20",
+               :security_type => TradesHelper::SecurityTypeEquity}
 
     assert_template 'new'
     assert_equal 4, assigns(:trade).errors.length, "number of validation errors"
@@ -153,7 +154,7 @@ class TradesControllerTest < MarketceteraTestBase
                    :trade=>{:side=>"1", "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                             :quantity=>"23", :price_per_share=>"23", :comment=>"", :total_commission=>"", :trade_type=>"T"}, 
                    :currency=>{:alpha_code=>"USD"}, 
-                   :account => {:nickname => "noSuchAccount"}}
+                   :account => {:nickname => "noSuchAccount"}, :security_type => TradesHelper::SecurityTypeEquity}
 
     assert_template 'new'
     assert_equal 1, assigns(:trade).errors.length, "number of validation errors"
@@ -171,7 +172,7 @@ class TradesControllerTest < MarketceteraTestBase
                    :trade=>{:side=>"1", "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                             :quantity=>"23", :comment=>"", :total_commission=>"", :trade_type=>"T"}, 
                    :currency=>{:alpha_code=>"USD"}, 
-                   :account => {:nickname => "noSuchAccount"}}
+                   :account => {:nickname => "noSuchAccount"}, :security_type => TradesHelper::SecurityTypeEquity}
 
     assert_template 'new'
     assert_equal 1, assigns(:trade).errors.length, "number of validation errors"
@@ -185,7 +186,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_create_no_qty
     num_trades = Trade.count
-    post :create, {:m_symbol => {:root => "bob"}, 
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity,
                    :account => {:nickname => "noSuchAccount"},
                     :trade => {:price_per_share => "23", :side => 1,
                                 "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
@@ -202,7 +203,7 @@ class TradesControllerTest < MarketceteraTestBase
   # not specifying an account should get the default UNASSIGNED account
   def test_create_no_account_should_pickup_default
     num_trades = Trade.count
-    post :create, {:m_symbol => {:root => "bob"}, 
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity,
                    :account => {:nickname => ""},
                     :trade => {:price_per_share => "23", :side => 1, :quantity=> "111",
                                 "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
@@ -219,7 +220,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_create_successful
     num_trades = Trade.count
-    post :create, {:m_symbol => {:root => "bob"}, 
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity,
                    :account => {:nickname => "pupkin"},
                     :trade => {:price_per_share => "23", :side => 1, :quantity => "111", :total_commission => "14.99",
                                 "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
@@ -239,7 +240,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_create_successful_sell
     num_trades = Trade.count
-    post :create, {:m_symbol => {:root => "bob"}, 
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity,
                    :account => {:nickname => "pupkin"},
                     :trade => {:price_per_share => "23", :side => Side::QF_SIDE_CODE[:sell].to_s, 
                                :quantity => "111", :total_commission => "14.99",
@@ -261,7 +262,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_create_successful_set_currency
     num_trades = Trade.count
-    post :create, {:m_symbol => {:root => "bob"}, 
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity,
                    :account => {:nickname => "pupkin"},
                    :currency => { :alpha_code => 'ZAI'}, 
                     :trade => {:price_per_share => "23", :side => 1, :quantity => "111", :total_commission => "14.99",
@@ -277,7 +278,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_create_neg_commission
     num_trades = Trade.count
-    post :create, {:m_symbol => {:root => "bob"}, 
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity, 
                    :trade => {:price_per_share => "23", :quantity => "100", :total_commission => "-100", :side => 1,
                                 "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
 
@@ -316,7 +317,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_update_no_actual_edits
     tradeCopy = @allTrades[0].clone
-    post :update, { :id =>  @allTrades[0].id, 
+    post :update, { :id =>  @allTrades[0].id,
                     :trade => @allTrades[0].attributes.merge(
                      {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"}), 
                     :account => {:nickname => @allTrades[0].account_nickname}, 
@@ -332,7 +333,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_price
     tradeCopy = @allTrades[0].clone
         
-    post :update, { :id =>  @allTrades[0].id, 
+    post :update, { :id =>  @allTrades[0].id,
                     :trade => @allTrades[0].attributes.merge(
                      {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                      "price_per_share" => 125}), 
@@ -350,7 +351,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_qty
     tradeCopy = @allTrades[0].clone
         
-    post :update, { :id =>  @allTrades[0].id, 
+    post :update, { :id =>  @allTrades[0].id,
                     :trade => @allTrades[0].attributes.merge(
                      {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                      "quantity" => 350}), 
@@ -368,7 +369,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_commission
     tradeCopy = @allTrades[0].clone
         
-    post :update, { :id =>  @allTrades[0].id, 
+    post :update, { :id =>  @allTrades[0].id,
                     :trade => @allTrades[0].attributes.merge(
                      {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                      "total_commission" => 12.34}), 
@@ -386,7 +387,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_buy_to_sell
     tradeCopy = @allTrades[0].clone
         
-    post :update, { :id =>  @allTrades[0].id, 
+    post :update, { :id =>  @allTrades[0].id,
                     :trade => @allTrades[0].attributes.merge(
                      {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                      "side" => Side::QF_SIDE_CODE[:sell]}), 
@@ -405,7 +406,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_sse_to_sell_short
     tradeCopy = @allTrades[1].clone
         
-    post :update, { :id =>  @allTrades[1].id, 
+    post :update, { :id =>  @allTrades[1].id,
                     :trade => @allTrades[1].attributes.merge(
                      {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20", 
                      "side" => Side::QF_SIDE_CODE[:sell]}), 
@@ -423,7 +424,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_currency
     tradeCopy = @allTrades[1].clone
         
-    post :update, { :id =>  @allTrades[1].id, 
+    post :update, { :id =>  @allTrades[1].id,
                     :trade => @allTrades[1].attributes.merge(
                      {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
                     :account => {:nickname => @allTrades[1].account_nickname}, 
@@ -439,7 +440,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_date
     tradeCopy = @allTrades[1].clone
         
-    post :update, { :id =>  @allTrades[1].id, 
+    post :update, { :id =>  @allTrades[1].id,
                     :trade => @allTrades[1].attributes.merge(
                      {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
                     :account => {:nickname => @allTrades[1].account_nickname}, 
@@ -458,7 +459,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_switch_accounts
     tradeCopy = @allTrades[1].clone
     newAcct = Account.create(:nickname => 'new-account-'+Date.new.to_s, :institution_identifier => "12345")    
-    post :update, { :id =>  @allTrades[1].id, 
+    post :update, { :id =>  @allTrades[1].id,
                     :trade => @allTrades[1].attributes.merge(
                      {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
                     :account => {:nickname => newAcct.nickname }, 
@@ -482,7 +483,7 @@ class TradesControllerTest < MarketceteraTestBase
     oldSymbol = @allTrades[1].tradeable_m_symbol_root
     oldEquityId = @allTrades[1].tradeable.id
     
-    post :update, { :id =>  @allTrades[1].id, 
+    post :update, { :id =>  @allTrades[1].id,
                     :trade => @allTrades[1].attributes.merge(
                      {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"}), 
                     :m_symbol => {:root => newSymbol}}
@@ -498,7 +499,7 @@ class TradesControllerTest < MarketceteraTestBase
   def test_update_comment
     tradeCopy = @allTrades[1].clone
     newComment = "your momma so fat.."
-    post :update, { :id =>  @allTrades[1].id, 
+    post :update, { :id =>  @allTrades[1].id,
                     :trade => @allTrades[1].attributes.merge(
                      {"journal_post_date(1i)"=>"2005", "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11", 
                      "comment" => newComment}), 
