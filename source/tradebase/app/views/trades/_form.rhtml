@@ -6,6 +6,13 @@
         <label for="trade_date">Trade Date</label>
         <div class="date"><%= date_select :trade, :journal_post_date %></div>
 
+        <label for="trade_trade_type">Security type</label>
+        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, true, {:class => "radio"})%>
+        <label class="radio_label" for="security_type_e">Equity</label>
+        <!--div class="clear"></div-->
+        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, false, { :class => "radio"})%>
+        <label class="radio_label" for="security_type_f">Forex</label>
+
         <label for="side">Side</label>
         <%= select(:trade, :side, Side.SIDES_HI_COLLECTION, { :selected => @trade.side.to_s }) %>
 
@@ -28,7 +35,7 @@
         <label for="trade_trade_type">Trade type</label>
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true, :class => "radio"})%>
         <label class="radio_label" for="trade_trade_type_t">Trade</label>
-        <div class="clear"></div>des
+        <div class="clear"></div>
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeExerciseOrExpire, { :class => "radio"})%>
         <label class="radio_label" for="trade_trade_type_e">Exercise or expire</label>
         <div class="clear"></div>

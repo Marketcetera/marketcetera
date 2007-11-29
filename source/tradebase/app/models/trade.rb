@@ -172,18 +172,55 @@ class Trade < ActiveRecord::Base
  # the qty is positive or negative
  def create_equity_trade(inQuantity, symbol, price_per_share, 
                           total_commission, currency_alpha_code, account_nickname, trade_date)
+    create_trade(inQuantity, symbol, price_per_share, total_commission, currency_alpha_code, account_nickname, trade_date, Equity.get_equity(symbol)) {
+    notional = self.quantity * self.price_per_share
+    logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
+    sub_accounts = self.account.sub_accounts
+    short_term_investment_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:sti])
+    cash_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
+
+    self.journal = Journal.create( :post_date => trade_date )
+    base_currency = Currency.get_currency(currency_alpha_code)
+    self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>notional, :sub_account=>short_term_investment_sub_account, :pair_id => 1)
+    self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>(-1*notional), :sub_account=>cash_sub_account, :pair_id => 1)
+    
+    logger.debug("created and saved all related postings")
+
+   }
+ end
+
+ def create_forex_trade(inQuantity, symbol, price_per_share, 
+                          total_commission, currency_alpha_code, account_nickname, trade_date)
+    create_trade(inQuantity, symbol, price_per_share, total_commission, currency_alpha_code, account_nickname, trade_date, CurrencyPair.get_currency_pair(symbol)) {
+#    notional = self.quantity * self.price_per_share
+#    logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
+#    sub_accounts = self.account.sub_accounts
+#    short_term_investment_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:sti])
+#    cash_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
+
+    self.journal = Journal.create( :post_date => trade_date )
+#    base_currency = Currency.get_currency(currency_alpha_code)
+#    self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>notional, :sub_account=>short_term_investment_sub_account, :pair_id => 1)
+#    self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>(-1*notional), :sub_account=>cash_sub_account, :pair_id => 1)
+    
+#    logger.debug("created and saved all related postings")
+
+   }
+    
+ end
+
+ def create_trade(inQuantity, symbol, price_per_share, 
+                          total_commission, currency_alpha_code, account_nickname, trade_date, tradeable)
     self.price_per_share = BigDecimal(price_per_share.to_s)
     self.quantity = BigDecimal(inQuantity.to_s).abs
     
-    self.tradeable = Equity.get_equity(symbol)
+    self.tradeable = tradeable
     if(!valid?) 
       logger.debug("Skipping out on create_equity_trade b/c trade doesn't validate with errors: "+self.errors.full_messages().to_s)
       return false
     end
-    
-    notional = self.quantity * self.price_per_share
+
     total_commission = BigDecimal(total_commission.to_s)
-    logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
     self.account = Account.find_by_nickname(account_nickname)
     if(self.account.nil?)
       self.account = Account.create(:nickname => account_nickname, :institution_identifier => account_nickname)
@@ -191,20 +228,16 @@ class Trade < ActiveRecord::Base
       self.account.save
     end
     logger.debug("Using account " + self.account.to_s)
-    sub_accounts = self.account.sub_accounts
-    short_term_investment_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:sti])
-    cash_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
-    commission_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
 
-    self.journal = Journal.create( :post_date => trade_date )
+    yield
+
     base_currency = Currency.get_currency(currency_alpha_code)
-    self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>notional, :sub_account=>short_term_investment_sub_account, :pair_id => 1)
-    self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>(-1*notional), :sub_account=>cash_sub_account, :pair_id => 1)
+    commission_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
+    cash_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
     self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>total_commission, :sub_account=>commission_sub_account, :pair_id => 2)
     self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency, :quantity=>(-1*total_commission), :sub_account=>cash_sub_account, :pair_id => 2)
-    
     self.journal.save
-    logger.debug("created and saved all related postings")
+
     return true
   end
   
