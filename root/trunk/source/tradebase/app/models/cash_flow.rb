@@ -1,6 +1,6 @@
 # Cashflow is a regular Ruby class, it doesn't ahve a corresponding database table 
 # and is intended to be a helper class (a struct) holding relevant cash flow-related information.
-class CashFlow 
+class CashFlow < ActiveRecord::Base
   attr_reader :cashflow, :account, :symbol, :tradeable_id
   attr_writer :cashflow
 
@@ -13,9 +13,9 @@ class CashFlow
   end
   
   def to_s
-    @cashflow.to_s + " for #{@symbol} in #{account}"
+    @cashflow.to_s + " for #{@symbol} in account [#{account}]"
   end
-  
+
   # returns an array of cashflows for the specified account 
   # Incoming acct is an Account object
   # IF the incoming accoutn is nil, then we get a set of cashflows across all available accounts
@@ -45,10 +45,13 @@ class CashFlow
               ' GROUP BY t.tradeable_id, t.account_id '+
               ' HAVING cashflow != 0 '+
               ' ORDER BY symbol ', params].flatten)
+    logger.debug("got Journal query results between from/to dates: #{results.inspect}")
     cashflows = {}
     results.each { |cf|
       openSyntheticCashflow = get_synthetic_cashflow(from_date, cf.account_id, cf.tradeable_id, cf.symbol)
       closeSyntheticCashflow = get_synthetic_cashflow(to_date, cf.account_id, cf.tradeable_id, cf.symbol)
+      logger.debug("Synthetic cashflow for [#{acct}] on open on #{from_date.to_s}: "+openSyntheticCashflow.to_s)
+      logger.debug("Synthetic cashflow for [#{acct}] on close on #{to_date.to_s}: "+closeSyntheticCashflow.to_s)
       if(cashflows[cf.account_nick].nil?)
         cashflows[cf.account_nick] = {}
       end
@@ -59,18 +62,24 @@ class CashFlow
     # now look at all positions that we had open on P&L start date (ie from_date)
     posOnFromDate = Position.get_positions_on_inclusive_date_and_account(from_date, acct)
     posOnFromDate.each { |pos|
+      logger.debug("posOnFromDate: " + pos.to_s)
       equity = Equity.find(pos.tradeable_id)
       openSyntheticCashflow = get_synthetic_cashflow(from_date, pos.account, pos.tradeable_id, equity.m_symbol_root)
       closeSyntheticCashflow = get_synthetic_cashflow(to_date, pos.account, pos.tradeable_id, equity.m_symbol_root)
+      logger.debug("Synthetic cashflow for [#{acct}] on open on #{from_date.to_s}: "+openSyntheticCashflow.to_s)
+      logger.debug("Synthetic cashflow for [#{acct}] on close on #{to_date.to_s}: "+closeSyntheticCashflow.to_s)
       if(cashflows[pos.account.nickname].nil?)
         cashflows[pos.account.nickname] = {}
       end
       if(cashflows[pos.account.nickname][equity.m_symbol_root].nil?)
         cashflows[pos.account.nickname][equity.m_symbol_root]  = CashFlow.new(closeSyntheticCashflow - openSyntheticCashflow, 
                                   equity.m_symbol_root, pos.account.nickname, pos.tradeable_id)
+        logger.debug("added cashflow for [#{pos.account}][#{equity.m_symbol_root}] --> #{cashflows[pos.account.nickname][equity.m_symbol_root].to_s}")
       else 
         cf = cashflows[pos.account.nickname][equity.m_symbol_root]
-        cf.cashflow += closeSyntheticCashflow - openSyntheticCashflow
+        calculatedSyntheticOpenCloseDiff = closeSyntheticCashflow - openSyntheticCashflow
+        logger.debug("[#{pos.account}][#{equity.m_symbol_root}] --> adding calculated cf #{calculatedSyntheticOpenCloseDiff.to_s} to #{cf.cashflow.to_s}")
+        cf.cashflow += calculatedSyntheticOpenCloseDiff
       end                                 
     }
     return cashflows
@@ -85,8 +94,13 @@ class CashFlow
     if(posOnDate.nil? || posOnDate.empty?)
       return 0
     end
-    markOnDate = Mark.find(:first, :conditions => ['tradeable_id = ? AND mark_date =? ', tradeable_id, date])
-    if(markOnDate.blank?) 
+    if(posOnDate[0].journal.post_date == date)
+      markOnDate = Mark.new(:tradeable_id => tradeable_id, :mark_value => posOnDate[0].price_per_share, :mark_date => date)
+      logger.debug("Trade happened on posOnDate so using that for mark #{markOnDate.to_s}")
+    else
+      markOnDate = Mark.find(:first, :conditions => ['tradeable_id = ? AND mark_date =? ', tradeable_id, date])
+    end
+    if(markOnDate.blank?)
       raise Exception.new("Please enter a mark for #{symbol} on #{date}.")
     end
     return BigDecimal.new(posOnDate[0].position) * markOnDate.mark_value
