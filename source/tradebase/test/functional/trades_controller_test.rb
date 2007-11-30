@@ -320,7 +320,7 @@ class TradesControllerTest < MarketceteraTestBase
     assert_equal "ZAI/USD", assigns(:trade).tradeable_m_symbol_root
   end
 
-  # USD/ZAI doesn't exist, should be created'
+  # USD/ZAI doesn't exist, should be created
   def test_create_forex_trade_successful_new_cur_pair
     num_trades = Trade.count
     post :create, {:m_symbol => {:root => "USD/ZAI"}, :security_type => TradesHelper::SecurityTypeForex,
@@ -334,10 +334,28 @@ class TradesControllerTest < MarketceteraTestBase
 
     assert_not_nil assigns(:trade), "didn't create a trade"
     assert_not_nil Account.find_by_nickname("FOREX"), "didn't create account"
-    assert_not_nil CurrencyPair.get_currency_pair("USDZAI", false), "didn't create equity"
+    assert_not_nil CurrencyPair.get_currency_pair("USDZAI", false), "didn't create currency pair"
 
     assert_equal "FOREX", assigns(:trade).account_nickname
     assert_equal "USD/ZAI", assigns(:trade).tradeable_m_symbol_root
+  end
+
+  # test creation of forex trade with currency pair that doesn't exist - should fail
+  def test_create_forex_currency_pair_dne
+    def test_create_forex_trade_successful_new_cur_pair
+      num_trades = Trade.count
+      post :create, {:m_symbol => {:root => "ABC/XYZ"}, :security_type => TradesHelper::SecurityTypeForex,
+                     :account => {:nickname => "FOREX"},
+                      :trade => {:price_per_share => "1.4298", :side => 1, :quantity => "1000000", :total_commission => "14.99",
+                                  "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+      assert_template 'new'
+      assert_equal num_trades, Trade.count
+
+      assert_not_nil assigns(:trade).errors[:symbol]
+      assert_not_nil assigns(:trade).errors[:symbol].match("Unknown currency")
+      assert_nil CurrencyPair.get_currency_pair("ABCXYZ", false), "created currency pair when it shouldn't have"
+    end
   end
 
   def test_edit

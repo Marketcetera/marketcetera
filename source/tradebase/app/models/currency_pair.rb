@@ -44,7 +44,7 @@ class CurrencyPair < ActiveRecord::Base
     currency_pair = CurrencyPair.find(:first, :conditions => { :first_currency_id => first_currency, :second_currency_id => second_currency } )
     currency_pair = CurrencyPair.create(:first_currency => first_currency, :second_currency => second_currency) if (currency_pair.nil? && create_missing)
 
-    raise "Unknown currency in pair: #{symbol}" if (!currency_pair.nil? && !currency_pair.valid?)
+    raise UnknownCurrencyPairException.new("Unknown currency in pair: #{symbol}") if (!currency_pair.nil? && !currency_pair.valid?)
 
     currency_pair
   end
