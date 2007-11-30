@@ -10,7 +10,7 @@ class CurrencyTest < Test::Unit::TestCase
     assert_equal currencies(:usd).alpha_code, c.alpha_code
   end
   
-    def test_get_currency
+  def test_get_currency
     assert_equal currencies(:usd).alpha_code, Currency.get_currency(nil).alpha_code
     assert_equal currencies(:usd).alpha_code, Currency.get_currency('').alpha_code
     assert_equal currencies(:usd).alpha_code, Currency.get_currency("USD").alpha_code
@@ -19,6 +19,4 @@ class CurrencyTest < Test::Unit::TestCase
     assert_not_nil Currency.get_currency("GBP")
     assert_nil Currency.get_currency("DNE")
   end
-  
-  
 end

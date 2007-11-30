@@ -33,9 +33,10 @@ class CurrencyPairsController < ApplicationController
   def create
     first_currency = Currency.find(:first, :conditions => params[:first_currency])
     second_currency = Currency.find(:first, :conditions => params[:second_currency])
-    @currency_pair = CurrencyPair.new(:description=>params[:description], :first_currency => first_currency, :second_currency => second_currency)
+    @currency_pair = CurrencyPair.new(:description => params[:currency_pair][:description],
+            :first_currency => first_currency, :second_currency => second_currency)
     if @currency_pair.save
-      flash[:notice] = 'Currency pair #{@currency_pair} was successfully created.'
+      flash[:notice] = "Currency pair #{@currency_pair} was successfully created."
       redirect_to :action => 'list'
     else
       render :action => 'new'

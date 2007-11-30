@@ -3,23 +3,18 @@
 <!--[form:trade]-->
 <fieldset>
     <div class="form_left">
+      <label for="first_currency_alpha_code">First Currency Code</label>
+      <%= text_field_with_auto_complete :first_currency, :alpha_code, :value=> @currency_pair.first_currency_code %>
+      <label for="second_currency_alpha_code">Second Currency Code</label>
+      <%= text_field_with_auto_complete :second_currency, :alpha_code, :value=> @currency_pair.second_currency_code %>
+    </div>
 
-    <label for="currency_alpha_code">First Currency Code</label>
-    <%= text_field_with_auto_complete :first_currency, :alpha_code, :value=> @currency_pair.first_currency_code %>
-    <label for="currency_alpha_code">Second Currency Code</label>
-    <%= text_field_with_auto_complete :second_currency, :alpha_code, :value=> @currency_pair.second_currency_code %>
-
-
-        <label for="currency_pair_description">Description</label>
+    <div class="form_right">
+        <label for="description">Description</label>
         <%= text_field 'currency_pair', 'description'  %>
-
-        <div class="clear"></div>
-        <%= link_to "Create new currency", {:controller => 'currencies', :action => 'new'} %>
     </div>
     
-    <div class="form_right">
-    </div>
-    <div class="clear"></div>
+    <div class="clear"/>
 </fieldset>
 <!--[eoform:trade]-->
 

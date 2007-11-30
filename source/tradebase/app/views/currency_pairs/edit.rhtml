@@ -1,9 +1,10 @@
-<h1>Editing currency_pair</h1>
+<%= render :partial => 'shared/breadcrumbs',
+    :locals=> { :top_level => "Currency Pairs", :action_name => "Update Currency Pair", :top_level_controller => @controller.controller_name } %>
+<h1>Update Currency Pair</h1>
 
 <% form_tag :action => 'update', :id => @currency_pair do %>
   <%= render :partial => 'form' %>
-  <%= submit_tag 'Edit' %>
+  <%= submit_tag 'Update', :class => "submit floatright" %>
 <% end %>
 
-<%= link_to 'Show', :action => 'show', :id => @currency_pair %> |
-<%= link_to 'Back', :action => 'list' %>
+<%= button_to 'Cancel', {:action => 'show', :id => @currency_pair}, {:class => "reset floatright"} %>

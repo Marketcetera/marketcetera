@@ -13,13 +13,13 @@ class Trade < ActiveRecord::Base
                 quantity.to_s+"/"+Side.get_human_side(side))
 
     if(tradeable_m_symbol_root.blank?)
-      errors.add(:symbol, "Symbol cannot be empty")
+      errors.add(:symbol, "cannot be empty")
     end
     
     if(side.nil? || !Side::QF_SIDE_CODE.invert.key?(side.to_s))
-      errors.add(:side, "Side is unknown")
+      errors.add(:side, "is unknown")
     end
-    
+
     if(quantity.blank? ||
       ((quantity <= 0 && side == Side::QF_SIDE_CODE[:buy].to_i) ||
       (quantity >= 0 && side != Side::QF_SIDE_CODE[:buy].to_i)))

@@ -31,6 +31,14 @@ class CurrencyPairsControllerTest < Test::Unit::TestCase
     assert_not_nil assigns(:currency_pairs)
   end
 
+  def test_list_new_currency
+    post :create, {:first_currency => {:alpha_code => "USD"}, :second_currency => {:alpha_code => "ZAI" },
+            :currency_pair => {:description => "zaichiki" }}
+
+    get :list
+    assert_tag :tag => "td", :content => "zaichiki"
+  end
+
   def test_show
     get :show, :id => @first_id
 
@@ -53,12 +61,17 @@ class CurrencyPairsControllerTest < Test::Unit::TestCase
   def test_create
     num_currency_pairs = CurrencyPair.count
 
-    post :create, {:first_currency => {:alpha_code => "USD"}, :second_currency => {:alpha_code => "ZAI" } }
+    post :create, {:first_currency => {:alpha_code => "USD"}, :second_currency => {:alpha_code => "ZAI" },
+            :currency_pair => {:description => "zaichiki" }}
 
     assert_response :redirect
     assert_redirected_to :action => 'list'
-
+    assert_not_nil flash[:notice].match("USD/ZAI")
     assert_equal num_currency_pairs + 1, CurrencyPair.count
+
+    usd_zai = CurrencyPair.get_currency_pair("USD/ZAI")
+    assert_not_nil usd_zai
+    assert_equal "zaichiki", usd_zai.description
   end
 
   def test_edit
