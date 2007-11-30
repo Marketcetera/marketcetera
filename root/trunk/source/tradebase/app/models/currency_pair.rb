@@ -26,6 +26,7 @@ class CurrencyPair < ActiveRecord::Base
     second_currency.nil? ? "" : second_currency.alpha_code
   end
 
+  # throws an exception if one of the underlying currencies is not present
   def CurrencyPair.get_currency_pair(symbol, create_missing=true)
     # EUR/USD
     # EURUSD
@@ -33,22 +34,18 @@ class CurrencyPair < ActiveRecord::Base
     if (matched.nil?)
       matched = /^([A-Z]{3})([A-Z]{3})$/.match(symbol)
       if (matched.nil?)
-        raise "Illegal currency pair symbol, #{symbol}"
+        raise "Illegal currency pair symbol: #{symbol}"
       end
     end
     first_currency_code = matched[1]
     second_currency_code = matched[2] 
-    first_currency = get_currency(first_currency_code, create_missing)
-    second_currency = get_currency(second_currency_code, create_missing)
+    first_currency = Currency.get_currency(first_currency_code)
+    second_currency = Currency.get_currency(second_currency_code)
     currency_pair = CurrencyPair.find(:first, :conditions => { :first_currency_id => first_currency, :second_currency_id => second_currency } )
-    currency_pair = CurrencyPair.create(:first_currency => first_currency, :second_currency => second_currency) if (currency_pair.nil? && create_missing) 
+    currency_pair = CurrencyPair.create(:first_currency => first_currency, :second_currency => second_currency) if (currency_pair.nil? && create_missing)
+
+    raise "Unknown currency in pair: #{symbol}" if (!currency_pair.nil? && !currency_pair.valid?)
+
     currency_pair
   end
-
-  def CurrencyPair.get_currency(currency_code, create_missing)
-    currency = Currency.find_by_alpha_code(currency_code)
-    currency = Currency.create(:alpha_code => currency_code) if (currency.nil? && create_missing)
-    currency
-  end
-
 end

@@ -32,21 +32,25 @@ class TradesController < ApplicationController
   end
 
   def create
-    if (params[:security_type] == TradesHelper::SecurityTypeEquity)
-      @trade = Trade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
-                         :comment => params[:trade][:comment],
-                         :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
-                         :price_per_share => params[:trade][:price_per_share])
-    else
-      if (params[:security_type] == TradesHelper::SecurityTypeForex)
-      @trade = ForexTrade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
-                         :comment => params[:trade][:comment],
-                         :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
-                         :price_per_share => params[:trade][:price_per_share])
-      end
-    end
-    logger.debug("initial trade creation, qty is: "+@trade.quantity.to_s)
     begin
+      if (params[:security_type] == TradesHelper::SecurityTypeEquity)
+        @trade = Trade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
+                :comment => params[:trade][:comment],
+                :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
+                :price_per_share => params[:trade][:price_per_share])
+      else
+        if (params[:security_type] == TradesHelper::SecurityTypeForex)
+          @trade = ForexTrade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
+                  :comment => params[:trade][:comment],
+                  :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
+                  :price_per_share => params[:trade][:price_per_share])
+        else
+          @trade = Trade.new(:type => nil)
+          @trade.errors.add(:security_type, "#{params[:security_type]} is unknown")
+          throw Exception.new
+        end
+      end
+      logger.debug("initial trade creation, qty is: "+@trade.quantity.to_s)
       Trade.transaction() do
         trade_date = VDate.parse_date_from_params(params, :trade, "journal_post_date").as_date
         symbol = get_non_empty_string_from_two(params, :m_symbol, :root, nil)
@@ -62,7 +66,7 @@ class TradesController < ApplicationController
                           account_nickname,
                           trade_date)
         logger.debug("after createEqtyTrade, qty is: "+@trade.quantity.to_s)
-          
+
         if @trade.save
           flash[:notice] = 'Trade was successfully created.'
           logger.debug("created trade: "+@trade.to_s)

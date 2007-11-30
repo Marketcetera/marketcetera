@@ -4,14 +4,11 @@ class Currency < ActiveRecord::Base
   
   # Lookup the specified currency. If incoming currency string is empty, returns USD by default
   def Currency.get_currency(cur_string)
-    if(cur_string == nil || cur_string == '') 
+    if(cur_string == nil || cur_string == '')
       cur_string = 'USD'
       logger.debug("No currency specified, defaulting to USD")
     end
-    currency = Currency.find(:first, :conditions=>["alpha_code = ?", cur_string])
+    currency = Currency.find_by_alpha_code(cur_string.upcase)
     return currency
   end
-  
-
-
 end

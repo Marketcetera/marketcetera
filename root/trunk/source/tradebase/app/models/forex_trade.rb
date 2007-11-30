@@ -1,7 +1,7 @@
 class ForexTrade < Trade
 
   def tradeable_m_symbol_root=(inSymbol)
-    self.tradeable = CurrencyPair.get_currency_pair(inSymbol, false)
+    self.tradeable = CurrencyPair.get_currency_pair(inSymbol, true)
   end
 
   def tradeable_m_symbol_root

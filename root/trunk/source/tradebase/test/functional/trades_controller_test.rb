@@ -136,9 +136,9 @@ class TradesControllerTest < MarketceteraTestBase
     num_trades = Trade.count
 
     # todo: remove date arg once we switch to date validation
-    post :create, :trade => {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20",
-               :security_type => TradesHelper::SecurityTypeEquity}
-
+    post :create, {:security_type => TradesHelper::SecurityTypeEquity,
+                   :trade => {"journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"}}
+    
     assert_template 'new'
     assert_equal 4, assigns(:trade).errors.length, "number of validation errors"
     assert_not_nil assigns(:trade).errors[:symbol]
@@ -288,6 +288,57 @@ class TradesControllerTest < MarketceteraTestBase
     assert_equal num_trades, Trade.count
   end
   
+
+  def test_create_no_security_type
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => 'bogus',
+                   :trade => {:price_per_share => "23", :quantity => "100", :total_commission => "100", :side => 1,
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_template 'new'
+    assert_equal 1, assigns(:trade).errors.length, "number of validation errors"
+    assert_not_nil assigns(:trade).errors[:security_type]
+    assert_equal num_trades, Trade.count
+  end
+
+  def test_create_forex_trade_successful
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "ZAI/USD"}, :security_type => TradesHelper::SecurityTypeForex,
+                   :account => {:nickname => "FOREX"},
+                    :trade => {:price_per_share => "1.4298", :side => 1, :quantity => "1000000", :total_commission => "14.99",
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+    assert_equal num_trades+1, Trade.count
+
+    assert_not_nil assigns(:trade), "didn't create a trade"
+    assert_not_nil Account.find_by_nickname("FOREX"), "didn't create account"
+    assert_not_nil CurrencyPair.get_currency_pair("ZAIUSD", false), "didn't create equity"
+
+    assert_equal "FOREX", assigns(:trade).account_nickname
+    assert_equal "ZAI/USD", assigns(:trade).tradeable_m_symbol_root
+  end
+
+  # USD/ZAI doesn't exist, should be created'
+  def test_create_forex_trade_successful_new_cur_pair
+    num_trades = Trade.count
+    post :create, {:m_symbol => {:root => "USD/ZAI"}, :security_type => TradesHelper::SecurityTypeForex,
+                   :account => {:nickname => "FOREX"},
+                    :trade => {:price_per_share => "1.4298", :side => 1, :quantity => "1000000", :total_commission => "14.99",
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+    assert_equal num_trades+1, Trade.count
+
+    assert_not_nil assigns(:trade), "didn't create a trade"
+    assert_not_nil Account.find_by_nickname("FOREX"), "didn't create account"
+    assert_not_nil CurrencyPair.get_currency_pair("USDZAI", false), "didn't create equity"
+
+    assert_equal "FOREX", assigns(:trade).account_nickname
+    assert_equal "USD/ZAI", assigns(:trade).tradeable_m_symbol_root
+  end
 
   def test_edit
     get :edit, :id => @allTrades[0].id
