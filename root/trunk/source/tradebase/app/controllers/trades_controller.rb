@@ -76,6 +76,12 @@ class TradesController < ApplicationController
           throw Exception.new
         end
       end
+    rescue UnknownCurrencyPairException => ucpex
+      if(@trade.errors.length == 0)
+        @trade.errors.add(:symbol, ucpex.message)
+      end
+      logger.debug("createTrade encountered error: "+ucpex.message)
+      render :action => 'new'
     rescue => ex
       logger.debug("createTrade encountered error: "+ex.message + ":\n"+ex.backtrace.join("\n"))
       render :action => 'new'

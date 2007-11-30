@@ -21,7 +21,7 @@ class CurrencyPairTest < Test::Unit::TestCase
     assert_raise(RuntimeError) { CurrencyPair.get_currency_pair("unparseable")}
 
     assert_nil CurrencyPair.get_currency_pair("XYZ/BSD", false)
-    assert_raise(RuntimeError) { CurrencyPair.get_currency_pair("XYZ/BSD", true)}
+    assert_raise(UnknownCurrencyPairException) { CurrencyPair.get_currency_pair("XYZ/BSD", true)}
 
     assert_nil CurrencyPair.get_currency_pair("USD/ZAI", false)
     usd_zai = CurrencyPair.get_currency_pair("USD/ZAI", true)
