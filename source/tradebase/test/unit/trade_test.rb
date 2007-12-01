@@ -93,7 +93,8 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal 420.23, theTrade.price_per_share
     assert_nums_equal 19.99, theTrade.total_commission
     assert_nums_equal 420.23 * theTrade.quantity, theTrade.total_price
-    
+    assert_equal "BUY 20.0 TOLI 420.23", theTrade.journal.description
+
     assert_equal SubAccountType::DESCRIPTIONS.length, theTrade.account.sub_accounts.length
   end
   
@@ -270,8 +271,6 @@ class TradeTest < MarketceteraTestBase
    assert_equal currencies(:ZAI).alpha_code, t.currency_alpha_code
    t.journal.postings.each { |p| assert_equal currencies(:ZAI), p.currency, "not all sub-postings got updated" }
   end
-  
-  ##### Helpers ######
 
   def test_assert_nums_equal
     assert_nums_equal 0, 0
@@ -281,5 +280,27 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal "20", 20
     assert_nums_equal "-20", -20
     assert_nums_equal BigDecimal("23.454"), Float(23.454)
+  end
+
+  def test_destroy
+    theTrade = Trade.new(:quantity => 20, :price_per_share => 420.23, :side => Side::QF_SIDE_CODE[:buy])
+    theTrade.tradeable = @equity
+    tradeDate = Date.civil(2006, 7, 8)
+    account = "beer money-"+Date.new.to_s
+    assert theTrade.create_trade(theTrade.quantity, "TOLI", theTrade.price_per_share, 19.99,  "USD", account, tradeDate)
+    theTrade.save
+
+    journal = theTrade.journal
+    postings = theTrade.journal.postings
+    theTrade.destroy
+
+    assert_raise(ActiveRecord::RecordNotFound, "didn't delete trade") {
+      Trade.find(theTrade)
+    }
+    assert_raise(ActiveRecord::RecordNotFound, "didn't delete underlying journal") {
+      Journal.find(journal.id)
+    }
+    postings.each {|p| assert_raise(ActiveRecord::RecordNotFound, "didn't delete underlying postings") {Posting.find(p.id) } }
+
   end
 end

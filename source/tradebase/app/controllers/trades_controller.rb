@@ -122,8 +122,9 @@ class TradesController < ApplicationController
 
   def destroy
     t = Trade.find(params[:id])
-    t.destroy
-    t.journal.destroy
+    t.transaction do
+      t.destroy
+    end
     redirect_to :action => 'list'
   end
 end

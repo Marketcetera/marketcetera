@@ -36,7 +36,12 @@ class Trade < ActiveRecord::Base
       errors.add(:total_commission, "Commissions cannot be negative")
     end
   end 
-  
+
+  # delete the journal after our deletion to avoid constraint violations
+  def after_destroy
+    self.journal.destroy if !self.journal.nil?
+  end
+
   def journal_post_date
     (self.journal.nil?) ? nil : self.journal.post_date
   end
@@ -167,7 +172,7 @@ class Trade < ActiveRecord::Base
   
   ##### Helper Methods #####
 
-   def create_trade_journal(total_commission, currency_alpha_code, trade_date)
+   def create_trade_journal(total_commission, currency_alpha_code, trade_date, description)
       notional = self.quantity * self.price_per_share
       logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")
       sub_accounts = self.account.sub_accounts
@@ -175,7 +180,7 @@ class Trade < ActiveRecord::Base
       cash_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:cash])
       commission_sub_account = self.account.find_sub_account_by_sat(SubAccountType::DESCRIPTIONS[:commissions])
 
-      self.journal = Journal.create( :post_date => trade_date )
+      self.journal = Journal.create( :post_date => trade_date, :description => description )
       base_currency = Currency.get_currency(currency_alpha_code)
       self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency,
                                               :quantity=>notional, :sub_account=>short_term_investment_sub_account, :pair_id => 1)
@@ -214,7 +219,8 @@ class Trade < ActiveRecord::Base
       self.account.save
     end
     logger.debug("Using account " + self.account.to_s)
-    create_trade_journal(total_commission, currency_alpha_code, trade_date)
+    description = Side.get_human_side(self.side) + " " + inQuantity.to_s + " " + self.tradeable_m_symbol_root + " " + price_per_share.to_s
+    create_trade_journal(total_commission, currency_alpha_code, trade_date, description)
     return true
   end
   

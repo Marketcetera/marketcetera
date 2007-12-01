@@ -1,7 +1,7 @@
 class Journal < ActiveRecord::Base
-  has_many :postings
+  has_many :postings, :dependent => :destroy
   has_many :trades
-  
+
   # returns the first posting that matches the specified sub-account-type description
   def find_posting_by_sat(desc)
     if(!self.postings.nil?)
