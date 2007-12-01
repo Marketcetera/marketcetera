@@ -599,6 +599,33 @@ class TradesControllerTest < MarketceteraTestBase
     }
   end
   
+  def test_destroy_newly_created
+    count = Trade.count
+    post :create, {:m_symbol => {:root => "bob"}, :security_type => TradesHelper::SecurityTypeEquity,
+                   :account => {:nickname => "pupkin"},
+                    :trade => {:price_per_share => "23", :side => 1, :quantity => "111", :total_commission => "14.99",
+                                "journal_post_date(1i)"=>"2006", "journal_post_date(2i)"=>"10", "journal_post_date(3i)"=>"20"} }
+    t = assigns(:trade)
+    assert_equal count+1, Trade.count
+
+    assert_not_nil t
+    journal = t.journal
+    postings = journal.postings
+    assert_not_nil Journal.find(journal.id)
+
+    post :destroy, :id =>  t.id
+    assert_response :redirect
+    assert_redirected_to :action => 'list'
+
+    assert_raise(ActiveRecord::RecordNotFound, "didn't delete trade") {
+      Trade.find(t)
+    }
+    assert_raise(ActiveRecord::RecordNotFound, "didn't delete underlying journal") {
+      Journal.find(journal.id)
+    }
+    postings.each {|p| assert_raise(ActiveRecord::RecordNotFound, "didn't delete underlying postings") {Posting.find(p.id) } }
+  end
+
   ### Helpers ####
   # this tests internal ticket:66
   # Need to verify that when we click on Edit the right option is selected in the side drop-down
