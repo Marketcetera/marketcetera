@@ -18,3 +18,10 @@ ZAI:
   numeric_code: 666
   description: "Belarussian Zaichiki"
   obsolete: false
+
+EUR:
+  id: 4
+  alpha_code: "EUR"
+  numeric_code: 978
+  description: "Euro"
+  obsolete: false

@@ -10,7 +10,7 @@
 <% i=0
  for mark in @marks %>
   <tr <%= ((i+=1)%2 ==1) ? 'class="odd"':''%> >
-    <td><%= mark.equity_m_symbol_root %></td>
+    <td><%= mark.tradeable_m_symbol_root %></td>
     <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(mark.mark_value, 2) %></td>
     <td><%=h mark.mark_type %></td>
     <td><%=h mark.mark_date %></td>

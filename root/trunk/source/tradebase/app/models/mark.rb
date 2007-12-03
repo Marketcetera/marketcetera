@@ -4,14 +4,14 @@ class Mark < ActiveRecord::Base
  
   MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
 
-  validates_uniqueness_of :mark_date, :scope => :tradeable_id, 
+  validates_uniqueness_of :mark_date, :scope => [:tradeable_id, :tradeable_type], 
     :message => "Already have a mark on that date. Please update an existing mark instead."
 
   validates_numericality_of(:mark_value, :message => "should be a number.")
   
   def validate
     errors.add(:mark_value, "should be a zero or positive value.") unless (!mark_value.blank? && mark_value >= 0)
-    errors.add(:symbol, "cannot be empty.") unless !equity_m_symbol_root.blank?
+    errors.add(:symbol, "cannot be empty.") unless !tradeable_m_symbol_root.blank?
     errors.add(:mark_date, "should not be in the future.") unless (!mark_date.blank? && (mark_date <= Date.today))
   end
 
@@ -21,8 +21,13 @@ class Mark < ActiveRecord::Base
     end
   end
 
-  def equity_m_symbol_root
-      (self.tradeable.nil? || self.tradeable.m_symbol.nil?) ? nil : self.tradeable.m_symbol.root
+  def tradeable_m_symbol_root
+    (self.tradeable.nil? || self.tradeable.m_symbol.nil?) ? nil : self.tradeable.m_symbol.root
+  end
+  
+  # deal with Equities here, deal with others in subclasses
+  def tradeable_m_symbol_root=(inSymbol)
+    self.tradeable = Equity.get_equity(inSymbol)
   end
 
   # pretty-print the errors

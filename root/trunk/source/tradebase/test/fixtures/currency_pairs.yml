@@ -8,3 +8,9 @@ ZAIUSD:
   id: 1002
   first_currency_id: 3
   second_currency_id: 1
+
+
+EURUSD:
+  id: 1003
+  first_currency_id: 4
+  second_currency_id: 1
