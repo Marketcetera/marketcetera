@@ -87,11 +87,11 @@ class PnlControllerTest < MarketceteraTestBase
                                 "from(3i)"=>"17", "to(3i)"=>"19"}}
     assert_response :success
     assert_template 'pnl_by_account'
-    assert_not_nil assigns(:cashflows)
+    assert_not_nil assigns(:pnls)
     # should find 3 P&Ls for unassigned
-    assert_equal 3, assigns(:cashflows).length
+    assert_equal 3, assigns(:pnls).length
     assert_equal "[UNASSIGNED]", assigns(:nickname)
-    cfs = assigns(:cashflows)
+    cfs = assigns(:pnls)
     assert_equal [BigDecimal("0").to_s, "GOOG"], [cfs[0].cashflow.to_s, cfs[0].symbol]
     assert_equal [BigDecimal("0").to_s, "IBM"], [cfs[0].cashflow.to_s, cfs[1].symbol]
     assert_equal [BigDecimal("0").to_s, "MSFT"], [cfs[0].cashflow.to_s,  cfs[2].symbol]
