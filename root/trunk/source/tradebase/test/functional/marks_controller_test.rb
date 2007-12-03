@@ -190,7 +190,7 @@ class MarksControllerTest < MarketceteraTestBase
     num_marks = Mark.count
 
     post :create, { :mark => {:mark_value => "10.20", :mark_date => sunw4_12.mark_date}, 
-                    :m_symbol =>{ :root => sunw4_12.equity.m_symbol.root} }
+                    :m_symbol =>{ :root => sunw4_12.tradeable.m_symbol.root} }
 
     assert_response :success
     assert :template => 'create'
@@ -201,7 +201,7 @@ class MarksControllerTest < MarketceteraTestBase
   
   def test_create_future_date
     post :create, { :mark => {:mark_value => "10.20", :mark_date => Date.today+10}, 
-                    :m_symbol =>{ :root => @sunw_4_12.equity.m_symbol.root} }
+                    :m_symbol =>{ :root => @sunw_4_12.tradeable.m_symbol.root} }
     assert_response :success
     assert_has_error_box
     assert_equal 1, assigns(:mark).errors.length
