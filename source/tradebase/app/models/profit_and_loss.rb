@@ -57,7 +57,7 @@ class ProfitAndLoss
     ' FROM postings JOIN journals ON postings.journal_id=journals.id '+
     '         JOIN trades ON trades.journal_id=journals.id '+
     '         JOIN sub_accounts ON sub_account_id = sub_accounts.id '+
-    ' WHERE journals.post_date > ? AND journals.post_date <= ? AND sub_accounts.sub_account_type_id=2 AND tradeable_type="CurrencyPair" '+
+    ' WHERE journals.post_date >= ? AND journals.post_date <= ? AND sub_accounts.sub_account_type_id=2 AND tradeable_type="CurrencyPair" '+
     ' UNION ALL '+
     ' /* phantom cash flows for end date */ '+
     ' SELECT mark_value * PositionTable.position as quantity, currency_pairs.second_currency_id, PositionTable.account_id, PositionTable.strategy '+

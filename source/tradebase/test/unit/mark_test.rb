@@ -116,23 +116,23 @@ class MarkTest < MarketceteraTestBase
     assert_equal 0, mark.errors.length, "didn't accept non-integer"
   end
   
-  def test_equity_m_symbol_root
+  def test_tradeable_m_symbol_root
     mark = Mark.find(:first)
-    assert_not_nil mark.equity_m_symbol_root
-    assert_equal mark.tradeable.m_symbol.root, mark.equity_m_symbol_root
+    assert_not_nil mark.tradeable_m_symbol_root
+    assert_equal mark.tradeable.m_symbol.root, mark.tradeable_m_symbol_root
     
     # null
     mark = Mark.new
-    assert_nil mark.equity_m_symbol_root 
+    assert_nil mark.tradeable_m_symbol_root 
     
     mark.tradeable = Equity.new
-    assert_nil mark.equity_m_symbol_root 
+    assert_nil mark.tradeable_m_symbol_root 
     
     mark.tradeable = @ifli
-    assert_not_nil mark.equity_m_symbol_root
+    assert_not_nil mark.tradeable_m_symbol_root
     
     @ifli.m_symbol = nil
-    assert_nil mark.equity_m_symbol_root 
+    assert_nil mark.tradeable_m_symbol_root 
   end
   
   # test duplicate marks on same day

@@ -4,7 +4,7 @@
 <fieldset>
     <div class="form_left">
         <%= render :partial => '/shared/symbol_auto_complete', 
-            :locals => { :errors => @mark.errors, :init_value => @mark.equity_m_symbol_root, :error_key => :symbol} %>
+            :locals => { :errors => @mark.errors, :init_value => @mark.tradeable_m_symbol_root, :error_key => :symbol} %>
             
         <label for="mark_value">Value</label>
         <%= text_field 'mark', 'mark_value'  %>

@@ -10,6 +10,7 @@ class AddForexSupport < ActiveRecord::Migration
     usd = Currency.find_by_alpha_code("USD")
     add_column :marks, :currency_id, :integer, {:default=>usd.id, :null =>false} 
     add_column :marks, :tradeable_type, :string, :limit=>255
+    add_column :marks, :type, :string, :limit=>255
 
     add_fkey :marks, :currency_id, :currencies
   end
@@ -19,5 +20,6 @@ class AddForexSupport < ActiveRecord::Migration
     remove_column :trades, :type
     remove_column :trades, :strategy
     remove_column :marks, :currency_id
+    remove_column :marks, :type
   end
 end

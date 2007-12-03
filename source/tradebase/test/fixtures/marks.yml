@@ -6,6 +6,7 @@ sunw_4_12:
   mark_value: 6.48
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 12) %>
+  type: Mark
   
 goog_4_11:
   id: 2
@@ -14,6 +15,7 @@ goog_4_11:
   mark_value: 450.32
   mark_type: C
   mark_date: <%= Date.new(2007, 4, 11) %>
+  type: Mark
   
 goog_4_13:
   id: 3
@@ -22,6 +24,7 @@ goog_4_13:
   mark_value: 452.32
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 13) %>
+  type: Mark
   
 goog_4_14:
   id: 4
@@ -30,6 +33,7 @@ goog_4_14:
   mark_value: 460.32
   mark_type: C
   mark_date: <%= Date.new(2007, 4, 14) %>
+  type: Mark
   
 sunw_4_13:
   id: 5
@@ -38,6 +42,7 @@ sunw_4_13:
   mark_value: 5.48
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 13) %>
+  type: Mark
   
 beer_4_13:
   id: 6
@@ -46,6 +51,7 @@ beer_4_13:
   mark_value: 3.48
   mark_type: I
   mark_date: <%= Date.new(2007, 4, 13) %>
+  type: Mark
 
   
   
