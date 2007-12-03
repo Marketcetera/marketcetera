@@ -1,5 +1,34 @@
 <%= error_messages_for 'trade' %>
 
+<script type="text/javascript">
+//<![CDATA[
+	function change_to_forex()
+	{
+		$('price_label').textContent = "Rate"
+		$('m_symbol_root_label').textContent = "Currency Pair"
+        $('trade_trade_type_t').checked = true
+        $('trade_trade_type_e').hide()
+        $('trade_trade_type_c').hide()
+        $('trade_trade_type_e_label').hide()
+        $('trade_trade_type_c_label').hide()
+		
+      $("trade_side").remove(2)
+      $("trade_side").remove(3)
+
+	}
+	function change_to_equity()
+	{
+		$('price_label').textContent = "Price"
+		$('m_symbol_root_label').textContent = "Symbol"
+        $('trade_trade_type_e').show()
+        $('trade_trade_type_c').show()
+        $('trade_trade_type_e_label').show()
+        $('trade_trade_type_c_label').show()
+
+	}
+//]]>
+</script>
+
 <!--[form:trade]-->
 <fieldset>
     <div class="form_left">
@@ -7,10 +36,10 @@
         <div class="date"><%= date_select :trade, :journal_post_date %></div>
 
         <label for="trade_trade_type">Security type</label>
-        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, true, {:class => "radio"})%>
+        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, true, {:class => "radio", :onclick=>"change_to_equity()"})%>
         <label class="radio_label" for="security_type_e">Equity</label>
         <!--div class="clear"></div-->
-        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, false, { :class => "radio"})%>
+        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, false, { :class => "radio", :onclick=>"change_to_forex()"})%>
         <label class="radio_label" for="security_type_f">Forex</label>
 
         <label for="side">Side</label>
@@ -22,7 +51,7 @@
         <%= render :partial => '/shared/symbol_auto_complete',
             :locals => { :errors => @trade.errors, :init_value => @trade.tradeable_m_symbol_root, :error_key => :symbol} %>
 
-        <label for="price_per_share">Price</label>
+        <label for="price_per_share" id="price_label">Price</label>
         <%= text_field :trade, :price_per_share %>
 
         <label for="account_nickname">Account</label>
@@ -36,14 +65,14 @@
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeTrade, {:checked => true, :class => "radio"})%>
         <label class="radio_label" for="trade_trade_type_t">Trade</label>
         <div class="clear"></div>
-        <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeExerciseOrExpire, { :class => "radio"})%>
-        <label class="radio_label" for="trade_trade_type_e">Exercise or expire</label>
+        <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeExerciseOrExpire, { :class => "radio", })%>
+        <label class="radio_label" for="trade_trade_type_e" id="trade_trade_type_e_label">Exercise or expire</label>
         <div class="clear"></div>
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeReconciliation, { :class => "radio"})%>
         <label class="radio_label" for="trade_trade_type_r">Reconciliation</label>
         <div class="clear"></div>
         <%= radio_button(:trade, 'trade_type', TradesHelper::TradeTypeCorporateAction, { :class => "radio"})%>
-        <label class="radio_label" for="trade_trade_type_c">Corporate Action</label>
+        <label class="radio_label" for="trade_trade_type_c" id="trade_trade_type_c_label">Corporate Action</label>
         <div class="clear"></div>
  
         <label for="total_commission">Total Commission</label>

@@ -1,9 +1,16 @@
 # Methods added to this helper will be available to all templates in the application.
+
+arb = ActiveRecord::Base
+def arb.sanitize_sql_accessor(*args)
+  sanitize_sql(*args)
+end
+
 module ApplicationHelper
   include NumberFormatHelper
   
   RJUST_NUMBER_CLASS_STR = " class='number'"
   RJUST_NUMBER_CLASS_NEG_STR = " class='negative'"
+
 
   def auto_complete_for_currency_alpha_code
     auto_complete_responder_for_currency_alpha_code params[:currency][:alpha_code]
