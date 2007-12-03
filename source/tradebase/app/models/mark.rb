@@ -22,7 +22,7 @@ class Mark < ActiveRecord::Base
   end
 
   def equity_m_symbol_root
-      (self.equity.nil? || self.equity.m_symbol.nil?) ? nil : self.equity.m_symbol.root
+      (self.tradeable.nil? || self.tradeable.m_symbol.nil?) ? nil : self.tradeable.m_symbol.root
   end
 
   # pretty-print the errors

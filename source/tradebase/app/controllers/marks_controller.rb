@@ -71,10 +71,10 @@ class MarksController < ApplicationController
     @mark = Mark.new(params[:mark])
     @mark.transaction() do
       begin
-        @mark.equity = Equity.get_equity(get_non_empty_string_from_two(params, :m_symbol, :root, nil))
+        @mark.tradeable = Equity.get_equity(get_non_empty_string_from_two(params, :m_symbol, :root, nil))
         if @mark.save
           flash[:notice] = 'Mark was successfully created.'
-          redirect_to :action => 'by_symbol', :m_symbol_root => @mark.equity.m_symbol.root,
+          redirect_to :action => 'by_symbol', :m_symbol_root => @mark.tradeable.m_symbol.root,
                                               :to_date => Date.today, :from_date => Date.today
         else
           throw Exception.new
@@ -82,6 +82,7 @@ class MarksController < ApplicationController
       rescue => ex
         logger.debug("exception in mark save with errors: "+@mark.errors.length.to_s + 
           " and ex is: "+ex.class.to_s + ":" + ex.message)
+        logger.debug(ex.backtrace.join("\n"))
         render :action => 'new'
      end
     end
