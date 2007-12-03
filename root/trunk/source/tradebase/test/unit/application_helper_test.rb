@@ -29,4 +29,14 @@ class ApplicationHelperTest < MarketceteraTestBase
     assert_equal "bob&nbsp;barker", make_spaces_hard("bob barker")
     assert_equal "bob&nbsp;barker&nbsp;louis", make_spaces_hard("bob barker louis")
   end
+  
+  # If (should I say when) this test fails, it is likely because
+  # the ActiveRecord::Base.sanitize_sql method has disappeared or 
+  # changed its contract.  In that case, we will need to come up
+  # with a new way to do what it does.
+  def test_sanitize_sql_accessor()
+    result = ActiveRecord::Base.sanitize_sql_accessor(["select * from foo where bar = ?", 7])
+    assert_equal "select * from foo where bar = 7", result
+  end
+  
 end

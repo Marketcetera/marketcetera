@@ -5,15 +5,18 @@
 <table>
     <tr>
         <th>Account</th>
+		<th>Strategy</th>
         <th>P&amp;L</th>
     </tr>
 <% i=0
    total = BigDecimal.new("0")
- for cf in @cashflows %>
+ for pnl in @pnls 
+ pnl_amount = BigDecimal(pnl.profit_and_loss.to_s) %>
   <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-    <td><%= link_to cf[:account], {:action => :report, :nickname => cf[:account], :from_date => @from_date, :to_date => @to_date} %></td>
-    <td <%= pnl_number_class(cf[:cashflow]) %>><%= fn(cf[:cashflow], 2) %></td>
-    <% total += BigDecimal(cf[:cashflow].to_s) %>
+    <td><%= link_to pnl.account, {:action => :report, :nickname => pnl.account, :from_date => @from_date, :to_date => @to_date} %></td>
+    <td><%= pnl.strategy %></td>
+    <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
+    <% total += pnl_amount %>
   </tr>
 <% end %>
   <tr>
@@ -23,4 +26,4 @@
 
 <%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
 
-<%= pagination_links(@cashflow_pages, :params => {:from_date => @from_date, :to_date => @to_date }) %>
+<%= pagination_links(@pnl_pages, :params => {:from_date => @from_date, :to_date => @to_date }) %>

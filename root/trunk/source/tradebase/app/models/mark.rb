@@ -1,6 +1,6 @@
 class Mark < ActiveRecord::Base
 
-  belongs_to :equity, :foreign_key => :tradeable_id
+  belongs_to :tradeable, :polymorphic => true
  
   MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
 

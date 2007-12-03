@@ -1,6 +1,6 @@
 # Cashflow is a regular Ruby class, it doesn't ahve a corresponding database table 
 # and is intended to be a helper class (a struct) holding relevant cash flow-related information.
-class CashFlow < ActiveRecord::Base
+class CashFlow
   attr_reader :cashflow, :account, :symbol, :tradeable_id
   attr_writer :cashflow
 
@@ -45,13 +45,13 @@ class CashFlow < ActiveRecord::Base
               ' GROUP BY t.tradeable_id, t.account_id '+
               ' HAVING cashflow != 0 '+
               ' ORDER BY symbol ', params].flatten)
-    logger.debug("got Journal query results between from/to dates: #{results.inspect}")
+#    logger.debug("got Journal query results between from/to dates: #{results.inspect}")
     cashflows = {}
     results.each { |cf|
       openSyntheticCashflow = get_synthetic_cashflow(from_date, cf.account_id, cf.tradeable_id, cf.symbol)
       closeSyntheticCashflow = get_synthetic_cashflow(to_date, cf.account_id, cf.tradeable_id, cf.symbol)
-      logger.debug("Synthetic cashflow for [#{acct}] on open on #{from_date.to_s}: "+openSyntheticCashflow.to_s)
-      logger.debug("Synthetic cashflow for [#{acct}] on close on #{to_date.to_s}: "+closeSyntheticCashflow.to_s)
+#      logger.debug("Synthetic cashflow for [#{acct}] on open on #{from_date.to_s}: "+openSyntheticCashflow.to_s)
+#      logger.debug("Synthetic cashflow for [#{acct}] on close on #{to_date.to_s}: "+closeSyntheticCashflow.to_s)
       if(cashflows[cf.account_nick].nil?)
         cashflows[cf.account_nick] = {}
       end
@@ -62,23 +62,23 @@ class CashFlow < ActiveRecord::Base
     # now look at all positions that we had open on P&L start date (ie from_date)
     posOnFromDate = Position.get_positions_on_inclusive_date_and_account(from_date, acct)
     posOnFromDate.each { |pos|
-      logger.debug("posOnFromDate: " + pos.to_s)
+#      logger.debug("posOnFromDate: " + pos.to_s)
       equity = Equity.find(pos.tradeable_id)
       openSyntheticCashflow = get_synthetic_cashflow(from_date, pos.account, pos.tradeable_id, equity.m_symbol_root)
       closeSyntheticCashflow = get_synthetic_cashflow(to_date, pos.account, pos.tradeable_id, equity.m_symbol_root)
-      logger.debug("Synthetic cashflow for [#{acct}] on open on #{from_date.to_s}: "+openSyntheticCashflow.to_s)
-      logger.debug("Synthetic cashflow for [#{acct}] on close on #{to_date.to_s}: "+closeSyntheticCashflow.to_s)
+#      logger.debug("Synthetic cashflow for [#{acct}] on open on #{from_date.to_s}: "+openSyntheticCashflow.to_s)
+#      logger.debug("Synthetic cashflow for [#{acct}] on close on #{to_date.to_s}: "+closeSyntheticCashflow.to_s)
       if(cashflows[pos.account.nickname].nil?)
         cashflows[pos.account.nickname] = {}
       end
       if(cashflows[pos.account.nickname][equity.m_symbol_root].nil?)
         cashflows[pos.account.nickname][equity.m_symbol_root]  = CashFlow.new(closeSyntheticCashflow - openSyntheticCashflow, 
                                   equity.m_symbol_root, pos.account.nickname, pos.tradeable_id)
-        logger.debug("added cashflow for [#{pos.account}][#{equity.m_symbol_root}] --> #{cashflows[pos.account.nickname][equity.m_symbol_root].to_s}")
+#        logger.debug("added cashflow for [#{pos.account}][#{equity.m_symbol_root}] --> #{cashflows[pos.account.nickname][equity.m_symbol_root].to_s}")
       else 
         cf = cashflows[pos.account.nickname][equity.m_symbol_root]
         calculatedSyntheticOpenCloseDiff = closeSyntheticCashflow - openSyntheticCashflow
-        logger.debug("[#{pos.account}][#{equity.m_symbol_root}] --> adding calculated cf #{calculatedSyntheticOpenCloseDiff.to_s} to #{cf.cashflow.to_s}")
+#        logger.debug("[#{pos.account}][#{equity.m_symbol_root}] --> adding calculated cf #{calculatedSyntheticOpenCloseDiff.to_s} to #{cf.cashflow.to_s}")
         cf.cashflow += calculatedSyntheticOpenCloseDiff
       end                                 
     }

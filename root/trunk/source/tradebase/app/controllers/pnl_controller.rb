@@ -54,17 +54,20 @@ class PnlController < ApplicationController
 
   def aggregate
     begin
-      result = CashFlow.get_cashflows_from_to_in_acct(nil, @from_date, @to_date)
-      
-      # we get a hashtable of cashflows for each account. Need to iterate over each account, sum its cashflows
-      # and provide a unified array, with a P&L for each account.
-      pnls = {}
-      # initialize all P&Ls for each account to be zero
-      result.keys.each { |key| pnls[key] = BigDecimal("0")}
-      # sum up all the cashflows
-      result.keys.each { |key| result[key].values.each { |cf| pnls[key] += cf.cashflow }}
-      cashflows = []
-      pnls.keys.sort.each { |key| cashflows << {:account => key, :cashflow => pnls[key]} }
+      missing_marks = ProfitAndLoss.get_missing_equity_marks(@from_date)
+      missing_marks = missing_marks + ProfitAndLoss.get_missing_equity_marks(@to_date)
+      if (missing_marks.length > 0)
+        @missing_mark_pages, @missing_marks = paginate_collection(cashflows, params)
+        render :template => 'pnl/missing_marks'
+      else
+        
+      end
+      pnls = ProfitAndLoss.get_equity_pnl(@from_date, @to_date)
+      pnls = pnls + ProfitAndLoss.get_forex_pnl(@from_date, @to_date)
+
+      @pnl_pages, @pnls = paginate_collection(pnls, params)
+      render :template => 'pnl/pnl_aggregate'
+
     rescue Exception => ex
       logger.debug("Error generating aggregate cashflow: " + ex);
       logger.debug(ex.backtrace)
@@ -72,8 +75,6 @@ class PnlController < ApplicationController
       cashflows = []
     end
 
-    @cashflow_pages, @cashflows = paginate_collection(cashflows, params)
-    render :template => 'pnl/pnl_aggregate'
   end
 
 end
