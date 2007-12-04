@@ -55,10 +55,10 @@ class PnlControllerTest < MarketceteraTestBase
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"5", "from(2i)"=>"1",
                                 "from(3i)"=>"1", "to(3i)"=>"8"}}
     assert_response :success
-    assert_template 'pnl_aggregate'
+    assert_template 'missing_marks'
     assert_has_error_notice
-    assert_equal 0, assigns(:cashflows).length
-    assert_has_error_notice("Error generating aggregate cashflow: Please enter a mark for FRO on 2007-05-08.")
+    assert_equal 5, assigns(:missing_marks).length
+    assert_has_error_notice("Unable to calculate P&L because some marks are missing.")
   end
 
   def test_pnl_by_account_no_data_at_all
@@ -77,7 +77,7 @@ class PnlControllerTest < MarketceteraTestBase
       assert_response :success
       assert_template 'pnl_aggregate'
       assert_no_tag :tag => 'div', :attributes => { :id => "error_notice" }
-      assert_equal 0, assigns(:cashflows).length
+      assert_equal 0, assigns(:pnls).length
   end
 
   # should return unassigned account
@@ -173,7 +173,7 @@ class PnlControllerTest < MarketceteraTestBase
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
                                 "from(3i)"=>"17", "to(3i)"=>"20"}}
     assert_response :success
-    assert_template 'pnl_aggregate'
+    assert_template 'missing_marks'
     assert_has_error_notice
   end
 end
