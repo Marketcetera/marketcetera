@@ -5,7 +5,7 @@ class CurrencyTest < Test::Unit::TestCase
 
   def test_lookup
     assert_equal 4, Currency.count
-    c = Currency.find(1)
+    c = Currency.find(154)
     assert c
     assert_equal currencies(:usd).alpha_code, c.alpha_code
   end

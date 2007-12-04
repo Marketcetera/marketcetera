@@ -51,7 +51,7 @@ class DividendTest < Test::Unit::TestCase
     assert_equal 1, div.errors.length
     assert_not_nil div.errors[:currency]
 
-    div.currency = Currency.find(1)
+    div.currency = Currency.find_by_alpha_code("USD")
     assert div.valid?
     assert_nil div.errors[:currency]
   end

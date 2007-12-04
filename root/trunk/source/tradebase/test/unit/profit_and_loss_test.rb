@@ -218,10 +218,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 41995.01, pnls[0].profit_and_loss    
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss    
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss    
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 41995.01, pnls[1].profit_and_loss    
   end
 
   def test_forex_pnl_type_3
@@ -238,10 +238,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 41995.01, pnls[0].profit_and_loss    
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss    
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss    
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 41995.01, pnls[1].profit_and_loss    
   end
 
   def test_forex_pnl_type_4
@@ -258,10 +258,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 990.02, pnls[0].profit_and_loss    
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss    
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss    
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 990.02, pnls[1].profit_and_loss    
   end
 
   def test_forex_pnl_type_5
@@ -278,10 +278,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 100000, pnls[0].profit_and_loss    
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss    
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss    
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 100000, pnls[1].profit_and_loss    
   end
 
   def test_forex_pnl_type_6
@@ -298,10 +298,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 58995.01, pnls[0].profit_and_loss    
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss    
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss    
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 58995.01, pnls[1].profit_and_loss    
   end
 
   def test_forex_pnl_type_7
@@ -318,10 +318,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 58995.01, pnls[0].profit_and_loss    
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss    
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss    
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 58995.01, pnls[1].profit_and_loss    
   end
 
   def test_forex_pnl_type_8
@@ -355,10 +355,10 @@ class ProfitAndLossTest < MarketceteraTestBase
     pnls = ProfitAndLoss.get_forex_pnl(pnl_start_date, pnl_end_date)  
     assert_equal 2, pnls.length
 
-    assert_equal "USD", pnls[0].currency.alpha_code
-    assert_nums_equal 990.02, pnls[0].profit_and_loss
-    assert_equal "EUR", pnls[1].currency.alpha_code
-    assert_nums_equal 0, pnls[1].profit_and_loss
+    assert_equal "EUR", pnls[0].currency.alpha_code
+    assert_nums_equal 0, pnls[0].profit_and_loss
+    assert_equal "USD", pnls[1].currency.alpha_code
+    assert_nums_equal 990.02, pnls[1].profit_and_loss
   end
 
   def create_forex_trades()
