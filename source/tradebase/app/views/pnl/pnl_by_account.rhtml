@@ -21,12 +21,8 @@
     <td><%=h pnl.account.to_s %></td>
     <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
 	<td><%= pnl.currency.alpha_code %></td>
-    <% total += pnl_amount %>
   </tr>
 <% end %>
-  <tr>
-      <td colspan="3" class="total">Subtotal: <span <%= pnl_number_class(total) %>><%= fn(total,2) %></span></td>
-  </tr>
 </table>
 
 <%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
