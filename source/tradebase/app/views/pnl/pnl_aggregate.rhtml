@@ -7,6 +7,7 @@
         <th>Account</th>
 		<th>Strategy</th>
         <th>P&amp;L</th>
+		<th>Currency</th>
     </tr>
 <% i=0
    total = BigDecimal.new("0")
@@ -17,6 +18,7 @@
             :from_date => @from_date, :to_date => @to_date} %></td>
     <td><%= pnl.strategy %></td>
     <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
+	<td><%= pnl.currency.alpha_code %></td>
     <% total += pnl_amount %>
   </tr>
 <% end %>

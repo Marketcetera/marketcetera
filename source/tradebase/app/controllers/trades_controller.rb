@@ -5,6 +5,7 @@ class TradesController < ApplicationController
   
   auto_complete_for :m_symbol, :root, {}
   auto_complete_for :account, :nickname, {}
+  auto_complete_for :trade, :strategy
 
   def index
     list
@@ -37,13 +38,15 @@ class TradesController < ApplicationController
         @trade = Trade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
                 :comment => params[:trade][:comment],
                 :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
-                :price_per_share => params[:trade][:price_per_share])
+                :price_per_share => params[:trade][:price_per_share],
+                :strategy => params[:trade][:strategy])
       else
         if (params[:security_type] == TradesHelper::SecurityTypeForex)
           @trade = ForexTrade.new(:quantity => get_non_empty_string_from_two(params, :trade, :quantity, nil),
                   :comment => params[:trade][:comment],
                   :trade_type => params[:trade][:trade_type], :side => params[:trade][:side],
-                  :price_per_share => params[:trade][:price_per_share])
+                  :price_per_share => params[:trade][:price_per_share],
+                  :strategy => params[:trade][:strategy])
         else
           @trade = Trade.new(:type => nil)
           @trade.errors.add(:security_type, "#{params[:security_type]} is unknown")
@@ -106,6 +109,7 @@ class TradesController < ApplicationController
         @trade.comment = params[:trade][:comment]
         @trade.total_commission = params[:trade][:total_commission]
         @trade.trade_type = params[:trade][:trade_type]
+        @trade.strategy = params[:trade][:strategy]
         if(@trade.save)
           flash[:notice] = 'Trade was successfully updated.'
           redirect_to :action => 'show', :id => @trade
