@@ -13,6 +13,10 @@ class AddForexSupport < ActiveRecord::Migration
     add_column :marks, :type, :string, :limit=>255
 
     add_fkey :marks, :currency_id, :currencies
+
+    # remove the foreign key to equities table - we have :has_many relationships instead, and we can't
+    # have a foreign key into 2 tables
+    remove_fkey :marks, :tradeable_id, :equities
   end
 
   def self.down
@@ -21,5 +25,7 @@ class AddForexSupport < ActiveRecord::Migration
     remove_column :trades, :strategy
     remove_column :marks, :currency_id
     remove_column :marks, :type
+    remove_column :marks, :tradeable_type
+    add_fkey :marks, :tradeable_id, :equities
   end
 end

@@ -12,8 +12,9 @@
    total = BigDecimal.new("0")
  for pnl in @pnls 
  pnl_amount = BigDecimal(pnl.profit_and_loss.to_s) %>
-  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-    <td><%= link_to pnl.account, {:action => :report, :nickname => pnl.account, :from_date => @from_date, :to_date => @to_date} %></td>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"':''%> >
+    <td><%= link_to pnl.account, {:action => :report, :nickname => pnl.account.nickname,
+            :from_date => @from_date, :to_date => @to_date} %></td>
     <td><%= pnl.strategy %></td>
     <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
     <% total += pnl_amount %>

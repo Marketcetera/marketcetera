@@ -1,4 +1,5 @@
 class Mark < ActiveRecord::Base
+  include TradesHelper
 
   belongs_to :tradeable, :polymorphic => true
  
@@ -24,7 +25,11 @@ class Mark < ActiveRecord::Base
   def tradeable_m_symbol_root
     (self.tradeable.nil? || self.tradeable.m_symbol.nil?) ? nil : self.tradeable.m_symbol.root
   end
-  
+
+  def security_type
+    TradesHelper::SecurityTypeEquity
+  end
+
   # deal with Equities here, deal with others in subclasses
   def tradeable_m_symbol_root=(inSymbol)
     self.tradeable = Equity.get_equity(inSymbol)

@@ -1,0 +1,5 @@
+<label for="trade_trade_type">Security type</label>
+<%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, true, :class => "radio")%>
+<label class="radio_label" for="security_type_e">Equity</label>
+<%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, false, :class => "radio")%>
+<label class="radio_label" for="security_type_f">Forex</label>

@@ -18,7 +18,7 @@ class CashFlow
 
   # returns an array of cashflows for the specified account 
   # Incoming acct is an Account object
-  # IF the incoming accoutn is nil, then we get a set of cashflows across all available accounts
+  # If the incoming account is nil, then we get a set of cashflows across all available accounts
   # Returns an unsorted double hashtable, where the first key is an account id pointing to another table of
   # [symbol, cashflow value] pairs.
   # Users should sort the individual per-account cashflows accordingly (probably by symbol)

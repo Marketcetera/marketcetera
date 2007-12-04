@@ -18,7 +18,7 @@ class CurrencyPairTest < Test::Unit::TestCase
     assert_not_nil CurrencyPair.get_currency_pair("ZAIUSD", false)
     assert_not_nil CurrencyPair.get_currency_pair("ZAI/USD", false)
 
-    assert_raise(RuntimeError) { CurrencyPair.get_currency_pair("unparseable")}
+    assert_raise(UnknownCurrencyPairException) { CurrencyPair.get_currency_pair("unparseable")}
 
     assert_nil CurrencyPair.get_currency_pair("XYZ/BSD", false)
     assert_raise(UnknownCurrencyPairException) { CurrencyPair.get_currency_pair("XYZ/BSD", true)}
@@ -28,6 +28,17 @@ class CurrencyPairTest < Test::Unit::TestCase
     assert_not_nil usd_zai
     assert_equal "USD", usd_zai.first_currency.alpha_code
     assert_equal "ZAI", usd_zai.second_currency.alpha_code
+  end
+
+  def test_get_currency_pair_nil
+    assert_raises (UnknownCurrencyPairException) { assert_nil CurrencyPair.get_currency_pair(nil) }  
+  end
+
+  def test_get_currency_pair_lowercase
+    assert_not_nil CurrencyPair.get_currency_pair("zaiusd", false)
+    assert_not_nil CurrencyPair.get_currency_pair("zaIUsd", false)
+    assert_not_nil CurrencyPair.get_currency_pair("zai/USD", false)
+    assert_not_nil CurrencyPair.get_currency_pair("ZAI/usd", false)
   end
 
   def test_validate

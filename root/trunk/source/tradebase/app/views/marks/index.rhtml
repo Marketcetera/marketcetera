@@ -10,18 +10,23 @@
             <fieldset>
                 <h2>Marks By Symbol</h2>
                 <p>List all marks for a particular symbol for a range of dates.</p>
-                <label for="m_symbol_root">Symbol</label>
-                <% if(!@report.nil? && !@report.errors[:symbol].nil?) %>
-                    <div class="fieldWithErrors">
-                <% end -%>
-                <%= text_field_with_auto_complete :m_symbol, :root  %>
-                <% if(!@report.nil? && !@report.errors[:symbol].nil?)%>
-                    </div>
-                <% end -%>
-                <%= render :partial => 'shared/from_to_date_fields', 
-                           :locals => { :suffix => "smb", :errors => (@report.nil?) ? nil : @report.errors,
-                                    :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true}   %>
-                <input type="hidden" name="suffix" value="smb"/>
+                <div class="form_left">
+                  <%= render :partial => '/shared/security_type' %>
+                  <label for="m_symbol_root">Symbol</label>
+                  <% if(!@report.nil? && !@report.errors[:symbol].nil?) %>
+                      <div class="fieldWithErrors">
+                  <% end -%>
+                  <%= text_field_with_auto_complete :m_symbol, :root  %>
+                  <% if(!@report.nil? && !@report.errors[:symbol].nil?)%>
+                      </div>
+                  <% end -%>
+                </div>
+                <div class="form_right">
+                  <%= render :partial => 'shared/from_to_date_fields',
+                             :locals => { :suffix => "smb", :errors => (@report.nil?) ? nil : @report.errors,
+                                      :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => false}   %>
+                  <input type="hidden" name="suffix" value="smb"/>
+                </div>                  
             </fieldset>
             <div>
                 <%= submit_tag 'Search by Symbol', :class => "submit floatright"  %>
