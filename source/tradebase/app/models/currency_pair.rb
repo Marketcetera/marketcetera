@@ -18,6 +18,10 @@ class CurrencyPair < ActiveRecord::Base
   def to_s
     "#{first_currency_code}/#{second_currency_code}"
   end
+  
+  def m_symbol_root
+    to_s
+  end
 
   def first_currency_code
     first_currency.nil? ? "" : first_currency.alpha_code

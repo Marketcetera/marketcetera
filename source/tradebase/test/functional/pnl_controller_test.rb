@@ -22,9 +22,8 @@ class PnlControllerTest < MarketceteraTestBase
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4", 
                                 "from(3i)"=>"11", "to(3i)"=>"11"}}
     assert_response :success
-    assert_template 'pnl_by_account'
+    assert_template 'missing_marks'
     assert_has_error_notice                   
-    assert_equal 0, assigns(:cashflows).length
   end
 
   # Marks on 4/25/2006 and 4/26/2006
@@ -43,10 +42,9 @@ class PnlControllerTest < MarketceteraTestBase
                        :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"5", "from(2i)"=>"1",
                                 "from(3i)"=>"1", "to(3i)"=>"8"}}
     assert_response :success
-    assert_template 'pnl_by_account'
+    assert_template 'missing_marks'
     assert_has_error_notice
-    assert_equal 0, assigns(:cashflows).length
-    assert_has_error_notice("Error generating cashflow for BOB: Please enter a mark for IBM on 2007-05-08.")
+    assert_has_error_notice("Unable to calculate P&L because some marks are missing.")
   end
 
   # same as above, but we are already missing some marks for FRO for example
@@ -91,10 +89,14 @@ class PnlControllerTest < MarketceteraTestBase
     # should find 3 P&Ls for unassigned
     assert_equal 3, assigns(:pnls).length
     assert_equal "[UNASSIGNED]", assigns(:nickname)
-    cfs = assigns(:pnls)
-    assert_equal [BigDecimal("0").to_s, "GOOG"], [cfs[0].cashflow.to_s, cfs[0].symbol]
-    assert_equal [BigDecimal("0").to_s, "IBM"], [cfs[0].cashflow.to_s, cfs[1].symbol]
-    assert_equal [BigDecimal("0").to_s, "MSFT"], [cfs[0].cashflow.to_s,  cfs[2].symbol]
+    pnls = assigns(:pnls)
+    assert_equal 3, pnls.length
+    assert_nums_equal 0, pnls[0].profit_and_loss
+    assert_equal "MSFT", pnls[0].tradeable.m_symbol_root
+    assert_nums_equal 0, pnls[1].profit_and_loss
+    assert_equal "IBM", pnls[1].tradeable.m_symbol_root
+    assert_nums_equal 0, pnls[2].profit_and_loss
+    assert_equal "GOOG", pnls[2].tradeable.m_symbol_root
   end
 
   def test_nonexistent_acct
@@ -114,15 +116,19 @@ class PnlControllerTest < MarketceteraTestBase
                                 "from(3i)"=>"17", "to(3i)"=>"19"}}
     assert_response :success
     assert_template 'pnl_by_account'
-    assert_not_nil assigns(:cashflows)
+    assert_not_nil assigns(:pnls)
     assert_equal "TOLI", assigns(:nickname)
     # should find 3 P&Ls for TOLI
-    assert_equal 4, assigns(:cashflows).length
-    cfs = assigns(:cashflows)
-    assert_equal [BigDecimal("0").to_s, "GOOG"], [cfs[0].cashflow.to_s, cfs[0].symbol]
-    assert_equal [BigDecimal("0").to_s, "IBM"], [cfs[0].cashflow.to_s, cfs[1].symbol]
-    assert_equal [BigDecimal("0").to_s, "MSFT"], [cfs[0].cashflow.to_s,  cfs[2].symbol]
-    assert_equal [BigDecimal("0").to_s, "SUNW"], [cfs[0].cashflow.to_s,  cfs[3].symbol]
+    assert_equal 4, assigns(:pnls).length
+    pnls = assigns(:pnls)
+    assert_nums_equal -669.0, pnls[0].profit_and_loss
+    assert_equal "SUNW", pnls[0].tradeable.m_symbol_root
+    assert_nums_equal 0, pnls[1].profit_and_loss
+    assert_equal "MSFT", pnls[1].tradeable.m_symbol_root
+    assert_nums_equal 0, pnls[2].profit_and_loss
+    assert_equal "IBM", pnls[2].tradeable.m_symbol_root
+    assert_nums_equal 0, pnls[3].profit_and_loss
+    assert_equal "GOOG", pnls[3].tradeable.m_symbol_root
   end
   
   def test_invalid_from_to_by_acct

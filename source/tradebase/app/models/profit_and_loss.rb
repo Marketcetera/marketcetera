@@ -1,8 +1,7 @@
 # Profitandloss is a regular Ruby class, it doesn't ahve a corresponding database table 
 # and is intended to be a helper class (a struct) holding relevant cash flow-related information.
 class ProfitAndLoss
-  attr_reader :profit_and_loss, :currency_id, :account_id, :strategy
-  attr_writer :profit_and_loss
+  attr_reader :profit_and_loss, :currency_id, :account_id, :strategy, :tradeable
 
   @pnl_equity_cashflow_queries =
     '	/* real cash flows */ '+
@@ -117,12 +116,12 @@ class ProfitAndLoss
     'WHERE mark_value IS NULL '
 
   # Profitandloss is a BigDecimal, account and symbols are strings
-  def initialize(profit_and_loss, currency_id, account_id, strategy, tradeable_id = nil)
+  def initialize(profit_and_loss, currency_id, account_id, strategy, tradeable = nil)
     @profit_and_loss = profit_and_loss
     @account_id  = account_id
     @currency_id = currency_id
     @strategy = strategy
-    @tradeable_id = tradeable_id
+    @tradeable = tradeable
   end
   
   def to_s
@@ -137,6 +136,7 @@ class ProfitAndLoss
     Currency.find(@currency_id)
   end
   
+  
   def ProfitAndLoss.get_equity_pnl(from_date, to_date)
     pnl_equity_query = '/* pnl in all currencies */ '+
     'SELECT sum(quantity) as pnl_local_currency, currency_id, account_id, strategy from  '+
@@ -150,16 +150,17 @@ class ProfitAndLoss
     }
   end 
 
-  def ProfitAndLoss.get_equity_pnl_detail(from_date, to_date)
+  def ProfitAndLoss.get_equity_pnl_detail(account, from_date, to_date)
     pnl_equity_query = '/* pnl in all currencies */ '+
     'SELECT sum(quantity) as pnl_local_currency, currency_id, tradeable_id, account_id, strategy from  '+
     '( '+
       @pnl_equity_cashflow_queries +
-    ') AS PnL GROUP BY account_id, currency_id, strategy, tradeable_id'
+    ') AS PnL WHERE account_id = ? GROUP BY account_id, currency_id, strategy, tradeable_id'
 
-    sane = ActiveRecord::Base.sanitize_sql_accessor([pnl_equity_query, from_date, to_date, from_date, from_date, to_date, to_date])
+    sane = ActiveRecord::Base.sanitize_sql_accessor([pnl_equity_query, from_date, to_date, from_date, from_date, to_date, to_date, account.id])
     ActiveRecord::Base.connection.select_all(sane).collect! { |row| 
-      ProfitAndLoss.new(row["pnl_local_currency"], row["currency_id"], row["account_id"], row["strategy"], row["tradeable_id"])
+      tradeable = Equity.find_by_id(row["tradeable_id"])
+      ProfitAndLoss.new(row["pnl_local_currency"], row["currency_id"], row["account_id"], row["strategy"], tradeable)
     }
   end
 
