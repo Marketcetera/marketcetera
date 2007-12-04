@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/marketcetera_test_base'
 
 class ProfitAndLossTest < MarketceteraTestBase
-  fixtures :currencies, :accounts, :sub_accounts, :sub_account_types, :currency_pairs
+  fixtures  :currency_pairs
   
   # The following describes the PnL test cases (T1 and T2 are test cases)
   #                    T1             T2
@@ -17,6 +17,12 @@ class ProfitAndLossTest < MarketceteraTestBase
   # Type 9:  |------------------------------------|
   # Tests assume correct marks.
   
+  def setup()
+    directory = File.join(File.dirname(__FILE__), "../fixtures/pnl") 
+    Fixtures.create_fixtures(directory, [:trades, :m_symbols, :journals, :equities, :accounts, :sub_accounts,
+                                         :sub_account_types, :postings, :marks]) 
+
+  end
   
   def test_equity_pnl_type_1
     create_equity_trades()
@@ -358,6 +364,18 @@ class ProfitAndLossTest < MarketceteraTestBase
   def create_forex_trades()
     create_forex_trade(1000000, 1.458, Side::QF_SIDE_CODE[:buy], "TOLI", Date.civil(2007, 11, 5), "EUR/USD", 4.99, "USD")
     create_forex_trade(1000000, 1.459, Side::QF_SIDE_CODE[:sell], "TOLI", Date.civil(2007, 11, 10), "EUR/USD", 4.99, "USD")
+  end
+  
+  def test_missing_equity_marks() 
+    results = {}
+    missing = ProfitAndLoss.get_missing_equity_marks(Date.civil(2007,9,28))
+    missing.each { |m| results[m.tradeable_m_symbol_root]= m}
+    assert_equal 5, results.size
+    assert_not_nil results["SUNW"]
+    assert_not_nil results["MSFT"]
+    assert_not_nil results["IBM"]
+    assert_not_nil results["GOOG"]
+    assert_not_nil results["FRO"]
   end
   
   # Helper function to create a trade
