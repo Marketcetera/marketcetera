@@ -80,6 +80,9 @@
 
         <%= render :partial => '/shared/currency_auto_complete', :locals => { :alpha_code => @trade.currency_alpha_code } %>
 
+		<label for="trade_strategy">Strategy</label>
+		<%= text_field_with_auto_complete :trade, :strategy, :value=> @trade.strategy %>
+
         <label for="trade_comment">Comment</label>
         <%= text_field 'trade', 'comment'  %>
     </div>

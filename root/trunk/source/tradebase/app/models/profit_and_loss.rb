@@ -47,18 +47,16 @@ class ProfitAndLoss
     ') AS PositionTable ON marks.tradeable_id = PositionTable.tradeable_id AND mark_date = position_date AND mark_type="C" AND tradeable_type="Equity" '+
     'WHERE mark_value IS NULL '
 
-  @pnl_forex_query = 
-    'SELECT sum(PnL.quantity) as pnl_local_currency, PnL.currency_id, PnL.account_id, PnL.strategy from '+
-    '( '+
+  @pnl_forex_cashflow_queries = 
     ' /* real cash flows */ '+
-    ' SELECT postings.quantity as quantity, postings.currency_id as currency_id, trades.account_id, strategy '+
+    ' SELECT postings.quantity as quantity, postings.currency_id as currency_id, trades.tradeable_id, trades.account_id, strategy '+
     ' FROM postings JOIN journals ON postings.journal_id=journals.id '+
     '         JOIN trades ON trades.journal_id=journals.id '+
     '         JOIN sub_accounts ON sub_account_id = sub_accounts.id '+
     ' WHERE journals.post_date >= ? AND journals.post_date <= ? AND sub_accounts.sub_account_type_id=2 AND tradeable_type="CurrencyPair" '+
     ' UNION ALL '+
     ' /* phantom cash flows for start date */ '+
-    ' SELECT -1*mark_value * PositionTable.position as quantity, currency_pairs.second_currency_id as currency_id, PositionTable.account_id, PositionTable.strategy '+
+    ' SELECT -1*mark_value * PositionTable.position as quantity, currency_pairs.second_currency_id as currency_id, PositionTable.tradeable_id, PositionTable.account_id, PositionTable.strategy '+
     ' FROM marks JOIN '+
     ' ( '+
     '   SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy '+
@@ -69,7 +67,7 @@ class ProfitAndLoss
     ' ) AS PositionTable ON PositionTable.tradeable_id = marks.tradeable_id AND mark_date = ? AND mark_type="C" AND tradeable_type="CurrencyPair" '+
     ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id '+
     ' UNION ALL '+
-    ' SELECT PositionTable.position as quantity, currency_pairs.first_currency_id as currency_id, PositionTable.account_id, PositionTable.strategy '+
+    ' SELECT PositionTable.position as quantity, currency_pairs.first_currency_id as currency_id, PositionTable.tradeable_id, PositionTable.account_id, PositionTable.strategy '+
     ' FROM ( '+
     '   SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy '+
     '   FROM trades JOIN journals ON journals.id=trades.journal_id '+
@@ -80,7 +78,7 @@ class ProfitAndLoss
     ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id '+
     ' UNION ALL '+
     ' /* phantom cash flows for end date */ '+
-    ' SELECT mark_value * PositionTable.position as quantity, currency_pairs.second_currency_id as currency_id, PositionTable.account_id, PositionTable.strategy '+
+    ' SELECT mark_value * PositionTable.position as quantity, currency_pairs.second_currency_id as currency_id, PositionTable.tradeable_id, PositionTable.account_id, PositionTable.strategy '+
     ' FROM marks JOIN '+
     ' ( '+
     '   SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy '+
@@ -91,7 +89,7 @@ class ProfitAndLoss
     ' ) AS PositionTable ON PositionTable.tradeable_id = marks.tradeable_id AND mark_date = ? AND mark_type="C" AND tradeable_type="CurrencyPair" '+
     ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id '+
     ' UNION ALL '+
-    ' SELECT -1*PositionTable.position as quantity, currency_pairs.first_currency_id as currency_id, PositionTable.account_id, PositionTable.strategy '+
+    ' SELECT -1*PositionTable.position as quantity, currency_pairs.first_currency_id as currency_id, PositionTable.tradeable_id, PositionTable.account_id, PositionTable.strategy '+
     ' FROM ( '+
     '   SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy '+
     '   FROM trades JOIN journals ON journals.id=trades.journal_id '+
@@ -99,9 +97,7 @@ class ProfitAndLoss
     '   GROUP BY tradeable_id, account_id, strategy '+
     '   HAVING position != 0 '+
     ' ) AS PositionTable  '+
-    ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id ' +
-    ') AS PnL '+
-    'GROUP BY PnL.account_id, PnL.currency_id, PnL.strategy ';
+    ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id ';
 
   @missing_forex_marks_query = 
     'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "CurrencyPair" as tradeable_type '+
@@ -165,11 +161,31 @@ class ProfitAndLoss
   end
 
   def ProfitAndLoss.get_forex_pnl(from_date, to_date)
-    sane = ActiveRecord::Base.sanitize_sql_accessor([@pnl_forex_query, from_date, to_date, from_date, from_date, from_date, to_date, to_date, to_date])
+    pnl_forex_query = 
+    'SELECT sum(quantity) as pnl_local_currency, currency_id, account_id, strategy from '+
+    '( '+
+      @pnl_forex_cashflow_queries +
+    ') AS PnL GROUP BY account_id, currency_id, strategy ';
+
+    sane = ActiveRecord::Base.sanitize_sql_accessor([pnl_forex_query, from_date, to_date, from_date, from_date, from_date, to_date, to_date, to_date])
     ActiveRecord::Base.connection.select_all(sane).collect! { |row| 
       ProfitAndLoss.new(row["pnl_local_currency"], row["currency_id"], row["account_id"], row["strategy"])
     }
   end 
+
+  def ProfitAndLoss.get_forex_pnl_detail(account, from_date, to_date)
+    pnl_forex_query = 
+    'SELECT sum(quantity) as pnl_local_currency, currency_id, tradeable_id, account_id, strategy from '+
+    '( '+
+      @pnl_forex_cashflow_queries +
+    ') AS PnL WHERE account_id = ? GROUP BY account_id, currency_id, strategy, tradeable_id ';
+
+    sane = ActiveRecord::Base.sanitize_sql_accessor([pnl_forex_query, from_date, to_date, from_date, from_date, from_date, to_date, to_date, to_date, account.id])
+    ActiveRecord::Base.connection.select_all(sane).collect! { |row| 
+      tradeable = CurrencyPair.find_by_id(row["tradeable_id"])
+      ProfitAndLoss.new(row["pnl_local_currency"], row["currency_id"], row["account_id"], row["strategy"], tradeable)
+    }
+  end
 
   def ProfitAndLoss.get_missing_equity_marks(the_date)
     sane = ActiveRecord::Base.sanitize_sql_accessor([@missing_equity_marks_query, the_date, the_date])

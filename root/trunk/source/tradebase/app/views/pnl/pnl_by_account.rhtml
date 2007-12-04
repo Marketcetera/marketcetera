@@ -7,6 +7,7 @@
         <th>Symbol</th>
         <th>Account</th>
         <th>P&amp;L</th>
+		<th>Currency</th>
     </tr>
 <% i=0
    total = BigDecimal.new("O")
@@ -19,6 +20,7 @@
                                    :nickname => pnl.account, :all_dates => "yes"} %></td>    
     <td><%=h pnl.account.to_s %></td>
     <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
+	<td><%= pnl.currency.alpha_code %></td>
     <% total += pnl_amount %>
   </tr>
 <% end %>

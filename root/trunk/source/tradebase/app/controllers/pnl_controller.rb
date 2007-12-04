@@ -21,6 +21,8 @@ class PnlController < ApplicationController
       @to_date = @report.to_date.as_date
       missing_marks = ProfitAndLoss.get_missing_equity_marks(@from_date)
       missing_marks = missing_marks + ProfitAndLoss.get_missing_equity_marks(@to_date)
+      missing_marks = missing_marks + ProfitAndLoss.get_missing_forex_marks(@from_date)
+      missing_marks = missing_marks + ProfitAndLoss.get_missing_forex_marks(@to_date)
       if (missing_marks.length > 0)
         @missing_mark_pages, @missing_marks = paginate_collection(missing_marks, params)
         flash[:error] = "Unable to calculate P&L because some marks are missing."
@@ -33,7 +35,11 @@ class PnlController < ApplicationController
         end
       end
     rescue Exception => ex
-      error_string = "Error generating PnL"+(" for #{nickname_str}" unless nickname_str.blank?)+": " + ex
+      additional = ""
+      if !nickname_str.blank?
+        additional = " for #{nickname_str}"
+      end
+      error_string = "Error generating PnL"+additional+": " + ex
       logger.debug(error_string);
       logger.debug(ex.backtrace)
       flash.now[:error] = error_string
@@ -50,6 +56,7 @@ class PnlController < ApplicationController
     theAcct = @report.account
             
     pnls = ProfitAndLoss.get_equity_pnl_detail(theAcct, @from_date, @to_date)
+    pnls = pnls + ProfitAndLoss.get_forex_pnl_detail(theAcct, @from_date, @to_date)
     @nickname = theAcct.nickname
     @pnl_pages, @pnls = paginate_collection(pnls, params)
     render :template => 'pnl/pnl_by_account'
