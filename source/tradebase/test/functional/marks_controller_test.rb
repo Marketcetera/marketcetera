@@ -6,13 +6,15 @@ require 'marks_controller'
 class MarksController; def rescue_action(e) raise e end; end
 
 class MarksControllerTest < MarketceteraTestBase
-  fixtures :marks, :equities, :m_symbols
+  fixtures :marks, :equities, :m_symbols, :currency_pairs
+  include TradesHelper
 
   def setup
     @controller = MarksController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
     @googEq     = equities(:GOOG)
+    @zaiusd_4_13= marks(:zaiusd_4_13)
     @sunw_4_12  = marks(:sunw_4_12)
   end
 
@@ -35,7 +37,7 @@ class MarksControllerTest < MarketceteraTestBase
 
   # both from and to dates should be Date.today
   def test_by_symbol_no_from_to_dates
-    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}}
+    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity}
 
     assert_response :success
     assert_template 'index'
@@ -48,7 +50,7 @@ class MarksControllerTest < MarketceteraTestBase
   end
 
   def test_by_symbol_invalid_dates
-    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, 
+    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2008", "to(2i)"=>"4", "to(3i)"=>"32", 
                                "from(1i)"=>"2008", "from(2i)"=>"4", "from(3i)"=>"32"}}
 
@@ -60,7 +62,7 @@ class MarksControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:report).errors[:to_date]
     
     # now try a date in the past, should get 0
-    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, 
+    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2006", "to(2i)"=>"10", "to(3i)"=>"20", 
                                "from(1i)"=>"2008", "from(2i)"=>"4", "from(3i)"=>"11"}}
     assert_response :success               
@@ -69,7 +71,7 @@ class MarksControllerTest < MarketceteraTestBase
   end
   
     def test_by_symbol_with_dates
-    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, 
+    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2008", "to(2i)"=>"10", "to(3i)"=>"20", 
                                "from(1i)"=>"2006", "from(2i)"=>"10", "from(3i)"=>"20"}}
 
@@ -86,7 +88,7 @@ class MarksControllerTest < MarketceteraTestBase
     assert_has_show_edit_delete_links(true, true, true)
     
     # now try a date in the past, should get 0
-    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, 
+    get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2008", "to(2i)"=>"10", "to(3i)"=>"20", 
                                "from(1i)"=>"2008", "from(2i)"=>"10", "from(3i)"=>"20"}}
     assert_response :success               
@@ -96,7 +98,7 @@ class MarksControllerTest < MarketceteraTestBase
 
   # both from and to dates should be Date.today
   def test_by_symbol_no_marks_found
-    get :by_symbol, {:m_symbol => {:root => "DNE"}, 
+    get :by_symbol, {:m_symbol => {:root => "DNE"}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2008", "to(2i)"=>"10", "to(3i)"=>"20", 
                            "from(1i)"=>"2008", "from(2i)"=>"10", "from(3i)"=>"20"}}
     assert_response :success
@@ -109,7 +111,24 @@ class MarksControllerTest < MarketceteraTestBase
     assert_equal 0, assigns(:marks).length
   end
 
-  # 2007/4/13 should have 3 marks: goog, sunw, beer
+  def test_by_symbol_forex
+    assert_not_nil CurrencyPair.get_currency_pair("ZAI/USD", false)
+    get :by_symbol, {:m_symbol => {:root => "ZAI/USD"}, :security_type => TradesHelper::SecurityTypeForex,
+                     :date_ => {"to(1i)"=>"2008", "to(2i)"=>"10", "to(3i)"=>"20",
+                               "from(1i)"=>"2006", "from(2i)"=>"10", "from(3i)"=>"20"}}
+
+    assert_response :success
+    assert_template 'list_by_symbol'
+    assert_not_nil assigns(:marks)
+    assert_nil flash[:error]
+
+    # should find 1 ZAI/USD entry
+    assert_equal 1, assigns(:marks).length
+    assert_equal assigns(:marks)[0].tradeable_m_symbol_root, "ZAI/USD"
+    assert_has_show_edit_delete_links(true, true, true)
+  end
+
+  # 2007/4/13 should have 3 marks: goog, sunw, beer, zai/usd
   def test_on_date
     get :on_date, :date => {"on(1i)"=>"2007", "on(2i)"=>"4", "on(3i)"=>"13"}
     
@@ -120,10 +139,12 @@ class MarksControllerTest < MarketceteraTestBase
     assert_nil flash[:error]
     
     # should find 3 entries
-    assert_equal 3, assigns(:marks).length
+    assert_equal 4, assigns(:marks).length
     assert_equal marks(:goog_4_13), assigns(:marks)[0]
     assert_equal marks(:sunw_4_13), assigns(:marks)[1]
     assert_equal marks(:beer_4_13), assigns(:marks)[2]
+    assert_equal marks(:zaiusd_4_13), assigns(:marks)[3]
+    assert_equal assigns(:marks)[3].class.to_s, "ForexMark"
     assert_has_show_edit_delete_links(true, true, true)
   end
 
@@ -162,6 +183,31 @@ class MarksControllerTest < MarketceteraTestBase
     assert assigns(:mark).valid?
   end
 
+  def test_by_symbol_inavalid_currency
+    get :by_symbol, {:m_symbol => {:root => "DNE"}, :security_type => TradesHelper::SecurityTypeForex,
+                     :date_ => {"to(1i)"=>"2008", "to(2i)"=>"10", "to(3i)"=>"20",
+                           "from(1i)"=>"2008", "from(2i)"=>"10", "from(3i)"=>"20"}}
+    assert_response :success
+    assert_template 'index'
+
+    assert_nil assigns(:marks)
+    assert_has_error_box
+    assert_not_nil assigns(:report).errors[:currency_pair]
+    assert_not_nil assigns(:report).errors[:currency_pair].match("DNE")
+  end
+
+  def test_by_symbol_currency_not_found
+    get :by_symbol, {:m_symbol => {:root => "XYZ/BSD"}, :security_type => TradesHelper::SecurityTypeForex,
+                     :date_ => {"to(1i)"=>"2008", "to(2i)"=>"10", "to(3i)"=>"20",
+                           "from(1i)"=>"2008", "from(2i)"=>"10", "from(3i)"=>"20"}}
+    assert_response :success
+    assert_template 'list_by_symbol'
+
+    assert_not_nil assigns(:marks)
+    assert_has_error_notice
+    assert_equal assigns(:marks).length, 0
+  end
+
   def test_new
     get :new
 
@@ -174,7 +220,8 @@ class MarksControllerTest < MarketceteraTestBase
   def test_create
     num_marks = Mark.count
 
-    post :create, { :mark => {:mark_value => "10.20", :mark_date => Date.today}, :m_symbol =>{ :root =>"fred"} }
+    post :create, { :mark => {:mark_value => "10.20", :mark_date => Date.today}, :m_symbol =>{ :root =>"fred"},
+                    :security_type => TradesHelper::SecurityTypeEquity}
 
     assert_response :redirect
     assert_redirected_to :action => 'by_symbol'
@@ -185,7 +232,23 @@ class MarksControllerTest < MarketceteraTestBase
     assert_equal num_marks + 1, Mark.count
   end
 
-  def test_create_already_exists 
+  # creates a mark for currency that doesn't exist upfront - but underlying currencies do exist
+  def test_create_forex
+    num_marks = Mark.count
+
+    post :create, { :mark => {:mark_value => "1.234", :mark_date => Date.today}, :m_symbol =>{ :root =>"USD/ZAI"},
+            :security_type => TradesHelper::SecurityTypeForex }
+
+    assert_response :redirect
+    assert_redirected_to :action => 'by_symbol'
+
+
+    assert_nil assigns(:report) # shouldn't have any errors on redirection'
+    assert_no_tag :tag => 'div', :attributes => {:class => "errorExplanation"}
+    assert_equal num_marks + 1, Mark.count
+  end
+
+  def test_create_already_exists
     sunw4_12 = marks(:sunw_4_12)
     num_marks = Mark.count
 
@@ -200,13 +263,47 @@ class MarksControllerTest < MarketceteraTestBase
   end
   
   def test_create_future_date
-    post :create, { :mark => {:mark_value => "10.20", :mark_date => Date.today+10}, 
+    post :create, { :mark => {:mark_value => "10.20", :mark_date => Date.today+10},
+                    :security_type => TradesHelper::SecurityTypeEquity, 
                     :m_symbol =>{ :root => @sunw_4_12.tradeable.m_symbol.root} }
     assert_response :success
     assert_has_error_box
     assert_equal 1, assigns(:mark).errors.length
     assert_not_nil assigns(:mark).errors[:mark_date]   
     assert_equal "should not be in the future.", assigns(:mark).errors[:mark_date]             
+  end
+
+  # the currency pair can't be created b/c underlying currencie's don't exist
+  def test_create_forex_unknown_currency_pair
+    num_marks = Mark.count
+
+    post :create, { :mark => {:mark_value => "1.234", :mark_date => Date.today}, :m_symbol =>{ :root =>"XYZ/BOB"},
+            :security_type => TradesHelper::SecurityTypeForex }
+
+    assert :template => 'create'
+    assert :action => 'new'
+    assert_has_error_box
+
+    assert_nil assigns(:report)
+    assert_not_nil assigns(:mark).errors[:symbol]
+    assert_not_nil assigns(:mark).errors[:symbol].match("XYZ/BOB")
+    assert_equal num_marks, Mark.count
+  end
+
+  # USD/ZAI doesn't exist, but we should be able to create mark for it since we have hte underlying currencies
+  def test_create_currency_pair_illegal
+    num_marks = Mark.count
+
+    post :create, { :mark => {:mark_value => "1.234", :mark_date => Date.today}, :m_symbol =>{ :root =>"ZAI"},
+            :security_type => TradesHelper::SecurityTypeForex }
+
+    assert :action => 'new'
+    assert :template => 'create'
+
+    assert_nil assigns(:report)
+    assert_not_nil assigns(:mark).errors[:symbol]
+    assert_not_nil assigns(:mark).errors[:symbol].match("ZAI")
+    assert_equal num_marks, Mark.count
   end
 
   def test_edit
@@ -234,7 +331,10 @@ class MarksControllerTest < MarketceteraTestBase
 
     post :destroy, :id => @sunw_4_12
     assert_response :redirect
-    assert_redirected_to :action => 'by_symbol'
+    assert_redirected_to :action => 'index'
+
+    assert_no_errors
+    assert_equal "Mark was successfully deleted.", flash[:notice]
 
     assert_raise(ActiveRecord::RecordNotFound) {
       Mark.find(@sunw_4_12)

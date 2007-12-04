@@ -8,6 +8,7 @@ class CurrencyPair < ActiveRecord::Base
 
   has_many :trades, :as => :tradeable
   has_many :positions, :as => :tradeable
+  has_many :marks, :as => :tradeable
 
   def validate
     errors.add(:first_currency, "unknown") if first_currency.nil?
@@ -30,11 +31,15 @@ class CurrencyPair < ActiveRecord::Base
   def CurrencyPair.get_currency_pair(symbol, create_missing=true)
     # EUR/USD
     # EURUSD
+    # eur/usd
+
+    # case-insensitive
+    symbol = (symbol.nil?) ? nil : symbol.upcase
     matched = /^([A-Z]{3})\/([A-Z]{3})$/.match(symbol)
     if (matched.nil?)
       matched = /^([A-Z]{3})([A-Z]{3})$/.match(symbol)
       if (matched.nil?)
-        raise "Illegal currency pair symbol: #{symbol}"
+        raise UnknownCurrencyPairException.new("Illegal currency pair symbol: #{symbol}")
       end
     end
     first_currency_code = matched[1]

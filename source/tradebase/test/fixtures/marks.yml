@@ -53,5 +53,14 @@ beer_4_13:
   mark_date: <%= Date.new(2007, 4, 13) %>
   type: Mark
 
-  
+zaiusd_4_13:
+  id: 7
+  tradeable_id: 1002
+  tradeable_type: CurrencyPair
+  mark_value: 1.48
+  mark_type: I
+  mark_date: <%= Date.new(2007, 4, 13) %>
+  type: ForexMark
+
+
   

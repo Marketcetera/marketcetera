@@ -4,6 +4,7 @@ class Equity < ActiveRecord::Base
   
   has_many :trades, :as => :tradeable
   has_many :positions, :as => :tradeable
+  has_many :marks, :as => :tradeable
 
   validates_uniqueness_of :m_symbol_id, :message => "Equity with that symbol already exists"
   

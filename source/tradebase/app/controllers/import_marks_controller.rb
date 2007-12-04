@@ -51,7 +51,7 @@ class ImportMarksController < ApplicationController
     value = mark[1]
     date = mark[2]
     m = Mark.new(:tradeable_id => equity, :mark_value => value, :mark_date => date, :mark_type => "C")
-    m.equity = equity
+    m.tradeable = equity
     m.save
     if(!m.valid?)
       report.add_error_for_line(line, m.errors)

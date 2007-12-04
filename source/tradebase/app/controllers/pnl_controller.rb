@@ -58,6 +58,7 @@ class PnlController < ApplicationController
       missing_marks = missing_marks + ProfitAndLoss.get_missing_equity_marks(@to_date)
       if (missing_marks.length > 0)
         @missing_mark_pages, @missing_marks = paginate_collection(missing_marks, params)
+        flash[:error] = "Unable to calculate P&L because some marks are missing."
         render :template => 'pnl/missing_marks'
       else
         pnls = ProfitAndLoss.get_equity_pnl(@from_date, @to_date)
@@ -65,7 +66,6 @@ class PnlController < ApplicationController
 
         @pnl_pages, @pnls = paginate_collection(pnls, params)
         render :template => 'pnl/pnl_aggregate'
-        # noop
       end
     rescue Exception => ex
       logger.debug("Error generating aggregate cashflow: " + ex);
