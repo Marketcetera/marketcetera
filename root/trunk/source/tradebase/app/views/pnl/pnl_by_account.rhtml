@@ -10,13 +10,16 @@
     </tr>
 <% i=0
    total = BigDecimal.new("O")
- for cf in @cashflows %>
+ for pnl in @pnls 
+ pnl_amount = BigDecimal(pnl.profit_and_loss.to_s)
+ symbol = pnl.tradeable.to_s
+  %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"':''%> >
-    <td><%= link_to h(cf.symbol), {:action => :trade_search, :controller => 'queries', :m_symbol_root => cf.symbol,
-                                   :nickname => cf.account, :all_dates => "yes"} %></td>    
-    <td><%=h cf.account.to_s %></td>
-    <td <%= pnl_number_class(cf.cashflow) %>><%= fn(cf.cashflow, 2) %></td>
-    <% total += BigDecimal(cf.cashflow.to_s) %>
+    <td><%= link_to h(symbol), {:action => :trade_search, :controller => 'queries', :m_symbol_root => symbol,
+                                   :nickname => pnl.account, :all_dates => "yes"} %></td>    
+    <td><%=h pnl.account.to_s %></td>
+    <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
+    <% total += pnl_amount %>
   </tr>
 <% end %>
   <tr>
@@ -26,4 +29,4 @@
 
 <%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
 
-<%= pagination_links(@cashflow_pages, :params => {:nickname => @nickname, :from_date => @from_date, :to_date => @to_date }) %>
+<%= pagination_links(@pnl_pages, :params => {:nickname => @nickname, :from_date => @from_date, :to_date => @to_date }) %>
