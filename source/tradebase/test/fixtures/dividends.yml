@@ -3,7 +3,7 @@ toli_div:
   id: 1
   amount: 20
   description: "toli dividend"
-  currency_id: 1
+  currency_id: 154
   equity_id: 3
 
 sunw_div:

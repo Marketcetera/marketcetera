@@ -31,7 +31,8 @@ class CurrenciesControllerTest < MarketceteraTestBase
   end
 
   def test_show
-    get :show, :id => 1
+    usd = Currency.find_by_alpha_code("USD")
+    get :show, :id => usd.id
 
     assert_response :success
     assert_template 'show'
