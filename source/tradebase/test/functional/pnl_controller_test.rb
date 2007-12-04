@@ -158,11 +158,14 @@ class PnlControllerTest < MarketceteraTestBase
     assert_template 'pnl_aggregate'
     assert_equal 0, assigns(:report).errors.length
 
-    cfs = assigns(:cashflows)
-    assert_equal 3, cfs.length
-    assert_equal ["GRAHAM", BigDecimal("285.12").to_s], [cfs[0][:account], cfs[0][:cashflow].to_s]
-    assert_equal ["TOLI", BigDecimal("0").to_s], [cfs[1][:account], cfs[1][:cashflow].to_s]
-    assert_equal ["[UNASSIGNED]", BigDecimal("0").to_s], [cfs[2][:account], cfs[2][:cashflow].to_s]
+    pnls = assigns(:pnls)
+    assert_equal 3, pnls.length
+    assert_equal "[UNASSIGNED]",pnls[0].account.nickname 
+    assert_nums_equal 0, pnls[0].profit_and_loss.to_s
+    assert_equal "TOLI",pnls[1].account.nickname 
+    assert_nums_equal -669.0, pnls[1].profit_and_loss.to_s
+    assert_equal "GRAHAM",pnls[2].account.nickname 
+    assert_nums_equal 285.12, pnls[2].profit_and_loss.to_s
   end
 
   def test_aggregate_missing_mark
