@@ -72,6 +72,7 @@ class MarketceteraTestBase < Test::Unit::TestCase
   end
   
   # Verify that show/edit/delete links are present
+  # config/environments/test.rb has 37 hard-coded as an asset-id
   def assert_has_show_edit_delete_links(hasShow, hasEdit, hasDelete)
     if(hasShow)
       assert_tag :tag => 'img', :attributes => { :alt=>'Show', :src => '/images/icons/show.png?37'}
