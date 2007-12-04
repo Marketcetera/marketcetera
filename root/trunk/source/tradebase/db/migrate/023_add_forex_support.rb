@@ -26,6 +26,6 @@ class AddForexSupport < ActiveRecord::Migration
     remove_column :marks, :currency_id
     remove_column :marks, :type
     remove_column :marks, :tradeable_type
-    add_fkey :marks, :tradeable_id, :equities
+    # do not re-add foreign key on marks to equities table since we may have duplicate tradeable ids in equities/currencies already
   end
 end

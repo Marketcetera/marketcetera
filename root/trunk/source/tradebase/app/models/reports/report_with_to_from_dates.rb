@@ -15,6 +15,9 @@ class ReportWithToFromDates < Tableless
   def validate
     errors.add(:from_date, "is not a valid date #{@from_date.to_s}") unless (!from_date.nil? && from_date.valid?)
     errors.add(:to_date, "is not a valid date #{@to_date.to_s}") unless (!to_date.nil? && to_date.valid?)
+    if ((!from_date.nil? && !to_date.nil? && from_date.valid? && to_date.valid?) && (from_date.as_date > to_date.as_date))
+      errors.add(:from_date, "is later than 'to date'") 
+    end
   end
    
 end

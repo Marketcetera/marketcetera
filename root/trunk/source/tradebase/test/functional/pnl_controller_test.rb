@@ -181,5 +181,50 @@ class PnlControllerTest < MarketceteraTestBase
     assert_response :success
     assert_template 'missing_marks'
     assert_has_error_notice
+    assert_not_nil assigns(:missing_marks)
+    assert_equal assigns(:missing_marks).length, 5, "should need 5 marks"
+    assert_equal assigns(:missing_marks)[0].tradeable_m_symbol_root, "SUNW"
+    assert_equal assigns(:missing_marks)[1].tradeable_m_symbol_root, "MSFT"
+    assert_equal assigns(:missing_marks)[2].tradeable_m_symbol_root, "IBM"
+    assert_equal assigns(:missing_marks)[3].tradeable_m_symbol_root, "GOOG"
+    assert_equal assigns(:missing_marks)[4].tradeable_m_symbol_root, "FRO"
+
+    #all marks are from 4-20-2007
+    assigns(:missing_marks).each {|m| assert_equal m.mark_date.to_s, Date.civil(2007, 4, 20).to_s}
+  end
+
+  def test_from_after_to_date
+    get :report, { :suffix => "acct",
+                       :date_acct=>{"to(1i)"=>"2002", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
+                                "from(3i)"=>"17", "to(3i)"=>"20"}}
+
+    assert_response :success
+    assert_template 'index'
+    assert_has_error_box
+    assert_equal 1, assigns(:report).errors.length
+    assert_not_nil assigns(:report).errors[:from_date]
+    assert_not_nil assigns(:report).errors[:from_date].match("is later than")
+  end
+
+  # verify the missing marks page has the 'edit' link that's linked to the create method of the marks controller
+  def test_missing_marks_have_right_links
+    get :report, { :suffix => "acct",
+                       :date_acct=>{"to(1i)"=>"2007", "from(1i)"=>"2007", "to(2i)"=>"4", "from(2i)"=>"4",
+                                "from(3i)"=>"17", "to(3i)"=>"20"}}
+    assert_response :success
+    assert_template 'missing_marks'
+    # verify we have a "create new" link and no other links
+    assert_tag :tag => 'img', :attributes => {:alt=>'Create New', :src => '/images/icons/pencil.png?37'}
+    assert_has_show_edit_delete_links(false, false, false)
+
+    # now let's dissect the link - should look like this:
+    # href="/marks/new_missing?tradeable_type=Equity&amp;tradeable_id=1&amp;mark_date=2007-12-04
+    m = assigns(:missing_marks)[0]
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*tradeable_type=Equity/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*mark_date=#{m.mark_date}/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*tradeable_id=#{m.tradeable.id}/}
   end
 end

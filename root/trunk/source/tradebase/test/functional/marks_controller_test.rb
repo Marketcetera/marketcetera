@@ -50,6 +50,7 @@ class MarksControllerTest < MarketceteraTestBase
   end
 
   def test_by_symbol_invalid_dates
+    # test when dates are invalid
     get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2008", "to(2i)"=>"4", "to(3i)"=>"32", 
                                "from(1i)"=>"2008", "from(2i)"=>"4", "from(3i)"=>"32"}}
@@ -61,13 +62,15 @@ class MarksControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:report).errors[:from_date]
     assert_not_nil assigns(:report).errors[:to_date]
     
-    # now try a date in the past, should get 0
+    # now try a when from date is later than to_date
     get :by_symbol, {:m_symbol => {:root => @googEq.m_symbol.root}, :security_type => TradesHelper::SecurityTypeEquity,
                      :date_ => {"to(1i)"=>"2006", "to(2i)"=>"10", "to(3i)"=>"20", 
                                "from(1i)"=>"2008", "from(2i)"=>"4", "from(3i)"=>"11"}}
     assert_response :success               
-    assert_equal 0, assigns(:marks).length
-    assert_tag :tag => 'div', :attributes => {:id => "error_notice"}
+    assert_nil assigns(:marks)
+    assert_not_nil assigns(:report).errors[:from_date]
+    assert_not_nil assigns(:report).errors[:from_date].match("is later than")
+    assert_has_error_box
   end
   
     def test_by_symbol_with_dates
