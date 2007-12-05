@@ -165,7 +165,7 @@ class ProfitAndLoss
     'SELECT sum(quantity) as pnl_local_currency, currency_id, account_id, strategy from '+
     '( '+
       @pnl_forex_cashflow_queries +
-    ') AS PnL GROUP BY account_id, currency_id, strategy ';
+    ') AS PnL GROUP BY account_id, currency_id, strategy ORDER BY account_id, strategy ';
 
     sane = ActiveRecord::Base.sanitize_sql_accessor([pnl_forex_query, from_date, to_date, from_date, from_date, from_date, to_date, to_date, to_date])
     ActiveRecord::Base.connection.select_all(sane).collect! { |row| 
