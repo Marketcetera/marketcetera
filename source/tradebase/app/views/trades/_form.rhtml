@@ -2,29 +2,41 @@
 
 <script type="text/javascript">
 //<![CDATA[
+	var sell_short_exempt = null
+	var sell_short = null
+
 	function change_to_forex()
 	{
-		$('price_label').textContent = "Rate"
-		$('m_symbol_root_label').textContent = "Currency Pair"
-        $('trade_trade_type_t').checked = true
-        $('trade_trade_type_e').hide()
-        $('trade_trade_type_c').hide()
-        $('trade_trade_type_e_label').hide()
-        $('trade_trade_type_c_label').hide()
-		
-      $("trade_side").remove(2)
-      $("trade_side").remove(3)
-
+		if (sell_short == null) {
+			$('price_label').textContent = "Rate"
+			$('m_symbol_root_label').textContent = "Currency Pair"
+			$('trade_trade_type_t').checked = true
+			$('trade_trade_type_e').hide()
+			$('trade_trade_type_c').hide()
+			$('trade_trade_type_e_label').hide()
+			$('trade_trade_type_c_label').hide()
+			
+			descendants = $("trade_side").descendants()
+			sell_short_exempt = descendants[3].remove()
+			sell_short = descendants[2].remove()
+		}
 	}
 	function change_to_equity()
 	{
-		$('price_label').textContent = "Price"
-		$('m_symbol_root_label').textContent = "Symbol"
-        $('trade_trade_type_e').show()
-        $('trade_trade_type_c').show()
-        $('trade_trade_type_e_label').show()
-        $('trade_trade_type_c_label').show()
-
+		if (sell_short != null) {
+			$('price_label').textContent = "Price"
+			$('m_symbol_root_label').textContent = "Symbol"
+			$('trade_trade_type_e').show()
+			$('trade_trade_type_c').show()
+			$('trade_trade_type_e_label').show()
+			$('trade_trade_type_c_label').show()
+			
+			$("trade_side").insert(sell_short)
+			$("trade_side").insert(sell_short_exempt)
+			
+			sell_short = null
+			sell_short_exempt = null			
+		}
 	}
 //]]>
 </script>
