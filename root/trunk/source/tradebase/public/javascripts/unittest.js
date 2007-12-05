@@ -1,8 +1,8 @@
-// script.aculo.us unittest.js v1.6.5, Wed Nov 08 14:17:49 CET 2006
+// script.aculo.us unittest.js v1.8.0, Tue Nov 06 15:01:40 +0300 2007
 
-// Copyright (c) 2005, 2006 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
-//           (c) 2005, 2006 Jon Tirsen (http://www.tirsen.com)
-//           (c) 2005, 2006 Michael Schuerig (http://www.schuerig.de/michael/)
+// Copyright (c) 2005-2007 Thomas Fuchs (http://script.aculo.us, http://mir.aculo.us)
+//           (c) 2005-2007 Jon Tirsen (http://www.tirsen.com)
+//           (c) 2005-2007 Michael Schuerig (http://www.schuerig.de/michael/)
 //
 // script.aculo.us is freely distributable under the terms of an MIT-style license.
 // For details, see the script.aculo.us web site: http://script.aculo.us/
@@ -295,6 +295,13 @@ Test.Unit.Assertions.prototype = {
         '", actual "' + Test.Unit.inspect(actual) + '"'); }
     catch(e) { this.error(e); }
   },
+  assertInspect: function(expected, actual) {
+    var message = arguments[2] || "assertInspect";
+    try { (expected == actual.inspect()) ? this.pass() :
+      this.fail(message + ': expected "' + Test.Unit.inspect(expected) + 
+        '", actual "' + Test.Unit.inspect(actual) + '"'); }
+    catch(e) { this.error(e); }
+  },
   assertEnumEqual: function(expected, actual) {
     var message = arguments[2] || "assertEnumEqual";
     try { $A(expected).length == $A(actual).length && 
@@ -405,7 +412,7 @@ Test.Unit.Assertions.prototype = {
       method();
       this.fail(message + ": exception expected but none was raised"); }
     catch(e) {
-      (e.name==exceptionName) ? this.pass() : this.error(e); 
+      ((exceptionName == null) || (e.name==exceptionName)) ? this.pass() : this.error(e); 
     }
   },
   assertElementsMatch: function() {
@@ -517,15 +524,19 @@ Test.setupBDDExtensionMethods = function(){
     shouldNotBe:     'assertReturnsFalse',
     shouldRespondTo: 'assertRespondsTo'
   };
-  Test.BDDMethods = {};
-  for(m in METHODMAP) {
-    Test.BDDMethods[m] = eval(
-      'function(){'+
-      'var args = $A(arguments);'+
-      'var scope = args.shift();'+
-      'scope.'+METHODMAP[m]+'.apply(scope,(args || []).concat([this])); }');
+  var makeAssertion = function(assertion, args, object) { 
+   	this[assertion].apply(this,(args || []).concat([object]));
   }
-  [Array.prototype, String.prototype, Number.prototype].each(
+  
+  Test.BDDMethods = {};   
+  $H(METHODMAP).each(function(pair) { 
+    Test.BDDMethods[pair.key] = function() { 
+       var args = $A(arguments); 
+       var scope = args.shift(); 
+       makeAssertion.apply(scope, [pair.value, args, this]); }; 
+  });
+  
+  [Array.prototype, String.prototype, Number.prototype, Boolean.prototype].each(
     function(p){ Object.extend(p, Test.BDDMethods) }
   );
 }
