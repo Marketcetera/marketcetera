@@ -343,4 +343,59 @@ class MarksControllerTest < MarketceteraTestBase
       Mark.find(@sunw_4_12)
     }
   end
+
+  def test_new_has_security_type_radio_buttons
+    get :new
+    assert_template 'new'
+    assert_tag :tag => 'input', :attributes => {:class => 'radio'}
+  end
+
+  def test_edit_page_security_type_disabled
+    get :edit, :id => @sunw_4_12
+    assert_response :success
+    assert_template 'edit'
+    # shouldn't have any radio buttons
+    assert_no_tag :tag => 'input', :attributes => {:class => 'radio'}
+    assert_tag :tag => 'div', :attributes => {:id => "asset_type"}, :content => "Equity"
+
+    get :edit, :id => @zaiusd_4_13
+    assert_response :success
+    assert_template 'edit'
+    # shouldn't have any radio buttons
+    assert_no_tag :tag => 'input', :attributes => {:class => 'radio'}
+    assert_tag :tag => 'div', :attributes => {:id => 'asset_type'}, :content => 'CurrencyPair'
+  end
+
+  # verify that passing the info to new_missing action correctly renders the mark
+  def test_new_missing_equity
+    get :new_missing,  {"mark_date"=>"2007-07-11", "tradeable_type"=>"Equity", "tradeable_id"=> @googEq.id}
+    assert_response :success
+    assert_template 'new'
+
+    assert_not_nil assigns(:mark)
+    m = assigns(:mark)
+    assert_equal m.mark_date, Date.civil(2007, 7, 11)
+    assert_equal m.tradeable_m_symbol_root, @googEq.m_symbol_root
+    assert_equal "Equity", m.tradeable_type
+
+    # make sure equity shows up as selected security type and forex is not checked as well
+    assert_tag :tag => 'input', :attributes => {:checked => "checked", :type => "radio", :id => 'security_type_e'}
+    assert_no_tag :tag => 'input', :attributes => {:checked => "checked", :type => "radio", :id => 'security_type_f'}
+  end
+
+  def test_new_missing_forex
+    get :new_missing,  {"mark_date"=>"2007-07-11", :tradeable_type =>"CurrencyPair", "tradeable_id"=> @zaiusd_4_13.tradeable_id}
+    assert_response :success
+    assert_template 'new'
+
+    assert_not_nil assigns(:mark)
+    m = assigns(:mark)
+    assert_equal m.mark_date, Date.civil(2007, 7, 11)
+    assert_equal m.tradeable_m_symbol_root, @zaiusd_4_13.tradeable_m_symbol_root
+    assert_equal "CurrencyPair", m.tradeable_type
+
+    # make sure forex shows up as selected security type and equity is not checked as well
+    assert_tag :tag => 'input', :attributes => {:checked => "checked", :type => "radio", :id => 'security_type_f'}
+    assert_no_tag :tag => 'input', :attributes => {:checked => "checked", :type => "radio", :id => 'security_type_e'}
+  end
 end

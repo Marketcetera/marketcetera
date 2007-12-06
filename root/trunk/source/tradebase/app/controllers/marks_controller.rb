@@ -79,7 +79,13 @@ class MarksController < ApplicationController
   # used for creation of missing marks - the mark data is prepopulated
   def new_missing
     flash.clear
-    @mark = Mark.new(:mark_date => params[:mark_date], :tradeable_id => params[:tradeable_id], :tradeable_type => params[:tradeable_type])
+    if(params[:tradeable_type] == CurrencyPair.name)
+      @mark = ForexMark.new(:mark_date => params[:mark_date])
+      @mark.tradeable = CurrencyPair.find(params[:tradeable_id])
+    else
+      @mark = Mark.new(:mark_date => params[:mark_date], :tradeable_id => params[:tradeable_id])
+      @mark.tradeable = Equity.find(params[:tradeable_id])
+    end
     render :template => 'marks/new'
   end
 

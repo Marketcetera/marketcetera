@@ -35,4 +35,9 @@ class ForexTrade < Trade
 
     logger.debug("created and saved all related postings")
   end
+
+  # Forex stores everything in cash
+  def get_notional_account_name
+    SubAccountType::DESCRIPTIONS[:cash]
+  end
 end

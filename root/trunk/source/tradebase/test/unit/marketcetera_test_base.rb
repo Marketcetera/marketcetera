@@ -3,7 +3,8 @@ require 'quickfix_ruby'
 require 'quickfix_fields'
 
 class MarketceteraTestBase < Test::Unit::TestCase
-  fixtures :currencies, :sub_account_types
+  include TradesHelper
+  fixtures :currencies, :sub_account_types, :currency_pairs
   
   def logger
     Logger.new(STDOUT)
@@ -103,9 +104,18 @@ class MarketceteraTestBase < Test::Unit::TestCase
    
   
   # Helper function to create a trade
-  def create_test_trade(qty, price, side, account, date, symbol, commission, cur)
+  def create_test_trade(qty, price, side, account, date, symbol, commission, cur, security_type = TradesHelper::SecurityTypeEquity)
+    if(security_type == TradesHelper::SecurityTypeEquity)
       theTrade = Trade.new(:quantity => qty, :price_per_share => price, :side => side)
-    theTrade.tradeable = Equity.get_equity(symbol)
+      theTrade.tradeable = Equity.get_equity(symbol)
+    else
+      if (security_type == TradesHelper::SecurityTypeForex)
+        theTrade = ForexTrade.new(:quantity => qty, :price_per_share => price, :side => side)
+        theTrade.tradeable = CurrencyPair.get_currency_pair(symbol)
+      else
+        raise "Creating trade of unknown type: #{security_type}"
+      end
+    end
     assert theTrade.create_trade(theTrade.quantity, symbol, theTrade.price_per_share, 
                                         commission,  cur, account, date)
     theTrade.save

@@ -10,6 +10,9 @@
                 
             <label for="mark_value" class="view_background">Value</label>
             <div id="mark_value" class="data view_data"><%=df @mark.mark_value %></div>
+
+            <label for="asset_type" class="view_background">Asset Type</label>
+            <div id="asset_type" class="data view_data"><%=df @mark.tradeable.class %></div>
         </div>
         <div class="form_right">
 
