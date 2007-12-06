@@ -16,6 +16,7 @@ public enum OrderLoaderMessageKey implements LocalizedMessage {
     PARSING_PRICE_POSITIVE("orderloader.parsing.price_positive"),
     PARSING_QTY_INT("orderloader.parsing.quantity_int"),
     PARSING_QTY_POS_INT("orderloader.parsing.quantity_pos_int"),
+    PARSING_FIELD_NOT_IN_DICT("orderloader.parsing.field_not_in_dict"),
     PARSING_WRONG_NUM_FIELDS("orderloader.parsing.wrong_num_fields");
 
     private OrderLoaderMessageKey(String inKey) {

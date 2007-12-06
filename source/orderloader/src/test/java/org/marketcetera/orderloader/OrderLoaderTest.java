@@ -45,22 +45,23 @@ public class OrderLoaderTest extends TestCase
     {
         super.setUp();
         mLoader = new MyOrderLoader(false);
+        // includes the custom 9999 field as INT
         FIXDataDictionaryManager.initialize(FIXVersion.FIX42, "FIX42-orderloader-test.xml");
     }
 
     public void testGetSide()
     {
-        assertEquals(Side.UNDISCLOSED, (Object)mLoader.getSide(null));
-        assertEquals(Side.UNDISCLOSED, (Object)mLoader.getSide(""));
-        assertEquals(Side.UNDISCLOSED, (Object)mLoader.getSide("asdf"));
-        assertEquals(Side.BUY, (Object)mLoader.getSide("b"));
-        assertEquals(Side.BUY, (Object)mLoader.getSide("B"));
-        assertEquals(Side.SELL, (Object)mLoader.getSide("S"));
-        assertEquals(Side.SELL, (Object)mLoader.getSide("s"));
-        assertEquals(Side.SELL_SHORT, (Object)mLoader.getSide("SS"));
-        assertEquals(Side.SELL_SHORT, (Object)mLoader.getSide("ss"));
-        assertEquals(Side.SELL_SHORT_EXEMPT, (Object)mLoader.getSide("SSE"));
-        assertEquals(Side.SELL_SHORT_EXEMPT, (Object)mLoader.getSide("sse"));
+        assertEquals(Side.UNDISCLOSED, mLoader.getSide(null));
+        assertEquals(Side.UNDISCLOSED, mLoader.getSide(""));
+        assertEquals(Side.UNDISCLOSED, mLoader.getSide("asdf"));
+        assertEquals(Side.BUY, mLoader.getSide("b"));
+        assertEquals(Side.BUY, mLoader.getSide("B"));
+        assertEquals(Side.SELL, mLoader.getSide("S"));
+        assertEquals(Side.SELL, mLoader.getSide("s"));
+        assertEquals(Side.SELL_SHORT, mLoader.getSide("SS"));
+        assertEquals(Side.SELL_SHORT, mLoader.getSide("ss"));
+        assertEquals(Side.SELL_SHORT_EXEMPT, mLoader.getSide("SSE"));
+        assertEquals(Side.SELL_SHORT_EXEMPT, mLoader.getSide("sse"));
     }
 
     public void testAddDefaults() throws Exception
@@ -339,6 +340,38 @@ public class OrderLoaderTest extends TestCase
 //        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
 //        assertEquals("[40=2, 55=TWX, 11=669, 5083=5, 9623=0.01, 54=1, 44=18.11, 59=0, 5900=NCentsWide, 21=3, 38=1500, 1=TOLI, 5084=200]",
 //                     mLoader.mMessage.toString());
+    }
+
+    /** Test using both header and trailer and message custom fields */
+    public void testWithMixedCustomFields() throws Exception {
+        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
+                new OrderQty(), new Price(), new CustomField(9999, null), new SenderSubID(), new SignatureLength(), new Signature()));
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "SenderSubID", "SignatureLength", "Signature"};
+
+        // manually construct message: {55=IBM, Side=SS, OrderQty=100, Price=12.22, 9999=custom, SenderSubID=sub1, 93=3, 89=sig}
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234","sub1", "sig".length()+"", "sig"});
+        assertEquals(0, mLoader.getFailedOrders().size());
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
+        assertEquals("1234", mLoader.mMessage.getString(9999));
+        assertEquals("sub1", mLoader.mMessage.getHeader().getString(SenderSubID.FIELD));
+        assertEquals(3, mLoader.mMessage.getTrailer().getInt(SignatureLength.FIELD));
+        assertEquals("sig", mLoader.mMessage.getTrailer().getString(Signature.FIELD));
+    }
+
+    /** Try sending a message with key not in dictionary */
+    public void testFieldNotInDictionary() throws Exception {
+        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
+                new OrderQty(), new Price(), new CustomField(7654, null)));
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "NotInDict"};
+
+        // manually construct message: {55=IBM, Side=SS, OrderQty=100, Price=12.22, 9999=custom, SenderSubID=sub1, 93=3, 89=sig}
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234"});
+        assertEquals(1, mLoader.getFailedOrders().size());
+        assertTrue(mLoader.failedOrders.get(0) + " does not end with "+OrderLoaderMessageKey.PARSING_FIELD_NOT_IN_DICT.getLocalizedMessage(7654, 1234),
+                mLoader.failedOrders.get(0).endsWith(OrderLoaderMessageKey.PARSING_FIELD_NOT_IN_DICT.getLocalizedMessage("7654", "1234")));
     }
 
     private class MyOrderLoader extends OrderLoader {
