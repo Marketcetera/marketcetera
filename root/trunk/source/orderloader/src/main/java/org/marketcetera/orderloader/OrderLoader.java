@@ -178,7 +178,17 @@ public class OrderLoader extends ApplicationBase
                     Field theField = inHeaderRow.get(i);
                     String value = parseMessageValue(theField, inHeaderNames[i], inOrderRow[i], message);
                     if(value!=null) {
-                        message.setField(new StringField(theField.getField(), value));
+                        int fieldID = theField.getField();
+                        if(fixDD.getDictionary().isMsgField(MsgType.ORDER_SINGLE, fieldID)) {
+                            message.setField(new StringField(fieldID, value));
+                        } else if(fixDD.getDictionary().isHeaderField(fieldID)) {
+                            message.getHeader().setField(new StringField(fieldID, value));
+                        } else if(fixDD.getDictionary().isTrailerField(fieldID)) {
+                            message.getTrailer().setField(new StringField(fieldID, value));
+                        } else {
+                            // Send the fieldID as string so it doesn't get localized to 2,345 for example
+                            throw new MarketceteraException(OrderLoaderMessageKey.PARSING_FIELD_NOT_IN_DICT.getLocalizedMessage(""+fieldID, value));
+                        }
                     }
                 }
 
@@ -212,7 +222,7 @@ public class OrderLoader extends ApplicationBase
 
         switch(inField.getField()) {
             case Side.FIELD:
-                return getSide(inValue).toString();
+                return getSide(inValue)+"";
             case Price.FIELD:
                 // price must be positive but can be MKT
                 if(MKT_PRICE.equals(inValue)) {
@@ -256,7 +266,7 @@ public class OrderLoader extends ApplicationBase
         }
     }
 
-    protected Character getSide(String inValue)
+    protected char getSide(String inValue)
      {
          if(inValue != null) {
              inValue = inValue.toUpperCase();
