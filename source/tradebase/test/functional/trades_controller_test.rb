@@ -129,6 +129,10 @@ class TradesControllerTest < MarketceteraTestBase
     assert_template 'new'
 
     assert_not_nil assigns(:trade)
+
+    # verify we have the security type raio buttons
+    assert_tag :tag => 'label', :attributes => {:for => 'trade_trade_type'}, :content => "Security type"
+    assert_tag :tag => 'input', :attributes => {:class => 'radio'}
   end
 
   # should generate a bunch of errors
@@ -383,7 +387,25 @@ class TradesControllerTest < MarketceteraTestBase
     prefilled_test_helper( Side::QF_SIDE_CODE[:sellShortExempt], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
     prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", "4.99000", "11.00000", nil, "ZAI", 7.37, Date.civil(2006, 10,10))
   end
-  
+
+  def test_edit_page_security_type_disabled
+    get :edit, :id => @allTrades[0]
+    assert_response :success
+    assert_template 'edit'
+    # shouldn't have any radio buttons
+    assert_no_tag :tag => 'input', :attributes => {:class => 'radio', :id => "security_type_f"}
+    assert_tag :tag => 'div', :attributes => {:id => "asset_type"}, :content => "Equity"
+
+    # create currency trade
+    currTrade = create_test_trade(10000, 1.11, Quickfix::Side_BUY(), "forex", Date.today, "ZAI/USD", 3.33, "USD", TradesHelper::SecurityTypeForex)
+    get :edit, :id => currTrade
+    assert_response :success
+    assert_template 'edit'
+    # shouldn't have any radio buttons
+    assert_no_tag :tag => 'input', :attributes => {:class => 'radio', :id => "security_type_f"}
+    assert_tag :tag => 'div', :attributes => {:id => 'asset_type'}, :content => 'CurrencyPair'
+  end
+
   def test_update_no_actual_edits
     tradeCopy = @allTrades[0].clone
     post :update, { :id =>  @allTrades[0].id,
@@ -579,6 +601,18 @@ class TradesControllerTest < MarketceteraTestBase
     
     assert_equal newComment, assigns(:trade).comment
     assert_not_equal tradeCopy.comment, assigns(:trade).comment, "comments are same"
+  end
+
+  def test_update_forex
+    currTrade = create_test_trade(10000, 1.11, Quickfix::Side_BUY(), "forex", Date.today, "ZAI/USD", 3.33, "USD", TradesHelper::SecurityTypeForex)
+    # update comment field
+    post :update, {:id => currTrade.id,  :m_symbol => {:root=>"ZAI/USD"}, 
+                   :trade => currTrade.attributes.merge({"comment" => 'new comment',  "journal_post_date(1i)"=>"2005",
+                                                         "journal_post_date(2i)"=>"9", "journal_post_date(3i)"=>"11"})}
+    assert_response :redirect
+    assert_redirected_to :action => 'show', :id =>  currTrade.id
+    assert "Trade was successfully updated", flash[:notice]
+    assert_equal "new comment", assigns(:trade).comment
   end
   
   def test_destroy

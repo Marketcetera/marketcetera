@@ -11,7 +11,8 @@
                 <h2>Marks By Symbol</h2>
                 <p>List all marks for a particular symbol for a range of dates.</p>
                 <div class="form_left">
-                  <%= render :partial => '/shared/security_type' %>
+                    <%= render :partial => '/shared/security_type',
+                               :locals => {:equity_onclick_fn => '', :forex_onclick_fn => '', :equity_on => true, :forex_on => false} %>
                   <label for="m_symbol_root">Symbol</label>
                   <% if(!@report.nil? && !@report.errors[:symbol].nil?) %>
                       <div class="fieldWithErrors">

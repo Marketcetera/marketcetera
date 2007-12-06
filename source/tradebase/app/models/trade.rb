@@ -113,7 +113,7 @@ class Trade < ActiveRecord::Base
       inCommission = 0
     end
     update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:commissions], SubAccountType::DESCRIPTIONS[:cash], 
-                                    inCommission)
+                                    inCommission, Posting::CommissionsPairID)
   end
     
   def total_price
@@ -130,8 +130,8 @@ class Trade < ActiveRecord::Base
       return
     end
     
-    update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:sti], SubAccountType::DESCRIPTIONS[:cash], 
-                                    self.quantity * BigDecimal(new_price.to_s))
+    update_underlying_posting_pairs(get_notional_account_name(), SubAccountType::DESCRIPTIONS[:cash],
+                                    self.quantity * BigDecimal(new_price.to_s), Posting::NotionalPairID)
   end
   
   # Need to update the underlying journals/postings when we update the price_per_share
@@ -139,11 +139,16 @@ class Trade < ActiveRecord::Base
     super(new_qty)
     logger.debug("updated qty to "+new_qty.to_s)
     if(!self.journal.nil?)
-      update_underlying_posting_pairs(SubAccountType::DESCRIPTIONS[:sti], SubAccountType::DESCRIPTIONS[:cash], 
-                                      self.quantity * self.price_per_share)
+      update_underlying_posting_pairs(get_notional_account_name(), SubAccountType::DESCRIPTIONS[:cash],
+                                      self.quantity * self.price_per_share, Posting::NotionalPairID)
     end
   end    
-  
+
+  # Subclasses should override in case they store the costs in subaccounts other than STI
+  def get_notional_account_name
+    SubAccountType::DESCRIPTIONS[:sti]
+  end
+
   # this is the var we want to use for all displaying and calculations in the order
   # It is adjusted according to the side, ie it's positive if it's a Buy or 
   # negative if it's a sell
@@ -183,15 +188,19 @@ class Trade < ActiveRecord::Base
       self.journal = Journal.create( :post_date => trade_date, :description => description )
       base_currency = Currency.get_currency(currency_alpha_code)
       self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency,
-                                              :quantity=>notional, :sub_account=>short_term_investment_sub_account, :pair_id => 1)
+                                              :quantity=>notional, :sub_account=>short_term_investment_sub_account,
+                                              :pair_id => Posting::NotionalPairID)
       self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency,
-                                              :quantity=>(-1*notional), :sub_account=>cash_sub_account, :pair_id => 1)
+                                              :quantity=>(-1*notional), :sub_account=>cash_sub_account,
+                                              :pair_id => Posting::NotionalPairID)
 
       # deal with commissions
       self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency,
-                                              :quantity=>total_commission, :sub_account=>commission_sub_account, :pair_id => 2)
+                                              :quantity=>total_commission, :sub_account=>commission_sub_account,
+                                              :pair_id => Posting::CommissionsPairID)
       self.journal.postings << Posting.create(:journal=>self.journal, :currency=>base_currency,
-                                              :quantity=>(-1*total_commission), :sub_account=>cash_sub_account, :pair_id => 2)
+                                              :quantity=>(-1*total_commission), :sub_account=>cash_sub_account,
+                                              :pair_id => Posting::CommissionsPairID)
       self.journal.save
 
       logger.debug("created and saved all related postings")
@@ -224,10 +233,10 @@ class Trade < ActiveRecord::Base
     return true
   end
   
-  def update_underlying_posting_pairs(debitName, creditName, qty)
+  def update_underlying_posting_pairs(debitName, creditName, qty, pair_id)
     logger.debug("updating the posting transactions when updating trade for postings: "+debitName+"/"+creditName + " for total: "+qty.to_s)
-    debitP = self.journal.find_posting_by_sat(debitName)
-    creditP = self.journal.find_posting_by_sat_and_pair_id(creditName, debitP.pair_id)
+    debitP = self.journal.find_posting_by_sat_and_pair_id(debitName, pair_id)
+    creditP = self.journal.find_posting_by_sat_and_pair_id(creditName, pair_id)
     debitP.quantity = qty
     creditP.quantity = -BigDecimal(qty.to_s)
     logger.debug("updated total price for "+self.tradeable_m_symbol_root + "["+debitName+"] to "+debitP.quantity.to_s)

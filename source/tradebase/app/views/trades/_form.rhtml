@@ -8,14 +8,14 @@
 	function change_to_forex()
 	{
 		if (sell_short == null) {
-			$('price_label').textContent = "Rate"
-			$('m_symbol_root_label').textContent = "Currency Pair"
-			$('trade_trade_type_t').checked = true
-			$('trade_trade_type_e').hide()
-			$('trade_trade_type_c').hide()
-			$('trade_trade_type_e_label').hide()
-			$('trade_trade_type_c_label').hide()
-			
+		$('price_label').textContent = "Rate"
+		$('m_symbol_root_label').textContent = "Currency Pair"
+        $('trade_trade_type_t').checked = true
+        $('trade_trade_type_e').hide()
+        $('trade_trade_type_c').hide()
+        $('trade_trade_type_e_label').hide()
+        $('trade_trade_type_c_label').hide()
+		
 			descendants = $("trade_side").descendants()
 			sell_short_exempt = descendants[3].remove()
 			sell_short = descendants[2].remove()
@@ -24,13 +24,13 @@
 	function change_to_equity()
 	{
 		if (sell_short != null) {
-			$('price_label').textContent = "Price"
-			$('m_symbol_root_label').textContent = "Symbol"
-			$('trade_trade_type_e').show()
-			$('trade_trade_type_c').show()
-			$('trade_trade_type_e_label').show()
-			$('trade_trade_type_c_label').show()
-			
+		$('price_label').textContent = "Price"
+		$('m_symbol_root_label').textContent = "Symbol"
+        $('trade_trade_type_e').show()
+        $('trade_trade_type_c').show()
+        $('trade_trade_type_e_label').show()
+        $('trade_trade_type_c_label').show()
+
 			$("trade_side").insert(sell_short)
 			$("trade_side").insert(sell_short_exempt)
 			
@@ -47,12 +47,14 @@
         <label for="trade_date">Trade Date</label>
         <div class="date"><%= date_select :trade, :journal_post_date %></div>
 
-        <label for="trade_trade_type">Security type</label>
-        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, true, {:class => "radio", :onclick=>"change_to_equity()"})%>
-        <label class="radio_label" for="security_type_e">Equity</label>
-        <!--div class="clear"></div-->
-        <%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, false, { :class => "radio", :onclick=>"change_to_forex()"})%>
-        <label class="radio_label" for="security_type_f">Forex</label>
+        <% if(@controller.action_name == "edit") %>
+          <label for="asset_type">Asset Type</label>
+          <div id="asset_type" class="data view_data"><%=df @trade.tradeable.class %></div>
+        <% else %>
+          <%=  render :partial => 'shared/security_type',
+                      :locals=> { :equity_onclick_fn => "change_to_equity()", :forex_onclick_fn => "change_to_forex()",
+                                  :equity_on => true, :forex_on => false} %>
+        <% end %>
 
         <label for="side">Side</label>
         <%= select(:trade, :side, Side.SIDES_HI_COLLECTION, { :selected => @trade.side.to_s }) %>

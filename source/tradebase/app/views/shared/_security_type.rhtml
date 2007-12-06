@@ -1,5 +1,8 @@
 <label for="trade_trade_type">Security type</label>
-<%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, true, :class => "radio")%>
-<label class="radio_label" for="security_type_e">Equity</label>
-<%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, false, :class => "radio")%>
-<label class="radio_label" for="security_type_f">Forex</label>
+<%= radio_button_tag('security_type', TradesHelper::SecurityTypeEquity, (equity_on.nil?) ? true : equity_on,
+                      :class => "radio", :onclick => equity_onclick_fn)%>
+  <label class="radio_label" for="security_type_e">Equity</label>
+<%= radio_button_tag('security_type', TradesHelper::SecurityTypeForex, (forex_on.nil?) ? false : forex_on,
+                      :class => "radio", :onclick => forex_onclick_fn)%>
+  <label class="radio_label" for="security_type_f">Forex</label>
+<% logger.debug "icoming equityON: #{equity_on} and forexON: #{forex_on} with calc: #{(equity_on.blank?)}" %>
