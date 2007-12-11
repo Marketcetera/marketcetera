@@ -23,10 +23,10 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.TradeRecommendation;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
-import org.marketcetera.photon.core.TradeRecommendation;
 import org.marketcetera.photon.parser.OrderFormatter;
 
 import quickfix.Message;

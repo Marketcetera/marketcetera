@@ -1,8 +1,8 @@
 package org.marketcetera.photon.views;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.core.FIXMatcher;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.messagehistory.FIXMatcher;
+import org.marketcetera.messagehistory.MessageHolder;
 
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;

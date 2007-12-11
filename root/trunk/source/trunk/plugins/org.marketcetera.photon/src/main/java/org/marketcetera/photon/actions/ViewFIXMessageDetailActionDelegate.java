@@ -10,8 +10,8 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 import org.marketcetera.photon.views.fixmessagedetail.IFIXMessageDetail;
 

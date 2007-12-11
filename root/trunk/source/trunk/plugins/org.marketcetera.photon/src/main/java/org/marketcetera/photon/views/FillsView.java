@@ -5,8 +5,8 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.MessageHolder;
 
 import ca.odell.glazedlists.EventList;
 

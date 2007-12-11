@@ -28,7 +28,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MessageBundleManager;
-import org.marketcetera.photon.core.FIXMessageHistory;
+import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.ConnectionsPreferencePage;
 import org.marketcetera.photon.preferences.PhotonPage;

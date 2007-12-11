@@ -6,10 +6,10 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.marketcetera.messagehistory.FIXMatcher;
+import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
-import org.marketcetera.photon.core.FIXMatcher;
-import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
 
