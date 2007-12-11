@@ -5,7 +5,7 @@
         tradeDesc += " for #{@symbol_str}"
     end
     if(!@nickname.blank?)
-        tradeDesc += " in account #{@nickname}"
+        tradeDesc += " in account [#{@nickname}]"
     end
     if(!@from_date.blank? && !@to_date.blank?)
         tradeDesc += " from #{@from_date} to #{@to_date}"

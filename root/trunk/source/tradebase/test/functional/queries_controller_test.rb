@@ -31,7 +31,7 @@ class QueriesControllerTest < MarketceteraTestBase
 
       assert_equal 1, assigns(:trades).length
       assert_equal "MIFLI", assigns(:trades)[0].tradeable_m_symbol_root
-      assert_tag :tag => "h1", :content => "List Trades for MIFLI in account acct2 from 2006-07-01 to 2006-11-30"
+      assert_tag :tag => "h1", :content => "List Trades for MIFLI in account [acct2] from 2006-07-01 to 2006-11-30"
   end
 
   def test_by_symbol_none_specified
@@ -103,7 +103,7 @@ class QueriesControllerTest < MarketceteraTestBase
     assert_equal @all_trades[1], assigns(:trades)[1]
     assert_not_equal assigns(:trades)[0].id, assigns(:trades)[1].id
 
-    assert_tag :tag => "h1", :content => "List Trades in account acct2 for all dates"
+    assert_tag :tag => "h1", :content => "List Trades in account [acct2] for all dates"
 
     # for pagination
     assert_equal "acct2", assigns(:nickname)
@@ -117,7 +117,7 @@ class QueriesControllerTest < MarketceteraTestBase
     
     assert_not_nil assigns(:trades)
     assert_equal 0, assigns(:trades).length
-    assert_tag :tag => "h1", :content => "List Trades in account zanachka for all dates"
+    assert_tag :tag => "h1", :content => "List Trades in account [zanachka] for all dates"
   end
 
   # should error out b/c dates aren't set and all_dates is not set either'
