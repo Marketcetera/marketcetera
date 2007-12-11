@@ -1,4 +1,4 @@
-package org.marketcetera.photon.model;
+package org.marketcetera.messagehistory;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -10,11 +10,11 @@ import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.core.MessageVisitor;
-import org.marketcetera.photon.core.OutgoingMessageHolder;
+import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.MessageVisitor;
+import org.marketcetera.messagehistory.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;

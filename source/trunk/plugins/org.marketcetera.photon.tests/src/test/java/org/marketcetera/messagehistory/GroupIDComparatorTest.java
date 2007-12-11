@@ -1,10 +1,10 @@
-package org.marketcetera.photon.model;
+package org.marketcetera.messagehistory;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.photon.core.GroupIDComparator;
-import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.messagehistory.GroupIDComparator;
+import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
 
 public class GroupIDComparatorTest extends TestCase {
 

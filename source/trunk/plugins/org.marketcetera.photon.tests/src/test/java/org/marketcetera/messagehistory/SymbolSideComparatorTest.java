@@ -1,4 +1,4 @@
-package org.marketcetera.photon.model;
+package org.marketcetera.messagehistory;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,8 +7,8 @@ import java.util.Random;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.core.SymbolSideComparator;
+import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.SymbolSideComparator;
 
 import quickfix.CharField;
 import quickfix.Field;

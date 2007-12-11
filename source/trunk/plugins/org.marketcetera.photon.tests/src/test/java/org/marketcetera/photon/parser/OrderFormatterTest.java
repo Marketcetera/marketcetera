@@ -7,7 +7,7 @@ import junit.framework.Test;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.model.FIXMessageHistoryTest;
+import org.marketcetera.messagehistory.FIXMessageHistoryTest;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.Message;
