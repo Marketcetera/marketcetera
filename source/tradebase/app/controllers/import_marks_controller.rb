@@ -1,3 +1,7 @@
+# We have 2 entry points - either through upload or through "paste", ie
+# where you can paste the quotes into a text box
+# Support both Equity (E) and Forex (F) quotes (designators can be lower-case)
+# Sample format: symbol, value, date, type ==> GOOG, 555, 12/10/2005, E
 class ImportMarksController < ApplicationController
   require 'csv'
   include ApplicationHelper
@@ -43,24 +47,49 @@ class ImportMarksController < ApplicationController
   end
 
   protected
+  # sample: GOOG,500,01/01/2007,E
+  # sample: EUR/USD,1.23,01/01/2007,F
+  # In case of errros, we put an error together with the line it caused it.
+  # If we have an error that's not a validation error, we manually pre-create an
+  # ActiveRecord::Errors object and put it in there with "Error:" key to be retrieved
+  # by the UI
   def import_one_mark(line, report)
-    mark = CSV.parse_line(line)
-    symbol = mark[0]
-    equity = Equity.get_equity(symbol)
-    equity.save
-    value = mark[1]
-    date = mark[2]
-    m = Mark.new(:tradeable_id => equity, :mark_value => value, :mark_date => date, :mark_type => "C")
-    m.tradeable = equity
-    m.save
-    if(!m.valid?)
-      report.add_error_for_line(line, m.errors)
-    else
-      @valid_marks +=1
-      logger.debug("created mark for #{line}")
+    begin
+      mark = CSV.parse_line(line)
+      if(mark.length != 4)
+        raise "Invalid number of arguments, got #{mark.length}/4 expected."
+      end
+      tradeable_type = mark[3].upcase
+      symbol = mark[0]
+      value = mark[1]
+      date = mark[2]
+      if(tradeable_type == TradesHelper::SecurityTypeEquity)
+        m = Mark.new(:mark_value => value, :mark_date => date, :mark_type => "C")
+        tradeable = Equity.get_equity(symbol)
+      else
+        if(tradeable_type == TradesHelper::SecurityTypeForex)
+          tradeable = CurrencyPair.get_currency_pair(symbol, true)
+          m = ForexMark.new(:mark_value => value, :mark_date => date, :mark_type => "C")
+        else
+          raise "Unknown mark type: #{tradeable_type}"
+        end
+      end
+      tradeable.save
+      m.tradeable = tradeable
+      m.save
+      if(!m.valid?)
+        report.add_error_for_line(line, m.errors)
+      else
+        @valid_marks +=1
+        logger.debug("created mark for #{line}")
+      end
+      @total_count += 1
+    rescue Exception => ex
+      error = Mark.new.errors
+      error.add("Error:", ex.message)
+      report.add_error_for_line(line, error)
+      logger.debug("exception while parsing mark line [#{line}]: "+ex.message)
+      logger.debug(ex.backtrace.join("\n"))
     end
-    @total_count += 1
   end
-
-
 end
