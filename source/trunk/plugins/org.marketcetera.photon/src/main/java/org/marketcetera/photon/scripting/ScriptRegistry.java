@@ -23,6 +23,7 @@ import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.scripting.ScriptLoggingUtil;
 import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.InitializingBean;
 

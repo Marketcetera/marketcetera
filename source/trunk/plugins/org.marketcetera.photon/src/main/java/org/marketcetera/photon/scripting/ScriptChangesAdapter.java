@@ -22,6 +22,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.ListEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
+import org.marketcetera.scripting.ScriptLoggingUtil;
 import org.springframework.beans.factory.InitializingBean;
 
 import ca.odell.glazedlists.BasicEventList;
