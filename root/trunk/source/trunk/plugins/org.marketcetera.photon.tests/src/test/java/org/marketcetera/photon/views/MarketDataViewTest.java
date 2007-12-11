@@ -13,8 +13,8 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.osgi.framework.BundleContext;
 

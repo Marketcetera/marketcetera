@@ -8,8 +8,8 @@ Bundle-Activator: org.marketcetera.photon.PhotonTestPlugin
 Bundle-Vendor: Marketcetera
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.apache.log4j, org.apache.commons.i18n, org.apache.activemq, org.jruby.bsf
-Export-Package: org.marketcetera.photon,
- org.marketcetera.photon.model,
+Export-Package: org.marketcetera.messagehistory,
+ org.marketcetera.photon,
  org.marketcetera.photon.parser,
  org.marketcetera.photon.scripting,
  org.marketcetera.photon.views

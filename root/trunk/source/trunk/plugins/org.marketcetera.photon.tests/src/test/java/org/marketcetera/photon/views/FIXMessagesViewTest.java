@@ -2,8 +2,8 @@ package org.marketcetera.photon.views;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
-import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.IncomingMessageHolder;
+import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.quickfix.FIXVersion;
 

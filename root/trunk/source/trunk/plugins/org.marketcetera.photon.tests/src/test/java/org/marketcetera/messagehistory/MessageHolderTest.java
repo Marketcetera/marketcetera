@@ -1,13 +1,13 @@
-package org.marketcetera.photon.model;
+package org.marketcetera.messagehistory;
 
 import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.photon.core.MessageHolder;
-import org.marketcetera.photon.core.OutgoingMessageHolder;
+import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.messagehistory.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
