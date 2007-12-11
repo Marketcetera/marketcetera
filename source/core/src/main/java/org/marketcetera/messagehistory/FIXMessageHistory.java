@@ -2,7 +2,6 @@ package org.marketcetera.messagehistory;
 
 import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
-import org.eclipse.core.runtime.PlatformObject;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -17,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @ClassVersion("$Id$")
-public class FIXMessageHistory extends PlatformObject {
+public class FIXMessageHistory {
 
 	private EventList<MessageHolder> allMessages;
 	
