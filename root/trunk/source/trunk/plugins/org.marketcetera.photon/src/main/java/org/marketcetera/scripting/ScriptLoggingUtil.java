@@ -1,4 +1,4 @@
-package org.marketcetera.photon.scripting;
+package org.marketcetera.scripting;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
