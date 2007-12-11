@@ -1,4 +1,4 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.messagehistory;
 
 import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.marketcetera.photon.core;
+package org.marketcetera.messagehistory;
 
 
 import org.marketcetera.core.ClassVersion;

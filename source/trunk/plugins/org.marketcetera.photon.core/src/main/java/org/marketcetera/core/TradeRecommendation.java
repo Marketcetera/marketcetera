@@ -1,8 +1,10 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.core;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Date;
+
+import org.marketcetera.messagehistory.OutgoingMessageHolder;
 
 import quickfix.Message;
 
