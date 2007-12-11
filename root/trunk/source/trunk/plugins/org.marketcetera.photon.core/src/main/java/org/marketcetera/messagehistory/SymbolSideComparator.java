@@ -1,4 +1,4 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.messagehistory;
 
 import java.io.Serializable;
 import java.util.Comparator;

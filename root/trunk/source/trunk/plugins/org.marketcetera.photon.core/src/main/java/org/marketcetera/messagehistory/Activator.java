@@ -1,4 +1,4 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.messagehistory;
 
 import org.eclipse.core.runtime.Plugin;
 import org.osgi.framework.BundleContext;

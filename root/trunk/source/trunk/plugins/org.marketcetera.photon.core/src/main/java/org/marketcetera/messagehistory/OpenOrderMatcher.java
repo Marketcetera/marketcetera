@@ -1,4 +1,4 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.messagehistory;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXMessageUtil;

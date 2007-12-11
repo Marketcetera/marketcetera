@@ -1,4 +1,4 @@
-package org.marketcetera.photon.core;
+package org.marketcetera.messagehistory;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -23,7 +23,7 @@ public class LatestExecutionReportsFunction extends LatestMessageFunction {
 	 * represents an execution report.
 	 * @param holder the message to test
 	 * @return true if the incoming message represents an execution report, false otherwise
-	 * @see org.marketcetera.photon.core.LatestMessageFunction#filter(org.marketcetera.photon.core.MessageHolder)
+	 * @see org.marketcetera.messagehistory.LatestMessageFunction#filter(org.marketcetera.messagehistory.MessageHolder)
 	 */
 	protected boolean filter(MessageHolder holder){
 		return (holder instanceof IncomingMessageHolder 
