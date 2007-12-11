@@ -25,7 +25,6 @@ import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
 import org.marketcetera.photon.actions.ReconnectMarketDataFeedAction;
-import org.marketcetera.photon.actions.RecoverMessagesAction;
 import org.marketcetera.photon.actions.SelectOptionMarketDataCommandAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 
@@ -117,12 +116,9 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 	private ReconnectMarketDataFeedAction reconnectQuoteFeedAction;
 
-	private RecoverMessagesAction recoverMessagesAction;
-
 	private CancelAllOpenOrdersAction cancelAllOpenOrdersAction;
 
 	private IWorkbenchAction selectOptionMarketDataCommandAction;
-
 
 
 
@@ -181,7 +177,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
 		reconnectQuoteFeedAction = new ReconnectMarketDataFeedAction(window); register(reconnectQuoteFeedAction);
-		recoverMessagesAction = new RecoverMessagesAction(window); register(recoverMessagesAction);
 		cancelAllOpenOrdersAction = new CancelAllOpenOrdersAction(); register(cancelAllOpenOrdersAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
@@ -320,8 +315,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		toolBar.add(reconnectJMSCI);
 		ActionContributionItem reconnectQuoteFeedCI = new ActionContributionItem(reconnectQuoteFeedAction);
 		toolBar.add(reconnectQuoteFeedCI);
-		ActionContributionItem recoverMessagesCI = new ActionContributionItem(recoverMessagesAction);
-		toolBar.add(recoverMessagesCI);
 		ActionContributionItem cancelAllOpenOrdersCI = new ActionContributionItem(cancelAllOpenOrdersAction);
 		toolBar.add(cancelAllOpenOrdersCI);
 		//ActionContributionItem openOptionsJMSCI = new ActionContributionItem(openOptionEditorAction);
