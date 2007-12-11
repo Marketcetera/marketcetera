@@ -8,7 +8,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.views.MarketDataView;
 
 import quickfix.Message;

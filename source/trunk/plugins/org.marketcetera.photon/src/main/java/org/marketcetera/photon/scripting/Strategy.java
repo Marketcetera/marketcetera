@@ -189,7 +189,7 @@ public abstract class Strategy {
 	 * @see Strategy#registerTimedCallback(long, TimeUnit, Object)
      * @return a {@link ScheduledFuture} object that can be used to cancel the callback or join the result.
 	 */
-	public ScheduledFuture<?> registerTimedCallback(final long millis, final Object clientData)
+	public ScheduledFuture<?> registerTimedCallback(long millis, Object clientData)
 	{
 		return registerTimedCallback(millis, TimeUnit.MILLISECONDS, clientData);
 	}
@@ -202,9 +202,24 @@ public abstract class Strategy {
      * @param clientData    the object passed back to the {@link #timeout_callback} function.
      * @return a {@link ScheduledFuture} object that can be used to cancel the callback or join the result.
      */
-	public ScheduledFuture<?> registerTimedCallback(final long delay, TimeUnit unit, final Object clientData)
+	public ScheduledFuture<?> registerTimedCallback(long delay, TimeUnit unit, Object clientData)
 	{
 		return getScriptRegistry().registerTimedCallback(this, delay, unit, clientData);
+	}
+
+    /** 
+     * Causes the {@link #timeout_callback} function to be called after the specified delay,
+     * passing the clientData object into it, and repeatedly called at period interval
+     * after that.
+     * @param delay Length of the delay before calling the {@link #timeout_callback} function
+     * @param period Length of the interval between subsequent calls
+     * @param unit  Units of the delay and period
+     * @param clientData    the object passed back to the {@link #timeout_callback} function.
+     * @return a {@link ScheduledFuture} object that can be used to cancel the callback or join the result.
+     */
+	public ScheduledFuture<?> registerCallbackAtFixedRate(long delay, long period, TimeUnit unit, Object clientData)
+	{
+		return getScriptRegistry().registerCallbackAtFixedRate(this, delay, period, unit, clientData);
 	}
 
 	/**

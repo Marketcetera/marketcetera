@@ -2,10 +2,10 @@ package org.marketcetera.photon.ui;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
+import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.core.IncomingMessageHolder;
-import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionary;
 
 /**

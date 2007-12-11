@@ -2,7 +2,7 @@ package org.marketcetera.photon.ui;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IWorkbenchPartSite;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
 
 import quickfix.DataDictionary;
 import quickfix.FieldMap;

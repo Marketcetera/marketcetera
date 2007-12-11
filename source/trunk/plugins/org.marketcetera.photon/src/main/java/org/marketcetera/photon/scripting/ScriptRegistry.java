@@ -205,12 +205,27 @@ public class ScriptRegistry implements InitializingBean {
      * @param unit  Units of the delay
      * @param clientData    ClientData object passed back to the {@link Strategy#timeout_callback} function.
      */
-	public ScheduledFuture<?> registerTimedCallback(final Strategy strategy, final long delay,
-                                                    TimeUnit unit, final Object clientData)
+	public ScheduledFuture<?> registerTimedCallback(Strategy strategy, final long delay,
+                                                    TimeUnit unit, Object clientData)
 	{
-		ScheduledFuture<?> future = getScheduler().schedule(new Runnable(){
+		ScheduledFuture<?> future = getScheduler().schedule(createStrategyCallbackRunnable(strategy, clientData), delay, unit);
+		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); }
+		return future;
+	}
+
+	public ScheduledFuture<?> registerCallbackAtFixedRate(final Strategy strategy, final long delay,
+			final long period, TimeUnit unit, final Object clientData)
+	{
+		ScheduledFuture<?> future = getScheduler().scheduleAtFixedRate(createStrategyCallbackRunnable(strategy, clientData), delay, period, unit);
+		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); }
+		return future;
+	}
+
+	private Runnable createStrategyCallbackRunnable(final Strategy strategy,
+			final Object clientData) {
+		return new Runnable(){
 			public void run() {
-				if(logger.isDebugEnabled()) { logger.debug("starting ruby callback on ["+strategy.getName()+"]"); }
+				if(logger.isDebugEnabled()) { logger.debug("starting stategy callback on ["+strategy.getName()+"]"); }
 				try {
                     if(doIsRegistered(strategy.getName())) {
                         strategy.timeout_callback(clientData);
@@ -221,12 +236,12 @@ public class ScriptRegistry implements InitializingBean {
 					logger.error("Error in timeout_callback function: "+ex.getException());
 					ScriptLoggingUtil.error(logger, ex);
 				}
-				if(logger.isDebugEnabled()) { logger.debug("finished ruby callback on ["+strategy.getName()+"]"); }
+				if(logger.isDebugEnabled()) { logger.debug("finished strategy callback on ["+strategy.getName()+"]"); }
 			}
-		}, delay, unit);
-		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); }
-		return future;
+		};
 	}
+
+	
 	/**
 	 * Note that this method expects a file name, formatted as an argument to
 	 * the Ruby "require" method. For example, the workspace path "/foo/bar.rb",

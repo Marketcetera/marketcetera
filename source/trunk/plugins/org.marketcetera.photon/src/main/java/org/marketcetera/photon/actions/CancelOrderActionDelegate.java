@@ -7,9 +7,9 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.core.MessageHolder;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;

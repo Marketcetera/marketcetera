@@ -1,8 +1,8 @@
 package org.marketcetera.photon.views;
 
 import org.eclipse.jface.action.IToolBarManager;
-import org.marketcetera.photon.core.FIXMessageHistory;
-import org.marketcetera.photon.core.MessageHolder;
+import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.messagehistory.MessageHolder;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
