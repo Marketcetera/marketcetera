@@ -13,12 +13,12 @@
    total = BigDecimal.new("O")
  for pnl in @pnls 
  pnl_amount = BigDecimal(pnl.profit_and_loss.to_s)
- symbol = pnl.tradeable.to_s
+ symbol = pnl.tradeable.m_symbol_root
   %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"':''%> >
     <td><%= link_to h(symbol), {:action => :trade_search, :controller => 'queries', :m_symbol_root => symbol,
-                                   :nickname => pnl.account, :all_dates => "yes"} %></td>    
-    <td><%=h pnl.account.to_s %></td>
+                                   :nickname => pnl.account.nickname, :all_dates => "yes"} %></td>    
+    <td><%=h pnl.account.nickname %></td>
     <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
 	<td><%= pnl.currency.alpha_code %></td>
   </tr>

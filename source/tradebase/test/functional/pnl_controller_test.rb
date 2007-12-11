@@ -129,6 +129,18 @@ class PnlControllerTest < MarketceteraTestBase
     assert_equal "IBM", pnls[2].tradeable.m_symbol_root
     assert_nums_equal 0, pnls[3].profit_and_loss
     assert_equal "GOOG", pnls[3].tradeable.m_symbol_root
+
+    # now verify the page coming back has the correct link - ie it's linking the symbol and account correctly
+    # should look like this: <td><a href="/queries/trade_search?m_symbol_root=IBM&amp;all_dates=yes&amp;nickname=toli">IBM</a></td>
+    assert_tag :tag => 'td', :child => {:tag => 'a', :content => "SUNW",
+                                        :attributes => {:href => /queries\/trade_search\?.*m_symbol_root=SUNW/}}
+    assert_tag :tag => 'td', :child => {:tag => 'a', :content => "SUNW",
+                                        :attributes => {:href => /queries\/trade_search\?.*all_dates=yes/}}
+    assert_tag :tag => 'td', :child => {:tag => 'a', :content => "SUNW",
+                                        :attributes => {:href => /queries\/trade_search\?.*nickname=TOLI/}}
+
+    # verify that account name comes up correctly
+    assert_tag :tag => 'tr', :child => {:tag => "td", :content => "TOLI"}
   end
   
   def test_invalid_from_to_by_acct
@@ -172,6 +184,15 @@ class PnlControllerTest < MarketceteraTestBase
     assert_nums_equal -669.0, pnls[1].profit_and_loss.to_s
     assert_equal "GRAHAM",pnls[2].account.nickname 
     assert_nums_equal 285.12, pnls[2].profit_and_loss.to_s
+
+    # now verify the links are formatted correctly
+    # sample: <td><a href="/pnl/report?to_date=2007-10-01&amp;from_date=2007-09-28&amp;nickname=toli">[toli]</a></td>
+    assert_tag :tag => 'td', :child => {:tag => 'a', :content => /GRAHAM/,
+                                        :attributes => { :href => /pnl\/report\?.*to_date=2007-04-19/} }
+    assert_tag :tag => 'td', :child => {:tag => 'a', :content => /GRAHAM/,
+                                        :attributes => { :href => /pnl\/report\?.*from_date=2007-04-17/} }
+    assert_tag :tag => 'td', :child => {:tag => 'a', :content => /GRAHAM/,
+                                        :attributes => { :href => /pnl\/report\?.*nickname=GRAHAM/} }
   end
 
   def test_aggregate_missing_mark
