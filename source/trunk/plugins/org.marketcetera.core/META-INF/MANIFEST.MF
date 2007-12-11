@@ -12,10 +12,13 @@ Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,
  org.marketcetera.marketdata,
+ org.marketcetera.messagehistory,
+ org.marketcetera.options,
  org.marketcetera.quickfix,
  org.marketcetera.quickfix.cficode,
  org.marketcetera.quickfix.customfields,
  org.marketcetera.quickfix.messagefactory,
+ org.marketcetera.quickfix.messagemodifiers,
  org.marketcetera.spring,
  org.marketcetera.symbology
 Require-Bundle: org.apache.activemq;visibility:=reexport,
@@ -25,4 +28,5 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.apache.commons.i18n;visibility:=reexport,
  org.jruby.bsf;visibility:=reexport,
  org.junit;resolution:=optional,
- org.quickfixj;visibility:=reexport
+ org.quickfixj;visibility:=reexport,
+ net.java.dev.glazedlists;visibility:=reexport
