@@ -94,7 +94,74 @@ class PositionsQueriesControllerTest < MarketceteraTestBase
     assert_not_nil assigns(:positions)
     assert_equal 2, assigns(:positions).length
   end
-  
+
+  # mixed positions - both forex and equity
+  def test_positions_forex_present
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
+    create_test_trade(100, 1.23, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11),
+                      "ZAI/USD", "4.53", "ZAI", TradesHelper::SecurityTypeForex)
+
+    get :positions_by_account, { "account"=>{ "nickname" => ""}}
+    assert_response :success
+    assert_template 'positions_search_output'
+
+    assert_not_nil assigns(:positions)
+    assert_equal 2, assigns(:positions).length
+
+    # now w/out specifying arg
+    get :positions_by_account
+    assert_response :success
+    assert_template 'positions_search_output'
+
+    assert_not_nil assigns(:positions)
+    assert_equal 2, assigns(:positions).length
+
+    # now verity that the links are coming back correctly - we should have links to searches by symbola and account
+    pos_acct = Account.find_by_nickname("pos-acct")
+    acct1 = Account.find_by_nickname("acct1")
+    # verify search by symbol link:  <td><a href="/queries/trade_search?m_symbol_root=ZAI%2FUSD&amp;all_dates=yes">ZAI/USD</a></td>
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "ZAI/USD",
+                                            :attributes => {:href => /queries\/trade_search\?.*m_symbol_root=ZAI%2FUSD/} }
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "IFLI",
+                                            :attributes => {:href => /queries\/trade_search\?.*m_symbol_root=IFLI/} }
+    # and same for 'see all trades'
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "See all trades",
+                                            :attributes => {:href => /queries\/trade_search\?.*m_symbol_root=ZAI%2FUSD/} }
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "See all trades",
+                                            :attributes => {:href => /queries\/trade_search\?.*m_symbol_root=IFLI/} }
+    # verify the all-dates is there too
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "ZAI/USD",
+                                                :attributes => {:href => /queries\/trade_search\?.*all_dates=yes/} }
+
+    # Verify search by account
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "pos-acct",
+                                            :attributes => {:href => /accounts\/show\/#{pos_acct.id}/} }
+    assert_tag :tag => 'td', :child => { :tag => 'a', :content => "acct1",
+                                            :attributes => {:href => /accounts\/show\/#{acct1.id}/} }
+  end
+
+  def test_positions_forex_only
+    create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "USD/ZAI", "4.53", "ZAI",
+                      TradesHelper::SecurityTypeForex)
+    create_test_trade(100, 1.23, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11),
+                      "ZAI/USD", "4.53", "ZAI", TradesHelper::SecurityTypeForex)
+
+    get :positions_by_account, { "account"=>{ "nickname" => ""}}
+    assert_response :success
+    assert_template 'positions_search_output'
+
+    assert_not_nil assigns(:positions)
+    assert_equal 2, assigns(:positions).length
+
+    # now w/out specifying arg
+    get :positions_by_account
+    assert_response :success
+    assert_template 'positions_search_output'
+
+    assert_not_nil assigns(:positions)
+    assert_equal 2, assigns(:positions).length
+  end
+
   def test_positions_by_account
     create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "pos-acct", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")
     create_test_trade(400, 400, Side::QF_SIDE_CODE[:sell], "acct2", Date.civil(2006, 7, 11), "IFLI", "4.53", "ZAI")

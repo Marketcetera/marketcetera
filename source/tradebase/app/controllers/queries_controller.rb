@@ -25,9 +25,18 @@ class QueriesController < ApplicationController
     joinsLine = "as t"
     conditionsLine, orderLine = "", ""
     if(!@symbol_str.blank?)
+      # check if Forex symbol
+      begin
+        currencyPair = CurrencyPair.get_currency_pair(@symbol_str)
+        queryParams << currencyPair
+        joinsLine += ", currency_pairs"
+        conditionsLine += " AND currency_pairs.id = ? AND currency_pairs.id = t.tradeable_id "
+      rescue UnknownCurrencyPairException => ex
+        # guess what? not a forex symbol. try equities instead
         queryParams << @symbol_str
         joinsLine += ", equities, m_symbols"
         conditionsLine += "AND m_symbols.id=equities.m_symbol_id AND equities.id = t.tradeable_id AND m_symbols.root = ? "
+      end
     end
     if(!@nickname.blank?)
         queryParams << @nickname
