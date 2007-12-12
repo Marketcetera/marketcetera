@@ -67,6 +67,25 @@ class QueriesControllerTest < MarketceteraTestBase
     # for pagination
     assert_equal "IFLI", assigns(:symbol_str)
   end
+
+  # create a forex trade and make sure it comes up
+  def test_by_symbol_forex
+    currTrade = create_test_trade(100, 1.23, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11),
+            "ZAI/USD", "4.53", "ZAI", TradesHelper::SecurityTypeForex)
+    get :trade_search,{"m_symbol"=>{"root"=>"ZAI/USD"}, :all_dates => "yes" }
+
+    assert_response :success
+    assert_template 'queries_output'
+
+    assert_not_nil assigns(:trades)
+    assert_equal 1, assigns(:trades).length
+    assert_equal currTrade, assigns(:trades)[0]
+
+    assert_tag :tag => "h1", :content => "List Trades for ZAI/USD for all dates"
+
+    # for pagination
+    assert_equal "ZAI/USD", assigns(:symbol_str)
+  end
   
   def test_by_symbol_none_match
     post :trade_search,{"m_symbol"=>{"root"=>"pupkin"}, :all_dates => "yes" }
