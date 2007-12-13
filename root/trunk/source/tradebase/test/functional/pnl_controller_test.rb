@@ -203,12 +203,12 @@ class PnlControllerTest < MarketceteraTestBase
     assert_template 'missing_marks'
     assert_has_error_notice
     assert_not_nil assigns(:missing_marks)
-    assert_equal assigns(:missing_marks).length, 5, "should need 5 marks"
-    assert_equal assigns(:missing_marks)[0].tradeable_m_symbol_root, "SUNW"
-    assert_equal assigns(:missing_marks)[1].tradeable_m_symbol_root, "MSFT"
-    assert_equal assigns(:missing_marks)[2].tradeable_m_symbol_root, "IBM"
-    assert_equal assigns(:missing_marks)[3].tradeable_m_symbol_root, "GOOG"
-    assert_equal assigns(:missing_marks)[4].tradeable_m_symbol_root, "FRO"
+    assert_equal 5, assigns(:missing_marks).length, "should need 5 marks"
+    assert_equal "SUNW", assigns(:missing_marks)[0].tradeable_m_symbol_root
+    assert_equal "MSFT", assigns(:missing_marks)[1].tradeable_m_symbol_root
+    assert_equal "IBM", assigns(:missing_marks)[2].tradeable_m_symbol_root
+    assert_equal "GOOG", assigns(:missing_marks)[3].tradeable_m_symbol_root
+    assert_equal "FRO", assigns(:missing_marks)[4].tradeable_m_symbol_root
 
     #all marks are from 4-20-2007
     assigns(:missing_marks).each {|m| assert_equal m.mark_date.to_s, Date.civil(2007, 4, 20).to_s}

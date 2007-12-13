@@ -36,7 +36,7 @@ class ProfitAndLoss
     '   ) AS PositionTable ON PositionTable.tradeable_id = marks.tradeable_id AND mark_date = position_date AND mark_type="C" AND tradeable_type="Equity" '
     
   @missing_equity_marks_query = 
-    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "Equity" as tradeable_type, account_id '+
+    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "Equity" as tradeable_type '+
     'FROM marks RIGHT JOIN '+
     '( '+
     '	SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy, ? as position_date '+
@@ -100,7 +100,7 @@ class ProfitAndLoss
     ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id ';
 
   @missing_forex_marks_query = 
-    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "CurrencyPair" as tradeable_type, account_id '+
+    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "CurrencyPair" as tradeable_type '+
     'FROM marks RIGHT JOIN '+
     '( '+
     ' SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy, ? as position_date '+
