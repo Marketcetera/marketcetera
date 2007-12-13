@@ -36,7 +36,7 @@ class ProfitAndLoss
     '   ) AS PositionTable ON PositionTable.tradeable_id = marks.tradeable_id AND mark_date = position_date AND mark_type="C" AND tradeable_type="Equity" '
     
   @missing_equity_marks_query = 
-    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "Equity" as tradeable_type '+
+    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "Equity" as tradeable_type, account_id '+
     'FROM marks RIGHT JOIN '+
     '( '+
     '	SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy, ? as position_date '+
@@ -100,7 +100,7 @@ class ProfitAndLoss
     ' JOIN currency_pairs ON currency_pairs.id = PositionTable.tradeable_id ';
 
   @missing_forex_marks_query = 
-    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "CurrencyPair" as tradeable_type '+
+    'SELECT DISTINCT PositionTable.tradeable_id, mark_value, position_date as mark_date, null as mark_type, null as created_on, null as updated_on, "CurrencyPair" as tradeable_type, account_id '+
     'FROM marks RIGHT JOIN '+
     '( '+
     ' SELECT sum(position_qty) AS position, tradeable_id, account_id, strategy, ? as position_date '+
@@ -187,14 +187,26 @@ class ProfitAndLoss
     }
   end
 
-  def ProfitAndLoss.get_missing_equity_marks(the_date)
-    sane = ActiveRecord::Base.sanitize_sql_accessor([@missing_equity_marks_query, the_date, the_date])
-    
+  def ProfitAndLoss.get_missing_equity_marks(the_date, account = nil)
+    missing_equity_marks_query = @missing_equity_marks_query
+    if (account.nil?)
+      sane = ActiveRecord::Base.sanitize_sql_accessor([missing_equity_marks_query, the_date, the_date])
+    else 
+      missing_equity_marks_query += " AND account_id = ?"
+      sane = ActiveRecord::Base.sanitize_sql_accessor([missing_equity_marks_query, the_date, the_date, account.id])
+    end
     Mark.find_by_sql(sane)
   end
   
-  def ProfitAndLoss.get_missing_forex_marks(the_date)
-    sane = ActiveRecord::Base.sanitize_sql_accessor([@missing_forex_marks_query, the_date, the_date])
+  def ProfitAndLoss.get_missing_forex_marks(the_date, account = nil)
+    missing_forex_marks_query = @missing_forex_marks_query
+    
+    if (account.nil?)
+      sane = ActiveRecord::Base.sanitize_sql_accessor([missing_forex_marks_query, the_date, the_date])
+    else 
+      missing_forex_marks_query += " AND account_id = ?"
+      sane = ActiveRecord::Base.sanitize_sql_accessor([missing_forex_marks_query, the_date, the_date, account.id])
+    end
     
     ForexMark.find_by_sql(sane)
   end

@@ -405,6 +405,27 @@ class ProfitAndLossTest < MarketceteraTestBase
     assert_not_nil results["FRO"]
   end
   
+  def test_missing_equity_marks_for_account()
+    results = {}
+    missing = ProfitAndLoss.get_missing_equity_marks(Date.civil(2007,12,11), Account.find_by_nickname("GRAHAM"))
+    missing.each { |m| results[m.tradeable_m_symbol_root]= m}
+    assert_equal 1, results.size
+    assert_not_nil results["FRO"]
+    
+  end
+  
+  def test_missing_forex_marks_for_account()
+    create_test_trade(1000000, 1.4432, Side::QF_SIDE_CODE[:buy], "GRAHAM", Date.civil(2007,12,1),
+      "ZAI/USD", 0, "USD", TradesHelper::SecurityTypeForex)
+
+    results = {}
+    missing = ProfitAndLoss.get_missing_forex_marks(Date.civil(2007,12,11), Account.find_by_nickname("GRAHAM"))
+    missing.each { |m| results[m.tradeable_m_symbol_root]= m}
+    assert_equal 1, results.size
+    assert_not_nil results["ZAI/USD"]
+    
+  end
+
   # Helper function to create a trade
   def create_forex_trade(qty, rate, side, account, date, symbol, commission, cur)
       theTrade = ForexTrade.new(:quantity => qty, :price_per_share => rate, :side => side)
