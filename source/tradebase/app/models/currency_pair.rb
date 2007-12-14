@@ -32,7 +32,7 @@ class CurrencyPair < ActiveRecord::Base
   end
 
   # throws an exception if one of the underlying currencies is not present
-  def CurrencyPair.get_currency_pair(symbol, create_missing=true)
+  def CurrencyPair.get_currency_pair(symbol, create_missing = false)
     # EUR/USD
     # EURUSD
     # eur/usd
@@ -56,5 +56,23 @@ class CurrencyPair < ActiveRecord::Base
     raise UnknownCurrencyPairException.new("Unknown currency in pair: #{symbol}") if (!currency_pair.nil? && !currency_pair.valid?)
 
     currency_pair
+  end
+
+  # Helper function to find missing denominator/USD pairs
+  # Run it after modifying/adding more currency pairs
+  def CurrencyPair.find_missing_pairs
+    all = CurrencyPair.find_all
+    usd = Currency.get_currency("USD")
+    all.each {|p|
+      if(p.second_currency != usd)
+        top = CurrencyPair.get_currency_pair(p.second_currency.to_s+"usd", false)
+        bottom = CurrencyPair.get_currency_pair("usd"+p.second_currency.to_s, false)
+        if(top ==nil && bottom==nil)
+          puts "missing #{p.second_currency.to_s}/usd combo"
+        else
+          #puts "for #{p.to_s} found #{top.to_s} and #{bottom}"  
+        end
+      end
+    }
   end
 end
