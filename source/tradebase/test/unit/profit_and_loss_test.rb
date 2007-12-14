@@ -395,7 +395,7 @@ class ProfitAndLossTest < MarketceteraTestBase
   
   def test_missing_equity_marks() 
     results = {}
-    missing = ProfitAndLoss.get_missing_equity_marks(Date.civil(2007,9,28))
+    missing = ProfitAndLoss.get_missing_equity_marks(Date.civil(2007,9,28), true)
     missing.each { |m| results[m.tradeable_m_symbol_root]= m}
     assert_equal 5, results.size
     assert_not_nil results["SUNW"]
@@ -407,7 +407,7 @@ class ProfitAndLossTest < MarketceteraTestBase
   
   def test_missing_equity_marks_for_account()
     results = {}
-    missing = ProfitAndLoss.get_missing_equity_marks(Date.civil(2007,12,11), Account.find_by_nickname("GRAHAM"))
+    missing = ProfitAndLoss.get_missing_equity_marks(Date.civil(2007,12,11), true, Account.find_by_nickname("GRAHAM"))
     missing.each { |m| results[m.tradeable_m_symbol_root]= m}
     assert_equal 1, results.size
     assert_not_nil results["FRO"]
@@ -419,7 +419,7 @@ class ProfitAndLossTest < MarketceteraTestBase
       "ZAI/USD", 0, "USD", TradesHelper::SecurityTypeForex)
 
     results = {}
-    missing = ProfitAndLoss.get_missing_forex_marks(Date.civil(2007,12,11), Account.find_by_nickname("GRAHAM"))
+    missing = ProfitAndLoss.get_missing_forex_marks(Date.civil(2007,12,11), true, Account.find_by_nickname("GRAHAM"))
     missing.each { |m| results[m.tradeable_m_symbol_root]= m}
     assert_equal 1, results.size
     assert_not_nil results["ZAI/USD"]
