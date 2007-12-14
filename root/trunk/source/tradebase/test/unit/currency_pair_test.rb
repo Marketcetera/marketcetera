@@ -41,6 +41,17 @@ class CurrencyPairTest < Test::Unit::TestCase
     assert_not_nil CurrencyPair.get_currency_pair("ZAI/usd", false)
   end
 
+  # current assumption is that if you look for curPair with underlying currencies present by the pair
+  # does not exist, it wouldn't create it automatically
+  def test_get_currency_pair_create_missing_false
+    assert_not_nil Currency.get_currency("ZAI")
+    assert_not_nil Currency.get_currency("USD")
+
+    # usd/zai doesn't exist
+    assert_nil CurrencyPair.get_currency_pair("usdzai"), "shouldn't auto-create currencypair if underlying currencies present"
+    assert_not_nil CurrencyPair.get_currency_pair("usdzai", true)
+  end
+
   def test_validate
     usd = Currency.find_by_alpha_code("USD")
 

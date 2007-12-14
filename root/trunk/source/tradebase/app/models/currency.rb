@@ -11,4 +11,8 @@ class Currency < ActiveRecord::Base
     currency = Currency.find_by_alpha_code(cur_string.upcase)
     return currency
   end
+
+  def to_s
+    alpha_code
+  end
 end
