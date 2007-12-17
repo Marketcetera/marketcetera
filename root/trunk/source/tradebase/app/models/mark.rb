@@ -3,7 +3,9 @@ class Mark < ActiveRecord::Base
 
   belongs_to :tradeable, :polymorphic => true
  
-  MARK_TYPES = [ ['Close', 'C'], ['Intra-Day', 'I'] ]
+  MarkTypeClose='C'
+  MarkTypeIntraDay='I'
+  MARK_TYPES = [ ['Close', MarkTypeClose], ['Intra-Day', MarkTypeIntraDay] ]
 
   validates_uniqueness_of :mark_date, :scope => [:tradeable_id, :tradeable_type], 
     :message => "Already have a mark on that date. Please update an existing mark instead."
