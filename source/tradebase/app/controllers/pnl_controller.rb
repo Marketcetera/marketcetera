@@ -26,11 +26,23 @@ class PnlController < ApplicationController
       missing_marks = missing_marks + ProfitAndLoss.get_missing_equity_marks(@to_date, true, the_account)
       missing_marks = missing_marks + ProfitAndLoss.get_missing_forex_marks(@from_date, false, the_account)
       missing_marks = missing_marks + ProfitAndLoss.get_missing_forex_marks(@to_date, true, the_account)
+
       if (missing_marks.length > 0)
         @missing_mark_pages, @missing_marks = paginate_collection(missing_marks, params)
         flash[:error] = "Unable to calculate P&L because some marks are missing."
         render :template => 'pnl/missing_marks'
       else
+        base_currency = Currency.find_by_alpha_code(BaseCurrency)
+        @base_currency_marks = {}
+        ForexMark.find(:all, :conditions => {:mark_date => @to_date, :mark_type=>Mark::MarkTypeClose}).each() { |mark|
+          if (mark.tradeable.first_currency_id == base_currency.id)
+            @base_currency_marks[mark.tradeable.second_currency_id] = 1/mark.mark_value
+          else
+            if (mark.tradeable.second_currency_id == base_currency.id)
+              @base_currency_marks[mark.tradeable.first_currency_id] = mark.mark_value
+            end
+          end
+        }
         if(nickname_str.blank?)
           aggregate
         else

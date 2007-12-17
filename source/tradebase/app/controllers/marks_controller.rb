@@ -81,7 +81,11 @@ class MarksController < ApplicationController
     flash.clear
     if(params[:tradeable_type] == CurrencyPair.name)
       @mark = ForexMark.new(:mark_date => params[:mark_date])
-      @mark.tradeable = CurrencyPair.find(params[:tradeable_id])
+      if (params[:tradeable_id].blank?)
+        @mark.tradeable = CurrencyPair.get_currency_pair(params[:currency_pair])
+      else 
+        @mark.tradeable = CurrencyPair.find(params[:tradeable_id])
+      end
     else
       @mark = Mark.new(:mark_date => params[:mark_date], :tradeable_id => params[:tradeable_id])
       @mark.tradeable = Equity.find(params[:tradeable_id])
