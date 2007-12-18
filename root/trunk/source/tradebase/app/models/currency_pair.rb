@@ -10,6 +10,9 @@ class CurrencyPair < ActiveRecord::Base
   has_many :positions, :as => :tradeable
   has_many :marks, :as => :tradeable
 
+  # We don't want duplicate currency pairs
+  validates_uniqueness_of :first_currency_id, :scope => [:second_currency_id]
+
   def validate
     errors.add(:first_currency, "unknown") if first_currency.nil?
     errors.add(:second_currency, "unknown") if second_currency.nil?
