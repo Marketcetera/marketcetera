@@ -1,5 +1,6 @@
 # Library to create trades
 require 'bigdecimal'
+require 'tzinfo'
 
 module TradeCreator
   include MessageLogsHelper
@@ -17,14 +18,25 @@ module TradeCreator
 
     qfMessage = Quickfix::Message.new(dbMessage.text)
     logger.debug("creating a trade for msg: "+ qfMessage.to_s)
-    theTrade = Trade.new
+    ordType = getStringFieldValueIfPresent(qfMessage, Quickfix::OrdType.new)
+    if(ordType == Quickfix::OrdType_FOREX_LIMIT() || ordType == Quickfix::OrdType_FOREX_MARKET())
+        theTrade = ForexTrade.new
+    else
+      theTrade = Trade.new
+    end
+
     theTrade.side = getStringFieldValueIfPresent(qfMessage, Quickfix::Side.new)
     quantity = getStringFieldValueIfPresent(qfMessage, Quickfix::LastShares.new)
     currency = getStringFieldValueIfPresent(qfMessage, Quickfix::Currency.new)
     symbol =   getStringFieldValueIfPresent(qfMessage, Quickfix::Symbol.new)
     price = getStringFieldValueIfPresent(qfMessage, Quickfix::LastPx.new)
     account = getStringFieldValueIfPresent(qfMessage, Quickfix::Account.new)
-    sendingTime = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
+
+    # convert from UTC to loal time zone
+    sendingTime_UTC = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
+    pacificTZ = TZInfo::Timezone.get('America/Los_Angeles')
+    sendingTime  = pacificTZ.utc_to_local(DateTime.parse(sendingTime_UTC))
+
     commission = getStringFieldValueIfPresent(qfMessage, Quickfix::Commission.new)
 
     logger.debug("creating trade for "+Side.get_human_side(@side) + " " + quantity + " " +

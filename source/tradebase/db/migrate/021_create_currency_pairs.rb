@@ -23,6 +23,7 @@ class CreateCurrencyPairs < ActiveRecord::Migration
     end
     add_fkey :currency_pairs, :first_currency_id, :currencies, {:fcolumn => :id, :index => true }
     add_fkey :currency_pairs, :second_currency_id, :currencies, {:fcolumn => :id, :index => true }
+    
   end
 
   def self.down

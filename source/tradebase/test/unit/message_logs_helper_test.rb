@@ -1,6 +1,7 @@
 require File.dirname(__FILE__) + '/../test_helper'
+require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
 
-class MessageLogsHelperTest < Test::Unit::TestCase
+class MessageLogsHelperTest < MarketceteraTestBase
   fixtures :messages_log
   include MessageLogsHelper
 

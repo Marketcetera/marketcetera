@@ -20,6 +20,10 @@ class RecordTradeProcessor < ApplicationProcessor
 
       logger.debug("saved incoming message: "+ message_log.text)
       theTrade = create_one_trade(message_log.id)
+      if(StrategyAsAccount)
+        theTrade.strategy = theTrade.account_nickname
+        theTrade.save
+      end
     rescue => ex
       logger.debug("record_trade.on_message encountered error: "+ex.message + ":\n"+ex.backtrace.join("\n"))
     end

@@ -52,6 +52,18 @@ class CurrencyPairTest < Test::Unit::TestCase
     assert_not_nil CurrencyPair.get_currency_pair("usdzai", true)
   end
 
+  def test_create_duplicate_pair
+    zai = Currency.get_currency("ZAI")
+    eur = Currency.get_currency("EUR")
+
+    count = CurrencyPair.count
+    assert_not_nil CurrencyPair.get_currency_pair("ZAI/EUR", true)
+
+    created = CurrencyPair.create(:first_currency => zai, :second_currency => eur)
+    assert !created.save, "shouldn't be able to save"
+    assert_equal count+1, CurrencyPair.count
+  end
+
   def test_validate
     usd = Currency.find_by_alpha_code("USD")
 
