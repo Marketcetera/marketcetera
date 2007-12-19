@@ -26,7 +26,8 @@
 <% if (base_currency_pnl.nil?) %>
     <td <%= pnl_number_class(pnl_amount) %>><%= link_to("Create mark "+image_tag("/images/icons/pencil.png", :alt=> 'Create New', :width => 16, :height => 16),
                     :action => 'new_missing', :controller => 'marks', 
-                    :mark_date => @to_date, :tradeable_type => CurrencyPair.to_s) %></td>
+                    :mark_date => @to_date, :tradeable_type => CurrencyPair.to_s,
+                    :currency_pair => pnl.currency.alpha_code + BaseCurrency) %></td>
 <% else %>
     <td <%= pnl_number_class(pnl_amount) %>><%= base_currency_pnl %></td>
 <% end %>
