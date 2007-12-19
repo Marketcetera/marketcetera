@@ -248,4 +248,63 @@ class PnlControllerTest < MarketceteraTestBase
     assert_tag :tag => 'a', :attributes =>
             {:href => /marks\/new_missing\?.*tradeable_id=#{m.tradeable.id}/}
   end
+
+  # Verify that if we have a P&L in a currency XXX and we don't have the XXX/base currency mark for
+  # that date the link shows up and is correct
+  # BaseCurrency is USD, create a ZAI/EUR trade, and make sure a EUR/USD mark request shows up
+  def test_missing_forex_base_currency_mark
+    trade = create_test_trade(100, 77.30, Side::QF_SIDE_CODE[:buy], "forex", Date.civil(2006, 5, 8), "ZAI/EUR", "4.53", "ZAI", SecurityTypeForex)
+    zaieur = CurrencyPair.get_currency_pair("ZAI/EUR")
+
+    # get p&l, should get missing forex mark on 5/8/2006
+    get :report, { :suffix => "acct", :account => {:nickname => "forex"},
+            :date_acct=>{"to(1i)"=>"2006", "from(1i)"=>"2006", "to(2i)"=>"8", "from(2i)"=>"4",
+                     "from(3i)"=>"17", "to(3i)"=>"20"}}
+
+    assert_response :success
+    assert_template 'missing_marks'
+    m = assigns(:missing_marks)[0]
+    assert_equal "2006-08-20", m.mark_date.to_s
+
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*tradeable_type=CurrencyPair/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*mark_date=#{m.mark_date}/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*tradeable_id=#{m.tradeable.id}/}
+
+    # now create that mark and verify we get a zai/usd mark request
+    m = ForexMark.create(:tradeable => zaieur, :mark_date => Date.civil(2006, 8,20), :mark_value => "1.234", :mark_type => Mark::MarkTypeClose)
+    assert m.save
+    get :report, { :suffix => "acct", :account => {:nickname => "forex"},
+            :date_acct=>{"to(1i)"=>"2006", "from(1i)"=>"2006", "to(2i)"=>"8", "from(2i)"=>"4",
+                     "from(3i)"=>"17", "to(3i)"=>"20"}}
+
+    assert_response :success
+    assert_template 'pnl_by_account'
+
+    # verify have a link to create missing zai/usd mark
+    assert_tag :tag => 'a', :content => /Create mark/, :attributes =>
+            {:href => /marks\/new_missing\?.*tradeable_type=CurrencyPair/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*mark_date=2006-08-20/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*currency_pair=ZAIUSD/}
+
+    # verify same works for aggregate
+    get :report, { :suffix => "acct",
+            :date_acct=>{"to(1i)"=>"2006", "from(1i)"=>"2006", "to(2i)"=>"8", "from(2i)"=>"4",
+                     "from(3i)"=>"17", "to(3i)"=>"20"}}
+
+    assert_response :success
+    assert_template 'pnl_aggregate'
+
+    # verify have a link to create missing zai/usd mark
+    assert_tag :tag => 'a', :content => /Create mark/, :attributes =>
+            {:href => /marks\/new_missing\?.*tradeable_type=CurrencyPair/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*mark_date=2006-08-20/}
+    assert_tag :tag => 'a', :attributes =>
+            {:href => /marks\/new_missing\?.*currency_pair=ZAIUSD/}
+  end
 end
