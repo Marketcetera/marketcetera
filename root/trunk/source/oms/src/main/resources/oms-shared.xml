@@ -15,6 +15,19 @@
         </property>
     </bean>
 
+    <!-- topic for copies of all incoming commands -->
+    <bean id="omsCommandsCopyTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="oms-commands-copy"/>
+    </bean>
+
+    <bean id="commandsCopierJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
+        <property name="connectionFactory" ref="pooledConnectionFactory"/>
+        <property name="messageConverter">
+            <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
+        </property>
+        <property name="defaultDestination" ref="omsCommandsCopyTopic"/>
+    </bean>
+    
     <!-- note that this needs to use the non-pooled connection factory -->
     <bean id="container" class="org.springframework.jms.listener.SimpleMessageListenerContainer">
         <property name="connectionFactory" ref="connectionFactory"/>
@@ -46,6 +59,7 @@
         <property name="orderRouteManager" ref="orderRouting"/>
         <property name="messageModifierMgr" ref="messageModifierMgr"/>
         <property name="quickFIXSender" ref="quickfixSender"/>
+        <property name="incomingCommandsCopier" ref="commandsCopierJmsTemplate"/>
     </bean>
 
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>

@@ -3,6 +3,7 @@ package org.marketcetera.oms;
 import junit.framework.Test;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
+import org.marketcetera.spring.MockJmsTemplate;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.UncategorizedJmsException;
 import org.springframework.jms.core.JmsOperations;
@@ -14,7 +15,6 @@ import quickfix.field.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Vector;
 
 /**
  * Verifies that we don't error out of the sending functions
@@ -60,8 +60,8 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         qfApp.setJmsOperations(jmsTemplate);
 
         qfApp.onLogout(new SessionID(FIXVersion.FIX42.toString(), "sender", "target"));
-        assertEquals(1, jmsTemplate.sentMessages.size());
-        Message received = jmsTemplate.sentMessages.get(0);
+        assertEquals(1, jmsTemplate.getSentMessages().size());
+        Message received = jmsTemplate.getSentMessages().get(0);
         assertEquals(MsgType.LOGOUT, received.getHeader().getString(MsgType.FIELD));
         assertEquals("sender", received.getHeader().getString(SenderCompID.FIELD));
         assertEquals("target", received.getHeader().getString(TargetCompID.FIELD));
@@ -85,7 +85,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         SessionID session = new SessionID(FIXVersion.FIX42.toString(), "sender", "target");
         qfApp.fromApp(msg, session);
 
-        assertEquals(1, jmsTemplate.sentMessages.size());
+        assertEquals(1, jmsTemplate.getSentMessages().size());
 
         assertEquals(1, ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().size());
         Message reject = ((NullQuickFIXSender) qfApp.quickFIXSender).getCapturedMessages().get(0);
@@ -108,7 +108,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
             }
         }.run();
 
-        assertEquals(0, jmsTemplate.sentMessages.size());
+        assertEquals(0, jmsTemplate.getSentMessages().size());
     }
 
     public void testMessageModifiersAppliedToOutgoingAdminMessages() throws Exception {
@@ -134,23 +134,16 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
                 new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new MSymbol("XYZ"), "bob");
 
         qfApp.fromApp(msg, new SessionID(fixVersion.toString(), "sender", "target"));
-        assertEquals(1, jmsTemplate.sentMessages.size());
-        assertEquals(1, tradeRecorderJMS.sentMessages.size());
-        jmsTemplate.sentMessages.clear();
-        tradeRecorderJMS.sentMessages.clear();
+        assertEquals(1, jmsTemplate.getSentMessages().size());
+        assertEquals(1, tradeRecorderJMS.getSentMessages().size());
+        jmsTemplate.getSentMessages().clear();
+        tradeRecorderJMS.getSentMessages().clear();
 
         // now set JMS ops to null, but trade recorder should still get a message
         qfApp.setJmsOperations(null);
         qfApp.fromApp(msg, new SessionID(fixVersion.toString(), "sender", "target"));
-        assertEquals(0, jmsTemplate.sentMessages.size());        
-        assertEquals(1, tradeRecorderJMS.sentMessages.size());
-    }
-
-    private class MockJmsTemplate extends JmsTemplate {
-        private Vector<Message> sentMessages = new Vector<Message>();
-        public void convertAndSend(Object message) throws JmsException {
-            sentMessages.add((Message)message);
-        }
+        assertEquals(0, jmsTemplate.getSentMessages().size());
+        assertEquals(1, tradeRecorderJMS.getSentMessages().size());
     }
 
     public static class MockQuickFIXApplication extends QuickFIXApplication {
