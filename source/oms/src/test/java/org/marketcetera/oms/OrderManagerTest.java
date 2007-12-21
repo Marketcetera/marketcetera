@@ -4,6 +4,7 @@ import junit.framework.Test;
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.DefaultMessageModifier.MessageFieldType;
+import org.marketcetera.spring.MockJmsTemplate;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -442,6 +443,19 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertFalse("OrdStatus should not be set", reject.isSetField(OrdStatus.FIELD));
         assertEquals("didn't get a right reason", OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage(),
                 reject.getString(Text.FIELD));
+    }
+
+    /** Test that incoming commands are copied on copy-commands-topic */
+    public void testCommandsCopiedToTopic() throws Exception {
+        MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
+        MockJmsTemplate copyJmsTemplate = new MockJmsTemplate();
+        handler.setIncomingCommandsCopier(copyJmsTemplate);
+
+        Message nos = FIXMessageUtilTest.createNOS("abc", 10, 100, Side.BUY, msgFactory);
+        handler.handleMessage(nos);
+
+        assertEquals(1, copyJmsTemplate.getSentMessages().size());
+        assertEquals(nos, copyJmsTemplate.getSentMessages().get(0));
     }
 
 

@@ -2,6 +2,8 @@ package org.marketcetera.oms;
 
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
+import org.springframework.jms.core.JmsOperations;
+import org.springframework.jms.JmsException;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -29,6 +31,7 @@ public class OutgoingMessageHandler {
     private IDFactory idFactory;
     private FIXMessageFactory msgFactory;
     private OrderLimits orderLimits;
+    private JmsOperations incomingCommandsCopier;
 
     // this is temporary, until we have much better JMX visibility
     protected QuickFIXApplication qfApp;
@@ -74,6 +77,15 @@ public class OutgoingMessageHandler {
             return null;
         }
 
+        // send a copy to the copyTopic
+        try {
+            if(incomingCommandsCopier!=null) {
+                incomingCommandsCopier.convertAndSend(message);
+            }
+        } catch(JmsException ex) {
+            // ignore
+        }
+        
         if(!qfApp.isLoggedOn()) {
             Message notLoggedOnReject = createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
                     message);
@@ -282,6 +294,10 @@ public class OutgoingMessageHandler {
 	public void setQuickFIXSender(IQuickFIXSender quickFIXSender) {
 		this.quickFIXSender = quickFIXSender;
 	}
+
+    public void setIncomingCommandsCopier(JmsOperations incomingCommandsCopier) {
+        this.incomingCommandsCopier = incomingCommandsCopier;
+    }
 
     /** Returns the next ExecID from the factory, or a hardcoded ZZ-internal if we have
      * problems creating an execID

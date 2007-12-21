@@ -20,7 +20,7 @@
         <constructor-arg value="oms-messages"/>
     </bean>
 
-    <bean id="tradeRecorderTopic" class="org.apache.activemq.command.ActiveMQQueue">
+    <bean id="tradeRecorderQueue" class="org.apache.activemq.command.ActiveMQQueue">
         <constructor-arg value="trade-recorder"/>
     </bean>
 
@@ -50,7 +50,7 @@
         <property name="messageConverter">
             <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
         </property>
-        <property name="defaultDestination" ref="tradeRecorderTopic"/>
+        <property name="defaultDestination" ref="tradeRecorderQueue"/>
     </bean>
 
     <bean id="quickfixSender" class="org.marketcetera.quickfix.QuickFIXSender"/>
