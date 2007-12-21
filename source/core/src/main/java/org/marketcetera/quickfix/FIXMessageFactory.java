@@ -111,17 +111,16 @@ public class FIXMessageFactory {
         request.setField(new MarketDepth(TOP_OF_BOOK_DEPTH));
         request.setField(new MDReqID(reqID));
         request.setChar(SubscriptionRequestType.FIELD, SubscriptionRequestType.SNAPSHOT);
-        //request.setInt(NoMDEntryTypes.FIELD, 2);
         Group entryTypeGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
         entryTypeGroup.setField(new MDEntryType(MDEntryType.BID));
         request.addGroup(entryTypeGroup);
         entryTypeGroup.setField(new MDEntryType(MDEntryType.OFFER));
         request.addGroup(entryTypeGroup);
 
-	int numSymbols = symbols.size();
-	if (numSymbols == 0){
-	    request.setInt(NoRelatedSym.FIELD, numSymbols);
-	}
+        int numSymbols = symbols.size();
+        if (numSymbols == 0){
+            request.setInt(NoRelatedSym.FIELD, numSymbols);
+        }
         for (MSymbol oneSymbol : symbols) {
             Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
             symbolGroup.setField(new Symbol(oneSymbol.getFullSymbol()));
