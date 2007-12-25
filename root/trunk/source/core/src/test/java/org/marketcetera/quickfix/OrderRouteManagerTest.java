@@ -38,7 +38,7 @@ public class OrderRouteManagerTest extends TestCase
 
     public void testModifyOrderSeparateSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
     {
-        MessageRouteManager routeManager = getORMWithOrderRouting();
+        MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_100_METHOD);
 
         Message message =msgFactory.newLimitOrder("12345",
             Side.BUY,
@@ -259,7 +259,7 @@ public class OrderRouteManagerTest extends TestCase
     // with symbol changed and route method added
     public void testOrderRouting() throws Exception {
         FIXMessageAugmentor augmentor = new NoOpFIXMessageAugmentor();
-        MessageRouteManager routeManager = getORMWithOrderRouting();
+        MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_100_METHOD);
 
         // new order single
         Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
@@ -283,6 +283,29 @@ public class OrderRouteManagerTest extends TestCase
         assertEquals("SIGMA", cancel.getString(ExDestination.FIELD));
     }
 
+    public void testOrderRouting_field57() throws Exception {
+        FIXMessageAugmentor augmentor = new NoOpFIXMessageAugmentor();
+        MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_57_METHOD);
+
+        // new order single
+        Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
+        routeManager.modifyMessage(buy, augmentor);
+        assertEquals("IBM", buy.getString(Symbol.FIELD));
+        assertEquals("SIGMA", buy.getHeader().getString(TargetSubID.FIELD));
+    }
+
+    public void testOrderRouting_field128() throws Exception {
+        FIXMessageAugmentor augmentor = new NoOpFIXMessageAugmentor();
+        MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_128_METHOD);
+
+        // new order single
+        Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
+        routeManager.modifyMessage(buy, augmentor);
+        assertEquals("IBM", buy.getString(Symbol.FIELD));
+        assertEquals("SIGMA", buy.getHeader().getString(DeliverToCompID.FIELD));
+
+    }
+
     /**
      * Creates a basic MessageRouteManager using the {@link MessageRouteManager#FIELD_100_METHOD}
      * # enable class share separate
@@ -293,9 +316,9 @@ public class OrderRouteManagerTest extends TestCase
      * 2. IM Milan
      * 3. A B
      */
-    public static MessageRouteManager getORMWithOrderRouting() {
+    public static MessageRouteManager getORMWithOrderRouting(String routeMethod) {
         MessageRouteManager orm = new MessageRouteManager();
-        orm.setRouteMethod(MessageRouteManager.FIELD_100_METHOD);
+        orm.setRouteMethod(routeMethod);
         orm.setSeparateSuffix(true);
         HashMap<String, String> routesMap = new HashMap<String, String>();
         routesMap.put("N", "SIGMA");
