@@ -21,6 +21,7 @@ public class MessageRouteManager implements MessageModifier {
 
     public static final String FIELD_57_METHOD = "field:57";
     public static final String FIELD_100_METHOD = "field:100";
+    public static final String FIELD_128_METHOD = "field:128";
 
     private Map<String, String> mRoutes;
     private String routeMethod;
@@ -50,7 +51,7 @@ public class MessageRouteManager implements MessageModifier {
         // assume it's all stored in one field...
         routeMethod = inMethod;
         if (routeMethod != null &&
-            (!(FIELD_57_METHOD.equals(routeMethod) || FIELD_100_METHOD.equals(routeMethod)))) {
+            (!(FIELD_57_METHOD.equals(routeMethod) || FIELD_100_METHOD.equals(routeMethod) || FIELD_128_METHOD.equals(routeMethod)))) {
                 throw new IllegalArgumentException(MessageKey.ERROR_UNRECOGNIZED_ROUTE.getLocalizedMessage(routeMethod));
         }
     }
@@ -87,9 +88,11 @@ public class MessageRouteManager implements MessageModifier {
                         String mappedRoute = mRoutes.get(routeKey);
                         if (mappedRoute != null) {
                             if (FIELD_57_METHOD.equals(routeMethod)) {
-                                anOrder.setField(new TargetSubID(mappedRoute));
+                                anOrder.getHeader().setField(new TargetSubID(mappedRoute));
                             } else if (FIELD_100_METHOD.equals(routeMethod)) {
                                 anOrder.setField(new ExDestination(mappedRoute));
+                            } else if (FIELD_128_METHOD.equals(routeMethod)) {
+                                anOrder.getHeader().setField(new DeliverToCompID(mappedRoute));
                             }
                             anOrder.setField(new Symbol(rootSymbol));
                         }
