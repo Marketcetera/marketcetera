@@ -32,29 +32,9 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
                 MsgType.ALLOCATION_INSTRUCTION
     };
 
-    /**
-     * MarketOnClose order handling: FIX up to 4.2 doesn't have {@link TimeInForce#AT_THE_CLOSE}
-     * so we need to check if the order is a market order and of {@link OrdType#MARKET}
-     * and modify it appropriately to set the OrdType to be {@link OrdType#MARKET_ON_CLOSE}
-     * @param inMessage
-     * @return
-     */
     public Message newOrderSingleAugment(Message inMessage) {
         inMessage = super.newOrderSingleAugment(inMessage);
-        try {
-            if((OrdType.MARKET == inMessage.getChar(OrdType.FIELD)) &&
-               (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
-                inMessage.setField(new OrdType(OrdType.MARKET_ON_CLOSE));
-                inMessage.setField(new TimeInForce(TimeInForce.DAY));
-            } else if((OrdType.LIMIT == inMessage.getChar(OrdType.FIELD)) &&
-               (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
-                inMessage.setField(new OrdType(OrdType.LIMIT_ON_CLOSE));
-                inMessage.setField(new TimeInForce(TimeInForce.DAY));
-            }
-        } catch (FieldNotFound fieldNotFound) {
-            return inMessage;
-        }
-        return inMessage;
+        return handleOnCloseBehaviour(inMessage);
     }
 
     public Message executionReportAugment(Message inMessage) throws FieldNotFound {
@@ -71,6 +51,11 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
         return inMessage;
     }
 
+    public Message cancelReplaceRequestAugment(Message inMessage) {
+        inMessage = super.cancelReplaceRequestAugment(inMessage);
+        return handleOnCloseBehaviour(inMessage);
+    }
+
     public boolean needsTransactTime(Message inMsg) {
         String theType = null;
         try {
@@ -84,5 +69,29 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
     protected Set<String> getApplicableMsgTypes() {
         return applicableMsgTypes;
+    }
+
+    /**
+     * MarketOnClose order handling: FIX up to 4.2 doesn't have {@link TimeInForce#AT_THE_CLOSE}
+     * so we need to check if the order is a market order and of {@link OrdType#MARKET}
+     * and modify it appropriately to set the OrdType to be {@link OrdType#MARKET_ON_CLOSE}
+     * @param inMessage
+     * @return
+     */
+    private Message handleOnCloseBehaviour(Message inMessage) {
+        try {
+            if((OrdType.MARKET == inMessage.getChar(OrdType.FIELD)) &&
+               (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
+                inMessage.setField(new OrdType(OrdType.MARKET_ON_CLOSE));
+                inMessage.setField(new TimeInForce(TimeInForce.DAY));
+            } else if((OrdType.LIMIT == inMessage.getChar(OrdType.FIELD)) &&
+               (TimeInForce.AT_THE_CLOSE == inMessage.getChar(TimeInForce.FIELD))) {
+                inMessage.setField(new OrdType(OrdType.LIMIT_ON_CLOSE));
+                inMessage.setField(new TimeInForce(TimeInForce.DAY));
+            }
+        } catch (FieldNotFound fieldNotFound) {
+            return inMessage;
+        }
+        return inMessage;
     }
 }

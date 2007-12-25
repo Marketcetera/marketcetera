@@ -38,14 +38,31 @@ public class FIXMessageAugmentor_43 extends FIXMessageAugmentor_42 {
     }
 
 
+    public Message newOrderSingleAugment(Message inMessage) {
+        inMessage = super.newOrderSingleAugment(inMessage);
+        return handleOnCloseBehaviour(inMessage);
+    }
+
+    public Message cancelReplaceRequestAugment(Message inMessage) {
+        inMessage = super.newOrderSingleAugment(inMessage);
+        return handleOnCloseBehaviour(inMessage);
+    }
+
+    /** As of FIX43, we no longer use {@link quickfix.field.ExecTransType} so override this method to not do anything */
+    public Message executionReportAugment(Message inMessage) throws FieldNotFound {
+        super.executionReportAugment(inMessage);
+        // remove the ExecTransType field
+        inMessage.removeField(ExecTransType.FIELD);
+        return inMessage;
+    }
+
     /** Undo the changes made in FIX_40 augmentor
      * Starting with FIX.4.3, the {@link OrdType#MARKET_ON_CLOSE} is deprecated
      * so we want to use {@link TimeInForce#AT_THE_CLOSE} instead
      * @param inMessage
      * @return
      */
-    public Message newOrderSingleAugment(Message inMessage) {
-        inMessage = super.newOrderSingleAugment(inMessage);
+    private Message handleOnCloseBehaviour(Message inMessage) {
         try {
             if((OrdType.MARKET_ON_CLOSE == inMessage.getChar(OrdType.FIELD)) &&
                (TimeInForce.DAY == inMessage.getChar(TimeInForce.FIELD))) {
@@ -59,14 +76,6 @@ public class FIXMessageAugmentor_43 extends FIXMessageAugmentor_42 {
         } catch (FieldNotFound fieldNotFound) {
             return inMessage;
         }
-        return inMessage;
-    }
-
-    /** As of FIX43, we no longer use {@link quickfix.field.ExecTransType} so override this method to not do anything */
-    public Message executionReportAugment(Message inMessage) throws FieldNotFound {
-        super.executionReportAugment(inMessage);
-        // remove the ExecTransType field
-        inMessage.removeField(ExecTransType.FIELD);
         return inMessage;
     }
 }
