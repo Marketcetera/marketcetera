@@ -333,7 +333,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
      */
     public void testWithOrderRouteManager() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
-        MessageRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting();
+        MessageRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting(MessageRouteManager.FIELD_100_METHOD);
         handler.setOrderRouteManager(orm);
 
         final NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
