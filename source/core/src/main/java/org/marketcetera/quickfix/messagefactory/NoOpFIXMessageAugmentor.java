@@ -24,6 +24,10 @@ public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
         return inMessage;
     }
 
+    public Message cancelReplaceRequestAugment(Message inMessage) {
+        return inMessage;
+    }
+
     public Message cancelRequestAugment(Message inMessage) {
         return inMessage;
     }
