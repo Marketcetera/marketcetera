@@ -59,11 +59,7 @@ class TradeTest < MarketceteraTestBase
     
     t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShort])
     t.tradeable = @equity
-    
     assert t.valid?, "sellShort 10 does not validate: " + collect_errors_into_string(t.errors)
-    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShortExempt])
-    t.tradeable = @equity
-    assert t.valid?, "sse 10 does not validate: " + collect_errors_into_string(t.errors)
   end
   
   # this simulates behaviour when new trade is created in controller
@@ -222,11 +218,6 @@ class TradeTest < MarketceteraTestBase
     t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
     assert t.save, "wasn't able tos save b 10 GOOG 4.99"
     assert_nums_equal -10, t.position_qty
-    
-    t = Trade.new(:quantity => 10, :price_per_share => 4.99, :side => Side::QF_SIDE_CODE[:sellShortExempt], :tradeable => @equity)
-    t.create_trade(t.quantity, "TOLI", t.price_per_share, 7.50, "USD", "some-account", Date.civil(2006, 10,10))
-    assert t.save, "wasn't able tos save b 10 GOOG 4.99"
-    assert_nums_equal -10, t.position_qty
   end
   
   def test_summary 
@@ -250,7 +241,6 @@ class TradeTest < MarketceteraTestBase
     assert_nums_equal 100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:buy]).quantity
     assert_nums_equal -100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sell]).quantity
     assert_nums_equal -100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShort]).quantity
-    assert_nums_equal -100.0, Trade.new(:quantity => 100, :side => Side::QF_SIDE_CODE[:sellShortExempt]).quantity
   end
   
   def test_currency_alpha_code

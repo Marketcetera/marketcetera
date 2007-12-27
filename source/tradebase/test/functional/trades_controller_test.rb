@@ -384,7 +384,7 @@ class TradesControllerTest < MarketceteraTestBase
   
   def test_edit_verify_side_selected_correctly
     prefilled_test_helper( Side::QF_SIDE_CODE[:buy], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
-    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShortExempt], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
+    prefilled_test_helper( Side::QF_SIDE_CODE[:sellShort], "TOLI", "4.99000", "11.00000", "some-account", "ZAI", 7.37, Date.civil(2006, 10,10))
     prefilled_test_helper( Side::QF_SIDE_CODE[:sell], "TOLI", "4.99000", "11.00000", nil, "ZAI", 7.37, Date.civil(2006, 10,10))
   end
 
