@@ -174,8 +174,12 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		message.setField(new PutOrCall(PutOrCall.CALL));
 		controller.showMessage(message);
 		assertEquals("2000", ticket.getQuantityText().getText());
-		
-	}
+
+        // verify Side/Symbol/TIF enabled for 'new order single' orders
+        assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
+        assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
+        assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
+    }
 
 	public void testShowQuote() throws Exception {
 		OptionOrderTicket ticket = (OptionOrderTicket) getTestView();
@@ -396,7 +400,42 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		assertEquals("C", optionOrderTicket.getPutOrCallCombo().getText());
 		assertEquals("4.5", optionOrderTicket.getPriceText().getText());
 	}
-	
+
+    /** Bug #421 - verify that Symbol/Side/TIF aren't enabled for cancel/replace orders */
+    public void testFieldsDisabledOnCancelReplace() throws Exception {
+        IOptionOrderTicket ticket = (IOptionOrderTicket) getTestView();
+        /**
+         * Note the difference between an option contract symbol ("MSQ+GE") and
+         * an option root ("MSQ"). An OptionOrderTicket has both.
+         */
+        final String optionRoot = "MSQ";
+        final String optionContractSpecifier = "GE";
+        final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
+        Message buy = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", 23,
+                PutOrCall.CALL, 1, 10, Side.BUY, msgFactory);
+
+        Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
+        showMessageInOptionTicket(ticket, cxr, controller, optionRoot,
+                new String[] { optionContractSpecifier }, new String[] { "10" });
+
+        assertEquals("10", ticket.getQuantityText().getText());
+        assertEquals("B", ticket.getSideCombo().getText());
+        assertEquals("1", ticket.getPriceText().getText());
+        assertEquals(optionContractSymbol, ticket.getOptionSymbolControl().getText());
+        assertEquals("DAY", ticket.getTifCombo().getText());
+
+        assertEquals("10", ticket.getQuantityText().getText());
+        assertEquals("B", ticket.getSideCombo().getText());
+        assertEquals("1", ticket.getPriceText().getText());
+        assertEquals("MSQ+GE", ticket.getSymbolText().getText());
+        assertEquals("DAY", ticket.getTifCombo().getText());
+
+        // verify Side/Symbol/TIF are disabled for cancel/replace
+        assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
+        assertFalse("TIF should not be enabled", ticket.getTifCombo().isEnabled());
+        assertFalse("Symbol should not be enabled", ticket.getSymbolText().isEnabled());
+    }
+
     private DerivativeSecurityList createDummySecurityList(String symbol, String[] optionSuffixes, String[] strikePrices) {
         SecurityRequestResult resultCode = new SecurityRequestResult(SecurityRequestResult.VALID_REQUEST);
         DerivativeSecurityList responseMessage = new DerivativeSecurityList();

@@ -354,10 +354,13 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 		errorIconLabel.setImage(null);		
 	}
 
-	public void showMessage(Message order) {
+    /** Disable the Symbol/Side/TIF fields for all orders other than new order single */
+    public void showMessage(Message order) {
 		orderTicketViewPieces.getSymbolText().setEnabled(
 				FIXMessageUtil.isOrderSingle(order));
-		updateOutermostFormTitle(order);
+        orderTicketViewPieces.getSideCombo().setEnabled(FIXMessageUtil.isOrderSingle(order));
+        orderTicketViewPieces.getTifCombo().setEnabled(FIXMessageUtil.isOrderSingle(order));
+        updateOutermostFormTitle(order);
 	}
 
 	public IBookComposite getBookComposite() {
