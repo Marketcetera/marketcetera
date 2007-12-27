@@ -22,10 +22,10 @@ import quickfix.field.ClOrdID;
 import quickfix.field.OrderID;
 
 /**
- * CancelOrderActionDelegate is a subclass of {@link ActionDelegate}
- * that is responsible for cancelling an order based on a selected
+ * CancelReplaceOrderActionDelegate is a subclass of {@link ActionDelegate}
+ * that is responsible for cancelling an order and sending an updated one based on a selected
  * message with the appropriate {@link ClOrdID}.  This action is usually
- * invoked by the user by right clicking and choosing "Cancel" from
+ * invoked by the user by right clicking and choosing "Cancel/Replace" from
  * the context menu.
  * 
  * @author gmiller

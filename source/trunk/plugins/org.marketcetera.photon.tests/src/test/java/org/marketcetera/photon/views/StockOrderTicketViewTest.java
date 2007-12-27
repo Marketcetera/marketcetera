@@ -105,7 +105,12 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.showMessage(message);
 		assertEquals("2000", ticket.getQuantityText().getText());
-	}
+
+        // verify Side/Symbol/TIF enabled for 'new order single' orders
+        assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
+        assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
+        assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
+    }
 	
 	public void testShowQuote() throws Exception {
 		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
@@ -430,6 +435,25 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals(OrdType.MARKET, sentMessage.getChar(OrdType.FIELD));
 	}
 
+    /** Bug #421 - verify that Symbol/Side/TIF aren't enabled for cancel/replace orders */
+    public void testFieldsDisabledOnCancelReplace() throws Exception {
+        IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
+        Message buy = msgFactory.newLimitOrder("1",
+                Side.BUY, BigDecimal.TEN, new MSymbol("QWER"), BigDecimal.ONE,
+                TimeInForce.DAY, null);
+        Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
+        controller.showMessage(cxr);
+        assertEquals("10", ticket.getQuantityText().getText());
+        assertEquals("B", ticket.getSideCombo().getText());
+        assertEquals("1", ticket.getPriceText().getText());
+        assertEquals("QWER", ticket.getSymbolText().getText());
+        assertEquals("DAY", ticket.getTifCombo().getText());
+
+        // verify Side/Symbol/TIF are disabled for cancel/replace
+        assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
+        assertFalse("TIF should not be enabled", ticket.getTifCombo().isEnabled());
+        assertFalse("Symbol should not be enabled", ticket.getSymbolText().isEnabled());
+    }
 }
 
 
