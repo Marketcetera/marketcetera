@@ -70,12 +70,6 @@ public class ParserTest extends FIXVersionedTestCase {
     	verifyNewOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null);
     	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
 
-    	order = "SSE 999 IBM .7";
-    	command = aParser.parseNewOrder(order);
-    	result = command.getMessage();
-    	verifyNewOrder(result, Side.SELL_SHORT_EXEMPT, new BigDecimal("999"), "IBM", new BigDecimal(".7"), TimeInForce.DAY, null);
-    	assertEquals(result.getString(SecurityType.FIELD), SecurityType.COMMON_STOCK);
-
     	order = "S 0 IBM 0.0";
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
@@ -225,11 +219,6 @@ public class ParserTest extends FIXVersionedTestCase {
     	result = command.getMessage();
     	// this will break when the year changes...
     	verifyNewOptionOrder(result, Side.SELL_SHORT, new BigDecimal("1234"), "IBM", new BigDecimal("1.8"), TimeInForce.DAY, null, new BigDecimal("25"), "200801", PutOrCall.CALL);
-
-    	order = "SSE 999 IBM 08FEB0.50P .7";
-    	command = aParser.parseNewOrder(order);
-    	result = command.getMessage();
-    	verifyNewOptionOrder(result, Side.SELL_SHORT_EXEMPT, new BigDecimal("999"), "IBM", new BigDecimal(".7"), TimeInForce.DAY, null, new BigDecimal(".50"), "200802", PutOrCall.PUT);
 
     	order = "S 0 IBM 09MAR1.0P 0.0";
     	command = aParser.parseNewOrder(order);

@@ -144,9 +144,8 @@ public class OrderTicketViewPieces {
 		sideCombo.add(SideImage.BUY.getImage());
 		sideCombo.add(SideImage.SELL.getImage());
 		sideCombo.add(SideImage.SELL_SHORT.getImage());
-		sideCombo.add(SideImage.SELL_SHORT_EXEMPT.getImage());
 
-		assignDefaultComboGridData(sideCombo, SideImage.SELL_SHORT_EXEMPT.getImage());
+		assignDefaultComboGridData(sideCombo, SideImage.SELL_SHORT.getImage());
 
 		// Force Side to be uppercase
 		sideCombo.addVerifyListener(createToUpperCaseVerifyListener());

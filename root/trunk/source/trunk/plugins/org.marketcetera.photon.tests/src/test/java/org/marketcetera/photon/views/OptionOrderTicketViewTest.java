@@ -168,7 +168,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		
 		// bug #393 - verify quantity doesn't have commas in them
 		message = msgFactory.newMarketOrder("3",
-				Side.SELL_SHORT_EXEMPT, new BigDecimal(2000), new MSymbol(optionContractSymbol),
+				Side.SELL_SHORT, new BigDecimal(2000), new MSymbol(optionContractSymbol),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		message.setField(new MaturityDate());
 		message.setField(new PutOrCall(PutOrCall.CALL));
