@@ -265,7 +265,7 @@
          <objectContribution
          	adaptable="false"
          	id="org.marketcetera.photon.actions.CancelOrderActionDelegate"
-         	objectClass="org.marketcetera.photon.core.MessageHolder">
+         	objectClass="org.marketcetera.messagehistory.MessageHolder">
          	<action
          		class="org.marketcetera.photon.actions.CancelOrderActionDelegate"
          		icon="icons/silk/cancel.png"
@@ -275,7 +275,7 @@
          <objectContribution
          	adaptable="false"
          	id="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
-         	objectClass="org.marketcetera.photon.core.MessageHolder">
+         	objectClass="org.marketcetera.messagehistory.MessageHolder">
          	<action
          		class="org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"
          		icon="icons/silk/pencil.png"
@@ -285,7 +285,7 @@
          <objectContribution
          	adaptable="false"
          	id="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
-         	objectClass="org.marketcetera.photon.core.MessageHolder">
+         	objectClass="org.marketcetera.messagehistory.MessageHolder">
          	<action
                 class="org.marketcetera.photon.actions.ViewSecurityActionDelegate"
                 enablesFor="+"
@@ -321,7 +321,7 @@
    <objectContribution
          adaptable="false"
          id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
-         objectClass="org.marketcetera.photon.core.MessageHolder">
+         objectClass="org.marketcetera.messagehistory.MessageHolder">
       <action
             class="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
             icon="icons/silk/table_go.png"

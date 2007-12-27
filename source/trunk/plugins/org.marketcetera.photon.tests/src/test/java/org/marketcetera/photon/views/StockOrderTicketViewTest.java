@@ -89,11 +89,11 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertEquals("DAY", ticket.getTifCombo().getText());
 
 		message = msgFactory.newMarketOrder("2",
-				Side.SELL_SHORT_EXEMPT, BigDecimal.ONE, new MSymbol("QWER"),
+				Side.SELL_SHORT, BigDecimal.ONE, new MSymbol("QWER"),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.showMessage(message);
 		assertEquals("1", ticket.getQuantityText().getText());
-		assertEquals("SSE", ticket.getSideCombo().getText());
+		assertEquals("SS", ticket.getSideCombo().getText());
 		assertEquals("MKT", ticket.getPriceText().getText());
 		assertEquals("QWER", ticket.getSymbolText().getText());
 		assertEquals("OPG", ticket.getTifCombo().getText());
@@ -101,7 +101,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 		// bug #393 - verify quantity doesn't have commas in them
 		message = msgFactory.newMarketOrder("3",
-				Side.SELL_SHORT_EXEMPT, new BigDecimal(2000), new MSymbol("QWER"),
+				Side.SELL_SHORT, new BigDecimal(2000), new MSymbol("QWER"),
 				TimeInForce.AT_THE_OPENING, "123456789101112");
 		controller.showMessage(message);
 		assertEquals("2000", ticket.getQuantityText().getText());
