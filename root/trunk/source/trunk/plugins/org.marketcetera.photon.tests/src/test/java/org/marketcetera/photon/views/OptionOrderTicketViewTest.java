@@ -434,12 +434,20 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
         assertFalse("TIF should not be enabled", ticket.getTifCombo().isEnabled());
         assertFalse("Symbol should not be enabled", ticket.getSymbolText().isEnabled());
+        assertFalse("Expiry Month should not be enabled", ticket.getExpireMonthCombo().isEnabled());
+        assertFalse("Expiry year should not be enabled", ticket.getExpireYearCombo().isEnabled());
+        assertFalse("PutOrCall should not be enabled", ticket.getPutOrCallCombo().isEnabled());
+        assertFalse("Strike should not be enabled", ticket.getStrikePriceControl().isEnabled());
 
         // verify enabled after cancel
         controller.handleCancel();
         assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
         assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
         assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
+        assertTrue("Expiry Month should be enabled", ticket.getExpireMonthCombo().isEnabled());
+        assertTrue("Expiry year should be enabled", ticket.getExpireYearCombo().isEnabled());
+        assertTrue("PutOrCall should be enabled", ticket.getPutOrCallCombo().isEnabled());
+        assertTrue("Strike should be enabled", ticket.getStrikePriceControl().isEnabled());
     }
 
     private DerivativeSecurityList createDummySecurityList(String symbol, String[] optionSuffixes, String[] strikePrices) {
