@@ -25,9 +25,7 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 
 	public static String ID = "org.marketcetera.photon.views.StockOrderTicket";
 
-	private Section otherExpandableComposite;
-
-	private Text accountText;
+    private Text accountText;
 
 	private StockOrderTicketController stockOrderTicketController;
 
@@ -93,14 +91,14 @@ public class StockOrderTicket extends AbstractOrderTicket implements
 		gridData3.verticalAlignment = GridData.BEGINNING;
 		// gridData3.grabExcessHorizontalSpace = true;
 		gridData3.horizontalAlignment = GridData.FILL;
-		otherExpandableComposite = getFormToolkit().createSection(
-				outermostForm.getBody(), Section.TITLE_BAR | Section.TWISTIE);
+        Section otherExpandableComposite = getFormToolkit().createSection(
+                outermostForm.getBody(), Section.TITLE_BAR | Section.TWISTIE);
 		otherExpandableComposite.setText("Other");
 		otherExpandableComposite.setExpanded(false);
 		otherExpandableComposite.setLayoutData(gridData3);
 
 		Composite otherComposite = getFormToolkit().createComposite(
-				otherExpandableComposite);
+                otherExpandableComposite);
 		otherComposite.setLayout(new RowLayout(SWT.HORIZONTAL));
 		getFormToolkit().createLabel(otherComposite, "Account:");
 		accountText = getFormToolkit().createText(otherComposite, "");

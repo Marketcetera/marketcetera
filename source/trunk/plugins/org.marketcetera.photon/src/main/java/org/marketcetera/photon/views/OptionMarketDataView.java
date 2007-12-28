@@ -24,6 +24,7 @@ import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.IFeedComponent.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -363,11 +364,10 @@ public class OptionMarketDataView extends ViewPart implements
 		optionMessagesComposite.clear(marketDataTracker);
 	}
 
-
-
 	@Override
 	public void setFocus() {
-		
+		if(symbolEntryText.isEnabled())
+			symbolEntryText.setFocus();
 	}
 
 	public boolean isListeningSymbol(MSymbol symbol) {
