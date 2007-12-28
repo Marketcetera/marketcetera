@@ -526,4 +526,25 @@ public class OptionOrderTicket extends AbstractOrderTicket implements
 			return super.toString();
 		}
 	}
+
+    @Override
+    public void showMessage(Message order) {
+        super.showMessage(order);
+
+        // in addition, disable Expiry month/year, strike, call/put
+        getExpireMonthCombo().setEnabled(FIXMessageUtil.isOrderSingle(order));
+        getExpireYearCombo().setEnabled(FIXMessageUtil.isOrderSingle(order));
+        getStrikePriceControl().setEnabled(FIXMessageUtil.isOrderSingle(order));
+        getPutOrCallCombo().setEnabled(FIXMessageUtil.isOrderSingle(order));
+    }
+
+    /** Reenable all the fields disabled on non-new-order-singles */
+    @Override
+    public void clear() {
+        super.clear();
+        getExpireMonthCombo().setEnabled(true);
+        getExpireYearCombo().setEnabled(true);
+        getStrikePriceControl().setEnabled(true);
+        getPutOrCallCombo().setEnabled(true);
+    }
 }
