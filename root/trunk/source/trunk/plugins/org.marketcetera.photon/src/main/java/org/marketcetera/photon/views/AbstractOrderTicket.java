@@ -35,6 +35,7 @@ import org.marketcetera.photon.ui.validation.IMessageDisplayer;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
+import quickfix.field.SideComplianceID;
 
 public abstract class AbstractOrderTicket extends ViewPart implements
 		IOrderTicket, IMessageDisplayer, IPropertyChangeListener {
@@ -223,9 +224,12 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 
 	@Override
 	public void setFocus() {
+		if(getSideCombo().isEnabled()) {
+			getSideCombo().setFocus();
+		} else {
+			getQuantityText().setFocus();
+		}
 	}
-
-
 
 	/**
 	 * This method initializes formToolkit
@@ -341,8 +345,11 @@ public abstract class AbstractOrderTicket extends ViewPart implements
 	public void clear() {
 		updateOutermostFormTitle(null);
 		orderTicketViewPieces.getSymbolText().setEnabled(true);
+		orderTicketViewPieces.getSideCombo().setEnabled(true);
+		orderTicketViewPieces.getTifCombo().setEnabled(true);
 		sendButton.setEnabled(false);
-		clearErrors();
+
+        clearErrors();
 	}
 
 	public void updateMessage(Message aMessage) throws MarketceteraException {

@@ -153,7 +153,11 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	    this.setInput(new BasicEventList<MessageHolder>());
 	}
 
-
+	@Override
+	public void setFocus() {
+		if(symbolEntryText.isEnabled())
+			symbolEntryText.setFocus();
+	}
 	
 	@Override
 	public void dispose() {

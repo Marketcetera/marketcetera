@@ -397,6 +397,7 @@ public class OrderTicketControllerHelper {
 		resetTrackers();
 		bind(newNewOrderSingle(), false);
 		updateSendButtonState();
+		ticket.getSideCombo().setFocus();
 	}
 
 	private void unbind() {

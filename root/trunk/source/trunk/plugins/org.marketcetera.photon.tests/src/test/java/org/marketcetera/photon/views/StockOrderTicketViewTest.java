@@ -453,6 +453,22 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         assertFalse("Side should not be enabled", ticket.getSideCombo().isEnabled());
         assertFalse("TIF should not be enabled", ticket.getTifCombo().isEnabled());
         assertFalse("Symbol should not be enabled", ticket.getSymbolText().isEnabled());
+
+        // verify enabled after cancel
+        controller.handleCancel();
+        assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
+        assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
+        assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
+        
+        assertTrue("Side not enabled after cancel", ticket.getSideCombo().isFocusControl());
+    }
+    
+    // verify the side combo is focused after clear - ie after send or cancel
+    public void testSideComboFocusedAfterClear()
+    {
+    	IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
+    	ticket.clear();
+    	assertTrue("side is not focused", ticket.getSideCombo().isFocusControl());
     }
 }
 
