@@ -10,6 +10,7 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.internal.ErrorViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -459,15 +460,17 @@ public class StockOrderTicketViewTest extends ViewTestBase {
         assertTrue("Side should be enabled", ticket.getSideCombo().isEnabled());
         assertTrue("TIF should be enabled", ticket.getTifCombo().isEnabled());
         assertTrue("Symbol should be enabled", ticket.getSymbolText().isEnabled());
-        
-        assertTrue("Side not enabled after cancel", ticket.getSideCombo().isFocusControl());
     }
     
-    // verify the side combo is focused after clear - ie after send or cancel
+    /**  verify the side combo is focused after clear - ie after send or cancel
+     * This test is tough - it sometimes passes, sometimes fails. Seems to work in "real app".
+     * Not sure what the right test should be then
+     */
     public void testSideComboFocusedAfterClear()
     {
     	IStockOrderTicket ticket = (IStockOrderTicket) getTestView();
     	ticket.clear();
+        LoggerAdapter.info("side is enabled/has focus:"+ticket.getSideCombo().isEnabled() + "/"+ticket.getSideCombo().isFocusControl(), this);
     	assertTrue("side is not focused", ticket.getSideCombo().isFocusControl());
     }
 }

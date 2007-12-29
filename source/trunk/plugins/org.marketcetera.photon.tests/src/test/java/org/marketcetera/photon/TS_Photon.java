@@ -22,10 +22,10 @@ import org.marketcetera.photon.scripting.JRubyBSFTest;
 import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
 import org.marketcetera.photon.scripting.ScriptRegistryTest;
 import org.marketcetera.photon.scripting.StrategyTest;
-import org.marketcetera.photon.ui.validation.fix.DateToStringCustomConverterTest;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilderTest;
 import org.marketcetera.photon.ui.validation.fix.PriceObservableValueTest;
 import org.marketcetera.photon.ui.validation.fix.StringDateObservableValueTest;
+import org.marketcetera.photon.ui.FIXMessageTableFormatTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
@@ -79,8 +79,10 @@ public class TS_Photon {
 		suite.addTestSuite(ScriptRegistryTest.class);
 		suite.addTestSuite(StrategyTest.class);
 		
-		// ui.validation.fix
-		suite.addTestSuite(DateToStringCustomConverterTest.class);
+		// ui.
+        suite.addTestSuite(FIXMessageTableFormatTest.class);
+
+        // ui.validation.fix
 		suite.addTestSuite(PriceConverterBuilderTest.class);
 		suite.addTest(StringDateObservableValueTest.suite());
 		suite.addTest(PriceObservableValueTest.suite());

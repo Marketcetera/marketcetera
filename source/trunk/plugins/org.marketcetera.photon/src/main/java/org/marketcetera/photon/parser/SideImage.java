@@ -9,15 +9,17 @@ import quickfix.field.Side;
 public enum SideImage implements ILexerFIXImage {
 	BUY("B", Side.BUY), SELL("S", Side.SELL), SELL_SHORT("SS", Side.SELL_SHORT);
 	static final Map<String, SideImage> nameMap = new HashMap<String, SideImage>();
+	static final Map<Character, SideImage> fixValueMap = new HashMap<Character, SideImage>();
 	private static final String[] images;
 
 	static {
 		ArrayList<String> imageList = new ArrayList<String>();
 		for (SideImage anImage : SideImage.values()) {
 			nameMap.put(anImage.getImage(), anImage);
-			imageList.add(anImage.getImage());
+            fixValueMap.put(anImage.getFIXCharValue(), anImage);
+            imageList.add(anImage.getImage());
 		}
-		images = imageList.toArray(new String[0]);
+		images = imageList.toArray(new String[imageList.size()]);
 	}
 
 	private String image;
@@ -32,14 +34,15 @@ public enum SideImage implements ILexerFIXImage {
 	public static SideImage fromName(String image) {
 		return nameMap.get(image);
 	}
+
+	public static SideImage fromFIXValue(char value) {
+		return fixValueMap.get(value);
+	}
+
 	public static String [] getImages(){
 		return images;
 	}
 	
-	// todo: Remove this method
-	public char getFIXValue() {
-		return getFIXCharValue();
-	}
 	public char getFIXCharValue() {
 		return fixValue;
 	}

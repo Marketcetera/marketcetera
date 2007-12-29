@@ -223,9 +223,9 @@ public class CommandParser {
 					Message message=null;
 					try {
 						if (PriceImage.MKT.equals(priceImage))	{
-							message = messageFactory.newMarketOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
+							message = messageFactory.newMarketOrder(idFactory.getNext(), sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), timeInForce.getFIXValue(), accountID);
 						} else {
-							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
+							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
 						}
 						if (optionSpecifier != null){
 							FIXMessageUtil.copyFields(message,optionSpecifier);

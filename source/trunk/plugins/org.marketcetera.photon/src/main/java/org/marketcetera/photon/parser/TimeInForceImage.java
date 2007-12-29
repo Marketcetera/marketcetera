@@ -23,15 +23,17 @@ public enum TimeInForceImage implements ILexerFIXImage{
     IOC("IOC", TimeInForce.IMMEDIATE_OR_CANCEL); 
 
 	static final Map<String, TimeInForceImage> nameMap = new HashMap<String, TimeInForceImage>();
+    static final Map<Character, TimeInForceImage> fixValueMap = new HashMap<Character, TimeInForceImage>();
 	private static final String[] images;
 
 	static {
 		ArrayList<String> imageList = new ArrayList<String>();
 		for (TimeInForceImage anImage : TimeInForceImage.values()) {
 			nameMap.put(anImage.getImage(), anImage);
+            fixValueMap.put(anImage.getFIXCharValue(), anImage);
 			imageList.add(anImage.getImage());
 		}
-		images = imageList.toArray(new String[0]);
+		images = imageList.toArray(new String[imageList.size()]);
 	}
 
 	private String image;
@@ -49,6 +51,11 @@ public enum TimeInForceImage implements ILexerFIXImage{
 	public static TimeInForceImage fromName(String image) {
 		return nameMap.get(image);
 	}
+
+    public static TimeInForceImage fromFIXValue(char value) {
+        return fixValueMap.get(value);
+    }
+
 	public static String [] getImages(){
 		return images;
 	}
