@@ -17,6 +17,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.parser.SideImage;
+import org.marketcetera.photon.parser.OrdTypeImage;
+import org.marketcetera.photon.parser.TimeInForceImage;
+import org.marketcetera.photon.parser.OrdStatusImage;
 import org.marketcetera.photon.preferences.FIXMessageColumnPreferenceParser;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -27,6 +31,10 @@ import org.marketcetera.quickfix.FIXVersion;
 import quickfix.DataDictionary;
 import quickfix.FieldMap;
 import quickfix.FieldType;
+import quickfix.field.Side;
+import quickfix.field.OrdType;
+import quickfix.field.TimeInForce;
+import quickfix.field.OrdStatus;
 import ca.odell.glazedlists.gui.TableFormat;
 
 /**
@@ -349,7 +357,16 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return getFIXDataDictionary().getDictionary();
 	}
 
-	protected Object extractValue(int fieldNum, T element, int columnIndex) {
+    /** In general, we just return the human-readable values for everything
+     * that we pull out of the FIX data dictionary.
+     * However, we need to special-case some fields that have very long values,
+     * and we use that xxxxxImage class to do the translation for them instead.
+     *
+     * In the case where we special-case and we don't find a corresponding image, then
+     * go ahead and use the human-readable value instead. Perhaps we don't know of
+     * how to shorten it or it's unexpected, etc, so better display the longer user-friendly version
+     */
+    protected Object extractValue(int fieldNum, T element, int columnIndex) {
 		if (valueExtractor == null) {
 			// Lazily initialize the FIXValueExtractor
 			DataDictionary dictionary = getDataDictionary();
@@ -363,8 +380,50 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		int groupDiscriminatorID = 0;
 		Object groupDiscriminatorValue = null;
 		FieldMap fieldMap = getFieldMap(element, columnIndex);
-		Object value = valueExtractor.extractValue(fieldMap, fieldNum, groupID,
-				groupDiscriminatorID, groupDiscriminatorValue, true);
-		return value;
+
+        switch(fieldNum) {
+            case Side.FIELD: {
+                Object value = valueExtractor.extractValue(fieldMap, fieldNum, groupID,
+                                                           groupDiscriminatorID, groupDiscriminatorValue, false);
+                if(value == null) return null;
+                SideImage image = SideImage.fromFIXValue(((String)value).charAt(0));
+                if(image == null) break;
+
+                return image.getImage();
+            }
+            case OrdType.FIELD: {
+                Object value = valueExtractor.extractValue(fieldMap, fieldNum, groupID,
+                                                           groupDiscriminatorID, groupDiscriminatorValue, false);
+                if(value == null) return null;
+                OrdTypeImage image = OrdTypeImage.fromFIXValue(((String)value).charAt(0));
+                if(image == null) break;
+
+                return image.getImage();
+            }
+            case TimeInForce.FIELD: {
+                Object value = valueExtractor.extractValue(fieldMap, fieldNum, groupID,
+                                                           groupDiscriminatorID, groupDiscriminatorValue, false);
+                if(value == null) return null;
+
+                TimeInForceImage image = TimeInForceImage.fromFIXValue(((String)value).charAt(0));
+                if(image == null) break;
+                return image.getImage();
+            }
+            case OrdStatus.FIELD: {
+                Object value = valueExtractor.extractValue(fieldMap, fieldNum, groupID,
+                                                           groupDiscriminatorID, groupDiscriminatorValue, false);
+                if(value == null) return null;
+
+                OrdStatusImage image = OrdStatusImage.fromFIXValue(((String)value).charAt(0));
+                if(image == null) break;
+                return image.getImage();
+            }
+            default:
+                break;
+        }
+        // default behaviour: return the human-readable  value
+        return valueExtractor.extractValue(fieldMap, fieldNum, groupID,
+                                           groupDiscriminatorID, groupDiscriminatorValue, true);
 	}
 }
+
