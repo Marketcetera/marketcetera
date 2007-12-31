@@ -14,7 +14,8 @@ class DiagnosticsControllerTest < Test::Unit::TestCase
   # Replace this with your real tests.
   def test_index
     get :index
-    assert :template => 'server_info'
+    assert :template => 'index'
+    assert :success
   end
 
   def test_server_info_nonworking_oms
@@ -24,4 +25,17 @@ class DiagnosticsControllerTest < Test::Unit::TestCase
 
     assert_tag :tag => 'p', :content => /error connecting to the OMS/
   end
+
+  def test_oms_log_display
+    get :oms_log_display
+    assert :template => 'oms_log_display'
+    assert :success
+  end
+
+  def test_tradebase_log_display
+    get :tradebase_log_display
+    assert :template => 'tradebase_log_display'
+    assert :success
+  end
+
 end
