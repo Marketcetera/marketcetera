@@ -2,8 +2,6 @@ class DiagnosticsController < ApplicationController
   require 'tzinfo'
 
   def index
-    server_info
-    render :action => :server_info
   end
 
   def server_info
@@ -37,6 +35,14 @@ class DiagnosticsController < ApplicationController
     @report = ServerInfo.new(@networking_eth0, @time_diff, @host_resolution, @process_info, @marketcetera_line)
   end
 
+  # Displays the OMS server log
+  def oms_log_display
+    @log = %x{tail -2000 /var/log/marketcetera/oms.log}
+  end
+
+  def tradebase_log_display
+    @log = %x{tail -2000 log/#{RAILS_ENV}.log}
+  end
 
   private
   def check_hostname_resolution(host)

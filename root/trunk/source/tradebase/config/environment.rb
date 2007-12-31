@@ -19,6 +19,9 @@ BaseCurrency="USD"
 # Whether or not to treat Account as Strategy for incoming recorded trades
 StrategyAsAccount = true
 
+# Whether  or not we are running on an appliance
+RUN_ON_APPLIANCE = false
+
 # Location of the Java library for running JMX reader connector code
 # The default location is in lib directory
 JAVA_JMX_CONNECTOR_LIB='lib/marketcetera-jmx-connector-1.0.jar'
