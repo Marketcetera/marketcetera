@@ -83,8 +83,7 @@ public class OptionDateHelperTest extends TestCase {
     	int thisYear = calendar.get(Calendar.YEAR);
     	int nextYear = thisYear +1;
     	int thisMonth = calendar.get(Calendar.MONTH);
-    	// will fail when it becomes 2008.
-    	assertEquals(2007, thisYear);
+
     	assertEquals(thisMonth > 0 ? nextYear: thisYear, optionDateHelper.calculateYearFromMonth(0));
     	assertEquals(thisMonth > 1 ? nextYear: thisYear, optionDateHelper.calculateYearFromMonth(1));
     	assertEquals(thisMonth > 2 ? nextYear: thisYear, optionDateHelper.calculateYearFromMonth(2));
