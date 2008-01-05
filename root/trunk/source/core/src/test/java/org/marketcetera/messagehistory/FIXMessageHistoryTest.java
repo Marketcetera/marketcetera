@@ -139,7 +139,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 	public void testAddOutgoingMessage() throws FieldNotFound {
 		FIXMessageHistory history = getMessageHistory();
 		String orderID = "1";
-		char side = Side.SELL_SHORT_EXEMPT;
+		char side = Side.SELL_SHORT;
 		BigDecimal quantity = new BigDecimal("2000");
 		MSymbol symbol = new MSymbol("QWER");
 		char timeInForce = TimeInForce.DAY;
@@ -152,12 +152,12 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
 		OutgoingMessageHolder holder = (OutgoingMessageHolder) historyList.get(0);
 		Message historyMessage = holder.getMessage();
-		assertEquals(orderID.toString(), historyMessage.getString(ClOrdID.FIELD));
+		assertEquals(orderID, historyMessage.getString(ClOrdID.FIELD));
 		assertEquals(""+side, historyMessage.getString(Side.FIELD));
 		assertEquals(quantity, new BigDecimal(historyMessage.getString(OrderQty.FIELD)));
 		assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		assertEquals(""+timeInForce, historyMessage.getString(TimeInForce.FIELD));
-		assertEquals(account.toString(), historyMessage.getString(Account.FIELD));
+		assertEquals(account, historyMessage.getString(Account.FIELD));
 	}
 
 	

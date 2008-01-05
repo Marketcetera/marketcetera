@@ -121,4 +121,19 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         assertEquals(BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, msg.getInt(BusinessRejectReason.FIELD));
         assertEquals("bob", msg.getString(Text.FIELD));
     }
+
+    // Verify that LOC is preserved to the Cancel/Replace from buy order
+    public void testNewCancelReplaceFromMessage_withLOC() throws Exception {
+        Message buy = FIXMessageUtilTest.createNOS("IBM", 85.84, 100, Side.BUY, msgFactory);
+        // make it "On close" order - and the augmentor will translate it appropriately
+        buy.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
+        buy = fixVersion.getMessageFactory().getMsgAugmentor().newOrderSingleAugment(buy);
+        char oldOrdType = buy.getChar(OrdType.FIELD);
+        char oldTIF = buy.getChar(TimeInForce.FIELD);
+
+        Message replace = msgFactory.newCancelReplaceFromMessage(buy);
+
+        assertEquals("ord types different", oldOrdType, replace.getChar(OrdType.FIELD));
+        assertEquals("TIF different", oldTIF, replace.getChar(TimeInForce.FIELD));
+    }
 }

@@ -75,6 +75,9 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
      * MarketOnClose order handling: FIX up to 4.2 doesn't have {@link TimeInForce#AT_THE_CLOSE}
      * so we need to check if the order is a market order and of {@link OrdType#MARKET}
      * and modify it appropriately to set the OrdType to be {@link OrdType#MARKET_ON_CLOSE}
+     *
+     * Same goes for {@link OrdType#LIMIT_ON_CLOSE} orders.
+     *
      * @param inMessage
      * @return
      */
