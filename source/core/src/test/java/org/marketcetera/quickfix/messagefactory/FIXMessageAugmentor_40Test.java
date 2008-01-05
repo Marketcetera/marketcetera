@@ -84,7 +84,7 @@ public class FIXMessageAugmentor_40Test extends FIXVersionedTestCase {
         assertEquals(TimeInForce.DAY, cancelReplace.getChar(TimeInForce.FIELD));
     }
 
-    public void testLimitOnClose() throws Exception
+    public void testLimitOnClose_cxr() throws Exception
     {
         FIXMessageFactory factory = FIXVersion.FIX40.getMessageFactory();
         Message buy = FIXMessageUtilTest.createNOS("TOLI", 123, 100, Side.BUY, factory);
@@ -107,7 +107,7 @@ public class FIXMessageAugmentor_40Test extends FIXVersionedTestCase {
         assertEquals(TimeInForce.DAY, cancelReplace.getChar(TimeInForce.FIELD));
     }
 
-    public void testLimitOnClose_cxr() throws Exception
+    public void testLimitOnClose() throws Exception
     {
         FIXMessageFactory factory = FIXVersion.FIX40.getMessageFactory();
         Message buy = FIXMessageUtilTest.createNOS("TOLI", 123, 100, Side.BUY, factory);

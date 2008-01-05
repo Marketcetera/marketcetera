@@ -24,11 +24,7 @@ public class FIXMessageHistory {
 
 	private FilterList<MessageHolder> fillMessages;
 
-	private GroupingList<MessageHolder> orderIDList;
-
-	private GroupingList<MessageHolder> symbolSideList;
-
-	private FilterList<MessageHolder> averagePriceList;
+    private FilterList<MessageHolder> averagePriceList;
 
 	private FilterList<MessageHolder> latestExecutionReportsList;
 
@@ -36,7 +32,7 @@ public class FIXMessageHistory {
 	
 	private FilterList<MessageHolder> openOrderList;
 	
-	private Map<String, MessageHolder> orderMap;
+	private final Map<String, MessageHolder> orderMap;
 	
 	private Map<String, String> orderIDToGroupMap;
 
@@ -48,14 +44,14 @@ public class FIXMessageHistory {
 		allMessages = new BasicEventList<MessageHolder>();
 		allFilteredMessages = new FilterList<MessageHolder>(allMessages);
 		fillMessages = new FilterList<MessageHolder>(allFilteredMessages, new FillMatcher());
-		orderIDList = new GroupingList<MessageHolder>(allMessages, new GroupIDComparator());
+        GroupingList<MessageHolder> orderIDList = new GroupingList<MessageHolder>(allMessages, new GroupIDComparator());
 		latestExecutionReportsList = new FilterList<MessageHolder>(
 			new FunctionList<List<MessageHolder>, MessageHolder>(orderIDList,
 				new LatestExecutionReportsFunction()), new NotNullMatcher());
 		latestMessageList = new FilterList<MessageHolder>(
 				new FunctionList<List<MessageHolder>, MessageHolder>(orderIDList,
 					new LatestMessageFunction()), new NotNullMatcher());
-		symbolSideList = new GroupingList<MessageHolder>(allFilteredMessages, new SymbolSideComparator());
+        GroupingList<MessageHolder> symbolSideList = new GroupingList<MessageHolder>(allFilteredMessages, new SymbolSideComparator());
 		averagePriceList = new FilterList<MessageHolder>(
 				new FunctionList<List<MessageHolder>, MessageHolder>(symbolSideList,
 				new AveragePriceFunction(messageFactory)), new NotNullMatcher());
@@ -70,8 +66,9 @@ public class FIXMessageHistory {
 			long sendingTime =0;
 			try {
 				sendingTime = fixMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD).getTime();
-			} catch (FieldNotFound e) {
-			}
+			} catch (FieldNotFound ignored) {
+                // ignored
+            }
 			long systemTime = System.currentTimeMillis();
 			double diff = (sendingTime-systemTime)/1000.0;
 			if(Math.abs(diff) > 1) {
@@ -280,7 +277,7 @@ public class FIXMessageHistory {
 	{
 		try {
 			openOrderList.getReadWriteLock().readLock().lock();
-			MessageHolder[] holders = openOrderList.toArray(new MessageHolder[0]);
+			MessageHolder[] holders = openOrderList.toArray(new MessageHolder[openOrderList.size()]);
 			for(MessageHolder holder : holders)
 			{
 				visitor.visitOpenOrderExecutionReports(holder.getMessage());
