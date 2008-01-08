@@ -16,6 +16,9 @@ MaxPerPage=25
 # Tradebase base currency
 BaseCurrency="USD"
 
+# DateTime should look like this: 04-Jan-08 13:32:23 EST
+DATETIME_FORMAT = "%d-%b-%y %H:%M:%S %Z"
+
 # Whether or not to treat Account as Strategy for incoming recorded trades
 StrategyAsAccount = true
 

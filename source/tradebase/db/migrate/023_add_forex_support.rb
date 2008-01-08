@@ -17,6 +17,9 @@ class AddForexSupport < ActiveRecord::Migration
     # remove the foreign key to equities table - we have :has_many relationships instead, and we can't
     # have a foreign key into 2 tables
     remove_fkey :marks, :tradeable_id, :equities
+
+    # modify the journal.post_date column to be datetime from date
+    change_column :journals, :post_date, :datetime
   end
 
   def self.down
@@ -27,5 +30,8 @@ class AddForexSupport < ActiveRecord::Migration
     remove_column :marks, :type
     remove_column :marks, :tradeable_type
     # do not re-add foreign key on marks to equities table since we may have duplicate tradeable ids in equities/currencies already
+
+    # modify the journal.post_date column to be date from datetime 
+    change_column :journals, :post_date, :date
   end
 end

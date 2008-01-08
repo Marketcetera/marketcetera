@@ -54,7 +54,7 @@ class RecordTradeProcessorTest < MarketceteraTestBase
     assert_equal 1, Trade.count
     t = Trade.find(:all)[0]
     assert_equal "CurrencyPair", t.tradeable_type
-    assert_equal "2007-12-17", t.journal_post_date.to_s, "trade date not set correctly"
+    assert_equal "Mon Dec 17 19:48:02 -0800 2007", t.journal_post_date.to_s, "trade date not set correctly"
     
     if(StrategyAsAccount)
       assert_equal "strat3", t.strategy, "strategy was not set"

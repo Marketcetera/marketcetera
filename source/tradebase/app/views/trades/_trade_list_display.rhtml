@@ -14,8 +14,8 @@
   
 <% i=0
 for trade in @trades %>
-  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
-    <td><%=h trade.journal.post_date %></td>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
+    <td><%=h trade.journal.post_date.strftime(DATETIME_FORMAT) %></td>
     <td><%=h Side.get_short_side(trade.side) %></td>
     <td <%= ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%=h fn(trade.quantity, 2, true) %></td>
     <td><%= make_spaces_hard(h(trade.tradeable_m_symbol_root)) %></td>
