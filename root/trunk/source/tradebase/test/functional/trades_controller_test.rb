@@ -74,7 +74,7 @@ class TradesControllerTest < MarketceteraTestBase
                    :trade_type => "T", :side => Side::QF_SIDE_CODE[:buy], 
                        :price_per_share => "50.12")
     t.create_trade(t.quantity, "SYMBOL WITH SPACES", t.price_per_share, 19.99,  "USD",
-                          "A COUNT WITH SPACES", Date.new)
+                          "A COUNT WITH SPACES", DateTime.civil(2006, 10, 20, 12, 23, 0))
     t.save
     
     get :list
@@ -88,6 +88,9 @@ class TradesControllerTest < MarketceteraTestBase
     assert_tag :tag => "td", :content => "SYMBOL&nbsp;WITH&nbsp;SPACES"
     assert_tag :tag => "td", :content => "very long comment with..."
     assert_tag :tag => "td", :content => "A&nbsp;COU...PACES"
+
+    # verify the post-date is displayed according to format
+    assert_tag :tag => 'td', :content => "20-Oct-06 12:23:00 PDT"
   end
 
   # bug #123
@@ -233,7 +236,7 @@ class TradesControllerTest < MarketceteraTestBase
     assert_redirected_to :action => 'list'
     assert_equal num_trades+1, Trade.count
     
-    assert_not_nil assigns(:trade), "didn't createa  trade"
+    assert_not_nil assigns(:trade), "didn't create a trade"
     assert_not_nil Account.find_by_nickname("pupkin"), "didn't create account"
     assert_not_nil Equity.get_equity("bob", false), "didn't create equity"
     
