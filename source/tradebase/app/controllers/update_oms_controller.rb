@@ -22,7 +22,8 @@ class UpdateOmsController < ApplicationController
       return
     end
 
-    %x{sed -i "" s/MKTC-OMS/"#{@report.sender_id}"/ #{@file}}
+    # on the Mac, you need to have -i "", otherwise youd don't
+    %x{sed -i s/MKTC-OMS/"#{@report.sender_id}"/ #{@file}}
     @post_sub = %x{grep -2 "#{@report.sender_id}" #{@file}}
   end
 end
