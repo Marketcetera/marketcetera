@@ -2,8 +2,8 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
-      version="0.4"
-      provider-name="Marketcetera LLC">
+      version="0.4.2"
+      provider-name="Marketcetera Inc">
 
    <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">
       Marketcetera Photon Feature
@@ -54,28 +54,28 @@
          id="org.marketcetera.marketdata"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.2"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.core"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.2"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.2"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.photon.core"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.2"
          unpack="false"/>
 
    <plugin
@@ -376,14 +376,14 @@
          id="org.marketcetera.photon.registry"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.2"
          unpack="false"/>
 
    <plugin
          id="org.marketcetera.bogusfeed"
          download-size="0"
          install-size="0"
-         version="0.4.1"
+         version="0.4.2"
          unpack="false"/>
 
    <plugin

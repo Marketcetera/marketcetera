@@ -1,7 +1,7 @@
 1. MARKETCETERA LICENSE
 
-The Marketcetera Platform 0.1 Developer Preview
-(Copyright, Marketcetera LLC, All rights reserved)
+The Marketcetera Platform 0.4.2 Developer Preview
+(Copyright, Marketcetera Inc, All rights reserved)
 
 This release, including source and object code and documentation, is made 
 available for use under the terms of the GNU Public License version 2 (GPLv2), 
@@ -12,7 +12,7 @@ we reserve the right to offer this code under additional licenses (which may
 include commercial licenses), and to modify licensing terms for future 
 releases.  For reference the GPLv2 is reproduced in Appendix A below.
 
-Please be aware that The Marketcetera Platform 0.1 Developers Preview may be 
+Please be aware that The Marketcetera Platform 0.4.2 Developers Preview may be 
 distributed by Marketcetera along with third-party components licensed under 
 different terms.  Please see the license notices in those components for 
 further details.

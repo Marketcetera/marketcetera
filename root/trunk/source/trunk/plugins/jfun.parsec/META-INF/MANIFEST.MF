@@ -5,7 +5,7 @@ Bundle-SymbolicName: jfun.parsec
 Bundle-Version: 1.1
 Eclipse-LazyStart: false
 Bundle-ClassPath: lib/jparsec-1.1.jar
-Bundle-Vendor: Marketcetera
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Export-Package: jfun.parsec,
  jfun.parsec.pattern,

@@ -16,7 +16,7 @@ Bundle-ClassPath: lib/commons-pool-1.2.jar,
  lib/commons-logging-1.1.jar
 Eclipse-LazyStart: false
 Eclipse-BuddyPolicy: registered
-Bundle-Vendor: Marketcetera
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Export-Package: javax.jms,
  javax.management.j2ee,

@@ -4,7 +4,7 @@ Bundle-Name: JRuby BSF Plug-in
 Bundle-SymbolicName: org.jruby.bsf
 Bundle-Version: 1.0.1
 Bundle-Activator: org.jruby.bsf.JRubyPlugin
-Bundle-Vendor: Marketcetera LLC
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.core.runtime
 Eclipse-BuddyPolicy: registered

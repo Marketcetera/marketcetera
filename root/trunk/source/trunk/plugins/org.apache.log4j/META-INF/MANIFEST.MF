@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.apache.log4j
 Bundle-Version: 1.2.9
 Bundle-ClassPath: lib/log4j-1.2.9.jar
 Eclipse-LazyStart: false
-Bundle-Vendor: Marketcetera
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Eclipse-BuddyPolicy: registered
 Export-Package: org.apache.log4j,
