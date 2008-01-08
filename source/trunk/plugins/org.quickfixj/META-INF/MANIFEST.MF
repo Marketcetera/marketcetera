@@ -13,7 +13,7 @@ Bundle-ClassPath: lib/backport-util-concurrent-2.1.jar,
  lib/quickfixj-msg-fix44.jar,
  lib/slf4j-api-1.3.0.jar,
  lib/slf4j-log4j12-1.3.0.jar
-Bundle-Vendor: Marketcetera
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.jruby.bsf
 Eclipse-BuddyPolicy: registered

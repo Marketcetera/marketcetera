@@ -2,12 +2,12 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Marketcetera Core Plug-in
 Bundle-SymbolicName: org.marketcetera.core
-Bundle-Version: 0.4.1
+Bundle-Version: 0.4.2
 Bundle-ClassPath: src/main/resources/,
  .
 Eclipse-LazyStart: false
 Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
-Bundle-Vendor: Marketcetera
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,

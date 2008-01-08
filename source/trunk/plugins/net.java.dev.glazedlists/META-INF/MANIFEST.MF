@@ -6,7 +6,7 @@ Bundle-Version: 1.7.0
 Eclipse-LazyStart: false
 Bundle-ClassPath: lib/glazedlists_java15-1.7.0-sources.jar,
  lib/glazedlists_java15-1.7.0.jar
-Bundle-Vendor: Marketcetera
+Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Export-Package: ca.odell.glazedlists,
  ca.odell.glazedlists.event,
