@@ -218,7 +218,51 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(order2.getString(OrderQty.FIELD), historyExecutionReportForOrder2.getString(OrderQty.FIELD));
 		assertEquals(order2.getString(Symbol.FIELD), historyExecutionReportForOrder2.getString(Symbol.FIELD));
 	}
-	
+
+	/*
+	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.getLatestMessage()'
+	 */
+	public void testGetLatestMessage() throws FieldNotFound {
+		long currentTime = System.currentTimeMillis();
+		FIXMessageHistory history = getMessageHistory();
+		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
+		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
+		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
+		Message order2 = msgFactory.newLimitOrder("3", Side.SELL, new BigDecimal(2000), new MSymbol("QWER"), new BigDecimal("12.3"), TimeInForce.DAY, "1");
+		Message executionReportForOrder2 = msgFactory.newExecutionReport("1003", "3", "2003", OrdStatus.NEW, Side.SELL, new BigDecimal(2000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("QWER"), null);
+		executionReportForOrder2.getHeader().setField(new SendingTime(new Date(currentTime - 8000)));
+		Message secondExecutionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"), null);
+		secondExecutionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 7000)));
+
+		Message aMessage = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
+		
+		history.addIncomingMessage(aMessage);
+		history.addOutgoingMessage(order1);
+		history.addIncomingMessage(executionReportForOrder1);
+		history.addOutgoingMessage(order2);
+		history.addIncomingMessage(executionReportForOrder2);
+		history.addIncomingMessage(secondExecutionReportForOrder1);
+
+		Message historyExecutionReportForOrder1 = history.getLatestMessage("1");
+		assertNotNull(historyExecutionReportForOrder1);
+		Message historyExecutionReportForOrder2 = history.getLatestMessage("3");
+		assertNotNull(historyExecutionReportForOrder2);
+
+		assertEquals("1001", historyExecutionReportForOrder1.getString(OrderID.FIELD));
+		assertEquals("2004", historyExecutionReportForOrder1.getString(ExecID.FIELD));
+		assertEquals(order1.getString(ClOrdID.FIELD), historyExecutionReportForOrder1.getString(ClOrdID.FIELD));
+		assertEquals(order1.getString(Side.FIELD), historyExecutionReportForOrder1.getString(Side.FIELD));
+		assertEquals(order1.getString(OrderQty.FIELD), historyExecutionReportForOrder1.getString(OrderQty.FIELD));
+		assertEquals(order1.getString(Symbol.FIELD), historyExecutionReportForOrder1.getString(Symbol.FIELD));
+
+		assertEquals("1003", historyExecutionReportForOrder2.getString(OrderID.FIELD));
+		assertEquals("2003", historyExecutionReportForOrder2.getString(ExecID.FIELD));
+		assertEquals(order2.getString(ClOrdID.FIELD), historyExecutionReportForOrder2.getString(ClOrdID.FIELD));
+		assertEquals(order2.getString(Side.FIELD), historyExecutionReportForOrder2.getString(Side.FIELD));
+		assertEquals(order2.getString(OrderQty.FIELD), historyExecutionReportForOrder2.getString(OrderQty.FIELD));
+		assertEquals(order2.getString(Symbol.FIELD), historyExecutionReportForOrder2.getString(Symbol.FIELD));
+	}
+
 	public void testOrderCancelReject() throws Exception {
 		FIXMessageHistory history = getMessageHistory();
 		{
