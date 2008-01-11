@@ -248,9 +248,12 @@ public class FIXMessageHistory {
 		try {
 			latestMessageList.getReadWriteLock().readLock().lock();
 			String groupID = getGroupID(clOrdID);
-			if (groupID != null){
-				for (MessageHolder holder : latestMessageList) {
-					if (0 == groupID.compareTo(holder.getGroupID())){
+			if (groupID != null)
+			{
+				for (MessageHolder holder : latestMessageList)
+				{
+					String holderGroupID = holder.getGroupID();
+					if (holderGroupID != null && 0 == groupID.compareTo(holderGroupID)){
 						return holder.getMessage();
 					}
 				}
