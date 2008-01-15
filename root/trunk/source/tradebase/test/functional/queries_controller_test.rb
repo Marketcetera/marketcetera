@@ -173,8 +173,19 @@ class QueriesControllerTest < MarketceteraTestBase
     assert_equal 0, assigns(:trades).length
     assert_tag :tag => "h1", :content => "List Trades from #{Date.today.to_s} to #{Date.today.to_s}"
   end
-  
-  
+
+  # test the case of bug #477 - need to have a trade have a timestamp past midnight on today
+  def test_on_date_today_past_midnight
+    t1 = create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", DateTime.now, "bob", "4.53", "ZAI")
+    get :trade_search, {:from_date => Date.today.to_s, :to_date => Date.today.to_s}
+
+    assert_response :success
+    assert_template 'queries_output'
+    assert_not_nil assigns(:trades)
+    assert_equal 1, assigns(:trades).length, "didn't find the trade for today past midnight"
+  end
+
+
   def test_on_date_invalid
     get :trade_search, {"date_date"=>{"from(1i)"=>"2007", "to(1i)"=>"2007", "from(2i)"=>"4",
                                        "to(2i)"=>"5", "from(3i)"=>"31", "to(3i)"=>"1"},}

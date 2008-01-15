@@ -51,8 +51,9 @@ class QueriesController < ApplicationController
         end
         @from_date, @to_date = @report.from_date.as_date, @report.to_date.as_date
         queryParams << @from_date
-        queryParams << @to_date
-        conditionsLine += 'AND post_date >= ? AND post_date <= ?'
+        # since we are dealing with dates and not DateTime, make sure to check entire "today", ie until next day for to_date
+        queryParams << @to_date+1
+        conditionsLine += 'AND post_date >= ? AND post_date < ?'
     end
       @trade_pages, @trades  = paginate :trades, :per_page => MaxPerPage,
                            :joins =>  joinsLine + ", journals",

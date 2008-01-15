@@ -11,7 +11,7 @@ class PositionsController < ApplicationController
          :redirect_to => { :action => :list }
 
   def list
-     @date = Date.today
+     @date = DateTime.now
      @position_pages, @positions, @num_positions = get_positions_as_of_date(@date, true)
   end
 end

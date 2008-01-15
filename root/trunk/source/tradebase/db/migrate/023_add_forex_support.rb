@@ -20,6 +20,12 @@ class AddForexSupport < ActiveRecord::Migration
 
     # modify the journal.post_date column to be datetime from date
     change_column :journals, :post_date, :datetime
+
+    # make messages_log columns nullable
+    change_column :messages_log, :beginstring, :string, :limit => 8, :null => true
+    change_column :messages_log, :sendercompid, :string, :limit => 64, :null => true
+    change_column :messages_log, :targetcompid, :string, :limit => 64, :null => true
+    add_column :messages_log, :failed_parsing, :boolean, :default => false
   end
 
   def self.down

@@ -4,7 +4,8 @@
               <ul class="stretcher">
                 <li><%= link_to "List Trades", {:action => 'list', :controller => 'trades'}, :title => "List Trades" %></li>
                 <li><%= link_to "New Trade", {:action => 'new', :controller => 'trades'}, :title => "New Trade" %></li>
-                <li><%= link_to "List Execution Reports", {:action => 'list', :controller => 'message_logs'}, :title => "List Execution Reports" %></li>
+                <li><%= link_to "List Unparseable Messages", {:action => 'list', :controller => 'message_logs'},
+                                                                       :title => "List Unparseable Messages" %></li>
               </ul>
             </li>
             <li class="display" title="position"><a title="Positions" href="#positions">Positions</a>

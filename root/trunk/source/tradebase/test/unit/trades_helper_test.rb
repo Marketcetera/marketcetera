@@ -18,4 +18,12 @@ class TradesHelperTest < MarketceteraTestBase
 
     assert_equal 0, number_trades_on_day(Date.civil(2005, 7, 11))
   end
+
+  # bug 477
+  def test_get_num_trades_on_day_past_midnight
+    assert_equal 0, number_trades_on_day(Date.today)
+
+    create_test_trade(100, 20.11, Side::QF_SIDE_CODE[:buy], "TOLI", DateTime.now, "IFLI", 4.99, "USD")
+    assert_equal 1, number_trades_on_day(Date.today), "didn't show trade recorded after midnight today"
+  end
 end

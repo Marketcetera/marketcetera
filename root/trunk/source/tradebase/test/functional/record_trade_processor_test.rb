@@ -35,7 +35,7 @@ class RecordTradeProcessorTest < MarketceteraTestBase
 
     @@processor.on_message("this is not a FIX message")
 
-    assert_equal n_logs, MessageLog.count
+    assert_equal n_logs+1, MessageLog.count, "should still create a MessageLog object"
     assert_equal n_trades, Trade.count
   end
 
