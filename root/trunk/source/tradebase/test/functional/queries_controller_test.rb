@@ -245,4 +245,39 @@ class QueriesControllerTest < MarketceteraTestBase
     assert_equal "2007-07-01", assigns(:from_date).to_s
     assert_equal "2008-11-30", assigns(:to_date).to_s
   end
+
+  # verify the case where we only get either an equity or a currency pair
+  # for example, need to have 2 trades where tradeable_id goes has a valid equity and forex trade
+  # but only equity trade should show up
+  # So manually set the 2 tradeable_ids to be the same
+  def test_right_tradeable_type_shows_up_equity
+    Trade.delete_all
+    t1 = create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11), "bob", "4.53", "ZAI")
+    t2 = create_test_trade(100, 1.23, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11),
+                        "ZAI/USD", "4.53", "ZAI", TradesHelper::SecurityTypeForex)
+    t2.connection.execute("update trades set tradeable_id=#{t1.tradeable_id} where id=#{t2.id}")
+
+    get :trade_search,{"m_symbol"=>{"root"=>"bob"}, :all_dates => "yes" }
+
+
+    assert_response :success
+    assert_template 'queries_output'
+
+    assert_not_nil assigns(:trades)
+    assert_equal 1, assigns(:trades).length, "got the forex trade as well"
+  end
+
+  def test_right_tradeable_type_shows_up_forex
+    Trade.delete_all
+    t1 = create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11), "bob", "4.53", "ZAI")
+    t2 = create_test_trade(100, 1.23, Side::QF_SIDE_CODE[:buy], "acct1", Date.civil(2006, 7, 11),
+                        "ZAI/USD", "4.53", "ZAI", TradesHelper::SecurityTypeForex)
+    t2.connection.execute("update trades set tradeable_id=#{t2.tradeable_id} where id=#{t1.id}")
+
+    get :trade_search,{"m_symbol"=>{"root"=>"ZAI/USD"}, :all_dates => "yes" }
+    assert_response :success
+    assert_template 'queries_output'
+    assert_not_nil assigns(:trades)
+    assert_equal 1, assigns(:trades).length, "got the equity trade as well"
+  end
 end
