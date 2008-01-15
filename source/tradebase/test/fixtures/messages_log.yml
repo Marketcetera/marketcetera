@@ -1,4 +1,5 @@
 # B 100 GOOG 408.18
+# some of these have failed_parsing set to 1 for test purposes
 goog_20:  
   id: 20
   time: "2006-09-28 15:56:55"
@@ -27,6 +28,7 @@ goog_long_22:
   sendercompid: "MRKTC-OMS"
   targetcompid: "MRKTC-EXCH"
   processed: 0
+  failed_parsing: 1
   text: "8=FIX.4.29=22935=834=1149=MRKTC-EXCH52=20060928-23:01:18.24056=MRKTC-OMS1=TOLI with spaces6=408.1811=700314=10017=1204020=331=408.1832=10037=731238=400039=144=408.1854=555=GOOG Long Equity60=20060928-23:01:18150=1151=390010=223"
 
 sunw_23:
@@ -63,6 +65,7 @@ ibm_27:
   sendercompid: MRKTC-OMS
   targetcompid: MRKTC-EXCH
   processed: 0
+  failed_parsing: 1
   text: "8=FIX.4.29=18035=834=1549=MRKTC-EXCH52=20060925-23:01:52.82256=MRKTC-OMS6=77.6511=77914=23017=1204420=331=77.6532=23037=732738=23039=254=255=IBM60=20060928-23:01:52150=2151=010=009"
 
 partial_fill_101:
@@ -72,5 +75,6 @@ partial_fill_101:
   sendercompid: MRKTC-OMS
   targetcompid: MRKTC-EXCH
   processed: 0
+  failed_parsing: 1
   text: "8=FIX.4.29=18035=834=1549=MRKTC-EXCH52=20060923-23:01:52.82256=MRKTC-OMS6=77.6511=77914=23017=1204420=331=77.6532=23037=732738=23039=154=255=IBM60=20060928-23:01:52150=2151=010=006"
 

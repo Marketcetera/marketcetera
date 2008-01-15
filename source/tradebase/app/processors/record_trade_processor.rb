@@ -26,6 +26,9 @@ class RecordTradeProcessor < ApplicationProcessor
       end
     rescue => ex
       logger.debug("record_trade.on_message encountered error: "+ex.message + ":\n"+ex.backtrace.join("\n"))
+      message_log = MessageLog.create(
+              :time => Time.now.to_s,
+              :text => message_text, :failed_parsing => true)
     end
   end
 end

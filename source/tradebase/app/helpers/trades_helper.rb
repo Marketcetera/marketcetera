@@ -35,9 +35,10 @@ module TradesHelper
   end    
   
   # find the number of trades executed on a particular date
+  # note that we are dealing with Date and not DateTime here
   def number_trades_on_day(date)
     return (Trade.count_by_sql(["select count(*) \
                           from trades, journals where \
-                          trades.journal_id = journals.id and journals.post_date = ? ", date.to_s]))
+                          trades.journal_id = journals.id and journals.post_date < ? AND journals.post_date >= ?", date+1, date]))
   end
 end

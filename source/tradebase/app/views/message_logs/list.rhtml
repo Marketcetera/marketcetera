@@ -1,101 +1,29 @@
 <%= render :partial => 'shared/breadcrumbs', 
-    :locals=> { :top_level => "Trades", :action_name => "List Execution Reports", :top_level_controller => 'trades' } %>
-<h1>Import Trades</h1>
+    :locals=> { :top_level => "Trades", :action_name => "List Unparseable Messages", :top_level_controller => 'trades' } %>
+<h1>List Unparseable Messages</h1>
 <%= if(!@report.nil?)
        error_messages_for_report :report
     end %>
-<% form_tag 'list', { :id => 'dateRange', :method => :get } do -%>
-    <fieldset>
-        <div class="clear"></div>
-        <label for="search_type">Select Date Range</label>
-        <div class="clear"></div>
-        <%= radio_button_tag('search_type', 's', (!@report.nil? && @report.errors.length > 0),  
-            { :id => 'subset',  :class => 'radio' })%>
-        <label for="subset">Subset</label>
-        <div class="clear"></div>
-        <div id="subset_content">
-            <div class="clear"></div>
-            <%= render :partial => 'shared/from_to_date_fields',
-                       :locals => { :suffix => "date", :errors => (@report.nil?) ? nil : @report.errors,
-                                :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => false} %>
-            <input type="hidden" name="suffix" value="date"/>
-            <div class="clear"></div>
-        </div>
-        <div class="clear"></div>
-       <%= radio_button_tag('search_type', 'a', (@report.nil? || @report.errors.length == 0),
-            {:id => 'all', :class => 'radio'} )%>
-       <label for="all">All</label>
-        <div class="clear"></div>
-    </fieldset>
-  <%= submit_tag 'Search', :class => "submit floatright" %>
-  <div class="clear"></div>
-<% end -%>
-
+Failed to parse the following messages:
 <table>
   <tr>
-    <th>SendingTime</th>
-    <th>ClOrdID</th>
-    <th>Status</th>
-    <th>Side</th>
-    <th>Symbol</th>
-    <th>OrderQty</th>
-    <th>Done</th>
-    <th>Leaves</th>
-    <th>AvgPx</th>
-    <th>Account</th>
-    <th>Last</th>
-    <th>LastPx</th>
+    <th>Message Text</th>
     <th/>
   </tr>
   
-<%
-    sendingTime = Quickfix::SendingTime.new
-    clOrdID = Quickfix::ClOrdID.new
-    ordStatus = Quickfix::OrdStatus.new
-    side = Quickfix::Side.new
-    symbol = Quickfix::Symbol.new
-    orderQty = Quickfix::OrderQty.new
-    cumQty = Quickfix::CumQty.new
-    leavesQty = Quickfix::LeavesQty.new
-    avgPx = Quickfix::AvgPx.new
-    account = Quickfix::Account.new
-    lastShares = Quickfix::LastShares.new
-    lastPx = Quickfix::LastPx.new
-%>
-
 <!-- Display the messages that have failed to parse -->
 <% i=0
     for message in @failed_msg %>
   <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
-    <td/>
-    <td colspan="12">Failed to parse message [<%= message.id %>]: <%=h shorten_string(message.text.gsub("\001", " "), 130) %></td>
+    <td><%=h shorten_string(message.text.gsub("\001", " "), 130) %></td>
     <td><%= link_to(image_tag("/images/icons/show.png", :alt=> 'Show', :width => 16, :height => 16), 
                 :action => 'show_unparseable_msg', :id => message, :controller => 'message_logs') %></td>
   </tr>
 <% end %>
-<!-- Display timportable messages -->
-<% i=0
-    for qf_message in @exec_reports %>
-  <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
-    <td><%=h DateTime.parse(getHeaderStringFieldValueIfPresent(qf_message, sendingTime)).to_s %></td>
-    <td><%=h contract_string(getStringFieldValueIfPresent(qf_message, clOrdID), 10) %></td>
-    <td><%=h getHumanOrdStatus(getStringFieldValueIfPresent(qf_message, ordStatus)) %></td>
-    <td><%=h Side.get_short_side(getStringFieldValueIfPresent(qf_message, side)) %></td>
-    <td><%= make_spaces_hard(h(getStringFieldValueIfPresent(qf_message, symbol))) %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, orderQty), 2, true) %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, cumQty), 2, true) %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, leavesQty), 2, true) %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, avgPx), 4) %></td>
-    <td><%= make_spaces_hard(h(contract_string(getStringFieldValueIfPresent(qf_message, account), 12))) %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, lastShares), 2, true) %></td>
-    <td <%=h ApplicationHelper::RJUST_NUMBER_CLASS_STR %>><%= fn(getStringFieldValueIfPresent(qf_message, lastPx), 2) %></td>
-    <%= render :partial => 'shared/show_edit_delete_links', 
-               :locals=> { :object => message, :skipEditDelete => true, :controller_name => 'message_logs'} %>
-  </tr>
-    <% end %>
+
 </table>
 <p/>
 
 <%= if(!@exec_report_pages.nil?)
-  pagination_links(@exec_report_pages,  :params => { @param_name => @param_value, :on_date => @on_date })
+  pagination_links(@exec_report_pages)
  end %>

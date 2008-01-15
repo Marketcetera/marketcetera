@@ -20,81 +20,7 @@ class MessagesLogControllerTest < MarketceteraTestBase
     assert_template 'list'
   end
 
-  def test_list
-    get :list
-
-    assert_response :success
-    assert_template 'list'
-
-    assert_not_nil assigns(:exec_report_pages)
-    assert_equal 8, assigns(:exec_reports).length
-    assert_has_show_edit_delete_links(true, false, false)
-    assert_nil flash[:error]
-  end
-
-  # make sure the symbol/account columns have spaces substituted for &nbsp;
-  def test_list_formatting
-    get :list
-
-    assert_response :success
-    assert_template 'list'
-
-    # verify the formatting for the 'goog_long_22' message
-    assert_tag :tag => "td", :content => "GOOG&nbsp;Long&nbsp;Equity"   # symbol
-    assert_tag :tag => "td", :content => "TOLI&nbsp;...paces"
-  end
-
-  def test_show
-    get :show, :id => 20
-
-    assert_response :success
-    assert_template 'show'
-
-    assert_not_nil assigns(:message_log)
-    assert assigns(:message_log).valid?
-    assert_not_nil assigns(:qf_message)
-  end
-  
-  def test_conditional_date_list
-    # there are 2 messages that  are done on Sept 23-24, should find just these 2
-    get :list, {:suffix => 'date', :date_date => { "from(1i)"=>"2006", "from(2i)"=>"9", "from(3i)"=>"16",
-                            "to(1i)"=>"2006", "to(2i)"=>"9", "to(3i)"=>"27"}, "search_type"=>"s"}
-    assert_response :success
-    assert_template 'list'
-    assert_equal 2, assigns(:exec_reports).length
-  end
-
-  def test_subset_invalid_dates
-    get :list, {:dates => { "start_date(1i)"=>"2006", "start_date(2i)"=>"9", "start_date(3i)"=>"16",
-                            "end_date(1i)"=>"2006", "end_date(2i)"=>"9", "end_date(3i)"=>"33"}, "search_type"=>"s"}
-    assert_response :success
-    assert_template 'list'
-    assert_has_error_box
-    assert_not_nil assigns(:report).errors[:to_date]
-
-
-    get :list, {:dates => { "start_date(1i)"=>"2006", "start_date(2i)"=>"9", "start_date(3i)"=>"36",
-                            "end_date(1i)"=>"2006", "end_date(2i)"=>"9", "end_date(3i)"=>"3"}, "search_type"=>"s"}
-    assert_response :success
-    assert_template 'list'
-    assert_has_error_box
-    assert_not_nil assigns(:report).errors[:from_date]
-  end
-
-  # test if the account is empty we still display an &nbsp
-  # this is essentially a test for the display_helper::df function, but since
-  # the h() function is not loaded in unit test we can't test it directly.'
-  def test_empty_account_name_results_in_space
-      # get goog_20 message
-      get :show, :id => 20
-
-      assert_response :success
-      assert_template 'show'
-
-      assert_tag :tag => "div", :attributes => { :id => "account", :class => "data view_data" }, :content => "&nbsp;"
-  end
-  
-  # verify that unparseable messages are handled correctly 
+  # verify that unparseable messages are handled correctly
   def test_unparseable_msg
       badMsg = "8=FIX.4.2\0019=378\00135=9\00134=18\00149=MRKTC-EXCH\00152=20070404-23:16:21.087\00156=sender-1308-OMS" +
       "\00111=\00137=\00139=8\00141=\00158=Could not find field OrderID in message.: 8=FIX.4.2\0019=190\00135=F\00134=23" +
@@ -109,13 +35,8 @@ class MessagesLogControllerTest < MarketceteraTestBase
     assert_template 'list'
 
     assert_not_nil assigns(:exec_report_pages)
-    assert_equal 8, assigns(:exec_reports).length
     assert_not_nil assigns(:failed_msg)
-    assert_equal 1, assigns(:failed_msg).length
-    assert flash[:error] = "Failed to parse 1 message(s)."
-    
-    # verify the row with unparseable message shows up
-    assert_tag :tag => "td", :attributes => { :colspan => "12"}
+    assert_equal 3, assigns(:failed_msg).length
     
     # now test that unparseable message shows up
     get :show_unparseable_msg, :id => m.id
