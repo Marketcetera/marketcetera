@@ -30,12 +30,13 @@ class QueriesController < ApplicationController
         currencyPair = CurrencyPair.get_currency_pair(@symbol_str)
         queryParams << currencyPair
         joinsLine += ", currency_pairs"
-        conditionsLine += " AND currency_pairs.id = ? AND currency_pairs.id = t.tradeable_id "
+        conditionsLine += " AND currency_pairs.id = ? AND currency_pairs.id = t.tradeable_id AND t.tradeable_type = 'CurrencyPair' "
       rescue UnknownCurrencyPairException => ex
         # guess what? not a forex symbol. try equities instead
         queryParams << @symbol_str
         joinsLine += ", equities, m_symbols"
-        conditionsLine += "AND m_symbols.id=equities.m_symbol_id AND equities.id = t.tradeable_id AND m_symbols.root = ? "
+        conditionsLine += "AND m_symbols.id=equities.m_symbol_id AND equities.id = t.tradeable_id AND m_symbols.root = ? " +
+                          "AND t.tradeable_type = 'Equity' "
       end
     end
     if(!@nickname.blank?)
