@@ -13,6 +13,7 @@ import org.marketcetera.core.MessageKey;
 public enum OMSMessageKey implements LocalizedMessage {
     ERROR_INIT_PROPNAME_IGNORE("oms.init.ignoring_propname"),
     ERROR_INCOMING_MSG_NULL("oms.error_incoming_msg_null"),
+    ERROR_INCOMING_MSG_REJECTED("oms.error_incoming_msg_rejected"),
     ERROR_SENDING_QF_MESSAGE("oms.error.send_qf_message"),
     ERROR_SENDING_JMS_MESSAGE("oms.error.send_jms_message"),
     ERROR_GENERATING_EXEC_ID("oms.error.gen_exec_id"),
