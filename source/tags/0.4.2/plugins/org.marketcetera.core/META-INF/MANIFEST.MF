@@ -1,0 +1,32 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Marketcetera Core Plug-in
+Bundle-SymbolicName: org.marketcetera.core
+Bundle-Version: 0.4.2
+Bundle-ClassPath: src/main/resources/,
+ .
+Eclipse-LazyStart: false
+Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Localization: plugin
+Export-Package: .,
+ org.marketcetera.core,
+ org.marketcetera.marketdata,
+ org.marketcetera.messagehistory,
+ org.marketcetera.options,
+ org.marketcetera.quickfix,
+ org.marketcetera.quickfix.cficode,
+ org.marketcetera.quickfix.customfields,
+ org.marketcetera.quickfix.messagefactory,
+ org.marketcetera.quickfix.messagemodifiers,
+ org.marketcetera.spring,
+ org.marketcetera.symbology
+Require-Bundle: org.apache.activemq;visibility:=reexport,
+ org.apache.log4j;visibility:=reexport,
+ org.quickfixj;visibility:=reexport,
+ org.skife.kasparov.csv;visibility:=reexport,
+ org.apache.commons.i18n;visibility:=reexport,
+ org.jruby.bsf;visibility:=reexport,
+ org.junit;resolution:=optional,
+ org.quickfixj;visibility:=reexport,
+ net.java.dev.glazedlists;visibility:=reexport

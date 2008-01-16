@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.marketcetera.photon.quotefeed">
+      <feed
+            feedFactoryClass="org.marketcetera.marketdata.MarketceteraFeedFactory"/>
+   </extension>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.marketcetera.marketdata.MarketceteraFeedPreferencePage"
+            id="org.marketcetera.marketdata.preferences"
+            name="Marketcetera Feed">
+      </page>
+   </extension>
+</plugin>

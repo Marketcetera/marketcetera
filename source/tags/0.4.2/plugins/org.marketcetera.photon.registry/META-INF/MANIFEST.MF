@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Registry Plug-in
+Bundle-SymbolicName: org.marketcetera.photon.registry
+Bundle-Version: 0.4.2
+Bundle-Activator: org.marketcetera.photon.registry.Activator
+Bundle-Localization: plugin
+Import-Package: org.osgi.framework;version="1.3.0"
+Require-Bundle: org.eclipse.equinox.registry,
+ org.eclipse.core.runtime
+Bundle-Vendor: Marketcetera, Inc.
