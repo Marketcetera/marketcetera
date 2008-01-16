@@ -146,6 +146,42 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         assertEquals(1, tradeRecorderJMS.getSentMessages().size());
     }
 
+    /** Test that when underlying QFJ engine sends out an outgoing reject
+     * we intercept it and put more data into it and send it out to JMS topic
+     */
+    public void testOutgoingRejectCopiedToJMS() throws Exception {
+        final QuickFIXApplication qfApp = new QuickFIXApplication(fixVersion.getMessageFactory());
+        MockJmsTemplate jmsTemplate = new MockJmsTemplate();
+        qfApp.setJmsOperations(jmsTemplate);
+        SessionID sessionID = new SessionID(fixVersion.toString(), "sender", "target");
+
+        Message logon = msgFactory.createMessage(MsgType.LOGON);
+        qfApp.toAdmin(logon, sessionID);
+
+        assertEquals("Logon shouldn't have been copied to JSM", 0, jmsTemplate.getSentMessages().size());
+        assertFalse("Shouldn't have had Text tag in outgoing logon", logon.isSetField(Text.FIELD));
+        jmsTemplate.getSentMessages().clear();
+
+        // now send a reject w/out RefMsgType field - should not be modified
+        Message reject = msgFactory.createMessage(MsgType.REJECT);
+        reject.setField(new Text("no refmsgtype"));
+        qfApp.toAdmin(reject, sessionID);
+        assertEquals("text field should not be modified", "no refmsgtype", reject.getString(Text.FIELD));
+        assertEquals("Reject should've been copied to JMS", 1, jmsTemplate.getSentMessages().size());
+        jmsTemplate.getSentMessages().clear();
+
+        // now add real fields
+        reject.setField(new RefMsgType(MsgType.EXECUTION_REPORT));
+        reject.setField(new Text("Invalid tag number"));
+
+        // send it through
+        qfApp.toAdmin(reject, sessionID);
+        String expectedErr = OMSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(
+                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.EXECUTION_REPORT), "Invalid tag number");
+        assertEquals(expectedErr, reject.getString(Text.FIELD));
+        assertEquals("Reject should've been copied to JMS", 1, jmsTemplate.getSentMessages().size());
+    }
+
     public static class MockQuickFIXApplication extends QuickFIXApplication {
         public MockQuickFIXApplication(FIXMessageFactory fixMessageFactory) {
             super(fixMessageFactory);

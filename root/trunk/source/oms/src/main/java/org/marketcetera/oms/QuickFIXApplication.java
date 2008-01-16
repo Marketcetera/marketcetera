@@ -124,6 +124,18 @@ public class QuickFIXApplication implements Application {
             if(messageModifierMgr != null) {
                 messageModifierMgr.modifyMessage(message);
             }
+            if(FIXMessageUtil.isReject(message)) {
+                try {
+                    String origText = message.getString(Text.FIELD);
+                    String msgType = (message.isSetField(MsgType.FIELD)) ? null : message.getString(RefMsgType.FIELD);
+                    String msgTypeName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType);
+                    String combinedText = OMSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(msgTypeName, origText);
+                    message.setString(Text.FIELD, combinedText);
+                } catch (FieldNotFound fieldNotFound) {
+                    // ignore - don't modify the message, send original error through
+                }
+                jmsOperations.convertAndSend(message);
+            }
         } catch (MarketceteraException ex) {
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error modifying message: "+message, ex, this); }
         }
