@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.rubypeople.rdt-tests"
+      label="Ruby Development Tools Unit Tests"
+      version="0.0.0"
+      provider-name="RubyPeople">
+
+   <install-handler/>
+
+   <description url="[Enter Feature URL here.]">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="[Enter Copyright URL here.]">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="[Enter License URL here.]">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui.console"/>
+      <import plugin="org.eclipse.ui.views"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.update.core"/>
+      <import plugin="org.eclipse.update.ui"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.core.runtime.compatibility"/>
+      <import plugin="org.eclipse.core.variables"/>
+      <import plugin="org.eclipse.jface.text"/>
+      <import plugin="org.eclipse.ui.workbench.texteditor"/>
+      <import plugin="org.eclipse.text"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.debug.ui"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.search"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.core.filebuffers"/>
+      <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.apache.lucene"/>
+      <import plugin="org.eclipse.ant.core"/>
+      <import plugin="org.eclipse.core.contenttype"/>
+      <import plugin="org.eclipse.team.core"/>
+      <import plugin="org.eclipse.core.runtime.compatibility.auth"/>
+      <import plugin="org.eclipse.core.expressions"/>
+      <import plugin="org.eclipse.equinox.common"/>
+      <import plugin="org.eclipse.equinox.preferences"/>
+      <import plugin="org.eclipse.equinox.registry"/>
+      <import plugin="org.eclipse.help"/>
+      <import plugin="org.eclipse.jface"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.swt"/>
+      <import plugin="org.eclipse.ui.workbench"/>
+      <import plugin="org.eclipse.update.configurator"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
+      <import plugin="org.eclipse.ui.intro"/>
+      <import plugin="org.marketcetera.photon.registry"/>
+      <import plugin="org.junit"/>
+   </requires>
+
+   <plugin
+         id="org.marketcetera.photon.tests"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+   <plugin
+         id="org.marketcetera.photon.tests.all"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+</feature>
