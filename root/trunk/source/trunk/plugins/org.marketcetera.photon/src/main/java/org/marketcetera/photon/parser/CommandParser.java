@@ -71,9 +71,10 @@ public class CommandParser {
 	// same spot in the parse.
 	final Parser<Tok> numberLexer = Parsers.plus(Parsers.atomize("1",integerLexer),Parsers.atomize("2",decimalLexer));
 
-	final Parser<_> wordScanner = Scanners.isPattern("wordScanner", Patterns.regex("[a-zA-z0-9/.;\\-+]").many(1), "expected word");
+	final String WORD_CHARS = "[a-zA-z0-9/.;\\-+]";
+	final Parser<_> wordScanner = Scanners.isPattern("wordScanner", Patterns.regex(WORD_CHARS).many(1), "expected word");
 	final Parser<Tok> wordLexer = Lexers.lexer("wordLexer", wordScanner, Tokenizers.forWord());
-	
+	final Pattern optionSymbolPattern = Pattern.compile("([a-zA-z]{1,3})\\+([a-zA-z])([a-zA-z])(\\."+WORD_CHARS+")?");
 
 	final Parser<Tok> tokenLexer = Parsers.plus(numberLexer, wordLexer);
 
@@ -227,8 +228,12 @@ public class CommandParser {
 						} else {
 							message = messageFactory.newLimitOrder(idFactory.getNext(), sideImage.getFIXCharValue(), quantity, new MSymbol(symbol), new BigDecimal(priceImage.getImage()), timeInForce.getFIXValue(), accountID);
 						}
-						if (optionSpecifier != null){
-							FIXMessageUtil.copyFields(message,optionSpecifier);
+						if (optionSpecifier != null || optionSymbolPattern.matcher(symbol).matches()){
+							if (optionSpecifier != null){
+								FIXMessageUtil.copyFields(message,optionSpecifier);
+							} else {
+								message.setString(SecurityType.FIELD, SecurityType.OPTION);
+							}
 							if (dataDictionary.isField(OpenClose.FIELD)){
 								message.setField(new OpenClose(OpenClose.OPEN));
 							}
