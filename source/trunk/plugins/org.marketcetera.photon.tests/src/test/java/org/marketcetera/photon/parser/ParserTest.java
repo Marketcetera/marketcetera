@@ -264,6 +264,19 @@ public class ParserTest extends FIXVersionedTestCase {
     	command = aParser.parseNewOrder(order);
     	result = command.getMessage();
     	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM+RE", new BigDecimal("94.8"), TimeInForce.DAY, "AAA;A/a-A");
+    	assertEquals(SecurityType.OPTION, result.getString(SecurityType.FIELD));
+
+    	order = "B 100 IBM+RE.C 94.8 DAY AAA;A/a-A";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM+RE.C", new BigDecimal("94.8"), TimeInForce.DAY, "AAA;A/a-A");
+    	assertEquals(SecurityType.OPTION, result.getString(SecurityType.FIELD));
+    	
+    	order = "B 100 IBM.+ 94.8 DAY AAA;A/a-A";
+    	command = aParser.parseNewOrder(order);
+    	result = command.getMessage();
+    	verifyNewOrder(result, Side.BUY, new BigDecimal("100"), "IBM.+", new BigDecimal("94.8"), TimeInForce.DAY, "AAA;A/a-A");
+    	assertEquals(SecurityType.COMMON_STOCK, result.getString(SecurityType.FIELD));
 
     	(new ExpectedTestFailure(ParserException.class) {
             protected void execute() throws Throwable
