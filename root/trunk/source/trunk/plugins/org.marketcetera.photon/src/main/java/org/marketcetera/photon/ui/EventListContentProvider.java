@@ -15,7 +15,12 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 	
 	public Object[] getElements(Object inputElement) {
 		if (swtList != null){
-			return swtList.toArray();
+			try {
+				swtList.getReadWriteLock().readLock().lock();
+				return swtList.toArray();
+			} finally {
+				swtList.getReadWriteLock().readLock().unlock();
+			}
 		} else {
 			return new Object[0];
 		}
@@ -45,24 +50,30 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 	}
 
 	public void listChanged(ListEvent<T> event) {
-		if (event.isReordering()){
-			viewer.refresh();
-		} else {
-			while (event.next()){
-				int index = event.getIndex();
-				switch (event.getType()){
-				case ListEvent.DELETE:
-					viewer.remove(index);
-					break;
-				case ListEvent.INSERT:
-					viewer.insert(swtList.get(index), index);
-					break;
-				case ListEvent.UPDATE:
-					viewer.replace(swtList.get(index), index);
-					break;
-				default:
+		try {
+			swtList.getReadWriteLock().readLock().lock();
+
+			if (event.isReordering()){
+				viewer.refresh();
+			} else {
+				while (event.next()){
+					int index = event.getIndex();
+					switch (event.getType()){
+					case ListEvent.DELETE:
+						viewer.remove(index);
+						break;
+					case ListEvent.INSERT:
+						viewer.insert(swtList.get(index), index);
+						break;
+					case ListEvent.UPDATE:
+						viewer.replace(swtList.get(index), index);
+						break;
+					default:
+					}
 				}
 			}
+		} finally {
+			swtList.getReadWriteLock().readLock().unlock();
 		}
 	}
 
