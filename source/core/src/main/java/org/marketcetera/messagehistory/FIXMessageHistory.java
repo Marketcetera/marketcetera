@@ -24,7 +24,7 @@ public class FIXMessageHistory {
 
 	private FilterList<MessageHolder> fillMessages;
 
-    private FilterList<MessageHolder> averagePriceList;
+    private AveragePriceList averagePriceList;
 
 	private FilterList<MessageHolder> latestExecutionReportsList;
 
@@ -51,10 +51,7 @@ public class FIXMessageHistory {
 		latestMessageList = new FilterList<MessageHolder>(
 				new FunctionList<List<MessageHolder>, MessageHolder>(orderIDList,
 					new LatestMessageFunction()), new NotNullMatcher());
-        GroupingList<MessageHolder> symbolSideList = new GroupingList<MessageHolder>(allFilteredMessages, new SymbolSideComparator());
-		averagePriceList = new FilterList<MessageHolder>(
-				new FunctionList<List<MessageHolder>, MessageHolder>(symbolSideList,
-				new AveragePriceFunction(messageFactory)), new NotNullMatcher());
+		averagePriceList = new AveragePriceList(messageFactory, allMessages);
 		openOrderList = new FilterList<MessageHolder>(latestExecutionReportsList, new OpenOrderMatcher());
 		
 		orderMap = new HashMap<String, MessageHolder>();

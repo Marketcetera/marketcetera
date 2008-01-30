@@ -455,6 +455,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		BigDecimal returnedAvgPrice = new BigDecimal(returnedMessage.getString(AvgPx.FIELD));
 		assertTrue( new BigDecimal("1000").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
 		assertEquals( ((12.3*100)+(12.4*900))/1000, returnedAvgPrice.doubleValue(), .0001);
+		assertEquals(Side.SELL_SHORT, returnedMessage.getChar(Side.FIELD));
 		
 		
 		orderID1 = "1";
@@ -470,7 +471,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		messageHistory.addIncomingMessage(message);
 
 		assertEquals(2, messageHistory.getAveragePricesList().size());
-		holder = (IncomingMessageHolder) averagePriceList.get(0);
+		holder = (IncomingMessageHolder) averagePriceList.get(1);
 		returnedMessage = holder.getMessage();
 		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
 
@@ -494,7 +495,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		messageHistory.addIncomingMessage(message);
 
 		assertEquals(2, messageHistory.getAveragePricesList().size());
-		holder = (IncomingMessageHolder) averagePriceList.get(1);
+		holder = (IncomingMessageHolder) averagePriceList.get(0);
 		returnedMessage = holder.getMessage();
 		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
 
@@ -564,7 +565,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("symbol1", message.getString(Symbol.FIELD));
 		assertEquals(0, new BigDecimal("81").compareTo(new BigDecimal(message.getString(AvgPx.FIELD))));
-		assertEquals(0, new BigDecimal("0").compareTo(new BigDecimal(message.getString(OrderQty.FIELD))));
 		
 	}
 	
