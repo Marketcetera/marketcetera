@@ -1,6 +1,7 @@
 package org.marketcetera.photon.ui.validation.fix;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -10,7 +11,6 @@ import quickfix.DataDictionary;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.StringField;
 
 /**
  * Observe a FIX date of type String in format yyyyMMdd, such as
@@ -38,7 +38,7 @@ public class StringDateObservableValue extends FIXObservableValue {
 		// todo: Quickfix expects a UTC time zone but this uses the local time
 		// zone. See http://www.quickfixj.org/jira/browse/QFJ-104
 		ymdFormatter = new SimpleDateFormat("yyyyMMdd");
-		ymdFormatter = new SimpleDateFormat("yyyyMM");
+		ymFormatter = new SimpleDateFormat("yyyyMM");
 	}
 
 	@Override
@@ -108,14 +108,21 @@ public class StringDateObservableValue extends FIXObservableValue {
 				// todo: Some date fields, such as ExpireDate, have choices
 				// dictated by market data. Creating a new date is incorrect for
 				// such fields.
-				currentDate = new Date();
+				Calendar calendar = GregorianCalendar.getInstance();
+				calendar.set(Calendar.DAY_OF_MONTH, 1);
+				calendar.set(Calendar.HOUR, 0);
+				calendar.set(Calendar.MINUTE, 0);
+				calendar.set(Calendar.SECOND, 0);
+				calendar.set(Calendar.MILLISECOND, 0);
+				
+				currentDate = calendar.getTime();
 			}
 
 			if (currentDate != null) {
 				Date updatedDate = getUpdatedDate(currentDate,
 						targetCalendarField, dateToSet);
 				if (updatedDate != null) {
-					String updatedDateString = ymdFormatter
+					String updatedDateString = ymFormatter
 							.format(updatedDate);
 					fixFieldMap.setString(fieldNumber, updatedDateString);
 				}
