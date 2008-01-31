@@ -10,11 +10,6 @@ import org.marketcetera.core.AccessViolator;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.FIXMessageHistory;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
-import org.marketcetera.messagehistory.MessageHolder;
-import org.marketcetera.messagehistory.MessageVisitor;
-import org.marketcetera.messagehistory.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
@@ -787,5 +782,24 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 
     	assertEquals("D", history.getOpenOrdersList().get(0).getMessage().getString(ClOrdID.FIELD));
     	assertEquals("B", history.getOpenOrdersList().get(1).getMessage().getString(ClOrdID.FIELD));
+    }
+
+    /**
+     * This tests to see that we ignore LastShares and LastPx in ExecutionReport
+     * messages with "finished" OrdStatus values.  That is, PAX tells us that we should
+     * only pay attention to LastShares and LastPx in ExecutionReports with OrdStatus
+     * of PARTIALLY_FILLED, FILLED, or PENDING_CANCEL, so that's what we do.
+     * @throws FieldNotFound 
+     */
+    public void testMerrillPAXIgnoreLastShares() throws FieldNotFound {
+    	Message executionReportA = msgFactory.newExecutionReport("ORD1", "A", "EXEC1", OrdStatus.CANCELED, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ABC"), null);
+    	Message executionReportB = msgFactory.newExecutionReport("ORD2", "B", "EXEC2", OrdStatus.FILLED, Side.BUY, BigDecimal.TEN, BigDecimal.ONE, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ABC"), null);
+    	
+    	FIXMessageHistory history = new FIXMessageHistory(fixVersion.getMessageFactory());
+    	history.addIncomingMessage(executionReportA);
+    	assertEquals(0, history.getFillsList().size());
+    	history.addIncomingMessage(executionReportB);
+    	assertEquals(1, history.getFillsList().size());
+    	
     }
 }
