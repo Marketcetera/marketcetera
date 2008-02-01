@@ -344,9 +344,9 @@ public class ParserTest extends FIXVersionedTestCase {
     		String symbol, BigDecimal price, char timeInForce, String account) throws FieldNotFound
     {
     	assertEquals(side, message.getChar(Side.FIELD));
-    	assertEquals(quantity, new BigDecimal(message.getString(OrderQty.FIELD)));
+    	assertEquals(quantity, message.getDecimal(OrderQty.FIELD));
     	assertEquals(symbol, message.getString(Symbol.FIELD));
-    	assertEquals(price, new BigDecimal(message.getString(Price.FIELD)));
+    	assertEquals(price, message.getDecimal(Price.FIELD));
     	assertEquals(timeInForce, message.getChar(TimeInForce.FIELD));
     	try {
     		assertEquals(account, message.getString(Account.FIELD));
