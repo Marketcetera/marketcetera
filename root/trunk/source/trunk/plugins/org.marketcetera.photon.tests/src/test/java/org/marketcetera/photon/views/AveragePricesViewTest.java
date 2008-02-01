@@ -1,18 +1,36 @@
 package org.marketcetera.photon.views;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.quickfix.FIXVersion;
+
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
+import quickfix.field.TransactTime;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 public class AveragePricesViewTest extends ViewTestBase {
 
@@ -106,8 +124,8 @@ public class AveragePricesViewTest extends ViewTestBase {
 		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) item.getData();
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("symbol1", message.getString(Symbol.FIELD));
-		assertEquals(0, new BigDecimal("81").compareTo(new BigDecimal(message.getString(AvgPx.FIELD))));
-		BigDecimal foundOrdQty = new BigDecimal(message.getString(OrderQty.FIELD));
+		assertEquals(0, new BigDecimal("81").compareTo(message.getDecimal(AvgPx.FIELD)));
+		BigDecimal foundOrdQty = message.getDecimal(OrderQty.FIELD);
 		assertEquals("Order quantity incorrect: "+foundOrdQty, 0, new BigDecimal("200").compareTo(foundOrdQty));
 		
 	}
