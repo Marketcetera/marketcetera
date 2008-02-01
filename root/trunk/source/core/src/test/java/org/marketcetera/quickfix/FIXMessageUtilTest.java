@@ -155,22 +155,22 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
             assertEquals("side", side, inExecReport.getChar(Side.FIELD));
             assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
             if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-                assertEquals("leavesQty", leavesQty, new BigDecimal(inExecReport.getString(LeavesQty.FIELD)));
+                assertEquals("leavesQty", leavesQty, inExecReport.getDecimal(LeavesQty.FIELD));
             }
             if (lastQty != null) {
-            assertEquals("lastQty",lastQty, new BigDecimal(inExecReport.getString(LastQty.FIELD)));
+            assertEquals("lastQty",lastQty, inExecReport.getDecimal(LastQty.FIELD));
             }
             if (lastPrice != null) {
-                assertEquals("lastPrice", lastPrice, new BigDecimal(inExecReport.getString(LastPx.FIELD)));
+                assertEquals("lastPrice", lastPrice, inExecReport.getDecimal(LastPx.FIELD));
             }
-            assertEquals("cumQty", cumQty, new BigDecimal(inExecReport.getString(CumQty.FIELD)));
+            assertEquals("cumQty", cumQty, inExecReport.getDecimal(CumQty.FIELD));
             assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
             if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
                 assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
             }
             assertNotNull(inExecReport.getString(TransactTime.FIELD));
 
-            assertEquals("avgPrice", avgPrice, new BigDecimal(inExecReport.getString(AvgPx.FIELD)));
+            assertEquals("avgPrice", avgPrice, inExecReport.getDecimal(AvgPx.FIELD));
             if(version42orBelow(msgFactory)) {
                 assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
             }
