@@ -15,18 +15,27 @@ import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class FIXFieldLocalizer {
-    public static final String PREFIX = "fix.field.";
+    public static final String FIELD_NAME_PREFIX = "fix.field.";
+    public static final String FIELD_VALUE_PREFIX = "fix.field.value.";
 
 
-    public static String getLocalizedMessage(String fixFieldName)
+    public static String getLocalizedFIXFieldName(String fixFieldName)
     {
     	try {
-    		return getMessageString(PREFIX + fixFieldName.toLowerCase());
+    		return getMessageString(FIELD_NAME_PREFIX + fixFieldName);
     	}catch (Throwable t) {
 		}
     	return fixFieldName;
     }
 
+    public static String getLocalizedFIXValueName(String fixFieldName, String fixFieldValueName){
+    	try {
+    		return getMessageString(FIELD_VALUE_PREFIX + fixFieldName+"."+fixFieldValueName);
+    	}catch (Throwable t) {
+		}
+    	return fixFieldValueName;
+    	
+    }
     /**
      * Corresponds to the suffix in the message bundle file. Currently, we are not distinguishing between different
      * kids of entries (title, summary, detail, etc) so we just use 'msg'.

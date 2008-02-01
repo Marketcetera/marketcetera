@@ -54,7 +54,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 				alignment = SWT.LEFT;
 			}
 			TableColumn tableColumn = new TableColumn(table, alignment);
-			String localizedName = FIXFieldLocalizer.getLocalizedMessage(getColumnName(i++));
+			String localizedName = FIXFieldLocalizer.getLocalizedFIXFieldName(getColumnName(i++));
 			tableColumn.setText(localizedName);
 		}
 	}
