@@ -26,7 +26,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 	{
 		super(OptionInfoComponent.class);
 		Pair<Integer, Integer> monthYear = OptionMarketDataUtils.getMaturityMonthYear(strikeInfo);
-		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, new BigDecimal(strikeInfo.getString(StrikePrice.FIELD)));
+		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, strikeInfo.getDecimal(StrikePrice.FIELD));
 		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);
 	}
 	
@@ -35,7 +35,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 			FieldMap putExtraInfo) throws ParseException, FieldNotFound {
 		super(OptionInfoComponent.class);
 		Pair<Integer, Integer> monthYear = OptionMarketDataUtils.getMaturityMonthYear(strikeInfo);
-		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, new BigDecimal(strikeInfo.getString(StrikePrice.FIELD)));
+		this.key = new OptionPairKey(optionRootSymbol, monthYear.getSecondMember(), monthYear.getFirstMember(), 0, strikeInfo.getDecimal(StrikePrice.FIELD));
 		
 		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);
 		this.put(OptionInfoComponent.CALL_EXTRA_INFO, callExtraInfo);
@@ -259,7 +259,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 					maturityMonthYear.getSecondMember(), //year
 					maturityMonthYear.getFirstMember(), //month
 					0,
-					new BigDecimal(info.getString(StrikePrice.FIELD)));
+					info.getDecimal(StrikePrice.FIELD));
 			return optionKey;
 
 		}

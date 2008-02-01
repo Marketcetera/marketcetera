@@ -93,7 +93,7 @@ public abstract class Strategy {
 		if(FIXMessageUtil.isExecutionReport(message)) {
 			if(message.isSetField(LastPx.FIELD) && message.isSetField(OrderID.FIELD)) {
 				try {
-					BigDecimal lastPx = new BigDecimal(message.getString(LastPx.FIELD));
+					BigDecimal lastPx = message.getDecimal(LastPx.FIELD);
 					if(!BigDecimal.ZERO.equals(lastPx)) {
 						on_execution_report(message);
 					}
