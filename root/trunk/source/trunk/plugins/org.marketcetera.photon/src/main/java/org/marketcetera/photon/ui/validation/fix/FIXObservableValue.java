@@ -10,6 +10,7 @@ import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import quickfix.BooleanField;
 import quickfix.CharField;
 import quickfix.DataDictionary;
+import quickfix.DecimalField;
 import quickfix.DoubleField;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -104,8 +105,8 @@ public class FIXObservableValue extends AbstractObservableValue {
 					UtcTimeStampField field = new UtcTimeStampField(fieldNumber);
 					return fieldMap.getField(field).getValue();
 				} else if (DoubleField.class.isAssignableFrom(fieldClass)) {
-					StringField field = new StringField(fieldNumber);
-					return new BigDecimal(fieldMap.getField(field).getValue());
+					DecimalField field = new DecimalField(fieldNumber);
+					return fieldMap.getField(field).getValue();
 				} else if (IntField.class.isAssignableFrom(fieldClass)) {
 					IntField field = new IntField(fieldNumber);
 					return fieldMap.getField(field).getValue();
