@@ -88,7 +88,7 @@ public class FIXValueExtractor {
 						||fieldType.equals(FieldType.UtcDate)){
 					value = map.getUtcDateOnly(fieldID);
 				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
-					value = new BigDecimal(map.getString(fieldID));
+					value = map.getDecimal(fieldID);
 				} else if (humanReadable && dict.hasFieldValue(fieldID)){
 					value = map.getString(fieldID);
 					try {

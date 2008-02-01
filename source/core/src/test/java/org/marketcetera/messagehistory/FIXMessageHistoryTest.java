@@ -95,11 +95,11 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD));
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD));
 			assertEquals(""+side, historyMessage.getString(Side.FIELD));
-			assertEquals(orderQty, new BigDecimal(historyMessage.getString(OrderQty.FIELD)));
-			assertEquals(lastQty, new BigDecimal(historyMessage.getString(LastShares.FIELD)));
-			assertEquals(lastPrice, new BigDecimal(historyMessage.getString(LastPx.FIELD)));
-			assertEquals(cumQty, new BigDecimal(historyMessage.getString(CumQty.FIELD)));
-			assertEquals(avgPrice, new BigDecimal(historyMessage.getString(AvgPx.FIELD)));
+			assertEquals(orderQty, historyMessage.getDecimal(OrderQty.FIELD));
+			assertEquals(lastQty, historyMessage.getDecimal(LastShares.FIELD));
+			assertEquals(lastPrice, historyMessage.getDecimal(LastPx.FIELD));
+			assertEquals(cumQty, historyMessage.getDecimal(CumQty.FIELD));
+			assertEquals(avgPrice, historyMessage.getDecimal(AvgPx.FIELD));
 			assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		}		
 
@@ -119,11 +119,11 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD));
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD));
 			assertEquals(""+side, historyMessage.getString(Side.FIELD));
-			assertEquals(orderQty, new BigDecimal(historyMessage.getString(OrderQty.FIELD)));
-			assertEquals(lastQty, new BigDecimal(historyMessage.getString(LastShares.FIELD)));
-			assertEquals(lastPrice, new BigDecimal(historyMessage.getString(LastPx.FIELD)));
-			assertEquals(cumQty, new BigDecimal(historyMessage.getString(CumQty.FIELD)));
-			assertEquals(avgPrice, new BigDecimal(historyMessage.getString(AvgPx.FIELD)));
+			assertEquals(orderQty, historyMessage.getDecimal(OrderQty.FIELD));
+			assertEquals(lastQty, historyMessage.getDecimal(LastShares.FIELD));
+			assertEquals(lastPrice, historyMessage.getDecimal(LastPx.FIELD));
+			assertEquals(cumQty, historyMessage.getDecimal(CumQty.FIELD));
+			assertEquals(avgPrice, historyMessage.getDecimal(AvgPx.FIELD));
 			assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		}
 	}
@@ -149,7 +149,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		Message historyMessage = holder.getMessage();
 		assertEquals(orderID, historyMessage.getString(ClOrdID.FIELD));
 		assertEquals(""+side, historyMessage.getString(Side.FIELD));
-		assertEquals(quantity, new BigDecimal(historyMessage.getString(OrderQty.FIELD)));
+		assertEquals(quantity, historyMessage.getDecimal(OrderQty.FIELD));
 		assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
 		assertEquals(""+timeInForce, historyMessage.getString(TimeInForce.FIELD));
 		assertEquals(account, historyMessage.getString(Account.FIELD));
@@ -447,8 +447,8 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		Message returnedMessage = holder.getMessage();
 		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
 
-		BigDecimal returnedAvgPrice = new BigDecimal(returnedMessage.getString(AvgPx.FIELD));
-		assertTrue( new BigDecimal("1000").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
+		BigDecimal returnedAvgPrice = returnedMessage.getDecimal(AvgPx.FIELD);
+		assertTrue( new BigDecimal("1000").compareTo(returnedMessage.getDecimal(CumQty.FIELD)) == 0);
 		assertEquals( ((12.3*100)+(12.4*900))/1000, returnedAvgPrice.doubleValue(), .0001);
 		assertEquals(Side.SELL_SHORT, returnedMessage.getChar(Side.FIELD));
 		
@@ -470,10 +470,10 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		returnedMessage = holder.getMessage();
 		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
 
-		returnedAvgPrice = new BigDecimal(returnedMessage.getString(AvgPx.FIELD));
+		returnedAvgPrice = returnedMessage.getDecimal(AvgPx.FIELD);
 		assertEquals(Side.BUY, returnedMessage.getChar(Side.FIELD));
 		assertEquals( 12.4, returnedAvgPrice.doubleValue(), .0001);
-		assertTrue( new BigDecimal("900").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
+		assertTrue( new BigDecimal("900").compareTo(returnedMessage.getDecimal(CumQty.FIELD)) == 0);
 
 
 		
@@ -494,10 +494,10 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		returnedMessage = holder.getMessage();
 		assertEquals(MsgType.EXECUTION_REPORT, returnedMessage.getHeader().getString(MsgType.FIELD));
 
-		returnedAvgPrice = new BigDecimal(returnedMessage.getString(AvgPx.FIELD));
+		returnedAvgPrice = returnedMessage.getDecimal(AvgPx.FIELD);
 		assertEquals(Side.SELL_SHORT, returnedMessage.getChar(Side.FIELD));
 		assertEquals( ((12.3*100)+(12.4*900)+(12.4*(900)))/1900, returnedAvgPrice.doubleValue(), .0001);
-		assertTrue( new BigDecimal("1900").compareTo(new BigDecimal(returnedMessage.getString(CumQty.FIELD))) == 0);
+		assertTrue( new BigDecimal("1900").compareTo(returnedMessage.getDecimal(CumQty.FIELD)) == 0);
 
 	}
 
@@ -559,7 +559,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		IncomingMessageHolder returnedMessageHolder = (IncomingMessageHolder) hist.getAveragePricesList().get(0);
 		Message message = returnedMessageHolder.getMessage();
 		assertEquals("symbol1", message.getString(Symbol.FIELD));
-		assertEquals(0, new BigDecimal("81").compareTo(new BigDecimal(message.getString(AvgPx.FIELD))));
+		assertEquals(0, new BigDecimal("81").compareTo(message.getDecimal(AvgPx.FIELD)));
 		
 	}
 	
@@ -598,14 +598,14 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		FIXMessageHistory history = getMessageHistory();
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 		
 		// execution reports come in out of order, use the one that has the OrderID in it.
 		history = getMessageHistory();
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message1);
-		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
 		assertTrue(history.getLatestExecutionReport(clOrderID1.toString()).isSetField(OrderID.FIELD));
 
 		// expecting 3, since it's later in order and later with sending time
@@ -613,7 +613,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message3);
-		assertEquals(new BigDecimal(300), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(300), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 		
 		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
@@ -621,7 +621,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message1);
-		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 
 		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
@@ -629,7 +629,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 
 		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
@@ -637,7 +637,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(200), new BigDecimal(history.getLatestExecutionReport(clOrderID1.toString()).getString(LastQty.FIELD)));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
 		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
 	}
 
