@@ -4,6 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.quickfix.MessageModifier;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -22,7 +23,8 @@ public class OptionSymbolSplitterMessageModifier implements MessageModifier {
     public boolean modifyMessage(Message message, FIXMessageAugmentor fixMessageAugmentor)
             throws MarketceteraException {
         try {
-            if(SecurityType.OPTION.equals(message.getString(SecurityType.FIELD))) {
+            if(FIXMessageUtil.isOrderSingle(message) &&
+                    SecurityType.OPTION.equals(message.getString(SecurityType.FIELD))) {
                 if (message.isSetField(Symbol.FIELD)) {
                     String fullSymbol = message.getString(Symbol.FIELD);
                     if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Modifying symbol "+fullSymbol, this); }
