@@ -9,6 +9,7 @@ import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.messagefactory.NoOpFIXMessageAugmentor;
 import quickfix.Message;
+import quickfix.fix42.Logon;
 import quickfix.field.SecurityType;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
@@ -70,5 +71,11 @@ public class OptionSymbolSplitterMessageModifierTest extends TestCase {
                 mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor());
             }
         }.run();
+    }
+
+    public void testNonNewOrderSingle() throws Exception {
+        Logon logon =  new Logon();
+        OptionSymbolSplitterMessageModifier mmod = new OptionSymbolSplitterMessageModifier();
+        assertFalse("logon messaged shouldn't have been modified", mmod.modifyMessage(logon, new NoOpFIXMessageAugmentor()));
     }
 }
