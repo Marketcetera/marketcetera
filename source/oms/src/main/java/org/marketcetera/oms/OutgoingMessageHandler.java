@@ -255,7 +255,7 @@ public class OutgoingMessageHandler {
                         null,
                         clOrdId,
                         getNextExecId().getValue(),
-                        OrdStatus.NEW,
+                        OrdStatus.PENDING_NEW,
                         side,
                         orderQty,
                         orderPrice,

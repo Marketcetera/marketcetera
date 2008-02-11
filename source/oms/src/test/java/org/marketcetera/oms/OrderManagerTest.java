@@ -406,8 +406,8 @@ public class OrderManagerTest extends FIXVersionedTestCase
         handler.setQuickFIXSender(sender);
         Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
         assertEquals(1, sender.getCapturedMessages().size());
-        assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
-        assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
+        assertTrue(FIXMessageUtil.isExecutionReport(execReport));
+        assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
 
         // now set it to be logged out and verify a reject
         sender.getCapturedMessages().clear();
@@ -422,7 +422,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
         assertEquals(1, sender.getCapturedMessages().size());
         assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
-        assertEquals(OrdStatus.NEW, execReport.getChar(OrdStatus.FIELD));
+        assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
     }
 
     /** bug #433 - need to modify the reject being sent back in case the OMS is not logged on
