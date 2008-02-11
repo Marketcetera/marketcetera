@@ -186,7 +186,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                                              FIXMessageFactory msgFactory, FIXDataDictionary fixDD) throws Exception
     {
         verifyExecutionReport(inExecReport, qty, symbol, side, new BigDecimal(qty), BigDecimal.ZERO, BigDecimal.ZERO,
-                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.NEW, ExecType.NEW, ExecTransType.NEW, msgFactory, fixDD);
+                BigDecimal.ZERO,BigDecimal.ZERO, OrdStatus.PENDING_NEW, ExecType.PENDING_NEW, ExecTransType.NEW, msgFactory, fixDD);
     }
 
 
