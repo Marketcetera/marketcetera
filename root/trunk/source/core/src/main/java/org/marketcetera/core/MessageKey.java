@@ -45,7 +45,7 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_NULL_ID("core.error.null_id"),
     ERROR_NULL_MSYMBOL("core.error.null_msymbol"),
     ERROR_UNRECOGNIZED_ROUTE("core.error.unrecognized_route"),
-    ERROR_MSG_NOT_EXEC_REPORT("error.msg_must_be_exec_report"),
+    ERROR_MSG_NOT_EXEC_REPORT("core.error.msg_must_be_exec_report"),
 
     LOGGER_MISSING_CAT("core.logger.missing_cat"),
     LOGGER_INIT("core.logger.init"),
