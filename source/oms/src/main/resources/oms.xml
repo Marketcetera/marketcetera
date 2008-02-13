@@ -62,7 +62,7 @@
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID [, sessionQualifier] -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg ref="fixVersion"/>
-        <constructor-arg value="MKTC-toli-OMS"/>
+        <constructor-arg value="MKTC-OMS"/>
         <constructor-arg value="MRKTC-EXCH"/>
     </bean>
 
