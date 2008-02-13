@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:util="http://www.springframework.org/schema/util">
+<beans 
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:amq="http://activemq.org/config/1.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  http://activemq.org/config/1.0 http://activemq.apache.org/schema/core/activemq-core-5.0.0.xsd">
+
     <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
 
-    <broker useJmx="true" brokerName="OMS_BROKER" persistent="false" xmlns="http://activemq.org/config/1.0">
-
+    <amq:broker useJmx="true" brokerName="OMS_BROKER" persistent="false" useShutdownHook="false">
 <!--
         <plugins>
             <simpleAuthenticationPlugin userGroups="#groups" userPasswords="#users"/>
@@ -15,11 +20,11 @@
             </persistenceAdapter>
         -->
 
-        <transportConnectors>
-            <transportConnector uri="tcp://localhost:61616"/>
-            <transportConnector uri="stomp://localhost:61613"/>
-        </transportConnectors>
-    </broker>
+        <amq:transportConnectors>
+            <amq:transportConnector uri="tcp://localhost:61616"/>
+            <amq:transportConnector uri="stomp://localhost:61613"/>
+        </amq:transportConnectors>
+    </amq:broker>
 <!--
     <util:map id="users">
         <entry key="user1" value="password1"/>

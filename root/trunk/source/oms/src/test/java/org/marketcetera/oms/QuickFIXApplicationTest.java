@@ -48,10 +48,10 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
         qfApp.setJmsOperations(ops);
 
         // these should not fail
-        qfApp.fromAdmin(new Message(), new SessionID());
+        qfApp.fromAdmin(new Message(), new SessionID("begin", "sender", "target"));
         Message execReport = msgFactory.newExecutionReport("123", "456", "789", OrdStatus.FILLED, Side.BUY, new BigDecimal(100), new BigDecimal("10.10"),
                 new BigDecimal(100), new BigDecimal("10.10"), new BigDecimal(100), new BigDecimal("10.10"), new MSymbol("XYZ"), "bob");
-        qfApp.fromApp(execReport, new SessionID());
+        qfApp.fromApp(execReport, new SessionID("begin", "sender", "target"));
     }
 
     public void testLogoutPropagated() throws Exception {
