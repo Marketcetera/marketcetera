@@ -63,8 +63,15 @@ public enum MessageKey implements LocalizedMessage {
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
     APP_EXIT("core.init.app_exit"),
+    ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE("core.resourcepool.could_not_allocate_new_resource.error"),
+    ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED("core.resourcepool.resource_already_returned.error"),
+    ERROR_RESOURCE_POOL_RESOURCE_MINIMUM_CONFIGURATION("core.resourcepool.resource_minimum_configuration.error"),
+    ERROR_RESOURCE_POOL_RESOURCE_MAXIMUM_CONFIGURATION("core.resourcepool.resource_maximum_configuration.error"),
+    ERROR_RESOURCE_POOL_RESERVATION_RESOURCE_MAXIMUM_CONFIGURATION("core.resourcepool.reservation_resource_maximum_configuration.error"),
+    ERROR_RESOURCE_POOL_SHUTTING_DOWN("core.resourcepool.resource_shutting_down.error"),
+    ERROR_CANNOT_CREATE_RESOURCE_FOR_RESERVATION("core.resourcepool.cannot_create_resource_for_reservation.error"),
     SESSION_NOT_FOUND("core.error.fix.session_not_found");
-
+    
     private MessageKey(String inKey) {
         key = inKey;
     }
@@ -101,5 +108,3 @@ public enum MessageKey implements LocalizedMessage {
         return MessageManager.getText(inKey, MESSAGE_BUNDLE_ENTRY,  args, Locale.getDefault());
     }
 }
-
-
