@@ -178,91 +178,73 @@ public abstract class ResourcePool
         ResourcePoolException lastCreationException = null;
         // check the configuration, as long as we're here
         checkResourcePoolConfiguration();
-        // repeat the request cycle until we give up or a resource is returned
-        while(true) {
-            try {
-                // lock up the resource pool for the balance of the method
-                synchronized(getPoolLock()) {
-                    // this is the number of consecutive times the pool method has failed to allocate
-                    //  a new resource
-                    int creationFailures = 0;
-                    // we need to find a resource, start by checking to see if
-                    //  the number in the pool is below the minimum threshold
-                    // repeat this loop until the pool contains at least the number
-                    //  of resources to maintain (+1 because we're going to remove one right away so we
-                    //  want to maintain the minimum *after* we take one out)
-                    while(getCurrentPoolSize() < getMinResources() + 1) {
-                        try {
-                            createNewResource(null);
-                            creationFailures = 0;
-                        } catch (ResourcePoolException e) {
-                            if(LoggerAdapter.isDebugEnabled(this)) { 
-                                LoggerAdapter.debug("ResourePool failed to allocate resource",
-                                                    e,
-                                                    this); 
-                            }
-                            // hold on to this exception - we *might* want to wrap it
-                            //  and send it back to the caller
-                            lastCreationException = e;
-                            // count how many times we try to create new resources -
-                            //  make sure we don't exceed the limit set by subclasses
-                            creationFailures += 1;
-                            if(creationFailures > getMaxResourceCreationFailures()) {
-                                if(LoggerAdapter.isDebugEnabled(this)) { 
-                                    LoggerAdapter.debug("ResourcePool cannot allocate a resource after " + creationFailures + " failed attempt(s)",
-                                                        this); 
-                                }
-                                break;
-                            }
-                            // allow subclasses to perform some action, perhaps wait a little,
-                            //  perhaps fix something, before trying again
-                            try {
-                                resourceCreationFailed();
-                            } catch (Throwable t) {
-                                // resource creation recovery threw an exception - log it and continue
-                                if(LoggerAdapter.isDebugEnabled(this)) {
-                                    LoggerAdapter.debug("ResourcePool was unable to recover from a failed resource creation attempt", 
-                                                        t,
-                                                        this);
-                                }
-                            }
-                        }
+        // lock up the resource pool for the balance of the method
+        synchronized(getPoolLock()) {
+            // this is the number of consecutive times the pool method has failed to allocate
+            //  a new resource
+            int creationFailures = 0;
+            // we need to find a resource, start by checking to see if
+            //  the number in the pool is below the minimum threshold
+            // repeat this loop until the pool contains at least the number
+            //  of resources to maintain (+1 because we're going to remove one right away so we
+            //  want to maintain the minimum *after* we take one out)
+            while(getCurrentPoolSize() < getMinResources() + 1) {
+                try {
+                    createNewResource(null);
+                    creationFailures = 0;
+                } catch (ResourcePoolException e) {
+                    if(LoggerAdapter.isDebugEnabled(this)) { 
+                        LoggerAdapter.debug("ResourePool failed to allocate resource",
+                                            e,
+                                            this); 
                     }
-                    // at this point, the number of resources in the resource pool is at
-                    //  least equal to the minimum threshold of resources allowed
-                    try {
-                        // retrieve the next resource from the pool and return it
-                        return allocateResource(inData);
-                    } catch (NoSuchElementException e) {
+                    // hold on to this exception - we *might* want to wrap it
+                    //  and send it back to the caller
+                    lastCreationException = e;
+                    // count how many times we try to create new resources -
+                    //  make sure we don't exceed the limit set by subclasses
+                    creationFailures += 1;
+                    if(creationFailures > getMaxResourceCreationFailures()) {
                         if(LoggerAdapter.isDebugEnabled(this)) { 
-                            LoggerAdapter.debug("ResourcePool cannot return a resource because there are none to allocate and no new resources could be allocated (see above)",
+                            LoggerAdapter.debug("ResourcePool cannot allocate a resource after " + creationFailures + " failed attempt(s)",
                                                 this); 
                         }
-                        // there are no resources to be removed
-                        throw new NoResourceException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,
-                                                      lastCreationException);
-                    } catch (ResourcePoolTryAllocationAgainException e) {
-                        throw e;
+                        break;
+                    }
+                    // allow subclasses to perform some action, perhaps wait a little,
+                    //  perhaps fix something, before trying again
+                    try {
+                        resourceCreationFailed();
                     } catch (Throwable t) {
-                        // this comes from "allocateResource" or "createResource", which means that the resource to be returned
-                        //  could not be allocated, likely because the callback to Resource threw an exception
-                        throw new NoResourceException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,
-                                                      t);
+                        // resource creation recovery threw an exception - log it and continue
+                        if(LoggerAdapter.isDebugEnabled(this)) {
+                            LoggerAdapter.debug("ResourcePool was unable to recover from a failed resource creation attempt", 
+                                                t,
+                                                this);
+                        }
                     }
                 }
-            } catch (ResourcePoolTryAllocationAgainException e) {
-                // this block *must* be outside of the synchronization block to allow other resources to be returned
-                try {
-                    // we've received a request to try the resource allocation again
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("ResourcePool received a request to try the allocation again...", 
-                                            this);
-                    }
-                    Thread.sleep(1000);                    
-                } catch (InterruptedException e1) {
-                    throw new NoResourceException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,
-                                                  e1);
+            }
+            // at this point, the number of resources in the resource pool is at
+            //  least equal to the minimum threshold of resources allowed
+            try {
+                // retrieve the next resource from the pool and return it
+                return allocateResource(inData);
+            } catch (NoSuchElementException e) {
+                if(LoggerAdapter.isDebugEnabled(this)) { 
+                    LoggerAdapter.debug("ResourcePool cannot return a resource because there are none to allocate and no new resources could be allocated (see above)",
+                                        this); 
                 }
+                // there are no resources to be removed
+                throw new NoResourceException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,
+                                              lastCreationException);
+            } catch (ReservationForAllocatedResourceException e) {
+                throw e;
+            } catch (Throwable t) {
+                // this comes from "allocateResource" or "createResource", which means that the resource to be returned
+                //  could not be allocated, likely because the callback to Resource threw an exception
+                throw new NoResourceException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,
+                                              t);
             }
         }
     }

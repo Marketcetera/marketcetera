@@ -7,8 +7,10 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.resourcepool.TestResource.STATE;
 
 public class ReservationResourcePoolTest
         extends TestCase
@@ -25,7 +27,7 @@ public class ReservationResourcePoolTest
     {
         TestSuite suite = new MarketceteraTestSuite(ReservationResourcePoolTest.class);
 //        TestSuite suite = new MarketceteraTestSuite();
-//        suite.addTest(new ReservationResourcePoolTest("testGetAllocatedResourceByReservation"));
+//        suite.addTest(new ReservationResourcePoolTest("testReleasedRemovesReservation"));
         return suite;
     }
     
@@ -80,36 +82,25 @@ public class ReservationResourcePoolTest
         mTestPool.setReturnNullRenderKey(false);
         mTestPool.setRenderThrowsDuringCreate(false);
         mTestPool.setRenderThrowsDuringReturn(true);
-        final TestResource r = (TestResource)mTestPool.getResource();
+        TestResource r = (TestResource)mTestPool.getResource();
         assertEquals(mTestPool.getMinResources(),
                      mTestPool.getCurrentPoolSize());
         assertEquals(TestResource.STATE.ALLOCATED,
                      r.getState());
-        // can't return it
-        new ExpectedTestFailure(ResourcePoolException.class) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.returnResource(r);
-            }
-        }.run();
-        // pool size has not changed
-        assertEquals(mTestPool.getMinResources(),
-                     mTestPool.getCurrentPoolSize());
-        // verify that the pool size has not changed as a result of the max set to the min
-        assertFalse(mTestPool.getMinResources() == mTestPool.getMaxResourceCreationFailures());
-        // resource could not be returned
-        assertEquals(TestResource.STATE.ALLOCATED,
-                     r.getState());
-        // now, return the resource properly
-        mTestPool.setRenderThrowsDuringReturn(false);
+        // the pool will search for the reservation inefficiently, but it will still find it
         mTestPool.returnResource(r);
-        // resource was returned
-        assertEquals(mTestPool.getMinResources()+1,
+        // pool size has increased
+        assertEquals(mTestPool.getMinResources() + 1,
                      mTestPool.getCurrentPoolSize());
+        // resource was returned
         assertEquals(TestResource.STATE.RETURNED,
                      r.getState());
+        // get a resource back
+        r = (TestResource)mTestPool.getResource();
+        // have render return null during release
+        r.setState(TestResource.STATE.DAMAGED);
+        mTestPool.setReturnNullRenderKey(true);
+        mTestPool.returnResource(r);
     }
     
     public void testGetExistingReadyResourceByReservation()
@@ -239,6 +230,80 @@ public class ReservationResourcePoolTest
         }.run();        
     }
     
+    public void testReleasedRemovesReservation()    
+        throws Exception
+    {
+        mTestPool.setResourceContentionException(null);
+        TestResource r1 = (TestResource)mTestPool.getResource();
+        assertEquals(mTestPool.getMinResources(),
+                     mTestPool.getCurrentPoolSize());
+        assertEquals(TestResource.STATE.ALLOCATED,
+                     r1.getState());
+        Object r1Reservation = mTestPool.renderReservationKey(r1);
+        assertEquals(r1,
+                     mTestPool.lookupParentReservation(r1Reservation));
+        // resource exists in reservation table
+        r1.setState(TestResource.STATE.DAMAGED);
+        assertFalse(r1.isFunctional());
+        // return resource
+        mTestPool.returnResource(r1);
+        assertEquals(TestResource.STATE.RELEASED,
+                     r1.getState());
+        assertNull(mTestPool.lookupParentReservation(r1Reservation));
+    }
+    
+    public void testReleasedRemovesReservationThrowsResourcePoolException()
+        throws Exception
+    {
+        mTestPool.setResourceContentionException(null);
+        TestResource r1 = (TestResource)mTestPool.getResource();
+        assertEquals(mTestPool.getMinResources(),
+                     mTestPool.getCurrentPoolSize());
+        assertEquals(TestResource.STATE.ALLOCATED,
+                     r1.getState());
+        Object r1Reservation = mTestPool.renderReservationKey(r1);
+        assertEquals(r1,
+                     mTestPool.lookupParentReservation(r1Reservation));
+        // resource exists in reservation table
+        r1.setState(TestResource.STATE.DAMAGED);
+        assertFalse(r1.isFunctional());
+        // return resource
+        mTestPool.setRenderThrowsDuringReturn(true);
+        mTestPool.returnResource(r1);
+        assertEquals(TestResource.STATE.RELEASED,
+                     r1.getState());
+        assertNull(mTestPool.lookupParentReservation(r1Reservation));
+    }
+
+    public void testReservationPoolConfiguration()
+        throws Exception
+    {
+        // the reservation pool must have max > min (instead of parent's max >= min)
+        mTestPool.setTestMinResources(2);
+        mTestPool.setTestMaxResources(2);
+        new ExpectedTestFailure(ResourcePoolConfigurationException.class,
+                                MessageKey.ERROR_RESOURCE_POOL_RESERVATION_RESOURCE_MAXIMUM_CONFIGURATION.getLocalizedMessage()) 
+        {
+            protected void execute() 
+                throws Exception 
+            {
+                mTestPool.getResource();
+            }
+        }.run();
+        mTestPool.setTestMaxResources(1);
+        new ExpectedTestFailure(ResourcePoolConfigurationException.class,
+                                MessageKey.ERROR_RESOURCE_POOL_RESOURCE_MAXIMUM_CONFIGURATION.getLocalizedMessage()) 
+        {
+            protected void execute() 
+                throws Exception 
+            {
+                mTestPool.getResource();
+            }
+        }.run();
+        mTestPool.setTestMaxResources(3);
+        mTestPool.getResource();
+    }
+    
     public void testGetAllocatedResourceByReservation()
         throws Exception
     {
@@ -251,33 +316,130 @@ public class ReservationResourcePoolTest
         assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
         // no contentions yet
         assertEquals(0,
-                     r1.getContentionCounter());
+                     r1.getContentionStamp());
         // r1 is in the reservation system by this key
         assertEquals(r1,
                      mTestPool.lookupParentReservation(r1Reservation));
 
-        ResourceRequester requester = new ResourceRequester(r1Reservation);
+        doContentionTest(r1Reservation,
+                         r1,
+                         r1, 
+                         TestResource.STATE.ALLOCATED, 
+                         null);
+    }
+    
+    public void testContentionThrowsResourcePoolException()
+        throws Exception
+    {
+        TestResource r1 = (TestResource)mTestPool.getResource();
+        assertEquals(mTestPool.getMinResources(),
+                     mTestPool.getCurrentPoolSize());
+        assertEquals(TestResource.STATE.ALLOCATED,
+                     r1.getState());
+        Object r1Reservation = mTestPool.renderReservationKey(r1);
+        assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
+        // no contentions yet
+        assertEquals(0,
+                     r1.getContentionStamp());
+        // r1 is in the reservation system by this key
+        assertEquals(r1,
+                     mTestPool.lookupParentReservation(r1Reservation));
+        mTestPool.setResourceContentionException(new ResourcePoolException("This exception is expected"));
+
+        doContentionTest(r1Reservation,
+                         r1,
+                         null, 
+                         TestResource.STATE.RETURNED, 
+                         NoResourceException.class);
+    }
+    
+    public void testContentionThrowsThrowable()
+        throws Exception
+    {
+        TestResource r1 = (TestResource)mTestPool.getResource();
+        assertEquals(mTestPool.getMinResources(),
+                     mTestPool.getCurrentPoolSize());
+        assertEquals(TestResource.STATE.ALLOCATED,
+                     r1.getState());
+        Object r1Reservation = mTestPool.renderReservationKey(r1);
+        assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
+        // no contentions yet
+        assertEquals(0,
+                     r1.getContentionStamp());
+        // r1 is in the reservation system by this key
+        assertEquals(r1,
+                     mTestPool.lookupParentReservation(r1Reservation));
+        mTestPool.setResourceContentionException(new NullPointerException("This exception is expected"));
+
+        doContentionTest(r1Reservation,
+                         r1,
+                         null, 
+                         TestResource.STATE.RETURNED, 
+                         NoResourceException.class);
+    }
+    
+    public void testCancelledReservations()
+        throws Exception
+    {
+        // tests what happens when a non-functional resource is returned with outstanding requesters
+        TestResource r1 = (TestResource)mTestPool.getResource();
+        assertEquals(mTestPool.getMinResources(),
+                     mTestPool.getCurrentPoolSize());
+        assertEquals(TestResource.STATE.ALLOCATED,
+                     r1.getState());
+        Object r1Reservation = mTestPool.renderReservationKey(r1);
+        assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
+        // no contentions yet
+        assertEquals(0,
+                     r1.getContentionStamp());
+        // r1 is in the reservation system by this key
+        assertEquals(r1,
+                     mTestPool.lookupParentReservation(r1Reservation));
+        r1.setState(TestResource.STATE.DAMAGED);
+
+        doContentionTest(r1Reservation,
+                         r1,
+                         null, 
+                         TestResource.STATE.RELEASED, 
+                         NoResourceException.class);
+        
+    }
+
+    protected void doContentionTest(Object inReservation,
+                                    TestResource inResource,
+                                    TestResource inReturnedResource, 
+                                    STATE inReturnedResourceState, 
+                                    Class inExceptionClass)
+        throws Exception
+    {
+        ResourceRequester requester = new ResourceRequester(inReservation);
         Thread requesterThread = new Thread(requester);
         requesterThread.start();
         requester.mStartSemaphore.acquire();
         // requester thread has started
-        // the requester thread is now running through iterations asking for r1 over and over
-        // the requester thread can't have it until we let it go
-        // let the requester thread ask for r1 10 times before we take pity
-        while(r1.getContentionCounter() <= 10) {
+        // the requester thread will soon block on its request for r1 (coz we have it, bwaaaahaahaahaa)        
+        while(inResource.getContentionStamp() == 0) {
             Thread.sleep(100);
         }
-        // r1 has been requested at least 10 times
+        // the requester thread is blocked on a request for r1
+        // let it stew for 10 seconds or so
+        while(System.currentTimeMillis() - inResource.getContentionStamp() < 10000) {
+            Thread.sleep(1000);
+        }
+        // requester has been blocked for at least 10 seconds        
         // return r1 so the requester thread can have it
-        mTestPool.returnResource(r1);
+        mTestPool.returnResource(inResource);
         // wait for the requester to complete
         requesterThread.join();
         // the requester should have gotten r1
-        assertEquals(r1,
+        assertEquals(inReturnedResource,
                      requester.getResource());
-        assertEquals(TestResource.STATE.ALLOCATED,
-                     r1.getState());
-        assertNull(requester.getException());
+        assertEquals(inReturnedResourceState,
+                     inResource.getState());
+        if(inExceptionClass != null) {
+            assertEquals(inExceptionClass,
+                         requester.getException().getClass());
+        }
     }
     
     private class ResourceRequester
@@ -304,6 +466,11 @@ public class ReservationResourcePoolTest
             try {
                 setResource((TestResource)mTestPool.getResource(getReservation()));
             } catch (Throwable t) {
+                if(LoggerAdapter.isDebugEnabled(this)) { 
+                    LoggerAdapter.debug("Requester thread caught exception",
+                                        t,
+                                        this); 
+                }
                 setException(t);
             }
             // we have the resource now

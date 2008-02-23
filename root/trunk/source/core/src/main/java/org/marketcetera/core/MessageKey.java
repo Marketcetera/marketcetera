@@ -70,6 +70,7 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_RESOURCE_POOL_RESERVATION_RESOURCE_MAXIMUM_CONFIGURATION("core.resourcepool.reservation_resource_maximum_configuration.error"),
     ERROR_RESOURCE_POOL_SHUTTING_DOWN("core.resourcepool.resource_shutting_down.error"),
     ERROR_CANNOT_CREATE_RESOURCE_FOR_RESERVATION("core.resourcepool.cannot_create_resource_for_reservation.error"),
+    ERROR_CANNOT_RETURN_RESOURCE_TO_RESERVATION_POOL("core.resourcepool.cannot_return_resource_to_reservation_pool.error"),
     SESSION_NOT_FOUND("core.error.fix.session_not_found");
     
     private MessageKey(String inKey) {
