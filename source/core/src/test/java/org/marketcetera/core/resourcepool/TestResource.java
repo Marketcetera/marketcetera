@@ -18,7 +18,7 @@ public class TestResource
     private Throwable mReturnException = null;
     private Throwable mReleaseException = null;
     private boolean mIsFunctionalException = false;
-    private int mContentionCounter;
+    private long mContentionStamp;
     
     private static int sIDCounter = 0;
     private String mUser;
@@ -31,7 +31,7 @@ public class TestResource
     {
         setState(STATE.UNITIALIZED);
         setID(getNextID());
-        setContentionCounter(0);
+        setContentionStamp(0);
     }
     
     public TestResource(String inUser,
@@ -291,20 +291,13 @@ public class TestResource
     {
         mUser = inUser;
     }
-
-    /**
-     * @return the contentionCounter
-     */
-    int getContentionCounter()
+    long getContentionStamp()
     {
-        return mContentionCounter;
+        return mContentionStamp;
     }
 
-    /**
-     * @param inContentionCounter the contentionCounter to set
-     */
-    void setContentionCounter(int inContentionCounter)
+    void setContentionStamp(long inContentionStamp)
     {
-        mContentionCounter = inContentionCounter;
+        mContentionStamp = inContentionStamp;
     }
 }

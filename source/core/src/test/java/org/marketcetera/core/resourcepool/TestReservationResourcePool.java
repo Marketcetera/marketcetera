@@ -14,6 +14,7 @@ public class TestReservationResourcePool
     private int mTestMaxResources;
     private int mTestMinResources;
     private Throwable mCreateResourceException;
+    private Throwable mResourceContentionException;
     
     public TestReservationResourcePool() 
         throws InterruptedException
@@ -27,6 +28,7 @@ public class TestReservationResourcePool
         setTestMaxResources(5);
         setTestMinResources(2);
         setCreateResourceException(null);
+        setResourceContentionException(null);
     }
 
     protected Object renderReservationKey(Resource inResource)
@@ -337,8 +339,32 @@ public class TestReservationResourcePool
         super.resourceContention(inData, 
                                  inDesiredResource);
         TestResource r = (TestResource)inDesiredResource;
-        r.setContentionCounter(r.getContentionCounter() + 1);
+        r.setContentionStamp(System.currentTimeMillis());
         dumpReservationTable();
         dumpResourcePool();
+        Throwable t = getResourceContentionException();
+        if(t != null) {
+            if(t instanceof ResourcePoolException) {
+                throw ((ResourcePoolException)t);
+            } else {
+                throw new NullPointerException("This exception is expected");
+            }
+        }
+    }
+
+    /**
+     * @return the resourceContentionException
+     */
+    Throwable getResourceContentionException()
+    {
+        return mResourceContentionException;
+    }
+
+    /**
+     * @param inResourceContentionException the resourceContentionException to set
+     */
+    void setResourceContentionException(Throwable inResourceContentionException)
+    {
+        mResourceContentionException = inResourceContentionException;
     }
 }
