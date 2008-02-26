@@ -45,4 +45,18 @@ public class AccessViolatorTest extends TestCase {
         violator.setField("hidden", violated, "violated");
         assertEquals("violated", violator.getField("hidden", violated));
     }
+    
+    public void testPrimitiveTypeGetter() throws Exception {
+        final AccessViolator violator = new AccessViolator(ViolatedClass.class);
+        final ViolatedClass violated = new ViolatedClass();
+
+        new ExpectedTestFailure(NoSuchMethodException.class){
+			@Override
+			protected void execute() throws Throwable {
+		        violator.invokeMethod("doSomethingWithTwoBooleans", violated, true, true);
+			}
+        }.run();
+        violator.invokeMethod("doSomethingWithTwoBooleans", violated, new Object[] {true, true}, new Class<?>[] {Boolean.TYPE, Boolean.TYPE});
+        
+    }
 }

@@ -24,14 +24,20 @@ public class AccessViolator {
 
     public Object invokeMethod(String methodName, Object reference, Object ... args)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        Class [] types = new Class[args.length];
+        Class<?> [] types = new Class<?>[args.length];
         for (int i = 0; i < args.length; i++){
             types[i] = args[i].getClass();
         }
-        Method theMethod = violatedClass.getDeclaredMethod(methodName, types);
-        theMethod.setAccessible(true);
-        return theMethod.invoke(reference, args);
+        return invokeMethod(methodName, reference, args, types);
     }
+
+    public Object invokeMethod(String methodName, Object reference, Object [] args, Class<?> [] classes)
+    	throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+		Method theMethod = violatedClass.getDeclaredMethod(methodName, classes);
+		theMethod.setAccessible(true);
+		return theMethod.invoke(reference, args);
+	}
+    
 
     /** Sets the speicified field to the passed-in value */
     public void setField(String fieldName, Object reference, Object value)
