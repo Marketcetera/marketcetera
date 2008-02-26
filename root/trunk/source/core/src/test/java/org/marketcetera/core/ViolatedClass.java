@@ -21,4 +21,8 @@ class ViolatedClass{
         youCantCallMe("");
         youCantGetMyException();
     }
+    
+    private void doSomethingWithTwoBooleans(boolean a, boolean b){
+    	
+    }
 }
