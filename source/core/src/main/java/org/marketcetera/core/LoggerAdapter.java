@@ -2,6 +2,7 @@ package org.marketcetera.core;
 
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 import org.apache.log4j.PropertyConfigurator;
 
 /**
@@ -37,6 +38,7 @@ public class LoggerAdapter extends Logger
     {
         if(sLogger != null) { return sLogger; }
 
+        System.out.println("initializing logger for " + name);
         sLogger = new LoggerAdapter(name);
         PropertyConfigurator.configureAndWatch(LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
         sLogger.setLevel(Level.ERROR);
@@ -111,6 +113,11 @@ public class LoggerAdapter extends Logger
     public static boolean isInfoEnabled(Object inCat)
     {
         return(getMyLogger(inCat).isInfoEnabled());
+    }
+    
+    public static boolean isErrorEnabled(Object inCat)
+    {
+        return(getMyLogger(inCat).isEnabledFor(Priority.ERROR));
     }
 
     private static Logger getMyLogger(Object inCategory)

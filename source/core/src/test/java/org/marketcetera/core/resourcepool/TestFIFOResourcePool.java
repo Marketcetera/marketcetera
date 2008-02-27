@@ -1,198 +1,160 @@
 package org.marketcetera.core.resourcepool;
 
-import org.marketcetera.core.resourcepool.Resource;
-import org.marketcetera.core.resourcepool.ResourceCreationException;
-import org.marketcetera.core.resourcepool.ResourcePool;
-import org.marketcetera.core.resourcepool.ResourcePoolException;
-import org.marketcetera.core.resourcepool.TestResource;
+import java.util.Iterator;
 
-public class TestFIFOResourcePool 
+class TestFIFOResourcePool 
     extends FIFOResourcePool 
 {
-    private int mMaxCreationFailures = 5;
-    private int mMaxResources = 10;
-    private int mMinResources = 3;
-    private int mTimesToFailCreationBeforeSuccess = 0;
-    private int mCreationFailureCounter = 0;
-    private int mActualFailureCounter = 0;
-    private boolean mPoolBroken = false;
-    private boolean mFixPool = false;
-    private boolean mResourceCreationFailedException = false;
+    private boolean mThrowDuringCreateResource = false;
+    private boolean mThrowDuringAddResource = false;
+    private boolean mThrowDuringAllocateResource = false;
+    private boolean mEmptyPoolBeforeAllocation = false;
+    private boolean mThrowDuringPoolContains = false;
     
-	protected Resource createResource(Object inData) 
-        throws ResourceCreationException 
+    TestFIFOResourcePool()
     {
-        if((mTimesToFailCreationBeforeSuccess > 0 &&                
-           mCreationFailureCounter++ < mTimesToFailCreationBeforeSuccess) ||
-           getPoolBroken()) {
-            throw new ResourceCreationException("This exception is expected");
-        }
-        resetCreationFailureCounter();
-		return new TestResource();
-	}
+        super();
+    }
     
-    private void resetCreationFailureCounter()
-    {
-        mCreationFailureCounter = 0;
-    }
-
-	protected int getMaxResourceCreationFailures() 
-    {
-		return mMaxCreationFailures;
-	}
-
-	protected int getMaxResources() 
-    {
-		return mMaxResources;
-	}
-
-	protected int getMinResources() 
-    {
-		return mMinResources;
-	}
-
-    /**
-     * @param inMaxResources the maxResources to set
-     */
-    void setMaxResources(int inMaxResources)
-    {
-        mMaxResources = inMaxResources;
-    }
-
-    /**
-     * @param inMinResources the minResources to set
-     */
-    void setMinResources(int inMinResources)
-    {
-        mMinResources = inMinResources;
-    }
-
-    int getResourcePoolSize()
-    {
-        return getCurrentPoolSize();
-    }
-
-    /**
-     * @return the creationFailureCounter
-     */
-    int getCreationFailureCounter()
-    {
-        return mCreationFailureCounter;
-    }
-
-    /**
-     * @return the timesToFailCreationBeforeSuccess
-     */
-    int getTimesToFailCreationBeforeSuccess()
-    {
-        return mTimesToFailCreationBeforeSuccess;
-    }
-
-    /**
-     * @param inTimesToFailCreationBeforeSuccess the timesToFailCreationBeforeSuccess to set
-     */
-    void setTimesToFailCreationBeforeSuccess(int inTimesToFailCreationBeforeSuccess)
-    {
-        mTimesToFailCreationBeforeSuccess = inTimesToFailCreationBeforeSuccess;
-    }
-
-    /**
-     * @return the maxCreationFailures
-     */
-    int getMaxCreationFailures()
-    {
-        return mMaxCreationFailures;
-    }
-
-    /**
-     * @param inMaxCreationFailures the maxCreationFailures to set
-     */
-    void setMaxCreationFailures(int inMaxCreationFailures)
-    {
-        mMaxCreationFailures = inMaxCreationFailures;
-    }
-
-    protected void resourceCreationFailed()
+    protected TestResource createResource(Object inData)
             throws ResourcePoolException
     {
-        super.resourceCreationFailed();
-        mActualFailureCounter += 1;
-        if(getFixPool()) {
-            setPoolBroken(false);
-        }
-        if(getResourceCreationFailedException()) {
+        if(getThrowDuringCreateResource()) {
             throw new NullPointerException("This exception is expected");
         }
-    }
-
-    /**
-     * @return the actualFailureCounter
-     */
-    int getActualFailureCounter()
-    {
-        return mActualFailureCounter;
+        return new TestResource();
     }
     
-    void resetActualFailureCounter()
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.FIFOResourcePool#addResourceToPool(org.marketcetera.core.resourcepool.Resource)
+     */
+    protected void addResourceToPool(Resource inResource)
     {
-        mActualFailureCounter = 0;
+        if(getThrowDuringAddResource()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        super.addResourceToPool(inResource);
+    }    
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.FIFOResourcePool#allocateNextResource(java.lang.Object)
+     */
+    protected Resource allocateNextResource(Object inData)
+    {
+        if(getEmptyPoolBeforeAllocation()) {
+            synchronized(getPoolLock()) {
+                while(getPoolSize() > 0) {
+                    super.allocateNextResource(inData);
+                }
+            }
+        }
+        if(getThrowDuringAllocateResource()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        return super.allocateNextResource(inData);
     }
-    
-    void emptyParentPool()
+
+    int getPoolSize()
     {
-        super.emptyPool();
+        Iterator<Resource> iterator = getPoolIterator();
+        int counter = 0;
+        while(iterator.hasNext()) {
+            iterator.next();
+            counter += 1;
+        }
+        
+        return counter;
     }
 
     /**
-     * @return the poolBroken
+     * @return the throwDuringCreateResource
      */
-    private boolean getPoolBroken()
+    boolean getThrowDuringCreateResource()
     {
-        return mPoolBroken;
+        return mThrowDuringCreateResource;
     }
 
     /**
-     * @param inPoolBroken the poolBroken to set
+     * @param inThrowDuringCreateResource the throwDuringCreateResource to set
      */
-    void setPoolBroken(boolean inPoolBroken)
+    void setThrowDuringCreateResource(boolean inThrowDuringCreateResource)
     {
-        mPoolBroken = inPoolBroken;
+        mThrowDuringCreateResource = inThrowDuringCreateResource;
     }
 
     /**
-     * @return the fixPool
+     * @return the throwDuringAddResource
      */
-    private boolean getFixPool()
+    boolean getThrowDuringAddResource()
     {
-        return mFixPool;
+        return mThrowDuringAddResource;
     }
 
     /**
-     * @param inFixPool the fixPool to set
+     * @param inThrowDuringAddResource the throwDuringAddResource to set
      */
-    void setFixPool(boolean inFixPool)
+    void setThrowDuringAddResource(boolean inThrowDuringAddResource)
     {
-        mFixPool = inFixPool;
+        mThrowDuringAddResource = inThrowDuringAddResource;
     }
 
     /**
-     * @return the resourceCreationFailedException
+     * @return the throwDuringAllocateResource
      */
-    private boolean getResourceCreationFailedException()
+    boolean getThrowDuringAllocateResource()
     {
-        return mResourceCreationFailedException;
+        return mThrowDuringAllocateResource;
     }
 
     /**
-     * @param inResourceCreationFailedException a <code>boolean</code> value
+     * @param inThrowDuringAllocateResource the throwDuringAllocateResource to set
      */
-    void setResourceCreationFailedException(boolean inResourceCreationFailedException)
+    void setThrowDuringAllocateResource(boolean inThrowDuringAllocateResource)
     {
-        mResourceCreationFailedException = inResourceCreationFailedException;
+        mThrowDuringAllocateResource = inThrowDuringAllocateResource;
     }
-    
-    ResourcePool.STATUS getParentStatus()
+
+    /**
+     * @return the emptyPoolBeforeAllocation
+     */
+    boolean getEmptyPoolBeforeAllocation()
     {
-        return getStatus();
+        return mEmptyPoolBeforeAllocation;
     }
+
+    /**
+     * @param inEmptyPoolBeforeAllocation the emptyPoolBeforeAllocation to set
+     */
+    void setEmptyPoolBeforeAllocation(boolean inEmptyPoolBeforeAllocation)
+    {
+        mEmptyPoolBeforeAllocation = inEmptyPoolBeforeAllocation;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.FIFOResourcePool#poolContains(org.marketcetera.core.resourcepool.Resource)
+     */
+    protected boolean poolContains(Resource inResource)
+    {
+        if(getThrowDuringPoolContains()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        return super.poolContains(inResource);
+    }
+
+    /**
+     * @return the throwDuringPoolContains
+     */
+    boolean getThrowDuringPoolContains()
+    {
+        return mThrowDuringPoolContains;
+    }
+
+    /**
+     * @param inThrowDuringPoolContains the throwDuringPoolContains to set
+     */
+    void setThrowDuringPoolContains(boolean inThrowDuringPoolContains)
+    {
+        mThrowDuringPoolContains = inThrowDuringPoolContains;
+    }
+
 }

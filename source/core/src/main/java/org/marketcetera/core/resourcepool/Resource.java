@@ -1,5 +1,8 @@
 package org.marketcetera.core.resourcepool;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.context.Lifecycle;
+
 /**
  * Represents an abstract resource in a {@link ResourcePool}.
  * 
@@ -16,22 +19,8 @@ package org.marketcetera.core.resourcepool;
  * @version $Id: $
  */
 public interface Resource
+    extends Lifecycle, InitializingBean
 {
-    /**
-     * Called when a <code>Resource</code> is created.
-     *
-     * This method will be called once over the lifetime of a
-     * given <code>Resource</code>, when it is initially created.
-     * Upon completion of this method, the <code>Resource</code>
-     * should be ready for service.
-     *
-     * @param inPool a <code>ResourcePool</code> value
-     * @throws Throwable if an error occurs during initialization - note,
-     *   this will cause the <code>Resource</code> to be discarded
-     */
-    public void initialize(ResourcePool inPool)
-        throws Throwable;
-    
     /**
      * Called when a <code>Resource</code> is issued to a caller.
      * 
@@ -40,13 +29,12 @@ public interface Resource
      * <code>Resource</code> from a {@link ResourcePool}, this method
      * is called on the <code>Resource</code> before it is issued.
      *
-     * @param inPool a <code>ResourcePool</code> value
      * @throws Throwable if an error occurs - note, throwing an exception
      *   in this method will cause the {@link ResourcePool} to reject the
      *   request from the caller for a <code>Resource</code>.  The <code>Resource</code>
-     *   will subsequently be released by the {@link ResourcePool} (@see {@link #released(ResourcePool)}).
+     *   will subsequently be released by the {@link ResourcePool} (@see {@link #released()}).
      */
-    public void allocated(ResourcePool inPool)
+    public void allocated()
         throws Throwable;
     
     /**
@@ -63,10 +51,9 @@ public interface Resource
      *     objects (@see {@link ResourcePool#getMaxResources()})</li>
      * </ol>
      *
-     * @param inPool a <code>ResourcePool</code> value
      * @throws Throwable if an error occurs
      */
-    public void released(ResourcePool inPool)
+    public void released()
         throws Throwable;
     
     /**
@@ -92,27 +79,11 @@ public interface Resource
      * <p>This method is called after the <code>Resource</code> has been returned to the pool
      * but before the lock on the pool is released.
      *
-     * @param inPool a <code>ResourcePool</code> value
      * @throws Throwable if a <code>Resource</code> throws an exception
      *   when it's returned, the <code>Resource</code> is still returned for re-use.  If the intent
      *   is to make the <code>Resource</code> be discarded, make sure {@link Resource#isFunctional()} returns
      *   false when the <code>Resource</code> is returned.
      */
-    public void returned(ResourcePool inPool)
-        throws Throwable;
-    
-    /**
-     * Called when the {@link ResourcePool} receives a request to shut down.
-     * 
-     * The <code>Resource</code> should finish outstanding work and
-     * shut down as soon as possible.  The {@link ResourcePool} will not call
-     * {@link #released(ResourcePool)} or {@link #returned(ResourcePool)}.
-     * 
-     * @param inPool a <code>ResourcePool</code> value
-     * @throws Throwable if an error occurs.  Throwing this exception will indicate
-     *   to the {@link ResourcePool} that this <code>Resource</code> is as shut down
-     *   as it's going to get.
-     */
-    public void shutdown(ResourcePool inPool)
+    public void returned()
         throws Throwable;
 }

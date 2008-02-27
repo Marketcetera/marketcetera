@@ -65,12 +65,10 @@ public enum MessageKey implements LocalizedMessage {
     APP_EXIT("core.init.app_exit"),
     ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE("core.resourcepool.could_not_allocate_new_resource.error"),
     ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED("core.resourcepool.resource_already_returned.error"),
-    ERROR_RESOURCE_POOL_RESOURCE_MINIMUM_CONFIGURATION("core.resourcepool.resource_minimum_configuration.error"),
-    ERROR_RESOURCE_POOL_RESOURCE_MAXIMUM_CONFIGURATION("core.resourcepool.resource_maximum_configuration.error"),
-    ERROR_RESOURCE_POOL_RESERVATION_RESOURCE_MAXIMUM_CONFIGURATION("core.resourcepool.reservation_resource_maximum_configuration.error"),
     ERROR_RESOURCE_POOL_SHUTTING_DOWN("core.resourcepool.resource_shutting_down.error"),
-    ERROR_CANNOT_CREATE_RESOURCE_FOR_RESERVATION("core.resourcepool.cannot_create_resource_for_reservation.error"),
-    ERROR_CANNOT_RETURN_RESOURCE_TO_RESERVATION_POOL("core.resourcepool.cannot_return_resource_to_reservation_pool.error"),
+    ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL("core.resourcepool.cannot_create_resource_for_pool.error"),
+    ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR("core.resourcepool.executable_block_error"),
+    INFO_WAITING_FOR_RESOURCE("core.resourcepool.waiting_for_resource"),
     SESSION_NOT_FOUND("core.error.fix.session_not_found");
     
     private MessageKey(String inKey) {

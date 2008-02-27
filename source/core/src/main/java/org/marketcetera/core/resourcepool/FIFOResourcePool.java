@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.marketcetera.core.MessageKey;
+
 /**
  * Implementation of {@link ResourcePool} that allocates <code>Resource</code> objects
  * in FIFO order.
@@ -21,13 +23,16 @@ public abstract class FIFOResourcePool
     /**
      * the resource objects are stored here
      */
-    private LinkedList<Resource> mResources;
-    private HashSet<Resource> mResourceHash;
+    private final LinkedList<Resource> mResources;
+    /**
+     * this collection should always be in sync with {@link #mResources}
+     */
+    private final HashSet<Resource> mResourceHash;
 
     /**
      * Create a new <code>FIFOResourcePool</code> object.
      */
-    public FIFOResourcePool()
+    protected FIFOResourcePool()
     {
         super();
         mResources = new LinkedList<Resource>();
@@ -39,41 +44,63 @@ public abstract class FIFOResourcePool
         return mResources;
     }
     
-    protected int getCurrentPoolSize()
-    {
-        return mResources.size();
-    }
-    
     protected Iterator<Resource> getPoolIterator()
     {
         return mResources.iterator();
     }
     
-    protected void addResource(Resource inResource) 
-        throws ResourcePoolException
+    protected void addResourceToPool(Resource inResource)
     {
+        if(inResource == null) {
+            throw new NullPointerException();
+        }
         mResources.add(inResource);
         mResourceHash.add(inResource);
     }
     
-    protected Resource getNextResource(Object inData)
-        throws ResourcePoolException
+    protected Resource allocateNextResource(Object inData)
     {
         Resource r = mResources.removeFirst();
         mResourceHash.remove(r);
         return r;
     }
     
+    protected Resource getNextResource(Object inData)
+        throws ResourcePoolException
+    {
+        try {
+            // inside the parent synchronization lock
+            if(mResources.isEmpty()) {
+                // try to add a resource
+                Resource newResource = createResource(inData);
+                addResourceToPool(newResource);
+            }
+            return allocateNextResource(inData);
+        } catch (Throwable t) {
+            throw new ResourcePoolException(MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL,
+                                            t);
+        }
+    }
+    
+    protected void verifyResourceReturn(Resource inResource) 
+        throws ResourcePoolException
+    {
+        if(inResource == null) {
+            throw new NullPointerException();
+        }
+        try {
+            if(poolContains(inResource)) {
+                throw new DuplicateResourceReturnException(MessageKey.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED);
+            }
+        } catch (ResourcePoolException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new ResourcePoolException(t);
+        }
+    }
+    
     protected boolean poolContains(Resource inResource)
     {
         return mResourceHash.contains(inResource);
-    }
-    
-    protected void emptyPool()
-    {
-        synchronized(mResources) {
-            mResources.clear();
-            mResourceHash.clear();
-        }
-    }
+    }    
 }
