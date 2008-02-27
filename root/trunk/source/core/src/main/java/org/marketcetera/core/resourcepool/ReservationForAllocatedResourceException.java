@@ -2,37 +2,32 @@ package org.marketcetera.core.resourcepool;
 
 import org.marketcetera.core.MessageKey;
 
+
 class ReservationForAllocatedResourceException
         extends ResourcePoolException
 {
     private static final long serialVersionUID = 4053461153409187526L;
+    private Resource mResource;
 
-    ReservationForAllocatedResourceException(String inMessage)
+    ReservationForAllocatedResourceException(Resource inResource)
     {
-        super(inMessage);
+        super(MessageKey.INFO_WAITING_FOR_RESOURCE.getLocalizedMessage(new Object[] { inResource.toString() } ));
+        setResource(inResource);
     }
 
-    ReservationForAllocatedResourceException(String inMsg,
-                                                Throwable inNested)
+    /**
+     * @return the resource
+     */
+    Resource getResource()
     {
-        super(inMsg,
-              inNested);
+        return mResource;
     }
 
-    ReservationForAllocatedResourceException(Throwable inNested)
+    /**
+     * @param inResource the resource to set
+     */
+    private void setResource(Resource inResource)
     {
-        super(inNested);
-    }
-
-    ReservationForAllocatedResourceException(MessageKey inKey)
-    {
-        super(inKey);
-    }
-
-    ReservationForAllocatedResourceException(MessageKey inKey,
-                                                Throwable inNested)
-    {
-        super(inKey,
-              inNested);
+        mResource = inResource;
     }
 }

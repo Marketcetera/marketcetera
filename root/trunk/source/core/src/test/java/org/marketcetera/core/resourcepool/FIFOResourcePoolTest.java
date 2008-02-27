@@ -1,7 +1,7 @@
 package org.marketcetera.core.resourcepool;
 
-import java.util.ArrayList;
-import java.util.Random;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
@@ -12,7 +12,7 @@ import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.MessageKey;
 
 /**
- * Tests {@link ResourcePool}. 
+ * Tests {@link FIFOResourcePool}. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
@@ -21,6 +21,8 @@ public class FIFOResourcePoolTest
 	extends TestCase 
 {
     protected TestFIFOResourcePool mTestPool;
+    protected TestResource mResource1;
+    protected TestResource mResource2;
     
 	public FIFOResourcePoolTest(String inName) 
 	{
@@ -30,7 +32,7 @@ public class FIFOResourcePoolTest
     public static Test suite() 
     {
         TestSuite suite = new MarketceteraTestSuite(FIFOResourcePoolTest.class);
-//        suite.addTest(new FIFOResourcePoolTest("testDuringShutdown"));
+//        suite.addTest(new FIFOResourcePoolTest("testSerialResourceCheckOut"));
         return suite;
     }
     
@@ -42,493 +44,265 @@ public class FIFOResourcePoolTest
         mTestPool = new TestFIFOResourcePool();
         TestResource.setInitializeException(null);
         TestResource.setAllocateException(null);
+        mResource1 = new TestResource();
+        mResource2 = new TestResource();
     }
-    
-    public void testResourcePoolConfiguration()
+
+    public void testConstructor()
         throws Exception
     {
-        verifyPoolSize(0);
-        mTestPool.setMinResources(0);
-        new ExpectedTestFailure(ResourcePoolConfigurationException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_RESOURCE_MINIMUM_CONFIGURATION.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-
-        verifyPoolSize(0);
-        mTestPool.setMinResources(-1);
-        new ExpectedTestFailure(ResourcePoolConfigurationException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_RESOURCE_MINIMUM_CONFIGURATION.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-
-        verifyPoolSize(0);
-        mTestPool.setMinResources(1);
-        mTestPool.setMaxResources(0);
-        new ExpectedTestFailure(ResourcePoolConfigurationException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_RESOURCE_MAXIMUM_CONFIGURATION.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-    }
-    
-    public void testSerialResourceCheckOut()
-        throws Exception
-    {
-        // test sequential checkout of two resources
-        mTestPool.setMinResources(1);
-        mTestPool.setMaxResources(1);
-        verifyPoolSize(0);
-        TestResource resource1 = (TestResource)mTestPool.getResource();
+        TestFIFOResourcePool pool = new TestFIFOResourcePool();
         assertEquals(0,
-                     mTestPool.getActualFailureCounter());
-        verifyPoolSize(1);
-        TestResource resource2 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(1);
-        assertFalse(resource1.equals(resource2));
+                     pool.getPoolSize());
+        assertFalse(pool.poolContains(new TestResource()));
     }
     
-    public void testResourceCreationFailure()
+    public void testPoolIterator()
         throws Exception
-    {        
-        mTestPool.setMinResources(1);
-        // let creation fail twice before giving up
-        mTestPool.setMaxCreationFailures(2);
-        // set the pool to fail once before succeeding
-        mTestPool.setTimesToFailCreationBeforeSuccess(1);
-        // check the starting state of the pool
-        verifyPoolSize(0);        
-        // allocate a resource
-        mTestPool.getResource();
-        // verify the pool is populated
-        verifyPoolSize(1);
-        // verify it failed twice (created min + 1 or 2 resources, failed once each time)        
+    {
+        assertFalse(mTestPool.getPoolIterator().hasNext());
+        mTestPool.addResourceToPool(mResource1);
+        assertTrue(mTestPool.getPoolIterator().hasNext());
+        assertEquals(mResource1,
+                     mTestPool.getPoolIterator().next());
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+    }
+    
+    public void testAddResourcesToPool()
+        throws Exception
+    {
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                mTestPool.addResourceToPool(null);
+            }
+        }.run();
+        
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        
+        mTestPool.addResourceToPool(mResource1);
+        
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+        assertTrue(mTestPool.poolContains(mResource1));
+        assertEquals(mResource1,
+                     mTestPool.getPoolIterator().next());
+        
+        mTestPool.addResourceToPool(mResource2);
+
         assertEquals(2,
-                     mTestPool.getActualFailureCounter());
-        // reset the failure counter
-        mTestPool.resetActualFailureCounter();
-        // increase the number of times between successes
-        // still OK, because it will fail twice and the maximum allowed value is 2
-        mTestPool.setTimesToFailCreationBeforeSuccess(2);
-        mTestPool.getResource();
-        // verify the pool is populated
-        verifyPoolSize(1);
-        // verify it failed twice (created min + 1 or 2 resources, failed once each time)        
-        assertEquals(2,
-                     mTestPool.getActualFailureCounter());
-        // reset the failure counter
-        mTestPool.resetActualFailureCounter();
-        // empty the pool to create a condition where a resource can't be allocated
-        mTestPool.emptyParentPool();
-        // increase the number of times between successes
-        // now should exceed the maximum of 2
-        mTestPool.setTimesToFailCreationBeforeSuccess(3);
-        // should now fail to allocate a resource
-        new ExpectedTestFailure(NoResourceException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
+                     mTestPool.getPoolSize());
+        assertTrue(mTestPool.poolContains(mResource1));
+        assertTrue(mTestPool.poolContains(mResource2));
+        Iterator<Resource> iterator = mTestPool.getPoolIterator();
+        assertEquals(mResource1,
+                     iterator.next());
+        assertEquals(mResource2,
+                     iterator.next());        
+    }
+    
+    public void testAllocateNextResource()
+        throws Exception
+    {
+        // request on empty pool should throw NoSuchElementException
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        new ExpectedTestFailure(NoSuchElementException.class) {
+            protected void execute()
+                    throws Throwable
             {
-                mTestPool.getResource();
+                mTestPool.allocateNextResource(null);
             }
         }.run();
+        
+        // add a resource
+        mTestPool.addResourceToPool(mResource1);
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+        assertTrue(mTestPool.poolContains(mResource1));
+        
+        // get it back
+        TestResource r = (TestResource) mTestPool.allocateNextResource(null);
+        assertEquals(mResource1,
+                     r);
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        assertFalse(mTestPool.poolContains(mResource1));
+        
+        // add another resource
+        mTestPool.addResourceToPool(mResource2);
+        // the parameter to allocate doesn't do anything
+        r = (TestResource) mTestPool.allocateNextResource(this);
+        assertEquals(mResource2,
+                     r);
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        assertFalse(mTestPool.poolContains(mResource2));        
     }
     
-    public void testMaxResources()
+    public void testGetNextResource()
         throws Exception
     {
-        // tests resource return around the max pool limit
-        mTestPool.setMinResources(2);
-        mTestPool.setMaxResources(5);
-        verifyPoolSize(0);
-        // request one resource
-        TestResource r1 = (TestResource)mTestPool.getResource();
-        // check new pool size
-        verifyPoolSize(2);
-        // request a second, third, and fourth resource
-        TestResource r2 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-        TestResource r3 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-        TestResource r4 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-
-        // start putting the resources back
-        mTestPool.returnResource(r1);
-        verifyPoolSize(3);
-        assertEquals(TestResource.STATE.RETURNED,
-                     r1.getState());
-
-        mTestPool.returnResource(r2);
-        verifyPoolSize(4);
-        assertEquals(TestResource.STATE.RETURNED,
-                     r2.getState());
-
-        mTestPool.returnResource(r3);
-        verifyPoolSize(5);
-        assertEquals(TestResource.STATE.RETURNED,
-                     r3.getState());
-        // here's the interesting one
-        mTestPool.returnResource(r4);
-        verifyPoolSize(5);
-        assertEquals(TestResource.STATE.RELEASED,
-                     r4.getState());
-    }
-    
-    public void testReturnBrokenResource()
-        throws Exception
-    {
-        // this test verifies that a broken resource will not be added back to the pool
-        mTestPool.setMaxCreationFailures(100);
-        mTestPool.setMaxResources(100);
-        mTestPool.setMinResources(1);
-        verifyPoolSize(0);
-        TestResource r1 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(1);
-        // verify it's not broken
-        assertTrue(r1.isFunctional());
-        // put it back
-        mTestPool.returnResource(r1);
-        verifyPoolSize(2);
-        assertEquals(TestResource.STATE.RETURNED,
-                     r1.getState());
-        // get the resource back
-        r1 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(1);
-        // "break" it
-        r1.setState(TestResource.STATE.DAMAGED);
-        assertFalse(r1.isFunctional());
-        // put back broken resource
-        mTestPool.returnResource(r1);
-        // pool count is unchanged
-        verifyPoolSize(1);
-        assertEquals(TestResource.STATE.RELEASED,
-                     r1.getState());
-        // get "other" resource from pool and verify it is not our first one
-        TestResource r2 = (TestResource)mTestPool.getResource();
-        assertFalse(r1.equals(r2));
-        // repeat the test with a smaller max, just to be sure
-        mTestPool.emptyParentPool();
-        mTestPool.setMaxResources(1);
-        r1 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(1);
-        r1.setState(TestResource.STATE.DAMAGED);
-        assertFalse(r1.isFunctional());
-        // two reasons now it shouldn't go back in the pool
-        mTestPool.returnResource(r1);
-        verifyPoolSize(1);
-        assertEquals(TestResource.STATE.RELEASED,
-                     r1.getState());
-    }
-    
-    public void testResourceInitializationFailure()
-        throws Exception
-    {
-        // tests that an otherwise functional pool cannot return resources because of a
-        //  failure during resource initialization
-        mTestPool.setMaxCreationFailures(100);
-        mTestPool.setMaxResources(100);
-        mTestPool.setMinResources(1);
-        verifyPoolSize(0);
-        // set all resources to fail initialize
-        TestResource.setInitializeException(new ResourceCreationException("This error is expected"));
-        // try to create a resource
-        new ExpectedTestFailure(NoResourceException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-        // set resources to use a more pernicious exception
-        TestResource.setInitializeException(new NullPointerException("This error is expected"));
-        // try to create a resource
-        new ExpectedTestFailure(NoResourceException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-    }
-
-    public void testResourceAllocationFailure()
-        throws Exception
-    {
-        // tests that an otherwise functional pool cannot return resources because of a
-        //  failure during resource allocation
-        mTestPool.setMaxCreationFailures(100);
-        mTestPool.setMaxResources(100);
-        mTestPool.setMinResources(1);
-        verifyPoolSize(0);
-        // set all resources to fail allocate
-        TestResource.setAllocateException(new NullPointerException("This error is expected"));
-        // try to create a resource
-        new ExpectedTestFailure(NoResourceException.class,
-                               MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-    }
-    
-    public void testFIFOAllocation()
-        throws Exception
-    {
-        verifyPoolSize(0);
-        mTestPool.setMinResources(2);
-        mTestPool.setMaxCreationFailures(10);
-        // get two resources
-        mTestPool.getResource();
-        TestResource r2 = (TestResource)mTestPool.getResource();
-        // retrieve one other
-        mTestPool.getResource();
-        verifyPoolSize(2);
-        // we now have 5 resources in existance
-        // r4-r5 are currently in the pool
-        // if we put back r2, and take out two resources, the second should be r2 again
-        mTestPool.returnResource(r2);
-        // the pool now contains r4, r5, r2
-        verifyPoolSize(3);
-        mTestPool.getResource();
-        verifyPoolSize(2);
-        // the pool now contains r5, r2
-        mTestPool.getResource();
-        verifyPoolSize(2);
-        // the pool now contains r2, r6      
-        TestResource newR2 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-        assertEquals(r2,
-                     newR2);
-    }
-    
-    /**
-     * Verifies proper handling of a resource throwing an exception upon being returned.
-     */
-    public void testReturnException()
-        throws Exception
-    {
-        verifyPoolSize(0);
-        mTestPool.setMinResources(2);
-        final TestResource r1 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-        r1.setReturnException(new NullPointerException("This exception is supposed to be thrown"));
-        new ExpectedTestFailure(ReturnedResourceException.class) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.returnResource(r1);
-            }
-        }.run();        
-    }
-    
-    /**
-     * Verifies proper handling of a resource throwing an exception upon being released.
-     */
-    public void testReleaseException()
-        throws Exception
-    {
-        verifyPoolSize(0);
-        mTestPool.setMinResources(2);
-        final TestResource r1 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-        r1.setReleaseException(new NullPointerException("This exception is supposed to be thrown"));
-        r1.setState(TestResource.STATE.DAMAGED);
-        new ExpectedTestFailure(ReleasedResourceException.class) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.returnResource(r1);
-            }
-        }.run();        
-    }
-    
-    public void testReturnResourceTwice()
-        throws Exception
-    {
-        verifyPoolSize(0);
-        mTestPool.setMinResources(2);
-        final TestResource r1 = (TestResource)mTestPool.getResource();
-        verifyPoolSize(2);
-        mTestPool.returnResource(r1);
-        new ExpectedTestFailure(DuplicateResourceReturnException.class) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.returnResource(r1);
-            }
-        }.run();        
-    }
-    
-    public void testResourceCreationFailureRecovery()
-        throws Exception
-    {
-        mTestPool.setMinResources(1);
-        mTestPool.setMaxCreationFailures(2);
-        mTestPool.setMaxResources(1);
-        // test pool can't create new resources, can't be fixed
-        mTestPool.setPoolBroken(true);
-        mTestPool.setFixPool(false);
-        new ExpectedTestFailure(NoResourceException.class) 
-        {
-            protected void execute() 
-                throws Exception 
-            {
-                mTestPool.getResource();
-            }
-        }.run();
-        // test pool can't create new resources, can be fixed
-        mTestPool.setFixPool(true);
-        mTestPool.getResource();
-        // now make test pool throw an exception, make sure it gets handled
-        mTestPool.setResourceCreationFailedException(true);
-        mTestPool.setPoolBroken(true);
-        mTestPool.setFixPool(true);
-        // exception should be swallowed
-        mTestPool.getResource();
-    }
-    
-    public void testIsFunctionalThrowsException()
-        throws Exception
-    {
-        TestResource r = (TestResource)mTestPool.getResource();
-        r.setIsFunctionalException(true);
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        TestResource r = (TestResource) mTestPool.getNextResource(null);
+        assertNotNull(r);
+        assertFalse(r.equals(mResource1));
+        assertFalse(r.equals(mResource2));
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        
         mTestPool.returnResource(r);
-        assertEquals(TestResource.STATE.RELEASED,
-                     r.getState());
-    }
-    
-    public void testDuringShutdown()
-        throws Exception
-    {
-        assertEquals(ResourcePool.STATUS.READY,
-                     mTestPool.getParentStatus());
-        final TestResource r1 = (TestResource)mTestPool.getResource();
-        final TestResource r2 = (TestResource)mTestPool.getResource();
-        mTestPool.returnResource(r2);
-        mTestPool.shutdown();
-        assertEquals(ResourcePool.STATUS.SHUT_DOWN,
-                     mTestPool.getParentStatus());
-        // can request another shutdown
-        mTestPool.shutdown();
-        // can't get new resource
-        new ExpectedTestFailure(ResourcePoolShuttingDownException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+        assertEquals(r,
+                     mTestPool.getPoolIterator().next());
+        
+        TestResource newR = (TestResource) mTestPool.getNextResource(this);
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        assertEquals(r,
+                     newR);
+        // test exception handling
+        mTestPool.setThrowDuringCreateResource(true);
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+            protected void execute()
+                    throws Throwable
             {
-                mTestPool.getResource();
+                mTestPool.getNextResource(null);
             }
         }.run();
-        // can't return existing resource
-        new ExpectedTestFailure(ResourcePoolShuttingDownException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getLocalizedMessage()) 
-        {
-            protected void execute() 
-                throws Exception 
+        mTestPool.setThrowDuringCreateResource(false);
+        
+        mTestPool.setThrowDuringAddResource(true);
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+            protected void execute()
+                    throws Throwable
             {
-                mTestPool.returnResource(r1);
+                mTestPool.getNextResource(null);
             }
         }.run();
-        // resource in pool is shutdown
-        assertEquals(TestResource.STATE.SHUTDOWN,
-                     r2.getState());
+        mTestPool.setThrowDuringAddResource(false);
+        
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        mTestPool.setThrowDuringAllocateResource(true);
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+            protected void execute()
+                    throws Throwable
+            {
+                mTestPool.getNextResource(null);
+            }
+        }.run();
+        mTestPool.setThrowDuringAllocateResource(false);
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+        assertNotNull(mTestPool.getNextResource(null));
+        
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        mTestPool.setEmptyPoolBeforeAllocation(true);
+        new ExpectedTestFailure(ResourcePoolException.class,
+                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+            protected void execute()
+                    throws Throwable
+            {
+                mTestPool.getNextResource(null);
+            }
+        }.run();
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        mTestPool.setEmptyPoolBeforeAllocation(false);
     }
     
-    public void testParallel()
+    public void testVerifyResourceReturn()
         throws Exception
     {
-        mTestPool.setMinResources(10);
-        mTestPool.setMaxResources(100);
-        // create 100 ActionThreads and fire them off
-        // each one will perform 1000 iterations
-        ArrayList<Thread> threads = new ArrayList<Thread>();
-        for(int i=1;i<100;i++) {
-            threads.add(new Thread(new ActionThread(1000,
-                                                    mTestPool)));
-        }
-        // now, start the Threads (do it as a separate loop in order to
-        //  allow the heavier-weight object initialization to happen serially
-        for(Thread thread : threads) {
-            thread.start();
-        }
-        // good, now wait for all the threads to complete
-        for(Thread thread : threads) {
-            thread.join();
-        }
-        // last, make sure no exceptions were thrown
-        assertTrue(ActionThread.sExceptions.isEmpty());
-    }
-     
-    private static class ActionThread
-        implements Runnable
-    {
-        private final int mIterations;
-        private final ResourcePool mPool;
-        private static final ArrayList<Throwable> sExceptions;
-        private static final Random sRandom;
-        
-        static 
-        {
-            sRandom = new Random(System.nanoTime());
-            sExceptions = new ArrayList<Throwable>();
-        }
-        
-        private ActionThread(int inIterations,
-                             ResourcePool inPool)        
-        {
-            mIterations = inIterations;
-            mPool = inPool;
-        }
-        
-        public void run()        
-        {
-            int iterationCount = 0;
-            while(iterationCount < mIterations) {
-                try {
-                    Resource r = mPool.getResource();
-                    // sleep for as much as 1/100th of a second
-                    Thread.sleep(sRandom.nextInt(10));
-                    mPool.returnResource(r);
-                    iterationCount += 1;
-                } catch (Throwable t) {
-                    synchronized(sExceptions) {
-                        sExceptions.add(t);
-                    }
-                }
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                mTestPool.verifyResourceReturn(null);
             }
-//            mPool.shutdown();
-        }        
-    }
+        }.run();
+        
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        assertFalse(mTestPool.poolContains(mResource1));
+        mTestPool.verifyResourceReturn(mResource1);
+        
+        mTestPool.addResourceToPool(mResource1);
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+        assertTrue(mTestPool.poolContains(mResource1));
 
-    protected void verifyPoolSize(int inSize)
+        mTestPool.verifyResourceReturn(mResource2);
+        new ExpectedTestFailure(DuplicateResourceReturnException.class,
+                                MessageKey.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED.getLocalizedMessage()) {
+            protected void execute()
+                    throws Throwable
+            {
+                mTestPool.verifyResourceReturn(mResource1);
+            }
+        }.run();
+        
+        mTestPool.setThrowDuringPoolContains(true);
+        new ExpectedTestFailure(ResourcePoolException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                mTestPool.verifyResourceReturn(mResource1);
+            }
+        }.run();
+        mTestPool.setThrowDuringPoolContains(false);
+    }
+    
+    public void testResourceOrder()
+        throws Exception
     {
-        assertEquals(inSize,
-                     mTestPool.getResourcePoolSize());
+        TestResource r3 = new TestResource();
+        assertEquals(0,
+                     mTestPool.getPoolSize());
+        mTestPool.addResourceToPool(mResource2);
+        mTestPool.addResourceToPool(r3);
+        mTestPool.addResourceToPool(mResource1);
+        assertEquals(3,
+                     mTestPool.getPoolSize());
+        // pool contains (in FIFO) 2,3,1
+        assertEquals(mResource2,
+                     mTestPool.getNextResource(null));
+        // pool contains (in FIFO) 3,1
+        assertEquals(2,
+                     mTestPool.getPoolSize());
+        assertEquals(r3,
+                     mTestPool.getNextResource(null));
+        // pool contains (in FIFO) 1
+        assertEquals(1,
+                     mTestPool.getPoolSize());
+        mTestPool.addResourceToPool(mResource2);
+        // pool contains (in FIFO) 1,2
+        assertEquals(2,
+                     mTestPool.getPoolSize());
+        mTestPool.addResourceToPool(r3);
+        // pool contains (in FIFO) 1,2,3
+        assertEquals(mResource1,
+                     mTestPool.getNextResource(null));
+        // pool contains (in FIFO) 2,3
+        assertEquals(mResource2,
+                     mTestPool.getNextResource(null));
+        // pool contains (in FIFO) 3
+        assertEquals(r3,
+                     mTestPool.getNextResource(null));
+        // pool empty
+        assertEquals(0,
+                     mTestPool.getPoolSize());
     }
 }

@@ -1,7 +1,7 @@
 package org.marketcetera.core.resourcepool;
 
 /**
- *
+ * Sample implementation of {@link Resource} for testing.
  *
  * @author <a href="mailto:colin@marketcetera.com">colin</a>
  * @version $Id: $
@@ -15,10 +15,11 @@ public class TestResource
     private int mID;
     private static Throwable sInitializeException = null;
     private static Throwable sAllocateException = null;
-    private Throwable mReturnException = null;
-    private Throwable mReleaseException = null;
+    private boolean mReturnException = false;
+    private boolean mReleaseException = false;
     private boolean mIsFunctionalException = false;
     private long mContentionStamp;
+    private boolean mThrowDuringStop = false;
     
     private static int sIDCounter = 0;
     private String mUser;
@@ -29,15 +30,16 @@ public class TestResource
      */
     public TestResource()
     {
-        setState(STATE.UNITIALIZED);
-        setID(getNextID());
-        setContentionStamp(0);
+        this("user_" + System.nanoTime(),
+             "password_" + System.nanoTime());
     }
     
     public TestResource(String inUser,
                         String inPassword)
     {
-        this();
+        setState(STATE.UNITIALIZED);
+        setID(getNextID());
+        setContentionStamp(0);
         setUser(inUser);
         setPassword(inPassword);
     }
@@ -62,22 +64,13 @@ public class TestResource
         mState = inState;
     }
 
-    public void allocated(ResourcePool inPool)
+    public void allocated()
         throws Throwable
     {
         if(getAllocateException() != null) {
             throw getAllocateException();
         }
         setState(STATE.ALLOCATED);        
-    }
-
-    public void initialize(ResourcePool inPool)
-        throws Throwable
-    {
-        if(getInitializeException() != null) {
-            throw getInitializeException();
-        }
-        setState(STATE.INITIALIZED);
     }
 
     public boolean isFunctional()
@@ -88,22 +81,22 @@ public class TestResource
         return !getState().equals(STATE.DAMAGED);
     }
 
-    public void released(ResourcePool inPool)
+    public void released()
         throws Throwable
     {
-        if(getReleaseException() != null) {
-            throw getReleaseException();
-        }
         setState(STATE.RELEASED);
+        if(getReleaseException()) {
+            throw new NullPointerException("This exception is expected");
+        }
     }
 
-    public void returned(ResourcePool inPool)
+    public void returned()
         throws Throwable
     {
-        if(getReturnException() != null) {
-            throw getReturnException();
-        }
         setState(STATE.RETURNED);
+        if(getReturnException()) {
+            throw new NullPointerException();
+        }
     }
 
     public int compareTo(Object inOther)
@@ -204,7 +197,7 @@ public class TestResource
     /**
      * @return the releaseException
      */
-    private Throwable getReleaseException()
+    private boolean getReleaseException()
     {
         return mReleaseException;
     }
@@ -212,7 +205,7 @@ public class TestResource
     /**
      * @param inReleaseException the releaseException to set
      */
-    void setReleaseException(Throwable inReleaseException)
+    void setReleaseException(boolean inReleaseException)
     {
         mReleaseException = inReleaseException;
     }
@@ -220,7 +213,7 @@ public class TestResource
     /**
      * @return the returnException
      */
-    private Throwable getReturnException()
+    private boolean getReturnException()
     {
         return mReturnException;
     }
@@ -228,7 +221,7 @@ public class TestResource
     /**
      * @param inReturnException the returnException to set
      */
-    void setReturnException(Throwable inReturnException)
+    void setReturnException(boolean inReturnException)
     {
         mReturnException = inReturnException;
     }
@@ -252,12 +245,6 @@ public class TestResource
     void setIsFunctionalException(boolean inIsFunctionalException)
     {
         mIsFunctionalException = inIsFunctionalException;
-    }
-
-    public void shutdown(ResourcePool inPool)
-        throws Throwable
-    {
-        setState(STATE.SHUTDOWN);
     }
 
     /**
@@ -299,5 +286,49 @@ public class TestResource
     void setContentionStamp(long inContentionStamp)
     {
         mContentionStamp = inContentionStamp;
+    }
+
+    public boolean isRunning()
+    {
+        return getState().equals(STATE.ALLOCATED) ||
+               getState().equals(STATE.INITIALIZED) ||
+               getState().equals(STATE.RETURNED);
+    }
+
+    public void start()
+    {
+        if(getInitializeException() != null) {
+            throw new NullPointerException();
+        }
+        setState(STATE.INITIALIZED);
+    }
+
+    public void stop()
+    {
+        setState(STATE.SHUTDOWN);
+        if(getThrowDuringStop()) {
+            throw new NullPointerException("This exception is expected");
+        }
+    }
+
+    public void afterPropertiesSet()
+            throws Exception
+    {
+    }
+
+    /**
+     * @return the throwDuringStop
+     */
+    boolean getThrowDuringStop()
+    {
+        return mThrowDuringStop;
+    }
+
+    /**
+     * @param inThrowDuringStop the throwDuringStop to set
+     */
+    void setThrowDuringStop(boolean inThrowDuringStop)
+    {
+        mThrowDuringStop = inThrowDuringStop;
     }
 }
