@@ -5,7 +5,6 @@ import org.marketcetera.core.ClassVersion;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.*;
 import quickfix.fix41.NewOrderSingle;
 
@@ -38,17 +37,17 @@ public class FIXMessageAugmentor_41Test extends TestCase {
         assertEquals("0", msg.getString(LeavesQty.FIELD));
 
         // verify ExecType is set
-        assertEquals(ExecType.NEW, msg.getField(new ExecType()).getValue());
+        assertEquals(ExecType.NEW, msg.getChar(ExecType.FIELD));
 
     }
 
     public void testExecReportAugmentor_decimalQtyAndPrice() throws Exception {
         FIXMessageAugmentor_41 augmentor = new FIXMessageAugmentor_41();
         Message msg = augmentor.executionReportAugment(createNOS(new BigDecimal("100.10"), new BigDecimal("30.50")));
-        assertEquals("69.60", msg.getString(LeavesQty.FIELD));
+        assertEquals(new BigDecimal("69.6"), msg.getDecimal(LeavesQty.FIELD));
 
         msg = augmentor.executionReportAugment(createNOS(new BigDecimal("300.3"), BigDecimal.ZERO));
-        assertEquals("300.3", msg.getString(LeavesQty.FIELD));
+        assertEquals(new BigDecimal("300.3"), msg.getDecimal(LeavesQty.FIELD));
     }
 
     public void testExecutionReportAugmentor_leavesQty_setToZeroOnRejections() throws Exception {
@@ -57,7 +56,7 @@ public class FIXMessageAugmentor_41Test extends TestCase {
         nos.setField(new OrdStatus(OrdStatus.REJECTED));
 
         Message augmented = augmentor.executionReportAugment(nos);
-        assertEquals("leavesQty should be 0 on rejection", (double) 0, augmented.getField(new LeavesQty()).getValue());
+        assertEquals("leavesQty should be 0 on rejection", BigDecimal.ZERO, augmented.getDecimal(LeavesQty.FIELD));
 
     }
 
@@ -67,8 +66,8 @@ public class FIXMessageAugmentor_41Test extends TestCase {
 
     private Message createNOS(BigDecimal initial, BigDecimal cumQty) {
         NewOrderSingle nos = new NewOrderSingle();
-        nos.setField(new StringField(OrderQty.FIELD, initial.toPlainString()));
-        nos.setField(new StringField(CumQty.FIELD, cumQty.toPlainString()));
+        nos.setField(new OrderQty(initial));
+        nos.setField(new CumQty(cumQty));
         nos.setField(new OrdStatus(OrdStatus.NEW));
         return nos;
     }

@@ -9,6 +9,9 @@ import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import quickfix.field.Side;
+import quickfix.Message;
+
+import java.math.BigDecimal;
 
 /**
  * Test the {@link JMSFIXMessageConverter} class.
@@ -27,7 +30,7 @@ public class JMSFIXMessageConverterTest extends FIXVersionedTestCase {
     }
 
     public void testTextMessage() throws Exception {
-        quickfix.Message buy = FIXMessageUtilTest.createNOS("TOLI", 23.34, 123, Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.34"), new BigDecimal("123"), Side.BUY, msgFactory);
         ActiveMQTextMessage jmsMessage = new ActiveMQTextMessage();
         jmsMessage.setText(buy.toString());
 
@@ -37,7 +40,7 @@ public class JMSFIXMessageConverterTest extends FIXVersionedTestCase {
     }
 
     public void testBytesMessage() throws Exception {
-        quickfix.Message buy = FIXMessageUtilTest.createNOS("TOLI", 23.34, 123, Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.34"), new BigDecimal("123"), Side.BUY, msgFactory);
         ActiveMQBytesMessage jmsMessage = new ActiveMQBytesMessage();
         jmsMessage.writeBytes(buy.toString().getBytes(JMSFIXMessageConverter.BYTES_MESSAGE_CHARSET));
         jmsMessage.reset();

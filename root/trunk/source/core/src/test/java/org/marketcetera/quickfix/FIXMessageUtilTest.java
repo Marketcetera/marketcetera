@@ -60,7 +60,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         String clOrderID = "asdf";
         String orderID = "bob";
         char side = Side.BUY;
-        BigDecimal  quantity = new BigDecimal("200");
+        BigDecimal quantity = new BigDecimal("200");
         String symbol = "IBM";
         BigDecimal price = new BigDecimal("123.45");
         Message aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
@@ -69,11 +69,11 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                 "accountName");
 
         assertEquals(MsgType.EXECUTION_REPORT, aMessage.getHeader().getString(MsgType.FIELD));
-        assertEquals(price.toPlainString(), aMessage.getString(Price.FIELD));
+        assertEquals(price, aMessage.getDecimal(Price.FIELD));
         assertEquals(clOrderID, aMessage.getString(ClOrdID.FIELD));
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
         assertEquals(side, aMessage.getChar(Side.FIELD));
-        assertEquals(quantity.toPlainString(), aMessage.getString(OrderQty.FIELD));
+        assertEquals(quantity, aMessage.getDecimal(OrderQty.FIELD));
         assertEquals("accountName", aMessage.getString(Account.FIELD));
 
         // now send in a market order with null price
@@ -95,7 +95,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     /** Creates a NewOrderSingle */
-    public static Message createNOS(String symbol, double price, double qty, char side, FIXMessageFactory msgFactory)
+    public static Message createNOS(String symbol, BigDecimal price, BigDecimal qty, char side, FIXMessageFactory msgFactory)
     {
         Message newSingle = createNOSHelper(symbol, qty, side, new OrdType(OrdType.LIMIT), msgFactory);
         newSingle.setField(new Price(price));
@@ -104,8 +104,8 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     public static Message createOptionNOS(String optionRoot, String optionContractSpecifier,
-                                          String maturityMonthYear, double strikePrice,
-                                          int putOrCall, double price, double qty,
+                                          String maturityMonthYear, BigDecimal strikePrice,
+                                          int putOrCall, BigDecimal price, BigDecimal qty,
                                           char side, FIXMessageFactory msgFactory)
     {
         String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
@@ -121,13 +121,13 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     /** This actually creats a NewOrderSingle with a *set* OrderID - which isn't how
      * it comes in through FIX connection originallY
      */
-    public static Message createMarketNOS(String symbol, double qty, char side, FIXMessageFactory msgFactory)
+    public static Message createMarketNOS(String symbol, BigDecimal qty, char side, FIXMessageFactory msgFactory)
     {
         return createNOSHelper(symbol, qty, side, new OrdType(OrdType.MARKET), msgFactory);
     }
 
     /** This needs to be modeled off {@link FIXMessageFactory#newOrderHelper} */
-    public static Message createNOSHelper(String symbol, double qty, char side, OrdType ordType, FIXMessageFactory msgFactory)
+    public static Message createNOSHelper(String symbol, BigDecimal qty, char side, OrdType ordType, FIXMessageFactory msgFactory)
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = msgFactory.newBasicOrder();
@@ -230,7 +230,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
      * @throws Exception
      */
     public void testFillFieldsFromExistingMessage() throws Exception {
-        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+        Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
         buy.removeField(Side.FIELD);
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
             buy.setString(LeavesQty.FIELD, "33");
@@ -262,7 +262,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     public void testFillFieldsFromExistingMessage_ExtraInvalidFields() throws Exception {
-        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+        Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
         buy.removeField(Side.FIELD);
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
             buy.setString(LeavesQty.FIELD, "33");
@@ -288,14 +288,14 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
     public void testGetTextOrEncodedText() throws InvalidMessage {
     	{
-	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+            Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
 	        String unencodedMessage = "some unencoded message text";
 	        buy.setField(new Text(unencodedMessage));
 	        Message copy = new Message(buy.toString());
 	        assertEquals(unencodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
     	}
     	{
-	        Message buy = createNOS("GAP", 23.45, 2385, Side.BUY, msgFactory);
+            Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
 	        String encodedMessage = "some encoded message text";
 	        buy.setField(new EncodedTextLen(encodedMessage.length()));
 	        buy.setField(new EncodedText(encodedMessage));
@@ -424,7 +424,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testExceptionsInMergeMarketDataMessages() throws Exception {
         final FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
         final Message incremental = messageFactory.createMessage(MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
-        final Message nos = createNOS("IFLI", 23.3, 230, Side.BUY, messageFactory);
+        final Message nos = createNOS("IFLI", new BigDecimal("23.3"), new BigDecimal("230"), Side.BUY, messageFactory);
         new ExpectedTestFailure(IllegalArgumentException.class, MessageKey.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getLocalizedMessage()) {
             protected void execute() throws Throwable {
                 FIXMessageUtil.mergeMarketDataMessages(nos, incremental, messageFactory);
@@ -463,29 +463,30 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
 				BigDecimal.TEN, new MSymbol("ABC"), null);
 		assertTrue(FIXMessageUtil.isCancellable(aMessage));
-		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", 10, Side.BUY, msgFactory)));
+		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", new BigDecimal(10), Side.BUY, msgFactory)));
 
     }
 
     public void testIsEquityOptionOrder() throws Exception {
-        Message equity = FIXMessageUtilTest.createNOS("bob", 23.11, 100, Side.BUY, msgFactory);
+        Message equity = FIXMessageUtilTest.createNOS("bob", new BigDecimal("23.11"), new BigDecimal("100"), Side.BUY, msgFactory);
         assertFalse(equity.getString(Symbol.FIELD), FIXMessageUtil.isEquityOptionOrder(equity));
         equity.setField(new Symbol("FRED.A"));
         assertFalse("equity with route doesn't work: FRED.A", FIXMessageUtil.isEquityOptionOrder(equity));
         equity.setField(new Symbol("FRED.+"));
         assertFalse("equity with route doesn't work: FRED.+", FIXMessageUtil.isEquityOptionOrder(equity));
 
-        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "GE", "200708", 10.25, PutOrCall.CALL,
-                                                             33.23, 10, Side.BUY, msgFactory);
+        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "GE", "200708", new BigDecimal("10.25"),
+                PutOrCall.CALL, new BigDecimal("33.23"), new BigDecimal("10"), Side.BUY, msgFactory);
         assertTrue("option didn't work", FIXMessageUtil.isEquityOptionOrder(option));
         assertTrue("didn't work on IBM+IB plain order",
-                FIXMessageUtil.isEquityOptionOrder(FIXMessageUtilTest.createNOS("IBM+IB", 22.22, 100, Side.BUY, msgFactory)));
+                FIXMessageUtil.isEquityOptionOrder(FIXMessageUtilTest.createNOS("IBM+IB", new BigDecimal("22.22"),
+                        new BigDecimal("100"), Side.BUY, msgFactory)));
         equity.setField(new CFICode("OCASPS"));
         assertTrue("option CFICode didn't work", FIXMessageUtil.isEquityOptionOrder(equity));
     }
 
     public void testIsTradingSessionStatus() throws Exception {
-        Message nos = FIXMessageUtilTest.createNOS("bob", 23.11, 100, Side.BUY, msgFactory);
+        Message nos = FIXMessageUtilTest.createNOS("bob", new BigDecimal("23.11"), new BigDecimal("100"), Side.BUY, msgFactory);
         assertFalse(FIXMessageUtil.isTradingSessionStatus(nos));
 
         Message msg = new Message();
