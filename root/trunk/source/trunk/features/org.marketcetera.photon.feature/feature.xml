@@ -72,13 +72,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.marketcetera.photon.core"
-         download-size="0"
-         install-size="0"
-         version="0.4.2"
-         unpack="false"/>
-
-   <plugin
          id="org.quickfixj"
          download-size="0"
          install-size="0"
