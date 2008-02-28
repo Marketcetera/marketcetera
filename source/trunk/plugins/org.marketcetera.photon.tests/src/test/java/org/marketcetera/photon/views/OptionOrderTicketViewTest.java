@@ -126,8 +126,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		final String optionRoot = "MSQ";
 		final String optionContractSpecifier = "GE";
 		final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
-		Message message = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", 23,
-				PutOrCall.CALL, 1, 10, Side.BUY, msgFactory);
+		Message message = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", new BigDecimal("23"),
+				PutOrCall.CALL, new BigDecimal("1"), new BigDecimal("10"), Side.BUY, msgFactory);
 
 		showMessageInOptionTicket(ticket, message, controller, optionRoot,
 				new String[] { optionContractSpecifier }, new String[] { "10" });
@@ -186,8 +186,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		final String optionRoot = "MRK";
 		final String optionContractSpecifier = "GA";
 		final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
-		Message orderMessage = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "", 10,
-				PutOrCall.CALL, 1, 10, Side.BUY, msgFactory);
+		Message orderMessage = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "", new BigDecimal("10"),
+				PutOrCall.CALL, new BigDecimal("1"), new BigDecimal("10"), Side.BUY, msgFactory);
 
 		showMessageInOptionTicket(ticket, orderMessage, controller, optionRoot,
 				new String[] { optionContractSpecifier }, new String[] { "10" });
@@ -411,8 +411,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         final String optionRoot = "MSQ";
         final String optionContractSpecifier = "GE";
         final String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
-        Message buy = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", 23,
-                PutOrCall.CALL, 1, 10, Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", new BigDecimal("23"),
+                PutOrCall.CALL, new BigDecimal("1"), new BigDecimal("10"), Side.BUY, msgFactory);
 
         Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
         showMessageInOptionTicket(ticket, cxr, controller, optionRoot,

@@ -93,7 +93,7 @@ public class MarketDataViewTest extends ViewTestBase {
 		MarketDataSnapshotFullRefresh fixMessage = new MarketDataSnapshotFullRefresh();
 		fixMessage.set(new Symbol("MRKT"));
 		
-		String priceWithZeroes = "123.400";
+		String priceWithZeroes = "123.4";
 		addGroup(fixMessage, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
 		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		addGroup(fixMessage, MDEntryType.TRADE, new BigDecimal(priceWithZeroes), BigDecimal.TEN, new Date(), "BGUS");
@@ -113,14 +113,14 @@ public class MarketDataViewTest extends ViewTestBase {
 	}
 
 	public static void addGroup(Message message, char side, BigDecimal price, BigDecimal quantity, Date time, String mkt) {
-		MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-		group.set(new MDEntryType(side));
-		group.set(new MDEntryTime(time));
-		group.set(new MDMkt(mkt));
-		group.setField(new StringField(MDEntryPx.FIELD, price.toPlainString()));
-		group.setField(new StringField(MDEntrySize.FIELD, quantity.toPlainString()));
-		message.addGroup(group);
-	}
+        MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+        group.set(new MDEntryType(side));
+        group.set(new MDEntryTime(time));
+        group.set(new MDMkt(mkt));
+        group.setField(new MDEntryPx(price));
+        group.setField(new MDEntrySize(quantity));
+        message.addGroup(group);
+    }
 
 	@Override
 	protected String getViewID() {

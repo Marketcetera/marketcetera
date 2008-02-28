@@ -123,7 +123,7 @@ public class OptionContractData {
 			} else if (!optionSymbol.equals(other.optionSymbol))
 				return false;
 
-			if (putOrCall != other.putOrCall)
+			if (!putOrCall.equals(other.putOrCall))
 				return false;
 		}
 		if (strikePrice == null) {
@@ -171,10 +171,9 @@ public class OptionContractData {
 		BigDecimal strike = new BigDecimal(strikeStr);
 
 		MSymbol optionSymbol = new MSymbol(optionSymbolStr);
-		OptionContractData optionData = new OptionContractData(
+		return new OptionContractData(
 				underlyingSymbol, optionSymbol, expirationYear, expirationMonth, strike,
 				putOrCall);
-		return optionData;
 	}
 	
 	private void parseUIValues() {
@@ -225,7 +224,7 @@ public class OptionContractData {
 
 		}
 
-		private final <T> int compareHelper(Comparable<T> c1, T c2){
+		private <T> int compareHelper(Comparable<T> c1, T c2){
 			if (c1 == null){
 				return c2 == null ? 0 : -1;
 			} else if (c2 == null){

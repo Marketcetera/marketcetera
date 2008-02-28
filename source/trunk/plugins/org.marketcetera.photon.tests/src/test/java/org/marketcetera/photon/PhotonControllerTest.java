@@ -62,7 +62,7 @@ public class PhotonControllerTest extends TestCase {
     }
 
     public void testNewOrderAugmentorApplied() throws Exception {
-    	Message msg = FIXMessageUtilTest.createMarketNOS("IBM", 100, Side.BUY, msgFactory);
+    	Message msg = FIXMessageUtilTest.createMarketNOS("IBM", new BigDecimal(100), Side.BUY, msgFactory);
     	msg.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
     	photonController.handleInternalMessage(msg);
     	
