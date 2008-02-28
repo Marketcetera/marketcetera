@@ -25,7 +25,7 @@ public class BogusSubscription implements ISubscription {
 	}
 
 	public boolean equals(Object arg0) {
-		return reqID.equals(arg0);
+        return reqID.equals(arg0);
 	}
 
 	public int hashCode() {
@@ -33,7 +33,7 @@ public class BogusSubscription implements ISubscription {
 	}
 
 	public String toString() {
-		return reqID.toString();
+		return reqID;
 	}
 
 	public String getSymbol() {

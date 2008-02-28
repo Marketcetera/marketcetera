@@ -1,6 +1,7 @@
 package org.marketcetera.photon.marketdata;
 
 import java.text.ParseException;
+import java.math.BigDecimal;
 
 import junit.framework.TestCase;
 
@@ -38,7 +39,7 @@ public class OptionMessageHolderTest extends TestCase {
 		assertEquals(11, key.getExpirationMonth());
 		assertEquals(2007, key.getExpirationYear());
 		assertEquals("IBM", key.getOptionRoot());
-		assertEquals("72.5", key.getStrikePrice().toPlainString());
+		assertEquals(new BigDecimal("72.5"), key.getStrikePrice());
 	}
 
 	public void testGetMarketDataForSymbol() throws ParseException, FieldNotFound {

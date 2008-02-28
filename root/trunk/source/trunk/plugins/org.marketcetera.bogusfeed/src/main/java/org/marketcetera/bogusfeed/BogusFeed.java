@@ -23,7 +23,6 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
@@ -51,9 +50,9 @@ public class BogusFeed extends MarketDataFeedBase {
 
 	public void start() {
 		boolean oldValue = isRunning.getAndSet(true);
-		if (oldValue)
+		if (oldValue) {
 			throw new IllegalStateException();
-				
+        }
         executor = new ScheduledThreadPoolExecutor(1);
         executor.scheduleAtFixedRate(new Runnable() {
 			public void run() {
@@ -80,30 +79,30 @@ public class BogusFeed extends MarketDataFeedBase {
 		Message refresh = new MarketDataSnapshotFullRefresh();
 		refresh.setField(new Symbol(symbol));
 
-		{
-			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-			group.setField(new MDEntryType(MDEntryType.BID));
-			group.setField(new StringField(MDEntryPx.FIELD, currentValue.subtract(PENNY).toPlainString()));
-			group.setField(new MDMkt(BGUS_MARKET));
-			group.setField(new MDEntrySize(Math.round((currentValue.subtract(PENNY)).doubleValue()* 100)));
-			refresh.addGroup(group);
-		}
-		{
-			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-			group.setField(new MDEntryType(MDEntryType.OFFER));
-			group.setField(new StringField(MDEntryPx.FIELD, currentValue.add(PENNY).toPlainString()));
-			group.setField(new MDMkt(BGUS_MARKET));
-			group.setField(new MDEntrySize(Math.round((currentValue.add(PENNY)).doubleValue()* 100)));
-			refresh.addGroup(group);
-		}
-		{
-			Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-			group.setField(new MDEntryType(MDEntryType.TRADE));
-			group.setField(new StringField(MDEntryPx.FIELD, currentValue.toPlainString()));
-			group.setField(new MDMkt(BGUS_MARKET));
-			group.setField(new MDEntrySize(Math.round(currentValue.doubleValue())));
-			refresh.addGroup(group);
-		}
+        {
+            Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+            group.setField(new MDEntryType(MDEntryType.BID));
+            group.setField(new MDEntryPx(currentValue.subtract(PENNY)));
+            group.setField(new MDMkt(BGUS_MARKET));
+            group.setField(new MDEntrySize(Math.round((currentValue.subtract(PENNY)).doubleValue() * 100)));
+            refresh.addGroup(group);
+        }
+        {
+            Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+            group.setField(new MDEntryType(MDEntryType.OFFER));
+            group.setField(new MDEntryPx(currentValue.add(PENNY)));
+            group.setField(new MDMkt(BGUS_MARKET));
+            group.setField(new MDEntrySize(Math.round((currentValue.add(PENNY)).doubleValue() * 100)));
+            refresh.addGroup(group);
+        }
+        {
+            Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
+            group.setField(new MDEntryType(MDEntryType.TRADE));
+            group.setField(new MDEntryPx(currentValue));
+            group.setField(new MDMkt(BGUS_MARKET));
+            group.setField(new MDEntrySize(Math.round(currentValue.doubleValue())));
+            refresh.addGroup(group);
+        }
 		
 		fireMarketDataMessage(refresh);
 	}

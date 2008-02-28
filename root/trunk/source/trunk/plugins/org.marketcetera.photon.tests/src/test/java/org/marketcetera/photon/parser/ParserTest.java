@@ -41,8 +41,7 @@ public class ParserTest extends FIXVersionedTestCase {
 
     public static Test suite()
     {
-    	FIXVersionTestSuite suite = new FIXVersionTestSuite(ParserTest.class,FIXVersion.values());
-        return suite;
+    	return new FIXVersionTestSuite(ParserTest.class,FIXVersion.values());
     }
 
     
@@ -359,7 +358,7 @@ public class ParserTest extends FIXVersionedTestCase {
     		BigDecimal strike, String expirationMonthYear, int putOrCall) throws FieldNotFound
     {
     	verifyNewOrder(message, side, quantity, symbol, price, timeInForce, account);
-    	assertEquals(strike.toPlainString(), message.getString(StrikePrice.FIELD));
+    	assertEquals(strike, message.getDecimal(StrikePrice.FIELD));
     	assertEquals(expirationMonthYear, message.getString(MaturityMonthYear.FIELD));
     	assertEquals(putOrCall, message.getInt(PutOrCall.FIELD));
     	assertEquals(message.getString(SecurityType.FIELD), SecurityType.OPTION);
