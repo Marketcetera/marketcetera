@@ -42,7 +42,7 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
             case OrdStatus.DONE_FOR_DAY:
             case OrdStatus.EXPIRED:
                 // set leavesQty to be 0
-                if(!inMessage.isSetField(LeavesQty.FIELD)) {
+                if (!inMessage.isSetField(LeavesQty.FIELD)) {
                     inMessage.setField(new LeavesQty(0));
                 }
                 break;
@@ -50,7 +50,7 @@ public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
                 // calculate the LeavesQty = IniitialQty - CumQty
                 BigDecimal initial = inMessage.getDecimal(OrderQty.FIELD);
                 BigDecimal cumQty = inMessage.getDecimal(CumQty.FIELD);
-                inMessage.setField(new StringField(LeavesQty.FIELD, initial.subtract(cumQty).toPlainString()));
+                inMessage.setField(new LeavesQty(initial.subtract(cumQty)));
                 break;
         }
 

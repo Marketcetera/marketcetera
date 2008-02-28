@@ -52,7 +52,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
-        assertEquals(1000.0, message.getField(new OrderQty()).getValue(), .0001);
+        assertEquals(new BigDecimal(1000), message.getDecimal(OrderQty.FIELD));
         assertEquals("BRK", message.getField(new Symbol()).getValue());
         assertEquals("A", message.getField(new SymbolSfx()).getValue());
         assertEquals("SIGMA", message.getField(new ExDestination()).getValue());
@@ -70,7 +70,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
-        assertEquals(100.0, message.getField(new OrderQty()).getValue(), .0001);
+        assertEquals(new BigDecimal(100), message.getDecimal(OrderQty.FIELD));
         assertEquals("BRK", message.getField(new Symbol()).getValue());
         assertEquals("B", message.getField(new SymbolSfx()).getValue());
         final Message outerMessage1 = message;
@@ -92,7 +92,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
-        assertEquals(2000.0, message.getField(new OrderQty()).getValue());
+        assertEquals(new BigDecimal(2000), message.getDecimal(OrderQty.FIELD));
         assertEquals("VOD/", message.getField(new Symbol()).getValue());
         final Message outerMessage2 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -128,7 +128,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
-        assertEquals(1000.0, message.getField(new OrderQty()).getValue(), .0001);
+        assertEquals(new BigDecimal(1000), message.getDecimal(OrderQty.FIELD));
         assertEquals("BRK/A", message.getField(new Symbol()).getValue());
         final Message outerMessage = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -151,7 +151,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
-        assertEquals(100.0, message.getField(new OrderQty()).getValue(),.0001);
+        assertEquals(new BigDecimal(100), message.getDecimal(OrderQty.FIELD));
         assertEquals("BRK/B", message.getField(new Symbol()).getValue());
         final Message outerMessage2 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -177,7 +177,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
-        assertEquals(2000.0, message.getField(new OrderQty()).getValue(), .0001);
+        assertEquals(new BigDecimal(2000), message.getDecimal(OrderQty.FIELD));
         assertEquals("IBM", message.getField(new Symbol()).getValue());
         final Message outerMessage3 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -203,7 +203,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
-        assertEquals(2000.0, message.getField(new OrderQty()).getValue(),.0001);
+        assertEquals(new BigDecimal(2000), message.getDecimal(OrderQty.FIELD));
         assertEquals("VOD/", message.getField(new Symbol()).getValue());
         final Message outerMessage4 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -262,19 +262,19 @@ public class OrderRouteManagerTest extends TestCase
         MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_100_METHOD);
 
         // new order single
-        Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("IBM.N", new BigDecimal("10.1"), new BigDecimal("100"), Side.BUY, msgFactory);
         routeManager.modifyMessage(buy, augmentor);
         assertEquals("IBM", buy.getString(Symbol.FIELD));
         assertEquals("SIGMA", buy.getString(ExDestination.FIELD));
 
         // cancel replace request
-        Message crq = msgFactory.newCancelReplaceFromMessage(FIXMessageUtilTest.createNOS("TOLI.N", 10.1, 100, Side.BUY,  msgFactory));
+        Message crq = msgFactory.newCancelReplaceFromMessage(FIXMessageUtilTest.createNOS("TOLI.N", new BigDecimal("10.1"), new BigDecimal("100"), Side.BUY, msgFactory));
         routeManager.modifyMessage(crq, augmentor);
         assertEquals("TOLI", crq.getString(Symbol.FIELD));
         assertEquals("SIGMA", crq.getString(ExDestination.FIELD));
 
         // cancel  request
-        Message buyOrder = FIXMessageUtilTest.createNOS("BOB.N", 10.1, 100, Side.BUY, msgFactory);
+        Message buyOrder = FIXMessageUtilTest.createNOS("BOB.N", new BigDecimal("10.1"), new BigDecimal("100"), Side.BUY, msgFactory);
         buyOrder.setField(new SecurityType(SecurityType.COMMON_STOCK));
         Message cancel = msgFactory.newCancelFromMessage(buyOrder);
         routeManager.modifyMessage(cancel, augmentor);
@@ -288,7 +288,7 @@ public class OrderRouteManagerTest extends TestCase
         MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_57_METHOD);
 
         // new order single
-        Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("IBM.N", new BigDecimal("10.1"), new BigDecimal("100"), Side.BUY, msgFactory);
         routeManager.modifyMessage(buy, augmentor);
         assertEquals("IBM", buy.getString(Symbol.FIELD));
         assertEquals("SIGMA", buy.getHeader().getString(TargetSubID.FIELD));
@@ -299,7 +299,7 @@ public class OrderRouteManagerTest extends TestCase
         MessageRouteManager routeManager = getORMWithOrderRouting(MessageRouteManager.FIELD_128_METHOD);
 
         // new order single
-        Message buy = FIXMessageUtilTest.createNOS("IBM.N", 10.1, 100, Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("IBM.N", new BigDecimal("10.1"), new BigDecimal("100"), Side.BUY, msgFactory);
         routeManager.modifyMessage(buy, augmentor);
         assertEquals("IBM", buy.getString(Symbol.FIELD));
         assertEquals("SIGMA", buy.getHeader().getString(DeliverToCompID.FIELD));

@@ -47,13 +47,12 @@ public class FIXMessageFactory {
         return msg;
     }
 
-    public Message newCancelReplaceShares(String orderID, String origOrderID, BigDecimal quantity) 
-    {
+    public Message newCancelReplaceShares(String orderID, String origOrderID, BigDecimal quantity) {
         Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REPLACE_REQUEST);
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
-        aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
+        aMessage.setField(new OrderQty(quantity));
         aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         return aMessage;
     }
@@ -67,7 +66,7 @@ public class FIXMessageFactory {
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(orderID));
         aMessage.setField(new OrigClOrdID(origOrderID));
-        aMessage.setField(new StringField(Price.FIELD, price.toPlainString()));
+        aMessage.setField(new Price(price));
         aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         return aMessage;
     }
@@ -178,7 +177,7 @@ public class FIXMessageFactory {
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
         aMessage.setField(new Side(side));
 
-        aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
+        aMessage.setField(new OrderQty(quantity));
         aMessage.setField(new TimeInForce(timeInForce));
         if (account != null) {
             aMessage.setField(new Account(account));
@@ -209,14 +208,14 @@ public class FIXMessageFactory {
             MSymbol symbol,
             String counterpartyOrderID
     ) {
-        Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
+        Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REQUEST);
 
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(clOrderId));
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        aMessage.setField(new StringField(OrderQty.FIELD, quantity.toPlainString()));
+        aMessage.setField(new OrderQty(quantity));
         if (counterpartyOrderID != null) {
             aMessage.setField(new OrderID(counterpartyOrderID));
         }
@@ -250,16 +249,16 @@ public class FIXMessageFactory {
         aMessage.setField(new ExecID(execID));
         aMessage.setField(new OrdStatus(ordStatus));
         aMessage.setField(new Side(side));
-        aMessage.setField(new StringField(OrderQty.FIELD, orderQty.toPlainString()));
-        if(orderPrice != null) {
-            aMessage.setField(new StringField(Price.FIELD, orderPrice.toPlainString()));
+        aMessage.setField(new OrderQty(orderQty));
+        if (orderPrice != null) {
+            aMessage.setField(new Price(orderPrice));
         }
-        if (lastShares != null) aMessage.setField(new StringField(LastShares.FIELD, lastShares.toPlainString()));
-        if (lastPrice != null) aMessage.setField(new StringField(LastPx.FIELD, lastPrice.toPlainString()));
-        aMessage.setField(new StringField(CumQty.FIELD, cumQty.toPlainString()));
-        aMessage.setField(new StringField(AvgPx.FIELD, avgPrice.toPlainString()));
+        if (lastShares != null) aMessage.setField(new LastShares(lastShares));
+        if (lastPrice != null) aMessage.setField(new LastPx(lastPrice));
+        aMessage.setField(new CumQty(cumQty));
+        aMessage.setField(new AvgPx(avgPrice));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        if(inAccount != null) {
+        if (inAccount != null) {
             aMessage.setField(new Account(inAccount));
         }
         msgAugmentor.executionReportAugment(aMessage);

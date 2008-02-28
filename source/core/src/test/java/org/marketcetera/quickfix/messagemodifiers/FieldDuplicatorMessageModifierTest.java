@@ -13,6 +13,8 @@ import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 
+import java.math.BigDecimal;
+
 /**
  * @author toli
  * @version $Id$
@@ -31,21 +33,21 @@ public class FieldDuplicatorMessageModifierTest extends TestCase {
     }
 
     public void testFieldExists() throws Exception {
-        Message msg = FIXMessageUtilTest.createNOS("ABC", 23.33, 100, Side.BUY, msgFactory);
+        Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory);
         FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(Symbol.FIELD, 7632);
         assertTrue(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
         assertEquals("ABC", msg.getString(7632));
     }
 
     public void testFieldDNE() throws Exception {
-        Message msg = FIXMessageUtilTest.createNOS("ABC", 23.33, 100, Side.BUY, msgFactory);
+        Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory);
         FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(7631, 7632);
         assertFalse(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
         assertFalse(msg.isSetField(7632));
     }
 
     public void testNotStringField() throws Exception {
-        Message msg = FIXMessageUtilTest.createNOS("ABC", 23.33, 100, Side.BUY, msgFactory);
+        Message msg = FIXMessageUtilTest.createNOS("ABC", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory);
         FieldDuplicatorMessageModifier mmod = new FieldDuplicatorMessageModifier(Price.FIELD, 7632);
         assertTrue(mmod.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
         assertEquals("23.33", msg.getString(7632));
