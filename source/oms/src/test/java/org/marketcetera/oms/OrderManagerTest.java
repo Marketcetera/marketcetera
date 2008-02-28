@@ -37,7 +37,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     {
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
-        suite.addTest(new OrderManagerTest("testDictionaryLoad", FIXVersion.FIX41));
+        suite.addTest(new OrderManagerTest("testNewExecutionReportFromOrder", FIXVersion.FIX41));
         suite.init(new MessageBundleInfo[]{OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO});
         return suite;
 /*/
@@ -235,7 +235,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
 
     /** verify that sending a malformed buy order (ie missing Side) results in a reject exectuionReport */
     public void testHandleMalformedEvent() throws Exception {
-        Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY, msgFactory);
+        Message buyOrder = FIXMessageUtilTest.createNOS("toli", new BigDecimal("12.34"), new BigDecimal("234"), Side.BUY, msgFactory);
         buyOrder.removeField(Side.FIELD);
 
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(fixVersion.getMessageFactory());
@@ -271,7 +271,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-    	Message buyOrder = FIXMessageUtilTest.createNOS("toli", 12.34, 234, Side.BUY, msgFactory);
+        Message buyOrder = FIXMessageUtilTest.createNOS("toli", new BigDecimal("12.34"), new BigDecimal("234"), Side.BUY, msgFactory);
         buyOrder.setString(Price.FIELD, "23.23.3");
 
         assertNotNull(buyOrder.getString(ClOrdID.FIELD));
@@ -404,7 +404,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         NullQuickFIXSender sender = new NullQuickFIXSender();
         handler.setQuickFIXSender(sender);
-        Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
+        Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
         assertEquals(1, sender.getCapturedMessages().size());
         assertTrue(FIXMessageUtil.isExecutionReport(execReport));
         assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
@@ -412,14 +412,14 @@ public class OrderManagerTest extends FIXVersionedTestCase
         // now set it to be logged out and verify a reject
         sender.getCapturedMessages().clear();
         handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
-        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
+        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
         assertEquals(0, sender.getCapturedMessages().size());
         verifyRejection(execReport, msgFactory, false, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
 
         // verify goes through again after log on
         sender.getCapturedMessages().clear();
         handler.getQFApp().onLogon(null);
-        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory));
+        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
         assertEquals(1, sender.getCapturedMessages().size());
         assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
@@ -437,7 +437,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         sender.getCapturedMessages().clear();
         handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
         Message reject = handler.handleMessage(msgFactory.newCancelFromMessage(
-                FIXMessageUtilTest.createNOS("TOLI", 23.33, 100, Side.BUY, msgFactory)));
+                FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory)));
         assertEquals(0, sender.getCapturedMessages().size());
         assertEquals(MsgType.ORDER_CANCEL_REJECT, reject.getHeader().getString(MsgType.FIELD));
         assertFalse("OrdStatus should not be set", reject.isSetField(OrdStatus.FIELD));
@@ -451,7 +451,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         MockJmsTemplate copyJmsTemplate = new MockJmsTemplate();
         handler.setIncomingCommandsCopier(copyJmsTemplate);
 
-        Message nos = FIXMessageUtilTest.createNOS("abc", 10, 100, Side.BUY, msgFactory);
+        Message nos = FIXMessageUtilTest.createNOS("abc", new BigDecimal("10"), new BigDecimal("100"), Side.BUY, msgFactory);
         handler.handleMessage(nos);
 
         assertEquals(1, copyJmsTemplate.getSentMessages().size());

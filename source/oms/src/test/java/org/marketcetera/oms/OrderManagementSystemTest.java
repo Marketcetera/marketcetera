@@ -16,6 +16,7 @@ import quickfix.field.Side;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.math.BigDecimal;
 
 /**
  * Setup an OMS through Sring configuration.
@@ -106,7 +107,7 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
         }
 
         // generate and send a buy order on JMS queue
-        Message buyOrder = FIXMessageUtilTest.createNOS("TOLI", 12.34, 32, inSide, msgFactory);
+        Message buyOrder = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("12.34"), new BigDecimal("32"), inSide, msgFactory);
         qfSender.getCapturedMessages().clear();
         topicMsgs.clear();
         jmsQueueSender.convertAndSend(buyOrder);
