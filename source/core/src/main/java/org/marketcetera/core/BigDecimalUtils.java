@@ -25,6 +25,18 @@ public class BigDecimalUtils {
 	    return a.subtract (b);
 	}
 
+	public static BigDecimal multiply (double a, double b) {
+	    String s = DEFAULT_DECIMAL_FORMAT.format(a);
+	    BigDecimal bd = new BigDecimal (s);
+	    return multiply (bd, b);
+	}
+
+	public static BigDecimal multiply (BigDecimal a, double b) {
+	    String s = DEFAULT_DECIMAL_FORMAT.format(b);
+	    BigDecimal bd = new BigDecimal (s);
+	    return multiply (a, bd);
+	}
+
 	public static BigDecimal multiply (BigDecimal a, BigDecimal b) {
 	    if (a == null) return (b == null) ? BigDecimal.ZERO : b;
 	    return a.multiply (b);
