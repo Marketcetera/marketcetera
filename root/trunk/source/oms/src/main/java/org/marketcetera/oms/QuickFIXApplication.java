@@ -118,7 +118,12 @@ public class QuickFIXApplication implements Application {
         }
     }
 
-    /** Apply message modifiers to all outgoing to-admin messages (such as logout/login) */
+    /** Apply message modifiers to all outgoing to-admin messages (such as logout/login)
+     * In case the underlying QFJ engine is sending a reject (ie the counterparty sent us a
+     * malformed ExecReport for example) we want to add some more information to it and
+     * send a copy of the reject on the shared oms-messages topic as well so that the
+     * outgoing reject is visible in Photon and to other subscribers
+     * */
     public void toAdmin(Message message, SessionID session) {
         try {
             if(messageModifierMgr != null) {

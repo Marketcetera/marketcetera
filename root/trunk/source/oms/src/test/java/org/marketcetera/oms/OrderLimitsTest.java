@@ -32,7 +32,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMaxQty() throws Exception {
         final OrderLimits limits = createOrderLimits(new BigDecimal(100), null, null, null, false);
-        final Message nos = FIXMessageUtilTest.createNOS("TOLI", 23.40, 100, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.40"), new BigDecimal("100"), Side.BUY, msgFactory);
         limits.verifyOrderLimits(nos);
 
         nos.setField(new OrderQty(99));
@@ -49,7 +49,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMaxNotional() throws Exception {
         final OrderLimits limits = createOrderLimits(null, new BigDecimal(10000), null, null, false);
-        final Message nos = FIXMessageUtilTest.createNOS("TOLI", 23.40, 100, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.40"), new BigDecimal("100"), Side.BUY, msgFactory);
         limits.verifyOrderLimits(nos);
 
         nos.setField(new OrderQty(1000));
@@ -62,7 +62,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMaxPrice() throws Exception {
         final OrderLimits limits = createOrderLimits(null, null, null, new BigDecimal(100), false);
-        final Message nos = FIXMessageUtilTest.createNOS("TOLI", 23.40, 100, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.40"), new BigDecimal("100"), Side.BUY, msgFactory);
         limits.verifyOrderLimits(nos);
 
         nos.setField(new Price(1000));
@@ -75,7 +75,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMinPrice() throws Exception {
         final OrderLimits limits = createOrderLimits(null, null, new BigDecimal(100), null, false);
-        final Message nos = FIXMessageUtilTest.createNOS("TOLI", 234, 100, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("234"), new BigDecimal("100"), Side.BUY, msgFactory);
         limits.verifyOrderLimits(nos);
 
         nos.setField(new Price(10));
@@ -88,7 +88,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMarketWithMinPrice() throws Exception {
         final OrderLimits limits = createOrderLimits(null, null, new BigDecimal(100), null, false);
-        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", 50, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("50"), Side.BUY, msgFactory);
         new ExpectedTestFailure(OrderLimitException.class,
                 OrderLimitException.createMarketOrderWithPriceException("TOLI").getLocalizedMessage()) {
             protected void execute() throws Throwable {
@@ -98,7 +98,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
     }
 
     public void testMarketWithNoPrice() throws Exception {
-        Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", 50, Side.BUY, msgFactory);
+        Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("50"), Side.BUY, msgFactory);
         // order limits w/out price should let market order through
         OrderLimits limits_no_price = createOrderLimits(new BigDecimal(200), null, null, null, false);
         limits_no_price.verifyOrderLimits(nos);
@@ -109,7 +109,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMarketWithMaxPrice() throws Exception {
         final OrderLimits limits = createOrderLimits(null, null, null, new BigDecimal(100), false);
-        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", 50, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("50"), Side.BUY, msgFactory);
         new ExpectedTestFailure(OrderLimitException.class,
                 OrderLimitException.createMarketOrderWithPriceException("TOLI").getLocalizedMessage()) {
             protected void execute() throws Throwable {
@@ -120,7 +120,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMarketWithMaxNotional() throws Exception {
         final OrderLimits limits = createOrderLimits(null, new BigDecimal(100), null, null, false);
-        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", 50, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("50"), Side.BUY, msgFactory);
         new ExpectedTestFailure(OrderLimitException.class,
                 OrderLimitException.createMarketOrderWithPriceException("TOLI").getLocalizedMessage()) {
             protected void execute() throws Throwable {
@@ -131,7 +131,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testMarket() throws Exception {
         final OrderLimits limits = createOrderLimits(null, null, null, null, true);
-        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", 50, Side.BUY, msgFactory);
+        final Message nos = FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("50"), Side.BUY, msgFactory);
         new ExpectedTestFailure(OrderLimitException.class,
                 OrderLimitException.createMarketOrderException("TOLI").getLocalizedMessage()) {
             protected void execute() throws Throwable {
@@ -142,10 +142,10 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
 
     public void testPassing() throws Exception {
         OrderLimits limits = createOrderLimits(new BigDecimal(100), new BigDecimal(1000), BigDecimal.ZERO, new BigDecimal(100), false);
-        limits.verifyOrderLimits(FIXMessageUtilTest.createNOS("TOLI", 10, 5, Side.BUY, msgFactory));
+        limits.verifyOrderLimits(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("10"), new BigDecimal("5"), Side.BUY, msgFactory));
 
         limits = createOrderLimits(new BigDecimal(100), null, null, null, false);
-        limits.verifyOrderLimits(FIXMessageUtilTest.createMarketNOS("TOLI", 10, Side.BUY, msgFactory));
+        limits.verifyOrderLimits(FIXMessageUtilTest.createMarketNOS("TOLI", new BigDecimal("10"), Side.BUY, msgFactory));
     }
 
     /** Creates an empty order limit set where market orders are allowed */
