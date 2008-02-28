@@ -24,6 +24,26 @@ public class BigDecimalUtilsTest extends TestCase {
     }
 
     /*
+      * Test method for 'org.marketcetera.core.BigDecimalUtils.multiply(double, double)'
+      */
+    public void testMultiplyDoubleDouble() {
+        assertEquals((double)123.0*87.5, BigDecimalUtils.multiply((double)123.0, (double)87.5).doubleValue(), .000001);
+        assertEquals((double)-123.0*87.5, BigDecimalUtils.multiply((double)-123.0, (double)87.5).doubleValue(), .000001);
+        assertEquals((double)8888.0*.0001, BigDecimalUtils.multiply((double)8888.0, (double).0001).doubleValue(), .000001);
+        assertEquals((double)92384.5*0, BigDecimalUtils.multiply((double)92384.5, (double)0).doubleValue(), .000001);
+    }
+
+    /*
+      * Test method for 'org.marketcetera.core.BigDecimalUtils.multiply(BigDecimal, double)'
+      */
+    public void testMultiplyBigDecimalDouble() {
+        assertEquals((double)123.0*87.5, BigDecimalUtils.multiply(new BigDecimal(123.0), (double)87.5).doubleValue(), .000001);
+        assertEquals((double)-123.0*87.5, BigDecimalUtils.multiply(new BigDecimal(-123.0), (double)87.5).doubleValue(), .000001);
+        assertEquals((double)8888.0*.0001, BigDecimalUtils.multiply(new BigDecimal(8888.0), (double).0001).doubleValue(), .000001);
+        assertEquals((double)92384.5*0, BigDecimalUtils.multiply(new BigDecimal(92384.5), (double)0).doubleValue(), .000001);
+    }
+
+    /*
       * Test method for 'org.marketcetera.core.BigDecimalUtils.multiply(BigDecimal, BigDecimal)'
       */
     public void testMultiplyBigDecimalBigDecimal() {
