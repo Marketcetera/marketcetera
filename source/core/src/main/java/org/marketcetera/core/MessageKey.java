@@ -68,6 +68,7 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_RESOURCE_POOL_SHUTTING_DOWN("core.resourcepool.resource_shutting_down.error"),
     ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL("core.resourcepool.cannot_create_resource_for_pool.error"),
     ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR("core.resourcepool.executable_block_error"),
+    ERROR_RESOURCE_POOL_RESERVATION_CANCELLED("core.resourcepool.resource_reservation_cancelled"),
     INFO_WAITING_FOR_RESOURCE("core.resourcepool.waiting_for_resource"),
     SESSION_NOT_FOUND("core.error.fix.session_not_found");
     

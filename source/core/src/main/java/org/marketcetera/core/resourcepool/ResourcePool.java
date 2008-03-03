@@ -41,14 +41,15 @@ public abstract class ResourcePool
      * will be automatically returned to the pool to allow it to be used by someone else.
      * 
      * @param inBlock an <code>ExecutableBlock</code> value
+     * @return TODO
      * @throws ResourcePoolException if an error occurs during the allocation of the resource or the execution
      *   of the block
      */
-    public void execute(ExecutableBlock inBlock) 
+    public Object execute(ExecutableBlock inBlock) 
         throws ResourcePoolException
     {
-        execute(inBlock,
-                null);
+        return execute(inBlock,
+                       null);
     }
     
     /**
@@ -65,10 +66,11 @@ public abstract class ResourcePool
      * 
      * @param inBlock an <code>ExecutableBlock</code> value
      * @param inData an <code>Object</code> value used to assist in the allocation of the {@link Resource}
+     * @return TODO
      * @throws ResourcePoolException if an error occurs during the allocation of the resource or the execution
      *   of the block
      */
-    public void execute(ExecutableBlock inBlock,
+    public Object execute(ExecutableBlock inBlock,
                         Object inData) 
         throws ResourcePoolException
     {
@@ -80,7 +82,7 @@ public abstract class ResourcePool
                                             t);
         }
         try {
-            inBlock.execute(resource);
+            return inBlock.execute(resource);
         } catch (Throwable t) {
             throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR,
                                             t);
@@ -429,9 +431,6 @@ public abstract class ResourcePool
      */
     protected abstract void addResourceToPool(Resource inResource);
     
-    protected abstract void verifyResourceReturn(Resource inResource)
-        throws ResourcePoolException;
-    
     /**
      * Create a new <code>Resource</code>.
      * 
@@ -470,4 +469,31 @@ public abstract class ResourcePool
      * @return a <code>boolean</code> value
      */
     protected abstract boolean poolContains(Resource inResource);
+
+    /**
+     * Called when a <code>Resource</code> is being returned to the pool.
+     * 
+     * <p>The default implementation of this method is to make sure that the <code>Resource</code>
+     * returned isn't already in the pool.  Subclasses may provide their own implementation.  If this
+     * method throws an exception, the <code>Resource</code> will be discarded.
+     * 
+     * @param inResource a <code>Resource</code> value being returned to the pool
+     * @throws ResourcePoolException if the <code>Resource</code> being returned should be discarded instead.
+     */
+    protected void verifyResourceReturn(Resource inResource)
+            throws ResourcePoolException
+    {
+        if(inResource == null) {
+            throw new NullPointerException();
+        }
+        try {
+            if(poolContains(inResource)) {
+                throw new DuplicateResourceReturnException(MessageKey.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED);
+            }
+        } catch (ResourcePoolException e) {
+            throw e;
+        } catch (Throwable t) {
+            throw new ResourcePoolException(t);
+        }
+    }
 }

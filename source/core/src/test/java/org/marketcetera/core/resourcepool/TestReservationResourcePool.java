@@ -1,19 +1,51 @@
 package org.marketcetera.core.resourcepool;
 
+import java.util.Iterator;
+
 
 public class TestReservationResourcePool
         extends ReservationResourcePool
 {
-    protected Resource createResource(Object inData)
+    private boolean mRenderThrows = false;
+    private boolean mRenderReturnsNull = false;
+    private boolean mCreateResourceReturnsNull = false;
+    private boolean mCreateResourceThrows = false;
+    private boolean mAddResourceThrows = false;
+    private boolean mResourceContentionThrows = false;
+    private boolean mReleaseResourceThrows = false;
+    private TestResource mLastResourceCreated = null;
+    
+    protected TestResource createResource(Object inData)
             throws ResourcePoolException
     {
-        ReservationData data = (ReservationData)inData;
-        return new TestResource(data.getUser(),
-                                data.getPassword());
+        setLastResourceCreated(null);
+        if(getCreateResourceReturnsNull()) {
+            return null;
+        }
+        if(getCreateResourceThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        ReservationData data = null;
+        if(inData == null) {
+            data = new ReservationData("user_" + System.nanoTime(),
+                                       "password_" + System.nanoTime());
+        } else {
+            data = (ReservationData)inData;
+        }
+        TestResource resource = new TestResource(data.getUser(),
+                                                 data.getPassword());
+        setLastResourceCreated(resource);
+        return resource;
     }
 
-    protected Object renderReservationKey(Resource inResource)
+    protected ReservationData renderReservationKey(Resource inResource)
     {
+        if(getRenderThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        if(getRenderReturnsNull()) {
+            return null;
+        }
         TestResource r = (TestResource) inResource;
         return new ReservationData(r.getUser(),
                                    r.getPassword());
@@ -112,5 +144,209 @@ public class TestReservationResourcePool
         {
             return "ReservationData(" + hashCode() + ") " + getUser() + "/" + getPassword();
         }
+    }
+    
+    int getPoolSize()
+    {
+        synchronized(getPoolLock()) {
+            int counter = 0;
+            Iterator<Resource> iterator = getPoolIterator();
+            while(iterator.hasNext()) {
+                iterator.next();
+                counter += 1;
+            }
+            return counter;
+        }        
+    }
+
+    /**
+     * @return the renderThrows
+     */
+    boolean getRenderThrows()
+    {
+        return mRenderThrows;
+    }
+
+    /**
+     * @param inRenderThrows the renderThrows to set
+     */
+    void setRenderThrows(boolean inRenderThrows)
+    {
+        mRenderThrows = inRenderThrows;
+    }
+
+    /**
+     * @return the renderReturnsNull
+     */
+    boolean getRenderReturnsNull()
+    {
+        return mRenderReturnsNull;
+    }
+
+    /**
+     * @param inRenderReturnsNull the renderReturnsNull to set
+     */
+    void setRenderReturnsNull(boolean inRenderReturnsNull)
+    {
+        mRenderReturnsNull = inRenderReturnsNull;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ReservationResourcePool#getNextResource(java.lang.Object)
+     */
+    protected TestResource getNextResource(Object inData)
+            throws ResourcePoolException
+    {
+        return (TestResource)super.getNextResource(inData);
+    }
+
+    /**
+     * @return the createResourceReturnsNull
+     */
+    boolean getCreateResourceReturnsNull()
+    {
+        return mCreateResourceReturnsNull;
+    }
+
+    /**
+     * @param inCreateResourceReturnsNull the createResourceReturnsNull to set
+     */
+    void setCreateResourceReturnsNull(boolean inCreateResourceReturnsNull)
+    {
+        mCreateResourceReturnsNull = inCreateResourceReturnsNull;
+    }
+
+    /**
+     * @return the createResourceThrows
+     */
+    boolean getCreateResourceThrows()
+    {
+        return mCreateResourceThrows;
+    }
+
+    /**
+     * @param inCreateResourceThrows the createResourceThrows to set
+     */
+    void setCreateResourceThrows(boolean inCreateResourceThrows)
+    {
+        mCreateResourceThrows = inCreateResourceThrows;
+    }
+
+    /**
+     * @return the addResourceThrows
+     */
+    boolean getAddResourceThrows()
+    {
+        return mAddResourceThrows;
+    }
+
+    /**
+     * @param inAddResourceThrows the addResourceThrows to set
+     */
+    void setAddResourceThrows(boolean inAddResourceThrows)
+    {
+        mAddResourceThrows = inAddResourceThrows;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ReservationResourcePool#addResourceToPool(org.marketcetera.core.resourcepool.Resource)
+     */
+    protected void addResourceToPool(Resource inResource)
+    {
+        if(getAddResourceThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        super.addResourceToPool(inResource);
+    }
+
+    /**
+     * @return the lastResourceCreated
+     */
+    TestResource getLastResourceCreated()
+    {
+        return mLastResourceCreated;
+    }
+
+    /**
+     * @param inLastResourceCreated the lastResourceCreated to set
+     */
+    void setLastResourceCreated(TestResource inLastResourceCreated)
+    {
+        mLastResourceCreated = inLastResourceCreated;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ReservationResourcePool#allocateResource(org.marketcetera.core.resourcepool.Resource)
+     */
+    protected TestResource allocateResource(Resource inResource)
+    {
+        return (TestResource)super.allocateResource(inResource);
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ReservationResourcePool#requestResource(java.lang.Object)
+     */
+    protected TestResource requestResource(Object inData)
+            throws ResourcePoolException
+    {
+        return (TestResource)super.requestResource(inData);
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ReservationResourcePool#resourceContention(org.marketcetera.core.resourcepool.ReservationResourcePool.ReservationEntry)
+     */
+    protected TestResource resourceContention(ReservationEntry inReservationEntry)
+            throws ResourcePoolException
+    {
+        TestResource r = (TestResource)inReservationEntry.getResource();
+        r.setContentionStamp(System.currentTimeMillis());
+        if(getResourceContentionThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        return (TestResource)super.resourceContention(inReservationEntry);
+    }
+
+    /**
+     * @return the resourceContentionThrows
+     */
+    boolean getResourceContentionThrows()
+    {
+        return mResourceContentionThrows;
+    }
+
+    /**
+     * @param inResourceContentionThrows the resourceContentionThrows to set
+     */
+    void setResourceContentionThrows(boolean inResourceContentionThrows)
+    {
+        mResourceContentionThrows = inResourceContentionThrows;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.resourcepool.ReservationResourcePool#releaseResource(org.marketcetera.core.resourcepool.Resource)
+     */
+    protected void releaseResource(Resource inResource)
+            throws ReleasedResourceException
+    {
+        if(getReleaseResourceThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        super.releaseResource(inResource);
+    }
+
+    /**
+     * @return the releaseResourceThrows
+     */
+    boolean getReleaseResourceThrows()
+    {
+        return mReleaseResourceThrows;
+    }
+
+    /**
+     * @param inReleaseResourceThrows the releaseResourceThrows to set
+     */
+    void setReleaseResourceThrows(boolean inReleaseResourceThrows)
+    {
+        mReleaseResourceThrows = inReleaseResourceThrows;
     }
 }

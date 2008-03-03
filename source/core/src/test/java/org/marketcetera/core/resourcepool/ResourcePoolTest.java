@@ -395,7 +395,7 @@ public class ResourcePoolTest
             setSabotageResource(false);
         }
         
-        public void execute(Resource inResource)
+        public Object execute(Resource inResource)
                 throws Throwable
         {
             setResource((TestResource)inResource);
@@ -407,6 +407,7 @@ public class ResourcePoolTest
             if(t != null) {
                 throw t;
             }
+            return inResource;
         }
 
         /**
