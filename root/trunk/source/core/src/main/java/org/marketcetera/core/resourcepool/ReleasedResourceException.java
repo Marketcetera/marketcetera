@@ -21,18 +21,16 @@ public class ReleasedResourceException
     public ReleasedResourceException(String inMessage)
     {
         super(inMessage);
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * Create a new ReleasedResourceException instance.
      */
     public ReleasedResourceException(String inMsg,
-            Throwable inNested)
+                                     Throwable inNested)
     {
         super(inMsg,
               inNested);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -41,7 +39,6 @@ public class ReleasedResourceException
     public ReleasedResourceException(Throwable inNested)
     {
         super(inNested);
-        // TODO Auto-generated constructor stub
     }
 
     /**
@@ -50,18 +47,15 @@ public class ReleasedResourceException
     public ReleasedResourceException(MessageKey inKey)
     {
         super(inKey);
-        // TODO Auto-generated constructor stub
     }
 
     /**
      * Create a new ReleasedResourceException instance.
      */
     public ReleasedResourceException(MessageKey inKey,
-            Throwable inNested)
+                                     Throwable inNested)
     {
         super(inKey,
               inNested);
-        // TODO Auto-generated constructor stub
     }
-
 }

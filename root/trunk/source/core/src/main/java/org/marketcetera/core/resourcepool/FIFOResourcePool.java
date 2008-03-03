@@ -82,23 +82,6 @@ public abstract class FIFOResourcePool
         }
     }
     
-    protected void verifyResourceReturn(Resource inResource) 
-        throws ResourcePoolException
-    {
-        if(inResource == null) {
-            throw new NullPointerException();
-        }
-        try {
-            if(poolContains(inResource)) {
-                throw new DuplicateResourceReturnException(MessageKey.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED);
-            }
-        } catch (ResourcePoolException e) {
-            throw e;
-        } catch (Throwable t) {
-            throw new ResourcePoolException(t);
-        }
-    }
-    
     protected boolean poolContains(Resource inResource)
     {
         return mResourceHash.contains(inResource);

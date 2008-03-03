@@ -2,6 +2,6 @@ package org.marketcetera.core.resourcepool;
 
 public interface ExecutableBlock
 {
-    public void execute(Resource inResource)
+    public Object execute(Resource inResource)
         throws Throwable;
 }
