@@ -90,7 +90,7 @@ public class OutgoingMessageHandler {
             Message notLoggedOnReject = createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
                     message);
             // explicitly remove the OrdStatus b/c we don't know what it is - we aren't logged on
-            notLoggedOnReject.removeField(OrdStatus.FIELD);
+            notLoggedOnReject.setField(new OrdStatus(OrdStatus.REJECTED));
             return notLoggedOnReject;
         }
 
