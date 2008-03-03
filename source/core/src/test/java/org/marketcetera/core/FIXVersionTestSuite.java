@@ -32,6 +32,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
     public static final FIXVersion[] FIX42_PLUS_VERSIONS =
             new FIXVersion[]{FIXVersion.FIX42, FIXVersion.FIX43, FIXVersion.FIX44};
     private FIXDataDictionaryManager fixDDMgr;
+	private String suiteName;
 
     public FIXVersionTestSuite() {
     }
@@ -39,18 +40,21 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
     public FIXVersionTestSuite(Class aClass, FIXVersion[] inVersions) {
         super();
         addTestForEachVersion(aClass, inVersions, new HashSet<String>(), new FIXVersion[0]);
+        suiteName = aClass.getName();
     }
 
     public FIXVersionTestSuite(Class aClass, MessageBundleInfo extraBundle, FIXVersion[] inVersions) {
         super();
         init(new MessageBundleInfo[]{extraBundle});
         addTestForEachVersion(aClass, inVersions, new HashSet<String>(), new FIXVersion[0]);
+        suiteName = aClass.getName();
     }
 
     public FIXVersionTestSuite(Class aClass, MessageBundleInfo[] extraBundles, FIXVersion[] inVersions) {
         super();
         init(extraBundles);
         addTestForEachVersion(aClass, inVersions, new HashSet<String>(), new FIXVersion[0]);
+        suiteName = aClass.getName();
     }
 
     public FIXVersionTestSuite(Class aClass, MessageBundleInfo extraBundle, FIXVersion[] inVersions,
@@ -58,12 +62,14 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         super();
         init(new MessageBundleInfo[]{extraBundle});
         addTestForEachVersion(aClass, inVersions, exceptionMethods, exceptionVersions);
+        suiteName = aClass.getName();
     }
 
     public FIXVersionTestSuite(Class aClass, FIXVersion[] inVersions,
                                Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
         super();
         addTestForEachVersion(aClass, inVersions, exceptionMethods, exceptionVersions);
+        suiteName = aClass.getName();
     }
     
     public FIXVersionTestSuite(Class aClass, MessageBundleInfo[] extraBundles, FIXVersion[] inVersions,
@@ -71,6 +77,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         super();
         init(extraBundles);
         addTestForEachVersion(aClass, inVersions, exceptionMethods, exceptionVersions);
+        suiteName = aClass.getName();
     }
 
 
@@ -134,4 +141,8 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         return testNames.toArray(new String[0]);
     }
 
+    @Override
+    public String getName() {
+    	return suiteName == null ? super.getName() : suiteName;
+    }
 }
