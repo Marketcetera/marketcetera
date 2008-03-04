@@ -23,7 +23,7 @@ public class OptionDateHelper {
 	public List<String> createDefaultYears() {
 		List<String> yearList = new ArrayList<String>();
 		final int maxYear = 12;
-		for (int currentYear = 7; currentYear <= maxYear; ++currentYear) {
+		for (int currentYear = 8; currentYear <= maxYear; ++currentYear) {
 			StringBuilder year = new StringBuilder();
 			if (currentYear < 10) {
 				year.append("0");
