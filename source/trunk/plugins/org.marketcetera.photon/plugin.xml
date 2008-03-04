@@ -365,6 +365,12 @@
             <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
          </location>
       </widget>
+       <widget class="org.marketcetera.photon.ui.ClockTrimWidget"
+                 id="org.marketcetera.photon.ui.clockTrimWidget">
+          <location>
+             <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
+          </location>
+       </widget>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
