@@ -276,7 +276,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         buy.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
 
         Message execReport = msgFactory.newExecutionReport("orderID", "clOrderID", "1234", OrdStatus.CANCELED, Side.BUY, 
-                new BigDecimal(2385), new BigDecimal(23.45), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                new BigDecimal(2385), new BigDecimal("23.45"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
                 new MSymbol("GAP"), "account");
         execReport.setString(Text.FIELD, "dummyMessage");
 

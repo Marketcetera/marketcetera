@@ -45,7 +45,7 @@ public class FIXVersionsTest extends TestCase {
 
     }
 
-    private Message createNOSHelper(FIXVersion version, String inSymbol, double qty, char inSide)
+    private Message createNOSHelper(FIXVersion version, String inSymbol, int qty, char inSide)
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = version.getMessageFactory().newMarketOrder("123"+suffix, inSide, new BigDecimal(qty), new MSymbol(inSymbol),

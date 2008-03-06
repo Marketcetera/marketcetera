@@ -139,7 +139,7 @@ public class FIXMessageFactory {
 
         Message newMessage = newOrderHelper(clOrderID, side, quantity, symbol, timeInForce, account);
         newMessage.setField(new OrdType(OrdType.LIMIT));
-        newMessage.setField(new StringField(Price.FIELD, price.toString()));
+        newMessage.setField(new Price(price));
 
         return newMessage;
     }
