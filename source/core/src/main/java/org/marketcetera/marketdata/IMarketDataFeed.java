@@ -1,31 +1,34 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.core.publisher.Subscriber;
+import java.util.IllegalFormatException;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.springframework.context.Lifecycle;
 
 import quickfix.Message;
 
-/**
- * Indicates an object capable of responding to requests for market data.
- * 
- * <p><code>IMarketDataFeed</code> objects can be constructed by calling
- * the appropriate {@link IMarketDataFeedFactory}.
- *
- * @author gmiller
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id$
- * @since 0.43-SNAPSHOT
- */
-public interface IMarketDataFeed 
-    extends IFeedComponent, Lifecycle 
-{
+
+
+public interface IMarketDataFeed extends IFeedComponent, Lifecycle {
+
+	public ISubscription asyncQuery(Message query) throws MarketceteraException;
+
+	public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws MarketceteraException, TimeoutException;
+
+	public void asyncUnsubscribe(ISubscription subscription) throws MarketceteraException;
+	
+	public void setMarketDataListener(IMarketDataListener listener);
+    public IMarketDataListener getMarketDataListener();
+    
     /**
-     * Executes a market data query described by the given FIX message.
      * 
-     * @param inMessage a <code>Message</code> value
-     * @throws FeedException if an error occurs
+     * @param symbolString
+     * @return The {@link MSymbol} object corresponding to the passed-in symbol name.
+	 * @throws IllegalFormatException if the format of the symbol is not understood
      */
-    public MarketDataFeedToken execute(Message inMessage,
-                                       Subscriber inSubscriber)
-        throws FeedException;
+    public MSymbol symbolFromString(String symbolString);
 }
