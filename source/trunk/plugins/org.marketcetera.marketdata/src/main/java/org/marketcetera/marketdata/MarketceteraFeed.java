@@ -17,6 +17,7 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.publisher.Subscriber;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -333,6 +334,11 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	}
 
 	public void toApp(Message message, SessionID sessionID) throws DoNotSend {
+	}
+
+	public MarketDataFeedToken execute(Message inMessage, Subscriber inSubscriber) throws FeedException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 
