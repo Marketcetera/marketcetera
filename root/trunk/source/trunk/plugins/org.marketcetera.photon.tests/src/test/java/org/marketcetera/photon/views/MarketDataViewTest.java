@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Table;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
@@ -19,7 +20,6 @@ import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.osgi.framework.BundleContext;
 
 import quickfix.Message;
-import quickfix.StringField;
 import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
