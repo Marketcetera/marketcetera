@@ -11,6 +11,8 @@ Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,
+ org.marketcetera.core.publisher,
+ org.marketcetera.core.resourcepool,
  org.marketcetera.marketdata,
  org.marketcetera.messagehistory,
  org.marketcetera.options,
