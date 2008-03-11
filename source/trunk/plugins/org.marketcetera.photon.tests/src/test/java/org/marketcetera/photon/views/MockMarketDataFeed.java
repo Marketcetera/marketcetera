@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
