@@ -26,4 +26,8 @@ public class MarketceteraFeedFactory implements IMarketDataFeedFactory {
 		return "Marketcetera";
 	}
 
+	public IMarketDataFeed getMarketDataFeed(MarketDataFeedCredentials inCredentials) throws FeedException {
+		return null;
+	}
+
 }
