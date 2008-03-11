@@ -3,10 +3,11 @@ package org.marketcetera.photon.marketdata;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
@@ -164,6 +165,4 @@ public class MarketDataFeedService implements IFeedComponentListener, IFeedCompo
 			}
 		}
 	}
-
-
 }

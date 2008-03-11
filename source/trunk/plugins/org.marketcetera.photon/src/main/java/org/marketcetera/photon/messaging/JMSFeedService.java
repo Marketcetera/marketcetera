@@ -5,6 +5,7 @@ import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.FeedComponentAdapterBase;
 import org.marketcetera.photon.PhotonPlugin;
 import org.osgi.framework.ServiceRegistration;

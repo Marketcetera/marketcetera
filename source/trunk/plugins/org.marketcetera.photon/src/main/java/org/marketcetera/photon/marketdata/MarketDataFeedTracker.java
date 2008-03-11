@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import org.eclipse.swt.widgets.Display;
-import org.marketcetera.core.IFeedComponent;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.Pair;
-import org.marketcetera.core.IFeedComponent.FeedStatus;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
