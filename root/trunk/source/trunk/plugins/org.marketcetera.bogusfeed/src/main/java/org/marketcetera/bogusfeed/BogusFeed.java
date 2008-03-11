@@ -16,8 +16,12 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataFeedBase;
+import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -196,6 +200,11 @@ public class BogusFeed extends MarketDataFeedBase {
 
 	public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws MarketceteraException, TimeoutException {
 		throw new UnsupportedOperationException();
+	}
+
+	public MarketDataFeedToken execute(Message inMessage, Subscriber inSubscriber) throws FeedException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 

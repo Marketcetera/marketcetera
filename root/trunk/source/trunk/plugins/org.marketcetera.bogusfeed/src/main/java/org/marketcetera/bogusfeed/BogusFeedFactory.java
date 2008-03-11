@@ -4,8 +4,10 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.marketcetera.core.NoOpLogger;
+import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
+import org.marketcetera.marketdata.MarketDataFeedCredentials;
 
 public class BogusFeedFactory implements IMarketDataFeedFactory {
 
@@ -23,5 +25,7 @@ public class BogusFeedFactory implements IMarketDataFeedFactory {
 	public String getProviderName(){
 		return "Marketcetera (Bogus)";
 	}
-
+	public IMarketDataFeed getMarketDataFeed(MarketDataFeedCredentials inCredentials) throws FeedException {
+		return new BogusFeed();
+	}
 }
