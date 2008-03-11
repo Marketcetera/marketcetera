@@ -15,7 +15,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.IFeedComponent.FeedStatus;
+import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
