@@ -1,5 +1,7 @@
 package org.marketcetera.core;
 
+import org.marketcetera.marketdata.IFeedComponent;
+
 /**
  * @author Toli Kuznets
  * @version $Id$
