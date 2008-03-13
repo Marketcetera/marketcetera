@@ -44,8 +44,10 @@ public class JMSFIXMessageConverter implements MessageConverter {
             // todo: handle validation when creating quickfix message
             try {
 				qfMessage = new quickfix.Message(((TextMessage)message).getText());
-			} catch (InvalidMessage e) {
-				throw new MessageConversionException(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage(), e);
+            } catch (InvalidMessage e) {
+                // bug #501 - want to log here
+                LoggerAdapter.error(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage()+": "+e.getMessage(), this);
+                throw new MessageConversionException(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage(), e);
 			}
         } else if (message instanceof BytesMessage){
             LoggerAdapter.debug("Received JMS msg: "+message, this);
@@ -60,6 +62,8 @@ public class JMSFIXMessageConverter implements MessageConverter {
                     qfMessage = new quickfix.Message(possibleString);
                 }
             } catch (Exception ex){
+                // bug #501 - want to log here
+                LoggerAdapter.error(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage()+": "+ex.getMessage(), this);
                 throw new MessageConversionException(MessageKey.ERR0R_JMS_MESSAGE_CONVERSION.getLocalizedMessage(), ex);
             }
         } else if (message instanceof ObjectMessage) {
