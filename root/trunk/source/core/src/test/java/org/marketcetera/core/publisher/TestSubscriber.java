@@ -1,14 +1,17 @@
 package org.marketcetera.core.publisher;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * Test implementation of {@link Subscriber}.
+ * Test implementation of {@link ISubscriber}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
  * @since 0.43-SNAPSHOT
  */
 public class TestSubscriber
-    implements Subscriber
+    implements ISubscriber
 {
     private boolean mInteresting = false;
     private Object mData = null;
@@ -17,6 +20,7 @@ public class TestSubscriber
     private int mCounter = 0;
     private static int sCounter = 0;
     private int mPublishCount = 0;
+    private List<Object> mPublications;
     
     public TestSubscriber()
     {
@@ -32,6 +36,7 @@ public class TestSubscriber
         mInteresting = inInteresting;
         mInterestingThrows = inInterestingThrows;
         mPublishThrows = inPublishThrows;
+        mPublications = new ArrayList<Object>();
     }
 
     public boolean isInteresting(Object inData)
@@ -50,6 +55,7 @@ public class TestSubscriber
         mData = inData;
         mCounter = ++sCounter;
         mPublishCount += 1;
+        mPublications.add(inData);
     }
     
     public int getPublishCount()
@@ -105,5 +111,10 @@ public class TestSubscriber
     public void setPublishThrows(boolean inPublishThrows)
     {
         mPublishThrows = inPublishThrows;
+    }
+    
+    public List<Object> getPublications()
+    {
+        return mPublications;
     }
 }

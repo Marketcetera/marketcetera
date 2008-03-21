@@ -16,12 +16,12 @@ import org.marketcetera.core.LoggerAdapter;
  * @since 0.43-SNAPSHOT
  */
 public class PublisherEngine
-    implements Publisher
+    implements IPublisher
 {
     /**
      * the queue of subscribers - should be maintained in FIFO order
      */
-    private final LinkedHashSet<Subscriber> mSubscribers;    
+    private final LinkedHashSet<ISubscriber> mSubscribers;    
     /**
      * the pool of notifiers common to all <code>PublisherEngine</code> objects
      */
@@ -61,7 +61,7 @@ public class PublisherEngine
      */
     public PublisherEngine(int inMaxPoolSize)
     {
-        mSubscribers = new LinkedHashSet<Subscriber>();
+        mSubscribers = new LinkedHashSet<ISubscriber>();
         mMaxPoolSize = inMaxPoolSize;
     }
     
@@ -79,12 +79,12 @@ public class PublisherEngine
       initializeThreadPool(getMaxPoolSize());
       // hand the notification chore to a thread from the thread pool
       synchronized(mSubscribers) {
-          sNotifierPool.execute(new PublisherEngineNotifier(mSubscribers.toArray(new Subscriber[0]),
+          sNotifierPool.execute(new PublisherEngineNotifier(mSubscribers.toArray(new ISubscriber[0]),
                                                             inData));
       }
     }
     
-    public void subscribe(Subscriber inSubscriber)
+    public void subscribe(ISubscriber inSubscriber)
     {
         if(inSubscriber == null) {
             return;
@@ -97,7 +97,7 @@ public class PublisherEngine
         }
     }
     
-    public void unsubscribe(Subscriber inSubscriber)
+    public void unsubscribe(ISubscriber inSubscriber)
     {
         if(inSubscriber == null) {
             return;

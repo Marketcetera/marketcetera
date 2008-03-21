@@ -15,7 +15,9 @@ import quickfix.Message;
 
 public interface IMarketDataFeed extends IFeedComponent, Lifecycle {
 
-	public ISubscription asyncQuery(Message query) throws MarketceteraException;
+    public final static String DATAFEED_MESSAGES = "marketdatafeed.messages";
+
+    public ISubscription asyncQuery(Message query) throws MarketceteraException;
 
 	public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws MarketceteraException, TimeoutException;
 

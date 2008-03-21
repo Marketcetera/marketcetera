@@ -12,7 +12,12 @@ import quickfix.Message;
  */
 public interface MessageTranslator
 {
-    public Object translate(Message inMessage)
+    /**
+     * Indicates what FIX version to use
+     */
+    public static final FIXMessageFactory sMessageFactory = FIXVersion.FIX44.getMessageFactory();
+
+    public Object translate()
         throws MarketceteraException;
     
     public Message translate(Object inData)

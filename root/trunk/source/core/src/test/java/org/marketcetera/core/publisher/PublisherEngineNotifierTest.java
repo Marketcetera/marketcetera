@@ -30,8 +30,8 @@ public class PublisherEngineNotifierTest
     public void testConstructor()
         throws Exception
     {
-        Subscriber[] s0 = new Subscriber[0];
-        Subscriber[] s1 = new Subscriber[1];
+        ISubscriber[] s0 = new ISubscriber[0];
+        ISubscriber[] s1 = new ISubscriber[1];
         Object d0 = new Object();
         
         assertNotNull(new PublisherEngineNotifier(null,

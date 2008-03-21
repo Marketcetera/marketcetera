@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.util.concurrent.Callable;
 
-public interface MarketDataFeedConnector
+public interface IMarketDataFeedConnector
     extends Callable<MarketDataFeedToken>
 {
     public void cancel(MarketDataFeedToken inToken)

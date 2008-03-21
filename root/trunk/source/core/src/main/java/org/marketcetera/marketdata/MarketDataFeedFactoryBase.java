@@ -1,5 +1,6 @@
 package org.marketcetera.marketdata;
 
+
 /**
  * Base implementation of {@link IMarketDataFeedFactory}.
  *
