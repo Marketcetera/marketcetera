@@ -11,10 +11,14 @@ import org.marketcetera.marketdata.MarketDataFeedCredentials;
 
 public class BogusFeedFactory implements IMarketDataFeedFactory {
 
-	public IMarketDataFeed getInstance(String url, String userName, String passwordString, Map<String,Object> properties) {
+	public IMarketDataFeed getInstance(String url, String userName, String passwordString, Map<String,Object> properties) 
+		throws FeedException 
+	{
 		return getInstance(url, userName, passwordString, properties, new NoOpLogger("BogusFeed"));
 	}
-	public IMarketDataFeed getInstance(String url, String userName, String passwordString, Map<String,Object> properties, Logger logger) {
+	
+	public IMarketDataFeed getInstance(String url, String userName, String passwordString, Map<String,Object> properties, Logger logger) 
+		throws FeedException {
 		return new BogusFeed();
 	}
 
