@@ -72,11 +72,11 @@ public class LoggerAdapter extends Logger
         getMyLogger(inCat).log(WRAPPER_FQCN, Level.INFO, msg, ex);
     }
     /** Get the appropriate logger for the incoming category and delegate the warn to it */
-    public void warn(String msg, Object inCat)
+    public static void warn(String msg, Object inCat)
     {
         getMyLogger(inCat).log(WRAPPER_FQCN, Level.WARN, msg, null);
     }
-    public void warn(String msg, Throwable ex, Object inCat)
+    public static void warn(String msg, Throwable ex, Object inCat)
     {
         getMyLogger(inCat).log(WRAPPER_FQCN, Level.WARN, msg, ex);
     }
@@ -113,6 +113,11 @@ public class LoggerAdapter extends Logger
     public static boolean isInfoEnabled(Object inCat)
     {
         return(getMyLogger(inCat).isInfoEnabled());
+    }
+    
+    public static boolean isWarnEnabled(Object inCat)
+    {
+        return(getMyLogger(inCat).isEnabledFor(Priority.WARN));
     }
     
     public static boolean isErrorEnabled(Object inCat)

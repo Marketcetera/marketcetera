@@ -8,7 +8,7 @@ package org.marketcetera.core.publisher;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
  */
-public interface Publisher
+public interface IPublisher
 {
     /**
      * Subscribe to updates from the <code>Publisher</code>.
@@ -21,7 +21,7 @@ public interface Publisher
      * 
      * @param inSubscriber a <code>Subscriber</code> value
      */
-    public void subscribe(Subscriber inSubscriber);
+    public void subscribe(ISubscriber inSubscriber);
     
     /**
      * Unsubscribe to updates from the <code>Publisher</code>.
@@ -31,5 +31,5 @@ public interface Publisher
      * 
      * @param inSubscriber a <code>Subscriber</code> value
      */
-    public void unsubscribe(Subscriber inSubscriber);
+    public void unsubscribe(ISubscriber inSubscriber);
 }

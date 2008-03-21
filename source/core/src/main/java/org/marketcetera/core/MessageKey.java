@@ -70,6 +70,15 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR("core.resourcepool.executable_block_error"),
     ERROR_RESOURCE_POOL_RESERVATION_CANCELLED("core.resourcepool.resource_reservation_cancelled"),
     INFO_WAITING_FOR_RESOURCE("core.resourcepool.waiting_for_resource"),
+    /* market data feed messages*/
+    ERROR_NO_ID_FOR_TOKEN("marketdatafeed.no_id_for_token"),
+    ERROR_CREDENTIAL_URL_VALIDATION_FAILED("marketdatafeed.credential_url_validation_failed"),
+    ERROR_MARKET_DATA_FEED_EXECUTION_CANCELLED("marketdatafeed.market_data_feed_execution_cancelled"),
+    ERROR_MARKET_DATA_FEED_EXECUTION_INTERRUPTED("marketdatafeed.market_data_feed_execution_interrupted"),
+    ERROR_MARKET_DATA_FEED_EXECUTION_FAILED("marketdatafeed.market_data_feed_execution_failed"),
+    ERROR_MARKET_DATA_FEED_EXECUTION_REJECTED("marketdatafeed.market_data_feed_execution_rejected"),
+    ERROR_MARKET_DATA_FEED_CANNOT_GENERATE_MESSAGE("marketdatafeed.market_data_feed_cannot_generate_message"),
+    /* session messages */
     SESSION_NOT_FOUND("core.error.fix.session_not_found");
     
     private MessageKey(String inKey) {

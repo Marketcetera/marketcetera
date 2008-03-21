@@ -1,21 +1,21 @@
 package org.marketcetera.core.publisher;
 
 /**
- * Test implementation of {@link Publisher}.
+ * Test implementation of {@link IPublisher}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
  * @since 0.43-SNAPSHOT
  */
 public class TestPublisher
-        implements Publisher
+        implements IPublisher
 {
     private PublisherEngine mEngine = new PublisherEngine();
     
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.Publisher#subscribe(org.marketcetera.core.publisher.Subscriber)
      */
-    public void subscribe(Subscriber inSubscriber)
+    public void subscribe(ISubscriber inSubscriber)
     {
         mEngine.subscribe(inSubscriber);
     }
@@ -23,7 +23,7 @@ public class TestPublisher
     /* (non-Javadoc)
      * @see org.marketcetera.core.publisher.Publisher#unsubscribe(org.marketcetera.core.publisher.Subscriber)
      */
-    public void unsubscribe(Subscriber inSubscriber)
+    public void unsubscribe(ISubscriber inSubscriber)
     {
         mEngine.unsubscribe(inSubscriber);
     }

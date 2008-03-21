@@ -15,7 +15,7 @@ public class PublisherEngineNotifier
     /**
      * the list of subscribers who should be notified in the given order
      */
-    private final Subscriber[] mSubscribers;
+    private final ISubscriber[] mSubscribers;
     /**
      * the data to publish to the subscribers
      */
@@ -27,7 +27,7 @@ public class PublisherEngineNotifier
      * @param inSubscribers a <code>Subscriber[]</code> value indicating to whom to publish
      * @param inData an <code>Object</code> value indicating what to publish
      */
-    PublisherEngineNotifier(Subscriber[] inSubscribers,
+    PublisherEngineNotifier(ISubscriber[] inSubscribers,
                             Object inData)
     {
         mSubscribers = inSubscribers;
@@ -43,7 +43,7 @@ public class PublisherEngineNotifier
         if(mSubscribers == null) {
             return;
         }
-        for(Subscriber s : mSubscribers) {
+        for(ISubscriber s : mSubscribers) {
             try {
                 if(s.isInteresting(mData)) {
                     s.publishTo(mData);
