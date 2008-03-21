@@ -8,16 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -69,8 +72,15 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
 	private final Logger logger;
 	private String url;
+	private FeedStatus feedStatus;
 
-	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties, Logger logger) throws MarketceteraException {
+	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties, Logger logger) 
+		throws MarketceteraException 
+	{
+		super(FeedType.SIMULATED,
+			  new MarketceteraCredentials(url,
+					                      userName,
+					                      password));
 		this.logger = logger;
 		this.url = url;
 		try {
@@ -336,10 +346,65 @@ public class MarketceteraFeed extends MarketDataFeedBase implements Application 
 	public void toApp(Message message, SessionID sessionID) throws DoNotSend {
 	}
 
-	public MarketDataFeedToken execute(Message inMessage, Subscriber inSubscriber) throws FeedException {
+	public MarketDataFeedToken execute(Message inMessage, ISubscriber inSubscriber) throws FeedException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	protected MarketDataFeedToken generateToken(Message inMessage) throws FeedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	protected IMarketDataFeedConnector getConnector(MarketDataFeedCredentials inCredentials, MarketDataFeedToken inToken) throws FeedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected ExecutorService getThreadPool() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IMarketDataListener getMarketDataListener() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setMarketDataListener(IMarketDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addFeedComponentListener(IFeedComponentListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void removeFeedComponentListener(IFeedComponentListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void fireMarketDataMessage(Message refresh) 
+	{
+	}
+	
+	private static class MarketceteraCredentials
+		extends MarketDataFeedCredentials
+	{
+
+		protected MarketceteraCredentials(String inURL, String inUsername, String inPassword) throws FeedException {
+			super(inURL, inUsername, inPassword);
+		}
+
+		@Override
+		protected void validateURL(String inURL) throws FeedException {
+
+		}
+	}
+	
 }
