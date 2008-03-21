@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.WeakHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -13,14 +14,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.marketcetera.core.BigDecimalUtils;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.publisher.Subscriber;
+import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.IMarketDataFeedConnector;
+import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketDataFeedBase;
+import org.marketcetera.marketdata.MarketDataFeedCredentials;
 import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
@@ -40,6 +45,13 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 public class BogusFeed extends MarketDataFeedBase {
 
+
+	protected BogusFeed() 
+		throws FeedException 
+	{
+		super(FeedType.SIMULATED, 
+			  new BogusCredentials());
+	}
 
 	private static final BigDecimal PENNY = new BigDecimal("0.01");
 	private static final String BGUS_MARKET = "BGUS";
@@ -109,6 +121,10 @@ public class BogusFeed extends MarketDataFeedBase {
         }
 		
 		fireMarketDataMessage(refresh);
+	}
+
+	private void fireMarketDataMessage(Message refresh) 
+	{
 	}
 
 	public void stop() {
@@ -202,10 +218,63 @@ public class BogusFeed extends MarketDataFeedBase {
 		throw new UnsupportedOperationException();
 	}
 
-	public MarketDataFeedToken execute(Message inMessage, Subscriber inSubscriber) throws FeedException {
+	public MarketDataFeedToken execute(Message inMessage, ISubscriber inSubscriber) throws FeedException {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	@Override
+	protected MarketDataFeedToken generateToken(Message inMessage) throws FeedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
+	@Override
+	protected IMarketDataFeedConnector getConnector(MarketDataFeedCredentials inCredentials, MarketDataFeedToken inToken) throws FeedException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected ExecutorService getThreadPool() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public IMarketDataListener getMarketDataListener() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setMarketDataListener(IMarketDataListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void addFeedComponentListener(IFeedComponentListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void removeFeedComponentListener(IFeedComponentListener listener) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private static class BogusCredentials
+		extends MarketDataFeedCredentials
+	{
+
+		protected BogusCredentials() 
+			throws FeedException 
+		{
+			super("http://bogusurl", "bogususer", "boguspassword");
+		}
+
+		@Override
+		protected void validateURL(String inURL) throws FeedException {
+			
+		}
+		
+	}
 }
