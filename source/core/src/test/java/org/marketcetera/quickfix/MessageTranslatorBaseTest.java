@@ -46,18 +46,9 @@ public class MessageTranslatorBaseTest
     public void testConstructor()
         throws Exception
     {
-        new ExpectedTestFailure(NullPointerException.class) {
-            protected void execute()
-                    throws Throwable
-            {
-                new TestMessageTranslator(null);
-            }
-        }.run();
         final Message message = MarketDataFeedTestSuite.generateFIXMessage();
-        TestMessageTranslator translator = new TestMessageTranslator(message);
+        TestMessageTranslator translator = new TestMessageTranslator();
         assertNotNull(translator);
-        assertEquals(message,
-                     translator.getMessage());
         // test with no subscription type
         message.removeField(SubscriptionRequestType.FIELD);
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -67,9 +58,9 @@ public class MessageTranslatorBaseTest
                 message.getChar(SubscriptionRequestType.FIELD);
             }
         }.run();
-        translator = new TestMessageTranslator(message);
+        translator = new TestMessageTranslator();
         assertEquals(SubscriptionRequestType.SNAPSHOT,
-                     translator.getSubscriptionRequestType());
+                     MessageTranslatorBase.determineSubscriptionRequestType(message));
     }
     
     public void testGetSymbol()
@@ -85,8 +76,8 @@ public class MessageTranslatorBaseTest
         MSymbol google = new MSymbol("GOOG");
         MSymbol msoft = new MSymbol("MSFT");
         Message message = MarketDataFeedTestSuite.generateFIXMessage(Arrays.asList(new MSymbol[] { google, msoft }));
-        TestMessageTranslator translator = new TestMessageTranslator(message);
-        List<Group> groups = translator.getGroups();
+        TestMessageTranslator translator = new TestMessageTranslator();
+        List<Group> groups = translator.getGroups(message);
         assertEquals(2,
                      groups.size());
         assertEquals(google,
