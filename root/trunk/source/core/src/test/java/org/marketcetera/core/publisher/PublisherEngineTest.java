@@ -128,7 +128,7 @@ public class PublisherEngineTest
         for(int i=0;i<50;i++) {
             publishers[i] = new TestPublisher();
         }
-        TestSubscriber[] subscribers = new TestSubscriber[750];
+        TestSubscriber[] subscribers = new TestSubscriber[500];
         for(int i=0;i<subscribers.length;i++) {
             subscribers[i] = new TestSubscriber();
         }
