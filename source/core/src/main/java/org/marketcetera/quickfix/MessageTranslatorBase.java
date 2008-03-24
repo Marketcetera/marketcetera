@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.MessageKey;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -18,9 +20,9 @@ import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
 /**
- * Common routines for {@link MessageTranslator} implementations.
+ * Common routines for {@link IMessageTranslator} implementations.
  * 
- * <p>This class hierarch translates <em>QuickFIX</em> messages to 
+ * <p>This class hierarchy translates <em>QuickFIX</em> messages to 
  * other formats.  This class specifically provides common routines to
  * parse a <em>QuickFIX</em> message.
  *
@@ -29,8 +31,12 @@ import quickfix.field.UnderlyingSymbol;
  * @since 0.43-SNAPSHOT
  */
 public abstract class MessageTranslatorBase
-        implements MessageTranslator
 {
+    /**
+     * Indicates what FIX version to use
+     */
+    public static final FIXMessageFactory sMessageFactory = FIXVersion.FIX44.getMessageFactory();
+
     /**
      * the subscription type
      */
@@ -68,20 +74,19 @@ public abstract class MessageTranslatorBase
      * Gets the <code>Symbol</code> specified in the given <code>Group</code>.
      *
      * @param inGroup a <code>Group</code> value
-     * @return a <code>String</code> value containing the symbol
-     * @throws MarketceteraException
+     * @return a <code>MSymbol</code> value containing the symbol
+     * @throws MarketceteraException if the symbol could not be extracted
      */
-    protected static String getSymbol(Group inGroup) 
+    protected static MSymbol getSymbol(Group inGroup) 
         throws MarketceteraException
     {
-        // TODO this return type should be non-String
         String securityType;
         try {
             securityType = inGroup.getString(SecurityType.FIELD);
         } catch (FieldNotFound e) {
             securityType = SecurityType.COMMON_STOCK;
         }
-        String symbol;
+        MSymbol symbol;
         try {
             if(SecurityType.OPTION.equals(securityType) && 
                inGroup.isSetField(NoUnderlyings.FIELD)) {
@@ -89,13 +94,13 @@ public abstract class MessageTranslatorBase
                                                                     NoUnderlyings.FIELD);
                 inGroup.getGroup(1, 
                                  underlyingGroup);
-                symbol = underlyingGroup.getString(UnderlyingSymbol.FIELD);
+                symbol = new MSymbol(underlyingGroup.getString(UnderlyingSymbol.FIELD));
             } else {
-                symbol = inGroup.getString(Symbol.FIELD);
+                symbol = new MSymbol(inGroup.getString(Symbol.FIELD));
             }
         } catch (FieldNotFound e) {
-            // TODO add a message here
-            throw new MarketceteraException(e);
+            throw new MarketceteraException(MessageKey.ERROR_MARKET_DATA_FEED_CANNOT_FIND_SYMBOL,
+                                            e);
         }
         return symbol;
     }
@@ -136,15 +141,18 @@ public abstract class MessageTranslatorBase
      *
      * @param inMessage a <code>Message</code> value
      * @return a <code>char</code> value
-     * @throws MarketceteraException if the subscription type could not be determined
      */
     protected static char determineSubscriptionRequestType(Message inMessage) 
-        throws MarketceteraException 
     {
         try {
             return inMessage.getChar(SubscriptionRequestType.FIELD);
         } catch (FieldNotFound e) {
-            throw new MarketceteraException(e);
+            if(LoggerAdapter.isWarnEnabled(MessageTranslatorBase.class)) {
+                LoggerAdapter.warn(MessageKey.WARNING_MARKET_DATA_FEED_CANNOT_DETERMINE_SUBSCRIPTION.getLocalizedMessage(),
+                                   e,
+                                   MessageTranslatorBase.class);
+            }
+            return SubscriptionRequestType.SNAPSHOT;
         }
     }
 
