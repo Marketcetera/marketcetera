@@ -38,36 +38,10 @@ public abstract class MessageTranslatorBase
     public static final FIXMessageFactory sMessageFactory = FIXVersion.FIX44.getMessageFactory();
 
     /**
-     * the subscription type
-     */
-    private final char mSubscriptionRequestType;
-    /**
-     * the total number of symbols in the FIX message
-     */
-    private final int mTotalSymbols;
-    /**
-     * the message itself
-     */
-    private final Message mMessage;
-    
-    /**
      * Create a new MessageTranslatorBase instance.
-     *
-     * @param inMessage a <code>Message</code> value
-     * @throws MarketceteraException if an error occurs while parsing the message
      */
-    protected MessageTranslatorBase(Message inMessage) 
-        throws MarketceteraException
+    public MessageTranslatorBase() 
     {
-        mMessage = inMessage;
-        mSubscriptionRequestType = determineSubscriptionRequestType(inMessage);
-        mTotalSymbols = determineTotalSymbols(inMessage);
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug(String.format("Translating market data request for %d total symbols and subscription type %c",
-                                              getTotalSymbols(),
-                                              getSubscriptionRequestType()),
-                                this);
-        }
     }
     
     /**
@@ -106,20 +80,24 @@ public abstract class MessageTranslatorBase
     }
     
     /**
-     * Get all the {@link Group} objects associated with the <code>Message</code>.
+     * Get all the {@link Group} objects associated with the given <code>Message</code>.
      *
+     * @param inMessage a <code>Message</code> value
      * @return a <code>List&lt;Group&gt;</code> value
+     * @throws MarketceteraException 
      */
-    protected List<Group> getGroups()
+    protected List<Group> getGroups(Message inMessage) 
+        throws MarketceteraException
     {
+        int totalSymbols = MessageTranslatorBase.determineTotalSymbols(inMessage);
         List<Group> groups = new ArrayList<Group>();
         // the message header is valid, make a best effort to parse each group, discarding as few as possible
-        for (int symbolCounter=1;symbolCounter<=getTotalSymbols();symbolCounter++) {
+        for (int symbolCounter=1;symbolCounter<=totalSymbols;symbolCounter++) {
             try {
                 Group relatedSymGroup = sMessageFactory.createGroup(MsgType.MARKET_DATA_REQUEST, 
                                                                     NoRelatedSym.FIELD);
-                getMessage().getGroup(symbolCounter, 
-                                      relatedSymGroup);
+                inMessage.getGroup(symbolCounter, 
+                                   relatedSymGroup);
                 // relatedSymGroup is a chunk in the message that encapsulates the Symbol
                 // securityType now holds a description of the symbol (fix tag 167)
                 groups.add(relatedSymGroup);
@@ -171,35 +149,5 @@ public abstract class MessageTranslatorBase
         } catch (FieldNotFound e) {
             throw new MarketceteraException(e);
         }
-    }
-
-    /**
-     * Get the subscriptionRequestType value.
-     *
-     * @return a <code>MessageTranslatorBase</code> value
-     */
-    protected char getSubscriptionRequestType()
-    {
-        return mSubscriptionRequestType;
-    }
-
-    /**
-     * Get the totalSymbols value.
-     *
-     * @return a <code>MessageTranslatorBase</code> value
-     */
-    protected int getTotalSymbols()
-    {
-        return mTotalSymbols;
-    }
-
-    /**
-     * Get the message value.
-     *
-     * @return a <code>MessageTranslatorBase</code> value
-     */
-    protected Message getMessage()
-    {
-        return mMessage;
     }
 }
