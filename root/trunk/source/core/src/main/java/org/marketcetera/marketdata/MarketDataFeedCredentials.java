@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.core.MessageKey;
 
 /**
  * Encapsulates the credentials necessary to authenticate a connection with an 
@@ -44,8 +43,7 @@ public abstract class MarketDataFeedCredentials
         try {
             validateURL(inURL);
         } catch (Throwable t) {
-            throw new FeedException(MessageKey.ERROR_CREDENTIAL_URL_VALIDATION_FAILED.getLocalizedMessage(),
-                                    t);
+            throw new FeedException(t);
         }
         mURL = inURL;
         mUsername = inUsername;

@@ -82,8 +82,14 @@ public class MarketDataFeedTestSuite
         throws FeedException
     {
         List<MSymbol> symbols = Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT"), new MSymbol("YGZ9") });
+        return generateFIXMessage(symbols);
+    }    
+
+    public static Message generateFIXMessage(List<MSymbol> inSymbols) 
+        throws FeedException
+    {
         TestMarketDataFeed feed = new TestMarketDataFeed();
-        return feed.marketDataRequest(symbols, 
+        return feed.marketDataRequest(inSymbols, 
                                       false);
     }    
 }

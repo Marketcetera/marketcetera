@@ -3,7 +3,6 @@ package org.marketcetera.marketdata;
 import junit.framework.Test;
 
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MessageKey;
 
 /**
  * Tests {@link MarketDataFeedCredentials}.
@@ -74,8 +73,7 @@ public class MarketDataFeedCredentialsTest
         throws Exception
     {
         TestMarketDataFeedCredentials.sValidateThrowsThrowable = true;
-        new ExpectedTestFailure(FeedException.class,
-                                MessageKey.ERROR_CREDENTIAL_URL_VALIDATION_FAILED.getLocalizedMessage()) {
+        new ExpectedTestFailure(FeedException.class) {
             protected void execute()
                     throws Throwable
             {

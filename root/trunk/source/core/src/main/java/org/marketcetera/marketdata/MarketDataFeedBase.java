@@ -272,6 +272,5 @@ public abstract class MarketDataFeedBase
     protected FIXVersion getFIXVersion()
     {
         return DEFAULT_MESSAGE_FACTORY;
-    }
-    
+    }    
 }
