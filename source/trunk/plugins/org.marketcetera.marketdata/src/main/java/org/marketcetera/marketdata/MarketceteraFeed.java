@@ -57,7 +57,7 @@ import quickfix.field.TestMessageIndicator;
 import quickfix.field.Text;
 import quickfix.fix44.MessageFactory;
 
-public class MarketceteraFeed extends MarketDataFeedBase implements Application {
+public class MarketceteraFeed extends AbstractMarketDataFeed implements Application {
 
 	public static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
 	public static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
