@@ -19,14 +19,15 @@ import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataFeedConnector;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
-import org.marketcetera.marketdata.MarketDataFeedBase;
 import org.marketcetera.marketdata.MarketDataFeedCredentials;
 import org.marketcetera.marketdata.MarketDataFeedToken;
+import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldNotFound;
@@ -43,7 +44,7 @@ import quickfix.field.Symbol;
 import quickfix.fix44.MarketDataRequest;
 import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
-public class BogusFeed extends MarketDataFeedBase {
+public class BogusFeed extends AbstractMarketDataFeed {
 
 
 	protected BogusFeed() 
