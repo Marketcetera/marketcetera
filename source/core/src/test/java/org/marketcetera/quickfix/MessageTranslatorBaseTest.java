@@ -9,6 +9,7 @@ import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.marketdata.MarketDataFeedTestSuite;
 
@@ -18,7 +19,7 @@ import quickfix.Message;
 import quickfix.field.SubscriptionRequestType;
 
 /**
- * Tests {@link MessageTranslatorBase}.
+ * Tests {@link AbstractMessageTranslator}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
@@ -27,6 +28,8 @@ import quickfix.field.SubscriptionRequestType;
 public class MessageTranslatorBaseTest
         extends TestCase
 {
+    private IMessageTranslator mTranslator;
+    
     /**
      * Create a new MessageTranslatorBaseTest instance.
      *
@@ -43,12 +46,32 @@ public class MessageTranslatorBaseTest
         return suite;    
     }
 
+    /* (non-Javadoc)
+     * @see junit.framework.TestCase#setUp()
+     */
+    protected void setUp()
+            throws Exception
+    {
+        super.setUp();
+        mTranslator = new IMessageTranslator<Object>() {
+            public Object translate(Message inMessage)
+                    throws MarketceteraException
+            {
+                return null;
+            }
+            public Message translate(Object inData)
+                    throws MarketceteraException
+            {
+                return null;
+            }
+        };
+    }
+
     public void testConstructor()
         throws Exception
     {
         final Message message = MarketDataFeedTestSuite.generateFIXMessage();
-        TestMessageTranslator translator = new TestMessageTranslator();
-        assertNotNull(translator);
+        assertNotNull(mTranslator);
         // test with no subscription type
         message.removeField(SubscriptionRequestType.FIELD);
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -58,9 +81,8 @@ public class MessageTranslatorBaseTest
                 message.getChar(SubscriptionRequestType.FIELD);
             }
         }.run();
-        translator = new TestMessageTranslator();
         assertEquals(SubscriptionRequestType.SNAPSHOT,
-                     MessageTranslatorBase.determineSubscriptionRequestType(message));
+                     AbstractMessageTranslator.determineSubscriptionRequestType(message));
     }
     
     public void testGetSymbol()
@@ -70,20 +92,19 @@ public class MessageTranslatorBaseTest
             protected void execute()
                     throws Throwable
             {
-                MessageTranslatorBase.getSymbol(null);
+                AbstractMessageTranslator.getSymbol(null);
             }
         }.run();
         MSymbol google = new MSymbol("GOOG");
         MSymbol msoft = new MSymbol("MSFT");
         Message message = MarketDataFeedTestSuite.generateFIXMessage(Arrays.asList(new MSymbol[] { google, msoft }));
-        TestMessageTranslator translator = new TestMessageTranslator();
-        List<Group> groups = translator.getGroups(message);
+        List<Group> groups = AbstractMessageTranslator.getGroups(message);
         assertEquals(2,
                      groups.size());
         assertEquals(google,
-                     TestMessageTranslator.getSymbol(groups.get(0)));
+                     AbstractMessageTranslator.getSymbol(groups.get(0)));
         assertEquals(msoft,
-                     TestMessageTranslator.getSymbol(groups.get(1)));
+                     AbstractMessageTranslator.getSymbol(groups.get(1)));
 //        Message message = FIXMessageUtilTest.createOptionNOS(optionRoot, optionContractSpecifier, "200708", new BigDecimal("23"),
 //                                                            PutOrCall.CALL, new BigDecimal("1"), new BigDecimal("10"), Side.BUY, msgFactory);
 

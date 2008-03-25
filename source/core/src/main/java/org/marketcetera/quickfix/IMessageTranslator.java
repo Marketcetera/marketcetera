@@ -17,7 +17,8 @@ public interface IMessageTranslator<T>
      *
      * @param inMessage a <code>Message</code> value
      * @return a <code>T</code> value
-     * @throws MarketceteraException
+     * @throws IllegalArgumentException if the message type is not handled by the translater
+     * @throws MarketceteraException if an error occurs during otherwise valid message translation 
      */
     public T translate(Message inMessage)
         throws MarketceteraException;

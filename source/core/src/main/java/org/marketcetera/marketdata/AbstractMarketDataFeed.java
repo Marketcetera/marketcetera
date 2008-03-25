@@ -32,7 +32,7 @@ import quickfix.field.SubscriptionRequestType;
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-public abstract class MarketDataFeedBase 
+public abstract class AbstractMarketDataFeed 
     implements IMarketDataFeed 
 {
     /**
@@ -58,13 +58,13 @@ public abstract class MarketDataFeedBase
     protected static final FIXVersion DEFAULT_MESSAGE_FACTORY = FIXVersion.FIX44;
     
     /**
-     * Create a new <code>MarketDataFeedBase</code> instance.
+     * Create a new <code>AbstractMarketDataFeed</code> instance.
      *
      * @param inFeedType a <code>FeedType</code> value
      * @param inCredentials a <code>MarketDataFeedCredentials</code> value
      */
-    protected MarketDataFeedBase(FeedType inFeedType,
-                                 MarketDataFeedCredentials inCredentials)
+    protected AbstractMarketDataFeed(FeedType inFeedType,
+                                     MarketDataFeedCredentials inCredentials)
     {
         // since these are final, make sure they are non-null
         if(inFeedType == null ||
@@ -208,7 +208,7 @@ public abstract class MarketDataFeedBase
     /**
      * @param inFeedStatus the feedStatus to set
      */
-    protected void setFeedStatus(FeedStatus inFeedStatus)
+    protected final void setFeedStatus(FeedStatus inFeedStatus)
     {
         mFeedStatus = inFeedStatus;
     }
@@ -230,16 +230,16 @@ public abstract class MarketDataFeedBase
      * @return a <code>Message</code> value
      * @throws FeedException if an error occurs constructing the <code>Message</code>
      */
-    public Message marketDataRequest(List<MSymbol> inSymbols,
-                                     boolean inUpdate) 
+    public static Message marketDataRequest(List<MSymbol> inSymbols,
+                                            boolean inUpdate) 
         throws FeedException 
     {
         try {
             // generate a unique ID for this FIX message
             InternalID id = getNextID();
             // generate the message using the current FIXMessageFactory
-            Message message = getFIXVersion().getMessageFactory().newMarketDataRequest(id.toString(), 
-                                                                                       inSymbols);
+            Message message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(id.toString(), 
+                                                                                               inSymbols);
             // this little bit determines whether we subscribe to updates or not
             message.setChar(SubscriptionRequestType.FIELD, 
                             inUpdate ? '1' : '0');
@@ -261,16 +261,4 @@ public abstract class MarketDataFeedBase
     {
         return new InternalID(sIDFactory.getNext());
     }
-
-    /**
-     * Gets the FIX version which the feed should use to construct FIX messages.
-     * 
-     * <p>The default is {@link FIXVersion.FIX44}.
-     *
-     * @return a <code>FIXVersion</code> value
-     */
-    protected FIXVersion getFIXVersion()
-    {
-        return DEFAULT_MESSAGE_FACTORY;
-    }    
 }

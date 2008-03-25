@@ -30,20 +30,18 @@ import quickfix.field.UnderlyingSymbol;
  * @version $Id: $
  * @since 0.43-SNAPSHOT
  */
-public abstract class MessageTranslatorBase
+public abstract class AbstractMessageTranslator<T>
+    implements IMessageTranslator<T>
 {
     /**
      * Indicates what FIX version to use
      */
-    public static final FIXMessageFactory sMessageFactory = FIXVersion.FIX44.getMessageFactory();
-
+    public static final FIXVersion sMessageVersion = FIXVersion.FIX44;
     /**
-     * Create a new MessageTranslatorBase instance.
+     * Indicates what FIX factory to use
      */
-    public MessageTranslatorBase() 
-    {
-    }
-    
+    public static final FIXMessageFactory sMessageFactory = sMessageVersion.getMessageFactory();
+
     /**
      * Gets the <code>Symbol</code> specified in the given <code>Group</code>.
      *
@@ -51,7 +49,7 @@ public abstract class MessageTranslatorBase
      * @return a <code>MSymbol</code> value containing the symbol
      * @throws MarketceteraException if the symbol could not be extracted
      */
-    protected static MSymbol getSymbol(Group inGroup) 
+    public static MSymbol getSymbol(Group inGroup) 
         throws MarketceteraException
     {
         String securityType;
@@ -86,10 +84,10 @@ public abstract class MessageTranslatorBase
      * @return a <code>List&lt;Group&gt;</code> value
      * @throws MarketceteraException 
      */
-    protected List<Group> getGroups(Message inMessage) 
+    public static List<Group> getGroups(Message inMessage) 
         throws MarketceteraException
     {
-        int totalSymbols = MessageTranslatorBase.determineTotalSymbols(inMessage);
+        int totalSymbols = AbstractMessageTranslator.determineTotalSymbols(inMessage);
         List<Group> groups = new ArrayList<Group>();
         // the message header is valid, make a best effort to parse each group, discarding as few as possible
         for (int symbolCounter=1;symbolCounter<=totalSymbols;symbolCounter++) {
@@ -102,11 +100,11 @@ public abstract class MessageTranslatorBase
                 // securityType now holds a description of the symbol (fix tag 167)
                 groups.add(relatedSymGroup);
             } catch (Throwable e) {
-                if(LoggerAdapter.isDebugEnabled(this)) {
+                if(LoggerAdapter.isDebugEnabled(AbstractMessageTranslator.class)) {
                     LoggerAdapter.debug(String.format("Group number %d could not be translated, skipping",
                                                       symbolCounter),
                                         e,
-                                        this);
+                                        AbstractMessageTranslator.class);
                 }
             }
         }            
@@ -120,15 +118,15 @@ public abstract class MessageTranslatorBase
      * @param inMessage a <code>Message</code> value
      * @return a <code>char</code> value
      */
-    protected static char determineSubscriptionRequestType(Message inMessage) 
+    public static char determineSubscriptionRequestType(Message inMessage) 
     {
         try {
             return inMessage.getChar(SubscriptionRequestType.FIELD);
         } catch (FieldNotFound e) {
-            if(LoggerAdapter.isWarnEnabled(MessageTranslatorBase.class)) {
+            if(LoggerAdapter.isWarnEnabled(AbstractMessageTranslator.class)) {
                 LoggerAdapter.warn(MessageKey.WARNING_MARKET_DATA_FEED_CANNOT_DETERMINE_SUBSCRIPTION.getLocalizedMessage(),
                                    e,
-                                   MessageTranslatorBase.class);
+                                   AbstractMessageTranslator.class);
             }
             return SubscriptionRequestType.SNAPSHOT;
         }
@@ -141,7 +139,7 @@ public abstract class MessageTranslatorBase
      * @return an <code>int</code> value
      * @throws MarketceteraException if the number of symbols could not be determined
      */
-    protected static int determineTotalSymbols(Message inMessage) 
+    public static int determineTotalSymbols(Message inMessage) 
         throws MarketceteraException 
     {
         try {
