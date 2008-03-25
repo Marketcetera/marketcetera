@@ -21,7 +21,7 @@ import quickfix.Message;
  * @since 0.43-SNAPSHOT
  */
 public class TestMarketDataFeed
-    extends MarketDataFeedBase
+    extends AbstractMarketDataFeed
 {
     private static ExecutorService sThreadPool = Executors.newFixedThreadPool(1);
     private final int mDelay;
@@ -63,7 +63,7 @@ public class TestMarketDataFeed
     }
 
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataFeedBase#generateToken(quickfix.Message)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(quickfix.Message)
      */
     @Override
     protected TestMarketDataFeedToken generateToken(Message inMessage)
@@ -73,7 +73,7 @@ public class TestMarketDataFeed
     }
 
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataFeedBase#getConnector(org.marketcetera.marketdata.MarketDataFeedCredentials, org.marketcetera.marketdata.MarketDataFeedToken)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getConnector(org.marketcetera.marketdata.MarketDataFeedCredentials, org.marketcetera.marketdata.MarketDataFeedToken)
      */
     @Override
     protected TestMarketDataFeedConnector getConnector(MarketDataFeedCredentials inCredentials,
@@ -85,7 +85,7 @@ public class TestMarketDataFeed
     }
 
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataFeedBase#getThreadPool()
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getThreadPool()
      */
     @Override
     protected ExecutorService getThreadPool()
@@ -167,7 +167,7 @@ public class TestMarketDataFeed
     }
 
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.MarketDataFeedBase#execute(quickfix.Message, org.marketcetera.core.publisher.ISubscriber)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#execute(quickfix.Message, org.marketcetera.core.publisher.ISubscriber)
      */
     @Override
     public TestMarketDataFeedToken execute(Message inMessage,

@@ -88,8 +88,7 @@ public class MarketDataFeedTestSuite
     public static Message generateFIXMessage(List<MSymbol> inSymbols) 
         throws FeedException
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed();
-        return feed.marketDataRequest(inSymbols, 
-                                      false);
+        return AbstractMarketDataFeed.marketDataRequest(inSymbols, 
+                                                    false);
     }    
 }

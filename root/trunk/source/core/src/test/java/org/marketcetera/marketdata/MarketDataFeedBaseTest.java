@@ -12,7 +12,7 @@ import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import quickfix.Message;
 
 /**
- * Tests {@link MarketDataFeedBase}.
+ * Tests {@link AbstractMarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
