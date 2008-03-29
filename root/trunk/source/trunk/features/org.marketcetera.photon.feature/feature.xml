@@ -79,6 +79,13 @@
          unpack="false"/>
 
    <plugin
+         id="com.swtworkbench.community.xswt"
+         download-size="0"
+         install-size="0"
+         version="1.5.0"
+         unpack="false"/>
+
+   <plugin
          id="org.skife.kasparov.csv"
          download-size="0"
          install-size="0"
