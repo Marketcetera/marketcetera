@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Control;
 
 public class EclipseUtils {
 	
-	private static String swtPlatform;
 	private static boolean IS_WINDOWS;
 	private static boolean IS_MAC;
 	private static boolean IS_GTK;

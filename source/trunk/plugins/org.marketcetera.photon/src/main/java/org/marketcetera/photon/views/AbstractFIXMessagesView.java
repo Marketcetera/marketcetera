@@ -1,12 +1,17 @@
 package org.marketcetera.photon.views;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
+import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.ContextMenuFactory;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableRefresher;
 import org.marketcetera.photon.ui.IndexedTableViewer;
+
+import ca.odell.glazedlists.EventList;
 
 /**
  * A view for FIX messages that uses a FIXMessageTableFormat and ensures the
@@ -15,9 +20,25 @@ import org.marketcetera.photon.ui.IndexedTableViewer;
  * @author michael.lossos@softwaregoodness.com
  * 
  */
-public abstract class AbstractFIXMessagesView extends HistoryMessagesView {
+public abstract class AbstractFIXMessagesView extends MessagesViewBase<MessageHolder> {
 
 	private FIXMessageTableRefresher tableRefresher;
+
+	protected abstract EventList<MessageHolder> extractList(FIXMessageHistory input);
+
+	@Override
+	public void createPartControl(Composite parent) {
+		super.createPartControl(parent);
+		FIXMessageHistory messageHistory = PhotonPlugin.getDefault().getFIXMessageHistory();
+		if (messageHistory!= null){
+			setInput(messageHistory);
+		}
+	}
+
+	public void setInput(FIXMessageHistory input) {
+		EventList<MessageHolder> extractedList = extractList(input);
+		super.setInput(extractedList);
+	}
 
 	/**
 	 * The FIXMessageTableFormat manages the addition/removal of columns. The
@@ -25,7 +46,7 @@ public abstract class AbstractFIXMessagesView extends HistoryMessagesView {
 	 * 
 	 * @return always null
 	 */
-	protected Enum[] getEnumValues() {
+	protected Enum<?>[] getEnumValues() {
 		return null;
 	}
 
@@ -53,7 +74,7 @@ public abstract class AbstractFIXMessagesView extends HistoryMessagesView {
 
 	@Override
 	protected IndexedTableViewer createTableViewer(Table aMessageTable,
-			Enum[] enums) {
+			Enum<?>[] enums) {
 		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(
 				aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);

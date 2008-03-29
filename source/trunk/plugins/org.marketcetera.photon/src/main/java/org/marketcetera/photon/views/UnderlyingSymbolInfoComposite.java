@@ -250,7 +250,7 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 		return value;
 	}
 
-	public String extractStockValue(Enum fieldEnum, Object element) {
+	public String extractStockValue(Enum<?> fieldEnum, Object element) {
 		Object value = null;
 		Integer fieldID = null;
 		if (fieldEnum instanceof IFieldIdentifier) {

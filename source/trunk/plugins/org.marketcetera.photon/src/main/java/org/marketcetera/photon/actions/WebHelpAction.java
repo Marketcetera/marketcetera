@@ -23,14 +23,11 @@ public class WebHelpAction extends Action implements IWorkbenchAction {
 
 	public static final String ID = "org.marketcetera.photon.actions.HelpBrowserAction";
 	private static final String MAIN_HELP_URL = "http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/PhotonGuide";
-	private final IWorkbenchWindow window;
-	
 	/**
 	 * Create the default instance of HelpBrowserAction, setting the ID, text,
 	 * tool-tip text, and image to the defaults.
 	 */
 	public WebHelpAction(IWorkbenchWindow window){
-		this.window = window;
 		setId(ID);
 		setText("&Help");
 		setToolTipText("Open help in a browser");

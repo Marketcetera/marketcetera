@@ -3,8 +3,8 @@ package org.marketcetera.photon.ui;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.action.ContributionItem;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.accessibility.Accessible;
 import org.eclipse.swt.events.FocusEvent;

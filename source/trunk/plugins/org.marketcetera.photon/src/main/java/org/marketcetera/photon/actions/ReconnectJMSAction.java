@@ -18,14 +18,11 @@ import org.marketcetera.photon.PhotonPlugin;
 public class ReconnectJMSAction extends Action implements IWorkbenchAction {
 
 	public static final String ID = "org.marketcetera.photon.actions.ReconnectJMSAction";
-	private IWorkbenchWindow window;
-	
 	/**
 	 * Create the default instance of ReconnectJMSAction, setting the ID, text,
 	 * tool-tip text, and image to the defaults.
 	 */
 	public ReconnectJMSAction(IWorkbenchWindow window){
-		this.window = window;
 		setId(ID);
 		setText("&Reconnect Message Connection");
 		setToolTipText("Reconnect to the message server");

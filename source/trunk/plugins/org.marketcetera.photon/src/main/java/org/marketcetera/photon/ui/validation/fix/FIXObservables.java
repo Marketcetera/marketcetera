@@ -1,13 +1,14 @@
 package org.marketcetera.photon.ui.validation.fix;
 
 
+import java.util.Calendar;
+
 import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+
 import quickfix.DataDictionary;
 import quickfix.FieldType;
 import quickfix.Message;
-
-import java.util.Calendar;
 
 public class FIXObservables {
 

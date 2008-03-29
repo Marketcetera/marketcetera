@@ -3,27 +3,34 @@ package org.marketcetera.photon.ui.validation;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
-public class SetValidator<T> extends AbstractToggledValidator {
+public class SetValidator<T> implements IValidator {
 
-	private HashSet<T> validSet;
-	private IStatus errorStatus;
+	protected HashSet<T> validSet;
+	protected IStatus noMatchStatus;
 
 	public SetValidator(Collection<T> collection, String pluginID,  String errorMessage) {
+		this(collection, pluginID, errorMessage, true);
+	}
+	public SetValidator(Collection<T> collection, String pluginID,  String errorMessage, boolean errorOnNoMatch) {
 		validSet = new HashSet<T>(collection);
-		errorStatus = new Status(IStatus.ERROR, pluginID, IStatus.OK, errorMessage, null);
+		int severity;
+		if (errorOnNoMatch){
+			severity = IStatus.ERROR;
+		} else {
+			severity = IStatus.WARNING;
+		}
+		noMatchStatus = new Status(severity, pluginID, IStatus.OK, errorMessage, null);
 	}
 
 	public IStatus validate(Object arg0) {
-		if (!isEnabled()) {
-			return Status.OK_STATUS;
-		}
 		if (validSet.contains(arg0)){
 			return Status.OK_STATUS;
 		} else {
-			return errorStatus;
+			return noMatchStatus;
 		}
 	}
 

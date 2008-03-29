@@ -5,7 +5,7 @@ package org.marketcetera.photon.views.fixmessagedetail;
 
 import org.eclipse.core.runtime.Platform;
 
-class FIXMessageDetailTableRow implements Comparable {
+class FIXMessageDetailTableRow implements Comparable<Object> {
 	private String field;
 
 	private int  tag;

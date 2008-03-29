@@ -1,13 +1,13 @@
 package org.marketcetera.photon.parser;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.ParseException;
 
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
+import org.marketcetera.photon.ui.databinding.BindingHelper;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.PriceObservableValue;
-import org.marketcetera.photon.views.BindingHelper;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
 
@@ -15,8 +15,7 @@ import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.CFICode;
-import quickfix.field.MaturityDate;
-import quickfix.field.MaturityMonthYear;
+import quickfix.field.MsgType;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.PutOrCall;
@@ -25,8 +24,20 @@ import quickfix.field.Side;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
-import com.ibm.icu.text.DateFormat;
-
+/**
+ * This class can format QuickFIX orders int human readable strings,
+ * given a {@link DataDictionary}.
+ * 
+ * A stock order might format to "SS 100 IBM 10", and an option order
+ * "B 100 IBM 08Oct75P MKT".
+ * 
+ * The string will likely not represent every field in the given order,
+ * and should be used primarily to give a user a "summary" of the given order.
+ * 
+ * 
+ * @author gmiller
+ *
+ */
 public class OrderFormatter {
 
 	private static final String BAD_ORDER_MESSAGE = "Unknown message type";
@@ -55,8 +66,14 @@ public class OrderFormatter {
 		bindingHelper.initIntToImageConverterBuilder(putOrCallConverterBuilder, PutOrCallImage.values());
 		putOrCallConverter = putOrCallConverterBuilder.newToTargetConverter();
 	}
-	
-	public String format(Message orderMessage){
+
+	/**
+	 * Create a human readable representation for the given order message.
+	 * @param orderMessage an order message with message type {@link MsgType#ORDER_SINGLE}
+	 * @return a string representing the basics of this order
+	 * @throws ParseException
+	 */
+	public String format(Message orderMessage) throws ParseException{
 		StringBuffer sb = new StringBuffer();
 		try {
 			if (FIXMessageUtil.isOrderSingle(orderMessage))
@@ -88,14 +105,8 @@ public class OrderFormatter {
 						}
 					}
 					String strikePrice = orderMessage.getString(StrikePrice.FIELD);
-					Date expirationDate;
-					if (orderMessage.isSetField(MaturityDate.FIELD)) {
-						expirationDate  = orderMessage.getUtcDateOnly(MaturityDate.FIELD);
-					} else {
-						expirationDate = orderMessage.getUtcDateOnly(MaturityMonthYear.FIELD);
-					}
-					SimpleDateFormat format = new SimpleDateFormat("yMMM");
-					String expirationString = format.format(expirationDate);
+
+					String expirationString = OptionMarketDataUtils.getOptionExpirationMonthString(orderMessage);
 					sb.append(expirationString);
 					sb.append(strikePrice);
 					sb.append(putOrCallString);

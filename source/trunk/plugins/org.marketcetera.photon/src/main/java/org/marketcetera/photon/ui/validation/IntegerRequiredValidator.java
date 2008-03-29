@@ -5,7 +5,6 @@ import java.math.BigInteger;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.ui.validation.StringRequiredValidator;
 
 public class IntegerRequiredValidator extends StringRequiredValidator {
 
@@ -17,9 +16,6 @@ public class IntegerRequiredValidator extends StringRequiredValidator {
 
 	@Override
 	public IStatus validate(Object value) {
-		if (!isEnabled()) {
-			return Status.OK_STATUS;
-		}
 		if (value == null){
 			return errorStatus;
 		}

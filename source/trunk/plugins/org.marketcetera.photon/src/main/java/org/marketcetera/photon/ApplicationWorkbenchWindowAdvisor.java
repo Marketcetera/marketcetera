@@ -77,6 +77,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 //        configurer.setTitle(productName);
         configurer.setShowPerspectiveBar(true);
         configurer.setShowProgressIndicator(true);
+
+		PhotonPlugin.getDefault().initOrderTickets();
     }
     
 	/*
@@ -131,6 +133,7 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		startJMS();
 		startMarketDataFeed();
 		startIDFactory();
+		initStatusLine();
 	}
 
 	/** 
@@ -159,7 +162,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 
 	private void stopJMS() {
-		ReconnectJMSJob job = null;
 		try {
 			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
 			ServiceTracker jmsFeedTracker = new ServiceTracker(bundleContext, JMSFeedService.class.getName(), null);
@@ -179,7 +181,6 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	}
 	
 	private void stopMarketDataFeed() {
-		ReconnectMarketDataFeedJob job = null;
 		try {
 			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
 			MarketDataFeedTracker marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);

@@ -10,7 +10,7 @@ import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.photon.views.OpenOrdersView;
-import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.StockOrderTicketView;
 import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 
@@ -57,7 +57,6 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		layout.addPerspectiveShortcut(OptionPerspectiveFactory.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
-		layout.addShowViewShortcut(StockOrderTicket.ID);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);
@@ -80,8 +79,8 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		topFolder = layout.createFolder(TOP_FOLDER, IPageLayout.TOP,
 				0.4f, RIGHT_FOLDER);
-		topFolder.addPlaceholder(StockOrderTicket.ID + ":*");
-		topFolder.addView(StockOrderTicket.ID);
+		topFolder.addPlaceholder(StockOrderTicketView.ID + ":*");
+		topFolder.addView(StockOrderTicketView.ID);
 
 		
 

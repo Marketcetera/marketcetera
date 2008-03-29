@@ -19,7 +19,14 @@ import org.springframework.jms.core.JmsOperations;
 import quickfix.CharField;
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.ClOrdID;
+import quickfix.field.CxlRejReason;
+import quickfix.field.ExecID;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrderID;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
 
 /**
  * OrderManager is the main repository for business logic.  It can be considered

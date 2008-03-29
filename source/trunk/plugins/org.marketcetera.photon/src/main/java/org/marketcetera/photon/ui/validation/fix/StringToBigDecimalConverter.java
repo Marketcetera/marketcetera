@@ -30,11 +30,9 @@ public class StringToBigDecimalConverter extends Converter {
 			return null;
 		}
 
-		Number result = null;
-
 		synchronized (numberFormat) {
 			ParsePosition position = new ParsePosition(0);
-			result = numberFormat.parse(source, position);
+			numberFormat.parse(source, position);
 
 			if (position.getIndex() != source.length()
 					|| position.getErrorIndex() > -1) {

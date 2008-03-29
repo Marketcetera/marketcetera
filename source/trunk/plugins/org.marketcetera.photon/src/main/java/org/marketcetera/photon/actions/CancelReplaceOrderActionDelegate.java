@@ -138,7 +138,7 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 				IOrderTicketController controller = PhotonPlugin.getDefault()
 						.getOrderTicketController(originalOrderMessage);
 				if (controller != null) {
-					controller.showMessage(cancelReplaceMessage);
+					controller.setOrderMessage(cancelReplaceMessage);
 				}
 			} catch (NoMoreIDsException e) {
 				PhotonPlugin.getMainConsoleLogger().error(

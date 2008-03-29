@@ -32,17 +32,17 @@
          point="org.eclipse.ui.views">
       <view
             category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.StockOrderTicket"
+            class="org.marketcetera.photon.views.StockOrderTicketView"
             icon="icons/silk/medal_gold_add.png"
-            id="org.marketcetera.photon.views.StockOrderTicket"
+            id="org.marketcetera.photon.views.StockOrderTicketView"
             name="Stock Order Ticket"
             allowMultiple="true"
             />
       <view
             category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.OptionOrderTicket"
+            class="org.marketcetera.photon.views.OptionOrderTicketView"
             icon="icons/silk/clock_add.png"
-            id="org.marketcetera.photon.views.OptionOrderTicket"
+            id="org.marketcetera.photon.views.OptionOrderTicketView"
             name="Option Order Ticket"
             allowMultiple="true"
             />

@@ -3,21 +3,16 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.photon.ui.IBookComposite;
-
-import quickfix.Message;
+import org.eclipse.ui.forms.widgets.ExpandableComposite;
+import org.eclipse.ui.forms.widgets.ScrolledForm;
 
 public interface IOrderTicket {
 
-	Button getCancelButton();
+	Button getClearButton();
 
 	Button getSendButton();
-
-	IBookComposite getBookComposite();
 
 	Text getPriceText();
 
@@ -33,19 +28,16 @@ public interface IOrderTicket {
 
 	Label getErrorMessageLabel();
 	
-	CheckboxTableViewer getTableViewer();
-
-	void updateMessage(Message aMessage) throws MarketceteraException;
-
-	void showMessage(Message order);
-
-	void showErrorForControl(Control aControl, int severity, String message);
-
-	void clearErrors();
-
-	void showErrorMessage(String errorMessage, int severity);
-
-	void clear();
+	Label getErrorIconLabel();
 	
-	IOrderTicketController getOrderTicketController();
+	ExpandableComposite getCustomExpandableComposite();
+
+	ExpandableComposite getOtherExpandableComposite();
+	
+	ScrolledForm getForm();
+
+	CheckboxTableViewer getCustomFieldsTableViewer();
+	
+	Text getMessageDebugText();
+	
 }

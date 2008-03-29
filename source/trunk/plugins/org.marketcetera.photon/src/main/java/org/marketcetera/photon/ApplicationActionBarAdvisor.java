@@ -38,10 +38,6 @@ import org.marketcetera.photon.actions.WebHelpAction;
 @ClassVersion("$Id$")
 public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
-	private IWorkbenchWindow window;
-
-	//private IWorkbenchAction helpContentsAction;
-
 	private IWorkbenchAction saveAction;
 
 	private IWorkbenchAction closeAllAction;
@@ -135,9 +131,6 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	 * @see org.eclipse.ui.application.ActionBarAdvisor#makeActions(org.eclipse.ui.IWorkbenchWindow)
 	 */
 	protected void makeActions(IWorkbenchWindow window) {
-		this.window = window;
-
-
 		saveAction = ActionFactory.SAVE.create(window);  register(saveAction);
 		closeAllAction = ActionFactory.CLOSE_ALL.create(window);  register(closeAllAction);
 		closeAction = ActionFactory.CLOSE.create(window);  register(closeAction);

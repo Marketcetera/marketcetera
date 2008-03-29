@@ -3,13 +3,11 @@ package org.marketcetera.photon.views;
 import quickfix.Message;
 
 public interface IOrderTicketController {
-	void showMessage(Message aMessage);
+	void setOrderMessage(Message order);
 
-	Message getMessage();
+	Message getOrderMessage();
 	
-	void handleSend();
-
-	void handleCancel();
+	void clear();
 	
 	void dispose();
 }

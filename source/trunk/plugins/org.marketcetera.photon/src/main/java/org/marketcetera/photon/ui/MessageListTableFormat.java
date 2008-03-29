@@ -11,11 +11,11 @@ import quickfix.FieldMap;
 
 public class MessageListTableFormat extends MessageListTableFormatBase<MessageHolder> {
 	
-	public MessageListTableFormat(Table table, Enum[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
+	public MessageListTableFormat(Table table, Enum<?>[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
 		super(table, columns, site, dataDictionary);
 	}
 
-	public MessageListTableFormat(Table table, Enum[] columns, IWorkbenchPartSite site) {
+	public MessageListTableFormat(Table table, Enum<?>[] columns, IWorkbenchPartSite site) {
 		super(table, columns, site);
 	}
 

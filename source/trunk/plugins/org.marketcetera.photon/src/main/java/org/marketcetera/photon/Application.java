@@ -1,6 +1,5 @@
 package org.marketcetera.photon;
 
-import org.eclipse.core.runtime.IPlatformRunnable;
 import org.eclipse.equinox.app.IApplication;
 import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.util.IPropertyChangeListener;

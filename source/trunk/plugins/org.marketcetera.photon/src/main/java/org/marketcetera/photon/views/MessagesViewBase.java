@@ -119,7 +119,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 
 	protected abstract void initializeToolBar(IToolBarManager theToolBarManager);
 	
-	protected abstract Enum[] getEnumValues();
+	protected abstract Enum<?>[] getEnumValues();
 	
 	
 	protected void packColumns(final Table table) {
@@ -270,7 +270,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
         return messageTable;
     }
     
-	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum<?>[] enums) {
 		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());

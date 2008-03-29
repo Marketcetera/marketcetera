@@ -337,9 +337,9 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 	}
 
 	private void addFieldsFromMap(FieldMap map, ArrayList<FIXMessageDetailTableRow> rows, FIXDataDictionary fixDictionary, String msgType) {
-		Iterator it = map.iterator();
+		Iterator<?> it = map.iterator();
 		while (it.hasNext()){
-			Field aField = (Field) it.next();
+			Field<?> aField = (Field<?>) it.next();
 			addFIXMessageDetailTableRow(map, aField.getTag(), rows, fixDictionary,
 					msgType);
 		}

@@ -92,7 +92,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			this.name = name;
 		}
 
-		MarketDataColumns(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+		MarketDataColumns(Class<?> clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
 			this(clazz);
 			this.fieldID = fieldID;
 			this.groupID = groupID;
@@ -100,7 +100,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
-		MarketDataColumns(Class clazz) {
+		MarketDataColumns(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
 				Field fieldField = clazz.getField("FIELD");
@@ -233,7 +233,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 
 	@Override
-	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum[] enums) {
+	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum<?>[] enums) {
 		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
 		getSite().setSelectionProvider(aMessagesViewer);
 		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
@@ -258,7 +258,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	}
 
 	@Override
-	protected Enum[] getEnumValues() {
+	protected Enum<?>[] getEnumValues() {
 		return MarketDataColumns.values();
 	}
 
@@ -348,10 +348,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	class MarketDataCellModifier implements ICellModifier
 	{
-		private final MarketDataView view;
-
 		public MarketDataCellModifier(MarketDataView view) {
-			this.view = view;
 		}
 
 		public boolean canModify(Object element, String property) {

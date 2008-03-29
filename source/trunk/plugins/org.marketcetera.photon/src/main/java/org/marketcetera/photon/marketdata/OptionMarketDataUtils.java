@@ -1,17 +1,17 @@
 package org.marketcetera.photon.marketdata;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Assert;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
+import org.marketcetera.core.ThreadLocalSimpleDateFormat;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
@@ -25,8 +25,6 @@ import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
 import quickfix.field.PutOrCall;
 import quickfix.field.SecurityListRequestType;
-import quickfix.field.SecurityRequestType;
-import quickfix.field.SecurityType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
@@ -34,16 +32,33 @@ public class OptionMarketDataUtils {
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
 
-	public static final DateFormat MONTH_YEAR_FORMAT = new SimpleDateFormat("yyyyMM");
-	public static final DateFormat DAY_FORMAT = new SimpleDateFormat("dd");
-	public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyyMMdd");
+	/* SimpleDateFormats are not thread safe... */
+	public static final ThreadLocalSimpleDateFormat MONTH_YEAR_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyyyMM");
+	public static final ThreadLocalSimpleDateFormat DAY_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("dd");
+	public static final ThreadLocalSimpleDateFormat DATE_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyyyMMdd");
+	public static final ThreadLocalSimpleDateFormat SHORT_MONTH_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("MMM");
+	public static final ThreadLocalSimpleDateFormat OPTION_EXPIRATION_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyMMM");
 
-	private static final Pattern OPTION_SYMBOL_PATTERN = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
+	{
+		MONTH_YEAR_FORMAT_LOCAL.setTimeZone(TimeZone.getTimeZone(MarketDataUtils.UTC_TIME_ZONE));
+		DAY_FORMAT_LOCAL.setTimeZone(TimeZone.getTimeZone(MarketDataUtils.UTC_TIME_ZONE));
+		DATE_FORMAT_LOCAL.setTimeZone(TimeZone.getTimeZone(MarketDataUtils.UTC_TIME_ZONE));
+		SHORT_MONTH_FORMAT_LOCAL.setTimeZone(TimeZone.getTimeZone(MarketDataUtils.UTC_TIME_ZONE));
+		OPTION_EXPIRATION_FORMAT_LOCAL.setTimeZone(TimeZone.getTimeZone(MarketDataUtils.UTC_TIME_ZONE));
+	}
+	/**
+	 * The pattern used to determine if a symbol represents an option.
+	 */
+	public static final Pattern OPTION_SYMBOL_PATTERN = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
 
 
 
-	private static Pattern optionSymbolRootSeparatorPattern;
-
+	/**
+	 * Create a query for requesting all related options to the specified underlying
+	 * 
+	 * @param underlyingSymbol the underlying symbol for the options query
+	 * @return a message representing the query
+	 */
 	public static Message newRelatedOptionsQuery(MSymbol underlyingSymbol) {
 		Message requestMessage = messageFactory
 				.createMessage(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
@@ -80,22 +95,25 @@ public class OptionMarketDataUtils {
 		return requestMessage;
 	}
 
-	public static Message newUnderlyingQuery(String optionRoot) {
-		Message requestMessage = messageFactory
-				.createMessage(MsgType.SECURITY_DEFINITION_REQUEST);
-
-		requestMessage.setField(new SecurityRequestType(
-				SecurityRequestType.REQUEST_SECURITY_IDENTITY_AND_SPECIFICATIONS));
-		requestMessage.setField(new SecurityType(SecurityType.OPTION));
-		requestMessage.setField(new Symbol(optionRoot));
-		return requestMessage;
-	}
-
+	/**
+	 * Determines if the given symbol represents an option, based on
+	 * {@link #OPTION_SYMBOL_PATTERN}.  If symbol is null, will return false.
+	 * @param symbol the symbol
+	 * @return true if the symbol represents an option symbol
+	 */
 	public static boolean isOptionSymbol(String symbol){
+		if (symbol == null) {
+			return false;
+		}
 		Matcher matcher = OPTION_SYMBOL_PATTERN.matcher(symbol);
 		return matcher.matches();
 	}
 	
+	/**
+	 * Get the root symbol from the given option symbol ("MSQ" from "MSQ+RE" for example)
+	 * @param symbol the symbol from which to get the root
+	 * @return the root
+	 */
 	public static String getOptionRootSymbol(String symbol) {
 		if (symbol == null) {
 			return null;
@@ -126,15 +144,21 @@ public class OptionMarketDataUtils {
 	}
 
 
-
+	/**
+	 * Get the type of option (put or call) represented by this 
+	 * {@link FieldMap} (such as a Message).  
+	 * @param fieldMap the FieldMap
+	 * @return {@link PutOrCall#PUT} if put, {@link PutOrCall#CALL} if call
+	 * @throws FieldNotFound if a required field is not present in the FieldMap
+	 */
 	public static int getOptionType(
-			FieldMap optionGroup)
+			FieldMap fieldMap)
 			throws FieldNotFound {
 
-		if (optionGroup.isSetField(PutOrCall.FIELD)){
-			return optionGroup.getInt(PutOrCall.FIELD);
+		if (fieldMap.isSetField(PutOrCall.FIELD)){
+			return fieldMap.getInt(PutOrCall.FIELD);
 		}
-		OptionCFICode cfiCode = new OptionCFICode(optionGroup
+		OptionCFICode cfiCode = new OptionCFICode(fieldMap
 				.getString(CFICode.FIELD));
 
 		int putOrCall;
@@ -150,6 +174,12 @@ public class OptionMarketDataUtils {
 		return putOrCall;
 	}
 	
+	/**
+	 * Get the "opposite" type of option from the specified type
+	 * 
+	 * @param thisOptionType either {@link PutOrCall#PUT} or {@link PutOrCall#CALL}
+	 * @return {@link PutOrCall#PUT} when thisOptionType is call, and {@link PutOrCall#CALL}, when thisOptionType is put
+	 */
 	public static int getOtherOptionType(int thisOptionType){
 		switch (thisOptionType){
 		case PutOrCall.PUT:
@@ -161,18 +191,73 @@ public class OptionMarketDataUtils {
 		}
 	}
 	
-	public static Pair<Integer, Integer> getMaturityMonthYear(FieldMap map) throws ParseException, FieldNotFound
+	/**
+	 * Return a pair of integers representing the month (1-indexed) and year
+	 * of the "maturity date" of the option specified by fieldMap.
+	 * 
+	 * @param fieldMap FieldMap representing an option
+	 * @return a {@link Pair} whose first element is the month, and second element the year of maturity for the given option
+	 * @throws FieldNotFound if a required field is missing
+	 * @throws ParseException if a required field is improperly formatted
+	 */
+	public static Pair<Integer, Integer> getMaturityMonthYear(FieldMap fieldMap) throws ParseException, FieldNotFound
 	{
+		Calendar cal = parseCalendar(fieldMap);
+		return new Pair<Integer, Integer>(cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR));
+	}
+
+	private static Calendar parseCalendar(FieldMap map) throws ParseException,
+			FieldNotFound {
 		Date parsed;
 		try {
 			String maturityDate = map.getString(MaturityDate.FIELD);
-			parsed = DATE_FORMAT.parse(maturityDate);
+			parsed = parseDateString(maturityDate);
 		} catch (FieldNotFound fnf){
 			String maturityMonthYear = map.getString(MaturityMonthYear.FIELD);
-			parsed = MONTH_YEAR_FORMAT.parse(maturityMonthYear);
+			parsed = parseMonthYear(maturityMonthYear);
 		}
 		Calendar cal = GregorianCalendar.getInstance();
 		cal.setTime(parsed);
-		return new Pair<Integer, Integer>(cal.get(Calendar.MONTH)+1, cal.get(Calendar.YEAR));
+		return cal;
 	}
+	
+	/**
+	 * Get a string representing the expiration month with a year identifier.  e.g.
+	 * 09JAN for January of 2009.
+	 * @param map the FieldMap representing the option
+	 * @return a string representing the expiration year and month
+	 * @throws FieldNotFound if a required field is missing
+	 * @throws ParseException if a required field is improperly formatted
+	 */
+	public static String getOptionExpirationMonthString(FieldMap map) throws ParseException, FieldNotFound{
+		Calendar cal = parseCalendar(map);
+		return OPTION_EXPIRATION_FORMAT_LOCAL.get().format(cal.getTime());
+		
+	}
+
+	/**
+	 * Given a string representing the "maturity month year" in standard
+	 * FIX format, (yyyyMM), parse out a Date object.  The DAY_OF_MONTH is 
+	 * unspecified in the returned Date.
+	 * 
+	 * @param maturityMonthYear the string representing the year and month, eg "200901" for January of 2009
+	 * @return the date object representing the month and year
+	 * @throws ParseException if the string is improperly formatted
+	 */
+	public static Date parseMonthYear(String maturityMonthYear)
+			throws ParseException {
+		return MONTH_YEAR_FORMAT_LOCAL.get().parse(maturityMonthYear);
+	}
+
+	/**
+	 * Given a string representing the "maturity date" in standard
+	 * FIX format, (yyyyMMdd), parse out a Date object.
+	 * @param maturityDate the string representing the year and month, eg "200901" for January of 2009
+	 * @return the date object representing the date
+	 * @throws ParseException if the string is improperly formatted
+	 */
+	public static Date parseDateString(String maturityDate) throws ParseException {
+		return DATE_FORMAT_LOCAL.get().parse(maturityDate);
+	}
+	
 }

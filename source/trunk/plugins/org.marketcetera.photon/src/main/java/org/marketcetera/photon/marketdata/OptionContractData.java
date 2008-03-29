@@ -2,11 +2,9 @@ package org.marketcetera.photon.marketdata;
 
 import java.math.BigDecimal;
 import java.text.ParseException;
-import java.util.Comparator;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
-import org.marketcetera.photon.views.OptionDateHelper;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -14,6 +12,14 @@ import quickfix.field.PutOrCall;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
+/**
+ * This class represents a descriptor for a particular option series.
+ * It includes the underlying symbol, option symbol, option root, 
+ * expiration year, expiration month, strike price, and put or call
+ * 
+ * @author gmiller
+ *
+ */
 public class OptionContractData {
 
 	private MSymbol underlyingSymbol;
@@ -21,15 +27,19 @@ public class OptionContractData {
 	private String optionRoot;
 	private Integer expirationYear;
 	private Integer expirationMonth;
-	private String expirationYearUIString;
-	private String expirationMonthUIString;
-	private String strikePriceUIString;
 	private BigDecimal strikePrice;
 	private Integer putOrCall;
-	private static OptionDateHelper OPTION_DATE_HELPER = new OptionDateHelper();
 
 	/**
-	 * @param optionSymbol the option symbol for the specific contract, e.g. MSQ+FN
+	 * Constructor that takes all the items in the descriptor.
+	 * 
+	 * @param underlyingSymbol the underlying (stock) symbol, like IBM
+	 * @param optionSymbol the option symbol, like IBM+RE
+	 * @param expirationYear the year of expiration for this option series
+	 * @param expirationMonth the month of expiration for this option series
+	 * @param strikePrice the strike price of this option series
+	 * @param putOrCall {@link PutOrCall#PUT} if put, {@link PutOrCall#CALL} if call
+	 * 
 	 */
 	public OptionContractData(MSymbol underlyingSymbol, MSymbol optionSymbol, Integer expirationYear, Integer expirationMonth, BigDecimal strikePrice, int putOrCall) {
 		this.underlyingSymbol = underlyingSymbol;
@@ -40,51 +50,70 @@ public class OptionContractData {
 		this.putOrCall = putOrCall;
 		
 		optionRoot = OptionMarketDataUtils.getOptionRootSymbol(optionSymbol.getFullSymbol());
-		parseUIValues();
 	}
 
-	public OptionContractData(String pOptionRoot, String uiExpirationYear, String uiExpirationMonth, String uiStrikePrice, Integer pPutOrCall) {
-		expirationYearUIString = uiExpirationYear;
-		expirationMonthUIString = uiExpirationMonth;
-		strikePriceUIString = uiStrikePrice;
-		optionRoot = pOptionRoot;
-		putOrCall = pPutOrCall;
-	}
 
 	/**
-	 * @return true if this is a put option, false if this is a call
+	 * Get whether this represents a put or call.
+	 * 
+	 * @return {@link PutOrCall#PUT} if put, {@link PutOrCall#CALL} if call
 	 */
 	public int getPutOrCall() {
 		return putOrCall;
 	}
 
+	/**
+	 * Get the expiration month
+	 * @return the expiration month
+	 */
 	public Integer getExpirationMonth() {
 		return expirationMonth;
 	}
 
+	/**
+	 * Get the expiration year
+	 * @return the expiration year
+	 */
 	public Integer getExpirationYear() {
 		return expirationYear;
 	}
 
 	/**
+	 * Get the full option symbol.
+	 * 
 	 * @return the option symbol for the specific contract, e.g. MSQ+FN
 	 */
 	public MSymbol getOptionSymbol() {
 		return optionSymbol;
 	}
 
+	/**
+	 * Get the root of the option symbol
+	 * @return the root of the option symbol, for example, MSQ
+	 */
 	public String getOptionRoot() {
 		return optionRoot;
 	}
 
+	/**
+	 * Get the strike price of this option
+	 * @return the strike price as a BigDecimal
+	 */
 	public BigDecimal getStrikePrice() {
 		return strikePrice;
 	}
 
+	/**
+	 * Get the underlying symbol
+	 * @return the underlying symbol as an {@link MSymbol}
+	 */
 	public MSymbol getUnderlyingSymbol() {
 		return underlyingSymbol;
 	}
 
+	/**
+	 * Calculate the hash code based on the internal components of this
+	 */
 	@Override
 	public int hashCode() {
 		final int PRIME = 31;
@@ -98,6 +127,13 @@ public class OptionContractData {
 		return result;
 	}
 
+	/**
+	 * Determine if this is equal to the specified object by comparing
+	 * all component parts, optionally ignoring the put or call field.
+	 * @param obj the object to compare
+	 * @param ignorePutOrCall true if put or call field should be ignored when determining equality
+	 * @return true if equal to obj, false otherwise
+	 */
 	private boolean equalsImpl(Object obj, boolean ignorePutOrCall) {
 		if (this == obj)
 			return true;
@@ -155,19 +191,28 @@ public class OptionContractData {
 		return equalsImpl(obj, true);
 	}
 
-	public static OptionContractData fromFieldMap(MSymbol underlyingSymbol, FieldMap optionGroup) throws FieldNotFound, ParseException{
+	/**
+	 * Construct an OptionContractData object from a {@link FieldMap} (such
+	 * as a message), and some additional data.
+	 * @param underlyingSymbol the underlying symbol to put into the new OptionContractData
+	 * @param fieldMap the field map from which to extract values
+	 * @return the new OptionContractData containing values from the FieldMap
+	 * @throws FieldNotFound if a required field is missing from the field map
+	 * @throws ParseException if a required field is incorrectly formatted
+	 */
+	public static OptionContractData fromFieldMap(MSymbol underlyingSymbol, FieldMap fieldMap) throws FieldNotFound, ParseException{
 
-		String optionSymbolStr = optionGroup.getString(Symbol.FIELD);
+		String optionSymbolStr = fieldMap.getString(Symbol.FIELD);
 
 		int putOrCall;
 
-		putOrCall = OptionMarketDataUtils.getOptionType(optionGroup);
+		putOrCall = OptionMarketDataUtils.getOptionType(fieldMap);
 
-		Pair<Integer, Integer> yearMonth = OptionMarketDataUtils.getMaturityMonthYear(optionGroup);
+		Pair<Integer, Integer> yearMonth = OptionMarketDataUtils.getMaturityMonthYear(fieldMap);
 		Integer expirationMonth = yearMonth.getFirstMember();
 		Integer expirationYear = yearMonth.getSecondMember();
 
-		String strikeStr = optionGroup.getString(StrikePrice.FIELD);
+		String strikeStr = fieldMap.getString(StrikePrice.FIELD);
 		BigDecimal strike = new BigDecimal(strikeStr);
 
 		MSymbol optionSymbol = new MSymbol(optionSymbolStr);
@@ -176,62 +221,4 @@ public class OptionContractData {
 				putOrCall);
 	}
 	
-	private void parseUIValues() {
-		expirationMonthUIString = OPTION_DATE_HELPER.getMonthAbbreviation(expirationMonth);
-		expirationYearUIString = OPTION_DATE_HELPER.formatYear(expirationYear);
-		strikePriceUIString = strikePrice.toPlainString();
-	}
-
-	public String getExpirationYearUIString() {
-		return expirationYearUIString;
-	}
-
-	public String getExpirationMonthUIString() {
-		return expirationMonthUIString;
-	}
-
-	public String getStrikePriceUIString() {
-		return strikePriceUIString;
-	}
-
-	public static class UIOnlyComparator implements
-		Comparator<OptionContractData> {
-
-		public int compare(OptionContractData ocd1, OptionContractData ocd2) {
-			if (ocd1 == ocd2)
-				return 0;
-			
-			if (ocd1 == null)
-				return ocd2 == null ? 0 : -1;
-			else if (ocd2 == null){
-				return 1;
-			}
-			int compVal;
-			compVal = compareHelper(ocd1.expirationMonthUIString, ocd2.expirationMonthUIString);
-			if (compVal != 0) return compVal;
-
-			compVal = compareHelper(ocd1.expirationYearUIString, ocd2.expirationYearUIString);
-			if (compVal != 0) return compVal;
-
-			compVal = compareHelper(ocd1.optionRoot, ocd2.optionRoot);
-			if (compVal != 0) return compVal;
-			
-			compVal = compareHelper(ocd1.putOrCall, ocd2.putOrCall);
-			if (compVal != 0) return compVal;
-
-			compVal = compareHelper(ocd1.strikePriceUIString, ocd2.strikePriceUIString);
-			return compVal;
-
-		}
-
-		private <T> int compareHelper(Comparable<T> c1, T c2){
-			if (c1 == null){
-				return c2 == null ? 0 : -1;
-			} else if (c2 == null){
-				// c1 is not null
-				return 1;
-			}
-			return c1.compareTo(c2);
-		}
-	}
 }

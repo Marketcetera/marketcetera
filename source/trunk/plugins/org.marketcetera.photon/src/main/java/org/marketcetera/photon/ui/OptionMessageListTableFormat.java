@@ -7,7 +7,6 @@ import org.marketcetera.photon.marketdata.OptionInfoComponent;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.views.OptionDateHelper;
-import org.marketcetera.photon.views.OptionMarketDataView;
 import org.marketcetera.photon.views.OptionMessagesComposite;
 import org.marketcetera.photon.views.OptionMessagesComposite.OptionDataColumns;
 
@@ -20,7 +19,7 @@ public class OptionMessageListTableFormat extends MessageListTableFormatBase<Opt
 
 	private OptionDateHelper helper;
 
-	public OptionMessageListTableFormat(Table table, Enum[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
+	public OptionMessageListTableFormat(Table table, Enum<?>[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
 		super(table, columns, site, dataDictionary);
 		helper = new OptionDateHelper();
 	}

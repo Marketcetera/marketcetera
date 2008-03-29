@@ -15,14 +15,10 @@ public class RunScriptActionDelegate implements IEditorActionDelegate {
 
 	public static final String ID = "org.marketcetera.photon.actions.RunScriptActionDelegate";
 	
-	private IEditorPart targetEditor;
-	
-	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IEditorActionDelegate#setActiveEditor(org.eclipse.jface.action.IAction, org.eclipse.ui.IEditorPart)
 	 */
 	public void setActiveEditor(IAction action, IEditorPart targetEditor) {
-  		this.targetEditor = targetEditor;
 	}
 
 	/* (non-Javadoc)

@@ -1,15 +1,15 @@
 package org.marketcetera.photon.ui;
 
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.menus.AbstractWorkbenchTrimWidget;
 import org.marketcetera.core.ClassVersion;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import org.marketcetera.core.ThreadLocalSimpleDateFormat;
 
 /**
  * Places the clock widget in the bottom status bar of the Photon client.
@@ -22,42 +22,44 @@ import java.util.TimerTask;
 @ClassVersion("$Id$")
 public class ClockTrimWidget extends AbstractWorkbenchTrimWidget {
     private Label clockValue;
-    private Timer timer;
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("MMM d HH:mm:ss z");
-
+    private static final ThreadLocalSimpleDateFormat DATE_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("MMM d HH:mm:ss z");
+    private static final Timer timer = new Timer("ClockUpdateTimer");
+	private TimerTask task;
+    
     public ClockTrimWidget() {
     }
 
     public void fill(Composite parent, int oldSide, int newSide) {
         clockValue = new Label(parent, SWT.NONE);
-        clockValue.setText(DATE_FORMAT.format(new Date()));
+        clockValue.setText(DATE_FORMAT_LOCAL.get().format(new Date()));
 
-        TimerTask task = new TimerTask() {
+        task = new TimerTask() {
             public void run() {
                 if (!clockValue.isDisposed()) {
                     clockValue.getDisplay().asyncExec(new Runnable() {
                         public void run() {
-                            clockValue.setText(DATE_FORMAT.format(new Date()));
+                            if (!clockValue.isDisposed()) {
+                            	clockValue.setText(DATE_FORMAT_LOCAL.get().format(new Date()));
+                            }
                         }
                     });
                 }
             }
         };
-        timer = new Timer("ClockUpdateTimer");
-        timer.schedule(task, 0, 1000);
+		timer.schedule(task, 0, 1000);
     }
 
-    /** Need to dispoose of the clockValue widget b/c the fill() method actually gets called
+    /** Need to dispose of the clockValue widget b/c the fill() method actually gets called
      * twice so we need to  dispose of the first one created.
      */
     public void dispose() {
+        if (task != null) {
+            task.cancel();
+            task = null;
+        }
         if (clockValue != null) {
             clockValue.dispose();
             clockValue = null;
-        }
-        if (timer != null) {
-            timer.cancel();
-            timer = null;
         }
     }
 }

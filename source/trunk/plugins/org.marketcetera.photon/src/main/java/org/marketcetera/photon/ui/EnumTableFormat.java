@@ -26,7 +26,7 @@ import ca.odell.glazedlists.gui.TableFormat;
 
 public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 {
-	Enum [] columns;
+	Enum<?> [] columns;
 	private DataDictionary dataDictionary;
 //	private Map<String, Integer> fieldMap = new HashMap<String, Integer>();
 	private FIXValueExtractor valueExtractor;
@@ -35,18 +35,18 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
-	public EnumTableFormat(Table table, Enum[] columns){
+	public EnumTableFormat(Table table, Enum<?>[] columns){
 		this(table, columns, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
 	}
 	
-	public EnumTableFormat(Table table, Enum[] columns, DataDictionary dataDictionary) {
+	public EnumTableFormat(Table table, Enum<?>[] columns, DataDictionary dataDictionary) {
 		this.columns = columns;
 		this.dataDictionary = dataDictionary;
 		FIXMessageFactory messageFactory = FIXVersion.getFIXVersion(dataDictionary.getVersion()).getMessageFactory();
 		valueExtractor = new FIXValueExtractor(dataDictionary, messageFactory);
 		
 		int i = 0;
-        for (Enum aColumn : columns) {
+        for (Enum<?> aColumn : columns) {
 			int alignment;
 			if (isNumericColumn(aColumn, dataDictionary)){
 				alignment = SWT.RIGHT;
@@ -59,8 +59,8 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		}
 	}
 
-	private boolean isNumericColumn(Enum column, DataDictionary dict) {
-		Class javaType;
+	private boolean isNumericColumn(Enum<?> column, DataDictionary dict) {
+		Class<?> javaType;
 		FieldType fieldTypeEnum;
 		Integer fieldID;
 		if (column instanceof IFieldIdentifier
@@ -85,7 +85,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	}
 
 	public Object getColumnValue(T element, int columnIndex) {
-		Enum columnEnum = columns[columnIndex];
+		Enum<?> columnEnum = columns[columnIndex];
 		if (columnEnum instanceof IFieldIdentifier) {
 			IFieldIdentifier fieldIdentifier = ((IFieldIdentifier) columnEnum);
 			Integer fieldID = fieldIdentifier.getFieldID();
@@ -115,8 +115,9 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		return null;
 	}
 
+	@SuppressWarnings("unchecked") // cast of element to T
 	public String getColumnText(Object element, int columnIndex) {
-		Enum columnEnum = columns[columnIndex];
+		Enum<?> columnEnum = columns[columnIndex];
 		Integer fieldID;
 		if (columnEnum instanceof IFieldIdentifier && 
 				(fieldID = ((IFieldIdentifier)columnEnum).getFieldID()) != null){
@@ -144,7 +145,6 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 
 
 	public void addListener(ILabelProviderListener listener) {
-		FieldType fieldTypeEnum = dataDictionary.getFieldTypeEnum(1);
 	}
 
 	public void dispose() {
