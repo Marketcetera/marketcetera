@@ -22,6 +22,14 @@ import org.marketcetera.photon.scripting.JRubyBSFTest;
 import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
 import org.marketcetera.photon.scripting.ScriptRegistryTest;
 import org.marketcetera.photon.scripting.StrategyTest;
+import org.marketcetera.photon.ui.databinding.FormTextObservableValueTest;
+import org.marketcetera.photon.ui.databinding.HasValueConverterTest;
+import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverterTest;
+import org.marketcetera.photon.ui.databinding.LabelBooleanImageObservableValueTest;
+import org.marketcetera.photon.ui.databinding.ObservableEventListTest;
+import org.marketcetera.photon.ui.validation.DataDictionaryValidatorTest;
+import org.marketcetera.photon.ui.validation.IgnoreFirstNullValidatorTest;
+import org.marketcetera.photon.ui.validation.IntegerRequiredValidatorTest;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilderTest;
 import org.marketcetera.photon.ui.validation.fix.PriceObservableValueTest;
 import org.marketcetera.photon.ui.validation.fix.StringDateObservableValueTest;
@@ -30,9 +38,13 @@ import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
 import org.marketcetera.photon.views.MarketDataViewTest;
 import org.marketcetera.photon.views.OptionDateHelperTest;
+import org.marketcetera.photon.views.OptionOrderTicketControllerTest;
+import org.marketcetera.photon.views.OptionOrderTicketModelTest;
 import org.marketcetera.photon.views.OptionOrderTicketViewTest;
-import org.marketcetera.photon.views.OptionSeriesCollectionTest;
+import org.marketcetera.photon.views.OptionOrderTicketXSWTTest;
+import org.marketcetera.photon.views.SWTTestViewTest;
 import org.marketcetera.photon.views.StockOrderTicketViewTest;
+import org.marketcetera.photon.views.StockOrderTicketXSWTTest;
 
 public class TS_Photon {
 	public static Test suite() {
@@ -71,7 +83,6 @@ public class TS_Photon {
 		// quickfix
 		suite.addTestSuite(QuickFIXTest.class);
 
-
 		//scripting
 		suite.addTestSuite(ClasspathTest.class);
 		suite.addTestSuite(JRubyBSFTest.class);
@@ -79,10 +90,20 @@ public class TS_Photon {
 		suite.addTestSuite(ScriptRegistryTest.class);
 		suite.addTestSuite(StrategyTest.class);
 		
+		suite.addTestSuite(IgnoreFirstNullValidatorTest.class);
+		suite.addTestSuite(IntegerRequiredValidatorTest.class);
         // ui.validation.fix
 		suite.addTestSuite(PriceConverterBuilderTest.class);
 		suite.addTest(StringDateObservableValueTest.suite());
 		suite.addTest(PriceObservableValueTest.suite());
+		
+		// ui.databinding
+		suite.addTestSuite(HasValueConverterTest.class);
+		suite.addTestSuite(ObservableEventListTest.class);
+		suite.addTestSuite(FormTextObservableValueTest.class);
+		suite.addTest(IsNewOrderMessageConverterTest.suite());
+		suite.addTestSuite(LabelBooleanImageObservableValueTest.class);
+		suite.addTest(DataDictionaryValidatorTest.suite());
 		
 		// views
 		suite.addTestSuite(AveragePricesViewTest.class);
@@ -92,8 +113,12 @@ public class TS_Photon {
 		suite.addTestSuite(StockOrderTicketViewTest.class);
 		suite.addTestSuite(OptionOrderTicketViewTest.class);
 		suite.addTestSuite(OptionDateHelperTest.class);
-		suite.addTestSuite(OptionSeriesCollectionTest.class);
-
+		suite.addTest(OptionOrderTicketModelTest.suite());
+		suite.addTestSuite(OptionOrderTicketXSWTTest.class);
+		suite.addTestSuite(StockOrderTicketXSWTTest.class);
+		suite.addTestSuite(OptionOrderTicketControllerTest.class);
+		suite.addTestSuite(SWTTestViewTest.class);
+		
 		return suite;
 	}
 
