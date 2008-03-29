@@ -351,9 +351,9 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     	execReport.setField(new OrdStatus(OrdStatus.NEW));
     	execReport.setField(new Symbol("A"));
     	execReport.setField(new Side(Side.BUY));
-		execReport.setField(new StringField(OrderQty.FIELD, noZeroes)); 
-		execReport.setField(new StringField(CumQty.FIELD, twoZeroes)); 
-		execReport.setField(new StringField(AvgPx.FIELD, aLotOfZeroes)); 
+		execReport.setField(new OrderQty(new BigDecimal(noZeroes))); 
+		execReport.setField(new CumQty(new BigDecimal(twoZeroes))); 
+		execReport.setField(new AvgPx(new BigDecimal(aLotOfZeroes))); 
 
     	String execReportString = execReport.toString();
     	assertTrue(execReportString.contains(separator+OrderQty.FIELD+"="+noZeroes+separator));

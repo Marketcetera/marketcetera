@@ -1,8 +1,8 @@
 package org.marketcetera.core;
 
-import org.marketcetera.symbology.SymbolScheme;
 import org.marketcetera.symbology.Exchange;
 import org.marketcetera.symbology.Exchanges;
+import org.marketcetera.symbology.SymbolScheme;
 
 /**
  * @author Graham Miller

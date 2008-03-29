@@ -80,6 +80,9 @@ public class BigDecimalUtilsTest extends TestCase {
         // decimal place (this is often what we mean by "round").
         assertEquals(new BigDecimal("11").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_UP).toPlainString());
         assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_DOWN).toPlainString());
+
+        assertEquals("10.3000", new BigDecimal("10.3000").toPlainString());
+        assertEquals("10.3000", new BigDecimal("10.3000").toString());
     }
 
     public void testTrim() throws Exception {

@@ -52,7 +52,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
-        assertEquals(new BigDecimal(1000), message.getDecimal(OrderQty.FIELD));
+        assertEquals(new BigDecimal(1000), message.getField(new OrderQty()).getValue());
         assertEquals("BRK", message.getField(new Symbol()).getValue());
         assertEquals("A", message.getField(new SymbolSfx()).getValue());
         assertEquals("SIGMA", message.getField(new ExDestination()).getValue());
@@ -70,7 +70,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
-        assertEquals(new BigDecimal(100), message.getDecimal(OrderQty.FIELD));
+        assertEquals(new BigDecimal(100), message.getField(new OrderQty()).getValue());
         assertEquals("BRK", message.getField(new Symbol()).getValue());
         assertEquals("B", message.getField(new SymbolSfx()).getValue());
         final Message outerMessage1 = message;
@@ -128,7 +128,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12345", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.BUY, message.getField(new Side()).getValue());
-        assertEquals(new BigDecimal(1000), message.getDecimal(OrderQty.FIELD));
+        assertEquals(new BigDecimal(1000), message.getField(new OrderQty()).getValue());
         assertEquals("BRK/A", message.getField(new Symbol()).getValue());
         final Message outerMessage = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -151,7 +151,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12346", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL, message.getField(new Side()).getValue());
-        assertEquals(new BigDecimal(100), message.getDecimal(OrderQty.FIELD));
+        assertEquals(new BigDecimal(100), message.getField(new OrderQty()).getValue());
         assertEquals("BRK/B", message.getField(new Symbol()).getValue());
         final Message outerMessage2 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -177,7 +177,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
-        assertEquals(new BigDecimal(2000), message.getDecimal(OrderQty.FIELD));
+        assertEquals(new BigDecimal(2000), message.getField(new OrderQty()).getValue());
         assertEquals("IBM", message.getField(new Symbol()).getValue());
         final Message outerMessage3 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
@@ -203,7 +203,7 @@ public class OrderRouteManagerTest extends TestCase
 
         assertEquals("12347", message.getField(new ClOrdID()).getValue());
         assertEquals(Side.SELL_SHORT, message.getField(new Side()).getValue());
-        assertEquals(new BigDecimal(2000), message.getDecimal(OrderQty.FIELD));
+        assertEquals(new BigDecimal(2000), message.getField(new OrderQty()).getValue());
         assertEquals("VOD/", message.getField(new Symbol()).getValue());
         final Message outerMessage4 = message;
         new ExpectedTestFailure(FieldNotFound.class) {
