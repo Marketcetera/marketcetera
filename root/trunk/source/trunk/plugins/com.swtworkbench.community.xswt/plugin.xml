@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="com.swtworkbench.community.xswt"
+   name="XSWT Plug-in"
+   version="1.5.0"
+   provider-name="SWTWORKBENCH"
+   class="com.swtworkbench.community.xswt.XswtPlugin">
+
+   <runtime>
+      <library name="xswt.jar">
+         <packages prefixes="com.swtworkbench.community.xswt"/>
+         <export name="*"/>
+      </library>
+      <library name="kxml2.jar">
+         <export name="*"/>
+         <packages prefixes="org.kmll2.io, org.kmll2.io.kdom , org.xmlpull.v1"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.ui.forms"/>
+      <import plugin="org.kxml2"/>
+   </requires>
+
+   <extension-point id="classBuilder" name="Class builder" schema="schema/classBuilder.exsd"/>
+   <extension-point id="dataParser" name="Data parser" schema="schema/dataParser.exsd"/>
+   <extension-point id="scriptingEngine" name="Scripting Engine" schema="schema/scriptingEngine.exsd"/>
+
+   <extension point="com.swtworkbench.community.xswt.classBuilder">
+   		<import	packages="com.swtworkbench.community.xswt.scripting"/>
+   </extension>
+
+   <extension point="com.swtworkbench.community.xswt.dataParser">
+   		<data-parser
+   			data-parser-class="com.swtworkbench.community.xswt.scripting.MethodFunctionDataParser"
+   			data-class="com.swtworkbench.community.xswt.scripting.Function"/>
+   </extension>
+
+</plugin>
