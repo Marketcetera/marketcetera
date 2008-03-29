@@ -59,9 +59,6 @@ public class MarketDataViewTest extends ViewTestBase {
 		
 		((MyMarketDataFeed)marketDataFeedService.getMarketDataFeed()).sendMessage(fixMessage);
 		
-		// TODO: fix me...
-		//delay(10000);
-		
 		MessageHolder messageHolder = input.get(0);
 		Message message = messageHolder.getMessage();
 		assertEquals("MRKT", message.getString(Symbol.FIELD));
@@ -93,15 +90,13 @@ public class MarketDataViewTest extends ViewTestBase {
 		MarketDataSnapshotFullRefresh fixMessage = new MarketDataSnapshotFullRefresh();
 		fixMessage.set(new Symbol("MRKT"));
 		
-		String priceWithZeroes = "123.4";
+		String priceWithZeroes = "123.400";
 		addGroup(fixMessage, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
 		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		addGroup(fixMessage, MDEntryType.TRADE, new BigDecimal(priceWithZeroes), BigDecimal.TEN, new Date(), "BGUS");
 		
 		((MyMarketDataFeed)marketDataFeedService.getMarketDataFeed()).sendMessage(fixMessage);
 		
-		// TODO: fix me...
-		//delay(10000);
 		
 		String text = ((Table)view.getMessagesViewer().getControl()).getItem(0).getText(2);
 		assertEquals(priceWithZeroes, text);
@@ -117,8 +112,8 @@ public class MarketDataViewTest extends ViewTestBase {
         group.set(new MDEntryType(side));
         group.set(new MDEntryTime(time));
         group.set(new MDMkt(mkt));
-        group.setField(new MDEntryPx(price));
-        group.setField(new MDEntrySize(quantity));
+		group.set(new MDEntryPx(price));
+		group.set(new MDEntrySize(quantity));
         message.addGroup(group);
     }
 
@@ -190,7 +185,6 @@ public class MarketDataViewTest extends ViewTestBase {
 
 		public void asyncUnsubscribe(ISubscription subscription) throws MarketceteraException {
 			// TODO Auto-generated method stub
-			
 		}
 
 		public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws MarketceteraException, TimeoutException {

@@ -17,7 +17,6 @@ import quickfix.fix44.Message;
 public class OptionContractDataTest extends TestCase {
 
 	private OptionContractData dataFull;
-	private OptionContractData dataUI;
 
 	
 	
@@ -25,24 +24,18 @@ public class OptionContractDataTest extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		dataFull = new OptionContractData(new MSymbol("IBM"), new MSymbol("IBM+RE"), 2007, 7, BigDecimal.TEN, PutOrCall.CALL);
-		dataUI = new OptionContractData("IBM", "2007", "JUL", "10", PutOrCall.CALL);
 	}
 
 	public void testGetPutOrCall() {
 		assertEquals(PutOrCall.CALL, dataFull.getPutOrCall());
-		assertEquals(PutOrCall.CALL, dataUI.getPutOrCall());
 	}
 
 	public void testGetExpirationMonth() {
 		assertEquals((Integer)7, dataFull.getExpirationMonth());
-		assertEquals("JUL", dataFull.getExpirationMonthUIString());
-		assertEquals("JUL", dataUI.getExpirationMonthUIString());
 	}
 
 	public void testGetExpirationYear() {
 		assertEquals((Integer)2007, dataFull.getExpirationYear());
-		assertEquals("2007", dataFull.getExpirationYearUIString());
-		assertEquals("2007", dataUI.getExpirationYearUIString());
 	}
 
 	public void testGetOptionSymbol() {
@@ -51,13 +44,10 @@ public class OptionContractDataTest extends TestCase {
 
 	public void testGetOptionRoot() {
 		assertEquals("IBM", dataFull.getOptionRoot());
-		assertEquals("IBM", dataUI.getOptionRoot());
 	}
 
 	public void testGetStrikePrice() {
 		assertEquals(BigDecimal.TEN, dataFull.getStrikePrice());
-		assertEquals("10", dataFull.getStrikePriceUIString());
-		assertEquals("10", dataUI.getStrikePriceUIString());
 	}
 
 	public void testGetUnderlyingSymbol() {

@@ -9,6 +9,9 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.photon.views.MockJmsOperations;
+import org.marketcetera.photon.views.StockOrderTicketModel;
+import org.marketcetera.photon.views.StockOrderTicketView;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
@@ -78,4 +81,22 @@ public class PhotonControllerTest extends TestCase {
             sentMessages.add(fixMessage);
         }
     }
+    
+	/** Verify that MarketOnClose orders are translated correctly 
+	 * Setup the outgoing order to be Market and CLO (at the close)
+	 * in FIX.4.2 Photon
+	 */
+	public void testMarketOnCloseCorrect() throws Exception {
+    	Message msg = FIXMessageUtilTest.createMarketNOS("ASDF", new BigDecimal(45), Side.SELL, msgFactory);
+
+    	msg.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
+
+    	photonController.handleInternalMessage(msg);
+
+    	assertEquals(1, photonController.sentMessages.size());
+
+		assertEquals(TimeInForce.DAY, photonController.sentMessages.get(0).getChar(TimeInForce.FIELD));
+		assertEquals(OrdType.MARKET_ON_CLOSE, photonController.sentMessages.get(0).getChar(OrdType.FIELD));
+	}
+
 }

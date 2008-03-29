@@ -345,7 +345,7 @@ public class ParserTest extends FIXVersionedTestCase {
     	assertEquals(side, message.getChar(Side.FIELD));
     	assertEquals(quantity, message.getDecimal(OrderQty.FIELD));
     	assertEquals(symbol, message.getString(Symbol.FIELD));
-    	assertEquals(price, message.getDecimal(Price.FIELD));
+    	assertEquals(0, price.compareTo(message.getDecimal(Price.FIELD)));
     	assertEquals(timeInForce, message.getChar(TimeInForce.FIELD));
     	try {
     		assertEquals(account, message.getString(Account.FIELD));
