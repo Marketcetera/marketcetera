@@ -1,9 +1,9 @@
 package org.marketcetera.photon.ui.validation.fix;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.core.databinding.conversion.Converter;
+import org.marketcetera.core.ThreadLocalSimpleDateFormat;
 
 public class DateToStringCustomConverter extends Converter {
 	public static final String MONTH_FORMAT = "MMM";
@@ -12,7 +12,7 @@ public class DateToStringCustomConverter extends Converter {
 
 	public static final String LONG_YEAR_FORMAT = "yyyy";
 
-	private SimpleDateFormat formatter;
+	private ThreadLocalSimpleDateFormat localFormat;
 
 	private boolean forceUppercase;
 
@@ -33,7 +33,7 @@ public class DateToStringCustomConverter extends Converter {
 	 */
 	public DateToStringCustomConverter(String dateFormatStr, boolean forceUppercase) {
 		super(java.util.Date.class, String.class);
-		this.formatter = new SimpleDateFormat(dateFormatStr);
+		this.localFormat = new ThreadLocalSimpleDateFormat(dateFormatStr);
 		this.forceUppercase = forceUppercase;
 	}
 
@@ -47,9 +47,7 @@ public class DateToStringCustomConverter extends Converter {
 		}
 		Date fromDate = (Date) fromObject;
 		String toDateString = null;
-		synchronized (formatter) {
-			toDateString = formatter.format(fromDate);
-		}
+		toDateString = localFormat.get().format(fromDate);
 		if (forceUppercase) {
 			toDateString = toDateString.toUpperCase();
 		}

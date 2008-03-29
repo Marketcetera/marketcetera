@@ -13,10 +13,10 @@ public class FIXMessageTableRefresher implements IPropertyChangeListener {
 
 	private TableViewer parentTableViewer;
 
-	private FIXMessageTableFormat tableFormat;
+	private FIXMessageTableFormat<?> tableFormat;
 
 	public FIXMessageTableRefresher(TableViewer parentTableViewer,
-			FIXMessageTableFormat tableFormat) {
+			FIXMessageTableFormat<?> tableFormat) {
 		this.parentTableViewer = parentTableViewer;
 		this.tableFormat = tableFormat;
 		addListeners();

@@ -9,8 +9,8 @@ import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
 import org.marketcetera.photon.views.OpenOrdersView;
 import org.marketcetera.photon.views.OptionMarketDataView;
-import org.marketcetera.photon.views.OptionOrderTicket;
-import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.OptionOrderTicketView;
+import org.marketcetera.photon.views.StockOrderTicketView;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 
 /**
@@ -52,8 +52,8 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		layout.addPerspectiveShortcut(EquityPerspectiveFactory.ID);
 		layout.addShowViewShortcut(IConsoleConstants.ID_CONSOLE_VIEW);
-		layout.addShowViewShortcut(StockOrderTicket.ID);
-		layout.addShowViewShortcut(OptionOrderTicket.ID);
+		layout.addShowViewShortcut(StockOrderTicketView.ID);
+		layout.addShowViewShortcut(OptionOrderTicketView.ID);
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);
@@ -75,8 +75,8 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		topFolder = layout.createFolder(TOP_FOLDER, IPageLayout.TOP,
 				0.4f, RIGHT_FOLDER);
-		topFolder.addPlaceholder(OptionOrderTicket.ID + ":*");
-		topFolder.addView(OptionOrderTicket.ID);
+		topFolder.addPlaceholder(OptionOrderTicketView.ID + ":*");
+		topFolder.addView(OptionOrderTicketView.ID);
 	}
 
 }

@@ -1,0 +1,311 @@
+package org.marketcetera.photon.views;
+
+import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.value.IValueChangeListener;
+import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.marketdata.IMarketDataListener;
+import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
+import org.marketcetera.photon.preferences.CustomOrderFieldPage;
+import org.marketcetera.quickfix.FIXMessageFactory;
+
+import quickfix.Message;
+import quickfix.field.MsgType;
+
+/**
+ * Abstract base class for controllers of order tickets.
+ * 
+ * This controller is responsible for handling subscriptions to market
+ * data on behalf of the order ticket.  In general this is accomplished by listening
+ * for change events on the {@link OrderTicketModel}, and based on those 
+ * events issuing subscribe messages to the market data feed.  Market data 
+ * messages are then received by this controller which updates
+ * the order ticket model.
+ * 
+ * This controller is also a listener for changes in the Eclipse property store.
+ * Based on changes to the custom fields property, this controller will update
+ * the custom fields in the order ticket model.
+ * 
+ * @author gmiller
+ *
+ */
+public abstract class OrderTicketController <T extends OrderTicketModel>
+	implements IOrderTicketController, IMarketDataListener, IPropertyChangeListener {
+
+	private final MarketDataFeedTracker marketDataTracker;
+
+	protected MSymbol listenedSymbol = null;
+
+	protected ISubscription currentSubscription;
+
+	private final T orderTicketModel;
+
+	protected final FIXMessageFactory messageFactory;
+
+	
+	/**
+	 * Create a new OrderTicketController.  Sets up a MarketDataFeedTracker
+	 * to track the market data feed service.
+	 * And hooks up a change listener for the Symbol property of the 
+	 * OrderTicketModel
+	 * 
+	 * @param orderTicketModel
+	 */
+	public OrderTicketController(T orderTicketModel) {
+		if (orderTicketModel == null){
+			throw new NullPointerException();
+		}
+		this.orderTicketModel = orderTicketModel;
+
+		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
+				.getBundleContext());
+		marketDataTracker.open();
+
+		marketDataTracker.setMarketDataListener(this);
+		
+		clear();
+
+		PhotonPlugin plugin = PhotonPlugin.getDefault();
+		ScopedPreferenceStore preferenceStore = plugin.getPreferenceStore();
+		preferenceStore.addPropertyChangeListener(this);
+		updateCustomFields(preferenceStore.getString(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE));
+		messageFactory = plugin.getFIXVersion().getMessageFactory();
+
+		orderTicketModel.getObservableSymbol().addValueChangeListener(new IValueChangeListener() {
+
+			public void handleValueChange(ValueChangeEvent event) {
+				try {
+					
+					Object newSymbol = event.diff.getNewValue();
+					String symbolString = (String) newSymbol;
+					if (PhotonPlugin.getMainConsoleLogger().isDebugEnabled()){
+						PhotonPlugin.getMainConsoleLogger().debug("New symbol: "+symbolString);
+					}
+					listenMarketData(symbolString);
+				} catch (Exception ex){
+					PhotonPlugin.getMainConsoleLogger().error(ex);
+				}
+			}
+			
+		});
+
+	}
+
+	/**
+	 * Cancel all market data feed subscriptions.  Catches and logs any exceptions.
+	 */
+	protected void unlistenMarketData() {
+		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+		if (service != null) {
+			try {
+		
+				doUnlistenMarketData(service);
+			} catch (MarketceteraException e) {
+				PhotonPlugin.getMainConsoleLogger().warn(
+						"Error unsubscribing to quotes for " + listenedSymbol);
+			}
+		}
+	}
+
+	
+	/**
+	 * Do the work of unsubscribing from the given MarketDataFeedService
+	 * throwing exceptions if necessary
+	 * 
+	 * @param service the service to unsubscribe from
+	 * @throws MarketceteraException if there is a problem unsubscribing
+	 */
+	protected void doUnlistenMarketData(MarketDataFeedService service) throws MarketceteraException {
+		if (currentSubscription != null) {
+			service.unsubscribe(currentSubscription);
+
+			listenedSymbol = null;
+			currentSubscription = null;
+		}
+	}
+
+	/**
+	 * Subscribe for market data for the given symbol.
+	 * 
+	 * @param symbol the symbol for which to subscribe for market data
+	 */
+	public void listenMarketData(String symbol) {
+		unlistenMarketData();
+		if (symbol != null && !"".equals(symbol.trim())) {
+			MSymbol newListenedSymbol = new MSymbol(symbol);
+			try {
+				MarketDataFeedService service = getMarketDataTracker()
+						.getMarketDataFeedService();
+	
+				if (service != null){
+					doListenMarketData(service, newListenedSymbol);
+				}
+			} catch (MarketceteraException e) {
+				PhotonPlugin.getMainConsoleLogger().error(
+						"Exception requesting quotes for "
+								+ symbol);
+			} finally {
+				listenedSymbol = newListenedSymbol;
+			}
+		}
+	}
+
+	/**
+	 * Does the work of subscribing for market data based on the given symbol,
+	 * and MarketDataFeedService
+	 * 
+	 * @param service the service from which to subscribe
+	 * @param symbol the symbol for which to describe
+	 * @throws MarketceteraException if there is a problem subscribing
+	 */
+	protected void doListenMarketData(MarketDataFeedService service, MSymbol symbol) throws MarketceteraException {
+		if (!symbol.equals(listenedSymbol)) {
+			Message subscriptionMessage = MarketDataUtils
+					.newSubscribeLevel2(symbol);
+			ISubscription subscription = null;
+				subscription = service.subscribe(subscriptionMessage);
+				currentSubscription = subscription;
+		}
+	}
+	
+	/**
+	 * Subclasses should implement this method to handle market data messages
+	 * received for this order ticket.
+	 * 
+	 * Messages will usually be {@link MsgType#MARKET_DATA_INCREMENTAL_REFRESH},
+	 * {@link MsgType#MARKET_DATA_SNAPSHOT_FULL_REFRESH}, {@link MsgType#DERIVATIVE_SECURITY_LIST},
+	 * or other market data related message.
+	 * 
+	 * @param message the market data message
+	 */
+	protected abstract void doOnQuote(Message message);
+
+	/**
+	 * Get the symbol for which market data is currently being received.
+	 * @return
+	 */
+	public MSymbol getListenedSymbol() {
+		return listenedSymbol;
+	}
+	
+	
+	/**
+	 * Get the market data tracker.
+	 * @return the market data tracker.
+	 */
+	public MarketDataFeedTracker getMarketDataTracker() {
+		return marketDataTracker;
+	}
+
+	/**
+	 * Get the order ticket model for this order ticket.
+	 */
+	public T getOrderTicketModel() {
+		return orderTicketModel;
+	}
+	
+
+	/**
+	 * Remove this as a market data listener, and close the connection
+	 * to the {@link MarketDataFeedTracker}.
+	 * 
+	 * Remove this as a listener to preference store events.
+	 */
+	public void dispose() {
+		marketDataTracker.setMarketDataListener(null);
+		marketDataTracker.close();
+		// don't dispose of system colors
+		PhotonPlugin.getDefault().getPreferenceStore()
+			.removePropertyChangeListener(this);
+	}
+
+	/**
+	 * Handle a property change event.  If the property change is the 
+	 * {@link CustomOrderFieldPage#CUSTOM_FIELDS_PREFERENCE} preference,
+	 * call {@link #updateCustomFields(String)}
+	 * 
+	 * @see IPropertyChangeListener#propertyChange(PropertyChangeEvent)
+	 */
+	public void propertyChange(PropertyChangeEvent event) {
+		final String property = event.getProperty();
+		final String valueString = event.getNewValue().toString();
+		if (CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE.equals(property)) {
+			updateCustomFields(valueString);
+		}
+	}
+
+	/**
+	 * Loop through the custom fields as represented in the preferenceString
+	 * and synchronize the entries with the list of {@link CustomField}s in
+	 * the order ticket model.
+	 * 
+	 * @param preferenceString string representing the custom fields as a preference entry
+	 */
+	public void updateCustomFields(String preferenceString) {
+		WritableList customFieldsList = getOrderTicketModel().getCustomFieldsList();
+		customFieldsList.clear();
+		if (preferenceString.contains("=")){
+			String [] pieces = preferenceString.split("&");
+			for (String piece : pieces) {
+				try {
+					customFieldsList.add(CustomField.fromString(piece));
+				} catch (Throwable ex){
+					PhotonPlugin.getMainConsoleLogger().warn("Exception reading custom field from database: "+piece, ex);
+				}
+			}
+		}
+	}
+
+
+	/**
+	 * Handle a market data message
+	 */
+	public void onMessage(Message message) {
+		doOnQuote(message);
+	}
+
+
+	/**
+	 * Handle a group of market data messages
+	 */
+	public void onMessages(Message[] messages) {
+		for (Message message : messages) {
+			onMessage(message);
+		}
+	}
+
+	/**
+	 * Get the order message associated with this order ticket.
+	 * @return the order message
+	 */
+	public Message getOrderMessage() {
+		return orderTicketModel.getOrderMessage();
+	}
+
+
+	/**
+	 * Set the order message associated with this order ticket.
+	 * @param the new order message
+	 */
+	public void setOrderMessage(Message order) {
+		orderTicketModel.setOrderMessage(order);
+	}
+
+	/**
+	 * Get the current market data subscription for this ticket.
+	 * 
+	 * @return the ISubscription for market data
+	 */
+	public ISubscription getCurrentSubscription() {
+		return currentSubscription;
+	}
+
+}

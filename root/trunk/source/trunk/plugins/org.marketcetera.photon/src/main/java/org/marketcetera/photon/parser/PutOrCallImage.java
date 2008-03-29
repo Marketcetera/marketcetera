@@ -1,10 +1,10 @@
 package org.marketcetera.photon.parser;
 
-import quickfix.field.PutOrCall;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import quickfix.field.PutOrCall;
 
 /**
  * We always use PutOrCallImage for all versions of FIX, with a post-processing

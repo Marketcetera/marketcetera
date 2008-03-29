@@ -15,7 +15,7 @@ public class MapEntryLabelProvider extends LabelProvider implements ITableLabelP
 
 	public String getColumnText(Object element, int columnIndex) {
 		String result = "";
-		Map.Entry entry = (Map.Entry) element;
+		Map.Entry<String, String> entry = (Map.Entry<String, String>) element;
 		switch (columnIndex) {
 			case 0 :
 				result = ""+entry.getKey();

@@ -3,16 +3,23 @@ package org.marketcetera.photon.ui.validation.fix;
 import java.math.BigDecimal;
 
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.ui.validation.AbstractToggledValidator;
-import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.SetValidator;
 
 import quickfix.DataDictionary;
 import quickfix.field.OrdType;
 
+/**
+ * Builder that knows how to produce converters and validators for price values.
+ * Price values can be represented as a string that is a valid decimal, or the special
+ * string "MKT" meaning "market order" or "no price".
+ * 
+ * @author gmiller
+ *
+ */
 public class PriceConverterBuilder extends EnumStringConverterBuilder<Character> implements IConverterBuilder {
 	
 
@@ -24,9 +31,15 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 		this.dictionary = dictionary;
 	}
 
+	/**
+	 * Produce a validator that succeeds if the field from model is 
+	 * either {@link OrdType#MARKET} or a String representing a decimal value 
+	 * 
+	 * @return the validator
+	 */
 	@Override
-	public IToggledValidator newModelAfterGetValidator() {
-		return new AbstractToggledValidator(){
+	public IValidator newModelAfterGetValidator() {
+		return new IValidator(){
 			public IStatus validate(Object obj) {
 				if (obj == null){
 					return Status.OK_STATUS;
@@ -52,18 +65,25 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 		};
 	}
 
-	public IToggledValidator newTargetAfterGetValidator() {
+	/**
+	 * Produce a validator that succeeds if the value is 
+	 * either {@link OrdType#MARKET} or a String representing a decimal value 
+	 * 
+	 * @return the validator
+	 */
+	public IValidator newTargetAfterGetValidator() {
 		return new SetValidator<String>(map.values(), PhotonPlugin.ID, "Not a valid value") {
 			@Override
 			public IStatus validate(Object obj) {
-				if (!isEnabled()) {
-					return Status.OK_STATUS;
-				}
-				try {
-					new BigDecimal((String) obj);
-					return Status.OK_STATUS;
-				} catch (Throwable t){
-					return (obj instanceof String) ? super.validate(((String)obj).toUpperCase()) : super.validate(obj);
+				if (obj == null){
+					return super.validate(obj);
+				} else {
+					try {
+						new BigDecimal((String) obj);
+						return Status.OK_STATUS;
+					} catch (Throwable t){
+						return (obj instanceof String) ? super.validate(((String)obj).toUpperCase()) : super.validate(obj);
+					}
 				}
 			}
 		};
@@ -73,10 +93,14 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 		return new BackwardConverter(map){
 			@Override
 			public Object convert(Object from) {
-				try {
-					return new BigDecimal((String)from);
-				} catch (Throwable t) {
-					return (from instanceof String) ? super.convert(((String)from).toUpperCase()) : super.convert(from);
+				if (from == null){
+					return super.convert(from);
+				} else {
+					try {
+						return new BigDecimal((String)from);
+					} catch (Throwable t) {
+						return (from instanceof String) ? super.convert(((String)from).toUpperCase()) : super.convert(from);
+					}
 				}
 			}
 			@Override

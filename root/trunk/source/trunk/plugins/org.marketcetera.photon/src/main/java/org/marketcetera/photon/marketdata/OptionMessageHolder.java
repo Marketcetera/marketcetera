@@ -4,23 +4,54 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.EnumMap;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
+import quickfix.field.MaturityDate;
+import quickfix.field.MaturityMonthYear;
 import quickfix.field.PutOrCall;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
+/**
+ * This class allows multiple {@link FieldMap} instances, representing
+ * a single "row" in an equity option UI to be aggregated and accessed.
+ * There are five components to each "row", encapsulated inthe {@link OptionInfoComponent}
+ * enumeration:  STRIKE_INFO, CALL_MARKET_DATA, PUT_MARKET_DATA, CALL_EXTRA_INFO, PUT_EXTRA_INFO.
+ * STRIKE_INFO represents the common data to both put and call, e.g. strike price and
+ * maturity date.  The *_MARKET_DATA components represent the current market prices
+ * for the call and put.  And *_EXTRA_INFO holds any information specific to the put or
+ * call.
+ * 
+ * @author gmiller
+ *
+ */
 public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> implements Comparable<OptionMessageHolder> {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -727881128321843742L;
+	
 	private OptionPairKey key;
-	private static Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+[a-zA-Z]{2}");
+	private String putSymbol;
+	private String callSymbol;
 	
-	
+	/**
+	 * Construct a new OptionMessageHolder form the specified option root symbol (e.g. "MSQ")
+	 * and a {@link FieldMap} containing the strike info (fields common to the put and call).
+	 * 
+	 * The FieldMap must contain at least {@link MaturityDate} or {@link MaturityMonthYear}
+	 * 
+	 * @param optionRootSymbol the option root symbol
+	 * @param strikeInfo the field map
+	 * @throws ParseException if a required field is improperly formatted
+	 * @throws FieldNotFound if a required field is missing
+	 */
 	public OptionMessageHolder(String optionRootSymbol,
 			FieldMap strikeInfo) throws ParseException, FieldNotFound
 	{
@@ -30,6 +61,20 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		this.put(OptionInfoComponent.STRIKE_INFO, strikeInfo);
 	}
 	
+	/**
+	 * Construct a new OptionMessageHolder form the specified option root symbol (e.g. "MSQ")
+	 * and a {@link FieldMap} containing the strike info (fields common to the put and call), as
+	 * well as the fields specific to each the put and call.
+	 * 
+	 * The strikeInfo FieldMap must contain at least {@link MaturityDate} or {@link MaturityMonthYear}
+	 * 
+	 * @param optionRootSymbol the root symbol of the option
+	 * @param strikeInfo the field map representing the common information for the put and call
+	 * @param callExtraInfo the fields specific to the call
+	 * @param putExtraInfo the fields specific to the put
+	 * @throws ParseException if a required field is improperly formatted
+	 * @throws FieldNotFound if a required field is missing
+	 */
 	public OptionMessageHolder(String optionRootSymbol,
 			FieldMap strikeInfo, FieldMap callExtraInfo,
 			FieldMap putExtraInfo) throws ParseException, FieldNotFound {
@@ -42,27 +87,47 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		this.put(OptionInfoComponent.PUT_EXTRA_INFO, putExtraInfo);
 	}
 
-	private static String getRootSymbol(String baseSymbol) {
-		Matcher matcher = optionSymbolPattern.matcher(baseSymbol);
+	/**
+	 * Get the root symbol from the given option symbol.
+	 * @param optionSymbol option symbol, e.g. "IBM+RE"
+	 * @return the root symbol, e.g "IBM"
+	 */
+	private static String getRootSymbol(String optionSymbol) {
+		Matcher matcher = FIXMessageUtil.optionSymbolPattern.matcher(optionSymbol);
 		if (matcher.matches()){
 			return matcher.group(1);
 		} else {
-			return baseSymbol;
+			return optionSymbol;
 		}
 	}
 
 
-	public OptionPairKey getKey() {
+	
+	private OptionPairKey getKey() {
 		return key;
 	}
 
+	/**
+	 * Compares this OptionMessageHolder to the specified OptionMessageHolder,
+	 * based on the values in the "key".
+	 * 
+	 * @see OptionPairKey#compareTo(org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey)
+	 */
 	public int compareTo(OptionMessageHolder o) {
+		if (o == null){
+			return 1;
+		}
 		OptionPairKey otherKey = o.getKey();
 		if (otherKey == null)
 			return 1;
 		return this.key.compareTo(otherKey);
 	}
 	
+	/**
+	 * Return the market data {@link FieldMap} for either the put or call
+	 * @param putOrCall {@link PutOrCall#PUT} or {@link PutOrCall#CALL}
+	 * @return the field map containing market data
+	 */
 	public FieldMap getMarketData(int putOrCall){
 		switch (putOrCall){
 		case PutOrCall.PUT:
@@ -73,7 +138,12 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 			throw new IllegalArgumentException(""+putOrCall);
 		}
 	}
-	
+
+	/**
+	 * Set the market data field map for the put or call.
+	 * @param putOrCall {@link PutOrCall#PUT} or {@link PutOrCall#CALL}
+	 * @param marketData the market data FieldMap to set.
+	 */
 	public void setMarketData(int putOrCall, FieldMap marketData){
 		switch (putOrCall){
 		case PutOrCall.PUT:
@@ -88,20 +158,41 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		
 	}
 	
-	public void setExtraInfo(int putOrCall, FieldMap otherData)
+	/**
+	 * Set the field map representing info specific to a put or call.
+	 * @param putOrCall {@link PutOrCall#PUT} or {@link PutOrCall#CALL}
+	 * @param otherData the FieldMap to set.
+	 * @throws FieldNotFound if the Symbol field is not found
+	 */
+	public void setExtraInfo(int putOrCall, FieldMap otherData) throws FieldNotFound
 	{
+		String symbol = null;
+		if (otherData.isSetField(Symbol.FIELD)){
+			symbol = otherData.getString(Symbol.FIELD); 
+		}
 		switch (putOrCall){
 		case PutOrCall.PUT:
 			this.put(OptionInfoComponent.PUT_EXTRA_INFO, otherData);
+			if (symbol != null){
+				this.setSymbol(PutOrCall.PUT, symbol);
+			}
 			break;
 		case PutOrCall.CALL:
 			this.put(OptionInfoComponent.CALL_EXTRA_INFO, otherData);
+			if (symbol != null){
+				this.setSymbol(PutOrCall.CALL, symbol);
+			}
 			break;
 		default:
-			throw new IllegalArgumentException(""+putOrCall);
+			throw new IllegalArgumentException(String.format("%d", putOrCall));
 		}
 	}
 	
+	/**
+	 * Given a symbol, determine if it represents a put or a call.
+	 * @param symbol the symbol to discriminate
+	 * @return {@link PutOrCall#PUT} if symbol represents a put, {@link PutOrCall#CALL} if symbol represents a call
+	 */
 	public int symbolOptionType(String symbol){
 		FieldMap fieldMap = get(OptionInfoComponent.CALL_EXTRA_INFO);
 		try {
@@ -121,6 +212,13 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		return Integer.MAX_VALUE;
 	}
 	
+	/**
+	 * Get the market data {@link FieldMap} for a symbol, or null
+	 * if the symbol does not correspond to either the put or call in this.
+	 * 
+	 * @param symbol the symbol to find
+	 * @return FieldMap representing the appropriate market data
+	 */
 	public FieldMap getMarketDataForSymbol(String symbol){
 		FieldMap fieldMap = get(OptionInfoComponent.CALL_EXTRA_INFO);
 		try {
@@ -140,6 +238,13 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		return null;
 	}
 
+	/**
+	 * Get the extra info {@link FieldMap} for a symbol, or null
+	 * if the symbol does not correspond to either the put or call in this.
+	 * 
+	 * @param symbol the symbol to find
+	 * @return FieldMap representing the appropriate extra info
+	 */
 	public FieldMap getExtraInfoForSymbol(String symbol){
 		FieldMap fieldMap = get(OptionInfoComponent.CALL_EXTRA_INFO);
 		try {
@@ -157,6 +262,40 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		} catch (FieldNotFound e) {
 		}
 		return null;
+	}
+
+	/**
+	 * Get the symbol for the put or call in this.
+	 * @param putOrCall {@link PutOrCall#PUT} or {@link PutOrCall#CALL}
+	 * @return the symbol for the put or call.
+	 */
+	public String getSymbol(int putOrCall){
+		switch(putOrCall){
+		case PutOrCall.PUT:
+			return putSymbol;
+		case PutOrCall.CALL:
+			return callSymbol;
+		default:
+			throw new IllegalArgumentException(String.format("%d", putOrCall));
+		}
+	}
+
+	/**
+	 * Set the symbol for the put or call.
+	 * @param putOrCall {@link PutOrCall#PUT} or {@link PutOrCall#CALL}
+	 * @param value the symbol to set for the put or call
+	 */
+	public void setSymbol(int putOrCall, String value){
+		switch(putOrCall){
+		case PutOrCall.PUT:
+			putSymbol = value;
+			break;
+		case PutOrCall.CALL:
+			callSymbol = value;
+			break;
+		default:
+			throw new IllegalArgumentException();
+		}
 	}
 
 	/**

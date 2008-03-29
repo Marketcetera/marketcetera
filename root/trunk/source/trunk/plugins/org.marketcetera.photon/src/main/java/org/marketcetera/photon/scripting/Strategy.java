@@ -37,12 +37,11 @@ public abstract class Strategy {
 
 	private FIXValueExtractor extractor;
 	private PhotonPlugin plugin;
-	private Logger logger;
-    private String registrationName;
+	private String registrationName;
 
     public Strategy() {
 		plugin = PhotonPlugin.getDefault();
-		logger = PhotonPlugin.getMainConsoleLogger();
+		PhotonPlugin.getMainConsoleLogger();
 		extractor = new FIXValueExtractor(plugin.getFIXDataDictionary().getDictionary(), 
 				plugin.getMessageFactory());
 	}

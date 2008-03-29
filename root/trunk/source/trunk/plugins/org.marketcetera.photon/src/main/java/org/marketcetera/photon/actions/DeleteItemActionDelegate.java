@@ -68,6 +68,7 @@ public class DeleteItemActionDelegate implements IViewActionDelegate {
 		action.setEnabled(shouldEnable);
 	}
 
+	@SuppressWarnings("unchecked") // Iterator from selection is untyped
 	public void run(IAction action) {
 		Iterator iter = selection.iterator();
 		while (iter.hasNext()) {

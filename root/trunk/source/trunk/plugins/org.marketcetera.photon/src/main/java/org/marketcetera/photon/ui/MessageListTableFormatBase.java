@@ -1,6 +1,5 @@
 package org.marketcetera.photon.ui;
 
-import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -17,19 +16,18 @@ import quickfix.DataDictionary;
 public class MessageListTableFormatBase<T> extends EnumTableFormat<T> {
 
 	private final IWorkbenchPartSite site;
-	private final ISelectionProvider selectionProvider;
-
-	public MessageListTableFormatBase(Table table, Enum[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
+	
+	public MessageListTableFormatBase(Table table, Enum<?>[] columns, IWorkbenchPartSite site, DataDictionary dataDictionary) {
 		super(table, columns, dataDictionary);
 		this.site = site;
-		this.selectionProvider = site.getSelectionProvider();
+		site.getSelectionProvider();
 		init(table);
 	}
 
-	public MessageListTableFormatBase(Table table, Enum[] columns, IWorkbenchPartSite site) {
+	public MessageListTableFormatBase(Table table, Enum<?>[] columns, IWorkbenchPartSite site) {
 		super(table, columns);
 		this.site = site;
-		this.selectionProvider = site.getSelectionProvider();
+		site.getSelectionProvider();
 		init(table);
 
 	}

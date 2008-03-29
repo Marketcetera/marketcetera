@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
@@ -184,17 +185,21 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 		}
 		@Override
 		public String getColumnText(Object element, int columnIndex) {
-			Object result = attributeMaps[columnIndex].get(element);
-			if (result == null){
-				return "";
-			} else if (columnIndex == 0){
-				SimpleDateFormat format = new SimpleDateFormat("HH:mm");
-				return format.format(result);
-			} else if (columnIndex == 1){
-				TradeRecommendation tradeRec = (TradeRecommendation)element;
-				return orderFormatter.format(tradeRec.getMessage());
-			} else {
-				return result.toString(); //$NON-NLS-1$
+			try {
+				Object result = attributeMaps[columnIndex].get(element);
+				if (result == null){
+					return "";
+				} else if (columnIndex == 0){
+					SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+					return format.format(result);
+				} else if (columnIndex == 1){
+					TradeRecommendation tradeRec = (TradeRecommendation)element;
+					return orderFormatter.format(tradeRec.getMessage());
+				} else {
+					return result.toString(); //$NON-NLS-1$
+				}
+			} catch (ParseException e) {
+				return "Error formatting trade recommendation";
 			}
 		}
 	}
@@ -203,7 +208,7 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 		ISelection selection = tableViewer.getSelection();
 		if (selection instanceof StructuredSelection) {
 			StructuredSelection structuredSelection = (StructuredSelection) selection;
-			Iterator it = structuredSelection.iterator();
+			Iterator<?> it = structuredSelection.iterator();
 			while (it.hasNext()){
 				modelList.remove(it.next());
 			}
@@ -214,7 +219,7 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 		ISelection selection = tableViewer.getSelection();
 		if (selection instanceof StructuredSelection) {
 			StructuredSelection structuredSelection = (StructuredSelection) selection;
-			Iterator it = structuredSelection.iterator();
+			Iterator<?> it = structuredSelection.iterator();
 			while (it.hasNext()){
 				modelList.remove(it.next());
 			}

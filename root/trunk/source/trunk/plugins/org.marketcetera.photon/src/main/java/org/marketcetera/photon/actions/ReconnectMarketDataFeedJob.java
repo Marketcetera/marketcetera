@@ -46,6 +46,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	}
 
+	@SuppressWarnings("unchecked") // cast on Class.forName()
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
@@ -79,7 +80,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 		    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
 			    		IConfigurationElement feedElement = configurationElements[0];
 			    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-			    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
+			    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass, true, PhotonPlugin.class.getClassLoader());
 			    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
 			    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
 			    		ScopedPreferenceStore store = new ScopedPreferenceStore(new InstanceScope(), pluginName);
@@ -177,6 +178,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	}
 	
 	// TODO: refactor this and run()
+	@SuppressWarnings("unchecked")
 	public static String [][] getFeedNames() {
 		IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
     	IExtensionPoint extensionPoint =
@@ -195,7 +197,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	    		IConfigurationElement feedElement = configurationElements[0];
 
 	    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-	    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass);
+	    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass, true, PhotonPlugin.class.getClassLoader());
 	    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
 	    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
 	    		providerName = factory.getProviderName();

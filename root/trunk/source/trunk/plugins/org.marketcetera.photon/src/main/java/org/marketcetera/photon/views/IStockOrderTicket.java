@@ -1,9 +1,10 @@
 package org.marketcetera.photon.views;
 
-import org.eclipse.swt.widgets.Table;
+import org.eclipse.jface.viewers.TableViewer;
 
 public interface IStockOrderTicket extends IOrderTicket {
 
-	Table getCustomFieldsTable();
+	TableViewer getLevel2BidTableViewer();
 
+	TableViewer getLevel2OfferTableViewer();
 }

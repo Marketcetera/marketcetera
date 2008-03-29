@@ -2,8 +2,6 @@ package org.marketcetera.photon.preferences;
 
 import java.io.IOException;
 
-import javax.swing.ComboBoxEditor;
-
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
 import org.eclipse.jface.preference.IntegerFieldEditor;

@@ -38,7 +38,7 @@ public class FIXMatcherEditor<FIX_TYPE extends Comparable<FIX_TYPE>> extends
 		}
 
 		if (obj instanceof FIXMatcherEditor) {
-			FIXMatcherEditor filt = (FIXMatcherEditor) obj;
+			FIXMatcherEditor<?> filt = (FIXMatcherEditor<?>) obj;
 			return filt.fixField == this.fixField
 					&& this.getItem().equals(filt.getItem());
 		}

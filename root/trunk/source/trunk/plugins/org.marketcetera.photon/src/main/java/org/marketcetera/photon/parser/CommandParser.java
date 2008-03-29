@@ -2,10 +2,6 @@ package org.marketcetera.photon.parser;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,7 +32,6 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.views.OptionDateHelper;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;

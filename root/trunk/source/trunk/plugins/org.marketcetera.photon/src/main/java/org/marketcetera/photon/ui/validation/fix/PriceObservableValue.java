@@ -57,7 +57,11 @@ public class PriceObservableValue extends FIXObservableValue {
 			}
 		} else if (value instanceof Number){
 			message.setField(new OrdType(OrdType.LIMIT));
-			message.setField(new StringField(Price.FIELD, value.toString()));
+			if (value instanceof BigDecimal){
+				message.setField(new Price((BigDecimal)value));
+			} else {
+				message.setField(new StringField(Price.FIELD, value.toString()));
+			}
 		}
 	}
 

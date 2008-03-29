@@ -94,37 +94,39 @@ public class StringDateObservableValue extends FIXObservableValue {
 
 	@Override
 	protected void doSetValue(Object value) {
-		if (value != null && !(value instanceof Date)) {
-			super.doSetValue(value);
-		} else {
-			Date dateToSet = (Date) value;
-
-			FieldMap fixFieldMap = getFieldMap();
-			Date currentDate = getFIXFieldDate(fieldNumber, fixFieldMap);
-
-			if (currentDate == null) {
-				// If the date field is not set on the fix message, create
-				// a new one.
-				// todo: Some date fields, such as ExpireDate, have choices
-				// dictated by market data. Creating a new date is incorrect for
-				// such fields.
-				Calendar calendar = GregorianCalendar.getInstance();
-				calendar.set(Calendar.DAY_OF_MONTH, 1);
-				calendar.set(Calendar.HOUR, 0);
-				calendar.set(Calendar.MINUTE, 0);
-				calendar.set(Calendar.SECOND, 0);
-				calendar.set(Calendar.MILLISECOND, 0);
-				
-				currentDate = calendar.getTime();
-			}
-
-			if (currentDate != null) {
-				Date updatedDate = getUpdatedDate(currentDate,
-						targetCalendarField, dateToSet);
-				if (updatedDate != null) {
-					String updatedDateString = ymFormatter
-							.format(updatedDate);
-					fixFieldMap.setString(fieldNumber, updatedDateString);
+		if (value != null) {
+			if (!(value instanceof Date)) {
+				super.doSetValue(value);
+			} else {
+				Date dateToSet = (Date) value;
+	
+				FieldMap fixFieldMap = getFieldMap();
+				Date currentDate = getFIXFieldDate(fieldNumber, fixFieldMap);
+	
+				if (currentDate == null) {
+					// If the date field is not set on the fix message, create
+					// a new one.
+					// todo: Some date fields, such as ExpireDate, have choices
+					// dictated by market data. Creating a new date is incorrect for
+					// such fields.
+					Calendar calendar = GregorianCalendar.getInstance();
+					calendar.set(Calendar.DAY_OF_MONTH, 1);
+					calendar.set(Calendar.HOUR, 0);
+					calendar.set(Calendar.MINUTE, 0);
+					calendar.set(Calendar.SECOND, 0);
+					calendar.set(Calendar.MILLISECOND, 0);
+					
+					currentDate = calendar.getTime();
+				}
+	
+				if (currentDate != null) {
+					Date updatedDate = getUpdatedDate(currentDate,
+							targetCalendarField, dateToSet);
+					if (updatedDate != null) {
+						String updatedDateString = ymFormatter
+								.format(updatedDate);
+						fixFieldMap.setString(fieldNumber, updatedDateString);
+					}
 				}
 			}
 		}

@@ -4,7 +4,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -24,7 +23,6 @@ public class CopyMessagesAction extends Action {
 		table.getColumnCount();
 		if (selection.length > 0){
 			TextTransfer textTransfer = TextTransfer.getInstance();
-			TransferData[] supportedTypes = textTransfer.getSupportedTypes();
 			clipboard.setContents(new Object[] {asText(selection, table.getColumnCount())},
 					new Transfer[] { textTransfer});
 		} else {

@@ -59,6 +59,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
 	 *      java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked") // overrides unparameterized method
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof MessageHolder)
@@ -73,6 +74,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")  // overrides unparameterized method
 	public Class[] getAdapterList() {
 		return new Class[] { IWorkbenchAdapter.class };
 	}

@@ -403,14 +403,16 @@ public class OptionMessagesComposite extends Composite {
 			chooser.appendComparator(EXP_DATE_INDEX, 0, false);
 			chooser.appendComparator(STRIKE_INDEX, 0, false);
 		}
-		EventList<OptionMessageHolder> inputList;
+		EventList<?> inputList;
 		if (showSingleLineOptionData){
 			optionSymbolMatcherEditor = new OptionSymbolMatcherEditor();
 			inputList = new FilterList<OptionMessageHolder>(sortedList, optionSymbolMatcherEditor);
 		} else {
 			inputList = sortedList;
 		}
-		inputList = new SWTThreadProxyEventList(inputList, this.getDisplay());
+		if (!(input instanceof SWTThreadProxyEventList)){
+			inputList = new SWTThreadProxyEventList(inputList, this.getDisplay());
+		}
 		messagesViewer.setInput(inputList);
 	}
 	

@@ -9,10 +9,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
-
 public class OptionDateHelper {
-	private SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM");
 	public static final DecimalFormat MATURITY_MONTH_NUMBER_FORMAT = new DecimalFormat("00");
 	public static final DecimalFormat MATURITY_YEAR_NUMBER_FORMAT = new DecimalFormat("0000");
 

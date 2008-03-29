@@ -24,7 +24,7 @@ import org.marketcetera.photon.ui.PhotonConsole;
 @ClassVersion("$Id$")
 public class PhotonConsoleAppender extends AppenderSkeleton {
 	private static final String LAYOUT_PATTERN = "%d{ABSOLUTE} %5p - %m";
-	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
+//	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
 	private PhotonConsole console;
 	private Display display;
 	private Level minimumSecondaryLogLevel = Level.DEBUG;

@@ -57,7 +57,7 @@ public class BookComposite extends Composite implements IBookComposite
 //			this.groupDiscriminatorValue = groupDiscriminatorValue;
 //		}
 
-		BookColumns(Class clazz) {
+		BookColumns(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
 				Field fieldField = clazz.getField("FIELD");
@@ -134,7 +134,7 @@ public class BookComposite extends Composite implements IBookComposite
 	private IndexedTableViewer getTableViewer(Table theTable) {
 		IndexedTableViewer tableViewer = new IndexedTableViewer(theTable);
 		DataDictionary dictionary = FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary();
-		EnumTableFormat format = new EnumTableFormat<Message>(theTable, BookColumns.values(), dictionary);
+		EnumTableFormat<Message> format = new EnumTableFormat<Message>(theTable, BookColumns.values(), dictionary);
 		tableViewer.setContentProvider(new EventListContentProvider<Group>());
 		tableViewer.setLabelProvider(format);
 		return tableViewer;

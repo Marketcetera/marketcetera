@@ -1,10 +1,7 @@
-package org.marketcetera.photon.views;
+package org.marketcetera.photon.ui.databinding;
 
-import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.validation.IValidator;
 import org.marketcetera.photon.parser.ILexerFIXImage;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
-import org.marketcetera.photon.ui.validation.fix.IConverterBuilder;
 
 public class BindingHelper {
 

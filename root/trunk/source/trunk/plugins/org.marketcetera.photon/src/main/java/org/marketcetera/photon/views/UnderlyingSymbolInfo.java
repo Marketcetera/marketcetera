@@ -64,7 +64,7 @@ public class UnderlyingSymbolInfo {
 		private Integer groupDiscriminatorID;
 		private Object groupDiscriminatorValue;
 
-		UnderlyingSymbolDataFields(Class clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
+		UnderlyingSymbolDataFields(Class<?> clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
 			this(clazz);
 			this.fieldID = fieldID;
 			this.groupID = groupID;
@@ -72,7 +72,7 @@ public class UnderlyingSymbolInfo {
 			this.groupDiscriminatorValue = groupDiscriminatorValue;
 		}
 
-		UnderlyingSymbolDataFields(Class clazz) {
+		UnderlyingSymbolDataFields(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
 				Field fieldField = clazz.getField("FIELD");

@@ -1,8 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.util.HashMap;
-import java.util.Map.Entry;
-
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -11,18 +8,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IMemento;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.photon.preferences.MapEditorUtil;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
-import ca.odell.glazedlists.EventList;
 
 /**
  * A UI section for custom fields.
@@ -116,36 +110,6 @@ public class CustomFieldsViewPieces {
 
 	}
 
-	public void updateCustomFields(String preferenceString) {
-		// Save previous enabled checkbox state
-		final int keyColumnNum = 1;
-		HashMap<String, Boolean> existingEnabledMap = new HashMap<String, Boolean>();
-		TableItem[] existingItems = customFieldsTable.getItems();
-		for (TableItem existingItem : existingItems) {
-			String key = existingItem.getText(keyColumnNum);
-			boolean checkedState = existingItem.getChecked();
-			existingEnabledMap.put(key, checkedState);
-		}
-
-		customFieldsTable.setItemCount(0);
-		EventList<Entry<String, String>> fields = MapEditorUtil
-				.parseString(preferenceString);
-		for (Entry<String, String> entry : fields) {
-			TableItem item = new TableItem(customFieldsTable, SWT.NONE);
-			String key = entry.getKey();
-			// Column order must match column numbers used above
-			String[] itemText = new String[] { "", key, entry.getValue() };
-			item.setText(itemText);
-			if (existingEnabledMap.containsKey(key)) {
-				boolean previousEnabledValue = existingEnabledMap.get(key);
-				item.setChecked(previousEnabledValue);
-			}
-		}
-		TableColumn[] columns = customFieldsTable.getColumns();
-		for (TableColumn column : columns) {
-			column.pack();
-		}
-	}
 
 	public void addCustomFields(Message message) throws MarketceteraException {
 		TableItem[] items = customFieldsTable.getItems();
@@ -196,30 +160,4 @@ public class CustomFieldsViewPieces {
 		return customFieldsExpandableComposite;
 	}
 
-	/**
-	 * Set the item checked state for all items in the custom fields table using
-	 * the integer value in the memento.
-	 */
-	public void restoreCustomFieldsTableItemCheckedState(
-			IMemento viewStateMemento, String keyPrefix) {
-		TableItem[] items = getCustomFieldsTable().getItems();
-		for (int i = 0; i < items.length; i++) {
-			TableItem item = items[i];
-			String key = keyPrefix + item.getText(1);
-			if (viewStateMemento.getInteger(key) != null) {
-				boolean itemChecked = (viewStateMemento.getInteger(key)
-						.intValue() != 0);
-				item.setChecked(itemChecked);
-			}
-		}
-	}
-
-	public void saveState(IMemento viewStateMemento, String keyPrefix) {
-		TableItem[] items = getCustomFieldsTable().getItems();
-		for (int i = 0; i < items.length; i++) {
-			TableItem item = items[i];
-			String key = keyPrefix + item.getText(1);
-			viewStateMemento.putInteger(key, (item.getChecked() ? 1 : 0));
-		}
-	}
 }

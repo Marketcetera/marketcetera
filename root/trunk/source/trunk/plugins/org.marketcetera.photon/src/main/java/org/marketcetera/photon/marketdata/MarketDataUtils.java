@@ -27,6 +27,8 @@ import quickfix.field.UnderlyingSymbol;
 
 public class MarketDataUtils {
 
+	static final String UTC_TIME_ZONE = "UTC";
+	
 	static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
 

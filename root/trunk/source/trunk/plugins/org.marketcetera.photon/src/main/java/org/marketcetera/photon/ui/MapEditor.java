@@ -9,7 +9,6 @@ import java.util.Map.Entry;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -383,7 +382,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 		// Set the cell modifier for the viewer
 		//tableViewer.setCellModifier(new BeanCellModifier<MMapEntry<String,String>>(this));
 
-		tableViewer.setContentProvider(new EventListContentProvider<Map.Entry>());
+		tableViewer.setContentProvider(new EventListContentProvider<Map.Entry<String,String>>());
         tableViewer.setLabelProvider(new MapEntryLabelProvider());
 	}
  
@@ -523,7 +522,8 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
      * @param up <code>true</code> if the item should move up,
      *  and <code>false</code> if it should move down
      */
-    private void swap(boolean up) {
+    @SuppressWarnings("unchecked") //selections are untyped
+	private void swap(boolean up) {
         setPresentsDefaultValue(false);
         int index = table.getSelectionIndex();
         int target = up ? index - 1 : index + 1;
@@ -531,7 +531,6 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
         if (index >= 0) {
             TableItem[] selection = table.getSelection();
             Entry<String, String> toReplace = (Entry<String, String>) selection[0].getData();
-            Assert.isTrue(selection.length == 1);
             entries.remove(index);
 			entries.add(target, toReplace);
             table.setSelection(target);
@@ -560,7 +559,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
     
     
 	
-	protected class MapTableFormat implements WritableTableFormat, AdvancedTableFormat{
+	protected class MapTableFormat implements WritableTableFormat<Object>, AdvancedTableFormat<Object>{
 
 		public static final int KEY_COLUMN = 0;
 		public static final int VALUE_COLUMN = 1;
@@ -610,11 +609,11 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 			}
 		}
 
-		public Class getColumnClass(int arg0) {
+		public Class<?> getColumnClass(int arg0) {
 			return String.class;
 		}
 
-		public Comparator getColumnComparator(int arg0) {
+		public Comparator<?> getColumnComparator(int arg0) {
 			return Collator.getInstance();
 		}
 		

@@ -21,8 +21,6 @@ public class SelectSymbolDialog extends Dialog {
 
 	private Text symbolText;
 
-	private IWorkbenchWindow window;
-	
 	private String targetSymbol;
 
 	public SelectSymbolDialog(IWorkbenchWindow window, String title,

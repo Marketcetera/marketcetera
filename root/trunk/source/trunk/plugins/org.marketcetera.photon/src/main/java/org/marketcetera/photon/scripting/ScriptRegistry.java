@@ -38,7 +38,6 @@ import quickfix.Message;
  */
 public class ScriptRegistry implements InitializingBean {
 
-	private static final String MESSAGE_BEAN_NAME = "message";
 	public static final String RUBY_LANG_STRING = "ruby";
 	protected BSFManager bsfManager;
 	protected BSFEngine engine;
@@ -96,10 +95,9 @@ public class ScriptRegistry implements InitializingBean {
 
 		engine = bsfManager.loadScriptingEngine("ruby");
 
-		Object result; // wasted
-		result = engine.eval("<java>", 1, 1, "require 'active_support/core_ext'");
-		result = engine.eval("<java>", 1, 1, "require 'active_support/dependencies'");
-		result = engine.eval("<java>", 1, 1, "require 'photon'");
+		engine.eval("<java>", 1, 1, "require 'active_support/core_ext'");
+		engine.eval("<java>", 1, 1, "require 'active_support/dependencies'");
+		engine.eval("<java>", 1, 1, "require 'photon'");
 	}
 	
 

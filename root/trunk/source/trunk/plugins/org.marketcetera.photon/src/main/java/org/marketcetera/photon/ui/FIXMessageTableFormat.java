@@ -191,7 +191,12 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		}
 		try {
 			FieldType fieldTypeEnum = dict.getFieldTypeEnum(fieldNum);
-			Class javaType = fieldTypeEnum.getJavaType();
+			Class<?> javaType;
+			if (fieldTypeEnum == null){
+				javaType = String.class;
+			} else {
+				javaType = fieldTypeEnum.getJavaType();
+			}
 
 			for (Class<?> type : NUMERIC_TYPES) {
 				if (type.isAssignableFrom(javaType)) {

@@ -5,13 +5,28 @@ import java.util.Map;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.validation.IValidator;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.ui.validation.IToggledValidator;
 import org.marketcetera.photon.ui.validation.SetValidator;
+import org.marketcetera.photon.ui.validation.StringSetValidator;
 
+/**
+ * A builder object for creating instances of {@link IConverter}
+ * that can convert from one set of objects to another and back
+ * based on a set of mappings.
+ * 
+ * The "from type" in the forward direction is specified by the
+ * type parameter, and the "from type" is always String.  The backward
+ * direction has the opposite type assignments.
+ * @author gmiller
+ * 
+ * Note that this class is intended for use with case-insensitive conversions.
+ *
+ * @param <FROM_T>
+ */
 public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
 
-	protected Map<FROM_T,String> map = new HashMap<FROM_T,String>();
+	protected final Map<FROM_T,String> map = new HashMap<FROM_T,String>();
 	private final Object fromType;
 	
 	public EnumStringConverterBuilder(Object fromType) {
@@ -24,14 +39,16 @@ public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
 	}
 	
 	
-	/* (non-Javadoc)
+	/**
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newToTargetConverter()
 	 */
 	public IConverter newToTargetConverter(){
 		return new ForwardConverter(map);
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * The converter returned will match strings from the UI in a case-insensitive fashion.
+	 * 
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newToModelConverter()
 	 */
 	public IConverter newToModelConverter(){
@@ -41,14 +58,14 @@ public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
 	/* (non-Javadoc)
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newTargetAfterGetValidator()
 	 */
-	public IToggledValidator newTargetAfterGetValidator(){
-		return new SetValidator<String>(map.values(), PhotonPlugin.ID, "Not a valid value");
+	public IValidator newTargetAfterGetValidator(){
+		return new StringSetValidator(map.values(), PhotonPlugin.ID, "Not a valid value");
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newModelAfterGetValidator()
 	 */
-	public IToggledValidator newModelAfterGetValidator(){
+	public IValidator newModelAfterGetValidator(){
 		return new SetValidator<FROM_T>(map.keySet(), PhotonPlugin.ID, "Not a valid value");
 	}
 	
@@ -78,7 +95,13 @@ public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
 		}
 
 		public Object convert(Object from) {
-			return map.get(from);
+			if (map.containsKey(from)){
+				return map.get(from);
+			} else if (from != null){
+				return map.get(from.toString().toUpperCase());
+			} else {
+				return null;
+			}
 		}
 	}
 

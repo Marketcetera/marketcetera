@@ -30,16 +30,16 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
-import org.marketcetera.photon.preferences.ConnectionsPreferencePage;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
-import org.marketcetera.photon.views.IOrderTicket;
 import org.marketcetera.photon.views.IOrderTicketController;
-import org.marketcetera.photon.views.OptionOrderTicket;
+import org.marketcetera.photon.views.OptionOrderTicketController;
+import org.marketcetera.photon.views.OptionOrderTicketModel;
 import org.marketcetera.photon.views.SecondaryIDCreator;
-import org.marketcetera.photon.views.StockOrderTicket;
+import org.marketcetera.photon.views.StockOrderTicketController;
+import org.marketcetera.photon.views.StockOrderTicketModel;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -95,6 +95,14 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private SecondaryIDCreator secondaryIDCreator = new SecondaryIDCreator();
 
+	private StockOrderTicketModel stockOrderTicketModel;
+
+	private OptionOrderTicketModel optionOrderTicketModel;
+
+	private StockOrderTicketController stockOrderTicketController;
+
+	private OptionOrderTicketController optionOrderTicketController;
+
 	/**
 	 * The constructor.
 	 */
@@ -125,8 +133,16 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		initFIXMessageHistory();
 		initScriptRegistry();
 		initPhotonController();
+
 	}
 
+	public void initOrderTickets(){
+		stockOrderTicketModel = new StockOrderTicketModel(messageFactory);
+		optionOrderTicketModel = new OptionOrderTicketModel(messageFactory);
+		stockOrderTicketController = new StockOrderTicketController(stockOrderTicketModel);
+		optionOrderTicketController = new OptionOrderTicketController(optionOrderTicketModel);
+	}
+	
 	private void initPhotonController() {
 		photonController = new PhotonController();
 		photonController.setMessageHistory(fixMessageHistory);
@@ -384,24 +400,33 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return null;
 	}
 	
-	public IOrderTicketController getOrderTicketController(
-			String orderTicketViewID) {
-		IViewPart viewPart = getActiveView(orderTicketViewID);
-		IOrderTicketController controller = null;
-		if (viewPart instanceof IOrderTicket) {
-			IOrderTicket orderTicket = (IOrderTicket) viewPart;
-			controller = orderTicket.getOrderTicketController();
-		}
-		return controller;
+	public StockOrderTicketModel getStockOrderTicketModel(){
+		return stockOrderTicketModel;
 	}
 	
+	public OptionOrderTicketModel getOptionOrderTicketModel(){
+		return optionOrderTicketModel;
+	}
+	
+	public StockOrderTicketController getStockOrderTicketController() {
+		return stockOrderTicketController;
+	}
+	
+	public OptionOrderTicketController getOptionOrderTicketController() {
+		return optionOrderTicketController;
+	}
+	
+	/**
+	 * Returns the order ticket appropriate for the given message (based
+	 * on security type).
+	 * @param orderMessage the message specifying the type of order ticket.
+	 * @return the controller for the appropriate order ticket.
+	 */
 	public IOrderTicketController getOrderTicketController(Message orderMessage) {
-		String orderTicketViewID = StockOrderTicket.ID;
 		if (FIXMessageUtil.isEquityOptionOrder(orderMessage)) {
-			orderTicketViewID = OptionOrderTicket.ID;
+			return getOptionOrderTicketController();
 		}
-		IOrderTicketController controller = getOrderTicketController(orderTicketViewID);
-		return controller;
+		return getStockOrderTicketController();
 	}
 
 	
@@ -411,6 +436,5 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public String getNextSecondaryID() {
 		return secondaryIDCreator.getNextSecondaryID();
 	}
-
 
 }
