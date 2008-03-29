@@ -208,7 +208,7 @@ public class FIXMessageFactory {
             MSymbol symbol,
             String counterpartyOrderID
     ) {
-        Message aMessage = msgFactory.create(beginString, MsgType.ORDER_CANCEL_REQUEST);
+        Message aMessage = msgFactory.create(beginString,MsgType.ORDER_CANCEL_REQUEST);
 
         addTransactionTimeIfNeeded(aMessage);
         aMessage.setField(new ClOrdID(clOrderId));
@@ -250,7 +250,7 @@ public class FIXMessageFactory {
         aMessage.setField(new OrdStatus(ordStatus));
         aMessage.setField(new Side(side));
         aMessage.setField(new OrderQty(orderQty));
-        if (orderPrice != null) {
+        if(orderPrice != null) {
             aMessage.setField(new Price(orderPrice));
         }
         if (lastShares != null) aMessage.setField(new LastShares(lastShares));
@@ -258,7 +258,7 @@ public class FIXMessageFactory {
         aMessage.setField(new CumQty(cumQty));
         aMessage.setField(new AvgPx(avgPrice));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
-        if (inAccount != null) {
+        if(inAccount != null) {
             aMessage.setField(new Account(inAccount));
         }
         msgAugmentor.executionReportAugment(aMessage);
