@@ -62,4 +62,8 @@ public class MarketceteraSubscription implements ISubscription, Comparable<Strin
 		}
 		
 	}
+
+	public String getCorrelationFieldValue() {
+		return value;
+	}
 }
