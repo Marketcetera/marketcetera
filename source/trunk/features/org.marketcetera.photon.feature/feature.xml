@@ -3,7 +3,7 @@
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
       version="0.4.2"
-      provider-name="Marketcetera Inc">
+      provider-name="Marketcetera, Inc.">
 
    <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">
       Marketcetera Photon Feature
@@ -75,7 +75,7 @@
          id="org.quickfixj"
          download-size="0"
          install-size="0"
-         version="1.3.1"
+         version="1.3.1.bd-2"
          unpack="false"/>
 
    <plugin
