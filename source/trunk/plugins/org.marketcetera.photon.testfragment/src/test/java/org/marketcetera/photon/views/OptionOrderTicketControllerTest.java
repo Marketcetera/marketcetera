@@ -5,7 +5,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.marketdata.MarketceteraSubscription;
+import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.photon.PhotonPlugin;
 
 import quickfix.field.MDEntryType;
@@ -32,7 +32,7 @@ public class OptionOrderTicketControllerTest extends TestCase {
 		controller.requestOptionRootInfo(optionRoot);
 
 		DerivativeSecurityList securityList = OptionOrderTicketViewTest.createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		securityList.setField(new SecurityReqID(((MarketceteraSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
+		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
 
 		controller.onMessage(securityList);
 
@@ -49,7 +49,7 @@ public class OptionOrderTicketControllerTest extends TestCase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(15), new BigDecimal(16), new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(66), new BigDecimal(67), new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(61), new BigDecimal(62), new Date(), "BGUS");
-		quoteMessageToSend.setField(new MDReqID(((MarketceteraSubscription)controller.getCurrentSubscription()).getCorrelationFieldValue()));
+		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)controller.getCurrentSubscription()).getCorrelationFieldValue()));
 
 		controller.onMessage(quoteMessageToSend);
 
