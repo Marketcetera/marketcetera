@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core Tests Plug-in
+Bundle-SymbolicName: org.marketcetera.core.tests
+Bundle-Version: 0.4.2
+Bundle-Vendor: Marketcetera, Inc.
+Require-Bundle: org.marketcetera.core,
+ org.junit
+Export-Package: org.marketcetera.core,
+ org.marketcetera.core.publisher,
+ org.marketcetera.core.resourcepool,
+ org.marketcetera.marketdata,
+ org.marketcetera.messagehistory,
+ org.marketcetera.options,
+ org.marketcetera.quickfix,
+ org.marketcetera.quickfix.cficode,
+ org.marketcetera.quickfix.customfields,
+ org.marketcetera.quickfix.messagefactory,
+ org.marketcetera.quickfix.messagemodifiers,
+ org.marketcetera.spring,
+ org.marketcetera.symbology
