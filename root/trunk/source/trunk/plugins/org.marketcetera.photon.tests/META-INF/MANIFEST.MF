@@ -19,5 +19,6 @@ Require-Bundle: org.marketcetera.photon,
  org.marketcetera.bogusfeed,
  org.marketcetera.marketdata,
  org.jruby.bsf,
- com.swtworkbench.community.xswt
+ com.swtworkbench.community.xswt,
+ org.marketcetera.core.tests
 Eclipse-LazyStart: true
