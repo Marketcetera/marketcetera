@@ -1,5 +1,8 @@
 package org.marketcetera.photon.scripting;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Enumeration;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
@@ -7,12 +10,15 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 
 import org.apache.bsf.BSFException;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.PhotonTestPlugin;
+import org.osgi.framework.Bundle;
 
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
@@ -61,12 +67,15 @@ public class ScriptRegistryTest extends TestCase {
 		
 	}
 
-	private Classpath getClasspath() {
+	private Classpath getClasspath() throws IOException {
 		Classpath classpath = new Classpath();
 
-		IPath pluginPath = EclipseUtils.getPluginPath(PhotonTestPlugin.getDefault());
-		pluginPath = pluginPath.append("lib");
-		classpath.add(pluginPath);
+		Bundle bundle = PhotonPlugin.getDefault().getBundle();
+		Enumeration entries = bundle.findEntries("/lib", "requiring.rb", true);
+		URL entryURL = (URL) entries.nextElement();
+			
+		IPath path = Path.fromOSString(FileLocator.toFileURL(entryURL).getFile()).removeLastSegments(1);
+		classpath.add(path);
 
 		IPath photonPluginPath = EclipseUtils.getPluginPath(PhotonPlugin.getDefault());
 		photonPluginPath = photonPluginPath.append("src").append("main").append("resources");
