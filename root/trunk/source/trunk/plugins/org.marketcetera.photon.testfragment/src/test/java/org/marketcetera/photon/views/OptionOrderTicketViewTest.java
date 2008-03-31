@@ -18,7 +18,7 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.marketdata.MarketceteraOptionSymbol;
-import org.marketcetera.marketdata.MarketceteraSubscription;
+import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
@@ -236,7 +236,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		controller.requestOptionRootInfo(optionRoot);
 		
 		DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		securityList.setField(new SecurityReqID(((MarketceteraSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
+		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
 
 		controller.onMessage(securityList);
 		
@@ -265,7 +265,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		controller.requestOptionRootInfo(optionRoot);
 		
 		DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		MarketceteraSubscription derivativeSecurityListSubscription = (MarketceteraSubscription)controller.getDerivativeSecurityListSubscription();
+		FIXCorrelationFieldSubscription derivativeSecurityListSubscription = (FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription();
 		securityList.setField(new SecurityReqID((derivativeSecurityListSubscription).getCorrelationFieldValue()));
 
 		controller.onMessage(securityList);
@@ -329,7 +329,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		controller.requestOptionRootInfo(optionRoot);
 		
 		DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		securityList.setField(new SecurityReqID(((MarketceteraSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
+		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
 
 		controller.onMessage(securityList);
 
@@ -342,7 +342,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
-		quoteMessageToSend.setField(new MDReqID(((MarketceteraSubscription)subscription).getCorrelationFieldValue()));
+		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)subscription).getCorrelationFieldValue()));
 
 		mockFeed.sendMessage(quoteMessageToSend);
 
