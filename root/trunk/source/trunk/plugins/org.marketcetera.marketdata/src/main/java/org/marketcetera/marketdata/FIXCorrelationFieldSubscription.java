@@ -7,14 +7,14 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.StringField;
 
-public class MarketceteraSubscription implements ISubscription, Comparable<String>, CharSequence {
+public class FIXCorrelationFieldSubscription implements ISubscription, Comparable<String>, CharSequence {
 
 	private final String value;
 	private final String subscribeMsgType;
 	private Integer marketDepth;
 	private StringField correlationField;
 	
-	public MarketceteraSubscription(String value, String subscribeMsgType, Integer marketDepth) {
+	public FIXCorrelationFieldSubscription(String value, String subscribeMsgType, Integer marketDepth) {
 		this.value = value;
 		this.subscribeMsgType = subscribeMsgType;
 		this.marketDepth = marketDepth;

@@ -122,7 +122,7 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 			try { marketDepth = query.getInt(MarketDepth.FIELD); } catch (FieldNotFound fnf) { /* do nothing */ }
 			String reqID = addReqID(query);
 			sendMessage(query);
-			return new MarketceteraSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
+			return new FIXCorrelationFieldSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
 		} catch (SessionNotFound e) {
 			logger.error("Session not found while trying to execute async query: "+query);
 		} catch (FieldNotFound e) {
@@ -154,8 +154,8 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 	}
 
 	public void asyncUnsubscribe(ISubscription subscription) throws MarketceteraException {
-		if (subscription instanceof MarketceteraSubscription) {
-			MarketceteraSubscription mSubscription = (MarketceteraSubscription) subscription;
+		if (subscription instanceof FIXCorrelationFieldSubscription) {
+			FIXCorrelationFieldSubscription mSubscription = (FIXCorrelationFieldSubscription) subscription;
 			Message message = messageFactory.create("", mSubscription.getSubscribeMsgType());
 			StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, mSubscription.getSubscribeMsgType());
 			correlationID.setValue(mSubscription.toString());
