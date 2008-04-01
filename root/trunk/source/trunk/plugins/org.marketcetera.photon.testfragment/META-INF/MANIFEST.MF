@@ -6,5 +6,4 @@ Bundle-Version: 1.0.0
 Bundle-Vendor: Marketcetera, Inc.
 Fragment-Host: org.marketcetera.photon;bundle-version="0.4.2"
 Require-Bundle: org.marketcetera.core.tests,
- org.junit,
- org.marketcetera.marketdata
+ org.junit

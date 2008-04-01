@@ -5,8 +5,6 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.marketdata.MarketceteraFeedTest;
-import org.marketcetera.marketdata.MarketceteraOptionSymbolTest;
 import org.marketcetera.messagehistory.FIXMessageHistoryTest;
 import org.marketcetera.messagehistory.GroupIDComparatorTest;
 import org.marketcetera.messagehistory.MessageHolderTest;
@@ -64,8 +62,6 @@ public class TS_Photon {
 		suite.addTestSuite(FIXFieldLocalizerTest.class);
 		
 		// marketdata
-		suite.addTestSuite(MarketceteraOptionSymbolTest.class);
-		suite.addTestSuite(MarketceteraFeedTest.class);
 		suite.addTestSuite(OptionContractDataTest.class);
 		suite.addTestSuite(OptionMessageHolderTest.class);
 
