@@ -16,15 +16,13 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.ISubscription;
-import org.marketcetera.marketdata.MarketceteraOptionSymbol;
 import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
+import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
-import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
@@ -665,7 +663,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 
         responseMessage.setField(new UnderlyingSymbol(symbol));
         for (int i = 0; i < callSuffixes.length; i++) {
-            MarketceteraOptionSymbol putSymbol = new MarketceteraOptionSymbol(symbol+"+"+putSuffixes[i]);
+        	MSymbol putSymbol = new MSymbol(symbol+"+"+putSuffixes[i]);
             // put first
             Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
             optionGroup.setField(new Symbol(putSymbol.toString()));
@@ -675,7 +673,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
             optionGroup.setField(new MaturityDate("20080122"));
             responseMessage.addGroup(optionGroup);
 
-            MarketceteraOptionSymbol callSymbol = new MarketceteraOptionSymbol(symbol + "+" + callSuffixes[i]);
+            MSymbol callSymbol = new MSymbol(symbol + "+" + callSuffixes[i]);
             // now call
             optionGroup.setField(new Symbol(callSymbol.toString()));
             optionGroup.setField(new StrikePrice(strikePrices[i]));
