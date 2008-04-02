@@ -37,7 +37,6 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  com.ibm.icu,
  org.eclipse.core.net,
  org.eclipse.ui.net,
- com.mysql.jdbc;resolution:=optional,
  org.eclipse.core.databinding.beans,
  com.swtworkbench.community.xswt
 Export-Package: org.marketcetera.photon,
