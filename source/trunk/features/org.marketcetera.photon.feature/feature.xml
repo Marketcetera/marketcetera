@@ -25,9 +25,13 @@
          id="org.eclipse.rcp"
          version="3.3.0.v20070607-8y8eE8NEbsN3X_fjWS8HPNG"/>
 
+   <!--includes
+         id="org.rubypeople.rdt"
+         version="0.8.1.609062100PRD"/-->
+
    <includes
          id="org.rubypeople.rdt"
-         version="0.8.1.609062100PRD"/>
+         version="0.9.3.6479" />
 
    <plugin
          id="net.java.dev.glazedlists"
