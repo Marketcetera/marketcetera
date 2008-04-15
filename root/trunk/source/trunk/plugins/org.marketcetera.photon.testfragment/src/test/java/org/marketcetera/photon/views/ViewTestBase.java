@@ -20,7 +20,9 @@ public abstract class ViewTestBase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		waitForJobs();
-               PhotonPlugin.getDefault().initOrderTickets();
+		if (PhotonPlugin.getDefault().getStockOrderTicketModel() == null){
+			PhotonPlugin.getDefault().initOrderTickets();
+		}
 		testView = PlatformUI.
 			getWorkbench().
 			getActiveWorkbenchWindow().
