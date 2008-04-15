@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.photon.PhotonPlugin;
 
 public abstract class ViewTestBase extends TestCase {
 
@@ -19,6 +20,7 @@ public abstract class ViewTestBase extends TestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		waitForJobs();
+               PhotonPlugin.getDefault().initOrderTickets();
 		testView = PlatformUI.
 			getWorkbench().
 			getActiveWorkbenchWindow().
