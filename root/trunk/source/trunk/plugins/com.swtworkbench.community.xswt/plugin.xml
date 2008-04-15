@@ -1,29 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="com.swtworkbench.community.xswt"
-   name="XSWT Plug-in"
-   version="1.5.0"
-   provider-name="SWTWORKBENCH"
-   class="com.swtworkbench.community.xswt.XswtPlugin">
-
-   <runtime>
-      <library name="xswt.jar">
-         <packages prefixes="com.swtworkbench.community.xswt"/>
-         <export name="*"/>
-      </library>
-      <library name="kxml2.jar">
-         <export name="*"/>
-         <packages prefixes="org.kmll2.io, org.kmll2.io.kdom , org.xmlpull.v1"/>
-      </library>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.kxml2"/>
-   </requires>
+<plugin>
 
    <extension-point id="classBuilder" name="Class builder" schema="schema/classBuilder.exsd"/>
    <extension-point id="dataParser" name="Data parser" schema="schema/dataParser.exsd"/>
