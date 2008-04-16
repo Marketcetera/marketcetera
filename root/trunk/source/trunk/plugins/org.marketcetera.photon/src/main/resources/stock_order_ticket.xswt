@@ -12,7 +12,7 @@
     <layout x:class="gridLayout" numColumns="2" marginWidth="0" marginHeight="0"/>
 
 	<scrolledForm x:id="Form" text="New Equity Order">
-        <layoutData x:class="gridData" grabExcessHorizontalSpace="true" 
+        <layoutData x:class="gridData" grabExcessHorizontalSpace="true"
             grabExcessVerticalSpace="true" horizontalAlignment="GridData.FILL" 
             verticalAlignment="GridData.FILL" horizontalSpan="2"/>
 		<getBody>
@@ -81,7 +81,7 @@
 					</composite>
 				</section>
 				<section x:style="ExpandableComposite.TITLE_BAR" text="Market data" expanded="true" client="_marketdata_composite">
-					<layout x:class="gridData"
+					<layout x:class="gridLayout"
 						marginWidth="0"
 						marginHeight="0"/>
 					<layoutData x:class="gridData" 
