@@ -1,29 +1,28 @@
 package org.marketcetera.photon.marketdata;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.IMarketDataFeed;
-import org.marketcetera.marketdata.IMarketDataListener;
-import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.marketdata.IMarketDataFeedCredentials;
+import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;
 
-public class MarketDataFeedService implements IFeedComponentListener, IFeedComponent {
-	IMarketDataFeed feed;
-	private DelegatingListener delegatingListener;
+public class MarketDataFeedService<C extends IMarketDataFeedCredentials> implements IFeedComponentListener, IFeedComponent {
+	C credentials;
+	IMarketDataFeed<?, C> feed;
 	private ServiceRegistration serviceRegistration;
 
-	public MarketDataFeedService(IMarketDataFeed aFeed){
+	public MarketDataFeedService(IMarketDataFeed<?,C> aFeed, C credentials){
 		feed = aFeed;
-		delegatingListener = new DelegatingListener();
-		feed.setMarketDataListener(delegatingListener);
 	}
 
 	public final void addFeedComponentListener(IFeedComponentListener listener) {
@@ -68,39 +67,21 @@ public class MarketDataFeedService implements IFeedComponentListener, IFeedCompo
 		feed.stop();
 	}
 
-	public final ISubscription subscribe(Message subscriptionMessage) throws MarketceteraException {
-		return feed.asyncQuery(subscriptionMessage);
+	public final IMarketDataFeedToken<C> execute(Message message, ISubscriber subscriber) 
+		throws FeedException{
+		return feed.execute(message, subscriber);
 	}
 
 	public final MSymbol symbolFromString(String symbolString) {
-		return feed.symbolFromString(symbolString);
+		return new MSymbol(symbolString);
 	}
 
-	public final void unsubscribe(ISubscription subscription) throws MarketceteraException {
-		if (subscription != null){
-			feed.asyncUnsubscribe(subscription);
-		}
-	}
 	
-	public final IMarketDataFeed getMarketDataFeed()
+	public final IMarketDataFeed<?,?> getMarketDataFeed()
 	{
 		return feed;
 	}
 
-	public void addMarketDataListener(IMarketDataListener listener)
-	{
-		if (listener == null)
-			throw new NullPointerException();
-		delegatingListener.addMarketDataListener(listener);
-	}
-	
-	public void removeMarketDataListener(IMarketDataListener listener)
-	{
-		if (listener == null)
-			throw new NullPointerException();
-		delegatingListener.removeMarketDataListener(listener);
-	}
-	
 	public void setServiceRegistration(ServiceRegistration serviceRegistration){
 		this.serviceRegistration = serviceRegistration;
 	}
@@ -110,49 +91,8 @@ public class MarketDataFeedService implements IFeedComponentListener, IFeedCompo
 	}
 
 
-	class DelegatingListener implements IMarketDataListener {
-
-		List<IMarketDataListener> delegatedListeners = new LinkedList<IMarketDataListener>();
-		public void onMessage(Message aMessage) {
-			synchronized (delegatedListeners){
-				for (IMarketDataListener aListener : delegatedListeners) {
-					aListener.onMessage(aMessage);
-				}
-			}
-		}
-		public void onMessages(Message[] messages) {
-			synchronized (delegatedListeners){
-				for (IMarketDataListener aListener : delegatedListeners) {
-					aListener.onMessages(messages);
-				}
-			}
-		}
-
-		public void removeMarketDataListener(IMarketDataListener listener) {
-			synchronized (delegatedListeners) {
-				delegatedListeners.remove(listener);
-			}
-		}
-		public void addMarketDataListener(IMarketDataListener listener) {
-			synchronized (delegatedListeners) {
-				delegatedListeners.add(listener);
-			}
-		}
-
-		public void onLevel2Quote(Message aQuote) {}
-		public void onLevel2Quotes(Message[] quotes) {}
-		public void onQuote(Message aQuote) {}
-		public void onQuotes(Message[] messages) {}
-		public void onTrade(Message aTrade) {}
-		public void onTrades(Message[] trades) {}
-		
-	}
-
-
-
 	
 	public void afterPropertiesSet() throws Exception {
-		feed.addFeedComponentListener(this);
 	}
 
 	public void feedComponentChanged(IFeedComponent component) {

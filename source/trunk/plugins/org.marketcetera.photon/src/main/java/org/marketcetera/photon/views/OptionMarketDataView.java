@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import org.eclipse.jface.action.IToolBarManager;
@@ -21,7 +23,10 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedStatus;
+import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.marketdata.IMarketDataListener;
 import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.PhotonPlugin;
@@ -42,7 +47,7 @@ import ca.odell.glazedlists.BasicEventList;
  * @author caroline.leung@softwaregoodness.com
  */
 public class OptionMarketDataView extends ViewPart implements
-		IMSymbolListener, IMarketDataListener{
+		IMSymbolListener, ISubscriber{
 
 	public static final String ID = "org.marketcetera.photon.views.OptionMarketDataView";
 
@@ -64,14 +69,13 @@ public class OptionMarketDataView extends ViewPart implements
 
 	private MarketDataFeedTracker marketDataTracker;
 
-	private ISubscription optionMarketDataSubscription;
+	private final Set<IMarketDataFeedToken> tokens = new HashSet<IMarketDataFeedToken>();
 
 	public OptionMarketDataView() {
 		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
 				.getBundleContext());
 		marketDataTracker.open();
 
-		marketDataTracker.setMarketDataListener(this);
 	}
 	
 	@Override
@@ -158,7 +162,6 @@ public class OptionMarketDataView extends ViewPart implements
 
 	@Override
 	public void dispose() {
-		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
 		underlyingSymbolInfoComposite.dispose();
 		optionMessagesComposite.dispose();
@@ -233,12 +236,6 @@ public class OptionMarketDataView extends ViewPart implements
 		}		
 	}
 
-	private void onMessageImpl(Message [] messages){
-		for (Message message : messages) {
-			onMessageImpl(message);
-		}
-	}
-	
 	public void onMessage(final Message aQuote) {
 		Display theDisplay = Display.getDefault();
 		if (theDisplay.getThread() == Thread.currentThread()) {
@@ -253,19 +250,6 @@ public class OptionMarketDataView extends ViewPart implements
 		}
 	}
 
-	public void onMessages(final Message[] messages) {
-		Display theDisplay = Display.getDefault();
-		if (theDisplay.getThread() == Thread.currentThread()) {
-			onMessageImpl(messages);
-		} else {
-			theDisplay.asyncExec(new Runnable() {
-				public void run() {
-					if (!optionMessagesComposite.getMessagesViewer().getTable().isDisposed())
-						onMessageImpl(messages);
-				}
-			});
-		}
-    }
 
 	public void onAssertSymbol(MSymbol symbol) {
 		if (symbol == null || symbol.getBaseSymbol().length() <= 0) {
@@ -295,7 +279,7 @@ public class OptionMarketDataView extends ViewPart implements
 			// Step 2 - subscribe to the underlying symbol
 			// Step 3 - retrieve and subscribe to all put/call options
 			unsubscribeAllMarketData();
-			marketDataTracker.simpleSubscribe(symbol);
+			doSubscribe(symbol);
 			requestOptionSecurityList(symbol);
 			requestOptionMarketData(symbol);
 		} catch (MarketceteraException e) {
@@ -308,9 +292,33 @@ public class OptionMarketDataView extends ViewPart implements
 		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
 		MarketDataFeedService marketDataFeed = marketDataTracker.getMarketDataFeedService();
 		if (marketDataFeed != null){
-			optionMarketDataSubscription = marketDataFeed.subscribe(subscribeMessage);
+			tokens.add(marketDataFeed.execute(subscribeMessage, new ISubscriber() {
+
+				public boolean isInteresting(Object arg0) {
+					return true;
+				}
+
+				public void publishTo(Object arg0) {
+					optionMessagesComposite.handleQuote((Message) arg0);
+				}
+				
+			}));
 		}
 	}
+
+	private void doSubscribe(MSymbol symbol) {
+		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker.getService();
+		try {
+			if (service == null){
+				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			} else {
+				service.execute(MarketDataUtils.newSubscribeBBO(symbol), this);
+			}
+		} catch (MarketceteraException e) {
+			PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+symbol);
+		}
+	}
+
 
 	private void requestOptionSecurityList(final MSymbol symbol) throws MarketceteraException {
 		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: " + symbol);
@@ -319,8 +327,16 @@ public class OptionMarketDataView extends ViewPart implements
 		//symbol = underlyingSymbol  (e.g. MSFT)
 		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
 
-		ISubscription optionListRequest = service.getMarketDataFeed().asyncQuery(query);
-		optionMessagesComposite.setDerivativeSecurityListSubscription(optionListRequest);
+		IMarketDataFeedToken token = service.execute(query, new ISubscriber(){
+			public boolean isInteresting(Object arg0) {
+				return true;
+			}
+
+			public void publishTo(Object message) {
+				optionMessagesComposite.handleDerivativeSecuritiyList((Message) message, marketDataTracker);
+			}
+		});
+		tokens.add(token);
 	}
 	
 
@@ -340,27 +356,12 @@ public class OptionMarketDataView extends ViewPart implements
 	}
 
 	private void unsubscribeAllMarketData() {
-		// retrieve all related contract symbols, unsubscribe and remove them
-		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker
-				.getService();
-		if (service == null) {
-			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
-			return;
+		Iterator<IMarketDataFeedToken> iter = tokens .iterator();
+		while (iter.hasNext()){
+			iter.next().unsubscribe(this);
+			iter.remove();
 		}
-		
-		// remove and unsubscribe underlying symbols and all contracts
-		Set<String> subscribedUnderlyingSymbols = underlyingSymbolInfoComposite
-				.getUnderlyingSymbolInfoMap().keySet();
-		for (String subscribedUnderlyingSymbol : subscribedUnderlyingSymbols) {
-			// unsubscribe and remove the underlying symbol
-			MSymbol symbol = service.symbolFromString(subscribedUnderlyingSymbol);
-			marketDataTracker.simpleUnsubscribe(symbol);
-		}
-		try {
-			service.unsubscribe(optionMarketDataSubscription);
-		} catch (MarketceteraException e) {
-		}
-		optionMessagesComposite.clear(marketDataTracker);
+		optionMessagesComposite.clear();
 	}
 
 	@Override
@@ -371,5 +372,19 @@ public class OptionMarketDataView extends ViewPart implements
 
 	public boolean isListeningSymbol(MSymbol symbol) {
 		return underlyingSymbolInfoComposite.hasSymbol(symbol);
+	}
+
+	public boolean isInteresting(Object arg0) {
+		return true;
+	}
+
+	public void publishTo(Object obj) {
+		Message message;
+		if (obj instanceof SymbolExchangeEvent){
+			message = ((SymbolExchangeEvent) obj).getFIXMessage();
+		} else {
+			message = (Message) obj;
+		}
+		onMessage(message);
 	}
 }

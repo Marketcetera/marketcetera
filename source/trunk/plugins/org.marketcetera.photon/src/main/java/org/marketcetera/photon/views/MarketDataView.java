@@ -1,6 +1,10 @@
 package org.marketcetera.photon.views;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.CellEditor;
@@ -13,10 +17,16 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.marketcetera.core.IFeedComponentListener;
+import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.MarketDataListener;
+import org.marketcetera.marketdata.IFeedComponent;
+import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.EclipseUtils;
@@ -24,11 +34,13 @@ import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.MarketDataUtils;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.DataDictionary;
@@ -41,6 +53,7 @@ import quickfix.field.LastQty;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
+import quickfix.field.MDReqID;
 import quickfix.field.NoMDEntries;
 import quickfix.field.OfferPx;
 import quickfix.field.OfferSize;
@@ -58,7 +71,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author andrei.lissovski@softwaregoodness.com
  * @author michael.lossos@softwaregoodness.com
  */
-public class MarketDataView extends MessagesView implements IMSymbolListener {
+public class MarketDataView extends MessagesView implements IMSymbolListener, IFeedComponentListener, ISubscriber {
 
 
 	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
@@ -68,7 +81,10 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 //	private static final int LASTPX_COLUMN_INDEX = 2;
 	private static final int LASTQTY_COLUMN_INDEX = 3;
 	private static final int LAST_NORMAL_COLUMN_INDEX = LASTQTY_COLUMN_INDEX;
-	
+    /**
+     * helper object to coordinate read and writes to the model quote list
+     */
+    private final LockHelper mListLocker = new LockHelper();	
 	
 	public enum MarketDataColumns implements IFieldIdentifier
 	{
@@ -136,17 +152,16 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 
 	private TextContributionItem symbolEntryText;
 
+	private final Map<MSymbol, IMarketDataFeedToken<?>> tokenMap = new HashMap<MSymbol, IMarketDataFeedToken<?>>();
+
 	public MarketDataView()
 	{
 		super(true);
 		marketDataTracker = new MarketDataFeedTracker(
 				PhotonPlugin.getDefault().getBundleContext());
 		marketDataTracker.open();
-
-		marketDataListener = new MDVMarketDataListener();
-		marketDataTracker.setMarketDataListener(marketDataListener);
 	}
-	
+
 	@Override
 	public void createPartControl(Composite parent) {
 		super.createPartControl(parent);
@@ -161,7 +176,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	
 	@Override
 	public void dispose() {
-		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
 		
 		super.dispose();
@@ -311,40 +325,35 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		return false;
 	}
 
-	private void updateQuote(Message quote) {
-		EventList<MessageHolder> list = getInput();
-		int i = 0;
-		for (MessageHolder holder : list) {
-			Message message = holder.getMessage();
-			try {
-				if (message.getString(Symbol.FIELD).equals(quote.getString(Symbol.FIELD)))
-				{
-					IncomingMessageHolder newHolder = new IncomingMessageHolder(quote);
-					list.set(i, newHolder);
-					getMessagesViewer().update(newHolder, null);
-					return;
-				}
-			} catch (FieldNotFound e) {
-			}
-			i++;
-		}
+	private void updateQuote(final Message quote) 
+	{
+	    try {
+            mListLocker.executeRead(new Callable<Object>() {
+                public Object call() 
+                    throws Exception
+                {
+                    EventList<MessageHolder> list = getInput();
+                    
+                    int i = 0;
+                    for (MessageHolder holder : list) {
+                        Message message = holder.getMessage();
+                        try {
+                            if (message.getString(Symbol.FIELD).equals(quote.getString(Symbol.FIELD))) {
+                                IncomingMessageHolder newHolder = new IncomingMessageHolder(quote);
+                                getMessagesViewer().update(newHolder, null);
+                            }               
+                        } catch (FieldNotFound e) {
+                            throw e;
+                        }
+                        i++;
+                    }
+                    return null;
+                }	        
+            });
+        } catch (Throwable t) {
+            PhotonPlugin.getMainConsoleLogger().error(t);
+        }
 	}
-
-	
-	public void onQuote(final Message aQuote) {
-		Display theDisplay = Display.getDefault();
-		if (theDisplay.getThread() == Thread.currentThread()){
-			updateQuote(aQuote);
-		} else {			
-			theDisplay.asyncExec(new Runnable() {
-				public void run() {
-					if (!getMessagesViewer().getTable().isDisposed())
-						updateQuote(aQuote);
-				}
-			});
-		}
-	}
-
 
 	class MarketDataCellModifier implements ICellModifier
 	{
@@ -364,7 +373,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		}
 
 		public void modify(Object element, String property, Object value) {
-			MarketDataFeedService service = (MarketDataFeedService) marketDataTracker.getMarketDataFeedService();
+			MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getMarketDataFeedService();
 			if (service == null){
 				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
 				return;
@@ -381,18 +390,13 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			
 			try {
 				MSymbol symbol = service.symbolFromString(message.getString(Symbol.FIELD));
-				marketDataTracker.simpleUnsubscribe(symbol);
+				doUnsubscribe(symbol);
 			} catch (FieldNotFound fnf){}
 			message.clear();
 			if (stringValue.length()>0){
 				MSymbol mSymbol = service.symbolFromString(stringValue);
 				message.setField(new Symbol(stringValue));
-				try {
-					marketDataTracker.simpleSubscribe(mSymbol);
-				} catch (MarketceteraException e) {
-					PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+mSymbol);
-				}
-				getMessagesViewer().refresh();
+				doSubscribe(mSymbol);
 			}
 		}
 	}
@@ -403,7 +407,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	private static final int ASK_INDEX = LAST_NORMAL_COLUMN_INDEX + 3;
 	private static final int ASK_SIZE_INDEX = LAST_NORMAL_COLUMN_INDEX + 4;
 
-	private MDVMarketDataListener marketDataListener;
 	
 	class MarketDataTableFormat extends MessageListTableFormat {
 
@@ -461,12 +464,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 			message.setField(new Symbol(symbol.toString()));
 			list.add(new MessageHolder(message));
 
-			try {
-				marketDataTracker.simpleSubscribe(symbol);
-			} catch (MarketceteraException e) {
-				PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+symbol);
-			}
-			getMessagesViewer().refresh();
+			doSubscribe(symbol);
 		}
 	}
 	
@@ -489,7 +487,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	}
 
 	public void removeItem(MessageHolder holder){
-		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker.getService();
+		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
 		if (service == null){
 			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
 			return;
@@ -503,8 +501,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 	}
 	
 	public void removeSymbol(MSymbol symbol) {
-
-		marketDataTracker.simpleUnsubscribe(symbol);
+		doUnsubscribe(symbol);
 
 		EventList<MessageHolder> list = getInput();
 		for (MessageHolder holder : list) {
@@ -520,17 +517,99 @@ public class MarketDataView extends MessagesView implements IMSymbolListener {
 		getMessagesViewer().refresh();
 		
 	}
-	
 
-	public class MDVMarketDataListener extends MarketDataListener {
-		public void onMessage(Message aMessage) {
-			MarketDataView.this.onQuote(aMessage);
+	private void doUnsubscribe(MSymbol symbol) {
+		tokenMap.remove(symbol).unsubscribe(this);
+	}
+
+	private void doSubscribe(MSymbol symbol) {
+		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
+		try {
+			if (service == null){
+				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			} else {
+				Message newSubscribeBBO = MarketDataUtils.newSubscribeBBO(symbol);
+				newSubscribeBBO.setField(new MDReqID(PhotonPlugin.getDefault().getIDFactory().getNext()));
+				service.execute(newSubscribeBBO, this);
+				getMessagesViewer().refresh();
+			}
+		} catch (MarketceteraException e) {
+		    e.printStackTrace();
+			PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+symbol);
 		}
-
 	}
 
 	public boolean isListeningSymbol(MSymbol symbol) {
-		// todo: implement if necessary
 		return false;
 	}
+
+	public void feedComponentChanged(IFeedComponent feedComponent) {
+		
+	}
+
+	public boolean isInteresting(Object message) {
+		
+		return  message instanceof SymbolExchangeEvent
+		|| (message instanceof Message && FIXMessageUtil.isMarketDataSnapshotFullRefresh((Message) message));
+	}
+
+	public void publishTo(Object aQuote) {
+	    System.out.println(System.nanoTime() + " published " + aQuote);
+		Message message;
+		if (aQuote instanceof SymbolExchangeEvent){
+		    if(aQuote instanceof TradeEvent) {
+		        System.out.println("Price is " + ((TradeEvent)aQuote).getPrice());
+		    }
+			message = ((SymbolExchangeEvent) aQuote).getFIXMessage();
+		} else {
+			message = (Message) aQuote;
+		}
+		onQuote(message);
+	}
+	
+    public void onQuote(final Message aQuote) {
+        Display theDisplay = Display.getDefault();
+        try {
+            mListLocker.executeWrite(new Callable<Object>() {
+                public Object call() 
+                    throws Exception
+                {
+                    List<MessageHolder> list = getInput();
+                    int i = 0;
+                    for (MessageHolder holder : list) {
+                        Message message = holder.getMessage();
+                        try {
+                            if (message.getString(Symbol.FIELD).equals(aQuote.getString(Symbol.FIELD))) {
+                                IncomingMessageHolder newHolder = new IncomingMessageHolder(aQuote);
+                                System.out.println("Setting list item " + i + " to " + aQuote);
+                                list.set(i, 
+                                         newHolder);
+                            }               
+                        } catch (FieldNotFound e) {
+                        }
+                        i++;
+                    }
+                    return null;
+                }});
+        } catch (Exception e1) {
+            PhotonPlugin.getMainConsoleLogger().error(e1);
+        }
+
+        if (theDisplay.getThread() == Thread.currentThread()){
+            updateQuote(aQuote);
+        } else {			
+            theDisplay.asyncExec(new Runnable() {
+                public void run()
+                {
+                    if (!getMessagesViewer().getTable().isDisposed()) {
+                        try {
+                            updateQuote(aQuote);
+                        } catch (Exception e) {
+                            PhotonPlugin.getMainConsoleLogger().error(e);
+                        }
+                    }
+                }
+            });
+        }
+    }
 }

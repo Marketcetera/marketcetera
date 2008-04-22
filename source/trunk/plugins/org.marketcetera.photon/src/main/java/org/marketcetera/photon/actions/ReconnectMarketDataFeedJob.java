@@ -22,9 +22,12 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.marketdata.IMarketDataFeed;
+import org.marketcetera.marketdata.IMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
 import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.marketdata.AbstractMarketDataFeedPreferencePage;
 import org.marketcetera.photon.marketdata.IMarketDataConstants;
+import org.marketcetera.photon.marketdata.IMarketDataFeedCredentialsFactory;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -79,18 +82,27 @@ public class ReconnectMarketDataFeedJob extends Job {
 				    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: using "+pluginName); }
 		    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
 			    		IConfigurationElement feedElement = configurationElements[0];
-			    		String factoryClass = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-			    		Class<IMarketDataFeedFactory> clazz = (Class<IMarketDataFeedFactory>) Class.forName(factoryClass, true, PhotonPlugin.class.getClassLoader());
-			    		Constructor<IMarketDataFeedFactory> constructor = clazz.getConstructor( new Class[0] );
-			    		IMarketDataFeedFactory factory = constructor.newInstance(new Object[0]);
+			    		String feedFactoryClassName = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
+			    		String credentialsFactoryClassName = feedElement.getAttribute(IMarketDataConstants.CREDENTIALS_FACTORY_CLASS_ATTRIBUTE);
+
+			    		Class<IMarketDataFeedFactory> feedClass = (Class<IMarketDataFeedFactory>) Class.forName(feedFactoryClassName, true, PhotonPlugin.class.getClassLoader());
+			    		Constructor<IMarketDataFeedFactory> feedConstructor = feedClass.getConstructor( new Class[0] );
+			    		IMarketDataFeedFactory feedFactory = feedConstructor.newInstance(new Object[0]);
+
+			    		IMarketDataFeedCredentials credentials = null;
 			    		ScopedPreferenceStore store = new ScopedPreferenceStore(new InstanceScope(), pluginName);
-			    		String url = getPreference(store, ConnectionConstants.MARKETDATA_URL_SUFFIX);
-			    		String user = getPreference(store, ConnectionConstants.MARKETDATA_USER_SUFFIX);
-			    		String password = getPreference(store, ConnectionConstants.MARKETDATA_PASSWORD_SUFFIX);
-			    		Map<String, Object> parameters = getParameters(factory, store, pluginName);
-			    		IMarketDataFeed targetQuoteFeed = factory.getInstance(url, user, password, parameters, marketDataLogger);
+			    		try {
+				    		Class<IMarketDataFeedCredentialsFactory> credentialsClass = (Class<IMarketDataFeedCredentialsFactory>) Class.forName(credentialsFactoryClassName, true, PhotonPlugin.class.getClassLoader());
+				    		Constructor<IMarketDataFeedCredentialsFactory> credentialsConstructor = credentialsClass.getConstructor( new Class[0] );
+				    		IMarketDataFeedCredentialsFactory credentialsFactory = credentialsConstructor.newInstance(new Object[0]);
+	
+							credentials = credentialsFactory.getCredentials(store);
+			    		} catch (Throwable t) {
+			    			logger.warn("Exception generating credentials for "+pluginName, t);
+			    		}
+			    		IMarketDataFeed targetQuoteFeed = feedFactory.getMarketDataFeed(credentials);
 			    		
-		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
+		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed, AbstractMarketDataFeedPreferencePage.getCredentialsForFeed("Yahoo!"));
 		    			marketDataFeedService.afterPropertiesSet();
 			    		// Quote feed must be started before registration so
 						// that resubscription works properly. See bug #213.

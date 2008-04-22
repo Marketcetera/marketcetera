@@ -7,6 +7,7 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -19,6 +20,7 @@ import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
+import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
 /**
  * The abstract superclass for model objects that represent order tickets.
@@ -31,11 +33,41 @@ import quickfix.field.TimeInForce;
  *
  */
 public abstract class OrderTicketModel {
-	private final PropertyChangeSupport propertyChangeSupport;
+	public static class OrderTicketPublication
+    	{
+    	    public enum Type {
+    	        BID,OFFER
+    	    };	    
+    	    private final Type type;
+    	    private final MarketDataSnapshotFullRefresh.NoMDEntries message;
+    	    OrderTicketPublication(Type inType,
+    	                           MarketDataSnapshotFullRefresh.NoMDEntries inMessage)
+    	    {
+    	        type = inType;
+    	        message = inMessage;
+    	    }
+    	    public Type getType()
+    	    {
+    	        return type;
+    	    }
+    	    public MarketDataSnapshotFullRefresh.NoMDEntries getMessage()
+    	    {
+    	        return message;
+    	    }
+    	    public String toString()
+    	    {
+    	        return String.format("OrderTicketModel %s publication: %s", 
+    	                             type,
+    	                             message);
+    	    }
+    	}
+
+    private final PropertyChangeSupport propertyChangeSupport;
 	protected Message orderMessage;
 	private final WritableList customFieldsList = new WritableList();
 	private final FIXMessageFactory messageFactory;
 	private final DataDictionary dictionary;
+    private final PublisherEngine mPublisher = new PublisherEngine();
 
 	/**
 	 * Create a new OrderTicketModel using the specified FIXMessageFactory
@@ -177,7 +209,9 @@ public abstract class OrderTicketModel {
 	 * 
 	 * @throws MarketceteraException
 	 */
-	private void addCustomFields() throws MarketceteraException {
+	private void addCustomFields() 
+	    throws MarketceteraException 
+	{
 		for (Object customFieldObject : customFieldsList) {
 			CustomField customField = (CustomField) customFieldObject;
 			if (customField.isEnabled()) {
@@ -258,5 +292,8 @@ public abstract class OrderTicketModel {
 		return messageFactory;
 	}
 
-
+	protected final PublisherEngine getPublisher()
+	{
+	    return mPublisher;
+	}
 }

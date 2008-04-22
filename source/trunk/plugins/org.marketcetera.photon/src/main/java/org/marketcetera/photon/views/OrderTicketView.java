@@ -301,9 +301,9 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 		customFieldsTableViewer.setContentProvider(contentProvider);
 		
 		// And a standard label provider that maps columns
-		IObservableMap[] attributeMaps = BeansObservables.observeMaps(
-				contentProvider.getKnownElements(), CustomField.class,
-				new String[] {"keyString", "valueString"});
+		IObservableMap[] attributeMaps = BeansObservables.observeMaps(contentProvider.getKnownElements(), 
+		                                                              CustomField.class,
+		                                                              new String[] { "keyString", "valueString" });
 		customFieldsTableViewer.setLabelProvider(new ObservableMapLabelProvider(attributeMaps));
 
 		ticket.getForm().reflow(true);
@@ -437,7 +437,8 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 
 		IObservableValue orderMessageObservable = BeansObservables.observeValue(model, "orderMessage");
 		bindFormTitle(model, orderMessageObservable);
-		bindCustomFields(model, getOrderTicket());
+		bindCustomFields(model, 
+		                 getOrderTicket());
 		bindOrderMessageProperty(model, orderMessageObservable);
 		
 		getDataBindingContext().bindValue(
@@ -464,28 +465,30 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 	 * @param orderTicket the proxy object for the actual UI controls.
 	 */
 	protected void bindCustomFields(final OrderTicketModel model,
-			IOrderTicket orderTicket) {
+	                                IOrderTicket orderTicket) 
+	{
 		orderTicket.getCustomFieldsTableViewer().setInput(model.getCustomFieldsList());
 		orderTicket.getCustomFieldsTableViewer().addCheckStateListener(new ICheckStateListener() {
-			public void checkStateChanged(CheckStateChangedEvent event) {
+			public void checkStateChanged(CheckStateChangedEvent event) 
+			{
 				Object source = event.getElement();
 				((CustomField)source).setEnabled(event.getChecked());
-			}
-			
+			}		
 		});
-		model.getCustomFieldsList().addListChangeListener(new IListChangeListener(){
-			public void handleListChange(ListChangeEvent event) {
+		model.getCustomFieldsList().addListChangeListener(new IListChangeListener() {
+			public void handleListChange(ListChangeEvent event) 
+			{
 				ScrolledForm theForm = getOrderTicket().getForm();
-				if (!theForm.isDisposed()){
+				if (!theForm.isDisposed()) {
 					ListDiffEntry[] differences = event.diff.getDifferences();
 					for (ListDiffEntry listDiffEntry : differences) {
-						if (listDiffEntry.isAddition()){
+						if (listDiffEntry.isAddition()) {
 							CustomField customField = (CustomField)listDiffEntry.getElement();
 							String key = CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX + customField.getKeyString();
 							IMemento theMemento = getMemento();
-							if (theMemento != null && theMemento.getInteger(key) != null) {
-								boolean itemChecked = (theMemento.getInteger(key)
-										.intValue() != 0);
+							if (theMemento != null && 
+							    theMemento.getInteger(key) != null) {
+								boolean itemChecked = (theMemento.getInteger(key).intValue() != 0);
 								customField.setEnabled(itemChecked);
 							}
 						}

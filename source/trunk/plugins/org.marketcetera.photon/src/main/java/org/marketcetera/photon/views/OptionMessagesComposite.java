@@ -164,7 +164,6 @@ public class OptionMessagesComposite extends Composite {
 	
 	private boolean showSingleLineOptionData;
 	private OptionSymbolMatcherEditor optionSymbolMatcherEditor;
-	private ISubscription derivativeSecurityListSubscription;
 	private HashMap<MSymbol, OptionMessageHolder> optionSymbolToSeriesMap;
 
 	
@@ -434,21 +433,13 @@ public class OptionMessagesComposite extends Composite {
 		optionSymbolToSeriesMap.clear();
 	}
 
-	public void clear(MarketDataFeedTracker marketDataTracker) {
-		unsubscribeOptions(marketDataTracker);
+	public void clear() {
 		EventList<OptionMessageHolder> inputList = getInput();
 		if (inputList != null && inputList.size() > 0) {
 			getInput().clear();
 		}
 		clearDataMaps();
 		getMessagesViewer().refresh();		
-	}
-	
-	private void unsubscribeOptions(MarketDataFeedTracker marketDataTracker) {
-		Set<MSymbol> contractSymbols = optionSymbolToSeriesMap.keySet();
-		for (MSymbol optionSymbol : contractSymbols) {
-			marketDataTracker.simpleUnsubscribe(optionSymbol);
-		}
 	}
 	
 	@Override
@@ -461,58 +452,55 @@ public class OptionMessagesComposite extends Composite {
 		clearDataMaps();
 		
 		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
-		if (derivativeSecurityListSubscription != null && derivativeSecurityListSubscription.isResponse(derivativeSecurityList) && feed != null){
-			derivativeSecurityListSubscription = null;
-			try {
-				int numDerivs = 0;
-				if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
-					numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
-				}
-				HashMap<OptionPairKey, OptionMessageHolder> optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
-				HashMap<MSymbol, OptionPairKey> optionSymbolToKeyMap = new HashMap<MSymbol, OptionPairKey>();
-
-				for (int i = 1; i <= numDerivs; i++)
-				{
-					try {
-						DerivativeSecurityList.NoRelatedSym info = new DerivativeSecurityList.NoRelatedSym();
-						derivativeSecurityList.getGroup(i, info);
-	
-						int putOrCall = OptionMarketDataUtils.getOptionType(info);
-						String optionSymbolString = info.getString(Symbol.FIELD);
-						MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
-						OptionPairKey optionKey;
-							optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
-						optionSymbolToKeyMap.put(optionSymbol, optionKey);
-						OptionMessageHolder holder;
-						if (optionContractMap.containsKey(optionKey)){
-							holder = optionContractMap.get(optionKey);
-						} else {
-							holder = new OptionMessageHolder(OptionMarketDataUtils.getOptionRootSymbol(optionSymbolString), info);
-							optionContractMap.put(optionKey, holder);
-
-							Lock writeLock = rawInputList.getReadWriteLock().writeLock();
-							try {
-								writeLock.lock();
-								rawInputList.add(holder);
-							} finally {
-								writeLock.lock();
-							}
-						}						
-						
-						holder.setExtraInfo(putOrCall, info);
-						optionSymbolToSeriesMap.put(optionSymbol, holder);
-					} catch (ParseException e) {
-						MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
-						PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
-						enableErrorLabelText("Error getting option contracts data for " + underlying.getBaseSymbol());
-					}
-				}
-				disableErrorLabelText();
-				getMessagesViewer().refresh();
-			} catch (FieldNotFound e) {
-				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
-				enableErrorLabelText("Exception parsing option info - " + e);
+		try {
+			int numDerivs = 0;
+			if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
+				numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
 			}
+			HashMap<OptionPairKey, OptionMessageHolder> optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
+			HashMap<MSymbol, OptionPairKey> optionSymbolToKeyMap = new HashMap<MSymbol, OptionPairKey>();
+
+			for (int i = 1; i <= numDerivs; i++)
+			{
+				try {
+					DerivativeSecurityList.NoRelatedSym info = new DerivativeSecurityList.NoRelatedSym();
+					derivativeSecurityList.getGroup(i, info);
+
+					int putOrCall = OptionMarketDataUtils.getOptionType(info);
+					String optionSymbolString = info.getString(Symbol.FIELD);
+					MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
+					OptionPairKey optionKey;
+						optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
+					optionSymbolToKeyMap.put(optionSymbol, optionKey);
+					OptionMessageHolder holder;
+					if (optionContractMap.containsKey(optionKey)){
+						holder = optionContractMap.get(optionKey);
+					} else {
+						holder = new OptionMessageHolder(OptionMarketDataUtils.getOptionRootSymbol(optionSymbolString), info);
+						optionContractMap.put(optionKey, holder);
+
+						Lock writeLock = rawInputList.getReadWriteLock().writeLock();
+						try {
+							writeLock.lock();
+							rawInputList.add(holder);
+						} finally {
+							writeLock.lock();
+						}
+					}						
+					
+					holder.setExtraInfo(putOrCall, info);
+					optionSymbolToSeriesMap.put(optionSymbol, holder);
+				} catch (ParseException e) {
+					MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
+					PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
+					enableErrorLabelText("Error getting option contracts data for " + underlying.getBaseSymbol());
+				}
+			}
+			disableErrorLabelText();
+			getMessagesViewer().refresh();
+		} catch (FieldNotFound e) {
+			PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
+			enableErrorLabelText("Exception parsing option info - " + e);
 		}
 	}
 
@@ -552,10 +540,6 @@ public class OptionMessagesComposite extends Composite {
 		if (optionSymbolMatcherEditor != null){
 			optionSymbolMatcherEditor.setFilterSymbol(filterOptionContractSymbol);
 		}
-	}
-	
-	public void setDerivativeSecurityListSubscription(ISubscription sub){
-		derivativeSecurityListSubscription = sub;
 	}
 	
 	
