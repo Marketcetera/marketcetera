@@ -3,6 +3,7 @@ package org.marketcetera.photon.views;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
@@ -14,11 +15,11 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
+import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
-import org.marketcetera.photon.views.MarketDataViewTest.MyMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
@@ -35,7 +36,6 @@ import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntryType;
 import quickfix.field.MsgType;
-import quickfix.field.NoMDEntries;
 import quickfix.field.OrdType;
 import quickfix.field.OrderQty;
 import quickfix.field.PrevClosePx;
@@ -57,9 +57,15 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	private StockOrderTicketController controller;
+	private MarketDataFeedTracker marketDataFeedTracker;
 
 	public StockOrderTicketViewTest(String name) {
 		super(name);
+		
+		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
+		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
+		marketDataFeedTracker.open();
+
 	}
 
     @Override
@@ -171,20 +177,12 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	}
 	
 	public void testShowQuote() throws Exception {
-		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		MarketDataFeedService marketDataFeed = MarketDataViewTest.getNullQuoteFeedService();
-		bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeed, null);
-		
-		
 		final String symbolStr = "MRKT";
 		StockOrderTicketView view = (StockOrderTicketView) getTestView();
 		Message orderMessage = msgFactory.newLimitOrder("1",
 				Side.BUY, BigDecimal.TEN, new MSymbol(symbolStr), BigDecimal.ONE,
 				TimeInForce.DAY, null);
-		controller.listenMarketData(symbolStr);
-		controller.setOrderMessage(orderMessage);
 
-		
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol("MRKT"));
 		
@@ -192,33 +190,35 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 		
-		MyMarketDataFeed feed = (MarketDataViewTest.MyMarketDataFeed)marketDataFeed.getMarketDataFeed();
-		feed.sendMessage(quoteMessageToSend);
+		MockMarketDataFeed feed = (MockMarketDataFeed) marketDataFeedTracker.getMarketDataFeedService().getMarketDataFeed();
+		feed.setMessageToSend(quoteMessageToSend);
+
+		controller.listenMarketData(symbolStr);
+		controller.setOrderMessage(orderMessage);		
 
 		TableViewer bidViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2BidTableViewer();
 		TableViewer offerViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2OfferTableViewer();
-		List bidInput = (List)bidViewer.getInput();
+		final List bidInput = (List)bidViewer.getInput();
 		List offerInput = (List)offerViewer.getInput();
-		for (int i = 0; i < 10; i ++){
-			if ((bidInput).size() > 0){
-				this.waitForJobs();
-				Thread.sleep(100 * i);
-			} else {
-				break;
-			}
-		}
-
+        doDelay(new Callable<Boolean>() {
+            public Boolean call() 
+                throws Exception
+            {
+                return bidInput.size() > 0;
+            }});
+		assertTrue(bidInput.size() > 0);
 		FieldMap bidGroup = (FieldMap) bidInput.get(0);
 		assertEquals(MDEntryType.BID, bidGroup.getChar(MDEntryType.FIELD));
 		assertEquals(1, bidGroup.getInt(MDEntryPx.FIELD));
 
+		assertTrue(offerInput.size() > 0);
 		FieldMap offerGroup = (FieldMap) offerInput.get(0);
 		assertEquals(MDEntryType.OFFER, offerGroup.getChar(MDEntryType.FIELD));
 		assertEquals(10, offerGroup.getInt(MDEntryPx.FIELD));
 	}
-	
+
 	public void testTypeNewOrder() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 		controller.clear();
 		StockOrderTicketView view = (StockOrderTicketView) getTestView();
 		// test for case sensitivity bug #196
@@ -248,16 +248,22 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	public void testAddCustomFieldsToPreferences() throws Exception {
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE, 
-				"" + DeliverToCompID.FIELD + "=ABCD" + "&" + PrevClosePx.FIELD + "=EFGH");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                           String.format("%d=ABCD&%d=EFGH",
+		                                 DeliverToCompID.FIELD,
+		                                 PrevClosePx.FIELD));
 
-		delay(10);
-		
-		StockOrderTicketView view = (StockOrderTicketView) getTestView();
-		Table customFieldsTable = view.getOrderTicket().getCustomFieldsTableViewer().getTable();
-		
-		assertEquals(2, customFieldsTable.getItemCount());
-		
-		TableItem item0 = customFieldsTable.getItem(0);
+		final StockOrderTicketView view = (StockOrderTicketView) getTestView();
+		doDelay(new Callable<Boolean>() {
+		    public Boolean call() 
+		        throws Exception
+		    {
+		        return view.getOrderTicket().getCustomFieldsTableViewer().getTable().getItem(0).getText(1).length() > 0;
+		    }
+		});
+        Table customFieldsTable = view.getOrderTicket().getCustomFieldsTableViewer().getTable();        
+        assertEquals(2, customFieldsTable.getItemCount());        
+
+        TableItem item0 = customFieldsTable.getItem(0);
 		assertEquals(false, item0.getChecked());
 		assertEquals("" + DeliverToCompID.FIELD, item0.getText(0));  //$NON-NLS-1$
 		assertEquals("ABCD", item0.getText(1));  //$NON-NLS-1$
@@ -269,7 +275,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	}
 	
 	public void testSingleCustomField() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE, 
@@ -321,7 +327,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	 * Tests that enabled custom fields (the header and body kind) are inserted into outgoing messages.
 	 */
 	public void testEnabledCustomFieldsAddedToMessage() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE, 
@@ -388,7 +394,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	 * Tests that disabled custom fields (the header and body kind) are <em>not</em> inserted into outgoing messages.
 	 */
 	public void testDisabledCustomFieldsNotAddedToMessage() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
 		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE, 
@@ -449,7 +455,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	}
 	
 	public void testTransactTimeCorrect() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		MockJmsOperations mockJmsOperations = new MockJmsOperations();
 		setUpJMSFeedService(mockJmsOperations);
@@ -493,7 +499,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	 * in FIX.4.2 Photon
 	 */
 	public void testMarketOnCloseCorrect() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		StockOrderTicketView view = (StockOrderTicketView) getTestView();
 		stockOrderTicketModel.clearOrderMessage();
@@ -512,7 +518,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	}
 
 	public void testMKTOrderCaseInsensitive() throws Exception {
-		StockOrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		StockOrderTicketView view = (StockOrderTicketView) getTestView();
 		stockOrderTicketModel.clearOrderMessage();

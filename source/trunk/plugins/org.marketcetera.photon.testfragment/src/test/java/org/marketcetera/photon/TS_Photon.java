@@ -5,12 +5,14 @@ import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.messagehistory.FIXMessageHistoryTest;
-import org.marketcetera.messagehistory.GroupIDComparatorTest;
-import org.marketcetera.messagehistory.MessageHolderTest;
-import org.marketcetera.messagehistory.SymbolSideComparatorTest;
+import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.photon.marketdata.MarketDataFeedService;
+import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
+import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
+import org.marketcetera.photon.marketdata.mock.MockMarketDataFeedCredentials;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.OrderFormatterTest;
 import org.marketcetera.photon.parser.ParserTest;
@@ -43,9 +45,13 @@ import org.marketcetera.photon.views.OptionOrderTicketXSWTTest;
 import org.marketcetera.photon.views.SWTTestViewTest;
 import org.marketcetera.photon.views.StockOrderTicketViewTest;
 import org.marketcetera.photon.views.StockOrderTicketXSWTTest;
+import org.marketcetera.photon.views.ViewTestBase;
+import org.osgi.framework.BundleContext;
 
 public class TS_Photon {
-	public static Test suite() {
+	public static Test suite() throws Exception {
+		installMockDataFeed();
+	
 		TestSuite suite = new TestSuite(){
 
 			@Override
@@ -65,11 +71,11 @@ public class TS_Photon {
 		suite.addTestSuite(OptionContractDataTest.class);
 		suite.addTestSuite(OptionMessageHolderTest.class);
 
-		// model
-		suite.addTestSuite(GroupIDComparatorTest.class);
-		suite.addTest(FIXMessageHistoryTest.suite());
-		suite.addTestSuite(MessageHolderTest.class);
-		suite.addTestSuite(SymbolSideComparatorTest.class);
+//		// model
+//		suite.addTestSuite(GroupIDComparatorTest.class);
+//		suite.addTest(FIXMessageHistoryTest.suite());
+//		suite.addTestSuite(MessageHolderTest.class);
+//		suite.addTestSuite(SymbolSideComparatorTest.class);
 		
 		//parser
 		suite.addTest(ParserTest.suite());
@@ -115,7 +121,28 @@ public class TS_Photon {
 		suite.addTestSuite(OptionOrderTicketControllerTest.class);
 		suite.addTestSuite(SWTTestViewTest.class);
 		
+//		suite.addTest(new MarketDataViewTest("testShowQuote"));
+		
 		return suite;
+	}
+
+	private static void installMockDataFeed() throws FeedException, NoMoreIDsException {
+		ViewTestBase.waitForJobs();
+		
+		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
+		MarketDataFeedTracker tracker = new MarketDataFeedTracker(bundleContext);
+		tracker.open();
+
+		// unregister existing feed
+		MarketDataFeedService<?> service = (MarketDataFeedService<?>) tracker.getService();
+		if (service != null){
+			service.getServiceRegistration().unregister();
+		}
+
+		// register mock feed
+		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(new MockMarketDataFeed(), new MockMarketDataFeedCredentials(""));
+		bundleContext.registerService(MarketDataFeedService.class.getName(), feedService, null);
+		
 	}
 
 }

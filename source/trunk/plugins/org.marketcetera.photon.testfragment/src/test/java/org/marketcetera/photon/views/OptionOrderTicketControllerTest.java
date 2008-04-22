@@ -5,12 +5,9 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
-import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.photon.PhotonPlugin;
 
 import quickfix.field.MDEntryType;
-import quickfix.field.MDReqID;
-import quickfix.field.SecurityReqID;
 import quickfix.field.Symbol;
 import quickfix.fix44.DerivativeSecurityList;
 import quickfix.fix44.MarketDataSnapshotFullRefresh;
@@ -28,13 +25,12 @@ public class OptionOrderTicketControllerTest extends TestCase {
 		final String optionRoot = "MRK";
 		final String callContractSpecifier = "GA";
 		final String putContractSpecifier = "RA";
-
 		controller.requestOptionRootInfo(optionRoot);
 
 		DerivativeSecurityList securityList = OptionOrderTicketViewTest.createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
+//		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
 
-		controller.onMessage(securityList);
+		controller.handleDerivativeSecurityList(securityList);
 
 		controller.listenMarketData(optionRoot);
 		
@@ -49,9 +45,9 @@ public class OptionOrderTicketControllerTest extends TestCase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(15), new BigDecimal(16), new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(66), new BigDecimal(67), new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(61), new BigDecimal(62), new Date(), "BGUS");
-		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)controller.getCurrentSubscription()).getCorrelationFieldValue()));
+//		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)controller.getPrimaryMarketDataToken()).getCorrelationFieldValue()));
 
-		controller.onMessage(quoteMessageToSend);
+		controller.doOnPrimaryQuote(quoteMessageToSend);
 
 		OptionOrderTicketModel model = PhotonPlugin.getDefault().getOptionOrderTicketModel();
 

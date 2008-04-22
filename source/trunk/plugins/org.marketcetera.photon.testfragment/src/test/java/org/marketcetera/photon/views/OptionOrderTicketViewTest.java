@@ -3,7 +3,10 @@ package org.marketcetera.photon.views;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.Callable;
 
+import org.apache.commons.i18n.MessageManager;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.runtime.IStatus;
@@ -16,11 +19,11 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
-import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
+import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -41,7 +44,6 @@ import quickfix.field.LastPx;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryType;
-import quickfix.field.MDReqID;
 import quickfix.field.MaturityDate;
 import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
@@ -75,6 +77,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 	
 	public OptionOrderTicketViewTest(String name) {
 		super(name);
+        BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
 	}
 
     @Override
@@ -108,10 +111,11 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		ticket.getSymbolText().setText(optionRoot);
 		// Subscription response has the contract symbols (create a fake quote and send that through)
 		Message dsl = createDummySecurityList(optionRoot, callSpecifiers, putSpecifiers, strikePrices);
-        optController.onMessage(dsl);
+        optController.handleDerivativeSecurityList(dsl);
         // Show the message for the specific contract
         optController.setOrderMessage(message);
-        ((OptionOrderTicketModel)optController.getOrderTicketModel()).updateOptionInfo();
+        OptionOrderTicketModel orderTicketModel = (OptionOrderTicketModel)optController.getOrderTicketModel();
+		(orderTicketModel).updateOptionInfo();
 	}
 	
 	public void testListBug() throws Exception {
@@ -129,7 +133,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 	
 			ticket.getSymbolText().setText(optionRoot);
 			Message dsl = createDummySecurityList(optionRoot, (new String[] { callContractSpecifier }), (new String[] { putContractSpecifier }), (new BigDecimal[] { BigDecimal.ONE }));
-			controller.onMessage(dsl);
+			controller.handleDerivativeSecurityList(dsl);
 			controller.setOrderMessage(message);
 			((OptionOrderTicketModel)controller.getOrderTicketModel()).updateOptionInfo();
 		}
@@ -153,7 +157,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 	        Message cxr = msgFactory.newCancelReplaceFromMessage(buy);
 			ticket.getSymbolText().setText(optionRoot);
 			Message dsl = createDummySecurityList(optionRoot, (new String[] { callContractSpecifier }), (new String[] {putContractSpecifier}), (new BigDecimal[] { BigDecimal.TEN }));
-			controller.onMessage(dsl);
+			controller.handleDerivativeSecurityList(dsl);
 			controller.setOrderMessage(cxr);
 			((OptionOrderTicketModel)controller.getOrderTicketModel()).updateOptionInfo();
 		}
@@ -216,31 +220,35 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
     }
 
 	
-	public void testUpdateOptionControls() {
-		OptionOrderTicketView ticketView = (OptionOrderTicketView) getTestView();
-		IOptionOrderTicket ticket = ((OptionOrderTicketView)getTestView()).getOptionOrderTicket();
-
-		OptionOrderTicketModel optionOrderTicketModel = controller.getOrderTicketModel();
-		optionOrderTicketModel.removeAllCachedOptionData();
-		controller.clear();
-		
-		assertEquals(0, ticket.getExpireMonthCombo().getItemCount());
-		assertEquals(null, optionOrderTicketModel.getCurrentOptionSymbol().getValue());
-		
-		final String optionRoot = "MRK";
-		final String callContractSpecifier = "GA";
-		final String putContractSpecifier = "RA";
-		
-		controller.requestOptionRootInfo(optionRoot);
-		
-		DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
-
-		controller.onMessage(securityList);
-		
-		optionOrderTicketModel.updateOptionInfo();
-
-		assertEquals(1, ticket.getExpireMonthCombo().getItemCount());
+	public void testUpdateOptionControls() throws FeedException {
+		try {
+			MessageManager.getText("marketdatafeed.market_data_feed_data_ignored", "msg", new Object[] {"ASDF"}, Locale.getDefault());
+			IOptionOrderTicket ticket = ((OptionOrderTicketView)getTestView()).getOptionOrderTicket();
+	
+			OptionOrderTicketModel optionOrderTicketModel = controller.getOrderTicketModel();
+			optionOrderTicketModel.removeAllCachedOptionData();
+			controller.clear();
+			
+			assertEquals(0, ticket.getExpireMonthCombo().getItemCount());
+			assertEquals(null, optionOrderTicketModel.getCurrentOptionSymbol().getValue());
+			
+			final String optionRoot = "MRK";
+			final String callContractSpecifier = "GA";
+			final String putContractSpecifier = "RA";
+			
+			controller.requestOptionRootInfo(optionRoot);
+			
+			DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
+	//		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
+	
+			controller.handleDerivativeSecurityList(securityList);
+			
+			optionOrderTicketModel.updateOptionInfo();
+	
+			assertEquals(1, ticket.getExpireMonthCombo().getItemCount());
+		} catch (Exception ex){
+			System.out.println(""+ex);
+		}
 	}
 	
 	/**
@@ -263,10 +271,10 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		controller.requestOptionRootInfo(optionRoot);
 		
 		DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		FIXCorrelationFieldSubscription derivativeSecurityListSubscription = (FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription();
-		securityList.setField(new SecurityReqID((derivativeSecurityListSubscription).getCorrelationFieldValue()));
+//		FIXCorrelationFieldSubscription derivativeSecurityListSubscription = (FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription();
+//		securityList.setField(new SecurityReqID((derivativeSecurityListSubscription).getCorrelationFieldValue()));
 
-		controller.onMessage(securityList);
+		controller.handleDerivativeSecurityList(securityList);
 
 		Message message = msgFactory.newMarketOrder("2",
 				Side.SELL, BigDecimal.ONE, new MSymbol(callContractSymbol),
@@ -327,29 +335,33 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		controller.requestOptionRootInfo(optionRoot);
 		
 		DerivativeSecurityList securityList = createDummySecurityList(optionRoot, new String[] { callContractSpecifier }, new String[] { putContractSpecifier }, new BigDecimal[] { BigDecimal.TEN });
-		securityList.setField(new SecurityReqID(((FIXCorrelationFieldSubscription)controller.getDerivativeSecurityListSubscription()).getCorrelationFieldValue()));
 
-		controller.onMessage(securityList);
+		controller.handleDerivativeSecurityList(securityList);
 
-		controller.listenMarketData(optionRoot);
-		ISubscription subscription = controller.getCurrentOptionSubscription();
-		
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol(callContractSymbol));
 
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
-		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)subscription).getCorrelationFieldValue()));
+//		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)subscription).getCorrelationFieldValue()));
 
-		mockFeed.sendMessage(quoteMessageToSend);
+		mockFeed.setMessageToSend(quoteMessageToSend);
+		
+		controller.listenMarketData(optionRoot);
 
 		TableViewer marketDataViewer = ((IOptionOrderTicket)ticketView.getOrderTicket()).getOptionMarketDataTableViewer();
 		List marketDataList = (List)marketDataViewer.getInput();
 		int noEntries = marketDataList.size();
 		assertEquals(1, noEntries);
-		OptionMessageHolder holder = (OptionMessageHolder) marketDataList.get(0);
-		FieldMap marketData = holder.getMarketData(PutOrCall.CALL);
+		final OptionMessageHolder holder = (OptionMessageHolder)marketDataList.get(0);
+		doDelay(new Callable<Boolean>() {
+            public Boolean call() 
+                throws Exception
+            {
+                return holder.getMarketData(PutOrCall.CALL) != null;
+            }});
+        FieldMap marketData = holder.getMarketData(PutOrCall.CALL);
 		int noMDEntries = marketData.getInt(NoMDEntries.FIELD);
 		MarketDataSnapshotFullRefresh.NoMDEntries group = new MarketDataSnapshotFullRefresh.NoMDEntries();
 		for (int i = 1; i <= noMDEntries; i++)
@@ -369,7 +381,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		}
 	}
 	
-
 	public void testTypeNewOrder() throws Exception {
 		OptionOrderTicketModel optionOrderTicketModel = PhotonPlugin.getDefault().getOptionOrderTicketModel();
 		
@@ -638,7 +649,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(31), new BigDecimal(32), new Date(1206576015015L), "BGUS");
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(31), new BigDecimal(32), new Date(1206576015015L), "BGUS");
 
-		controller.doOnUnderlyingQuote(quoteMessageToSend);
+		controller.doOnPrimaryQuote(quoteMessageToSend);
 		
 		assertEquals(true, optionOrderTicket.getUnderlyingMarketDataComposite().getVisible());
 		assertEquals("25", optionOrderTicket.getUnderlyingLastPriceLabel().getText());
