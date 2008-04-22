@@ -8,8 +8,9 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.marketdata.IMarketDataListener;
-import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -38,13 +39,11 @@ import quickfix.field.MsgType;
  *
  */
 public abstract class OrderTicketController <T extends OrderTicketModel>
-	implements IOrderTicketController, IMarketDataListener, IPropertyChangeListener {
+	implements IOrderTicketController, IPropertyChangeListener {
 
 	private final MarketDataFeedTracker marketDataTracker;
 
-	protected MSymbol listenedSymbol = null;
-
-	protected ISubscription currentSubscription;
+	protected IMarketDataFeedToken<?> primaryMarketDataToken;
 
 	private final T orderTicketModel;
 
@@ -69,8 +68,6 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 				.getBundleContext());
 		marketDataTracker.open();
 
-		marketDataTracker.setMarketDataListener(this);
-		
 		clear();
 
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
@@ -93,29 +90,23 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 				} catch (Exception ex){
 					PhotonPlugin.getMainConsoleLogger().error(ex);
 				}
-			}
-			
+			}			
 		});
-
 	}
-
 	/**
 	 * Cancel all market data feed subscriptions.  Catches and logs any exceptions.
 	 */
 	protected void unlistenMarketData() {
-		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+		MarketDataFeedService<?> service = marketDataTracker.getMarketDataFeedService();
 		if (service != null) {
-			try {
-		
+			try {		
 				doUnlistenMarketData(service);
 			} catch (MarketceteraException e) {
 				PhotonPlugin.getMainConsoleLogger().warn(
-						"Error unsubscribing to quotes for " + listenedSymbol);
+						"Error unsubscribing to quotes");
 			}
 		}
-	}
-
-	
+	}	
 	/**
 	 * Do the work of unsubscribing from the given MarketDataFeedService
 	 * throwing exceptions if necessary
@@ -123,12 +114,11 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * @param service the service to unsubscribe from
 	 * @throws MarketceteraException if there is a problem unsubscribing
 	 */
-	protected void doUnlistenMarketData(MarketDataFeedService service) throws MarketceteraException {
-		if (currentSubscription != null) {
-			service.unsubscribe(currentSubscription);
+	protected void doUnlistenMarketData(MarketDataFeedService<?> service) throws MarketceteraException {
+		if (primaryMarketDataToken != null) {
+			primaryMarketDataToken.cancel();
 
-			listenedSymbol = null;
-			currentSubscription = null;
+			primaryMarketDataToken = null;
 		}
 	}
 
@@ -140,20 +130,17 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	public void listenMarketData(String symbol) {
 		unlistenMarketData();
 		if (symbol != null && !"".equals(symbol.trim())) {
-			MSymbol newListenedSymbol = new MSymbol(symbol);
 			try {
-				MarketDataFeedService service = getMarketDataTracker()
+				MarketDataFeedService<?> service = getMarketDataTracker()
 						.getMarketDataFeedService();
 	
 				if (service != null){
-					doListenMarketData(service, newListenedSymbol);
+					doListenMarketData(service, new MSymbol(symbol));
 				}
 			} catch (MarketceteraException e) {
 				PhotonPlugin.getMainConsoleLogger().error(
 						"Exception requesting quotes for "
 								+ symbol);
-			} finally {
-				listenedSymbol = newListenedSymbol;
 			}
 		}
 	}
@@ -166,14 +153,23 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * @param symbol the symbol for which to describe
 	 * @throws MarketceteraException if there is a problem subscribing
 	 */
-	protected void doListenMarketData(MarketDataFeedService service, MSymbol symbol) throws MarketceteraException {
-		if (!symbol.equals(listenedSymbol)) {
-			Message subscriptionMessage = MarketDataUtils
-					.newSubscribeLevel2(symbol);
-			ISubscription subscription = null;
-				subscription = service.subscribe(subscriptionMessage);
-				currentSubscription = subscription;
-		}
+	protected void doListenMarketData(MarketDataFeedService<?> service, MSymbol symbol) throws MarketceteraException {
+		Message subscriptionMessage = MarketDataUtils
+				.newSubscribeLevel2(symbol);
+		primaryMarketDataToken = service.execute(subscriptionMessage, new ISubscriber(){
+			public boolean isInteresting(Object arg0) {
+				return true;
+			}
+			public void publishTo(Object obj) {
+				Message message;
+				if (obj instanceof SymbolExchangeEvent){
+					message = ((SymbolExchangeEvent) obj).getFIXMessage();
+				} else {
+					message = (Message) obj;
+				}
+				doOnPrimaryQuote(message);
+			}
+		});
 	}
 	
 	/**
@@ -186,16 +182,8 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * 
 	 * @param message the market data message
 	 */
-	protected abstract void doOnQuote(Message message);
+	protected abstract void doOnPrimaryQuote(Message message);
 
-	/**
-	 * Get the symbol for which market data is currently being received.
-	 * @return
-	 */
-	public MSymbol getListenedSymbol() {
-		return listenedSymbol;
-	}
-	
 	
 	/**
 	 * Get the market data tracker.
@@ -220,7 +208,6 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * Remove this as a listener to preference store events.
 	 */
 	public void dispose() {
-		marketDataTracker.setMarketDataListener(null);
 		marketDataTracker.close();
 		// don't dispose of system colors
 		PhotonPlugin.getDefault().getPreferenceStore()
@@ -249,7 +236,8 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * 
 	 * @param preferenceString string representing the custom fields as a preference entry
 	 */
-	public void updateCustomFields(String preferenceString) {
+	public void updateCustomFields(String preferenceString) 
+	{
 		WritableList customFieldsList = getOrderTicketModel().getCustomFieldsList();
 		customFieldsList.clear();
 		if (preferenceString.contains("=")){
@@ -261,24 +249,6 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 					PhotonPlugin.getMainConsoleLogger().warn("Exception reading custom field from database: "+piece, ex);
 				}
 			}
-		}
-	}
-
-
-	/**
-	 * Handle a market data message
-	 */
-	public void onMessage(Message message) {
-		doOnQuote(message);
-	}
-
-
-	/**
-	 * Handle a group of market data messages
-	 */
-	public void onMessages(Message[] messages) {
-		for (Message message : messages) {
-			onMessage(message);
 		}
 	}
 
@@ -304,8 +274,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * 
 	 * @return the ISubscription for market data
 	 */
-	public ISubscription getCurrentSubscription() {
-		return currentSubscription;
+	public IMarketDataFeedToken<?> getPrimaryMarketDataToken() {
+		return primaryMarketDataToken;
 	}
-
 }

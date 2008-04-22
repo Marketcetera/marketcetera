@@ -69,11 +69,6 @@ public class ScriptRegistry implements InitializingBean {
 		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
 		marketDataFeedTracker.open();
 		logger = PhotonPlugin.getMainConsoleLogger();
-		marketDataFeedTracker.setMarketDataListener(new MarketDataListener() {
-			public void onMessage(Message aQuote) {
-				onMarketDataEvent(aQuote);
-			}
-		});
 		registeredStrategies = new HashMap<String, Strategy>();
 	}
 

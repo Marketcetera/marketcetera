@@ -2,11 +2,15 @@ package org.marketcetera.photon.views;
 
 import java.lang.reflect.Field;
 
+import org.eclipse.core.databinding.observable.Realm;
+import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EnumTableFormat;
@@ -27,7 +31,7 @@ import quickfix.field.MDMkt;
  * along with the order ticket itself.
  * 
  * @author gmiller
- *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
 public class StockOrderTicketView extends OrderTicketView {
 
@@ -38,7 +42,8 @@ public class StockOrderTicketView extends OrderTicketView {
 	public static String ID = "org.marketcetera.photon.views.StockOrderTicketView";
 	
 
-	public StockOrderTicketView() {
+	public StockOrderTicketView() 
+	{
 	}
 	
 	/**
@@ -88,19 +93,53 @@ public class StockOrderTicketView extends OrderTicketView {
 		packColumns(offerViewer.getTable());
 	}
 
+	private final WritableList bids = new WritableList();
+	private final WritableList offers = new WritableList();
+	
 	/**
 	 * Calls {@link OrderTicketView#setInput(OrderTicketModel)}.
 	 * Binds the model to the tables for market data.
 	 */
 	@Override
-	public void setInput(OrderTicketModel model)
+	public void setInput(OrderTicketModel inModel)
 	{
-		super.setInput(model);
-		
+		super.setInput(inModel);
+		StockOrderTicketModel model = (StockOrderTicketModel)inModel;
+		model.subscribe(new ISubscriber() {
+            public boolean isInteresting(Object inData)
+            {
+                return inData instanceof StockOrderTicketModel.OrderTicketPublication;
+            }
+            public void publishTo(final Object inData)
+            {
+                final Runnable action = new Runnable() {
+                    public void run()
+                    {
+                        try {
+                            StockOrderTicketModel.OrderTicketPublication publication = (StockOrderTicketModel.OrderTicketPublication)inData;
+                            if(publication.getType().equals(OrderTicketModel.OrderTicketPublication.Type.BID)) {
+                                bids.add(publication.getMessage());
+                                bids.setStale(true);
+                            } else {
+                                offers.add(publication.getMessage());
+                                offers.setStale(true);
+                            }
+                        } catch (Throwable t) {
+                            t.printStackTrace();
+                        }
+                    }                    
+                };
+                Display theDisplay = Display.getDefault();
+                if (theDisplay.getThread() == Thread.currentThread()){
+                    action.run();
+                } else { 
+                    theDisplay.asyncExec(action);
+                }
+            }		    
+		});
 		IStockOrderTicket stockTicket = getStockOrderTicket();
-		stockTicket.getLevel2BidTableViewer().setInput(((StockOrderTicketModel)model).getBidList());
-		stockTicket.getLevel2OfferTableViewer().setInput(((StockOrderTicketModel)model).getOfferList());
-
+		stockTicket.getLevel2BidTableViewer().setInput(bids);
+		stockTicket.getLevel2OfferTableViewer().setInput(offers);
 	}
 
 	/**

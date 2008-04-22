@@ -1,6 +1,5 @@
 package org.marketcetera.photon.views;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,10 +9,14 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.Pair;
-import org.marketcetera.marketdata.ISubscription;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataUtils;
@@ -28,21 +31,15 @@ import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
-import quickfix.field.CFICode;
 import quickfix.field.MDEntryPx;
 import quickfix.field.MDEntrySize;
 import quickfix.field.MDEntryTime;
 import quickfix.field.MDEntryType;
-import quickfix.field.MaturityDate;
-import quickfix.field.MaturityMonthYear;
 import quickfix.field.MsgType;
 import quickfix.field.NoMDEntries;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.PutOrCall;
 import quickfix.field.SecurityReqID;
-import quickfix.field.SecurityRequestResult;
-import quickfix.field.SecurityResponseID;
-import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
@@ -54,8 +51,7 @@ public class OptionOrderTicketController
 	 * Maps option roots and underlyings to a complete set of OptionContractData
 	 */
 	HashMap<String, List<OptionContractData>> receivedOptionRoots = new HashMap<String, List<OptionContractData>>();
-	private ISubscription currentOptionSubscription;
-	private ISubscription derivativeSecurityListSubscription;
+	private IMarketDataFeedToken<?> currentOptionToken;
 	private Logger logger;
 	
 	/**
@@ -79,65 +75,49 @@ public class OptionOrderTicketController
 	}
 
 
-	/**
-	 * This method
-	 * checks to see whether the message is a response to the main
-	 * subscription (the underlying stock), or the option subscription.
-	 * 
-	 * Underlying stock info is parsed out and placed into the model.
-	 * Option market data is parsed and added to the list of market data
-	 * values.
-	 * 
-	 */
-	protected void doOnQuote(Message message){
-		OptionOrderTicketModel model = this.getOrderTicketModel();
-		if (currentSubscription != null &&
-				currentSubscription.isResponse(message) &&
-				(FIXMessageUtil.isMarketDataSnapshotFullRefresh(message))
-				) 
-		{
-			model.clearUnderlyingMarketData();
-			doOnUnderlyingQuote(message);
-		} else if (currentOptionSubscription != null &&
-				currentOptionSubscription.isResponse(message) &&
-				(FIXMessageUtil.isMarketDataIncrementalRefresh(message) || FIXMessageUtil.isMarketDataSnapshotFullRefresh(message))
-		) 
-		{
-			doOnOptionQuote(message);
-		}
+	public void doOnOptionQuote(final Message message) 
+	{
+	    Runnable block = new Runnable() {
+            public void run()
+            {
+                String symbol;
+                OptionOrderTicketModel model = getOrderTicketModel();
+                try {
+                    symbol = message.getString(Symbol.FIELD);
+                    WritableList mdList = model.getOptionMarketDataList();
+                    for (int i = 0; i < mdList.size(); i++){
+                        OptionMessageHolder holder = (OptionMessageHolder) mdList.get(i);
+                        if (symbol.equals(holder.getSymbol(PutOrCall.PUT)) ||
+                                symbol.equals(holder.getSymbol(PutOrCall.CALL))){
+                            FieldMap marketDataForSymbol = holder.getMarketDataForSymbol(symbol);
+                            if (marketDataForSymbol != null && FIXMessageUtil.isMarketDataIncrementalRefresh(message)){
+                                FIXMessageUtil.mergeMarketDataMessages(message, 
+                                        (Message)marketDataForSymbol, messageFactory);
+                            } else {
+                                marketDataForSymbol = message;
+                            }
+                            int putOrCall = holder.symbolOptionType(symbol);
+                            holder.setMarketData(putOrCall, marketDataForSymbol);
+                            // TODO: isn't there a better way to fire the changed event?
+                            mdList.set(i, holder);
+                        }
+                    }
+                } catch (FieldNotFound e) {
+                    PhotonPlugin.getDefault().getMarketDataLogger().debug("Field missing from option quote", e);
+                }
+            }	        
+	    };
+        Display theDisplay = Display.getDefault();
+        if (theDisplay.getThread() == Thread.currentThread()){
+            block.run();
+        } else { 
+            theDisplay.asyncExec(block);
+        }	    
 	}
 
+	public void doOnPrimaryQuote(Message message) {
+		getOrderTicketModel().clearUnderlyingMarketData();
 
-	public void doOnOptionQuote(Message message) {
-		String symbol;
-		OptionOrderTicketModel model = getOrderTicketModel();
-		try {
-			symbol = message.getString(Symbol.FIELD);
-			WritableList mdList = model.getOptionMarketDataList();
-			for (int i = 0; i < mdList.size(); i++){
-				OptionMessageHolder holder = (OptionMessageHolder) mdList.get(i);
-				if (symbol.equals(holder.getSymbol(PutOrCall.PUT)) ||
-						symbol.equals(holder.getSymbol(PutOrCall.CALL))){
-					FieldMap marketDataForSymbol = holder.getMarketDataForSymbol(symbol);
-					if (marketDataForSymbol != null && FIXMessageUtil.isMarketDataIncrementalRefresh(message)){
-						FIXMessageUtil.mergeMarketDataMessages(message, 
-								(Message)marketDataForSymbol, messageFactory);
-					} else {
-						marketDataForSymbol = message;
-					}
-					int putOrCall = holder.symbolOptionType(symbol);
-					holder.setMarketData(putOrCall, marketDataForSymbol);
-					// TODO: isn't there a better way to fire the changed event?
-					mdList.set(i, holder);
-				}
-			}
-		} catch (FieldNotFound e) {
-			PhotonPlugin.getDefault().getMarketDataLogger().debug("Field missing from option quote", e);
-		}
-	}
-
-
-	public void doOnUnderlyingQuote(Message message) {
 		OptionOrderTicketModel model = getOrderTicketModel();
 		try {
 			try {
@@ -188,11 +168,11 @@ public class OptionOrderTicketController
 	 * Cancel all subscriptions (stock and options).
 	 */
 	@Override
-	protected void doUnlistenMarketData(MarketDataFeedService service) throws MarketceteraException {
+	protected void doUnlistenMarketData(MarketDataFeedService<?> service) throws MarketceteraException {
 		super.doUnlistenMarketData(service);
-		if (currentOptionSubscription != null){
-			service.unsubscribe(currentOptionSubscription);
-			currentOptionSubscription = null;
+		if (currentOptionToken != null){
+			currentOptionToken.cancel();
+			currentOptionToken = null;
 		}
 	}
 
@@ -207,7 +187,7 @@ public class OptionOrderTicketController
 	 * Otherwise simply subscribe to updates for the market data.
 	 */
 	@Override
-	protected void doListenMarketData(MarketDataFeedService service, MSymbol symbol) throws MarketceteraException {
+	protected void doListenMarketData(MarketDataFeedService<?> service, MSymbol symbol) throws MarketceteraException {
 		String symbolString = symbol.toString();
 
 		String optionRootOrUnderlying;
@@ -223,37 +203,30 @@ public class OptionOrderTicketController
 			requestOptionRootInfo(optionRootOrUnderlying);
 		}
 
-		if (!symbol.equals(listenedSymbol)) {
-			String optionSymbolString = symbol.toString();
-			if (receivedOptionRoots.containsKey(optionSymbolString)){
-				MSymbol underlyingSymbol = receivedOptionRoots.get(optionSymbolString).get(0).getUnderlyingSymbol();
-				super.doListenMarketData(service, underlyingSymbol);
+		String optionSymbolString = symbol.toString();
+		if (receivedOptionRoots.containsKey(optionSymbolString)){
+			MSymbol underlyingSymbol = receivedOptionRoots.get(optionSymbolString).get(0).getUnderlyingSymbol();
+			super.doListenMarketData(service, underlyingSymbol);
 
-				Message subscriptionMessage = MarketDataUtils.newSubscribeOptionUnderlying(underlyingSymbol);
-				ISubscription subscription = null;
-				subscription = service.subscribe(subscriptionMessage);
-				currentOptionSubscription = subscription;
-				listenedSymbol = underlyingSymbol;
-			}
+			Message subscriptionMessage = MarketDataUtils.newSubscribeOptionUnderlying(underlyingSymbol);
+			currentOptionToken = service.execute(subscriptionMessage, new ISubscriber() {
+				public boolean isInteresting(Object arg0) {
+					return true;
+				}
+				public void publishTo(Object obj) {
+					Message message;
+					if (obj instanceof SymbolExchangeEvent){
+						message = ((SymbolExchangeEvent) obj).getFIXMessage();
+					} else {
+						message = (Message) obj;
+					}
+					doOnOptionQuote(message);
+				}
+			});
+
 		}
 	}
 	
-	/**
-	 * If the message is a {@link MsgType#MARKET_DATA_SNAPSHOT_FULL_REFRESH} or
-	 * {@link MsgType#MARKET_DATA_INCREMENTAL_REFRESH}, call {@link #doOnQuote(Message)},
-	 * otherwise if it is a {@link MsgType#DERIVATIVE_SECURITY_LIST},
-	 * parse out the data option specifiers and store it in the model by calling
-	 * {@link #addDerivativeSecurityListToCache(Message)} and {@link #handleDerivativeSecurityList(Message)}.
-	 */
-	public void onMessage(Message message) {
-		if (FIXMessageUtil.isMarketDataSnapshotFullRefresh(message)
-				|| FIXMessageUtil.isMarketDataIncrementalRefresh(message)){
-			doOnQuote(message);
-		} else if (FIXMessageUtil.isDerivativeSecurityList(message)){
-			addDerivativeSecurityListToCache(message);
-			handleDerivativeSecurityList(message);
-		}
-	}
 
 
 	/**
@@ -264,17 +237,29 @@ public class OptionOrderTicketController
 	}
 
 
-	public void requestOptionRootInfo(String optionRoot) {
+	public void requestOptionRootInfo(String optionRoot) throws FeedException {
 		PhotonPlugin.getMainConsoleLogger().debug("Requesting option root info for :"+optionRoot);
 
-		MarketDataFeedService service = getMarketDataTracker().getMarketDataFeedService();
+		MarketDataFeedService<?> service = getMarketDataTracker().getMarketDataFeedService();
 
 		Message query = OptionMarketDataUtils.newOptionRootQuery(optionRoot);
-		try {
-			derivativeSecurityListSubscription = service.getMarketDataFeed().asyncQuery(query);
-		} catch (MarketceteraException e) {
-			PhotonPlugin.getDefault().getMarketDataLogger().error("Exception getting market data: "+e);
-		}
+
+		service.execute(query, new ISubscriber() {
+			public boolean isInteresting(Object arg0) {
+				return true;
+			}
+			public void publishTo(Object obj) {
+				Message message;
+				if (obj instanceof SymbolExchangeEvent){
+					message = ((SymbolExchangeEvent) obj).getFIXMessage();
+				} else {
+					message = (Message) obj;
+				}
+
+				handleDerivativeSecurityList(message);
+			}
+			
+		});
 	}
 
 	
@@ -417,54 +402,50 @@ public class OptionOrderTicketController
 	 * @param derivativeSecurityList the message containgin option specifier information
 	 */
 	public void handleDerivativeSecurityList(Message derivativeSecurityList){
+		addDerivativeSecurityListToCache(derivativeSecurityList);
+		
 		WritableList optionHolderList = getOrderTicketModel().getOptionMarketDataList();
 
-		MarketDataFeedService feed = getMarketDataTracker().getMarketDataFeedService();
-		if (derivativeSecurityListSubscription != null && derivativeSecurityListSubscription.isResponse(derivativeSecurityList) && feed != null){
-			derivativeSecurityListSubscription = null;
-			optionHolderList.clear();
-			try {
-				int numDerivs = 0;
-				if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
-					numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
-				}
-				HashMap<OptionPairKey, OptionMessageHolder> optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
-				HashMap<MSymbol, OptionPairKey> optionSymbolToKeyMap = new HashMap<MSymbol, OptionPairKey>();
-
-				for (int i = 1; i <= numDerivs; i++)
-				{
-					try {
-						DerivativeSecurityList.NoRelatedSym info = new DerivativeSecurityList.NoRelatedSym();
-						derivativeSecurityList.getGroup(i, info);
-	
-						int putOrCall = OptionMarketDataUtils.getOptionType(info);
-						String optionSymbolString = info.getString(Symbol.FIELD);
-						MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
-						OptionPairKey optionKey;
-							optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
-						optionSymbolToKeyMap.put(optionSymbol, optionKey);
-						OptionMessageHolder holder;
-						if (optionContractMap.containsKey(optionKey)){
-							holder = optionContractMap.get(optionKey);
-						} else {
-							holder = new OptionMessageHolder(OptionMarketDataUtils.getOptionRootSymbol(optionSymbolString), info);
-							optionContractMap.put(optionKey, holder);
-
-							optionHolderList.add(holder);
-						}						
-						
-						holder.setExtraInfo(putOrCall, info);
-					} catch (ParseException e) {
-						MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
-						PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info: "+underlying, e);
-					}
-				}
-			} catch (FieldNotFound e) {
-				PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
+		MarketDataFeedService<?> feed = getMarketDataTracker().getMarketDataFeedService();
+		optionHolderList.clear();
+		try {
+			int numDerivs = 0;
+			if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
+				numDerivs = derivativeSecurityList.getInt(NoRelatedSym.FIELD);
 			}
-			if (listenedSymbol != null){
-				listenMarketData(listenedSymbol.toString());
+			HashMap<OptionPairKey, OptionMessageHolder> optionContractMap = new HashMap<OptionPairKey, OptionMessageHolder>();
+			HashMap<MSymbol, OptionPairKey> optionSymbolToKeyMap = new HashMap<MSymbol, OptionPairKey>();
+
+			for (int i = 1; i <= numDerivs; i++)
+			{
+				try {
+					DerivativeSecurityList.NoRelatedSym info = new DerivativeSecurityList.NoRelatedSym();
+					derivativeSecurityList.getGroup(i, info);
+
+					int putOrCall = OptionMarketDataUtils.getOptionType(info);
+					String optionSymbolString = info.getString(Symbol.FIELD);
+					MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
+					OptionPairKey optionKey;
+						optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
+					optionSymbolToKeyMap.put(optionSymbol, optionKey);
+					OptionMessageHolder holder;
+					if (optionContractMap.containsKey(optionKey)){
+						holder = optionContractMap.get(optionKey);
+					} else {
+						holder = new OptionMessageHolder(OptionMarketDataUtils.getOptionRootSymbol(optionSymbolString), info);
+						optionContractMap.put(optionKey, holder);
+
+						optionHolderList.add(holder);
+					}						
+					
+					holder.setExtraInfo(putOrCall, info);
+				} catch (ParseException e) {
+					MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
+					PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info: "+underlying, e);
+				}
 			}
+		} catch (FieldNotFound e) {
+			PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
 		}
 	}
 
@@ -472,18 +453,10 @@ public class OptionOrderTicketController
 	 * Get the current subscription for option market data
 	 * @return the ISubscription for market data
 	 */
-	public ISubscription getCurrentOptionSubscription() {
-		return currentOptionSubscription;
+	public IMarketDataFeedToken<?> getOptionMarketDataToken() {
+		return currentOptionToken;
 	}
 	
-	/**
-	 * Get the current subscription for derivative security list information
-	 * 
-	 * @return the ISubscription for derivative security list information
-	 */
-	public ISubscription getDerivativeSecurityListSubscription() {
-		return derivativeSecurityListSubscription;
-	}
 
 //	/**
 //	 * Debug code

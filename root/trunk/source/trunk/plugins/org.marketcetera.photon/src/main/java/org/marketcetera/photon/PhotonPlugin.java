@@ -37,6 +37,7 @@ import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketModel;
+import org.marketcetera.photon.views.OrderTicketModel;
 import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketModel;
@@ -95,7 +96,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private SecondaryIDCreator secondaryIDCreator = new SecondaryIDCreator();
 
-	private StockOrderTicketModel stockOrderTicketModel;
+	private OrderTicketModel stockOrderTicketModel;
 
 	private OptionOrderTicketModel optionOrderTicketModel;
 
@@ -400,7 +401,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return null;
 	}
 	
-	public StockOrderTicketModel getStockOrderTicketModel(){
+	public OrderTicketModel getStockOrderTicketModel(){
 		return stockOrderTicketModel;
 	}
 	
