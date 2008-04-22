@@ -8,19 +8,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -57,8 +53,15 @@ import quickfix.field.TestMessageIndicator;
 import quickfix.field.Text;
 import quickfix.fix44.MessageFactory;
 
-public class MarketceteraFeed extends AbstractMarketDataFeed implements Application {
-
+public class MarketceteraFeed 
+    extends AbstractMarketDataFeed<MarketceteraFeedToken,
+                                   MarketceteraFeedCredentials,
+                                   MarketceteraFeedMessageTranslator,
+                                   MarketceteraFeedEventTranslator,
+                                   Object,
+                                   MarketceteraFeed> 
+    implements Application 
+{
 	public static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
 	public static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
 	private int serverPort;
@@ -74,13 +77,16 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 	private String url;
 	private FeedStatus feedStatus;
 
-	public MarketceteraFeed(String url, String userName, String password, Map<String, Object> properties, Logger logger) 
+	public MarketceteraFeed(String url, 
+	                        String userName, 
+	                        String password, 
+	                        Map<String, Object> properties, 
+	                        Logger logger) 
 		throws MarketceteraException 
 	{
 		super(FeedType.SIMULATED,
-			  new MarketceteraCredentials(url,
-					                      userName,
-					                      password));
+		      "Marketcetera",
+			  new MarketceteraFeedCredentials(url));
 		this.logger = logger;
 		this.url = url;
 		try {
@@ -210,18 +216,6 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 		return linkedList;
 	}
 
-	public FeedStatus getFeedStatus() {
-		return feedStatus;
-	}
-
-	public FeedType getFeedType() {
-		return feedType;
-	}
-
-	public String getID() {
-		return "Marketcetera";
-	}
-
 	public boolean isRunning() {
 		return isRunning;
 	}
@@ -297,12 +291,15 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 		}
 	}
 
-	public void fromApp(Message message, SessionID sessionID) throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType {
-
+	public void fromApp(Message message, 
+	                    SessionID sessionID) 
+	    throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue, UnsupportedMessageType 
+	{
 		String reqID = null;
 		boolean handled = false;
 		try {
-			StringField correlationField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, message.getHeader().getString(MsgType.FIELD));
+			StringField correlationField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
+			                                                                  message.getHeader().getString(MsgType.FIELD));
 			reqID = message.getString(correlationField.getTag());
 		} catch (FieldNotFound fnf){
 		}
@@ -312,7 +309,9 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 					if (requestID.equals(reqID)){
 						try {
 							// the other side should wait on this before we can call exchange
-							pendingRequests.get(requestID).exchange(message, 1, TimeUnit.NANOSECONDS);
+							pendingRequests.get(requestID).exchange(message, 
+							                                        1, 
+							                                        TimeUnit.NANOSECONDS);
 							handled = true;
 						} catch (Exception e) {
 							// calling side probably timed out...
@@ -331,80 +330,130 @@ public class MarketceteraFeed extends AbstractMarketDataFeed implements Applicat
 	public void onCreate(SessionID sessionID) {
 		logger.info("Marketcetera feed session created "+sessionID);
 	}
-
 	public void onLogon(SessionID sessionID) {
 		setFeedStatus(FeedStatus.AVAILABLE);
 	}
-
 	public void onLogout(SessionID sessionID) {
 		setFeedStatus(FeedStatus.OFFLINE);
 	}
-
 	public void toAdmin(Message message, SessionID sessionID) {
 	}
-
 	public void toApp(Message message, SessionID sessionID) throws DoNotSend {
 	}
-
-	public MarketDataFeedToken execute(Message inMessage, ISubscriber inSubscriber) throws FeedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected MarketDataFeedToken generateToken(Message inMessage) throws FeedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected IMarketDataFeedConnector getConnector(MarketDataFeedCredentials inCredentials, MarketDataFeedToken inToken) throws FeedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	protected ExecutorService getThreadPool() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public IMarketDataListener getMarketDataListener() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void setMarketDataListener(IMarketDataListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void addFeedComponentListener(IFeedComponentListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void removeFeedComponentListener(IFeedComponentListener listener) {
-		// TODO Auto-generated method stub
-		
-	}
-
 	private void fireMarketDataMessage(Message refresh) 
 	{
 	}
-	
-	private static class MarketceteraCredentials
-		extends MarketDataFeedCredentials
-	{
 
-		protected MarketceteraCredentials(String inURL, String inUsername, String inPassword) throws FeedException {
-			super(inURL, inUsername, inPassword);
-		}
+    /**
+     * @param inProviderName
+     * @param inCredentials
+     * @return
+     */
+    public static MarketceteraFeed getInstance(String inProviderName,
+                                               MarketceteraFeedCredentials inCredentials)
+        throws NoMoreIDsException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-		@Override
-		protected void validateURL(String inURL) throws FeedException {
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doCancel(java.lang.String)
+     */
+    @Override
+    protected void doCancel(String inHandle)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 
-		}
-	}
-	
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doDerivativeSecurityListRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doDerivativeSecurityListRequest(Object inData) throws FeedException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.IMarketDataFeedCredentials)
+     */
+    @Override
+    protected boolean doLogin(MarketceteraFeedCredentials inCredentials)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogout()
+     */
+    @Override
+    protected void doLogout()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doMarketDataRequest(Object inData) throws FeedException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doSecurityListRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doSecurityListRequest(Object inData) throws FeedException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)
+     */
+    @Override
+    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec<MarketceteraFeedCredentials> inTokenSpec) throws FeedException
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getEventTranslator()
+     */
+    @Override
+    protected MarketceteraFeedEventTranslator getEventTranslator()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getMessageTranslator()
+     */
+    @Override
+    protected MarketceteraFeedMessageTranslator getMessageTranslator()
+    {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn(org.marketcetera.marketdata.IMarketDataFeedCredentials)
+     */
+    @Override
+    protected boolean isLoggedIn(MarketceteraFeedCredentials inCredentials)
+    {
+        // TODO Auto-generated method stub
+        return false;
+    }
 }
