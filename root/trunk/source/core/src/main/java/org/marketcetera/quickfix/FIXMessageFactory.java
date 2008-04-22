@@ -121,9 +121,11 @@ public class FIXMessageFactory {
             request.setInt(NoRelatedSym.FIELD, numSymbols);
         }
         for (MSymbol oneSymbol : symbols) {
-            Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
-            symbolGroup.setField(new Symbol(oneSymbol.getFullSymbol()));
-            request.addGroup(symbolGroup);
+            if(oneSymbol != null) {
+                Group symbolGroup =  msgFactory.create(beginString, MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
+                symbolGroup.setField(new Symbol(oneSymbol.getFullSymbol()));
+                request.addGroup(symbolGroup);
+            }
         }
         return request;
     }

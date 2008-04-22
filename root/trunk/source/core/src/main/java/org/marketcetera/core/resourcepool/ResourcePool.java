@@ -17,9 +17,9 @@ import org.marketcetera.core.MessageKey;
  * synchronization is needed unless the subclass is adding new behavior that so warrants.  The
  * number and type of resources in the pool is regulated by the subclass.
  * 
- * @todo TODO The <code>ResourcePool</code> should track allocated resources to order them
+ * TODO The <code>ResourcePool</code> should track allocated resources to order them
  *   to shut down.
- * @todo TODO Add an action thread used to make the calls to resource (returned, released, etc).
+ * TODO Add an action thread used to make the calls to resource (returned, released, etc).
  *   That way, a piggy resource can't shut down the whole pool.  The corallary of this, of course,
  *   is that the ResourcePool might re-allocate a resource before it has completed being returned. 
  * 
@@ -212,7 +212,7 @@ public abstract class ResourcePool
      * to re-use.  A <code>Resource</code> will be re-used iff it
      * deems itself functional (see {@link Resource#isFunctional()}).  If
      * this condition fails, the <code>Resource</code> is discarded.
-     * If a {@link Resource} is discarded, its {@link Resource#release()}
+     * If a {@link Resource} is discarded, its {@link Resource#released()}
      * method is invoked.
      * 
      * @param inResource a <code>Resource</code> value
@@ -242,7 +242,7 @@ public abstract class ResourcePool
                 shouldRelease = !inResource.isFunctional();
             } catch (Throwable t) {
                 if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Resource " + inResource + " failed when trying to report its state, releasing", 
+                    LoggerAdapter.debug("Resource " + inResource + " LOGIN_FAILED when trying to report its state, releasing", 
                                         t, 
                                         this);
                 }

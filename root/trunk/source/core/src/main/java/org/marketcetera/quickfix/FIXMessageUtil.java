@@ -155,7 +155,7 @@ public class FIXMessageUtil {
 		return msgTypeHelper(message, MsgType.SECURITY_DEFINITION_REQUEST);
 	}
 
-	public static boolean isSecurityDefnition(Message message) {
+	public static boolean isSecurityDefinition(Message message) {
 		return msgTypeHelper(message, MsgType.SECURITY_DEFINITION);
 	}
 
@@ -166,7 +166,11 @@ public class FIXMessageUtil {
     public static boolean isHeartbeat(Message message) {
 		return msgTypeHelper(message, MsgType.HEARTBEAT);
 	}
-
+    public static boolean isSecurityListRequest(Message inMessage)
+    {
+        return msgTypeHelper(inMessage,
+                             MsgType.SECURITY_LIST_REQUEST);
+    }
 	
 	public static boolean isEquityOptionOrder(Message message)
 	{

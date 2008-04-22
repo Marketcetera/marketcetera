@@ -72,13 +72,13 @@ public enum MessageKey implements LocalizedMessage {
     INFO_WAITING_FOR_RESOURCE("core.resourcepool.waiting_for_resource"),
     /* market data feed messages*/
     ERROR_NO_ID_FOR_TOKEN("marketdatafeed.no_id_for_token"),
-    ERROR_MARKET_DATA_FEED_EXECUTION_CANCELLED("marketdatafeed.market_data_feed_execution_cancelled"),
-    ERROR_MARKET_DATA_FEED_EXECUTION_INTERRUPTED("marketdatafeed.market_data_feed_execution_interrupted"),
     ERROR_MARKET_DATA_FEED_EXECUTION_FAILED("marketdatafeed.market_data_feed_execution_failed"),
-    ERROR_MARKET_DATA_FEED_EXECUTION_REJECTED("marketdatafeed.market_data_feed_execution_rejected"),
     ERROR_MARKET_DATA_FEED_CANNOT_GENERATE_MESSAGE("marketdatafeed.market_data_feed_cannot_generate_message"),
     ERROR_MARKET_DATA_FEED_CANNOT_FIND_SYMBOL("marketdatafeed.market_data_feed_cannot_find_symbol"),
+    ERROR_MARKET_DATA_FEED_UNKNOWN_MESSAGE_TYPE("marketdatafeed.market_data_feed_unknown_message_type"),
     WARNING_MARKET_DATA_FEED_CANNOT_DETERMINE_SUBSCRIPTION("marketdatafeed.market_data_feed_cannot_determine_subscription"),
+    WARNING_MARKET_DATA_FEED_CANNOT_CANCEL_SUBSCRIPTION("marketdatafeed.market_data_feed_cannot_cancel_subscription"),
+    WARNING_MARKET_DATA_FEED_DATA_IGNORED("marketdatafeed.market_data_feed_data_ignored"),
     /* session messages */
     SESSION_NOT_FOUND("core.error.fix.session_not_found");
     

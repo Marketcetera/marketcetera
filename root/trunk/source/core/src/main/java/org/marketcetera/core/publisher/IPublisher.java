@@ -1,7 +1,7 @@
 package org.marketcetera.core.publisher;
 
 /**
- * Capable of supplying updates to a group of {@link Subscribers}.
+ * Capable of supplying updates to a group of {@link ISubscriber} objects.
  * 
  * <p>Implementers are guaranteed to be notified in subscription order. 
  *
