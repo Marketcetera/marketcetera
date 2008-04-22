@@ -1,8 +1,12 @@
 package org.marketcetera.core.publisher;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.marketcetera.core.LoggerAdapter;
 
@@ -15,7 +19,7 @@ import org.marketcetera.core.LoggerAdapter;
  * @version $Id: $
  * @since 0.43-SNAPSHOT
  */
-public class PublisherEngine
+public final class PublisherEngine
     implements IPublisher
 {
     /**
@@ -33,8 +37,7 @@ public class PublisherEngine
     /**
      * default max pool size for notifier threads
      */
-    private static final int DEFAULT_MAX_POOL_SIZE = 20;
-    
+    private static final int DEFAULT_MAX_POOL_SIZE = 20;    
     /**
      * Initializes the publisher threadpool if necessary.
      */
@@ -44,16 +47,14 @@ public class PublisherEngine
             return;
         }
         sNotifierPool = Executors.newFixedThreadPool(inMaxPoolSize);        
-    }
-    
+    }  
     /**
      * Create a new <code>PublisherEngine</code> object.
      */
     public PublisherEngine()
     {
         this(DEFAULT_MAX_POOL_SIZE);
-    }
-    
+    }    
     /**
      * Create a new <code>PublisherEngine</code> object.
      * 
@@ -63,8 +64,7 @@ public class PublisherEngine
     {
         mSubscribers = new LinkedHashSet<ISubscriber>();
         mMaxPoolSize = inMaxPoolSize;
-    }
-    
+    }    
     /**
      * Advertise for publication the given object to all subscribers.
      * 
@@ -72,18 +72,27 @@ public class PublisherEngine
      */
     public void publish(Object inData)
     {
-      if(LoggerAdapter.isDebugEnabled(this)) {
-          LoggerAdapter.debug("Publishing " + inData + " to subscribers", 
-                          this);
-      }
-      initializeThreadPool(getMaxPoolSize());
-      // hand the notification chore to a thread from the thread pool
-      synchronized(mSubscribers) {
-          sNotifierPool.execute(new PublisherEngineNotifier(mSubscribers.toArray(new ISubscriber[0]),
-                                                            inData));
-      }
+        doPublish(inData);
     }
-    
+    /**
+     * Advertise for publication the given object to all subscribers and wait
+     * until all publications are done.
+     *
+     * <P>This method will block until all publications are complete.
+     *
+     * @param inData an <code>Object</code> value
+     * @throws InterruptedException if the thread is interrupted while waiting
+     *   for notifications to complete
+     * @throws ExecutionException 
+     */
+    public void publishAndWait(Object inData) 
+        throws InterruptedException, ExecutionException
+    {
+        doPublish(inData).get();
+    }      
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#subscribe(org.marketcetera.core.publisher.ISubscriber)
+     */
     public void subscribe(ISubscriber inSubscriber)
     {
         if(inSubscriber == null) {
@@ -96,7 +105,9 @@ public class PublisherEngine
             mSubscribers.add(inSubscriber);
         }
     }
-    
+    /* (non-Javadoc)
+     * @see org.marketcetera.core.publisher.IPublisher#unsubscribe(org.marketcetera.core.publisher.ISubscriber)
+     */
     public void unsubscribe(ISubscriber inSubscriber)
     {
         if(inSubscriber == null) {
@@ -108,14 +119,34 @@ public class PublisherEngine
             mSubscribers.remove(inSubscriber);
         }
     }
-
     /**
      * Gets the max pool size setting.
      * 
      * @return an <code>int</code> value indicating the maximum number of notifier threads the publisher will use
      */
-    public int getMaxPoolSize()
+    private int getMaxPoolSize()
     {
         return mMaxPoolSize;
+    }
+    /**
+     * Perform the actual publication to subscribers.
+     *
+     * @param inData an <code>Object</code> value
+     * @return a <code>Future&lt;Object&gt;</code> value
+     */
+    private Future<Object> doPublish(Object inData)
+    {
+        if(LoggerAdapter.isDebugEnabled(this)) {
+            LoggerAdapter.debug("Publishing " + inData + " to subscribers", 
+                            this);
+        }
+        initializeThreadPool(getMaxPoolSize());
+        // hand the notification chore to a thread from the thread pool
+        List<ISubscriber> subscribers;
+        synchronized(mSubscribers) {
+            subscribers = new ArrayList<ISubscriber>(mSubscribers);
+        }
+        return sNotifierPool.submit(new PublisherEngineNotifier(subscribers,
+                                                                inData));
     }
 }

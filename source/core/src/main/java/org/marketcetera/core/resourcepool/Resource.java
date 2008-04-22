@@ -46,9 +46,6 @@ public interface Resource
      * <ol>
      *   <li>{@link Resource#isFunctional()} returns <code>false</code> when
      *     the <code>Resource</code> is returned to tthe {@link ResourcePool}</li>
-     *   <li>the <code>Resource</code> is returned to the {@link ResourcePool}, but
-     *     the {@link ResourcePool} already has the maximum number of <code>Resource</code>
-     *     objects (@see {@link ResourcePool#getMaxResources()})</li>
      * </ol>
      *
      * @throws Throwable if an error occurs
@@ -74,7 +71,7 @@ public interface Resource
      * When a caller is done with a <code>Resource</code> and returns it for reuse,
      * this method is called.  If any work needs to be done to return the <code>Resource</code>
      * to a usable state before it can be reused, this is the place to do it.  The <code>Resource</code>
-     * should be ready to be used again when this method is complete.
+     * should be ready to be used again when this method is COMPLETE.
      * 
      * <p>This method is called after the <code>Resource</code> has been returned to the pool
      * but before the lock on the pool is released.

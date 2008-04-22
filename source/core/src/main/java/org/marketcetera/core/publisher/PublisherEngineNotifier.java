@@ -1,5 +1,10 @@
 package org.marketcetera.core.publisher;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.Callable;
+
 import org.marketcetera.core.LoggerAdapter;
 
 /**
@@ -9,39 +14,45 @@ import org.marketcetera.core.LoggerAdapter;
  * @version $Id: $
  * @since 0.43-SNAPSHOT
  */
-public class PublisherEngineNotifier
-        implements Runnable
+final class PublisherEngineNotifier
+        implements Callable<Object>
 {
     /**
      * the list of subscribers who should be notified in the given order
      */
-    private final ISubscriber[] mSubscribers;
+    private final List<? extends ISubscriber> mSubscribers;
     /**
      * the data to publish to the subscribers
      */
     private final Object mData;
-    
     /**
      * Create a new <code>PublisherEngineNotifier</code> object.
      *
-     * @param inSubscribers a <code>Subscriber[]</code> value indicating to whom to publish
+     * @param inSubscribers a <code>List&lt;? extends ISubscriber&gt;</code> value indicating to whom to publish
      * @param inData an <code>Object</code> value indicating what to publish
      */
-    PublisherEngineNotifier(ISubscriber[] inSubscribers,
+    PublisherEngineNotifier(List<? extends ISubscriber> inSubscribers,
                             Object inData)
     {
-        mSubscribers = inSubscribers;
+        if(inSubscribers == null) {
+            mSubscribers = new ArrayList<ISubscriber>();
+        } else {
+            mSubscribers = Collections.unmodifiableList(inSubscribers);
+        }
         mData = inData;
     }
-    
-    public void run()
+    /* (non-Javadoc)
+     * @see java.util.concurrent.Callable#call()
+     */
+    public Object call()
+        throws Exception
     {
         if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Publishing " + mData + " to " + (mSubscribers == null ? "0" : mSubscribers.length) + " subscriber(s)", 
+            LoggerAdapter.debug("Publishing " + mData + " to " + (mSubscribers == null ? "0" : mSubscribers.size()) + " subscriber(s)", 
                             this);
         }
         if(mSubscribers == null) {
-            return;
+            return null;
         }
         for(ISubscriber s : mSubscribers) {
             try {
@@ -56,5 +67,6 @@ public class PublisherEngineNotifier
                 }
             }
         }
+        return null;
     }
 }

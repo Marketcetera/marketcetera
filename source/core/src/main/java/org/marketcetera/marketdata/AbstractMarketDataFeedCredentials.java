@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata;
 
-
 /**
  * Encapsulates the credentials necessary to authenticate a connection with an 
  * {@link IMarketDataFeed} instance.
@@ -12,77 +11,49 @@ package org.marketcetera.marketdata;
  * @version $Id: $
  * @since 0.43-SNAPSHOT
  */
-public abstract class MarketDataFeedCredentials
+public abstract class AbstractMarketDataFeedCredentials
+    implements IMarketDataFeedCredentials
 {
-    /**
-     * the username with which to connect
-     */
-    private final String mUsername;
-    /**
-     * the password with which to connect
-     */
-    private final String mPassword;
     /**
      * the URL describing the server resource or resources to which to connect
      */
     private final String mURL;
-
     /**
-     * Create a new <code>MarketDataFeedCredentials</code> instance.
+     * Create a new <code>AbstractMarketDataFeedCredentials</code> instance.
      *
      * @param inURL a <code>String</code> value
-     * @param inUsername a <code>String</code> value
-     * @param inPassword a <code>String</code> value
      * @throws FeedException if the credentials object could not be constructed
      */
-    protected MarketDataFeedCredentials(String inURL,
-                                        String inUsername,
-                                        String inPassword) 
+    protected AbstractMarketDataFeedCredentials(String inURL) 
         throws FeedException
     {
+        mURL = inURL;
         try {
             validateURL(inURL);
         } catch (Throwable t) {
             throw new FeedException(t);
         }
-        mURL = inURL;
-        mUsername = inUsername;
-        mPassword = inPassword;
-    }
-    
+    }  
     /**
      * Perform necessary validation on the given URL.
+     * 
+     * <p>This implementation does nothing.
      *
      * @param inURL a <code>String</code> value
      * @throws FeedException if the URL is not valid for the Market Data Feed
      */
-    protected abstract void validateURL(String inURL)
-        throws FeedException;
-
-    /**
-     * @return the password
-     */
-    protected String getPassword()
+    protected void validateURL(String inURL)
+        throws FeedException
     {
-        return mPassword;
+        // do nothing
     }
-
     /**
      * @return the uRL
      */
-    protected String getURL()
+    public final String getURL()
     {
         return mURL;
     }
-
-    /**
-     * @return the username
-     */
-    protected String getUsername()
-    {
-        return mUsername;
-    }
-
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
      */
@@ -90,12 +61,9 @@ public abstract class MarketDataFeedCredentials
     {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((mPassword == null) ? 0 : mPassword.hashCode());
         result = PRIME * result + ((mURL == null) ? 0 : mURL.hashCode());
-        result = PRIME * result + ((mUsername == null) ? 0 : mUsername.hashCode());
         return result;
     }
-
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
@@ -107,21 +75,11 @@ public abstract class MarketDataFeedCredentials
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final MarketDataFeedCredentials other = (MarketDataFeedCredentials) obj;
-        if (mPassword == null) {
-            if (other.mPassword != null)
-                return false;
-        } else if (!mPassword.equals(other.mPassword))
-            return false;
+        final AbstractMarketDataFeedCredentials other = (AbstractMarketDataFeedCredentials) obj;
         if (mURL == null) {
             if (other.mURL != null)
                 return false;
         } else if (!mURL.equals(other.mURL))
-            return false;
-        if (mUsername == null) {
-            if (other.mUsername != null)
-                return false;
-        } else if (!mUsername.equals(other.mUsername))
             return false;
         return true;
     }

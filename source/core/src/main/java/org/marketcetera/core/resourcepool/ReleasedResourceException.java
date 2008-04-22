@@ -5,7 +5,7 @@ import org.marketcetera.core.MessageKey;
 /**
  * Indicates an exception thrown when a {@link Resource} was returned to a {@link ResourcePool} and subsequently released.
  * 
- * @see {@link ResourcePool#returnResource(Resource)}
+ * @see ResourcePool#returnResource(Resource)
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $

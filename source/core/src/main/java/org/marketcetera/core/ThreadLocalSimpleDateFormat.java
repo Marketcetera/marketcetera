@@ -1,6 +1,5 @@
 package org.marketcetera.core;
 
-import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -32,7 +31,7 @@ public class ThreadLocalSimpleDateFormat extends ThreadLocal<SimpleDateFormat> {
 	 * 
      * @exception NullPointerException if the given pattern is null
      * @exception IllegalArgumentException if the given pattern is invalid
-	 * @see {@link SimpleDateFormat#SimpleDateFormat(String)}
+	 * @see SimpleDateFormat#SimpleDateFormat(String)
 	 */
 	public ThreadLocalSimpleDateFormat(String formatString) {
 		this(formatString, null);

@@ -235,7 +235,7 @@ public abstract class ReservationResourcePool
             }
         }
         if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Manual reservation traverse for resource " + inResource + " failed, giving up", 
+            LoggerAdapter.debug("Manual reservation traverse for resource " + inResource + " LOGIN_FAILED, giving up", 
                                 this);
         }
         return null;
@@ -351,7 +351,7 @@ public abstract class ReservationResourcePool
      * resource contention may not be handled properly.
      * 
      * @param inReservationEntry a <code>ReservationEntry</code> value
-     * @returns a <code>Resource</code> value containing the <code>Resource</code> to return
+     * @return a <code>Resource</code> value containing the <code>Resource</code> to return
      * @throws ResourcePoolException
      */
     protected Resource resourceContention(ReservationEntry inReservationEntry) 
