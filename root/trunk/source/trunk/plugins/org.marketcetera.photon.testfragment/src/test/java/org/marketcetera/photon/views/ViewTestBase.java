@@ -1,5 +1,7 @@
 package org.marketcetera.photon.views;
 
+import java.util.concurrent.Callable;
+
 import junit.framework.TestCase;
 
 import org.eclipse.core.runtime.Platform;
@@ -46,7 +48,39 @@ public abstract class ViewTestBase extends TestCase {
 		super.tearDown();
 	}
 
-	protected void delay(long millis) {
+    /**
+     * Waits until the passed block evaluates to <code>true</code> while
+     * allowing the system display queue to execute events.
+     * 
+     * <p>This call will evaluate the block until it it returns <code>true</code>
+     * for a maximum of 60 seconds.  After 60 seconds, it will throw an exception.
+     * 
+     * @param inCondition a <code>Callable&lt;Boolean&gt;</code> value which must evaluate to true or false
+     * @throws Exception if an error occurs
+     */
+	public static void doDelay(Callable<Boolean> inCondition)
+        throws Exception
+    {
+        int counter = 0;
+        try {
+            Boolean result = inCondition.call();
+            while(!result &&
+                    counter < 600) {
+                delay(100);
+                result = inCondition.call();
+                counter += 1;
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            fail("Unexpected exception");
+        } finally {
+            if(counter >= 600) {
+                fail("Timeout waiting for async condition");
+            }
+        }
+    }   
+
+	protected static void delay(long millis) {
 		Display display = Display.getCurrent();
 		
 		if (display != null){
@@ -69,7 +103,7 @@ public abstract class ViewTestBase extends TestCase {
 		}
 	}
 
-	public void waitForJobs() {
+	public static void waitForJobs() {
 		while (Platform.getJobManager().currentJob() != null){
 			delay(1000);
 		}
