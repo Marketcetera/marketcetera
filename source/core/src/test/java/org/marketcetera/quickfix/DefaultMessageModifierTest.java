@@ -121,7 +121,7 @@ public class DefaultMessageModifierTest extends TestCase {
     }
 
     /** Put one extra field in the config and make sure that it appears
-     * in the vanilla message after initializing the modifier and running the message
+     * in the vanilla message after initializing the modifier and RUNNING the message
      * through it
      * @throws Exception
      */

@@ -1,5 +1,7 @@
 package org.marketcetera.core.publisher;
 
+import java.util.concurrent.ExecutionException;
+
 /**
  * Test implementation of {@link IPublisher}.
  *
@@ -36,5 +38,11 @@ public class TestPublisher
     public void publish(Object inData)
     {
         mEngine.publish(inData);
+    }
+    
+    public void publishAndWait(Object inData) 
+        throws InterruptedException, ExecutionException
+    {
+        mEngine.publishAndWait(inData);
     }
 }

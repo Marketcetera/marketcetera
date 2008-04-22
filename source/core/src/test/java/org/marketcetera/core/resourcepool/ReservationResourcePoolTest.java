@@ -542,7 +542,7 @@ public class ReservationResourcePoolTest
         //      requester has been blocked for at least 10 seconds        
         //      return r1 so the requester thread can have it
         mTestPool.returnResource(inResource);
-        //      wait for the requester to complete
+        //      wait for the requester to COMPLETE
         requesterThread.join();
         //      the requester should have gotten r1
         assertEquals(inReturnedResource,

@@ -108,7 +108,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
                     addTestWithVersion(constructor, name, inVersions);
                 }
             } catch (Exception ex) {
-                Assert.fail("Creation of test suite failed: " + ex.getMessage());
+                Assert.fail("Creation of test suite LOGIN_FAILED: " + ex.getMessage());
             }
         }
     }
