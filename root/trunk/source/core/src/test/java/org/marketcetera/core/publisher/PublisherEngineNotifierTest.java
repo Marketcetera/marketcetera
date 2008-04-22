@@ -1,5 +1,9 @@
 package org.marketcetera.core.publisher;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -30,8 +34,8 @@ public class PublisherEngineNotifierTest
     public void testConstructor()
         throws Exception
     {
-        ISubscriber[] s0 = new ISubscriber[0];
-        ISubscriber[] s1 = new ISubscriber[1];
+        List<ISubscriber> s0 = new ArrayList<ISubscriber>();
+        List<ISubscriber> s1 = new ArrayList<ISubscriber>();
         Object d0 = new Object();
         
         assertNotNull(new PublisherEngineNotifier(null,
@@ -54,9 +58,9 @@ public class PublisherEngineNotifierTest
         doRunTest(null,
                   this);
         
-        doRunTest(new TestSubscriber[0],
+        doRunTest(new ArrayList<TestSubscriber>(),
                   null);        
-        doRunTest(new TestSubscriber[0],
+        doRunTest(new ArrayList<TestSubscriber>(),
                   this);
         
         TestSubscriber s1 = new TestSubscriber(false,
@@ -84,18 +88,18 @@ public class PublisherEngineNotifierTest
                                                true,
                                                true);
         
-        doRunTest(new TestSubscriber[] { s1 },
+        doRunTest(Arrays.asList(new TestSubscriber[] { s1 }),
                   null);
-        doRunTest(new TestSubscriber[] { s1 },
+        doRunTest(Arrays.asList(new TestSubscriber[] { s1 }),
                   this);
 
-        doRunTest(new TestSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 },
+        doRunTest(Arrays.asList(new TestSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 }),
                   null);
-        doRunTest(new TestSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 },
+        doRunTest(Arrays.asList(new TestSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 }),
                   this);
     }
     
-    private void doRunTest(TestSubscriber[] inSubscribers,
+    private void doRunTest(List<TestSubscriber> inSubscribers,
                            Object inData)
         throws Exception
     {
@@ -106,7 +110,7 @@ public class PublisherEngineNotifierTest
         }
         PublisherEngineNotifier n = new PublisherEngineNotifier(inSubscribers,
                                                                 inData);
-        n.run();
+        n.call();
         if(inSubscribers == null) {
             return;
         }

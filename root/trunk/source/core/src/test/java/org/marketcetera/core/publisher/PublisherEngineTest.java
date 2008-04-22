@@ -56,16 +56,13 @@ public class PublisherEngineTest
         throws Exception
     {
         mPublisher.subscribe(null);
-        mPublisher.publish(this);
+        mPublisher.publishAndWait(this);
         TestSubscriber s = new TestSubscriber();
         mPublisher.subscribe(s);
         assertEquals(0,
                      s.getPublishCount());
         assertNull(s.getData());
-        mPublisher.publish(this);
-        while(s.getPublishCount() == 0) {
-            Thread.sleep(100);
-        }
+        mPublisher.publishAndWait(this);
         assertEquals(this,
                      s.getData());
         assertEquals(1,
@@ -76,10 +73,7 @@ public class PublisherEngineTest
         assertEquals(1,
                      s.getPublishCount());
         assertNull(s.getData());
-        mPublisher.publish(this);
-        while(s.getPublishCount() == 1) {
-            Thread.sleep(100);
-        }
+        mPublisher.publishAndWait(this);
         assertEquals(this,
                      s.getData());
         assertEquals(2, // not 3!

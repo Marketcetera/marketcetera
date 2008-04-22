@@ -88,11 +88,6 @@ public class TestSubscriber
         return mPublishThrows;
     }
 
-    public void setCounter(int inCounter)
-    {
-        mCounter = inCounter;
-    }
-
     public void setData(Object inData)
     {
         mData = inData;
@@ -116,5 +111,15 @@ public class TestSubscriber
     public List<Object> getPublications()
     {
         return mPublications;
+    }
+
+    /**
+     * Sets the publishCount value.
+     *
+     * @param a <code>TestSubscriber</code> value
+     */
+    public void setPublishCount(int inPublishCount)
+    {
+        mPublishCount = inPublishCount;
     }
 }
