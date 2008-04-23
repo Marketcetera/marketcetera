@@ -1,6 +1,7 @@
 package org.marketcetera.util.file;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Vector;
 import org.apache.commons.lang.ArrayUtils;
@@ -47,6 +48,17 @@ public class NoLinksDirectoryWalkerTest
         public int getMaxDepth()
         {
             return mMaxDepth;
+        }
+
+        @Override
+        protected boolean handleDirectory
+            (File directory,
+             int depth,
+             Collection results)
+            throws IOException
+        {
+            return (super.handleDirectory(directory,depth,results) &&
+                    !".svn".equals(directory.getName()));
         }
 
         @Override
@@ -124,31 +136,28 @@ public class NoLinksDirectoryWalkerTest
     }
 
     @Test
-    public void win32Walk()
+    public void walk()
         throws Exception
     {
-        assumeTrue(OperatingSystem.LOCAL.isWin32());
-
         ListWalker walker=new ListWalker();
         walker.apply(TEST_ROOT);
-        assertArrayPermutation(TEST_FILE_LIST,walker.getFiles());
+
+        String[] files=TEST_FILE_LIST;
+        if (OperatingSystem.LOCAL.isWin32()) {
+            files=(String[])ArrayUtils.add(files,"e.lnk");
+        }
+        assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(TEST_DIR_LIST,walker.getDirectories());
         assertEquals(3,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
         walker=new ListWalker();
         walker.apply(TEST_ROOT,results);
-        assertArrayPermutation(TEST_FILE_LIST,walker.getFiles());
+        assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(TEST_DIR_LIST,walker.getDirectories());
         assertArrayPermutation
-            (ArrayUtils.addAll(TEST_FILE_LIST,TEST_DIR_LIST),
+            (ArrayUtils.addAll(files,TEST_DIR_LIST),
              results.toArray(new String[0]));
         assertEquals(3,walker.getMaxDepth());
-    }
-
-    @Test
-    public void unixWalk()
-    {
-        assumeTrue(OperatingSystem.LOCAL.isWin32());
     }
 }
