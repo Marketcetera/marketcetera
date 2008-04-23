@@ -22,10 +22,6 @@
   <name>Public Sources</name>
 
   <modules>
-	<module>cli-core</module>
-	<module>core</module>
-	<module>market</module>
-	<module>ors</module>
 	<module>util</module>
 	<module>util-test</module>
   </modules>
