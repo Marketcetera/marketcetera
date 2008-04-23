@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+  <message id="hello">
+    <locale language="en"> 
+	  <entry key="msg">Hello</entry>
+	  <entry key="title">Hello {0}!</entry>
+    </locale> 
+    <locale language="fr"> 
+	  <entry key="msg">Bonjour</entry>
+	  <entry key="title">Bonjour {0}!</entry>
+    </locale> 
+  </message>	
+  <message id="log">
+    <locale language="en"> 
+	  <entry key="msg">Test here (expected): ''{0}''</entry>
+    </locale> 
+    <locale language="fr"> 
+	  <entry key="msg">Test voilà (attendu): ''{0}''</entry>
+    </locale> 
+  </message>	
+</messages>

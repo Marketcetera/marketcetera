@@ -1,0 +1,49 @@
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!--
+	- Author: tlerios
+	- Id: $Id$
+	- $License$
+	-->
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>tools</artifactId>
+    <version>0.4.3-SNAPSHOT</version>
+  </parent>
+  <artifactId>market</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Market data</name>
+
+  <dependencies>
+
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${public.package}</groupId>
+      <artifactId>util</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>org.marketcetera.tools.getlisted.Application</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

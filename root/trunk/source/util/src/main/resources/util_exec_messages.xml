@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+  <message id="cannot_copy_output">
+    <locale language="en"> 
+	  <entry key="msg">Cannot copy output of command ''{0}''</entry>
+    </locale>
+  </message>
+  <message id="cannot_execute">
+    <locale language="en"> 
+	  <entry key="msg">Cannot execute command ''{0}''</entry>
+    </locale>
+  </message>
+  <message id="unexpected_termination">
+    <locale language="en"> 
+	  <entry key="msg">Unexpected termination of command ''{0}''</entry>
+    </locale>
+  </message>
+</messages>
