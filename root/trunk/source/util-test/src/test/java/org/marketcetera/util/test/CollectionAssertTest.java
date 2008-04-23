@@ -66,7 +66,7 @@ public class CollectionAssertTest
                 (new Integer[] {1},new Integer[] {1,1});
         } catch (AssertionError ex) {
             assertEquals
-                ("actual contains extra elements",ex.getMessage());
+                ("actual contains extra elements such as 1",ex.getMessage());
         }
     }
 

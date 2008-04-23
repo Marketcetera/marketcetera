@@ -78,7 +78,8 @@ public final class CollectionAssert
                 if (actualBag.size()==0) {
                     return;
                 }
-                content="actual contains extra elements";
+                content="actual contains extra elements such as "+
+                    actualBag.iterator().next();
             }
         }
         if (message!=null) {
