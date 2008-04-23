@@ -1,0 +1,33 @@
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!--
+	- Author: tlerios
+	- Id: $Id$
+	- $License$
+	-->
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <profiles>
+    <profile>
+      <id>User Settings</id>
+      <properties>
+        <!-- Optional: local JRuby installation. -->
+        <jruby.home>C:\jruby1.0.3</jruby.home>
+        <!-- Optional: local Jython installation. -->
+        <jython.home>C:\jython2.2.1</jython.home>
+      </properties>
+    </profile>
+  </profiles>
+
+  <activeProfiles>
+    <!-- Default error-checking. -->
+    <activeProfile>Simple Compile</activeProfile>
+    <!-- Detailed error-checking. -->
+    <!-- <activeProfile>Safe Compile</activeProfile> -->
+  </activeProfiles>
+
+</project>

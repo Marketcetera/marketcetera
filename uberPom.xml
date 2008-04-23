@@ -1,0 +1,287 @@
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!--
+	- Author: tlerios
+	- Id: $Id$
+	- $License$
+	-->
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>marketcetera</groupId>
+  <artifactId>declarations</artifactId>
+  <version>0.4.3-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Declarations</name>
+  <description>Top-Level Declarations</description>
+
+  <properties>
+    <public.package>org.marketcetera</public.package>
+	<javase.version>6</javase.version>
+	<javaee.version>5</javaee.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- Compile: local modules. -->
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>util</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>ors</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>cli-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Compile: QuickFIX/J. -->
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-core</artifactId>
+        <version>1.3.1-bd-2</version>
+      </dependency>
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-msg-fix40</artifactId>
+        <version>1.3.1-bd-2</version>
+      </dependency>
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-msg-fix41</artifactId>
+        <version>1.3.1-bd-2</version>
+      </dependency>
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-msg-fix42</artifactId>
+        <version>1.3.1-bd-2</version>
+      </dependency>
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-msg-fix43</artifactId>
+        <version>1.3.1-bd-2</version>
+      </dependency>
+      <dependency>
+        <groupId>quickfixj</groupId>
+        <artifactId>quickfixj-msg-fix44</artifactId>
+        <version>1.3.1-bd-2</version>
+      </dependency>
+
+      <!-- Compile: other. -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring</artifactId>
+        <version>2.5.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.skife.kasparov</groupId>
+        <artifactId>csv</artifactId>
+        <version>1.0</version>
+      </dependency>
+      <dependency>
+        <groupId>net.java.dev.glazedlists</groupId>
+        <artifactId>glazedlists_java15</artifactId>
+        <version>1.7.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>1.5.0</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>1.4</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>2.4</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>3.2.1</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-i18n</groupId>
+        <artifactId>commons-i18n</artifactId>
+        <version>20060814</version>
+      </dependency>
+
+      <!-- Runtime. -->
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>1.5.0</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>1.2.15</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>1.2</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.activemq</groupId>
+        <artifactId>activemq-core</artifactId>
+        <version>5.0.0</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activeio-core</artifactId>
+          </exclusion>
+        </exclusions>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jta_1.1_spec</artifactId>
+        <version>1.1</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.mina</groupId>
+        <artifactId>mina-core</artifactId>
+        <version>1.1.1</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.xbean</groupId>
+        <artifactId>xbean-spring</artifactId>
+        <version>3.3</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <!-- Testing. -->
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>core</artifactId>
+        <version>${project.version}</version>
+        <type>test-jar</type>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>util-test</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.4</version>
+        <scope>test</scope>
+      </dependency>
+    </dependencies>
+   </dependencyManagement>
+
+  <profiles>
+    <profile>
+      <id>Simple Compile</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <source>1.${javase.version}</source>
+              <target>1.${javase.version}</target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>Safe Compile</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <showDeprecation>true</showDeprecation>
+              <showWarnings>true</showWarnings>
+              <compilerArgument>-Xlint</compilerArgument>
+              <source>1.${javase.version}</source>
+              <target>1.${javase.version}</target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <disableXmlReport>true</disableXmlReport>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+          <overview>${project.basedir}/tools/javadoc/overview.html</overview>
+          <links>
+            <link>http://java.sun.com/javaee/${javaee.version}/docs/api/</link>
+            <link>http://java.sun.com/javase/${javase.version}/docs/api/</link>
+            <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
+            <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
+			<link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+			<link>http://commons.apache.org/io/api-release/</link>
+			<link>http://commons.apache.org/lang/api-release/</link>
+			<link>http://commons.apache.org/collections/api-release/</link>
+			<link>http://commons.apache.org/vfs/apidocs/</link>
+          </links>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <repositories>
+    <repository>
+      <id>Internal</id>
+      <url>http://repo.marketcetera.org/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.repository.codehaus.org/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+</project>

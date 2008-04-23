@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<messages>
+  <message id="bot_exception">
+    <locale language="en"> 
+	  <entry key="msg">Bottom-level test exception (expected)</entry>
+    </locale> 
+    <locale language="fr"> 
+	  <entry key="msg">Niveau bas test exception (attendu)</entry>
+    </locale> 
+  </message>
+  <message id="mid_exception">
+    <locale language="en"> 
+	  <entry key="msg">Middle-level test exception (expected) {0}</entry>
+    </locale> 
+    <locale language="fr"> 
+	  <entry key="msg">Niveau moyen test exception (attendu) {0}</entry>
+    </locale>
+  </message>
+  <message id="top_exception">
+    <locale language="en"> 
+	  <entry key="msg">Top-level test exception (expected)</entry>
+    </locale> 
+  </message>	
+</messages>
