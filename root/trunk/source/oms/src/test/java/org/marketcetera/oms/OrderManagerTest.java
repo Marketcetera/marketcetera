@@ -190,6 +190,30 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD));
     }
 
+    /** Send a forex order EUR/USD and make sure that the symbol comes through unchanged */
+    public void testForexOrder_withSeparateSuffix() throws Exception {
+        OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
+        MessageRouteManager routeManager = new MessageRouteManager();
+        routeManager.setSeparateSuffix(true);
+        handler.setOrderRouteManager(routeManager);
+        handler.setMessageModifierMgr(new MessageModifierManager(new LinkedList<MessageModifier>(), msgFactory));
+        NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
+		handler.setQuickFIXSender(quickFIXSender);
+
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"),
+                                                      TimeInForce.DAY, "bob");
+        // change it to be forex
+        msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
+        msg.setField(new OrdType(OrdType.FOREX_MARKET));
+
+        Message response = handler.handleMessage(msg);
+        assertNotNull(quickFIXSender.getCapturedMessages().get(0));
+        assertFalse("should not have symbol suffix in sent msg", quickFIXSender.getCapturedMessages().get(0).isSetField(SymbolSfx.FIELD));
+
+        assertNotNull(response);
+        assertEquals("verify symbol has not been separated", "EUR/USD", response.getString(Symbol.FIELD));
+    }
+
     /** Send a generic event and a single-order event.
      * Verify get an executionReport (not content of it) and that the msg come out
      * on the sink
@@ -333,7 +357,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
      */
     public void testWithOrderRouteManager() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
-        MessageRouteManager orm = OrderRouteManagerTest.getORMWithOrderRouting(MessageRouteManager.FIELD_100_METHOD);
+        MessageRouteManager orm = MessageRouteManagerTest.getORMWithOrderRouting(MessageRouteManager.FIELD_100_METHOD);
         handler.setOrderRouteManager(orm);
 
         final NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();

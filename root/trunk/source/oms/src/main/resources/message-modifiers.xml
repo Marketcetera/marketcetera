@@ -54,7 +54,7 @@ So the sample map entries can look like this:
 
     <bean id="orderRouting" class="org.marketcetera.quickfix.MessageRouteManager">
         <property name="separateSuffix" value="false"/>
-        <property name="routeMethod" value="field:57"/>
+        <property name="routeMethod" value="field:100"/>
         <property name="routes">
             <map>
 <!--
