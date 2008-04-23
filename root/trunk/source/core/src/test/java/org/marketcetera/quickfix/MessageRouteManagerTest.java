@@ -19,10 +19,10 @@ import java.util.prefs.BackingStoreException;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class OrderRouteManagerTest extends TestCase
+public class MessageRouteManagerTest extends TestCase
 {
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
-    public OrderRouteManagerTest(String name)
+    public MessageRouteManagerTest(String name)
     {
         super(name);
     }
@@ -33,7 +33,7 @@ public class OrderRouteManagerTest extends TestCase
         } catch (FIXFieldConverterNotAvailable ignored) {
 
         }
-        return new MarketceteraTestSuite(OrderRouteManagerTest.class);
+        return new MarketceteraTestSuite(MessageRouteManagerTest.class);
     }
 
     public void testModifyOrderSeparateSuffix() throws BackingStoreException, MarketceteraException, FieldNotFound
@@ -305,6 +305,62 @@ public class OrderRouteManagerTest extends TestCase
         assertEquals("SIGMA", buy.getHeader().getString(DeliverToCompID.FIELD));
 
     }
+
+    /** verify message goes through when SecurityType is not present */
+    public void testModifyMessageNoSecurityType() throws Exception {
+        MessageRouteManager routeManager = new MessageRouteManager();
+        routeManager.setSeparateSuffix(true);
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("ABCD"),
+                                                      TimeInForce.DAY, "bob");
+        // remove SecurityType altogether
+        msg.removeField(SecurityType.FIELD);
+
+        assertFalse("should not have modified message", routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+    }
+
+    /** verify message goes through when SecurityType is present */
+    public void testModifyMessageWithSecurityType() throws Exception {
+        MessageRouteManager routeManager = new MessageRouteManager();
+        routeManager.setSeparateSuffix(true);
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("ABCD"),
+                                                      TimeInForce.DAY, "bob");
+        // change it to be common stock
+        msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
+        assertFalse("should not have modified message", routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+    }
+
+    /** verify message goes through when SecurityType is present for Forex*/
+    public void testModifyMessageForex() throws Exception {
+        MessageRouteManager routeManager = new MessageRouteManager();
+        routeManager.setSeparateSuffix(true);
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"),
+                                                      TimeInForce.DAY, "bob");
+        // change it to be forex
+        msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
+        msg.setField(new OrdType(OrdType.FOREX_MARKET));
+        assertFalse("should not have modified message", routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+    }
+
+    /** verify suffix separated correctly for stock order */
+    public void testModifyMessageStock() throws Exception {
+        MessageRouteManager routeManager = new MessageRouteManager();
+        routeManager.setSeparateSuffix(true);
+        Message msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("BRK/B"),
+                                                      TimeInForce.DAY, "bob");
+        // run it without security type first
+        assertTrue(routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertEquals("BRK", msg.getString(Symbol.FIELD));
+        assertEquals("B", msg.getString(SymbolSfx.FIELD));
+
+        // now do the same but set the SecurityType
+        msg = FIXVersion.FIX42.getMessageFactory().newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("BRK/B"),
+                                                      TimeInForce.DAY, "bob");
+        msg.setField(new SecurityType(SecurityType.COMMON_STOCK));
+        assertTrue(routeManager.modifyMessage(msg, new NoOpFIXMessageAugmentor()));
+        assertEquals("BRK", msg.getString(Symbol.FIELD));
+        assertEquals("B", msg.getString(SymbolSfx.FIELD));
+    }
+
 
     /**
      * Creates a basic MessageRouteManager using the {@link MessageRouteManager#FIELD_100_METHOD}

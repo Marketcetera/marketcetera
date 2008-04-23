@@ -99,7 +99,9 @@ public class MessageRouteManager implements MessageModifier {
                     }
                     isModified = true;
                 }
-                if (isSeparateSuffix()) {
+                // don't separate suffixes on Forex orders (SecurityType may not be set on all orders so check explicitly)
+                String securityType = (anOrder.isSetField(SecurityType.FIELD)) ? anOrder.getString(SecurityType.FIELD) : null;
+                if (isSeparateSuffix() && !SecurityType.FOREIGN_EXCHANGE_CONTRACT.equals(securityType)) {
                     int suffixEnd = symbolString.length();
                     int slashPosition = 0;
                     if ((slashPosition = symbolString.lastIndexOf('/')) > 0) {
@@ -114,6 +116,7 @@ public class MessageRouteManager implements MessageModifier {
                             anOrder.setField(new Symbol(symbolString.substring(0, slashPosition)));
                             anOrder.setField(new SymbolSfx(symbolString.substring(slashPosition + 1, suffixEnd)));
                         }
+                        isModified = true;
                     }
                 }
             }
