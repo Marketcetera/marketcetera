@@ -7,7 +7,7 @@ import org.marketcetera.core.MessageKey;
  * An unsupported QuickFix message was received. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class UnsupportedMessageException
         extends MarketceteraException

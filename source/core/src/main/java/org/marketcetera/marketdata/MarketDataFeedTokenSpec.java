@@ -24,7 +24,7 @@ import quickfix.Message;
  * be used to initiate a request with any feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>

@@ -15,7 +15,7 @@ import org.marketcetera.core.MessageKey;
  * Tests {@link FIFOResourcePool}. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class FIFOResourcePoolTest 
 	extends TestCase 

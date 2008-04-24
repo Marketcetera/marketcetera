@@ -667,7 +667,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * types and must call several non-static methods on the parent.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     private class ExecutorThread
@@ -741,7 +741,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * to use the parent class's generic types.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */    
     private class HandleHolder
@@ -842,7 +842,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * </ol>
      *       
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     private class MarketDataHandle
@@ -922,7 +922,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * the {@link IFeedComponentListener} objects.
      * 
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     private static class FeedComponentListenerWrapper

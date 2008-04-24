@@ -6,7 +6,7 @@ import org.marketcetera.core.MessageKey;
  * Thrown when a {@link Resource} is returned (@see {@link ResourcePool#returnResource(Resource)} twice. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class DuplicateResourceReturnException
         extends ResourcePoolException

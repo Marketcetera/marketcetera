@@ -8,7 +8,7 @@ import org.marketcetera.core.MarketceteraException;
  * Translates to and from {@link EventBase} format.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public interface IEventTranslator
 {

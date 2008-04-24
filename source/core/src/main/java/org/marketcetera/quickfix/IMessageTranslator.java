@@ -8,7 +8,7 @@ import quickfix.Message;
  * Translates between the specified external data type <code>T</code> and {@link Message} format.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public interface IMessageTranslator<T>
 {

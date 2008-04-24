@@ -8,7 +8,7 @@ package org.marketcetera.marketdata;
  * the data feed.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public abstract class AbstractMarketDataFeedCredentials

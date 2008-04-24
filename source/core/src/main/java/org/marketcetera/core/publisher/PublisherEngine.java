@@ -16,7 +16,7 @@ import org.marketcetera.core.LoggerAdapter;
  * <p>This object is meant to be used by means of a "has-a" relationship.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public final class PublisherEngine

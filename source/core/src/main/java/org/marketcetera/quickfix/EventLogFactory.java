@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.quickfix;
+package org.marketcetera.quickfix;
 
 import quickfix.FileLogFactory;
 import quickfix.Log;

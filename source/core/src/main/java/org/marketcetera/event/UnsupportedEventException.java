@@ -7,7 +7,7 @@ import org.marketcetera.core.MessageKey;
  * An event was received from a data feed but could not be translated.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class UnsupportedEventException
         extends MarketceteraException

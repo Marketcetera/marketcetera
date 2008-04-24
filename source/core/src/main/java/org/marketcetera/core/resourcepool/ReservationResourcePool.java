@@ -21,7 +21,7 @@ import org.marketcetera.core.MessageKey;
  * desired <code>Resource</code> will be allocated.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public abstract class ReservationResourcePool
@@ -507,7 +507,7 @@ public abstract class ReservationResourcePool
      * Encapsulates a <code>Resource</code> and all waiting reservations for that <code>Resource</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     static class ReservationEntry

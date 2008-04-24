@@ -19,7 +19,7 @@ import quickfix.field.MDReqID;
  * round-trip FIX message testing.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public abstract class MessageTranslatorTestBase<T>

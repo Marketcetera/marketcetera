@@ -8,7 +8,7 @@ package org.marketcetera.marketdata;
  * the inner half of a <em>decorator</em> pattern.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public class UserPassword

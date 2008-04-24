@@ -15,7 +15,7 @@ import junit.framework.TestSuite;
  * Base class for Market Data Feed tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public class MarketDataFeedTestBase
@@ -87,7 +87,7 @@ public class MarketDataFeedTestBase
      * nothing with them.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     public static class DoNothingSubscriber implements ISubscriber {

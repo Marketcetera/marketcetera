@@ -8,7 +8,7 @@ package org.marketcetera.core.publisher;
  * updating the <code>Subscriber</code> if appropriate.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @see IPublisher
  */
 public interface ISubscriber

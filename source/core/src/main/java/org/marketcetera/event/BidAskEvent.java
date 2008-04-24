@@ -8,7 +8,7 @@ import quickfix.Message;
  * Common class for {@link Bid} and {@link Ask} events.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 abstract class BidAskEvent
@@ -27,7 +27,7 @@ abstract class BidAskEvent
      * Describes the type of a <code>BidAsk</code> event.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     protected enum Type { Bid, Ask };

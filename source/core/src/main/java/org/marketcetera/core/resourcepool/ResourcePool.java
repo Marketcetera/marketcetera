@@ -24,7 +24,7 @@ import org.marketcetera.core.MessageKey;
  *   is that the ResourcePool might re-allocate a resource before it has completed being returned. 
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */ 
 public abstract class ResourcePool
 {    

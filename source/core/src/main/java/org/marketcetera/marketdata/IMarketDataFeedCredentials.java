@@ -4,7 +4,7 @@ package org.marketcetera.marketdata;
  * Credentials for establishing access to an {@link IMarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public interface IMarketDataFeedCredentials
