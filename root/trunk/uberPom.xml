@@ -56,31 +56,6 @@
         <artifactId>quickfixj-core</artifactId>
         <version>1.3.1-bd-2</version>
       </dependency>
-      <dependency>
-        <groupId>quickfixj</groupId>
-        <artifactId>quickfixj-msg-fix40</artifactId>
-        <version>1.3.1-bd-2</version>
-      </dependency>
-      <dependency>
-        <groupId>quickfixj</groupId>
-        <artifactId>quickfixj-msg-fix41</artifactId>
-        <version>1.3.1-bd-2</version>
-      </dependency>
-      <dependency>
-        <groupId>quickfixj</groupId>
-        <artifactId>quickfixj-msg-fix42</artifactId>
-        <version>1.3.1-bd-2</version>
-      </dependency>
-      <dependency>
-        <groupId>quickfixj</groupId>
-        <artifactId>quickfixj-msg-fix43</artifactId>
-        <version>1.3.1-bd-2</version>
-      </dependency>
-      <dependency>
-        <groupId>quickfixj</groupId>
-        <artifactId>quickfixj-msg-fix44</artifactId>
-        <version>1.3.1-bd-2</version>
-      </dependency>
 
       <!-- Compile: other. -->
       <dependency>
@@ -159,12 +134,6 @@
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
         <version>1.1</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.mina</groupId>
-        <artifactId>mina-core</artifactId>
-        <version>1.1.1</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
