@@ -39,16 +39,6 @@
         <artifactId>util</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
-        <groupId>${public.package}</groupId>
-        <artifactId>ors</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>${public.package}</groupId>
-        <artifactId>cli-core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
 
       <!-- Compile: QuickFIX/J. -->
       <dependency>
