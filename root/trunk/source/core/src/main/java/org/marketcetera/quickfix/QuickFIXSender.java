@@ -1,4 +1,4 @@
-package org.marketcetera.oms;
+package org.marketcetera.quickfix;
 
 import quickfix.Message;
 import quickfix.Session;

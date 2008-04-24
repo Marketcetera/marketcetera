@@ -1,4 +1,4 @@
-package org.marketcetera.photon;
+package org.marketcetera.messagehistory;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;

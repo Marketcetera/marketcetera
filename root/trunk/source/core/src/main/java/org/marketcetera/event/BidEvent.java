@@ -8,7 +8,7 @@ import quickfix.Message;
  * Represents a Bid for a symbol on an exchange at a particular time.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public class BidEvent

@@ -6,7 +6,7 @@ import org.marketcetera.core.publisher.IPublisher;
  * Represents a transaction with an {@link IMarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
@@ -16,7 +16,7 @@ public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
      * Describes the set of states for a token.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.43-SNAPSHOT
      */
     public enum Status {

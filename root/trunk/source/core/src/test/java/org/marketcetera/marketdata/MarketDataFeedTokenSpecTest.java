@@ -16,7 +16,7 @@ import quickfix.Message;
  *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.43-SNAPSHOT
  */
 public class MarketDataFeedTokenSpecTest

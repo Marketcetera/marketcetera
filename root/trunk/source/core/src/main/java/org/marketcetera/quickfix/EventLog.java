@@ -1,4 +1,4 @@
-package org.marketcetera.marketdata.quickfix;
+package org.marketcetera.quickfix;
 
 import java.io.File;
 import java.io.FileNotFoundException;

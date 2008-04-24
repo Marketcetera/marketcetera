@@ -4,7 +4,7 @@ package org.marketcetera.core.resourcepool;
  * Sample implementation of {@link Resource} for testing.
  *
  * @author <a href="mailto:colin@marketcetera.com">colin</a>
- * @version $Id: $
+ * @version $Id$
  */
 public class TestResource
         implements Resource, Comparable

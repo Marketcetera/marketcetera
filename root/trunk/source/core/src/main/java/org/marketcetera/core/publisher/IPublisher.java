@@ -6,7 +6,7 @@ package org.marketcetera.core.publisher;
  * <p>Implementers are guaranteed to be notified in subscription order. 
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public interface IPublisher
 {

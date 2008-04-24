@@ -16,7 +16,7 @@ import org.springframework.context.Lifecycle;
  * allows the caller to do.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  */
 public interface Resource
     extends Lifecycle, InitializingBean

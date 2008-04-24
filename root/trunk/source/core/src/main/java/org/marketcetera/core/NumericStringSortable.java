@@ -1,4 +1,4 @@
-package org.marketcetera.photon.ui;
+package org.marketcetera.core;
 
 
 /**
