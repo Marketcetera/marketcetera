@@ -27,6 +27,7 @@ public class Application
         (String args[])
         throws Exception
     {
+        /*
         URLConnection connection=(new URL(URL+NYSE)).openConnection();
 
         BufferedReader in = null;
@@ -40,5 +41,6 @@ public class Application
             (inputLine = in.readLine()) != null) {
             System.out.println(inputLine);
           }
+        */
     }
 }
