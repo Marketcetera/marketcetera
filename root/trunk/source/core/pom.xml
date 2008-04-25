@@ -25,6 +25,10 @@
 
 	<!-- Compile. -->
     <dependency>
+      <groupId>org.apache.activemq</groupId>
+      <artifactId>activemq-core</artifactId>
+    </dependency>
+    <dependency>
       <groupId>quickfixj</groupId>
       <artifactId>quickfixj-core</artifactId>
     </dependency>
@@ -52,17 +56,11 @@
       <scope>compile</scope>
 	</dependency>
 
-    <!-- Runtime. -->
-    <dependency>
-      <groupId>org.apache.activemq</groupId>
-      <artifactId>activemq-core</artifactId>
-    </dependency>
-
     <!-- Testing: needs junit 3. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
+      <version>[3.8.1]</version>
     </dependency>
   </dependencies>
 
