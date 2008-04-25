@@ -23,6 +23,7 @@
 
   <modules>
 	<module>core</module>
+	<module>oms</module>
 	<module>util</module>
 	<module>util-test</module>
   </modules>
