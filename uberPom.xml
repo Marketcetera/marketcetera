@@ -31,11 +31,6 @@
       <!-- Compile: local modules. -->
       <dependency>
         <groupId>${public.package}</groupId>
-        <artifactId>oms</artifactId>
-        <version>[${project.version}]</version>
-      </dependency>
-      <dependency>
-        <groupId>${public.package}</groupId>
         <artifactId>core</artifactId>
         <version>[${project.version}]</version>
       </dependency>
