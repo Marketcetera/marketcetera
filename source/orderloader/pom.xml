@@ -19,7 +19,7 @@
   <artifactId>orderloader</artifactId>
   <packaging>jar</packaging>
 
-  <name>Oeder Loader</name>
+  <name>Order Loader</name>
 
   <dependencies>
 
@@ -28,6 +28,22 @@
       <groupId>${public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
+
+    <!-- Compile: log4j is invoked directly, not via slf4j. -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+	</dependency>
+
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
     </dependency>
 
     <!-- Testing. -->
