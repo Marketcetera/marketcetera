@@ -1,62 +1,87 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
-        <groupId>org.marketcetera</groupId>
-        <artifactId>marketcetera-platform</artifactId>
-        <version>0.4.3-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>${parent.groupId}</groupId>
-    <artifactId>marketcetera-oms</artifactId>
-    <packaging>jar</packaging>
-    <name>Marketcetera OMS</name>
-    <url>http://trac.marketcetera.org</url>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>marketcetera-core</artifactId>
-        </dependency>
-        <dependency>
-            <!-- This may be necessary for QFJ if JDBCStore is used --> 
-            <groupId>proxool</groupId>
-            <artifactId>proxool</artifactId>
-	        <version>0.9.0RC2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- for SSL connections -->
-        <dependency>
-            <groupId>org.apache.mina</groupId>
-            <artifactId>mina-filter-ssl</artifactId>
-            <version>1.1.1</version>
-            <scope>runtime</scope>
-        </dependency>
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-        <!-- dependency on core test code -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>marketcetera-core</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+  <!--
+	- Author: tlerios
+	- Id: $Id$
+	- $License$
+	-->
 
-    <build>
-        <plugins>
-            <plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-					<configuration>
-						<mainClass>org.marketcetera.oms.OrderManagementSystem</mainClass>
-					</configuration>
-            </plugin>
-        </plugins>
-    </build>
-    <pluginRepositories>
-       <pluginRepository>
-           <id>maven-snapshots</id>
-           <url>http://snapshots.repository.codehaus.org</url>
-       </pluginRepository>
-    </pluginRepositories>
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>source</artifactId>
+    <version>0.4.3-SNAPSHOT</version>
+  </parent>
+  <artifactId>oms</artifactId>
+  <packaging>jar</packaging>
+
+  <name>OMS</name>
+
+  <dependencies>
+
+	<!-- Compile. -->
+    <dependency>
+      <groupId>${public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+
+    <!-- Compile: log4j is invoked directly, not via slf4j. -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <scope>compile</scope>
+	</dependency>
+
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.xbean</groupId>
+      <artifactId>xbean-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>commons-pool</groupId>
+      <artifactId>commons-pool</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-jta_1.1_spec</artifactId>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${public.package}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+
+    <!-- Testing: needs junit 3. -->
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+    </dependency>
+  </dependencies>
+
+  <!-- Command-line execution. -->
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>org.marketcetera.oms.OrderManagementSystem</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
 
 
