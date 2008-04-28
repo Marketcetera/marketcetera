@@ -18,8 +18,16 @@ public class Deleter
      */
 
     private static final class RecursiveDeleter
-        extends NoLinksDirectoryWalker
+        extends SmartLinksDirectoryWalker
     {
+
+        // CONSTRUCTORS.
+
+        public RecursiveDeleter()
+        {
+            super(false);
+        }
+
 
         // INSTANCE METHODS.
 
@@ -62,21 +70,11 @@ public class Deleter
         (File file)
         throws IOException
     {
-        try {
-            delete(file);
-        } catch (I18NException ex) {
-            throw new IOException(null,ex);
-        }
-    }
-
-    private static void delete
-        (File file)
-        throws I18NException
-    {
         if (!file.delete()) {
-            throw new I18NException
-                (Messages.PROVIDER,Messages.CANNOT_DELETE,
-                 file.getAbsolutePath());
+            throw new IOException
+                (null,new I18NException
+                 (Messages.PROVIDER,Messages.CANNOT_DELETE,
+                  file.getAbsolutePath()));
         }
     }
 
