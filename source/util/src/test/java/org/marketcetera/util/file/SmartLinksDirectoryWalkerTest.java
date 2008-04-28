@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
 
-public class NoLinksDirectoryWalkerTest
+public class SmartLinksDirectoryWalkerTest
 	extends TestCaseBase
 {
     private static final String TEST_ROOT=
@@ -22,6 +22,8 @@ public class NoLinksDirectoryWalkerTest
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE=
         "a.txt";
+    private static final String TEST_LINK=
+        "a"+File.separator+"e";
     private static final String[] TEST_FILE_LIST=new String[] {
         "a.txt", "b.txt","c.txt","d.txt"};
     private static final String[] TEST_DIR_LIST=new String[] {
@@ -29,11 +31,17 @@ public class NoLinksDirectoryWalkerTest
 
 
     public static final class ListWalker
-        extends NoLinksDirectoryWalker
+        extends SmartLinksDirectoryWalker
     {
         private Vector<String> mFiles=new Vector<String>();
         private Vector<String> mDirectories=new Vector<String>();
         private int mMaxDepth=-1;
+
+        public ListWalker
+            (boolean followLinks)
+        {
+            super(followLinks);
+        }
 
         public String[] getFiles()
         {
@@ -96,7 +104,7 @@ public class NoLinksDirectoryWalkerTest
     public void singleFile()
         throws Exception
     {
-        ListWalker walker=new ListWalker();
+        ListWalker walker=new ListWalker(false);
         walker.apply(TEST_ROOT+TEST_FILE);
         assertArrayPermutation
             (new String[] {TEST_FILE},walker.getFiles());
@@ -105,7 +113,31 @@ public class NoLinksDirectoryWalkerTest
         assertEquals(0,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
-        walker=new ListWalker();
+        walker=new ListWalker(false);
+        walker.apply(TEST_ROOT+TEST_FILE,results);
+        assertArrayPermutation
+            (new String[] {TEST_FILE},walker.getFiles());
+        assertArrayPermutation
+            (new String[0],walker.getDirectories());
+        assertArrayPermutation
+            (new String[] {TEST_FILE},results.toArray(new String[0]));
+        assertEquals(0,walker.getMaxDepth());
+    }
+
+    @Test
+    public void singleLink()
+        throws Exception
+    {
+        ListWalker walker=new ListWalker(false);
+        walker.apply(TEST_ROOT+TEST_FILE);
+        assertArrayPermutation
+            (new String[] {TEST_FILE},walker.getFiles());
+        assertArrayPermutation
+            (new String[0],walker.getDirectories());
+        assertEquals(0,walker.getMaxDepth());
+
+        Vector<String> results=new Vector<String>();
+        walker=new ListWalker(false);
         walker.apply(TEST_ROOT+TEST_FILE,results);
         assertArrayPermutation
             (new String[] {TEST_FILE},walker.getFiles());
@@ -120,14 +152,14 @@ public class NoLinksDirectoryWalkerTest
     public void nonexistentFiles()
         throws Exception
     {
-        ListWalker walker=new ListWalker();
+        ListWalker walker=new ListWalker(false);
         walker.apply(TEST_NONEXISTENT_FILE);
         assertArrayPermutation(new String[0],walker.getFiles());
         assertArrayPermutation(new String[0],walker.getDirectories());
         assertEquals(-1,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
-        walker=new ListWalker();
+        walker=new ListWalker(false);
         walker.apply(TEST_NONEXISTENT_FILE,results);
         assertArrayPermutation(new String[0],walker.getFiles());
         assertArrayPermutation(new String[0],walker.getDirectories());
@@ -139,19 +171,22 @@ public class NoLinksDirectoryWalkerTest
     public void walk()
         throws Exception
     {
-        ListWalker walker=new ListWalker();
-        walker.apply(TEST_ROOT);
 
         String[] files=TEST_FILE_LIST;
         if (OperatingSystem.LOCAL.isWin32()) {
             files=(String[])ArrayUtils.add(files,"e.lnk");
-        }
+        } else if (OperatingSystem.LOCAL.isUnix()) {
+            files=(String[])ArrayUtils.add(files,"e");
+        } 
+
+        ListWalker walker=new ListWalker(false);
+        walker.apply(TEST_ROOT);
         assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(TEST_DIR_LIST,walker.getDirectories());
         assertEquals(3,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
-        walker=new ListWalker();
+        walker=new ListWalker(false);
         walker.apply(TEST_ROOT,results);
         assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(TEST_DIR_LIST,walker.getDirectories());

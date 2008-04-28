@@ -8,49 +8,69 @@ import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.filefilter.IOFileFilter;
 
 /**
- * A {@link DirectoryWalker} which does not follow symbolic links, and
- * provides convenience methods to initiate traversal.
+ * A {@link DirectoryWalker} which provides convenience methods to
+ * initiate traversal, and (optionally) does not follow symbolic
+ * links.
  */
 
-public abstract class NoLinksDirectoryWalker
+public abstract class SmartLinksDirectoryWalker
     extends DirectoryWalker
 {
+
+    // INSTANCE DATA.
+
+    private boolean mFollowLinks;
+
 
     // CONSTRUCTORS.
 
     /**
      * Constructor mirroring superclass constructor.
      *
+     * @param followLinks True if links should be followed.
+     *
      * @see DirectoryWalker#DirectoryWalker()
      */
 
-    protected NoLinksDirectoryWalker() {}
-
-    /**
-     * Constructor mirroring superclass constructor.
-     *
-     * @see DirectoryWalker#DirectoryWalker(FileFilter,int)
-     */
-
-    protected NoLinksDirectoryWalker
-        (FileFilter filter,
-         int depthLimit)
+    protected SmartLinksDirectoryWalker
+        (boolean followLinks)
     {
-        super(filter,depthLimit);
+        mFollowLinks=followLinks;
     }
 
     /**
      * Constructor mirroring superclass constructor.
      *
+     * @param followLinks True if links should be followed.
+     *
+     * @see DirectoryWalker#DirectoryWalker(FileFilter,int)
+     */
+
+    protected SmartLinksDirectoryWalker
+        (boolean followLinks,
+         FileFilter filter,
+         int depthLimit)
+    {
+        super(filter,depthLimit);
+        mFollowLinks=followLinks;
+    }
+
+    /**
+     * Constructor mirroring superclass constructor.
+     *
+     * @param followLinks True if links should be followed.
+     *
      * @see DirectoryWalker#DirectoryWalker(IOFileFilter,IOFileFilter,int)
      */
 
-    protected NoLinksDirectoryWalker
-        (IOFileFilter directoryFilter,
+    protected SmartLinksDirectoryWalker
+        (boolean followLinks,
+         IOFileFilter directoryFilter,
          IOFileFilter fileFilter,
          int depthLimit) 
     {
         super(directoryFilter,fileFilter,depthLimit);
+        mFollowLinks=followLinks;
     }
 
 
@@ -58,8 +78,10 @@ public abstract class NoLinksDirectoryWalker
 
     /**
      * Returns false if the given directory is a symbolic link to a
-     * directory, thereby blocking following the link during
-     * traversal.
+     * directory, and links are not to be followed, thereby blocking
+     * following the link during traversal. In this case, it also
+     * invokes {@link DirectoryWalker#handleFile(File,int,Collection)}
+     * on the link.
      *
      * @see DirectoryWalker#handleDirectory(File,int,Collection)
      */
@@ -71,7 +93,24 @@ public abstract class NoLinksDirectoryWalker
          Collection results)
         throws IOException
     {
-        return (FileType.get(directory)!=FileType.LINK_DIR);
+        if ((FileType.get(directory)!=FileType.LINK_DIR) ||
+            getFollowLinks()) {
+            return true;
+        }
+        handleFile(directory,depth,results);
+        return false;
+    }
+
+    /**
+     * Returns true if symbolic links to directories should be
+     * followed during traversal.
+     *
+     * @return True if so.
+     **/
+
+    public boolean getFollowLinks()
+    {
+        return mFollowLinks;
     }
  
     /**
@@ -95,7 +134,8 @@ public abstract class NoLinksDirectoryWalker
         if (type==FileType.NONEXISTENT) {
             return;
         }
-        if (type.isFile()) {
+        if (type.isFile() ||
+            (!getFollowLinks() && type.isSymbolicLink())) {
             handleFile(root,0,results);
             return;
         }
