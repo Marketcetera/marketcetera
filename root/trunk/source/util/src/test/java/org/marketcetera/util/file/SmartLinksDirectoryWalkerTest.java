@@ -205,7 +205,7 @@ public class SmartLinksDirectoryWalkerTest
         assertEquals(-1,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
-        walker=new ListWalker(false);
+        walker=new ListWalker(true);
         walker.apply(TEST_NONEXISTENT_FILE,results);
         assertArrayPermutation(new String[0],walker.getFiles());
         assertArrayPermutation(new String[0],walker.getDirectories());
@@ -217,27 +217,52 @@ public class SmartLinksDirectoryWalkerTest
     public void walk()
         throws Exception
     {
-
         String[] files=TEST_FILE_LIST;
+        String[] dirs=TEST_DIR_LIST;
         if (OperatingSystem.LOCAL.isWin32()) {
-            files=(String[])ArrayUtils.add(files,"e.lnk");
+            files=(String[])ArrayUtils.add(files,TEST_LINK_NAME+".lnk");
         } else if (OperatingSystem.LOCAL.isUnix()) {
-            files=(String[])ArrayUtils.add(files,"e");
+            files=(String[])ArrayUtils.add(files,TEST_LINK_NAME);
         } 
 
         ListWalker walker=new ListWalker(false);
         walker.apply(TEST_ROOT);
         assertArrayPermutation(files,walker.getFiles());
-        assertArrayPermutation(TEST_DIR_LIST,walker.getDirectories());
+        assertArrayPermutation(dirs,walker.getDirectories());
         assertEquals(3,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
         walker=new ListWalker(false);
         walker.apply(TEST_ROOT,results);
         assertArrayPermutation(files,walker.getFiles());
-        assertArrayPermutation(TEST_DIR_LIST,walker.getDirectories());
+        assertArrayPermutation(dirs,walker.getDirectories());
         assertArrayPermutation
-            (ArrayUtils.addAll(files,TEST_DIR_LIST),
+            (ArrayUtils.addAll(files,dirs),
+             results.toArray(new String[0]));
+        assertEquals(3,walker.getMaxDepth());
+
+        files=TEST_FILE_LIST;
+        dirs=TEST_DIR_LIST;
+        if (OperatingSystem.LOCAL.isWin32()) {
+            files=(String[])ArrayUtils.add(files,TEST_LINK_NAME+".lnk");
+        } else if (OperatingSystem.LOCAL.isUnix()) {
+            files=(String[])ArrayUtils.add(files,TEST_LINK_CONTENTS);
+            dirs=(String[])ArrayUtils.add(dirs,TEST_LINK_NAME);
+        } 
+
+        walker=new ListWalker(true);
+        walker.apply(TEST_ROOT);
+        assertArrayPermutation(files,walker.getFiles());
+        assertArrayPermutation(dirs,walker.getDirectories());
+        assertEquals(3,walker.getMaxDepth());
+
+        results=new Vector<String>();
+        walker=new ListWalker(true);
+        walker.apply(TEST_ROOT,results);
+        assertArrayPermutation(files,walker.getFiles());
+        assertArrayPermutation(dirs,walker.getDirectories());
+        assertArrayPermutation
+            (ArrayUtils.addAll(files,dirs),
              results.toArray(new String[0]));
         assertEquals(3,walker.getMaxDepth());
     }
