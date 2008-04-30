@@ -15,7 +15,7 @@
     <groupId>marketcetera</groupId>
     <artifactId>declarations</artifactId>
     <version>0.4.3-SNAPSHOT</version>
-	<relativePath>uberPom.xml</relativePath>
+    <relativePath>uberPom.xml</relativePath>
   </parent>
   <groupId>org.marketcetera</groupId>
   <artifactId>public</artifactId>
