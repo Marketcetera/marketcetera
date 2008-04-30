@@ -227,8 +227,8 @@
 
   <repositories>
     <repository>
-      <id>Internal</id>
-      <url>http://repo.marketcetera.org/maven</url>
+      <id>central</id>
+      <url>http://repo1.maven.org/maven2</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -236,6 +236,13 @@
     <repository>
       <id>Codehaus Snapshots</id>
       <url>http://snapshots.repository.codehaus.org/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>Internal</id>
+      <url>http://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
