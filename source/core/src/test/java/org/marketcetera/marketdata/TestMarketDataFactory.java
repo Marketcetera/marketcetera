@@ -36,11 +36,6 @@ public class TestMarketDataFactory
         }                
     };
 
-    public String[] getAllowedPropertyKeys()
-    {
-        return mInnerFactory.getAllowedPropertyKeys();
-    }
-
     public TestMarketDataFeed getMarketDataFeed()
         throws MarketceteraException
     {

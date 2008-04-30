@@ -38,12 +38,6 @@ public interface IMarketDataFeedFactory<F extends IMarketDataFeed,C extends IMar
     public F getMarketDataFeed(C inCredentials)
         throws MarketceteraException;
 	/**
-     * Gets the set of properties the {@link IMarketDataFeed} can understand. 
-     *
-     * @return a <code>String[]</code> value
-	 */
-    public String[] getAllowedPropertyKeys();    
-	/**
      * Gets the data feed provider name. 
      *
      * @return a <code>String</code> value
