@@ -21,8 +21,8 @@
 
   <properties>
     <public.package>org.marketcetera</public.package>
-	<javase.version>6</javase.version>
-	<javaee.version>5</javaee.version>
+    <javase.version>6</javase.version>
+    <javaee.version>5</javaee.version>
   </properties>
 
   <dependencyManagement>
