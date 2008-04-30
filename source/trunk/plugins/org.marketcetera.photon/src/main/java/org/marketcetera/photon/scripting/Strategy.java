@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.TradeRecommendationView;

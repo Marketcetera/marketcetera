@@ -2,9 +2,7 @@ package org.marketcetera.photon.actions;
 
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,7 +52,6 @@ public class ReconnectMarketDataFeedJob extends Job {
 	protected IStatus run(IProgressMonitor monitor) {
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		Logger logger = plugin.getMainLogger();
-		Logger marketDataLogger = plugin.getMarketDataLogger();
 		if (reconnectInProgress.getAndSet(true)){
 			return Status.CANCEL_STATUS;
 		}
@@ -133,33 +130,6 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	}
 
-	private Map<String, Object> getParameters(IMarketDataFeedFactory factory, ScopedPreferenceStore store, String pluginName) {
-		String[] keys = factory.getAllowedPropertyKeys();
-		Map<String, Object> map = new HashMap<String, Object>();
-		for (String key : keys) {
-			String fqKey = key;
-			if (store.contains(fqKey)){
-				map.put(key, store.getString(fqKey));
-			}
-		}
-		return map;
-	}
-
-	private String getPreference(ScopedPreferenceStore store, String ... pieces) {
-		return store.getString(constructKey(pieces));
-	}
-
-	private String constructKey(String... pieces) {
-		StringBuilder builder = new StringBuilder();
-		int i;
-		for (i = 0; i < pieces.length-1; i++) {
-			builder.append(pieces[i]);
-			builder.append('.');
-		}
-		builder.append(pieces[i]);
-		return builder.toString();
-	}
-
 	private Set<String> getStartupFeeds() {
 		String startupString = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.MARKETDATA_STARTUP_KEY);
 		startupString.split("[\\s,]+");
@@ -168,7 +138,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	public static void disconnect(MarketDataFeedTracker marketDataFeedTracker) {
 
-		MarketDataFeedService service = (MarketDataFeedService) marketDataFeedTracker.getMarketDataFeedService();
+		MarketDataFeedService<?> service = marketDataFeedTracker.getMarketDataFeedService();
 		if (service != null){
 			ServiceRegistration serviceRegistration = service.getServiceRegistration();
 			if (serviceRegistration != null){

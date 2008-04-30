@@ -1,15 +1,6 @@
 package org.marketcetera.photon.marketdata;
 
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
