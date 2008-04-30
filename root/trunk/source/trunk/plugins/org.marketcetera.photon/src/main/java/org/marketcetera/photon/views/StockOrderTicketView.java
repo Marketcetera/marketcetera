@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import java.lang.reflect.Field;
 
-import org.eclipse.core.databinding.observable.Realm;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.viewers.IContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;

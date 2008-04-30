@@ -1,7 +1,5 @@
 package org.marketcetera.photon.marketdata;
 
-import java.util.LinkedList;
-
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.publisher.ISubscriber;
@@ -11,7 +9,6 @@ import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;

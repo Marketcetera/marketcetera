@@ -19,7 +19,6 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.jruby.bsf.JRubyPlugin;
 import org.jruby.exceptions.RaiseException;
-import org.marketcetera.marketdata.MarketDataListener;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;

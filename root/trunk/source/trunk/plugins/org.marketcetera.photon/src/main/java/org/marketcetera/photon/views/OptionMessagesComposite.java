@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import java.text.ParseException;
 import java.util.HashMap;
-import java.util.Set;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -14,7 +13,6 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.ISubscription;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.PhotonPlugin;
