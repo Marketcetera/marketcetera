@@ -4,10 +4,10 @@
  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <!--
-	- Author: tlerios
-	- Id: $Id$
-	- $License$
-	-->
+    - Author: tlerios
+    - Id: $Id$
+    - $License$
+    -->
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -213,11 +213,11 @@
             <link>http://java.sun.com/javase/${javase.version}/docs/api/</link>
             <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
             <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
-			<link>http://logging.apache.org/log4j/1.2/apidocs/</link>
-			<link>http://commons.apache.org/io/api-release/</link>
-			<link>http://commons.apache.org/lang/api-release/</link>
-			<link>http://commons.apache.org/collections/api-release/</link>
-			<link>http://commons.apache.org/vfs/apidocs/</link>
+            <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+            <link>http://commons.apache.org/io/api-release/</link>
+            <link>http://commons.apache.org/lang/api-release/</link>
+            <link>http://commons.apache.org/collections/api-release/</link>
+            <link>http://commons.apache.org/vfs/apidocs/</link>
           </links>
         </configuration>
       </plugin>

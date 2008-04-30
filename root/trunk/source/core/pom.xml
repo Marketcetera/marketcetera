@@ -4,10 +4,10 @@
  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <!--
-	- Author: tlerios
-	- Id: $Id$
-	- $License$
-	-->
+    - Author: tlerios
+    - Id: $Id$
+    - $License$
+    -->
 
   <modelVersion>4.0.0</modelVersion>
 
@@ -23,7 +23,7 @@
 
   <dependencies>
 
-	<!-- Compile. -->
+    <!-- Compile. -->
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-core</artifactId>
@@ -54,7 +54,7 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <scope>compile</scope>
-	</dependency>
+    </dependency>
 
     <!-- Testing: needs junit 3. -->
     <dependency>
