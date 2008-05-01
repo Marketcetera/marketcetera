@@ -14,7 +14,7 @@ import org.marketcetera.photon.PhotonPlugin;
  * @author gmiller
  * @see ReconnectMarketDataFeedJob#schedule()
  */
-@ClassVersion("$Id: ReconnectJMSAction.java 677 2007-01-05 01:21:20Z gmiller $")
+@ClassVersion("$Id$")
 public class ReconnectMarketDataFeedAction extends Action implements IWorkbenchAction {
 
 	public static final String ID = "org.marketcetera.photon.actions.ReconnectJMSAction";

@@ -21,7 +21,7 @@ require 'drb'
 require 'drb/acl'
 
 module Breakpoint
-  id = %q$Id: breakpoint.rb 92 2005-02-04 22:35:53Z flgr $
+  id = %q$Id$
   Version = id.split(" ")[2].to_i
 
   extend self
