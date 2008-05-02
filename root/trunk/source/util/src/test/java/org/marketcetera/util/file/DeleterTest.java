@@ -69,36 +69,42 @@ public class DeleterTest
         return TEST_ROOT+TEST_TEMPLATE_WIN32;
     }
 
-    @Test
-    public void directory()
-        throws Exception
-    {
-        String name=setupTemplate();
-        File root=new File(name);
-        Deleter.apply(root);
-        assertFalse(root.exists());
-
-        setupTemplate();
-        Deleter.apply(name);
-        assertFalse(root.exists());
-    }
-
-    @Test
-    public void file()
+    private static void single
+        (String name,
+         String resolvedName)
         throws Exception
     {
         String rootName=setupTemplate();
+        String fileName=rootName+File.separator+name;
         File root=new File(rootName);
-        String name=rootName+File.separator+TEST_PLAIN_FILE;
-        File file=new File(name);
+        File file=new File(fileName);
+        File resolvedFile=null;
+        if (resolvedName!=null) {
+            resolvedFile=new File(rootName+File.separator+resolvedName);
+        }
+
         Deleter.apply(file);
         assertTrue(root.exists());
         assertFalse(file.exists());
+        if (resolvedFile!=null) {
+            assertTrue(resolvedFile.exists());
+        }
 
         setupTemplate();
-        Deleter.apply(name);
+        Deleter.apply(fileName);
         assertTrue(root.exists());
         assertFalse(file.exists());
+        if (resolvedFile!=null) {
+            assertTrue(resolvedFile.exists());
+        }
+    }
+
+    @Test
+    public void existing()
+        throws Exception
+    {
+        single(TEST_PLAIN_DIR,null);
+        single(TEST_PLAIN_FILE,null);
     }
 
     @Test
@@ -110,92 +116,13 @@ public class DeleterTest
     }
  
     @Test
-    public void fileLink()
+    public void unixDeleter()
         throws Exception
     {
         assumeTrue(OperatingSystem.LOCAL.isUnix());
-
-        String rootName=setupTemplate();
-        String name=rootName+File.separator+TEST_FILE_LINK;
-        File root=new File(rootName);
-        File file=new File(name);
-        File resolvedFile=new File(rootName+File.separator+TEST_PLAIN_FILE);
-
-        Deleter.apply(file);
-        assertTrue(root.exists());
-        assertTrue(resolvedFile.exists());
-        assertFalse(file.exists());
-
-        setupTemplate();
-        Deleter.apply(name);
-        assertTrue(root.exists());
-        assertTrue(resolvedFile.exists());
-        assertFalse(file.exists());
-    }
-
-    @Test
-    public void dirLink()
-        throws Exception
-    {
-        assumeTrue(OperatingSystem.LOCAL.isUnix());
-
-        String rootName=setupTemplate();
-        String name=rootName+File.separator+TEST_DIR_LINK;
-        File root=new File(rootName);
-        File file=new File(name);
-        File resolvedFile=new File(rootName+File.separator+TEST_PLAIN_DIR);
-
-        Deleter.apply(file);
-        assertTrue(root.exists());
-        assertTrue(resolvedFile.exists());
-        assertFalse(file.exists());
-
-        setupTemplate();
-        Deleter.apply(name);
-        assertTrue(root.exists());
-        assertTrue(resolvedFile.exists());
-        assertFalse(file.exists());
-    }
-
-    @Test
-    public void danglingLink()
-        throws Exception
-    {
-        assumeTrue(OperatingSystem.LOCAL.isUnix());
-
-        String rootName=setupTemplate();
-        String name=rootName+File.separator+TEST_DANGLING_LINK;
-        File root=new File(rootName);
-        File file=new File(name);
-
-        Deleter.apply(file);
-        assertTrue(root.exists());
-        assertFalse(file.exists());
-
-        setupTemplate();
-        Deleter.apply(name);
-        assertTrue(root.exists());
-        assertFalse(file.exists());
-    }
-
-    @Test
-    public void recursiveLink()
-        throws Exception
-    {
-        assumeTrue(OperatingSystem.LOCAL.isUnix());
-
-        String rootName=setupTemplate();
-        String name=rootName+File.separator+TEST_RECURSIVE_LINK;
-        File root=new File(rootName);
-        File file=new File(name);
-
-        Deleter.apply(file);
-        assertTrue(root.exists());
-        assertFalse(file.exists());
-
-        setupTemplate();
-        Deleter.apply(name);
-        assertTrue(root.exists());
-        assertFalse(file.exists());
+        single(TEST_FILE_LINK,TEST_PLAIN_FILE);
+        single(TEST_DIR_LINK,TEST_PLAIN_DIR);
+        single(TEST_DANGLING_LINK,null);
+        single(TEST_RECURSIVE_LINK,null);
     }
 }
