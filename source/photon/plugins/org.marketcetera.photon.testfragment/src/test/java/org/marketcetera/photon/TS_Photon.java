@@ -140,7 +140,7 @@ public class TS_Photon {
 		}
 
 		// register mock feed
-		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(new MockMarketDataFeed(), new MockMarketDataFeedCredentials(""));
+		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(new MockMarketDataFeed());
 		bundleContext.registerService(MarketDataFeedService.class.getName(), feedService, null);
 		
 	}

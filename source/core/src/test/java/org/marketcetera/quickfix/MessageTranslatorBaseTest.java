@@ -59,7 +59,7 @@ public class MessageTranslatorBaseTest
             {
                 return null;
             }
-            public Message translate(Object inData)
+            public Message asMessage(Object inData)
                     throws MarketceteraException
             {
                 return null;

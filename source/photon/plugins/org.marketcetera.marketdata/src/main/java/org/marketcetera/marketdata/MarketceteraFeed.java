@@ -3,20 +3,26 @@ package org.marketcetera.marketdata;
 import java.io.File;
 import java.net.InetAddress;
 import java.net.URI;
-import java.util.LinkedList;
+import java.net.URISyntaxException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -26,6 +32,7 @@ import quickfix.Application;
 import quickfix.DoNotSend;
 import quickfix.FieldNotFound;
 import quickfix.FileLogFactory;
+import quickfix.Group;
 import quickfix.IncorrectDataFormat;
 import quickfix.IncorrectTagValue;
 import quickfix.Initiator;
@@ -48,17 +55,25 @@ import quickfix.field.NoMDEntryTypes;
 import quickfix.field.NoRelatedSym;
 import quickfix.field.SenderCompID;
 import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.TestMessageIndicator;
 import quickfix.field.Text;
 import quickfix.fix44.MessageFactory;
 
+/**
+ * A sample implementation of a market data feed.
+ *
+ * <p>This feed will return random market data for every symbol queried.
+ *
+ * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
+ */
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                    MarketceteraFeedCredentials,
                                    MarketceteraFeedMessageTranslator,
                                    MarketceteraFeedEventTranslator,
-                                   Object,
+                                   Message,
                                    MarketceteraFeed> 
     implements Application 
 {
@@ -67,68 +82,24 @@ public class MarketceteraFeed
 	private int serverPort;
 	private String server;
 	private SessionID sessionID;
-	private IDFactory idFactory;
+	private final IDFactory idFactory;
 	private FeedType feedType;
 	private boolean isRunning = false;
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
 	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
 	private final Logger logger;
-	private String url;
-	private FeedStatus feedStatus;
+	private final String url;
 
-	public MarketceteraFeed(String url, 
-	                        String userName, 
-	                        String password, 
-	                        Map<String, Object> properties, 
-	                        Logger logger) 
-		throws MarketceteraException 
-	{
-		super(FeedType.SIMULATED,
-		      "Marketcetera",
-			  new MarketceteraFeedCredentials(url));
-		this.logger = logger;
-		this.url = url;
-		try {
-			idFactory = new InMemoryIDFactory(System.currentTimeMillis(),"-"+ InetAddress.getLocalHost().toString());
-			URI feedURI = new URI(url);
-			if ((serverPort = feedURI.getPort()) < 0){
-				throw new MarketceteraException("Port must be defined on feed URL");
-			}
-			server = feedURI.getHost();
-			String senderCompID;
-			String targetCompID;
-			if (!properties.containsKey(SETTING_SENDER_COMP_ID)
-					|| properties.get(SETTING_SENDER_COMP_ID).toString().length()==0)
-			{
-				senderCompID = idFactory.getNext();
-			} else {
-				senderCompID = properties.get(SETTING_SENDER_COMP_ID).toString();
-			}
-			if (!properties.containsKey(SETTING_TARGET_COMP_ID))
-			{
-				throw new MarketceteraException("Must set setting "+SETTING_TARGET_COMP_ID);
-			} else {
-				targetCompID = properties.get(SETTING_TARGET_COMP_ID).toString();
-			}
-			String scheme;
-			if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ){
-				throw new MarketceteraException("Only FIX.4.4 is supported");
-			} else {
-				sessionID = new SessionID(scheme, senderCompID, targetCompID);
-			}
-		} catch (Exception e) {
-			throw new MarketceteraException(e);
-		}
-	}
-
-	public ISubscription asyncQuery(Message query) {
+	private FIXCorrelationFieldSubscription doQuery(Message query) {
 		try {
 			Integer marketDepth = null;
 			try { marketDepth = query.getInt(MarketDepth.FIELD); } catch (FieldNotFound fnf) { /* do nothing */ }
 			String reqID = addReqID(query);
 			sendMessage(query);
-			return new FIXCorrelationFieldSubscription(reqID, query.getHeader().getString(MsgType.FIELD), marketDepth);
+			return new FIXCorrelationFieldSubscription(reqID, 
+			                                           query.getHeader().getString(MsgType.FIELD), 
+			                                           marketDepth);
 		} catch (SessionNotFound e) {
 			logger.error("Session not found while trying to execute async query: "+query);
 		} catch (FieldNotFound e) {
@@ -137,13 +108,26 @@ public class MarketceteraFeed
 		return null;
 	}
 
+	private String getReqID(Message inMessage)
+	{
+	    String reqID = null;
+	    try {
+	        String msgType = inMessage.getHeader().getString(MsgType.FIELD);
+	        StringField reqIDField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
+	                                                                    msgType);
+	        reqID = inMessage.getField(reqIDField).getValue();
+	    } catch (FieldNotFound e) {}
+
+	    return reqID;
+	}
+	
 	private String addReqID(Message query) throws FieldNotFound {
-		String reqID = null;
+		String reqID = getReqID(query);
 
 		String msgType = query.getHeader().getString(MsgType.FIELD);
 		StringField reqIDField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, msgType);
 		try {
-			query.getField(reqIDField);
+			query.getField(reqIDField).toString();
 		} catch (FieldNotFound e1) {
 		}
 		if (reqIDField.getValue() == null || reqIDField.getValue().length()==0){
@@ -159,33 +143,11 @@ public class MarketceteraFeed
 		return reqID;
 	}
 
-	public void asyncUnsubscribe(ISubscription subscription) throws MarketceteraException {
-		if (subscription instanceof FIXCorrelationFieldSubscription) {
-			FIXCorrelationFieldSubscription mSubscription = (FIXCorrelationFieldSubscription) subscription;
-			Message message = messageFactory.create("", mSubscription.getSubscribeMsgType());
-			StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, mSubscription.getSubscribeMsgType());
-			correlationID.setValue(mSubscription.toString());
-
-			message.setField(correlationID);
-			message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
-			message.setField(new NoRelatedSym(0));
-			message.setField(new NoMDEntryTypes(0));
-			if (mSubscription.getMarketDepth() != null){
-				message.setField(new MarketDepth(mSubscription.getMarketDepth()));
-			}
-			try {
-                sendMessage(message);
-            } catch (SessionNotFound e) {
-				throw new MarketceteraException(e);
-			}
-		} else {
-			// Ignore
-		}
-	}
-
-    /** Delegating to a method so that subclasses can override in tests */
-    protected void sendMessage(Message message) throws SessionNotFound {
-        Session.sendToTarget(message, sessionID);
+    private void sendMessage(Message message) 
+        throws SessionNotFound 
+    {
+        Session.sendToTarget(message, 
+                             sessionID);
     }
 
     public MSymbol symbolFromString(String symbolString) {
@@ -195,36 +157,16 @@ public class MarketceteraFeed
 		return new MSymbol(symbolString);
 	}
 
-	public List<Message> syncQuery(Message query, long timeout, TimeUnit units) throws TimeoutException, MarketceteraException {
-		String reqID;
-		try {
-			reqID = addReqID(query);
-		} catch (FieldNotFound fnf) {
-			throw new MarketceteraException(fnf);
-		}
-		Exchanger<Message> exchanger = new Exchanger<Message>();
-		synchronized (pendingRequests) {
-			pendingRequests.put(reqID, exchanger);
-		}
-		asyncQuery(query);
-		LinkedList<Message> linkedList = new LinkedList<Message>();
-		try {
-			linkedList.add(exchanger.exchange(null, timeout, units));
-		} catch (InterruptedException e) {
-			return null;
-		}
-		return linkedList;
-	}
-
-	public boolean isRunning() {
+	public boolean isRunning() 
+	{
 		return isRunning;
 	}
 
-	public void start() {
-
-		synchronized (this){
+	public void start() 
+	{
+		synchronized(this) {
 			try {
-				if (!isRunning){
+				if (!isRunning) {
 					logger.info("Starting connection to: "+url);
 					MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
 					SessionSettings sessionSettings;
@@ -240,7 +182,6 @@ public class MarketceteraFeed
 					}
 					sessionSettings.setString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH, quoteFeedLogDir.getCanonicalPath());
 	
-	//				LogFactory logFactory = new FileLogFactory(sessionSettings);
 					LogFactory logFactory = new EventLogFactory(sessionSettings);
 					messageFactory = new MessageFactory();
 					socketInitiator = new SocketInitiator(this, messageStoreFactory, sessionSettings, logFactory, messageFactory);
@@ -254,33 +195,33 @@ public class MarketceteraFeed
 		}
 	}
 
-	public void stop() {
-		synchronized (this) {
-			if (isRunning){
+	public void stop() 
+	{
+		synchronized(this) {
+			if (isRunning) {
 				logger.info("Stopping connection to: "+url);
 				socketInitiator.stop(true);
 			}
 		}
 	}
-
-
 	// quickfix.Application methods
-	public void fromAdmin(Message message, SessionID sessionID)
-			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue,
-			RejectLogon {
+	public void fromAdmin(Message message, 
+	                      SessionID sessionID)
+			throws FieldNotFound, IncorrectDataFormat, IncorrectTagValue,RejectLogon 
+	{
 		Header header = message.getHeader();
 		String msgType = header.getString(MsgType.FIELD);
 		if (MsgType.LOGON.equals(msgType)) {
 			try {
-				boolean testMessageIndicator = header
-						.getBoolean(TestMessageIndicator.FIELD);
+				boolean testMessageIndicator = header.getBoolean(TestMessageIndicator.FIELD);
+				// TODO bolt this into the abstract feed parent 
 				feedType = testMessageIndicator ? FeedType.SIMULATED
-						: FeedType.LIVE;
+				                                : FeedType.LIVE;
 			} catch (FieldNotFound fnf) {
 				feedType = FeedType.LIVE;
 			}
 			logger.info("Marketcetera feed received Logon");
-		} else if (MsgType.LOGOUT.equals(msgType)){
+		} else if (MsgType.LOGOUT.equals(msgType)) {
 			String text = "";
 			try {
 				text = ": "+message.getString(Text.FIELD);
@@ -342,118 +283,261 @@ public class MarketceteraFeed
 	}
 	private void fireMarketDataMessage(Message refresh) 
 	{
+	    String symbol;
+	    try {
+            symbol = refresh.getString(Symbol.FIELD);
+        } catch (FieldNotFound e) {
+            symbol = UNKNOWN_SYMBOL;
+        }
+        logger.debug(String.format("MarketceteraFeed received response for handle %s",
+                                   symbol));
+	    dataReceived(symbol, 
+	                 refresh);
 	}
-
+	private MarketceteraFeed(String inProviderName,
+	                         MarketceteraFeedCredentials inCredentials) 
+	    throws URISyntaxException, MarketceteraException
+	{
+	    super(FeedType.UNKNOWN,
+	          inProviderName,
+	          inCredentials);
+        PhotonPlugin plugin = PhotonPlugin.getDefault();
+        logger = plugin.getMainLogger();
+        url = inCredentials.getURL();
+        try {
+            idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
+                                              String.format("-%s",
+                                                            InetAddress.getLocalHost().toString()));
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException(e);
+        }
+        URI feedURI = new URI(url);
+        if ((serverPort = feedURI.getPort()) < 0){
+            throw new MarketceteraException("Port must be defined on feed URL");
+        }
+        server = feedURI.getHost();
+        String senderCompID = inCredentials.getSenderCompID();
+        if (senderCompID == null || 
+                senderCompID.length() == 0) {
+                senderCompID = idFactory.getNext();
+            }
+        String targetCompID = inCredentials.getTargetCompID();
+        String scheme;
+        if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ) {
+            throw new MarketceteraException("Only FIX.4.4 is supported");
+        } else {
+            sessionID = new SessionID(scheme, 
+                                      senderCompID, 
+                                      targetCompID);
+        }
+	}
+	/**
+	 * used in a message that does not contain a symbol
+	 */
+    private static final String UNKNOWN_SYMBOL = "unknown";
+	/**
+	 * singleton instance of the marketcetera feed
+	 */
+	private static MarketceteraFeed sInstance;
     /**
-     * @param inProviderName
-     * @param inCredentials
-     * @return
+     * Gets an instance of <code>MarketceteraFeed</code>.
+     * 
+     * @param inProviderName a <code>String</code> value
+     * @param inCredentials a <code>MarketceteraFeedCredentials</code> value
+     * @return a <code>MarketceteraFeed</code> value
+     * @throws MarketceteraException 
+     * @throws URISyntaxException 
      */
     public static MarketceteraFeed getInstance(String inProviderName,
                                                MarketceteraFeedCredentials inCredentials)
-        throws NoMoreIDsException
+        throws URISyntaxException, MarketceteraException
     {
-        // TODO Auto-generated method stub
-        return null;
+        if(sInstance != null) {
+            return sInstance;
+        }
+        sInstance = new MarketceteraFeed(inProviderName,
+                                         inCredentials);
+        return sInstance;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doCancel(java.lang.String)
      */
     @Override
     protected void doCancel(String inHandle)
     {
-        // TODO Auto-generated method stub
-        
+        logger.debug(String.format("Marketcetera feed cancelling subscriptions for handle %s",
+                                   inHandle));
+        List<FIXCorrelationFieldSubscription> subscriptions = removeSubscriptions(inHandle);
+        logger.debug(String.format("Marketcetera feed found %d subscription(s) for handle %s",
+                                   subscriptions.size(),
+                                   inHandle));
+        for(FIXCorrelationFieldSubscription subscription : subscriptions) {
+            Message message = messageFactory.create("", 
+                                                    subscription.getSubscribeMsgType());
+            StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
+                                                                           subscription.getSubscribeMsgType());
+            correlationID.setValue(subscription.toString());
+            logger.debug(String.format("Marketcetera feed sending cancel request for %s",
+                                       correlationID));
+            message.setField(correlationID);
+            message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
+            message.setField(new NoRelatedSym(0));
+            message.setField(new NoMDEntryTypes(0));
+            if (subscription.getMarketDepth() != null) {
+                message.setField(new MarketDepth(subscription.getMarketDepth()));
+            }
+            try {
+                sendMessage(message);
+            } catch (SessionNotFound e) {
+                throw new IllegalArgumentException(e);
+            }
+        }
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doDerivativeSecurityListRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doDerivativeSecurityListRequest(Object inData) throws FeedException
+    protected List<String> doDerivativeSecurityListRequest(Message inData) 
+        throws FeedException
     {
         // TODO Auto-generated method stub
         return null;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     @Override
     protected boolean doLogin(MarketceteraFeedCredentials inCredentials)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogout()
      */
     @Override
     protected void doLogout()
     {
-        // TODO Auto-generated method stub
-        
     }
-
+    private final Map<String,List<FIXCorrelationFieldSubscription>> mSubscriptionsBySymbol = new HashMap<String,List<FIXCorrelationFieldSubscription>>();    
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doMarketDataRequest(Object inData) throws FeedException
+    protected List<String> doMarketDataRequest(Message inData) 
+        throws FeedException
     {
-        // TODO Auto-generated method stub
-        return null;
+        try {
+            logger.debug(String.format("MarketceteraFeed received market data request %s",
+                                       inData));
+            List<String> handles = new ArrayList<String>();
+            List<Group> groups = AbstractMessageTranslator.getGroups(inData);
+            for(Group group : groups) {
+                MSymbol symbol = AbstractMessageTranslator.getSymbol(group);
+                if(LoggerAdapter.isDebugEnabled(this)) {
+                    LoggerAdapter.debug("Found group with symbol: " + symbol,
+                                        this);
+                }
+                handles.add(symbol.getBaseSymbol());
+            }
+            addSubscription(doQuery(inData),
+                            handles);
+            logger.debug(String.format("MarketceteraFeed posted query and received handle(s) %s",
+                                       Arrays.toString(handles.toArray())));
+            return handles;
+        } catch (Throwable t) {
+            throw new FeedException(t);
+        }
     }
-
+    /**
+     * Associates the given request handles with the given subscription object.
+     * 
+     * @param inSub a <code>FIXCorrelationFieldSubscription</code> value
+     * @param inHandles a <code>List&lt;String&gt;</code> value
+     */
+    private void addSubscription(FIXCorrelationFieldSubscription inSub,
+                                 List<String> inHandles)
+    {
+        synchronized(mSubscriptionsBySymbol) {
+            for(String handle : inHandles) {
+                List<FIXCorrelationFieldSubscription> subs = mSubscriptionsBySymbol.get(handle);
+                if(subs == null) {
+                    subs = new ArrayList<FIXCorrelationFieldSubscription>();
+                    mSubscriptionsBySymbol.put(handle, 
+                                               subs);
+                }
+                logger.debug(String.format("MarketceteraFeed associating subscription %s to symbol %s",
+                                           inSub.getCorrelationFieldValue(),
+                                           handle));
+                subs.add(inSub);
+            }
+        }
+    }
+    /**
+     * the default list returned representing no subscriptions
+     */
+    private static final List<FIXCorrelationFieldSubscription> EMPTY_SUBSCRIPTION_LIST = new ArrayList<FIXCorrelationFieldSubscription>();
+    /**
+     * Removes all subscriptions for the given handle.
+     * 
+     * @param inHandle a <code>String</code> value
+     * @return a <code>List&lt;FIXCorrelationFieldSubscription&gt;</code> value
+     */
+    private List<FIXCorrelationFieldSubscription> removeSubscriptions(String inHandle)
+    {
+        List<FIXCorrelationFieldSubscription> listToReturn;
+        synchronized(mSubscriptionsBySymbol) {
+            List<FIXCorrelationFieldSubscription> subs = mSubscriptionsBySymbol.get(inHandle);
+            if(subs == null) {
+                return EMPTY_SUBSCRIPTION_LIST;
+            } else {
+                listToReturn = new ArrayList<FIXCorrelationFieldSubscription>(subs);
+                subs.clear();
+            }
+            return listToReturn;
+        }
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doSecurityListRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doSecurityListRequest(Object inData) throws FeedException
+    protected List<String> doSecurityListRequest(Message inData) 
+        throws FeedException
     {
         // TODO Auto-generated method stub
         return null;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)
      */
     @Override
-    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec<MarketceteraFeedCredentials> inTokenSpec) throws FeedException
+    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec<MarketceteraFeedCredentials> inTokenSpec) 
+        throws FeedException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return MarketceteraFeedToken.getToken(inTokenSpec, 
+                                              this);
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getEventTranslator()
      */
     @Override
     protected MarketceteraFeedEventTranslator getEventTranslator()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return MarketceteraFeedEventTranslator.getInstance();
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getMessageTranslator()
      */
     @Override
     protected MarketceteraFeedMessageTranslator getMessageTranslator()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return MarketceteraFeedMessageTranslator.getInstance();
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     @Override
     protected boolean isLoggedIn(MarketceteraFeedCredentials inCredentials)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return isRunning;
     }
 }

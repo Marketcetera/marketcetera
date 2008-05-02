@@ -94,7 +94,7 @@ public class MockMarketDataFeed extends AbstractMarketDataFeed<MockMarketDataFee
 		BundleContext bundleContext = PhotonPlugin.getDefault()
 				.getBundleContext();
 		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(
-				new MockMarketDataFeed(), new MockMarketDataFeedCredentials(""));
+				new MockMarketDataFeed());
 		bundleContext.registerService(MarketDataFeedService.class.getName(),
 				feedService, null);
 		return feedService;

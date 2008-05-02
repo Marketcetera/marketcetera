@@ -1,5 +1,7 @@
 package org.marketcetera.marketdata;
 
+import java.net.URISyntaxException;
+
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
 
@@ -32,6 +34,8 @@ public class MarketceteraFeedFactory
             return MarketceteraFeed.getInstance(getProviderName(),
                                                 inCredentials);
         } catch (NoMoreIDsException e) {
+            throw new FeedException(e);
+        } catch (URISyntaxException e) {
             throw new FeedException(e);
         }
     }

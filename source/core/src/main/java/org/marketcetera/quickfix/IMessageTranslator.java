@@ -30,6 +30,6 @@ public interface IMessageTranslator<T>
      * @return a <code>Message</code> value
      * @throws MarketceteraException if the message cannot be translated
      */
-    public Message translate(T inData)
+    public Message asMessage(T inData)
         throws MarketceteraException;
 }

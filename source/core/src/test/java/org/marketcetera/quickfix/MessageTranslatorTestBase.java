@@ -44,7 +44,7 @@ public abstract class MessageTranslatorTestBase<T>
         return sSuite;
     }
     
-    public static Test suite(Class inClass) 
+    public static Test suite(Class<?> inClass) 
     {
         sSuite = new TestSuite(inClass);
         return sSuite;
@@ -78,7 +78,7 @@ public abstract class MessageTranslatorTestBase<T>
         //  no more than that
         assertNotNull(xlatedMessage);
         // translate the given object back into FIX representation
-        Message newMessage = translator.translate(xlatedMessage);
+        Message newMessage = translator.asMessage(xlatedMessage);
         // we can say a lot more about the white box FIX representation
         // first, is it non-null
         assertNotNull(newMessage);
@@ -107,7 +107,7 @@ public abstract class MessageTranslatorTestBase<T>
             protected void execute()
                     throws Throwable
             {
-                translator.translate((T)null);
+                translator.asMessage((T)null);
             }            
         }.run();
     }

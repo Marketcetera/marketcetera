@@ -4,6 +4,7 @@
    <extension
          point="org.marketcetera.photon.marketdatafeed">
       <feed
+            credentialsFactoryClass="org.marketcetera.bogusfeed.BogusFeedCredentials"
             feedFactoryClass="org.marketcetera.bogusfeed.BogusFeedFactory"/>
    </extension>
 
