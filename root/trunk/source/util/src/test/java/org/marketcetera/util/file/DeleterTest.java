@@ -28,11 +28,11 @@ public class DeleterTest
         "a.txt";
     private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
-
     private static final String TEST_FILE_LINK=
-        TEST_ROOT+"file_link";
+        "file_link";
     private static final String TEST_DIR_LINK=
-        TEST_ROOT+"dir_link";
+        "dir_link";
+
     private static final String TEST_DANGLING_LINK=
         TEST_ROOT+"dangling_link";
     private static final String TEST_RECURSIVE_LINK=
@@ -111,8 +111,42 @@ public class DeleterTest
     }
 
     @Test
-    public void unixTypes()
+    public void fileLink()
+        throws Exception
     {
         assumeTrue(OperatingSystem.LOCAL.isUnix());
+
+        String rootName=setupTemplate();
+        File root=new File(rootName);
+        String name=rootName+File.separator+TEST_FILE_LINK;
+        File file=new File(name);
+        Deleter.apply(file);
+        assertTrue(root.exists());
+        assertFalse(file.exists());
+
+        setupTemplate();
+        Deleter.apply(name);
+        assertTrue(root.exists());
+        assertFalse(file.exists());
+    }
+
+    @Test
+    public void dirLink()
+        throws Exception
+    {
+        assumeTrue(OperatingSystem.LOCAL.isUnix());
+
+        String rootName=setupTemplate();
+        File root=new File(rootName);
+        String name=rootName+File.separator+TEST_DIR_LINK;
+        File file=new File(name);
+        Deleter.apply(file);
+        assertTrue(root.exists());
+        assertFalse(file.exists());
+
+        setupTemplate();
+        Deleter.apply(name);
+        assertTrue(root.exists());
+        assertFalse(file.exists());
     }
 }
