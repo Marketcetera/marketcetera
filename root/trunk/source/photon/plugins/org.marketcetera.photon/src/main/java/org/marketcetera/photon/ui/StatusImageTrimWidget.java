@@ -145,15 +145,18 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 		super.finalize();
 	}
 
-	protected void serviceChanged(Object service) {
+	private void serviceChanged(Object service) 
+	{
 		FeedStatus theStatus = getServiceStatus(service);
 		updateStatus(theStatus);
 	}
 
-	private FeedStatus getServiceStatus(Object service) {
+	private FeedStatus getServiceStatus(Object service) 
+	{
 		FeedStatus theStatus = FeedStatus.UNKNOWN;
-		if (service != null && service instanceof IFeedComponent){
-			IFeedComponent feedComponent = ((IFeedComponent)service);
+		if (service != null && 
+		    service instanceof IFeedComponent) {
+			IFeedComponent feedComponent = (IFeedComponent)service;
 			feedID = feedComponent.getID();
 			theStatus = feedComponent.getFeedStatus();
 		}
@@ -167,35 +170,55 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	 * @param aStatus the status for which to get an image.
 	 * @return the image associated with the given status
 	 */
-	protected Image getStatusImage(FeedStatus aStatus) {
-		if (aStatus == null){
+	private Image getStatusImage(FeedStatus aStatus) 
+	{
+		if (aStatus == null) {
 			return nullStatusImage;
 		}
 		Image theImage = statusImageMap.get(aStatus);
 		return theImage;
 	}
 
-	private void updateStatus() {
+	private void updateStatus() 
+	{
 		FeedStatus feedStatus = getServiceStatus(serviceTracker.getService());
 		updateStatus(feedStatus);
 	}
 	
-	private void updateStatus(final FeedStatus aStatus) {
-		if (imageLabel == null)
+	private static final String EMPTY_WIDGET_NAME = " ";	
+	/**
+	 * Updates the image associated with this service based on the given status.
+	 * 
+	 * @param aStatus a <code>FeedStatus</code> value
+	 */
+	private void updateStatus(final FeedStatus aStatus) 
+	{
+		if (imageLabel == null) {
 			return;
-
+		}
+		// make sure the UI is updated from the correct UI thread - this incantation guarantees that
+		//  but it does not guarantee exactly *when* it will get updated
 		Display.getDefault().asyncExec(new Runnable() {
 			public void run() {
-				if (!imageLabel.isDisposed()){
+			    // if the view containing the image is no longer alive, don't try to update anything
+				if (!imageLabel.isDisposed()) {
+				    // the view is alive
+				    // update the image with the correct picture based on the status
 					imageLabel.setImage(getStatusImage(aStatus));
-					String statusString = aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name();
-					String nameString = feedID==null ? " " : " \""+ feedID +"\" ";
-					imageLabel.setToolTipText(name + nameString + statusString);
+					// the status has a string associated with it, use that to describe the status of the image in the UI
+					String statusString = (aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name());
+					// use the feedID or a place holder to label the status
+					String nameString = (feedID == null ? EMPTY_WIDGET_NAME : String.format(" \"%s\" ", 
+					                                                                        feedID));
+					// put it all together
+					imageLabel.setToolTipText(String.format("%s%s%s",
+					                                        name,
+					                                        nameString,
+					                                        statusString));
 				}
 			}
 		});
 	}
-
 
 	private final class StatusLineServiceTracker extends ServiceTracker {
 		private StatusLineServiceTracker(BundleContext context, String clazz, ServiceTrackerCustomizer customizer) {

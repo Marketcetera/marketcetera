@@ -35,7 +35,7 @@ public class TestMessageTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
      */
-    public Message translate(String inData)
+    public Message asMessage(String inData)
             throws MarketceteraException
     {
         return null;

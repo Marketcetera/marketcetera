@@ -42,7 +42,7 @@ public class BogusFeedMessageTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
      */
-    public Message translate(BogusMessage inData)
+    public Message asMessage(BogusMessage inData)
             throws MarketceteraException
     {
         return inData.getAsMessage();

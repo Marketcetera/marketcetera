@@ -12,7 +12,7 @@ public class MockMarketDataFeedMessageTranslator extends
 		return message;
 	}
 	
-	public Message translate(Object obj) throws MarketceteraException {
+	public Message asMessage(Object obj) throws MarketceteraException {
 		return (Message)obj;
 	}
 }

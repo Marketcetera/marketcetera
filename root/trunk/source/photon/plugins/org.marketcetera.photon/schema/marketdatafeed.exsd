@@ -54,7 +54,7 @@
                </appInfo>
             </annotation>
          </attribute>
-         <attribute name="credentialsFactoryClass" type="string">
+         <attribute name="credentialsFactoryClass" type="string" use="required">
             <annotation>
                <documentation>
                   

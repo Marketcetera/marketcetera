@@ -1,6 +1,7 @@
 package org.marketcetera.photon.actions;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -23,9 +24,7 @@ import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.AbstractMarketDataFeedPreferencePage;
 import org.marketcetera.photon.marketdata.IMarketDataConstants;
-import org.marketcetera.photon.marketdata.IMarketDataFeedCredentialsFactory;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -49,7 +48,8 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	@SuppressWarnings("unchecked") // cast on Class.forName()
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
+	protected IStatus run(IProgressMonitor monitor) 
+	{
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
 		Logger logger = plugin.getMainLogger();
 		if (reconnectInProgress.getAndSet(true)){
@@ -62,50 +62,79 @@ public class ReconnectMarketDataFeedJob extends Job {
 			logger.warn("Could not disconnect from quote feed");
 		}
 		try {
-
 			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
-	    	IExtensionPoint extensionPoint =
-	    	extensionRegistry.getExtensionPoint(IMarketDataConstants.EXTENSION_POINT_ID);
+	    	IExtensionPoint extensionPoint = extensionRegistry.getExtensionPoint(IMarketDataConstants.EXTENSION_POINT_ID);
 	    	IExtension[] extensions = extensionPoint.getExtensions();
 
 	    	Set<String> startupFeeds = getStartupFeeds();
 
-	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: examining "+extensions.length+" extensions"); }
-	    	if (extensions != null && extensions.length > 0)
-	    	{
-	    		for (IExtension anExtension : extensions) {
+	    	if (logger.isDebugEnabled()) { 
+	    	    logger.debug(String.format("Marketdata: examining %d extensions",
+	    	                               extensions.length)); 
+	    	}
+	    	if (extensions != null && 
+	    	    extensions.length > 0) {
+	    		for(IExtension anExtension : extensions) {
 	    			String pluginName = anExtension.getContributor().getName();
 					if (startupFeeds.contains(pluginName)) {
 				    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: using "+pluginName); }
 		    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
 			    		IConfigurationElement feedElement = configurationElements[0];
-			    		String feedFactoryClassName = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);
-			    		String credentialsFactoryClassName = feedElement.getAttribute(IMarketDataConstants.CREDENTIALS_FACTORY_CLASS_ATTRIBUTE);
-
-			    		Class<IMarketDataFeedFactory> feedClass = (Class<IMarketDataFeedFactory>) Class.forName(feedFactoryClassName, true, PhotonPlugin.class.getClassLoader());
-			    		Constructor<IMarketDataFeedFactory> feedConstructor = feedClass.getConstructor( new Class[0] );
-			    		IMarketDataFeedFactory feedFactory = feedConstructor.newInstance(new Object[0]);
-
-			    		IMarketDataFeedCredentials credentials = null;
-			    		ScopedPreferenceStore store = new ScopedPreferenceStore(new InstanceScope(), pluginName);
+			    		// construct the market data feed factory corresponding to this extension
+			    		String feedFactoryClassName = feedElement.getAttribute(IMarketDataConstants.FEED_FACTORY_CLASS_ATTRIBUTE);                        
+			    		Class<IMarketDataFeedFactory> feedClass = (Class<IMarketDataFeedFactory>)Class.forName(feedFactoryClassName, 
+			    		                                                                                       true, 
+			    		                                                                                       PhotonPlugin.class.getClassLoader());
+			    		Constructor<IMarketDataFeedFactory> feedConstructor;
 			    		try {
-				    		Class<IMarketDataFeedCredentialsFactory> credentialsClass = (Class<IMarketDataFeedCredentialsFactory>) Class.forName(credentialsFactoryClassName, true, PhotonPlugin.class.getClassLoader());
-				    		Constructor<IMarketDataFeedCredentialsFactory> credentialsConstructor = credentialsClass.getConstructor( new Class[0] );
-				    		IMarketDataFeedCredentialsFactory credentialsFactory = credentialsConstructor.newInstance(new Object[0]);
-	
-							credentials = credentialsFactory.getCredentials(store);
-			    		} catch (Throwable t) {
-			    			logger.warn("Exception generating credentials for "+pluginName, t);
+			    		    feedConstructor = feedClass.getConstructor( new Class[0] );
+			    		} catch (NoSuchMethodException e) {
+			    		    logger.error(String.format("There must exist a default constructor which takes no arguments for feed factory class %s",
+			    		                               feedFactoryClassName));
+			    		    throw e;
 			    		}
+                        IMarketDataFeedFactory feedFactory = feedConstructor.newInstance(new Object[0]);
+			    		logger.debug(String.format("Feedfactory %s created",
+			    		                           feedFactory));
+			    		// now construct the credentials object for this feed
+                        String credentialsFactoryClassName = feedElement.getAttribute(IMarketDataConstants.CREDENTIALS_FACTORY_CLASS_ATTRIBUTE);
+			    		Class<IMarketDataFeedCredentials> credentialsClass = (Class<IMarketDataFeedCredentials>)Class.forName(credentialsFactoryClassName, 
+			    		                                                                                                      true, 
+			    		                                                                                                      PhotonPlugin.class.getClassLoader());
+			    		// retrieve the scoped preferences 
+			    		ScopedPreferenceStore preferences = new ScopedPreferenceStore(new InstanceScope(),
+			    		                                                              pluginName);
+			    		logger.debug(String.format("Retrieved preferences %s for plugin: %s",
+			    		                           preferences,
+			    		                           pluginName));
+			    		// execute a static getter to create the credentials object
+			    		Method credentialsGetter;
+                        try {
+                            credentialsGetter = credentialsClass.getMethod("getInstance", 
+                                                                           new Class[] { ScopedPreferenceStore.class } );
+                        } catch (NoSuchMethodException e) {
+                            logger.error(String.format("There must exist a static method named \"getInstance(ScopedPreferenceStore)\" for credentials class %s",
+                                                       credentialsFactoryClassName));
+                            throw e;
+                        }
+                        IMarketDataFeedCredentials credentials = (IMarketDataFeedCredentials)credentialsGetter.invoke(credentialsClass,
+                                                                                                                      preferences);
+			    		logger.debug(String.format("Credentials %s created",
+			    		                           credentials));
+			    		// create the feed object itself
 			    		IMarketDataFeed targetQuoteFeed = feedFactory.getMarketDataFeed(credentials);
-			    		
-		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed, AbstractMarketDataFeedPreferencePage.getCredentialsForFeed("Yahoo!"));
+			    		logger.debug(String.format("Market feed %s created",
+			    		                           targetQuoteFeed));
+		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
 		    			marketDataFeedService.afterPropertiesSet();
 			    		// Quote feed must be started before registration so
 						// that resubscription works properly. See bug #213.
 			    		targetQuoteFeed.start();
-		    			
-						ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), marketDataFeedService, null);
+			    		logger.debug(String.format("Market feed %s started",
+			    		                           targetQuoteFeed));
+						ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), 
+						                                                                 marketDataFeedService, 
+						                                                                 null);
 		    			marketDataFeedService.setServiceRegistration(registration);
 		    			succeeded = true;
 		    			break;
@@ -116,8 +145,10 @@ public class ReconnectMarketDataFeedJob extends Job {
 			}
 	
 	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: done examining "+extensions.length+" extensions"); }
-		} catch (Exception e) {
-			logger.error("Exception connecting to market data feed: "+e.getMessage(), e);
+		} catch (Throwable t) {
+			logger.error(String.format("Exception connecting to market data feed: %s",
+			                           t.getMessage()), 
+			             t);
 			return Status.CANCEL_STATUS;
 		} finally {
 			reconnectInProgress.set(false);

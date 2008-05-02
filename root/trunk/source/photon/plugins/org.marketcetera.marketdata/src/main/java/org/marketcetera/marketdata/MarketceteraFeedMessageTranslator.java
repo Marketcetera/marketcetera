@@ -13,25 +13,31 @@ import quickfix.Message;
  *
  */
 public class MarketceteraFeedMessageTranslator
-    extends AbstractMessageTranslator<Object>
+    extends AbstractMessageTranslator<Message>
 {
-
+    private static final MarketceteraFeedMessageTranslator sInstance = new MarketceteraFeedMessageTranslator();
+    static MarketceteraFeedMessageTranslator getInstance()
+    {
+        return sInstance;
+    }
+    private MarketceteraFeedMessageTranslator()
+    {        
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(quickfix.Message)
      */
-    public Object translate(Message inMessage) throws MarketceteraException
+    public Message translate(Message inMessage) 
+        throws MarketceteraException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return inMessage;
     }
 
     /* (non-Javadoc)
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
      */
-    public Message translate(Object inData) throws MarketceteraException
+    public Message asMessage(Message inData) 
+        throws MarketceteraException
     {
-        // TODO Auto-generated method stub
-        return null;
+        return inData;
     }
-
 }

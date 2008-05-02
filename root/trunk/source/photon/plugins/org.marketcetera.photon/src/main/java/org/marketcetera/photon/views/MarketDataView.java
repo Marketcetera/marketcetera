@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -23,7 +22,6 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
-import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
@@ -328,24 +326,26 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	private void updateQuote(final Message quote) 
 	{
 	    try {
-            mListLocker.executeRead(new Callable<Object>() {
+            mListLocker.executeWrite(new Callable<Object>() {
                 public Object call() 
                     throws Exception
                 {
                     EventList<MessageHolder> list = getInput();
-                    
                     int i = 0;
                     for (MessageHolder holder : list) {
                         Message message = holder.getMessage();
                         try {
                             if (message.getString(Symbol.FIELD).equals(quote.getString(Symbol.FIELD))) {
                                 IncomingMessageHolder newHolder = new IncomingMessageHolder(quote);
-                                getMessagesViewer().update(newHolder, null);
+                                list.set(i, 
+                                         newHolder);
+                                getMessagesViewer().update(newHolder, 
+                                                           null);
                             }               
                         } catch (FieldNotFound e) {
                             throw e;
                         }
-                        i++;
+                        i += 1;
                     }
                     return null;
                 }	        
@@ -518,19 +518,40 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 		
 	}
 
-	private void doUnsubscribe(MSymbol symbol) {
-		tokenMap.remove(symbol).unsubscribe(this);
+	private void doUnsubscribe(MSymbol symbol) 
+	{
+	    IMarketDataFeedToken<?> token = tokenMap.remove(symbol);
+	    if(token != null) {
+	        PhotonPlugin.getMainConsoleLogger().debug(String.format("Unsubscribing to updates for %s",
+	                                                                symbol));
+	        token.cancel();
+	    } else {
+            PhotonPlugin.getMainConsoleLogger().warn(String.format("Cannot unsubscribe to %s - no record of subscription",
+                                                                    symbol));
+	    }
 	}
 
-	private void doSubscribe(MSymbol symbol) {
+	private void doSubscribe(MSymbol symbol) 
+	{
 		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
 		try {
-			if (service == null){
+			if (service == null) {
 				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
 			} else {
 				Message newSubscribeBBO = MarketDataUtils.newSubscribeBBO(symbol);
-				newSubscribeBBO.setField(new MDReqID(PhotonPlugin.getDefault().getIDFactory().getNext()));
-				service.execute(newSubscribeBBO, this);
+				// this odd try/catch accounts for the equally odd behavior of the id factory.
+				//  it may throw an exception the first time around but will subsequently
+				//  be capable of returning ids.  weird.
+				String id;
+				try {
+				    id = PhotonPlugin.getDefault().getIDFactory().getNext();
+				} catch (Throwable t) {
+				    id = PhotonPlugin.getDefault().getIDFactory().getNext();
+				}
+				newSubscribeBBO.setField(new MDReqID(id));
+				tokenMap.put(symbol, 
+				             service.execute(newSubscribeBBO, 
+				                             this));
 				getMessagesViewer().refresh();
 			}
 		} catch (MarketceteraException e) {
@@ -554,12 +575,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	}
 
 	public void publishTo(Object aQuote) {
-	    System.out.println(System.nanoTime() + " published " + aQuote);
 		Message message;
 		if (aQuote instanceof SymbolExchangeEvent){
-		    if(aQuote instanceof TradeEvent) {
-		        System.out.println("Price is " + ((TradeEvent)aQuote).getPrice());
-		    }
 			message = ((SymbolExchangeEvent) aQuote).getFIXMessage();
 		} else {
 			message = (Message) aQuote;
@@ -569,32 +586,6 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	
     public void onQuote(final Message aQuote) {
         Display theDisplay = Display.getDefault();
-        try {
-            mListLocker.executeWrite(new Callable<Object>() {
-                public Object call() 
-                    throws Exception
-                {
-                    List<MessageHolder> list = getInput();
-                    int i = 0;
-                    for (MessageHolder holder : list) {
-                        Message message = holder.getMessage();
-                        try {
-                            if (message.getString(Symbol.FIELD).equals(aQuote.getString(Symbol.FIELD))) {
-                                IncomingMessageHolder newHolder = new IncomingMessageHolder(aQuote);
-                                System.out.println("Setting list item " + i + " to " + aQuote);
-                                list.set(i, 
-                                         newHolder);
-                            }               
-                        } catch (FieldNotFound e) {
-                        }
-                        i++;
-                    }
-                    return null;
-                }});
-        } catch (Exception e1) {
-            PhotonPlugin.getMainConsoleLogger().error(e1);
-        }
-
         if (theDisplay.getThread() == Thread.currentThread()){
             updateQuote(aQuote);
         } else {			
@@ -604,8 +595,8 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
                     if (!getMessagesViewer().getTable().isDisposed()) {
                         try {
                             updateQuote(aQuote);
-                        } catch (Exception e) {
-                            PhotonPlugin.getMainConsoleLogger().error(e);
+                        } catch (Throwable t) {
+                            PhotonPlugin.getMainConsoleLogger().error(t);
                         }
                     }
                 }
