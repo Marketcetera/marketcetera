@@ -26,19 +26,18 @@ public class DeleterTest
         "unix";
     private static final String TEST_PLAIN_FILE=
         "a.txt";
+    private static final String TEST_PLAIN_DIR=
+        "a";
     private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE_LINK=
         "file_link";
     private static final String TEST_DIR_LINK=
         "dir_link";
-
     private static final String TEST_DANGLING_LINK=
-        TEST_ROOT+"dangling_link";
+        "dangling_link";
     private static final String TEST_RECURSIVE_LINK=
-        TEST_ROOT+"recursive_link";
-    private static final String TEST_NO_PERMISSIONS=
-        "/dev/null";
+        "recursive_link";
 
     private static String setupTemplate()
         throws I18NException
@@ -109,7 +108,7 @@ public class DeleterTest
         Deleter.apply(new File(TEST_NONEXISTENT_FILE));
         Deleter.apply(TEST_NONEXISTENT_FILE);
     }
-
+ 
     @Test
     public void fileLink()
         throws Exception
@@ -117,9 +116,58 @@ public class DeleterTest
         assumeTrue(OperatingSystem.LOCAL.isUnix());
 
         String rootName=setupTemplate();
-        File root=new File(rootName);
         String name=rootName+File.separator+TEST_FILE_LINK;
+        File root=new File(rootName);
         File file=new File(name);
+        File resolvedFile=new File(rootName+File.separator+TEST_PLAIN_FILE);
+
+        Deleter.apply(file);
+        assertTrue(root.exists());
+        assertTrue(resolvedFile.exists());
+        assertFalse(file.exists());
+
+        setupTemplate();
+        Deleter.apply(name);
+        assertTrue(root.exists());
+        assertTrue(resolvedFile.exists());
+        assertFalse(file.exists());
+    }
+
+    @Test
+    public void dirLink()
+        throws Exception
+    {
+        assumeTrue(OperatingSystem.LOCAL.isUnix());
+
+        String rootName=setupTemplate();
+        String name=rootName+File.separator+TEST_DIR_LINK;
+        File root=new File(rootName);
+        File file=new File(name);
+        File resolvedFile=new File(rootName+File.separator+TEST_PLAIN_DIR);
+
+        Deleter.apply(file);
+        assertTrue(root.exists());
+        assertTrue(resolvedFile.exists());
+        assertFalse(file.exists());
+
+        setupTemplate();
+        Deleter.apply(name);
+        assertTrue(root.exists());
+        assertTrue(resolvedFile.exists());
+        assertFalse(file.exists());
+    }
+
+    @Test
+    public void danglingLink()
+        throws Exception
+    {
+        assumeTrue(OperatingSystem.LOCAL.isUnix());
+
+        String rootName=setupTemplate();
+        String name=rootName+File.separator+TEST_DANGLING_LINK;
+        File root=new File(rootName);
+        File file=new File(name);
+
         Deleter.apply(file);
         assertTrue(root.exists());
         assertFalse(file.exists());
@@ -131,15 +179,16 @@ public class DeleterTest
     }
 
     @Test
-    public void dirLink()
+    public void recursiveLink()
         throws Exception
     {
         assumeTrue(OperatingSystem.LOCAL.isUnix());
 
         String rootName=setupTemplate();
+        String name=rootName+File.separator+TEST_RECURSIVE_LINK;
         File root=new File(rootName);
-        String name=rootName+File.separator+TEST_DIR_LINK;
         File file=new File(name);
+
         Deleter.apply(file);
         assertTrue(root.exists());
         assertFalse(file.exists());
