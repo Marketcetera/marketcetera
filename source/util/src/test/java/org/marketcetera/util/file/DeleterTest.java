@@ -83,20 +83,21 @@ public class DeleterTest
             resolvedFile=new File(rootName+File.separator+resolvedName);
         }
 
-        Deleter.apply(file);
+        //        Deleter.apply(file);
+        org.apache.commons.io.FileUtils.deleteDirectory(file);
         assertTrue(root.exists());
         assertFalse(file.exists());
         if (resolvedFile!=null) {
             assertTrue(resolvedFile.exists());
         }
-
+        /*
         setupTemplate();
         Deleter.apply(fileName);
         assertTrue(root.exists());
         assertFalse(file.exists());
         if (resolvedFile!=null) {
             assertTrue(resolvedFile.exists());
-        }
+            }*/
     }
 
     @Test
