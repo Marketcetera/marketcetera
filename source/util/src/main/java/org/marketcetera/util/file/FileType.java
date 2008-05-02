@@ -8,7 +8,8 @@ import org.marketcetera.core.ClassVersion;
  * A file type. Files on NTFS are limited to the following types:
  * {@link #NONEXISTENT}, {@link #FILE}, {@link #DIR} (folder), and
  * {@link #UNKNOWN} (the file may or may not exist, and, if it does,
- * its type cannot be determined).
+ * its type cannot be determined). On Unix systems, unresolvable
+ * (dangling or recursive) links are {@link #NONEXISTENT}.
  *
  * @author tlerios
  * @version $Id$

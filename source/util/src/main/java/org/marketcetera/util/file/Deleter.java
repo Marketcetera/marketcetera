@@ -3,25 +3,34 @@ package org.marketcetera.util.file;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.I18NException;
 
 /**
+ * Deletes a file or directory recursively. It does not follow
+ * symbolic links in the process.
+ *
+ * @author tlerios
+ * @version $Id$
  */
 
+/* $License$ */
+
+@ClassVersion("$Id$")
 public class Deleter
 {
 
     // CLASS DATA.
-
-    /**
-     * Constructor mirroring superclass constructor.
-     */
 
     private static final class RecursiveDeleter
         extends SmartLinksDirectoryWalker
     {
 
         // CONSTRUCTORS.
+
+        /**
+         * Creates a new recursive deleter.
+         */
 
         public RecursiveDeleter()
         {
@@ -30,6 +39,12 @@ public class Deleter
 
 
         // INSTANCE METHODS.
+
+        /**
+         * Deletes the given directory.
+         *
+         * @see DirectoryWalker#handleDirectoryEnd(File,int,Collection)
+         */
 
         @Override
         protected void handleDirectoryEnd
@@ -41,6 +56,12 @@ public class Deleter
             deleteWrap(directory);
         }
 
+        /**
+         * Deletes the given file.
+         *
+         * @see DirectoryWalker#handleFile(File,int,Collection)
+         */
+
         @Override
         protected void handleFile
             (File file,
@@ -50,6 +71,14 @@ public class Deleter
         {
             deleteWrap(file);
         }
+
+        /**
+         * Deletes the given file.
+         *
+         * @param file The file.
+         *
+         * @throws I18NException Thrown if an I/O error occurs.
+         */
 
         public void applyUnwrap
             (File file)
@@ -66,6 +95,16 @@ public class Deleter
 
     // CLASS METHODS.
 
+    /**
+     * Deletes the given file. If the file represents a directory, it
+     * must be empty.
+     *
+     * @param file The file.
+     *
+     * @throws IOException Thrown if an I/O error occurs. It has no
+     * message and wraps an {@link I18NException}.
+     */
+
     private static void deleteWrap
         (File file)
         throws IOException
@@ -78,17 +117,37 @@ public class Deleter
         }
     }
 
-    public static void apply
-        (File file)
-        throws I18NException
-    {
-        (new RecursiveDeleter()).applyUnwrap(file);
-    }
+    /**
+     * Deletes the file tree rooted at the given root. It does not
+     * follow symbolic links in the process. The root may not be
+     * nonexistent (or no-op).
+     *
+     * @param root The root.
+     *
+     * @throws I18NException Thrown if an I/O error occurs.
+     */
 
     public static void apply
-        (String file)
+        (File root)
         throws I18NException
     {
-        apply(new File(file));
+        (new RecursiveDeleter()).applyUnwrap(root);
+    }
+
+    /**
+     * Deletes the file tree rooted at the file with the given
+     * name. It does not follow symbolic links in the process. The
+     * root may be nonexistent (no-op).
+     *
+     * @param name The file name.
+     *
+     * @throws I18NException Thrown if an I/O error occurs.
+     */
+
+    public static void apply
+        (String name)
+        throws I18NException
+    {
+        apply(new File(name));
     }
 }
