@@ -25,9 +25,9 @@ public class DeleterTest
     private static final String TEST_TEMPLATE_UNIX=
         "unix";
     private static final String TEST_PLAIN_FILE=
-        "a.txt";
+        "file.txt";
     private static final String TEST_PLAIN_DIR=
-        "a";
+        "dir";
     private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE_LINK=
