@@ -1,17 +1,16 @@
 package org.marketcetera.util.file;
 
 import java.io.File;
+import org.junit.After;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.exec.Disposition;
 import org.marketcetera.util.exec.Exec;
-import org.marketcetera.util.exec.ExecResult;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
-import static org.marketcetera.util.file.FileType.*;
 
 public class DeleterTest
 	extends TestCaseBase
@@ -19,7 +18,7 @@ public class DeleterTest
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"deleter"+File.separator;
     private static final String TEST_TEMPLATES=
-        TEST_ROOT+"templates"+File.separator;
+        TEST_ROOT+"templates";
     private static final String TEST_TEMPLATE_WIN32=
         "win32";
     private static final String TEST_TEMPLATE_UNIX=
@@ -28,6 +27,8 @@ public class DeleterTest
         "file.txt";
     private static final String TEST_PLAIN_DIR=
         "dir";
+    private static final String TEST_PLAIN_DIR_CONTENTS=
+        TEST_PLAIN_DIR+File.separator+"a.txt";
     private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE_LINK=
@@ -39,42 +40,47 @@ public class DeleterTest
     private static final String TEST_RECURSIVE_LINK=
         "recursive_link";
 
-    private static String setupTemplate()
+
+    private static void cleanCopy()
         throws I18NException
     {
-        String[] command;
         if (OperatingSystem.LOCAL.isUnix()) {
-            command=new String[] {
-                "rm","-r","-f","../"+TEST_TEMPLATE_UNIX};
-        } else if (OperatingSystem.LOCAL.isWin32()) {
-            command=new String[] {
-                "cmd.exe","/c","rd","/S","/Q","..\\"+TEST_TEMPLATE_WIN32};
-        } else {
-            throw new AssertionError("Unknown platform");
+            Exec.run(TEST_TEMPLATES,Disposition.STDERR,
+                     "rm","-r","-f",
+                     ".."+File.separator+TEST_TEMPLATE_UNIX);
+            return;
         }
-        Exec.run(TEST_TEMPLATES,Disposition.STDERR,command);
-        if (OperatingSystem.LOCAL.isUnix()) {
-            command=new String[] {
-                "cp","-r",TEST_TEMPLATE_UNIX,
-                "../"+TEST_TEMPLATE_UNIX};
-        } else {
-            command=new String[] {
-                "xcopy.exe","/E","/I",TEST_TEMPLATE_WIN32,
-                "..\\"+TEST_TEMPLATE_WIN32};
+        if (OperatingSystem.LOCAL.isWin32()) {
+            Exec.run(TEST_TEMPLATES,Disposition.STDERR,
+                     "cmd.exe","/c","rd","/S","/Q",
+                     ".."+File.separator+TEST_TEMPLATE_WIN32);
+            return;
         }
-        Exec.run(TEST_TEMPLATES,Disposition.STDERR,command);
+        throw new AssertionError("Unknown platform");
+    }
+
+    private static String setupCopy()
+        throws I18NException
+    {
         if (OperatingSystem.LOCAL.isUnix()) {
+            Exec.run(TEST_TEMPLATES,Disposition.STDERR,
+                     "cp","-r",TEST_TEMPLATE_UNIX,
+                     ".."+File.separator+TEST_TEMPLATE_UNIX);
             return TEST_ROOT+TEST_TEMPLATE_UNIX;
         }
+        Exec.run(TEST_TEMPLATES,Disposition.STDERR,
+                 "xcopy.exe","/E","/I",TEST_TEMPLATE_WIN32,
+                 ".."+File.separator+TEST_TEMPLATE_WIN32);
         return TEST_ROOT+TEST_TEMPLATE_WIN32;
     }
 
     private static void single
         (String name,
          String resolvedName)
-        throws Exception
+        throws I18NException
     {
-        String rootName=setupTemplate();
+        cleanCopy();
+        String rootName=setupCopy();
         String fileName=rootName+File.separator+name;
         File root=new File(rootName);
         File file=new File(fileName);
@@ -90,7 +96,8 @@ public class DeleterTest
             assertTrue(resolvedFile.exists());
         }
 
-        setupTemplate();
+        cleanCopy();
+        setupCopy();
         Deleter.apply(fileName);
         assertTrue(root.exists());
         assertFalse(file.exists());
@@ -98,6 +105,15 @@ public class DeleterTest
             assertTrue(resolvedFile.exists());
         }
     }
+
+
+    @After
+    public void cleanUp()
+        throws Exception
+    {
+        cleanCopy();
+    }
+
 
     @Test
     public void existing()
@@ -121,8 +137,26 @@ public class DeleterTest
     {
         assumeTrue(OperatingSystem.LOCAL.isUnix());
         single(TEST_FILE_LINK,TEST_PLAIN_FILE);
-        single(TEST_DIR_LINK,TEST_PLAIN_DIR);
+        single(TEST_DIR_LINK,TEST_PLAIN_DIR_CONTENTS);
         single(TEST_DANGLING_LINK,null);
         single(TEST_RECURSIVE_LINK,null);
     }
+
+    /*
+     * EXTREME TEST 1: run alone (no other tests in the same file,
+     * and no other units test) after uncommenting sections in main
+     * class.
+    @Test
+    public void exception()
+        throws Exception
+    {
+        try {
+            Deleter.apply(TEST_NONEXISTENT_FILE);
+        } catch (I18NException ex) {
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_DELETE,
+                 ex.getI18NMessage());
+        }
+    }
+    */
 }

@@ -1,6 +1,7 @@
 package org.marketcetera.util.file;
 
 import java.io.File;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
@@ -28,6 +29,7 @@ public class CopyUtilsTest
 
 
     @Before
+    @After
     public void deleteTestFile()
         throws Exception
     {

@@ -22,6 +22,11 @@ public class Deleter
 
     // CLASS DATA.
 
+    /**
+     * A {@link SmartLinksDirectoryWalker} that does not follow
+     * symbolic links, and deletes all files it traverses.
+     */
+
     private static final class RecursiveDeleter
         extends SmartLinksDirectoryWalker
     {
@@ -109,6 +114,7 @@ public class Deleter
         (File file)
         throws IOException
     {
+        // EXTREME TEST 1: comment out if-clause and closing brace.
         if (!file.delete()) {
             throw new IOException
                 (null,new I18NException
@@ -119,7 +125,7 @@ public class Deleter
 
     /**
      * Deletes the file tree rooted at the given root. It does not
-     * follow symbolic links in the process. The root may not be
+     * follow symbolic links in the process. The root may be
      * nonexistent (or no-op).
      *
      * @param root The root.
