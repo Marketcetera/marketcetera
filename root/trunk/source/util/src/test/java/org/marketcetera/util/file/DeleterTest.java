@@ -28,7 +28,7 @@ public class DeleterTest
     private static final String TEST_PLAIN_DIR=
         "dir";
     private static final String TEST_PLAIN_DIR_CONTENTS=
-        TEST_PLAIN_DIR+File.separator+"a.txt";
+        TEST_PLAIN_DIR+File.separator+"b.txt";
     private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE_LINK=
@@ -77,7 +77,7 @@ public class DeleterTest
     private static void single
         (String name,
          String resolvedName)
-        throws I18NException
+	throws I18NException
     {
         cleanCopy();
         String rootName=setupCopy();
@@ -89,7 +89,7 @@ public class DeleterTest
             resolvedFile=new File(rootName+File.separator+resolvedName);
         }
 
-        Deleter.apply(file);
+	Deleter.apply(file);
         assertTrue(root.exists());
         assertFalse(file.exists());
         if (resolvedFile!=null) {
@@ -103,7 +103,7 @@ public class DeleterTest
         assertFalse(file.exists());
         if (resolvedFile!=null) {
             assertTrue(resolvedFile.exists());
-        }
+	}
     }
 
 
