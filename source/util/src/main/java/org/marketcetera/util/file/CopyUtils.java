@@ -1,13 +1,17 @@
 package org.marketcetera.util.file;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import org.apache.commons.io.IOUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.I18NException;
 
 /**
  * Utilities for copying data. The participating media include files,
- * arrays, or a combination thereof.
+ * arrays, streams, or some combinations thereof.
  *
  * @author tlerios
  * @version $Id$
@@ -80,6 +84,145 @@ public final class CopyUtils
         } catch (IOException ex) {
             throw new I18NException
                 (ex,Messages.PROVIDER,Messages.CANNOT_COPY_FILES,in,out);
+        } finally {
+            registry.close();
+        }
+    }
+
+    /**
+     * Copies the given byte stream to the given location.
+     *
+     * @param in The byte source, as interpreted by {@link
+     * InputStreamWrapper#InputStreamWrapper(InputStream,boolean)}.
+     * @param skipClose True if the source stream should not be
+     * closed.
+     * @param out The name of the byte sink, as interpreted by {@link
+     * OutputStreamWrapper#OutputStreamWrapper(String)}.
+     *
+     * @throws I18NException Thrown if there is a data read/write
+     * error.
+     */
+
+    public static long copyBytes
+        (InputStream in,
+         boolean skipClose,
+         String out)
+        throws I18NException
+    {
+        CloseableRegistry registry=new CloseableRegistry();
+        try {
+            InputStreamWrapper inW=new InputStreamWrapper(in,skipClose);
+            registry.register(inW);
+            OutputStreamWrapper outW=new OutputStreamWrapper(out);
+            registry.register(outW);
+            return IOUtils.copyLarge(inW.getStream(),outW.getStream());
+        } catch (IOException ex) {
+            throw new I18NException
+                (ex,Messages.PROVIDER,Messages.CANNOT_COPY_ISTREAM,in,out);
+        } finally {
+            registry.close();
+        }
+    }
+
+    /**
+     * Copies the given character stream to the given location.
+     *
+     * @param in The character source, as interpreted by {@link
+     * ReaderWrapper#ReaderWrapper(Reader,boolean)}.
+     * @param skipClose True if the source reader should not be
+     * closed.
+     * @param out The name of the character sink, as interpreted by
+     * {@link WriterWrapper#WriterWrapper(String)}.
+     *
+     * @throws I18NException Thrown if there is a data read/write
+     * error.
+     */
+
+    public static void copyChars
+        (Reader in,
+         boolean skipClose,
+         String out)
+        throws I18NException
+    {
+        CloseableRegistry registry=new CloseableRegistry();
+        try {
+            ReaderWrapper inW=new ReaderWrapper(in,skipClose);
+            registry.register(inW);
+            WriterWrapper outW=new WriterWrapper(out);
+            registry.register(outW);
+            IOUtils.copyLarge(inW.getReader(),outW.getWriter());
+        } catch (IOException ex) {
+            throw new I18NException
+                (ex,Messages.PROVIDER,Messages.CANNOT_COPY_READER,in,out);
+        } finally {
+            registry.close();
+        }
+    }
+
+    /**
+     * Copies a byte stream from the given location to the given sink.
+     *
+     * @param in The name of the byte source, as interpreted by {@link
+     * InputStreamWrapper#InputStreamWrapper(String)}.
+     * @param out The byte sink, as interpreted by {@link
+     * OutputStreamWrapper#OutputStreamWrapper(OutputStream,boolean)}.
+     * @param skipClose True if the sink stream should not be closed.
+     *
+     * @throws I18NException Thrown if there is a data read/write
+     * error.
+     */
+
+    public static long copyBytes
+        (String in,
+         OutputStream out,
+         boolean skipClose)
+        throws I18NException
+    {
+        CloseableRegistry registry=new CloseableRegistry();
+        try {
+            InputStreamWrapper inW=new InputStreamWrapper(in);
+            registry.register(inW);
+            OutputStreamWrapper outW=new OutputStreamWrapper(out,skipClose);
+            registry.register(outW);
+            return IOUtils.copyLarge(inW.getStream(),outW.getStream());
+        } catch (IOException ex) {
+            throw new I18NException
+                (ex,Messages.PROVIDER,Messages.CANNOT_COPY_OSTREAM,in,out);
+        } finally {
+            registry.close();
+        }
+    }
+
+    /**
+     * Copies a character stream from the given location to the given
+     * sink.
+     *
+     * @param in The name of the character source, as interpreted by {@link
+     * ReaderWrapper#ReaderWrapper(String)}.
+     * @param out The character sink, as interpreted by {@link
+     * WriterWrapper#WriterWrapper(Writer,boolean)}.
+     * @param skipClose True if the sink writer should not be closed.
+     *
+     * @throws I18NException Thrown if there is a data read/write
+     * error.
+     */
+
+    public static void copyChars
+        (String in,
+         Writer out,
+         boolean skipClose)
+        throws I18NException
+    {
+        CloseableRegistry registry=new CloseableRegistry();
+        try {
+            ReaderWrapper inW=new ReaderWrapper(in);
+            registry.register(inW);
+            WriterWrapper outW=new WriterWrapper(out,skipClose);
+            registry.register(outW);
+            IOUtils.copyLarge(inW.getReader(),outW.getWriter());
+        } catch (IOException ex) {
+            throw new I18NException
+                (ex,Messages.PROVIDER,Messages.CANNOT_COPY_WRITER,in,out);
         } finally {
             registry.close();
         }

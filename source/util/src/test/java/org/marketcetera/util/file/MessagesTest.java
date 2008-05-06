@@ -30,6 +30,22 @@ public class MessagesTest
              Messages.PROVIDER.getText
              (Messages.CANNOT_COPY_FILES,"a","b"));
         assertEquals
+            ("Cannot copy from input stream to file 'a'",
+             Messages.PROVIDER.getText
+             (Messages.CANNOT_COPY_ISTREAM,"a"));
+        assertEquals
+            ("Cannot copy from reader to file 'a'",
+             Messages.PROVIDER.getText
+             (Messages.CANNOT_COPY_READER,"a"));
+        assertEquals
+            ("Cannot copy from file 'a' to output stream",
+             Messages.PROVIDER.getText
+             (Messages.CANNOT_COPY_OSTREAM,"a"));
+        assertEquals
+            ("Cannot copy from file 'a' to writer",
+             Messages.PROVIDER.getText
+             (Messages.CANNOT_COPY_WRITER,"a"));
+        assertEquals
             ("Cannot copy from memory to file 'a'",
              Messages.PROVIDER.getText
              (Messages.CANNOT_COPY_MEMORY_SRC,"a"));
