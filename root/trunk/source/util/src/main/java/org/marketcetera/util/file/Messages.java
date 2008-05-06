@@ -44,6 +44,14 @@ public interface Messages
         new I18NMessage("cannot_delete");
     static final I18NMessage CANNOT_COPY_FILES=
         new I18NMessage("cannot_copy_files");
+    static final I18NMessage CANNOT_COPY_ISTREAM=
+        new I18NMessage("cannot_copy_istream");
+    static final I18NMessage CANNOT_COPY_READER=
+        new I18NMessage("cannot_copy_reader");
+    static final I18NMessage CANNOT_COPY_OSTREAM=
+        new I18NMessage("cannot_copy_ostream");
+    static final I18NMessage CANNOT_COPY_WRITER=
+        new I18NMessage("cannot_copy_writer");
     static final I18NMessage CANNOT_COPY_MEMORY_SRC=
         new I18NMessage("cannot_copy_memory_src");
     static final I18NMessage CANNOT_COPY_MEMORY_DST=

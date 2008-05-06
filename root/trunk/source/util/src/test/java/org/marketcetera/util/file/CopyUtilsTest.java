@@ -28,6 +28,55 @@ public class CopyUtilsTest
         VALUE.getBytes();
 
 
+    private static void copyIStream
+        (String out)
+        throws Exception
+    {
+        InputStreamWrapper in=new InputStreamWrapper(TEST_INPUT_FILE);
+        try {
+            CopyUtils.copyBytes(in.getStream(),true,out);
+        } finally {
+            in.close();
+        }
+    }
+
+    private static void copyOStream
+        (String in)
+        throws Exception
+    {
+        OutputStreamWrapper out=new OutputStreamWrapper(TEST_OUTPUT_FILE);
+        try {
+            CopyUtils.copyBytes(in,out.getStream(),true);
+        } finally {
+            out.close();
+        }
+    }
+
+    private static void copyReader
+        (String out)
+        throws Exception
+    {
+        ReaderWrapper in=new ReaderWrapper(TEST_INPUT_FILE);
+        try {
+            CopyUtils.copyChars(in.getReader(),true,out);
+        } finally {
+            in.close();
+        }
+    }
+
+    private static void copyWriter
+        (String in)
+        throws Exception
+    {
+        WriterWrapper out=new WriterWrapper(TEST_OUTPUT_FILE);
+        try {
+            CopyUtils.copyChars(in,out.getWriter(),true);
+        } finally {
+            out.close();
+        }
+    }
+
+
     @Before
     @After
     public void deleteTestFile()
@@ -47,6 +96,24 @@ public class CopyUtilsTest
     }
 
     @Test
+    public void copyBytesInputStream()
+        throws Exception
+    {
+        CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
+        copyIStream(TEST_OUTPUT_FILE);
+        assertArrayEquals(VALUE_BYTES,CopyUtils.copyBytes(TEST_OUTPUT_FILE));
+    }
+
+    @Test
+    public void copyBytesOutputStream()
+        throws Exception
+    {
+        CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
+        copyOStream(TEST_INPUT_FILE);
+        assertArrayEquals(VALUE_BYTES,CopyUtils.copyBytes(TEST_OUTPUT_FILE));
+    }
+
+    @Test
 	public void copyBytesFiles()
         throws Exception
     {
@@ -61,6 +128,24 @@ public class CopyUtilsTest
     {
         CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
         assertArrayEquals(VALUE_CHARS,CopyUtils.copyChars(TEST_INPUT_FILE));
+    }
+
+    @Test
+    public void copyCharsReader()
+        throws Exception
+    {
+        CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
+        copyReader(TEST_OUTPUT_FILE);
+        assertArrayEquals(VALUE_CHARS,CopyUtils.copyChars(TEST_OUTPUT_FILE));
+    }
+
+    @Test
+    public void copyCharsWriter()
+        throws Exception
+    {
+        CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
+        copyWriter(TEST_INPUT_FILE);
+        assertArrayEquals(VALUE_CHARS,CopyUtils.copyChars(TEST_OUTPUT_FILE));
     }
 
     @Test
@@ -110,6 +195,62 @@ public class CopyUtilsTest
         } catch (I18NException ex) {
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_FILES,
+                 ex.getI18NMessage());
+        }
+    }
+
+    @Test
+	public void failIStream()
+        throws Exception
+    {
+        CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
+        try {
+            copyIStream(TEST_NONEXISTENT_FILE);
+        } catch (I18NException ex) {
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_ISTREAM,
+                 ex.getI18NMessage());
+        }
+    }
+
+    @Test
+	public void failOStream()
+        throws Exception
+    {
+        CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
+        try {
+            copyOStream(TEST_NONEXISTENT_FILE);
+        } catch (I18NException ex) {
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_OSTREAM,
+                 ex.getI18NMessage());
+        }
+    }
+
+    @Test
+	public void failReader()
+        throws Exception
+    {
+        CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
+        try {
+            copyReader(TEST_NONEXISTENT_FILE);
+        } catch (I18NException ex) {
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_READER,
+                 ex.getI18NMessage());
+        }
+    }
+
+    @Test
+	public void failWriter()
+        throws Exception
+    {
+        CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
+        try {
+            copyWriter(TEST_NONEXISTENT_FILE);
+        } catch (I18NException ex) {
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_WRITER,
                  ex.getI18NMessage());
         }
     }
