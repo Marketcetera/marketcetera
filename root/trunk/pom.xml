@@ -27,5 +27,7 @@
     <module>source</module>
     <module>tools</module>
   </modules>
-
+  <scm>
+    <connection>scm:svn:http://code.marketcetera.org/root/trunk/</connection>
+ </scm>
 </project>
