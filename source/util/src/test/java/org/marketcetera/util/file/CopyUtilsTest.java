@@ -21,7 +21,7 @@ public class CopyUtilsTest
     protected static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent"+File.separator+"nonexistent";
     private static final String VALUE=
-        "marketcetera";
+        "m\u20ACrketcetera";
     private static final char[] VALUE_CHARS=
         VALUE.toCharArray();
     private static final byte[] VALUE_BYTES=
@@ -34,7 +34,8 @@ public class CopyUtilsTest
     {
         InputStreamWrapper in=new InputStreamWrapper(TEST_INPUT_FILE);
         try {
-            CopyUtils.copyBytes(in.getStream(),true,out);
+            assertEquals(VALUE_BYTES.length,
+                         CopyUtils.copyBytes(in.getStream(),true,out));
         } finally {
             in.close();
         }
@@ -46,7 +47,8 @@ public class CopyUtilsTest
     {
         OutputStreamWrapper out=new OutputStreamWrapper(TEST_OUTPUT_FILE);
         try {
-            CopyUtils.copyBytes(in,out.getStream(),true);
+            assertEquals(VALUE_BYTES.length,
+                         CopyUtils.copyBytes(in,out.getStream(),true));
         } finally {
             out.close();
         }
@@ -58,7 +60,8 @@ public class CopyUtilsTest
     {
         ReaderWrapper in=new ReaderWrapper(TEST_INPUT_FILE);
         try {
-            CopyUtils.copyChars(in.getReader(),true,out);
+            assertEquals(VALUE_CHARS.length,
+                         CopyUtils.copyChars(in.getReader(),true,out));
         } finally {
             in.close();
         }
@@ -70,7 +73,8 @@ public class CopyUtilsTest
     {
         WriterWrapper out=new WriterWrapper(TEST_OUTPUT_FILE);
         try {
-            CopyUtils.copyChars(in,out.getWriter(),true);
+            assertEquals(VALUE_CHARS.length,
+                         CopyUtils.copyChars(in,out.getWriter(),true));
         } finally {
             out.close();
         }
@@ -118,7 +122,8 @@ public class CopyUtilsTest
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
-        CopyUtils.copyBytes(TEST_INPUT_FILE,TEST_OUTPUT_FILE);
+        assertEquals(VALUE_BYTES.length,
+                     CopyUtils.copyBytes(TEST_INPUT_FILE,TEST_OUTPUT_FILE));
         assertArrayEquals(VALUE_BYTES,CopyUtils.copyBytes(TEST_OUTPUT_FILE));
     }
 
@@ -153,7 +158,8 @@ public class CopyUtilsTest
         throws Exception
     {
         CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
-        CopyUtils.copyChars(TEST_INPUT_FILE,TEST_OUTPUT_FILE);
+        assertEquals(VALUE_CHARS.length,
+                     CopyUtils.copyChars(TEST_INPUT_FILE,TEST_OUTPUT_FILE));
         assertArrayEquals(VALUE_CHARS,CopyUtils.copyChars(TEST_OUTPUT_FILE));
     }
 

@@ -33,6 +33,8 @@ public final class CopyUtils
      * @param out The name of the byte sink, as interpreted by {@link
      * OutputStreamWrapper#OutputStreamWrapper(String)}.
      *
+     * @return The number of bytes copied.
+     *
      * @throws I18NException Thrown if there is a data read/write
      * error.
      */
@@ -65,11 +67,13 @@ public final class CopyUtils
      * @param out The name of the character sink, as interpreted by
      * {@link WriterWrapper#WriterWrapper(String)}.
      *
+     * @return The number of characters copied.
+     *
      * @throws I18NException Thrown if there is a data read/write
      * error.
      */
 
-    public static void copyChars
+    public static long copyChars
         (String in,
          String out)
         throws I18NException
@@ -80,7 +84,7 @@ public final class CopyUtils
             registry.register(inW);
             WriterWrapper outW=new WriterWrapper(out);
             registry.register(outW);
-            IOUtils.copyLarge(inW.getReader(),outW.getWriter());
+            return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
         } catch (IOException ex) {
             throw new I18NException
                 (ex,Messages.PROVIDER,Messages.CANNOT_COPY_FILES,in,out);
@@ -98,6 +102,8 @@ public final class CopyUtils
      * closed.
      * @param out The name of the byte sink, as interpreted by {@link
      * OutputStreamWrapper#OutputStreamWrapper(String)}.
+     *
+     * @return The number of bytes copied.
      *
      * @throws I18NException Thrown if there is a data read/write
      * error.
@@ -134,11 +140,13 @@ public final class CopyUtils
      * @param out The name of the character sink, as interpreted by
      * {@link WriterWrapper#WriterWrapper(String)}.
      *
+     * @return The number of characters copied.
+     *
      * @throws I18NException Thrown if there is a data read/write
      * error.
      */
 
-    public static void copyChars
+    public static long copyChars
         (Reader in,
          boolean skipClose,
          String out)
@@ -150,7 +158,7 @@ public final class CopyUtils
             registry.register(inW);
             WriterWrapper outW=new WriterWrapper(out);
             registry.register(outW);
-            IOUtils.copyLarge(inW.getReader(),outW.getWriter());
+            return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
         } catch (IOException ex) {
             throw new I18NException
                 (ex,Messages.PROVIDER,Messages.CANNOT_COPY_READER,in,out);
@@ -167,6 +175,8 @@ public final class CopyUtils
      * @param out The byte sink, as interpreted by {@link
      * OutputStreamWrapper#OutputStreamWrapper(OutputStream,boolean)}.
      * @param skipClose True if the sink stream should not be closed.
+     *
+     * @return The number of bytes copied.
      *
      * @throws I18NException Thrown if there is a data read/write
      * error.
@@ -203,11 +213,13 @@ public final class CopyUtils
      * WriterWrapper#WriterWrapper(Writer,boolean)}.
      * @param skipClose True if the sink writer should not be closed.
      *
+     * @return The number of characters copied.
+     *
      * @throws I18NException Thrown if there is a data read/write
      * error.
      */
 
-    public static void copyChars
+    public static long copyChars
         (String in,
          Writer out,
          boolean skipClose)
@@ -219,7 +231,7 @@ public final class CopyUtils
             registry.register(inW);
             WriterWrapper outW=new WriterWrapper(out,skipClose);
             registry.register(outW);
-            IOUtils.copyLarge(inW.getReader(),outW.getWriter());
+            return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
         } catch (IOException ex) {
             throw new I18NException
                 (ex,Messages.PROVIDER,Messages.CANNOT_COPY_WRITER,in,out);
