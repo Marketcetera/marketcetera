@@ -21,7 +21,7 @@ public class CopyUtilsTest
     protected static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent"+File.separator+"nonexistent";
     private static final String VALUE=
-        "m\u20ACrketcetera";
+        "marketcetera";
     private static final char[] VALUE_CHARS=
         VALUE.toCharArray();
     private static final byte[] VALUE_BYTES=
