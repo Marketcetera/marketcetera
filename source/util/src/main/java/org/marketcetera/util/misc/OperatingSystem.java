@@ -22,6 +22,7 @@ public enum OperatingSystem
     WINDOWS_XP("Windows XP"),
     WINDOWS_VISTA("Windows Vista"),
     MAC_OS_X("Mac OS X"),
+    DARWIN("Darwin"),
     LINUX("Linux"),
     SOLARIS("SunOS"),
     AIX("AIX"),
@@ -158,7 +159,8 @@ public enum OperatingSystem
 
     public boolean isUnix()
     {
-        return ((this==MAC_OS_X) ||
+        return ((this==DARWIN) ||
+                (this==MAC_OS_X) ||
                 (this==LINUX) ||
                 (this==SOLARIS) ||
                 (this==AIX) ||
