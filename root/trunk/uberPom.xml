@@ -23,6 +23,7 @@
     <public.package>org.marketcetera</public.package>
     <javase.version>6</javase.version>
     <javaee.version>5</javaee.version>
+    <xjc.version>2.1.3</xjc.version>
   </properties>
 
   <dependencyManagement>
@@ -37,6 +38,11 @@
       <dependency>
         <groupId>${public.package}</groupId>
         <artifactId>util</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${public.package}</groupId>
+        <artifactId>market</artifactId>
         <version>[${project.version}]</version>
       </dependency>
 
@@ -98,6 +104,11 @@
         <groupId>commons-i18n</groupId>
         <artifactId>commons-i18n</artifactId>
         <version>[20060814]</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-csv</groupId>
+        <artifactId>commons-csv</artifactId>
+        <version>[20080418]</version>
       </dependency>
 
       <!-- Runtime. -->
@@ -193,36 +204,69 @@
 
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <disableXmlReport>true</disableXmlReport>
-        </configuration>
-      </plugin>
+    <pluginManagement>
+      <plugins>
 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-javadoc-plugin</artifactId>
-        <configuration>
-          <aggregate>true</aggregate>
-          <overview>${project.basedir}/tools/javadoc/overview.html</overview>
-          <links>
-            <link>http://java.sun.com/javaee/${javaee.version}/docs/api/</link>
-            <link>http://java.sun.com/javase/${javase.version}/docs/api/</link>
-            <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
-            <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
-            <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
-            <link>http://commons.apache.org/io/api-release/</link>
-            <link>http://commons.apache.org/lang/api-release/</link>
-            <link>http://commons.apache.org/collections/api-release/</link>
-            <link>http://commons.apache.org/vfs/apidocs/</link>
-          </links>
-        </configuration>
-      </plugin>
+        <!-- mvn test -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <configuration>
+            <disableXmlReport>true</disableXmlReport>
+          </configuration>
+        </plugin>
 
-    </plugins>
+        <!-- mvn javadoc:javadoc -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <configuration>
+            <aggregate>true</aggregate>
+            <overview>${project.basedir}/tools/javadoc/overview.html</overview>
+            <links>
+              <link>http://java.sun.com/javaee/${javaee.version}/docs/api/</link>
+              <link>http://java.sun.com/javase/${javase.version}/docs/api/</link>
+              <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
+              <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
+              <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+              <link>http://commons.apache.org/io/api-release/</link>
+              <link>http://commons.apache.org/lang/api-release/</link>
+              <link>http://commons.apache.org/collections/api-release/</link>
+              <link>http://commons.apache.org/vfs/apidocs/</link>
+            </links>
+          </configuration>
+        </plugin>
+
+        <!--
+          -  Explicit dependencies are listed here because maven-jaxb2-plugin
+          -  uses jaxb 2.1.5 by default, which is different than the xjc
+          -  version included with jdk 1.6 (2.1.3 as of 1.6.0_04).
+          -->
+        <plugin>
+          <groupId>org.jvnet.jaxb2.maven2</groupId>
+          <artifactId>maven-jaxb2-plugin</artifactId>
+          <executions>
+            <execution>
+              <goals>
+                <goal>generate</goal>
+              </goals>
+            </execution>
+          </executions>
+          <dependencies>
+            <dependency>
+              <groupId>com.sun.xml.bind</groupId>
+              <artifactId>jaxb-xjc</artifactId>
+              <version>${xjc.version}</version>
+            </dependency>
+            <dependency>
+              <groupId>com.sun.xml.bind</groupId>
+              <artifactId>jaxb-impl</artifactId>
+              <version>${xjc.version}</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <repositories>
@@ -243,14 +287,14 @@
       </snapshots>
     </repository>
     <repository>
-      <id>Codehaus Snapshots</id>
+      <id>codehaus.snapshots</id>
       <url>http://snapshots.repository.codehaus.org/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </repository>
     <repository>
-      <id>Internal</id>
+      <id>internal</id>
       <url>http://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
@@ -258,4 +302,10 @@
     </repository>
   </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven2-repository.dev.java.net</id>
+      <url>http://download.java.net/maven/2</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
