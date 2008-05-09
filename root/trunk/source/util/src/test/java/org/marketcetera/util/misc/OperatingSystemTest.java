@@ -30,6 +30,7 @@ public class OperatingSystemTest
         single(WINDOWS_CE,   true,false, "WINDOWS_CE,Windows CE,win32");
         single(WINDOWS_VISTA,true,false, "WINDOWS_VISTA,Windows Vista,win32");
 
+        single(DARWIN,       false,true, "DARWIN,Darwin,unix");
         single(MAC_OS_X,     false,true, "MAC_OS_X,Mac OS X,unix");
         single(LINUX,        false,true, "LINUX,Linux,unix");
         single(SOLARIS,      false,true, "SOLARIS,SunOS,unix");
