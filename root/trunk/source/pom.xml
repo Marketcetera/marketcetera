@@ -28,5 +28,4 @@
     <module>util</module>
     <module>util-test</module>
   </modules>
-
 </project>
