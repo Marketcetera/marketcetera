@@ -16,7 +16,7 @@ import quickfix.field.SubscriptionRequestType;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public interface IMarketDataFeed<T extends IMarketDataFeedToken, 
+public interface IMarketDataFeed<T extends IMarketDataFeedToken<C>, 
                                  C extends IMarketDataFeedCredentials> 
     extends IFeedComponent, Lifecycle
 {
@@ -26,7 +26,7 @@ public interface IMarketDataFeed<T extends IMarketDataFeedToken,
      * <p>The <code>ISubscriber</code> value specified will receive the
      * response or responses from the market data feed either in the
      * case of a snapshot or a subscription.  To specify a subscription,
-     * which will give updates as they become available until cancelled,
+     * which will give updates as they become available until canceled,
      * set the appropriate field in the <code>Message</code> accordingly.
      *  
      * @see SubscriptionRequestType#FIELD
@@ -44,14 +44,14 @@ public interface IMarketDataFeed<T extends IMarketDataFeedToken,
      * <p>The <code>ISubscriber</code> value specified will receive the
      * response or responses from the market data feed either in the
      * case of a snapshot or a subscription.  To specify a subscription,
-     * which will give updates as they become available until cancelled,
+     * which will give updates as they become available until canceled,
      * set the appropriate field in the <code>Message</code> accordingly.
      *  
      * @see SubscriptionRequestType#FIELD
      *
-     * @param inCredentials a <code>C</code> value
+     * @param inCredentials a <code>C</code> value or null to use the last known credentials
      * @param inMessage a <code>Message</code> value
-     * @param inSubscriber an <code>ISubscriber</code> value
+     * @param inSubscriber an <code>ISubscriber</code> value or null if no notifications are required
      * @return a <code>T</code> value
      * @throws NullPointerException if valid credentials are not available to execute this request
      */

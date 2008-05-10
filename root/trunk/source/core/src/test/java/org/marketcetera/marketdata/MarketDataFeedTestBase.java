@@ -2,14 +2,16 @@ package org.marketcetera.marketdata;
 
 import java.util.List;
 
-import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.core.publisher.TestSubscriber;
-
-import quickfix.Message;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.TestSubscriber;
+import org.marketcetera.event.TestEventTranslator;
+import org.marketcetera.quickfix.TestMessageTranslator;
+
+import quickfix.Message;
 
 /**
  * Base class for Market Data Feed tests.
@@ -35,7 +37,7 @@ public class MarketDataFeedTestBase
         super(inArg0);
     }
 
-    protected static TestSuite suite(Class inClass) 
+    protected static TestSuite suite(Class<? extends MarketDataFeedTestBase> inClass) 
     {
         sSuite = new MarketDataFeedTestSuite(inClass);
         return sSuite;
@@ -58,6 +60,10 @@ public class MarketDataFeedTestBase
     {
         super.setUp();
         TestMarketDataFeedCredentials.sValidateThrowsThrowable = false;
+        TestEventTranslator.setTranslateToEventsReturnsZeroEvents(false);
+        TestEventTranslator.setTranslateToEventsThrows(false);
+        TestEventTranslator.setTranslateToEventsReturnsNull(false);
+        TestMessageTranslator.setTranslateThrows(false);
         mMessage = MarketDataFeedTestSuite.generateFIXMessage();
         mCredentials = new TestMarketDataFeedCredentials();
     }    
