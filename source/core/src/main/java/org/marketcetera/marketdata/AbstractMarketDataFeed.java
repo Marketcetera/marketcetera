@@ -66,7 +66,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     public static final FIXVersion DEFAULT_MESSAGE_FACTORY = FIXVersion.FIX44;
     /**
-     * the id factory used to generate unique ids within the context of all feeds for this JVM session
+     * the id factory used to generate unique IDs within the context of all feeds for this JVM session
      */
     private static final InMemoryIDFactory sIDFactory = new InMemoryIDFactory(0,
                                                                               Long.toString(System.currentTimeMillis()));
@@ -135,7 +135,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
     }
     /**
-     * Gets the next ID in sequence for assiging unique identifiers to market data feed objects.
+     * Gets the next ID in sequence for assigning unique identifiers to market data feed objects.
      *
      * @return an <code>InternalID</code> value
      * @throws NoMoreIDsException if no more IDs are available
@@ -181,21 +181,31 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         //  as part of this query or those originally supplied - either way,
         //  they must at this time be non-null
         if(credentials == null) {
+            // this should not be possible, but add it for completeness
             throw new NullPointerException();
         }
         // record these as the latest credentials
         setLatestCredentials(credentials);
+        // these subscribers are all the ones that are interested in the results
+        //  of the query we're about to execute - this list may be empty or null
         List<? extends ISubscriber> subscribers = inTokenSpec.getSubscribers();
         // the token is used to track the request and its responses
         // generate a new token for this request
-        T token = generateToken(inTokenSpec);
+        T token;
+        try {
+            token = generateToken(inTokenSpec);
+        } catch (Throwable t) {
+            throw new FeedException(MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage(),
+                                    t);
+        }
         // it's possible that some messages won't need subscribers, perhaps if the caller doesn't care
         //  about responses.  if the subscriber is null, ignore it.  otherwise, set the token to receive
         //  the responses        
         if(subscribers != null) {
             token.subscribeAll(subscribers);
         }
-        // construct the object that will be invoked by the ThreadPool
+        // construct the object that will be invoked by the ThreadPool - this object is used
+        //  to execute the query represented by the token
         ExecutorThread thread = new ExecutorThread(token,
                                                    credentials);        
         try {
@@ -221,7 +231,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     {
         return execute(inCredentials,
                        inMessage,
-                       Arrays.asList(new ISubscriber[] { inSubscriber } ));
+                       inSubscriber == null ? new ArrayList<ISubscriber>() : Arrays.asList(new ISubscriber[] { inSubscriber } ));
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeed#execute(org.marketcetera.marketdata.IMarketDataFeedCredentials, quickfix.Message, java.util.List)
@@ -462,8 +472,11 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * of the execution.
      * 
      * @param inToken a <code>T</code> value
+     * @param inException a <code>Throwable</code> value containing the exception thrown
+     *   during execution or <code>null</code> if no exception was thrown
      */
-    protected void afterDoExecute(T inToken)
+    protected void afterDoExecute(T inToken, 
+                                  Throwable inException)
     {
     }
     /*
@@ -474,9 +487,13 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * Sets the status of the feed.
      * 
      * @param inFeedStatus a <code>FeedStatus</code> value
+     * @throws NullPointerException if <code>inFeedStatus</code> is null
      */
     protected final void setFeedStatus(FeedStatus inFeedStatus)
     {
+        if(inFeedStatus == null) {
+            throw new NullPointerException();
+        }
         if(!(mFeedStatus.equals(inFeedStatus))) {
             mFeedStatus = inFeedStatus;
             mFeedStatusPublisher.publish(this);
@@ -504,8 +521,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                                    this);
             }
         } else {
-            E eventTranslator = getEventTranslator();
             try {
+                E eventTranslator = getEventTranslator();
                 List<EventBase> events = eventTranslator.translate(inData);
                 for(EventBase event : events) {
                     token.publish(event);
@@ -565,27 +582,28 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     private boolean doExecute(T inToken)
     {
-        if(!beforeDoExecute(inToken)) {
-            return false;
-        }
-        // translate fix message to specialized type
-        X xlator = getMessageTranslator();
-        Message message = inToken.getTokenSpec().getMessage();
+        Throwable thrownException = null;
         try {
+            if(!beforeDoExecute(inToken)) {
+                return false;
+            }
+            // translate fix message to specialized type
+            X xlator = getMessageTranslator();
+            Message message = inToken.getTokenSpec().getMessage();
             D data = xlator.translate(message);
             if(FIXMessageUtil.isMarketDataRequest(message)) {
-                mHandleHolder.addHandles(inToken,
-                                         doMarketDataRequest(data));
+                processResponse(doMarketDataRequest(data), 
+                                inToken);
                 return true;
             }
             if(FIXMessageUtil.isDerivativeSecurityListRequest(message)) {
-                mHandleHolder.addHandles(inToken,
-                                         doDerivativeSecurityListRequest(data));
+                processResponse(doDerivativeSecurityListRequest(data), 
+                                inToken);
                 return true;
             }
             if(FIXMessageUtil.isSecurityListRequest(message)) {
-                mHandleHolder.addHandles(inToken,
-                                         doSecurityListRequest(data));
+                processResponse(doSecurityListRequest(data), 
+                                inToken);
                 return true;
             }
             // Unhandled message type
@@ -595,6 +613,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             }
             return false;
         } catch (Throwable t) {
+            thrownException = t;
             if(LoggerAdapter.isErrorEnabled(this)) {
                 LoggerAdapter.error(MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage(),
                                     t,
@@ -602,7 +621,32 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             }
             return false;
         } finally {
-            afterDoExecute(inToken);
+            afterDoExecute(inToken, 
+                           thrownException);
+        }
+    }
+    /**
+     * Processes the handles returned from a feed request.
+     * 
+     * <p>The given handles will be associated with the given token.  Later, when data is returned from the feed via {@link #dataReceived(String, Object)},
+     * the handles stored here are used to associate the data with the token.
+     *
+     * @param inHandles a <code>List&lt;String&gt;</code> value containing the handles returned from the feed to associate with the given token
+     * @param inToken a <code>T</code> value to which to associate the handles
+     */
+    private void processResponse(List<String> inHandles,
+                                 T inToken)
+    {
+        if(inHandles == null ||
+           inHandles.size() == 0) {
+            // TODO move to message catalog
+            if(LoggerAdapter.isWarnEnabled(this)) {
+                LoggerAdapter.warn(String.format("The market data feed request did not return a handle so results from the request will be discarded."),
+                                   this);
+            }
+        } else {
+            mHandleHolder.addHandles(inToken,
+                                     inHandles);
         }
     }
     /**
@@ -697,27 +741,55 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
          * @see java.util.concurrent.Callable#call()
          */
         public T call()
-                throws Exception
+            throws Exception
         {
-            setFeedStatus(FeedStatus.UNKNOWN);
             C credentials = mCredentials;
             T token = mToken;
 
             token.setStatus(IMarketDataFeedToken.Status.RUNNING);
             // check to see if we're currently logged in to match
             //  the current credentials
-            if(!isLoggedIn(credentials)) {
-                // login with the given credentials
-                if(!doLogin(credentials)) {
-                    // bail out expressing sadness
-                    setFeedStatus(FeedStatus.ERROR);
-                    token.setStatus(IMarketDataFeedToken.Status.LOGIN_FAILED);
-                    return token;
-                }            
-            }        
+            boolean succeeded = false;
+            try {
+                // check to see if the feed is currently logged-in to with the given credentials
+                succeeded = isLoggedIn(credentials);
+                // if so, continue on
+                if(!succeeded) {
+                    // if not, try to login with the credentials
+                    succeeded = doLogin(credentials);
+                }
+            } catch (Throwable t) {
+                // any exception thrown during login will be the same as if the
+                //  login explicitly failed
+                // TODO move to message catalog
+                if(LoggerAdapter.isWarnEnabled(this)) {
+                    LoggerAdapter.warn("Unable to log in to feed, execution failed",
+                                       t,
+                                       this);
+                }
+                succeeded = false;
+            }
+            if(!succeeded) {
+                // bail out expressing sadness
+                setFeedStatus(FeedStatus.ERROR);
+                token.setStatus(IMarketDataFeedToken.Status.LOGIN_FAILED);
+                return token;
+            }
             // feed is logged in
             // do any initialization required
-            if(!doInitialize(token)) {
+            succeeded = false;
+            try {
+                succeeded = doInitialize(token);
+            } catch (Throwable t) {
+                // TODO move to message catalog
+                if(LoggerAdapter.isWarnEnabled(this)) {
+                    LoggerAdapter.warn("Unable to initialize feed, execution failed",
+                                       t,
+                                       this);
+                }
+                succeeded = false;
+            }
+            if(!succeeded) {
                 setFeedStatus(FeedStatus.ERROR);
                 token.setStatus(IMarketDataFeedToken.Status.INITIALIZATION_FAILED);
                 return token;
@@ -725,7 +797,19 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             setFeedStatus(FeedStatus.AVAILABLE);
             // feed should be ready for commands
             // execute command, wait for status response, not responses to the actual command
-            if(!doExecute(token)) {
+            succeeded = false;
+            try {
+                succeeded = doExecute(token);
+            } catch (Throwable t) {
+                // TODO move to message catalog
+                if(LoggerAdapter.isWarnEnabled(this)) {
+                    LoggerAdapter.warn("Unable to execute command on feed, execution failed",
+                                       t,
+                                       this);
+                }
+                succeeded = false;
+            }
+            if(!succeeded) {
                 setFeedStatus(FeedStatus.ERROR);
                 token.setStatus(IMarketDataFeedToken.Status.EXECUTION_FAILED);
                 return token;
@@ -812,7 +896,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
          *
          * @param inToken a <code>T</code> value
          * @return a <code>List&lt;MarketDataHandle&gt;</code> value or null if no handles are associated
-         *   wtih this token
+         *   with this token
          */
         private List<MarketDataHandle> removeToken(T inToken)
         {
@@ -822,6 +906,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             //  mTokensByHandle or mHandlesByToken without synchronizing mLock
             synchronized(mLock) {
                 handles = mHandlesByToken.remove(inToken);
+                if(handles == null) {
+                    return new ArrayList<MarketDataHandle>();
+                }
                 for(MarketDataHandle handle : handles) {
                     mTokensByHandle.remove(handle);
                 }
@@ -832,7 +919,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     /**
      * A unique handle to associate data feed requests with responses.
      *
-     * <p>The handle created is guranteed to be unique within the scope of all
+     * <p>The handle created is guaranteed to be unique within the scope of all
      * data feeds in the current JVM run iff:
      * <ol>
      *   <li>all proto-handles returned by {@link AbstractMarketDataFeed#doMarketDataRequest(Object)} 
@@ -859,11 +946,15 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
          * Create a new MarketDataHandle instance.
          *
          * @param inHandle a <code>String</code> value containing a value
-         *   meaningfull to the originating data feed which can be used
+         *   meaningful to the originating data feed which can be used
          *   to refer to a unique data feed request
+         * @throws NullPointerException if <code>inHandle</code> is null
          */
         private MarketDataHandle(String inHandle)
         {
+            if(inHandle == null) {
+                throw new NullPointerException();
+            }
             mProtoHandle = inHandle;
             mHandle = String.format("%s-%s",
                                     mProviderName,
@@ -941,10 +1032,15 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
          *
          * @param inListener an <code>IFeedComponentListener</code> value
          * @param inParent an <code>IFeedComponent</code> value
+         * @throws NullPointerException if either the listener or parent are null
          */
         private FeedComponentListenerWrapper(IFeedComponentListener inListener,
                                              IFeedComponent inParent)
         {
+            if(inListener == null ||
+               inParent == null) {
+                throw new NullPointerException();
+            }
             mListener = inListener;
             mParent = inParent;
         }
