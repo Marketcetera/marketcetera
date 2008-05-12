@@ -24,6 +24,7 @@ import quickfix.field.ConfirmReqID;
 import quickfix.field.EncodedText;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDReqID;
+import quickfix.field.MarketDepth;
 import quickfix.field.MsgType;
 import quickfix.field.NetworkRequestID;
 import quickfix.field.NoMDEntries;
@@ -220,8 +221,74 @@ public class FIXMessageUtil {
 		}
 		return false;
 	}
-	
-	
+    /**
+     * FIX market depth constant for "best bid or offer" or Level I 
+     */
+    public static final int TOP_OF_BOOK_DEPTH = 1;
+	/**
+	 * FIX market depth constant for "full book" or Level II
+	 */
+    public static final int FULL_BOOK_DEPTH = 0;
+	/**
+	 * Determines if the given message is a Level I or "top of book" message.
+	 *
+	 * @param inMessage a <code>Message</code> value
+	 * @return a <code>boolean</code> value
+	 */
+	public static boolean isLevelOne(Message inMessage)
+	{
+	    int depth;
+	    try {
+            depth = getMarketDepth(inMessage);
+        } catch (FieldNotFound e) {
+            return false;
+        }
+        return depth == TOP_OF_BOOK_DEPTH;
+	}
+    /**
+     * Determines if the given message is a Level II or "depth of book" message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>boolean</code> value
+     */
+    public static boolean isLevelTwo(Message inMessage)
+    {
+        int depth;
+        try {
+            depth = getMarketDepth(inMessage);
+        } catch (FieldNotFound e) {
+            return false;
+        }
+        return depth == FULL_BOOK_DEPTH;
+    }
+	/**
+	 * Determines if the given message is a Level II or "full book" message.
+	 *
+     * @param inMessage a <code>Message</code> value
+     * @return a <code>boolean</code> value
+	 */
+	public static boolean isFullBook(Message inMessage)
+	{
+        int depth;
+        try {
+            depth = getMarketDepth(inMessage);
+        } catch (FieldNotFound e) {
+            return false;
+        }
+        return depth == FULL_BOOK_DEPTH;
+	}
+	/**
+	 * Gets the market depth for the given message.
+	 *
+	 * @param inMessage a <code>Message</code> value
+	 * @return an <code>int</code>
+	 * @throws FieldNotFound if the given message does not contain market depth information
+	 */
+	private static int getMarketDepth(Message inMessage) 
+	    throws FieldNotFound
+	{
+	    return inMessage.getInt(MarketDepth.FIELD);
+	}
 	/** Helper method to extract all useful fields from an existing message into another message
      * This is usually called when the "existing" message is malformed and is missing some fields,
      * and an appropriate "reject" message needs to be sent.
@@ -265,13 +332,14 @@ public class FIXMessageUtil {
      * @param copyTo
      * @param copyFrom
      */
-    public static void copyFields(FieldMap copyTo, FieldMap copyFrom){
-    	Iterator iter = copyFrom.iterator();
+    public static void copyFields(FieldMap copyTo, 
+                                  FieldMap copyFrom)
+    {
+    	Iterator<Field<?>> iter = copyFrom.iterator();
     	while (iter.hasNext()){
-    		Field field = (Field) iter.next();
+    		Field<?> field = iter.next();
     		try {
-				copyTo.setField(copyFrom
-						.getField(new StringField(field.getTag())));
+				copyTo.setField(copyFrom.getField(new StringField(field.getTag())));
 			} catch (FieldNotFound e) {
 				// do nothing
 			}

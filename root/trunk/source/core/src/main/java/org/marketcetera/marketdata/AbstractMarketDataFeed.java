@@ -27,6 +27,7 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.IMessageTranslator;
 
 import quickfix.Message;
+import quickfix.field.MarketDepth;
 import quickfix.field.SubscriptionRequestType;
 
 /**
@@ -107,17 +108,52 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     public final static String DATAFEED_MESSAGES = "marketdatafeed.messages";
     /**
-     * Creates a FIX message requesting market data on the given symbols.
+     * Creates a Level I FIX message requesting market data on the given symbols.
      *
      * @param inSymbols a <code>List&lt;MSymbol&gt;</code> value containing the symbols on which to make requests
-     * @param inUpdate a <code>boolean</code> value indicating whether the request should be a single snapshot or an
+     * @param inSubscribeToResults a <code>boolean</code> value indicating whether the request should be a single snapshot or an
      *  ongoing subscription
      * @return a <code>Message</code> value
      * @throws FeedException if an error occurs constructing the <code>Message</code>
      */
-    public static Message marketDataRequest(List<MSymbol> inSymbols,
-                                            boolean inUpdate) 
+    public static Message levelOneMarketDataRequest(List<MSymbol> inSymbols,
+                                                    boolean inSubscribeToResults) 
         throws FeedException 
+    {
+        return marketDataRequest(inSymbols,
+                                 inSubscribeToResults,
+                                 FIXMessageUtil.TOP_OF_BOOK_DEPTH);
+    }
+    /**
+     * Creates a Level II FIX message requesting market data on the given symbols.
+     *
+     * @param inSymbols a <code>List&lt;MSymbol&gt;</code> value containing the symbols on which to make requests
+     * @param inSubscribeToResults a <code>boolean</code> value indicating whether the request should be a single snapshot or an
+     *  ongoing subscription
+     * @return a <code>Message</code> value
+     * @throws FeedException if an error occurs constructing the <code>Message</code>
+     */
+    public static Message levelTwoMarketDataRequest(List<MSymbol> inSymbols,
+                                                    boolean inSubscribeToResults) 
+        throws FeedException 
+    {
+        return marketDataRequest(inSymbols,
+                                 inSubscribeToResults,
+                                 FIXMessageUtil.FULL_BOOK_DEPTH);
+    }
+    /**
+     * Creates a FIX message for the given symbols at the given depth with subscription set accordingly.
+     *
+     * @param inSymbols a <code>List&lt;MSymbol&gt;</code> value containing the symbols on which to make requests
+     * @param inSubscribeToResults a <code>boolean</code> value indicating whether the request should be a single snapshot or an
+     *  ongoing subscription
+     * @return a <code>Message</code> value
+     * @throws FeedException if an error occurs constructing the <code>Message</code>
+     */
+    private static Message marketDataRequest(List<MSymbol> inSymbols,
+                                             boolean inSubscribeToResults,
+                                             int inMarketDepth)
+        throws FeedException
     {
         try {
             // generate a unique ID for this FIX message
@@ -125,9 +161,11 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             // generate the message using the current FIXMessageFactory
             Message message = DEFAULT_MESSAGE_FACTORY.getMessageFactory().newMarketDataRequest(id.toString(), 
                                                                                                inSymbols);
+            message.setInt(MarketDepth.FIELD, 
+                           inMarketDepth);
             // this little bit determines whether we subscribe to updates or not
             message.setChar(SubscriptionRequestType.FIELD, 
-                            inUpdate ? '1' : '0');
+                            inSubscribeToResults ? '1' : '0');
             return message;
         } catch (NoMoreIDsException e) {
             throw new FeedException(MessageKey.ERROR_MARKET_DATA_FEED_CANNOT_GENERATE_MESSAGE.getLocalizedMessage(),
@@ -135,7 +173,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
     }
     /**
-     * Gets the next ID in sequence for assiging unique identifiers to market data feed objects.
+     * Gets the next ID in sequence for assigning unique identifiers to market data feed objects.
      *
      * @return an <code>InternalID</code> value
      * @throws NoMoreIDsException if no more IDs are available
@@ -570,8 +608,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
         // translate fix message to specialized type
         X xlator = getMessageTranslator();
+        // the request is represented by a FIX message stored on the token
         Message message = inToken.getTokenSpec().getMessage();
         try {
+            // translate the FIX message to an appropriate proprietary format
             D data = xlator.translate(message);
             if(FIXMessageUtil.isMarketDataRequest(message)) {
                 mHandleHolder.addHandles(inToken,
@@ -713,8 +753,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                     setFeedStatus(FeedStatus.ERROR);
                     token.setStatus(IMarketDataFeedToken.Status.LOGIN_FAILED);
                     return token;
-                }            
-            }        
+                }
+            }
             // feed is logged in
             // do any initialization required
             if(!doInitialize(token)) {

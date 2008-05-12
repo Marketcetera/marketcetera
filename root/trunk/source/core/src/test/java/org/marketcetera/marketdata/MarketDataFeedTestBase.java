@@ -35,7 +35,7 @@ public class MarketDataFeedTestBase
         super(inArg0);
     }
 
-    protected static TestSuite suite(Class inClass) 
+    protected static TestSuite suite(Class<?> inClass) 
     {
         sSuite = new MarketDataFeedTestSuite(inClass);
         return sSuite;

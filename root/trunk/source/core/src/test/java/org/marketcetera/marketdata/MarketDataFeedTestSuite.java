@@ -33,7 +33,7 @@ public class MarketDataFeedTestSuite
      *
      * @param inClass
      */
-    public MarketDataFeedTestSuite(Class inClass)
+    public MarketDataFeedTestSuite(Class<?> inClass)
     {
         super(inClass);
 
@@ -45,7 +45,7 @@ public class MarketDataFeedTestSuite
      * @param inClass
      * @param inExtraBundle
      */
-    public MarketDataFeedTestSuite(Class inClass,
+    public MarketDataFeedTestSuite(Class<?> inClass,
                                    MessageBundleInfo inExtraBundle)
     {
         super(inClass,
@@ -59,7 +59,7 @@ public class MarketDataFeedTestSuite
      * @param inClass
      * @param inExtraBundles
      */
-    public MarketDataFeedTestSuite(Class inClass,
+    public MarketDataFeedTestSuite(Class<?> inClass,
                                    MessageBundleInfo[] inExtraBundles)
     {
         super(inClass,
@@ -77,7 +77,7 @@ public class MarketDataFeedTestSuite
     public static Message generateFIXMessage(List<MSymbol> inSymbols) 
         throws FeedException
     {
-        return AbstractMarketDataFeed.marketDataRequest(inSymbols, 
-                                                    false);
+        return AbstractMarketDataFeed.levelOneMarketDataRequest(inSymbols, 
+                                                                false);
     }    
 }

@@ -1,10 +1,14 @@
 package org.marketcetera.quickfix;
 
+import java.util.Arrays;
+
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTestSuite;
 
 import quickfix.Message;
@@ -91,7 +95,44 @@ public abstract class MessageTranslatorTestBase<T>
         assertEquals(fixMessage.toString(),
                      newMessage.toString());
     }
-    
+    /**
+     * Tests the message translator's ability to handle Level 1/BBO requests.
+     *
+     * @throws Exception
+     */
+    public void testLevel1()
+        throws Exception
+    {
+        // construct a BBO market data request
+        Message bbo = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ), 
+                                                                       false);
+        assertTrue(FIXMessageUtil.isMarketDataRequest(bbo));
+        assertTrue(FIXMessageUtil.isLevelOne(bbo));
+        // now translate the message
+        IMessageTranslator<T> translator = getMessageTranslator();
+        T xlatedMessage = translator.translate(bbo);
+        // this alone isn't necessarily indicative of successful handling, but at least it's a start 
+        assertNotNull(xlatedMessage);        
+    }
+    /**
+     * Tests the message translator's ability to handle Level 2/Full depth of book requests.
+     *
+     * @throws Exception
+     */
+    public void testLevel2()
+        throws Exception
+    {
+        // construct a BBO market data request
+        Message full = AbstractMarketDataFeed.levelTwoMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ), 
+                                                                        false);
+        assertTrue(FIXMessageUtil.isMarketDataRequest(full));
+        assertTrue(FIXMessageUtil.isLevelTwo(full));
+        // now translate the message
+        IMessageTranslator<T> translator = getMessageTranslator();
+        T xlatedMessage = translator.translate(full);
+        // this alone isn't necessarily indicative of successful handling, but at least it's a start 
+        assertNotNull(xlatedMessage);        
+    }
     public void testNullValues()
         throws Exception
     {
