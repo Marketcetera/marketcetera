@@ -52,7 +52,7 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      * @param inCredentials a <code>C</code> value
      * @param inMessage a <code>Message</code> value
      * @param inSubscribers a <code>List&lt;? extends ISubscriber&gt;</code> value which may be empty
-     *   or null if no subscribers need to be notified of query results
+     *   if no subscribers need to be notified of query resultss
      * @return a MarketDataFeedTokenSpec&lt;C&gt; value
      * @throws NullPointerException if the passed credentials or message is null
      */

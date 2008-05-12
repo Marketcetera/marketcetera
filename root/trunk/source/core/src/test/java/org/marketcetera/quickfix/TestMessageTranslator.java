@@ -5,7 +5,7 @@ import org.marketcetera.core.MarketceteraException;
 import quickfix.Message;
 
 /**
- * Test implementation of <code>AbstractMessageTranslator</code>.
+ *
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -14,7 +14,7 @@ import quickfix.Message;
 public class TestMessageTranslator
         extends AbstractMessageTranslator<String>
 {
-    private static boolean sTranslateThrows = false;
+
     /**
      * Create a new TestMessageTranslator instance.
      *
@@ -29,9 +29,6 @@ public class TestMessageTranslator
     public String translate(Message inMessage)
             throws MarketceteraException
     {
-        if(getTranslateThrows()) {
-            throw new NullPointerException("This exception is expected");
-        }
         return inMessage.toString();
     }
 
@@ -42,15 +39,5 @@ public class TestMessageTranslator
             throws MarketceteraException
     {
         return null;
-    }
-
-    public static boolean getTranslateThrows()
-    {
-        return sTranslateThrows;
-    }
-
-    public static void setTranslateThrows(boolean inTranslateThrows)
-    {
-        sTranslateThrows = inTranslateThrows;
     }
 }
