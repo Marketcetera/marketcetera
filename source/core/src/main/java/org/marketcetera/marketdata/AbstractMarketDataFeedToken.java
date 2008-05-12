@@ -18,7 +18,6 @@ import org.marketcetera.core.publisher.PublisherEngine;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-@SuppressWarnings("unchecked")
 public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFeed,
                                                   C extends IMarketDataFeedCredentials>
     implements IMarketDataFeedToken<C>
