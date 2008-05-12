@@ -13,6 +13,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.TestSubscriber;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
+import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Group;
 import quickfix.Message;
@@ -243,31 +244,55 @@ public class AbstractMarketDataFeedTest
                                         boolean inUpdate)
         throws Exception
     {
-        Message message = AbstractMarketDataFeed.marketDataRequest(inSymbols, 
-                                                                   inUpdate);
-        assertNotNull(message);
+        Message levelOneMessage = AbstractMarketDataFeed.levelOneMarketDataRequest(inSymbols, 
+                                                                                   inUpdate);
+        Message levelTwoMessage = AbstractMarketDataFeed.levelTwoMarketDataRequest(inSymbols, 
+                                                                                   inUpdate);
+        assertNotNull(levelOneMessage);
+        assertNotNull(levelTwoMessage);
         // special case: if the symbol list contains nulls, those nulls will be ignored
         //  by the message creator, so we need to subtract them from the expected number
         //  of groups
         int nullCount = Collections.frequency(inSymbols, 
                                               null);
-        List<Group> groups = AbstractMessageTranslator.getGroups(message);
+        List<Group> levelOneGroups = AbstractMessageTranslator.getGroups(levelOneMessage);
+        List<Group> levelTwoGroups = AbstractMessageTranslator.getGroups(levelTwoMessage);
+        verifyMarketDataGroups(inSymbols,
+                               levelOneGroups,
+                               levelOneMessage,
+                               nullCount);
+        verifyMarketDataGroups(inSymbols,
+                               levelTwoGroups,
+                               levelTwoMessage,
+                               nullCount);
+        assertEquals(inUpdate,
+                     AbstractMessageTranslator.determineSubscriptionRequestType(levelOneMessage) == '1');
+        assertTrue(FIXMessageUtil.isLevelOne(levelOneMessage));
+        assertEquals(inUpdate,
+                     AbstractMessageTranslator.determineSubscriptionRequestType(levelTwoMessage) == '1');
+        assertTrue(FIXMessageUtil.isLevelTwo(levelTwoMessage));
+    }
+    
+    private void verifyMarketDataGroups(List<MSymbol> inSymbols,
+                                        List<Group> inGroups,
+                                        Message inMessage,
+                                        int inNullCount)
+        throws Exception
+    {
         assertEquals(inSymbols.isEmpty(),
-                     groups.isEmpty());
-        assertEquals(inSymbols.size() - nullCount,
-                     AbstractMessageTranslator.determineTotalSymbols(message));
-        assertEquals(inSymbols.size() - nullCount,
-                     groups.size());
+                     inGroups.isEmpty());
+        assertEquals(inSymbols.size() - inNullCount,
+                     AbstractMessageTranslator.determineTotalSymbols(inMessage));
+        assertEquals(inSymbols.size() - inNullCount,
+                     inGroups.size());
         for(int i=0;i<inSymbols.size();i++) {
             MSymbol symbol = inSymbols.get(i);
             if(symbol != null) {
-                Group group = groups.get(i);
+                Group group = inGroups.get(i);
                 assertEquals(symbol,
                              AbstractMessageTranslator.getSymbol(group));
             }
         }
-        assertEquals(inUpdate,
-                     AbstractMessageTranslator.determineSubscriptionRequestType(message) == '1');        
     }
     
     private void doExecuteTest(final MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> inTokenSpec,
