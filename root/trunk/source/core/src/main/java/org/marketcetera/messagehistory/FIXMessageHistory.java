@@ -15,6 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * FIXMessageHistory is an object that stores all incoming and outgoing messages (from Photon, for example)
+ *
+ * @author gmiller
+ * $Id$
+ */
 @ClassVersion("$Id$")
 public class FIXMessageHistory {
 
@@ -148,7 +154,8 @@ public class FIXMessageHistory {
 		groupID = getGroupID(fixMessage);
 
 		OutgoingMessageHolder messageHolder = new OutgoingMessageHolder(fixMessage, groupID);
-		if (FIXMessageUtil.isOrderSingle(fixMessage) || FIXMessageUtil.isOrderList(fixMessage)){
+		if (FIXMessageUtil.isOrderSingle(fixMessage) || FIXMessageUtil.isOrderList(fixMessage)
+                || FIXMessageUtil.isCancelReplaceRequest(fixMessage)){
 			try {
 				synchronized (orderMap){
 					orderMap.put(fixMessage.getString(ClOrdID.FIELD), messageHolder);
