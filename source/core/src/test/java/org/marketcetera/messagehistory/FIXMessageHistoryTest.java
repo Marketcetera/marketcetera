@@ -13,6 +13,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.FIXMessageUtilTest;
 
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
@@ -74,7 +75,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		BigDecimal orderPrice = new BigDecimal(789);
 		BigDecimal lastQty = new BigDecimal(100);
 		BigDecimal lastPrice = new BigDecimal("12.3");
-		BigDecimal leavesQty = new BigDecimal(900);
 		BigDecimal cumQty = new BigDecimal(100);
 		BigDecimal avgPrice = new BigDecimal("12.3");
 		MSymbol symbol = new MSymbol("ASDF");
@@ -89,8 +89,8 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(IncomingMessageHolder.class, historyList.get(0).getClass());
 			IncomingMessageHolder holder = (IncomingMessageHolder) historyList.get(0);
 			Message historyMessage = holder.getMessage();
-			assertEquals(orderID1.toString(), historyMessage.getString(OrderID.FIELD));
-			assertEquals(clOrderID1.toString(), historyMessage.getString(ClOrdID.FIELD));
+			assertEquals(orderID1, historyMessage.getString(OrderID.FIELD));
+			assertEquals(clOrderID1, historyMessage.getString(ClOrdID.FIELD));
 			assertEquals(execID, historyMessage.getString(ExecID.FIELD));
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD));
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD));
@@ -113,8 +113,8 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(IncomingMessageHolder.class, historyList.get(1).getClass());
 			IncomingMessageHolder holder = (IncomingMessageHolder) historyList.get(1);
 			Message historyMessage = holder.getMessage();
-			assertEquals(orderID2.toString(), historyMessage.getString(OrderID.FIELD));
-			assertEquals(clOrderID2.toString(), historyMessage.getString(ClOrdID.FIELD));
+			assertEquals(orderID2, historyMessage.getString(OrderID.FIELD));
+			assertEquals(clOrderID2, historyMessage.getString(ClOrdID.FIELD));
 			assertEquals(execID, historyMessage.getString(ExecID.FIELD));
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD));
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD));
@@ -155,14 +155,39 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		assertEquals(account, historyMessage.getString(Account.FIELD));
 	}
 
-	
+    // test Cancel/Replace
+    public void testAddOutgoing_CxR() throws Exception {
+        Message nos = FIXMessageUtilTest.createNOS("IBM", new BigDecimal(20), new BigDecimal(1000), Side.BUY, msgFactory);
+        Message cxr = msgFactory.newCancelReplaceFromMessage(nos);
+        FIXMessageHistory history = getMessageHistory();
+        EventList<MessageHolder> historyList = history.getAllMessagesList();
+        assertEquals(0, historyList.size());
+
+        history.addOutgoingMessage(cxr);
+        assertEquals(1, historyList.size());
+        assertNotNull(history.getOrder(cxr.getString(ClOrdID.FIELD)));
+    }
+
+    // make sure other messages aren't added
+    public void testAddOutgoing_NotAdded() throws Exception {
+        Message er = msgFactory.newExecutionReport("orderID", "clOrderID", "execid", OrdStatus.FILLED,  Side.BUY, new BigDecimal(1000),
+                new BigDecimal("10.10"), new BigDecimal(1000), new BigDecimal("10.10"), new BigDecimal(1000), new BigDecimal("10.10"),
+                new MSymbol("TOLI"), "account");
+        EventList<MessageHolder> historyList = getMessageHistory().getAllMessagesList();
+        assertEquals(0, historyList.size());
+
+        getMessageHistory().addOutgoingMessage(er);
+        assertEquals(0, historyList.size());
+        assertNull(getMessageHistory().getOrder(er.getString(ClOrdID.FIELD)));
+    }
+
 //	public void testGetOpenOrder() throws FieldNotFound {
 //		long currentTime = System.currentTimeMillis();
 //		FIXMessageHistory history = getMessageHistory();
 //		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1");
 //		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null);
 //		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
-//		
+//
 //		history.addOutgoingMessage(order1);
 //		history.addIncomingMessage(executionReportForOrder1);
 //
@@ -412,15 +437,12 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		String orderID1 = "1";
 		String clOrderID1 = "1";
 		String execID = "300";
-		char execTransType = ExecTransType.STATUS;
-		char execType = ExecType.PARTIAL_FILL;
 		char ordStatus = OrdStatus.PARTIALLY_FILLED;
 		char side = Side.SELL_SHORT;
 		BigDecimal orderQty = new BigDecimal(1000);
 		BigDecimal orderPrice = new BigDecimal(789);
 		BigDecimal lastQty = new BigDecimal(100);
 		BigDecimal lastPrice = new BigDecimal("12.3");
-		BigDecimal leavesQty = new BigDecimal(900);
 		BigDecimal cumQty = new BigDecimal("100");
 		BigDecimal avgPrice = new BigDecimal("12.3");
 		MSymbol symbol = new MSymbol("ASDF");
@@ -598,47 +620,47 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		FIXMessageHistory history = getMessageHistory();
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
-		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1).getDecimal(LastQty.FIELD));
+		assertEquals(orderID1, history.getLatestExecutionReport(clOrderID1).getString(OrderID.FIELD));
 		
 		// execution reports come in out of order, use the one that has the OrderID in it.
 		history = getMessageHistory();
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message1);
-		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
-		assertTrue(history.getLatestExecutionReport(clOrderID1.toString()).isSetField(OrderID.FIELD));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1).getDecimal(LastQty.FIELD));
+		assertTrue(history.getLatestExecutionReport(clOrderID1).isSetField(OrderID.FIELD));
 
 		// expecting 3, since it's later in order and later with sending time
 		history = getMessageHistory();
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message3);
-		assertEquals(new BigDecimal(300), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
-		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		assertEquals(new BigDecimal(300), history.getLatestExecutionReport(clOrderID1).getDecimal(LastQty.FIELD));
+		assertEquals(orderID1, history.getLatestExecutionReport(clOrderID1).getString(OrderID.FIELD));
 		
 		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
 		history = getMessageHistory();
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message2);
 		history.addIncomingMessage(message1);
-		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
-		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1).getDecimal(LastQty.FIELD));
+		assertEquals(orderID1, history.getLatestExecutionReport(clOrderID1).getString(OrderID.FIELD));
 
 		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
 		history = getMessageHistory();
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
-		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1).getDecimal(LastQty.FIELD));
+		assertEquals(orderID1, history.getLatestExecutionReport(clOrderID1).getString(OrderID.FIELD));
 
 		// 3rd msg is later by time, but arrives first, so expect msg2 to come through
 		history = getMessageHistory();
 		history.addIncomingMessage(message3);
 		history.addIncomingMessage(message1);
 		history.addIncomingMessage(message2);
-		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1.toString()).getDecimal(LastQty.FIELD));
-		assertEquals(orderID1.toString(), history.getLatestExecutionReport(clOrderID1.toString()).getString(OrderID.FIELD));
+		assertEquals(new BigDecimal(200), history.getLatestExecutionReport(clOrderID1).getDecimal(LastQty.FIELD));
+		assertEquals(orderID1, history.getLatestExecutionReport(clOrderID1).getString(OrderID.FIELD));
 	}
 
 	String [] messageStrings = {
