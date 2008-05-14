@@ -41,15 +41,14 @@ public class WrapperTestBase
         throws Exception
     {
         InputStream stdInSave=System.in;
+        CloseableRegistry r=new CloseableRegistry();
         try {
             ByteArrayInputStream stdIn=new ByteArrayInputStream(VALUE_BYTES);
-            try {
-                System.setIn(stdIn);
-                testStandardInputStream(stdIn);
-            } finally {
-                stdIn.close();
-            }
+            r.register(stdIn);
+            System.setIn(stdIn);
+            testStandardInputStream(stdIn);
         } finally {
+            r.close();
             System.setIn(stdInSave);
         }
     }
@@ -63,15 +62,16 @@ public class WrapperTestBase
         throws Exception
     {
         PrintStream stdOutSave=System.out;
+        CloseableRegistry r=new CloseableRegistry();
         try {
-            ByteArrayOutputStream stdOut=new ByteArrayOutputStream();
-            try {
-                System.setOut(new PrintStream(stdOut));
-                testStandardOutputStream(stdOut);
-            } finally {
-                stdOut.close();
-            }
+            ByteArrayOutputStream stdOutByteArray=new ByteArrayOutputStream();
+            r.register(stdOutByteArray);
+            PrintStream stdOut=new PrintStream(stdOutByteArray);
+            r.register(stdOut);
+            System.setOut(stdOut);
+            testStandardOutputStream(stdOutByteArray);
         } finally {
+            r.close();
             System.setOut(stdOutSave);
         }
     }
@@ -85,15 +85,16 @@ public class WrapperTestBase
         throws Exception
     {
         PrintStream stdErrSave=System.err;
+        CloseableRegistry r=new CloseableRegistry();
         try {
-            ByteArrayOutputStream stdErr=new ByteArrayOutputStream();
-            try {
-                System.setErr(new PrintStream(stdErr));
-                testStandardErrorStream(stdErr);
-            } finally {
-                stdErr.close();
-            }
+            ByteArrayOutputStream stdErrByteArray=new ByteArrayOutputStream();
+            r.register(stdErrByteArray);
+            PrintStream stdErr=new PrintStream(stdErrByteArray);
+            r.register(stdErr);
+            System.setErr(stdErr);
+            testStandardErrorStream(stdErrByteArray);
         } finally {
+            r.close();
             System.setErr(stdErrSave);
         }
     }
