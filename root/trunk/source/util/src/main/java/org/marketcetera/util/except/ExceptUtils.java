@@ -1,8 +1,8 @@
 package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NMessageProvider;
-import org.marketcetera.util.log.LogUtils;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage;
 
 /**
  * General-purpose utilities.
@@ -14,109 +14,147 @@ import org.marketcetera.util.log.LogUtils;
 /* $License$ */
 
 @ClassVersion("$Id$")
-final class ExceptUtils
+public final class ExceptUtils
 {
 
     // CLASS METHODS.
 
     /**
-     * Returns a string combining the two given strings. A null string
-     * is ignored; if both strings are null, null is returned.
+     * Checks whether the calling thread has been interrupted, and, if
+     * so, throws an exception built using the {@link
+     * InterruptedException#InterruptedException()} constructor. The
+     * interrupted status of the thread is cleared.
      *
-     * @param first The first string.
-     * @param second The second string.
-     *
-     * @return The combination.
+     * @throws InterruptedException Thrown if the calling thread
+     * was interrupted.
      */
 
-    private static String combine
-        (String first,
-         String second)
+    public static void checkInterruption()
+        throws InterruptedException
     {
-        if ((first!=null) && (second!=null)) {
-            return first+" ("+second+")";
+        if (Thread.interrupted()) {
+            throw new InterruptedException();
         }
-        if (first!=null) {
-            return first;
-        }
-        return second;
-    }                                  
-
-    /**
-     * Returns the localized message of the given internationalized
-     * throwable, as implemented by {@link
-     * Throwable#getLocalizedMessage()}.
-     *
-     * @param t The throwable.
-     *
-     * @return The message.
-     */
-
-    static String getLocalizedMessage
-        (I18NThrowable t)
-    {
-    	if (t.getI18NProvider()==null) {
-	    	return t.getMessage();
-	    }
-    	return t.getI18NProvider().getText(t.getI18NMessage(),t.getParams());
     }
 
     /**
-     * Returns the raw message of the given internationalized
-     * throwable, possibly combined with the raw message of the
-     * throwable's underlying cause.
+     * Checks whether the calling thread has been interrupted, and, if
+     * so, throws an exception built using the {@link
+     * InterruptedException#InterruptedException(String)}
+     * constructor. The interrupted status of the thread is cleared.
      *
-     * @param t The throwable.
+     * @param message The message.
      *
-     * @return The message.
+     * @throws InterruptedException Thrown if the calling thread
+     * was interrupted.
      */
 
-    static String getDetail
-        (I18NThrowable t)
+    public static void checkInterruption
+        (String message)
+        throws InterruptedException
     {
-        String selfMessage=null;
-    	if (t.getI18NProvider()!=null) {
-	    	selfMessage=t.getMessage();
+        if (Thread.interrupted()) {
+            throw new InterruptedException(message);
         }
-        String causeMessage=null;
-        Throwable cause=t.getCause();
-    	if (cause!=null) {
-            if (cause instanceof I18NThrowable) {
-                causeMessage=((I18NThrowable)cause).getDetail();
-            } else {
-                causeMessage=cause.getMessage();
-            }
-	    }
-    	return combine(selfMessage,causeMessage);
-	}
+    }
 
     /**
-     * Returns the localized message of the given internationalized
-     * throwable, possibly combined with the localized message of the
-     * throwable's underlying cause.
+     * Checks whether the calling thread has been interrupted, and, if
+     * so, throws an exception built using the {@link
+     * InterruptedException#InterruptedException()} constructor. The
+     * given underlying cause is set on the thrown exception. The
+     * interrupted status of the thread is cleared.
      *
-     * @param t The throwable.
+     * @param cause The cause.
      *
-     * @return The message.
+     * @throws InterruptedException Thrown if the calling thread
+     * was interrupted.
      */
 
-    static String getLocalizedDetail
-        (I18NThrowable t)
+    public static void checkInterruption
+        (Throwable cause)
+        throws InterruptedException
     {
-        String selfMessage=null;
-    	if (t.getI18NProvider()!=null) {
-	    	selfMessage=t.getLocalizedMessage();
+        if (Thread.interrupted()) {
+            InterruptedException ex=new InterruptedException();
+            ex.initCause(cause);
+            throw ex;
         }
-        String causeMessage=null;
-        Throwable cause=t.getCause();
-    	if (cause!=null) {
-            if (cause instanceof I18NThrowable) {
-                causeMessage=((I18NThrowable)cause).getLocalizedDetail();
-            } else {
-                causeMessage=cause.getLocalizedMessage();
-            }
-	    }
-    	return combine(selfMessage,causeMessage);
+    }
+
+    /**
+     * Checks whether the calling thread has been interrupted, and, if
+     * so, throws an exception built using the {@link
+     * InterruptedException#InterruptedException(String)}
+     * constructor. The given underlying cause is set on the thrown
+     * exception. The interrupted status of the thread is cleared.
+     *
+     * @param cause The cause.
+     * @param message The message.
+     *
+     * @throws InterruptedException Thrown if the calling thread
+     * was interrupted.
+     */
+
+    public static void checkInterruption
+        (Throwable cause,
+         String message)
+        throws InterruptedException
+    {
+        if (Thread.interrupted()) {
+            InterruptedException ex=new InterruptedException(message);
+            ex.initCause(cause);
+            throw ex;
+        }
+    }
+
+    /**
+     * Swallows the given throwable. It logs the given parameterized
+     * message and throwable under the given logging category at the
+     * warning level via the given logger proxy. Also, if the given
+     * throwable is an instance of {@link InterruptedException}, then
+     * the calling thread is interrupted.
+     * 
+     * @param throwable The throwable.
+     * @param logger The logger proxy.
+     * @param category The category.
+     * @param message The message.
+     * @param params The message parameters.
+     *
+     * @throws InterruptedException Thrown if the calling thread
+     * was interrupted.
+     */
+
+    public static void swallow
+        (Throwable throwable,
+         I18NLoggerProxy logger,
+         Object category,
+         I18NMessage message,
+         Object... params)
+    {
+        logger.warn(category,throwable,message,params);
+        if (throwable instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
+     * Swallows the given throwable. It logs a standard message
+     * alongside the throwable at the warning level. Also, if the
+     * given throwable is an instance of {@link InterruptedException},
+     * then the calling thread is interrupted.
+     * 
+     * @param throwable The throwable.
+     *
+     * @throws InterruptedException Thrown if the calling thread
+     * was interrupted.
+     */
+
+    public static void swallow
+        (Throwable throwable)
+    {
+        swallow(throwable,Messages.LOGGER,ExceptUtils.class,
+                Messages.THROWABLE_IGNORED);
     }
 
 

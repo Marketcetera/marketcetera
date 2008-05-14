@@ -97,19 +97,19 @@ public class I18NError
     @Override
     public String getLocalizedMessage()
     {
-        return ExceptUtils.getLocalizedMessage(this);
+        return I18NExceptUtils.getLocalizedMessage(this);
 	}
 
     @Override
     public String getDetail()
     {
-        return ExceptUtils.getDetail(this);
+        return I18NExceptUtils.getDetail(this);
 	}
 
     @Override
     public String getLocalizedDetail()
     {
-        return ExceptUtils.getLocalizedDetail(this);
+        return I18NExceptUtils.getLocalizedDetail(this);
     }
     
     @Override
