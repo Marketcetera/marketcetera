@@ -13,7 +13,15 @@ public class ExceptUtilsTest
         ExceptUtils.class.getName();
 
 
-    private void swallowException
+    private static void interruptHelper
+        (Exception ex,
+         boolean interrupted)
+    {
+        ExceptUtils.interrupt(ex);
+        assertEquals(interrupted,Thread.currentThread().interrupted());
+    }
+
+    private void swallowHelper
         (Exception ex,
          boolean interrupted)
     {
@@ -27,6 +35,47 @@ public class ExceptUtilsTest
         assertEquals(interrupted,Thread.currentThread().interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,
                           "Caught throwable was not propagated");
+    }
+
+    private static void wrapHelper
+        (Exception ex,
+         boolean interruption)
+    {
+        I18NException out=ExceptUtils.wrap
+            (ex,TestMessages.PROVIDER,
+             TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+        assertEquals(TestMessages.PROVIDER,out.getI18NProvider());
+        assertEquals(TestMessages.MID_EXCEPTION,out.getI18NMessage());
+        assertEquals(new Object[] {MID_MSG_PARAM},out.getParams());
+        assertEquals(ex,out.getCause());
+        assertTrue(out instanceof I18NException);
+        assertEquals(interruption,out instanceof I18NInterruptedException);
+        assertEquals(interruption,Thread.currentThread().interrupted());
+
+        out=ExceptUtils.wrap(ex);
+        assertEquals(ex,out.getCause());
+        assertTrue(out instanceof I18NException);
+        assertEquals(interruption,out instanceof I18NInterruptedException);
+        assertEquals(interruption,Thread.currentThread().interrupted());
+
+        I18NRuntimeException outR=ExceptUtils.wrapRuntime
+            (ex,TestMessages.PROVIDER,
+             TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+        assertEquals(TestMessages.PROVIDER,outR.getI18NProvider());
+        assertEquals(TestMessages.MID_EXCEPTION,outR.getI18NMessage());
+        assertEquals(new Object[] {MID_MSG_PARAM},outR.getParams());
+        assertEquals(ex,outR.getCause());
+        assertTrue(outR instanceof I18NRuntimeException);
+        assertEquals(interruption,
+                     outR instanceof I18NInterruptedRuntimeException);
+        assertEquals(interruption,Thread.currentThread().interrupted());
+
+        outR=ExceptUtils.wrapRuntime(ex);
+        assertEquals(ex,outR.getCause());
+        assertTrue(outR instanceof I18NRuntimeException);
+        assertEquals(interruption,
+                     outR instanceof I18NInterruptedRuntimeException);
+        assertEquals(interruption,Thread.currentThread().interrupted());
     }
 
 
@@ -130,11 +179,42 @@ public class ExceptUtilsTest
     }
 
     @Test
+    public void interruptException()
+    {
+        assertFalse(ExceptUtils.isInterruptException
+                    (new CloneNotSupportedException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new InterruptedException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new I18NInterruptedException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new I18NInterruptedRuntimeException()));
+    }
+
+    @Test
+    public void interrupt()
+    {
+        interruptHelper(new CloneNotSupportedException(),false);
+        interruptHelper(new InterruptedException(),true);
+        interruptHelper(new I18NInterruptedException(),true);
+        interruptHelper(new I18NInterruptedRuntimeException(),true);
+    }
+
+    @Test
     public void swallow()
     {
-        swallowException(new CloneNotSupportedException(),false);
-        swallowException(new InterruptedException(),true);
-        swallowException(new I18NInterruptedException(),true);
-        swallowException(new I18NInterruptedRuntimeException(),true);
+        swallowHelper(new CloneNotSupportedException(),false);
+        swallowHelper(new InterruptedException(),true);
+        swallowHelper(new I18NInterruptedException(),true);
+        swallowHelper(new I18NInterruptedRuntimeException(),true);
+    }
+
+    @Test
+    public void wrap()
+    {
+        wrapHelper(new CloneNotSupportedException(),false);
+        wrapHelper(new InterruptedException(),true);
+        wrapHelper(new I18NInterruptedException(),true);
+        wrapHelper(new I18NInterruptedRuntimeException(),true);
     }
 }
