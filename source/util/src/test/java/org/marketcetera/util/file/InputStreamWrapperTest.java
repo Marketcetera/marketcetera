@@ -73,15 +73,17 @@ public class InputStreamWrapperTest
         (ByteArrayInputStream in)
         throws Exception
     {
-        InputStreamWrapper wrapper=new InputStreamWrapper
-            (SpecialNames.STANDARD_INPUT);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            InputStreamWrapper wrapper=new InputStreamWrapper
+                (SpecialNames.STANDARD_INPUT);
+            r.register(wrapper);
             assertTrue(wrapper.getSkipClose());
             assertNotNull(wrapper.getStream());
             assertArrayEquals
                 (VALUE_BYTES,IOUtils.toByteArray(wrapper.getStream()));
         } finally {
-            wrapper.close();
+            r.close();
         }
     }
 
