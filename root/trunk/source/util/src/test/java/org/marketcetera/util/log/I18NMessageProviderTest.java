@@ -36,7 +36,7 @@ public class I18NMessageProviderTest
 
 
     @Before
-    public void setup()
+    public void setupI18NMessageProviderTest()
     {
         Messages.PROVIDER.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.ERROR);
