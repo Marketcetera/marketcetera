@@ -69,8 +69,11 @@ public class MockMarketDataFeed extends AbstractMarketDataFeed<MockMarketDataFee
 	}
 
 	@Override
-	protected void afterDoExecute(MockMarketDataFeedToken inToken) {
-		dataReceived(SOME_IDENTIFIER, messageToSend);
+	protected void afterDoExecute(MockMarketDataFeedToken inToken,
+	                              Throwable inException) 
+	{
+		dataReceived(SOME_IDENTIFIER, 
+		             messageToSend);
 	}
 	
 	@Override
