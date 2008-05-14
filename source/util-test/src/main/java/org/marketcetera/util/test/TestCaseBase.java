@@ -109,7 +109,7 @@ public class TestCaseBase
      */
 
     @Before
-    public void setupLogging()
+    public void setupTestCaseBase()
     {
         mAppender=new MemoryAppender();
 		BasicConfigurator.configure(getAppender());
