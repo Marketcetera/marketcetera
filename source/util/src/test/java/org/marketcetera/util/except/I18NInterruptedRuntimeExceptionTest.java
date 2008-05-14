@@ -57,9 +57,8 @@ public class I18NInterruptedRuntimeExceptionTest
         I18NInterruptedRuntimeException.checkInterruption();
     }
 
-    @Test(expected=I18NInterruptedRuntimeException.class)
+    @Test
     public void interruptionEmptyThrow()
-        throws Exception
     {
         Thread.currentThread().interrupt();
         try {
@@ -69,8 +68,9 @@ public class I18NInterruptedRuntimeExceptionTest
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NMessage());
             assertNull(ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
@@ -81,9 +81,8 @@ public class I18NInterruptedRuntimeExceptionTest
             (new InterruptedException());
     }
 
-    @Test(expected=I18NInterruptedRuntimeException.class)
+    @Test
     public void interruptionNestedThrow()
-        throws Exception
     {
         InterruptedException nested=new InterruptedException();
         Thread.currentThread().interrupt();
@@ -94,8 +93,9 @@ public class I18NInterruptedRuntimeExceptionTest
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NMessage());
             assertEquals(nested,ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
@@ -107,9 +107,8 @@ public class I18NInterruptedRuntimeExceptionTest
              TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
     }
 
-    @Test(expected=I18NInterruptedRuntimeException.class)
+    @Test
     public void interruptionI18NMessageThrow()
-        throws Exception
     {
         Thread.currentThread().interrupt();
         try {
@@ -121,8 +120,9 @@ public class I18NInterruptedRuntimeExceptionTest
             assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
                          ex.getI18NMessage());
             assertNull(ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
@@ -134,9 +134,8 @@ public class I18NInterruptedRuntimeExceptionTest
              TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
     }
 
-    @Test(expected=I18NInterruptedRuntimeException.class)
+    @Test
     public void interruptionI18NMessageNestedThrow()
-        throws Exception
     {
         InterruptedException nested=new InterruptedException();
         Thread.currentThread().interrupt();
@@ -149,7 +148,8 @@ public class I18NInterruptedRuntimeExceptionTest
             assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
                          ex.getI18NMessage());
             assertEquals(nested,ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 }
