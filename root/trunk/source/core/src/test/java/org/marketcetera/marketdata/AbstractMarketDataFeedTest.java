@@ -4,16 +4,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Semaphore;
 
 import junit.framework.Test;
+import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.TestSubscriber;
+import org.marketcetera.event.TestEventTranslator;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
+import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.quickfix.TestMessageTranslator;
 
 import quickfix.Group;
 import quickfix.Message;
@@ -39,7 +47,15 @@ public class AbstractMarketDataFeedTest
     }
     public static Test suite() 
     {
-        return MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
+        TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
+//        TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite();
+//        suite.addTest(new AbstractMarketDataFeedTest("testDataReceived"));
+//        suite.addTest(new AbstractMarketDataFeedTest("testCancel"));
+//      suite.addTest(new AbstractMarketDataFeedTest("testExecute"));
+//        suite.addTest(new AbstractMarketDataFeedTest("testExecuteFailures"));
+//      suite.addTest(new AbstractMarketDataFeedTest("testPublishEventsThrowsException"));
+        
+        return suite;
     }        
     public void testConstructor()
         throws Exception
@@ -89,73 +105,6 @@ public class AbstractMarketDataFeedTest
                      feed.getFeedStatus());
     }
     
-    public void testExecute()
-        throws Exception
-    {
-        TestSubscriber subscriber = new TestSubscriber();
-        for(int a=0;a<=1;a++) {
-            for(int b=0;b<=1;b++) {
-                doExecuteTest(a==0 ? null : mMessage,
-                              b==0 ? null : subscriber, 
-                              false, 
-                              false, 
-                              false);        
-            }
-        }
-    }
-    
-    public void testParallelExecution()
-        throws Exception
-    {
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
-                                                         "TestMarketDataFeed",
-                                                         credentials,
-                                                         25);
-        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
-        List<TestMarketDataFeedToken> tokens = new ArrayList<TestMarketDataFeedToken>();
-        for(int i=0;i<1000;i++) {
-            TestSubscriber s = new TestSubscriber();
-            subscribers.add(s);
-            MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(credentials, 
-                                                                                                                         mMessage, 
-                                                                                                                         subscribers);
-            tokens.add(feed.execute(tokenSpec));
-        }
-        for(TestSubscriber s : subscribers) {
-            while(s.getData() == null) {
-                Thread.sleep(50);
-            }
-        }
-        for(TestMarketDataFeedToken token : tokens) {
-            feed.cancel(token);
-        }
-        assertEquals(feed.getCreatedHandles(),
-                     feed.getCanceledHandles());
-        assertTrue(Arrays.equals(feed.getCreatedHandles().toArray(),
-                                 feed.getCanceledHandles().toArray()));
-    }
-    
-    public void testExecuteFailures()
-        throws Exception
-    {
-        doExecuteTest(mMessage, 
-                      null, 
-                      true, 
-                      false, 
-                      false);
-        doExecuteTest(mMessage, 
-                      null, 
-                      false, 
-                      true, 
-                      false);
-        doExecuteTest(mMessage, 
-                      null, 
-                      false, 
-                      false, 
-                      true);
-    }
-    
     public void testMarketDataRequest()
         throws Exception
     {
@@ -201,7 +150,7 @@ public class AbstractMarketDataFeedTest
         final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
                                                                new TestMarketDataFeedCredentials());
         List<ISubscriber> subscribers = Arrays.asList(new ISubscriber[0]);
-                new ExpectedTestFailure(NullPointerException.class) {
+        new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
             {
@@ -218,8 +167,224 @@ public class AbstractMarketDataFeedTest
                              subscribers);
         feed.cancel(token);
         verifyAllCanceled(feed);
+        // set it so the execution step returns no handles, thus guaranteeing that the cancel
+        //  token request can't match any handles
+        feed.setExecuteReturnsNothing(true);
+        feed.setCancelFails(false);
+        // execute the same query
+        token = feed.execute(token.getTokenSpec());
+        feed.cancel(token);
+        verifyAllCanceled(feed);
+        
     }
     
+    public void testStart()
+    	throws Exception
+    {
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        assertFalse(feed.isRunning());
+        feed.start();
+        assertTrue(feed.isRunning());
+        feed.stop();
+        assertFalse(feed.isRunning());
+    }
+    
+    public void testDoInitialize()
+        throws Exception
+    {
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        feed.setInitFails(false);
+        assertTrue(feed.doInitialize(null));
+        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+                                                                                                                     mMessage, 
+                                                                                                                     Arrays.asList(new ISubscriber[0]));
+        TestMarketDataFeedToken token = TestMarketDataFeedToken.getToken(tokenSpec, 
+                                                                         feed);
+        assertTrue(feed.doInitialize(token));
+    }
+    
+    public void testBeforeDoExecute()
+        throws Exception
+    {
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        assertTrue(feed.beforeDoExecute(null));
+        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+                                                                                                                     mMessage, 
+                                                                                                                     Arrays.asList(new ISubscriber[0]));
+        TestMarketDataFeedToken token = TestMarketDataFeedToken.getToken(tokenSpec, 
+                                                                         feed);
+        assertTrue(feed.beforeDoExecute(token));
+    }
+    
+    public void testAfterDoExecute()
+        throws Exception
+    {
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+                                                                                                                     mMessage, 
+                                                                                                                     Arrays.asList(new ISubscriber[0]));
+        TestMarketDataFeedToken token = TestMarketDataFeedToken.getToken(tokenSpec, 
+                                                                         feed);
+        feed.afterDoExecute(null, null);
+        feed.afterDoExecute(token, null);
+    }
+    
+    public void testSetFeedStatus()
+        throws Exception
+    {
+        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                feed.setFeedStatus(null);
+            }
+        }.run();
+
+        TestFeedComponentListener listener = new TestFeedComponentListener();
+        assertTrue(listener.getChangedComponents().isEmpty());
+        feed.addFeedComponentListener(listener);
+        
+        assertEquals(FeedStatus.OFFLINE,
+                     feed.getFeedStatus());
+        
+        feed.setFeedStatus(FeedStatus.UNKNOWN);
+        listener.mSemaphore.acquire();
+        assertEquals(1,
+                     listener.getChangedComponents().size());
+        assertEquals(feed,
+                     listener.getChangedComponents().get(0));
+        listener.mSemaphore.release();
+        listener.reset();
+        // change feed status, make sure listener gets updated
+        feed.setFeedStatus(FeedStatus.AVAILABLE);
+        listener.mSemaphore.acquire();
+        assertEquals(FeedStatus.AVAILABLE,
+                     feed.getFeedStatus());
+        assertEquals(1,
+                     listener.getChangedComponents().size());
+        assertEquals(feed,
+                     listener.getChangedComponents().get(0));
+        listener.mSemaphore.release();
+        listener.reset();
+        // make sure listener is not notified if set to the same status
+        feed.setFeedStatus(FeedStatus.AVAILABLE);
+        Thread.sleep(1000);
+        assertTrue(listener.getChangedComponents().isEmpty());
+    }
+    
+    public void testFeedComponentListener()
+    	throws Exception
+    {
+        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                feed.addFeedComponentListener(null);
+            }
+        }.run();
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                feed.removeFeedComponentListener(null);
+            }
+        }.run();
+        
+    	TestFeedComponentListener listener = new TestFeedComponentListener();
+    	assertTrue(listener.getChangedComponents().isEmpty());
+        feed.start();
+    	assertTrue(listener.getChangedComponents().isEmpty());
+    	feed.addFeedComponentListener(listener);
+        feed.stop();
+        listener.mSemaphore.acquire();
+    	assertEquals(1,
+    			     listener.getChangedComponents().size());
+    	assertEquals(feed,
+    			     listener.getChangedComponents().get(0));
+    	listener.mSemaphore.release();
+    	listener.reset();
+    	// re-add the same listener, make sure there's only one notification
+        feed.addFeedComponentListener(listener);
+        feed.start();
+        listener.mSemaphore.acquire();
+        assertEquals(1,
+                     listener.getChangedComponents().size());
+        assertEquals(feed,
+                     listener.getChangedComponents().get(0));
+        listener.mSemaphore.release();
+        listener.reset();
+    	// remove a listener that's not subscribed
+    	feed.removeFeedComponentListener(new IFeedComponentListener() {
+			@Override
+			public void feedComponentChanged(IFeedComponent component) {
+			}    		
+    	});
+    	feed.stop();
+    	listener.mSemaphore.acquire();
+    	assertEquals(1,
+    			     listener.getChangedComponents().size());
+    	assertEquals(feed,
+    			     listener.getChangedComponents().get(0));
+    	listener.mSemaphore.release();
+    	listener.reset();
+    	// remove actual listener
+    	feed.removeFeedComponentListener(listener);
+    	feed.start();
+    	Thread.sleep(1000);
+    	assertTrue(listener.getChangedComponents().isEmpty());
+    }
+    
+    public void testDataReceived()
+        throws Exception
+    {
+        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                feed.dataReceived(null, 
+                                  this);
+            }
+        }.run();
+        feed.dataReceived("handle",
+                          null);
+    }
+    
+    private static class TestFeedComponentListener
+    	implements IFeedComponentListener
+    {
+    	private Semaphore mSemaphore = new Semaphore(1);
+    	private List<IFeedComponent> mChangedComponents = new ArrayList<IFeedComponent>();
+    	private TestFeedComponentListener()
+    		throws Exception
+    	{
+    		mSemaphore.acquire();
+    	}
+		@Override
+		public void feedComponentChanged(IFeedComponent component) 
+		{
+			synchronized(mChangedComponents) {
+				mChangedComponents.add(component);
+			}
+			mSemaphore.release();
+		}
+		private void reset() 
+			throws InterruptedException
+		{
+			synchronized(mChangedComponents) {
+				mChangedComponents.clear();
+			}
+			mSemaphore.acquire();
+		}
+		private List<IFeedComponent> getChangedComponents()
+		{
+			synchronized(mChangedComponents) {
+				return new ArrayList<IFeedComponent>(mChangedComponents);
+			}
+		}
+    }
     private void verifyAllCanceled(TestMarketDataFeed inFeed)
         throws Exception
     {
@@ -295,102 +460,571 @@ public class AbstractMarketDataFeedTest
         }
     }
     
-    private void doExecuteTest(final MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> inTokenSpec,
-                               boolean inLoginFails, 
-                               boolean inInitFails, 
-                               boolean inExecFails)
+    public void testPublishEventsThrowsException()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
-        List<? extends ISubscriber> subscribers = inTokenSpec.getSubscribers();
-        if(subscribers != null) {
-            for(ISubscriber subscriber : subscribers) {
-                if(subscriber != null) {
-                    TestSubscriber s = (TestSubscriber)subscriber;
-                    assertNull(s.getData());
-                }
+        TestSubscriber subscriber1 = new TestSubscriber();
+        TestSubscriber subscriber2 = new TestSubscriber();
+        TestSubscriber subscriber3 = new TestSubscriber();
+        subscriber2.setPublishThrows(true);
+        assertFalse(subscriber1.getPublishThrows());
+        assertTrue(subscriber2.getPublishThrows());
+        assertFalse(subscriber3.getPublishThrows());
+        TestMarketDataFeed feed = new TestMarketDataFeed();
+        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        List<ISubscriber> subscribers = Arrays.asList(new ISubscriber[] { subscriber1, subscriber2, subscriber3 } );
+        TestMarketDataFeedToken token = feed.execute(credentials,
+                                                     mMessage,
+                                                     subscribers);
+        // make sure that 1 & 3 received publications despite 2's rudeness
+        assertNotNull(token);
+        while(subscriber1.getData() == null) {
+            Thread.sleep(100);
+        }
+        assertEquals(1,
+                     subscriber1.getPublishCount());
+        assertEquals(0,
+                     subscriber2.getPublishCount());
+        while(subscriber3.getData() == null) {
+            Thread.sleep(100);
+        }
+        assertEquals(1,
+                     subscriber3.getPublishCount());
+    }        
+    
+    public void testExecute()
+    	throws Exception
+    {
+        TestSubscriber subscriber = new TestSubscriber();
+        for(int a=0;a<=1;a++) {
+            for(int b=0;b<=1;b++) {
+                doExecuteTest(a==0 ? null : mMessage,
+                              b==0 ? null : subscriber, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false, 
+                              false);  
             }
         }
-        feed.setLoginFails(inLoginFails);
-        feed.setInitFails(inInitFails);
-        feed.setExecutionFails(inExecFails);
-        
-        TestMarketDataFeedToken token = feed.execute(inTokenSpec);
-        verifyExecution(inLoginFails,
-                        inInitFails,
-                        inExecFails,
-                        feed,
-                        token,
-                        subscribers);
-        resetSubscribers(subscribers);
-        token = feed.execute(inTokenSpec.getCredentials(),
-                             inTokenSpec.getMessage(),
-                             inTokenSpec.getSubscribers());
-        verifyExecution(inLoginFails,
-                        inInitFails,
-                        inExecFails,
-                        feed,
-                        token,
-                        subscribers);
-        resetSubscribers(subscribers);
-        token = feed.execute(inTokenSpec.getCredentials(),
-                             inTokenSpec.getMessage(),
-                             inTokenSpec.getSubscribers().get(0));
-        List<ISubscriber> listOfOne = new ArrayList<ISubscriber>();
-        listOfOne.add(subscribers.get(0));
-        verifyExecution(inLoginFails,
-                        inInitFails,
-                        inExecFails,
-                        feed,
-                        token,
-                        listOfOne);
     }
-    private void verifyExecution(boolean inLoginFails,
-                                 boolean inInitFails,
-                                 boolean inExecFails,
-                                 TestMarketDataFeed inFeed,
-                                 TestMarketDataFeedToken inToken,
-                                 List<? extends ISubscriber> inSubscribers)
+
+    public void testParallelExecution()
         throws Exception
     {
-        if(inLoginFails ||
-           inInitFails ||
-           inExecFails) {
-            assertEquals(FeedStatus.ERROR,
-                         inFeed.getFeedStatus());
-            if(inLoginFails) {
-                assertEquals(IMarketDataFeedToken.Status.LOGIN_FAILED,
-                             inToken.getStatus());
-            } else if(inInitFails) {
-                assertEquals(IMarketDataFeedToken.Status.INITIALIZATION_FAILED,
-                             inToken.getStatus());
-            } else if(inExecFails) {
-                assertEquals(IMarketDataFeedToken.Status.EXECUTION_FAILED,
-                             inToken.getStatus());
+        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
+                                                         "TestMarketDataFeed",
+                                                         credentials,
+                                                         25);
+        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
+        List<TestMarketDataFeedToken> tokens = new ArrayList<TestMarketDataFeedToken>();
+        for(int i=0;i<1000;i++) {
+            TestSubscriber s = new TestSubscriber();
+            subscribers.add(s);
+            MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(credentials, 
+                                                                                                                         mMessage, 
+                                                                                                                         subscribers);
+            tokens.add(feed.execute(tokenSpec));
+        }
+        for(TestSubscriber s : subscribers) {
+            while(s.getData() == null) {
+                Thread.sleep(50);
             }
-        } else {
-            assertNotNull(inToken);
-            if(inSubscribers != null) {
-                for(ISubscriber subscriber : inSubscribers) {
-                    if(subscriber != null) {
-                        TestSubscriber s = (TestSubscriber)subscriber;
-                        while(s.getData() == null) {
-                            Thread.sleep(100);
-                        }
-                        assertEquals(1,
-                                     s.getPublishCount());
+        }
+        for(TestMarketDataFeedToken token : tokens) {
+            feed.cancel(token);
+        }
+        assertEquals(feed.getCreatedHandles(),
+                     feed.getCanceledHandles());
+        assertTrue(Arrays.equals(feed.getCreatedHandles().toArray(),
+                                 feed.getCanceledHandles().toArray()));
+    }
+
+    public void testExecuteFailures()
+        throws Exception
+    {
+        final TestMarketDataFeed feed = new TestMarketDataFeed();
+        final TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        final TestSubscriber subscriber = new TestSubscriber();
+        
+        // test nulls
+        // test execute I
+        new ExpectedTestFailure(NullPointerException.class) {
+            protected void execute()
+                    throws Throwable
+            {
+                feed.execute(null);
+            }
+        }.run();
+        // test execute overloads
+        for(int a=0;a<=1;a++) {
+            for(int b=0;b<=1;b++) {
+                for(int c=0;c<=1;c++) {
+                    final TestMarketDataFeedCredentials myCredentials = a==0 ? null : credentials;
+                    final Message myMessage = b==0 ? null : mMessage; 
+                    final ISubscriber mySubscriber = c==0 ? null : subscriber;
+                    final List<ISubscriber> mySubscribers = c==0 ? null : Arrays.asList(mySubscriber);
+                    // null subscribers are OK, any other null should cause a problem
+                    // also protect against all non-null (that should succeed)
+                    if(myCredentials != null &&
+                       mySubscriber != null &&
+                       myMessage != null) {
+                        // test execute II
+                        feed.execute(myCredentials,
+                                     myMessage,
+                                     mySubscriber);
+                        // test execute III
+                        feed.execute(myCredentials,
+                                     myMessage,
+                                     mySubscribers);
+                        feed.execute(myCredentials,
+                                     myMessage,
+                                     new ArrayList<ISubscriber>());
+                        // test execute IV
+                        feed.execute(myMessage,
+                                     mySubscriber);
+                        // test execute V
+                        feed.execute(myMessage,
+                                     mySubscribers);
+                    } else {
+                        // execute II
+                        new ExpectedTestFailure(NullPointerException.class) {
+                            protected void execute()
+                                throws Throwable
+                            {
+                                feed.execute(myCredentials,
+                                             myMessage,
+                                             mySubscriber);
+                            }
+                        }.run();
+                        // execute III
+                        new ExpectedTestFailure(NullPointerException.class) {
+                            protected void execute()
+                                throws Throwable
+                            {
+                                feed.execute(myCredentials,
+                                             myMessage,
+                                             mySubscribers);
+                            }
+                        }.run();
+                        // execute IV
+                        new ExpectedTestFailure(NullPointerException.class) {
+                            protected void execute()
+                                throws Throwable
+                            {
+                                feed.execute(myMessage,
+                                             mySubscriber);
+                            }
+                        }.run();
+                        // test execute V
+                        new ExpectedTestFailure(NullPointerException.class) {
+                            protected void execute()
+                                throws Throwable
+                            {
+                                feed.execute(myMessage,
+                                             mySubscribers);
+                            }
+                        }.run();
                     }
                 }
             }
-            assertEquals(FeedStatus.AVAILABLE,
-                         inFeed.getFeedStatus());
         }
+        // test more intricate failure conditions
+        doExecuteTest(mMessage, 
+                      null, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false,
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true, 
+                      false);
+        doExecuteTest(mMessage, 
+                      null, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      true);
     }
     private void doExecuteTest(final Message inMessage,
                                final TestSubscriber inSubscriber, 
                                boolean inLoginFails, 
                                boolean inInitFails, 
-                               boolean inExecFails)
+                               boolean inLoginThrows, 
+                               boolean inIsLoggedInThrows, 
+                               boolean inInitThrows, 
+                               boolean inExecThrows, 
+                               boolean inGenerateTokenThrows, 
+                               boolean inGetEventTranslatorThrows, 
+                               boolean inTranslateToEventsThrows, 
+                               boolean inTranslateToEventsReturnsNull, 
+                               boolean inTranslateToEventsReturnsZeroEvents, 
+                               boolean inBeforeExecuteReturnsFalse, 
+                               boolean inGetMessageTranslatorThrows, 
+                               boolean inTranslateThrows, 
+                               boolean inAfterExecuteThrows, 
+                               boolean inBeforeExecuteThrows, 
+                               boolean inRequestReturnsZeroHandles, 
+                               boolean inRequestReturnsNull)
         throws Exception
     {
         final TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
@@ -411,7 +1045,356 @@ public class AbstractMarketDataFeedTest
             doExecuteTest(tokenSpec,
                           inLoginFails,
                           inInitFails,
-                          inExecFails);
+                          inLoginThrows, 
+                          inIsLoggedInThrows, 
+                          inInitThrows, 
+                          inExecThrows, 
+                          inGenerateTokenThrows, 
+                          inGetEventTranslatorThrows, 
+                          inTranslateToEventsThrows, 
+                          inTranslateToEventsReturnsNull, 
+                          inTranslateToEventsReturnsZeroEvents, 
+                          inBeforeExecuteReturnsFalse, 
+                          inGetMessageTranslatorThrows, 
+                          inTranslateThrows, 
+                          inAfterExecuteThrows, 
+                          inBeforeExecuteThrows, 
+                          inRequestReturnsZeroHandles, 
+                          inRequestReturnsNull);
         }
     }
+    private void doExecuteTest(final MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> inTokenSpec,
+                               boolean inLoginFails, 
+                               boolean inInitFails, 
+                               boolean inLoginThrows, 
+                               boolean inIsLoggedInThrows, 
+                               boolean inInitThrows, 
+                               boolean inExecThrows, 
+                               boolean inGenerateTokenThrows, 
+                               boolean inGetEventTranslatorThrows, 
+                               boolean inTranslateToEventsThrows, 
+                               boolean inTranslateToEventsReturnsNull, 
+                               boolean inTranslateToEventsReturnsZeroEvents, 
+                               boolean inBeforeExecuteReturnsFalse, 
+                               boolean inGetMessageTranslatorThrows, 
+                               boolean inTranslateThrows, 
+                               boolean inAfterExecuteThrows, 
+                               boolean inBeforeExecuteThrows, 
+                               boolean inRequestReturnsZeroHandles, 
+                               boolean inRequestReturnsNull)
+        throws Exception
+    {
+        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
+                                                               "obnoxious-feed-name-with-dashes",
+                                                               null,
+                                                               0);
+        final List<? extends ISubscriber> subscribers = inTokenSpec.getSubscribers();
+        if(subscribers != null) {
+            for(ISubscriber subscriber : subscribers) {
+                if(subscriber != null) {
+                    TestSubscriber s = (TestSubscriber)subscriber;
+                    assertNull(s.getData());
+                }
+            }
+        }
+        feed.setLoginFails(inLoginFails);
+        feed.setInitFails(inInitFails);
+        feed.setExecutionFails(inExecThrows);
+        feed.setLoginThrows(inLoginThrows);
+        feed.setIsLoggedInThrows(inIsLoggedInThrows);
+        feed.setInitThrows(inInitThrows);
+        feed.setGenerateTokenThrows(inGenerateTokenThrows);
+        feed.setGetEventTranslatorThrows(inGetEventTranslatorThrows);
+        TestEventTranslator.setTranslateToEventsThrows(inTranslateToEventsThrows);
+        TestEventTranslator.setTranslateToEventsReturnsNull(inTranslateToEventsReturnsNull);
+        TestEventTranslator.setTranslateToEventsReturnsZeroEvents(inTranslateToEventsReturnsZeroEvents);
+        feed.setBeforeExecuteReturnsFalse(inBeforeExecuteReturnsFalse);
+        feed.setGetMessageTranslatorThrows(inGetMessageTranslatorThrows);
+        TestMessageTranslator.setTranslateThrows(inTranslateThrows);
+        feed.setAfterExecuteThrows(inAfterExecuteThrows);
+        feed.setBeforeExecuteThrows(inBeforeExecuteThrows);
+        feed.setExecuteReturnsNothing(inRequestReturnsZeroHandles);
+        feed.setExecuteReturnsNull(inRequestReturnsNull);
+        // execute a test with each of the execute overloads
+        TestMarketDataFeedToken token = null;
+        if(inGenerateTokenThrows) {
+            new ExpectedTestFailure(FeedException.class,
+                                    MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                protected void execute()
+                    throws Throwable
+                {
+                    feed.execute(inTokenSpec);
+                }
+            }.run();
+        } else {
+            token = feed.execute(inTokenSpec);
+        }
+        verifyExecution(inLoginFails,
+                        inInitFails,
+                        inLoginThrows,
+                        inIsLoggedInThrows,
+                        inInitThrows,
+                        inExecThrows, 
+                        inGenerateTokenThrows, 
+                        inGetEventTranslatorThrows, 
+                        inTranslateToEventsThrows, 
+                        inTranslateToEventsReturnsNull, 
+                        inTranslateToEventsReturnsZeroEvents, 
+                        inBeforeExecuteReturnsFalse, 
+                        inGetMessageTranslatorThrows, 
+                        inTranslateThrows, 
+                        inAfterExecuteThrows, 
+                        inBeforeExecuteThrows, 
+                        inRequestReturnsZeroHandles, 
+                        inRequestReturnsNull, 
+                        feed, 
+                        token, 
+                        subscribers);
+        resetSubscribers(subscribers);
+        if(inGenerateTokenThrows) {
+            new ExpectedTestFailure(FeedException.class,
+                                    MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                protected void execute()
+                    throws Throwable
+                {
+                    feed.execute(inTokenSpec.getCredentials(),
+                                 inTokenSpec.getMessage(),
+                                 inTokenSpec.getSubscribers());
+                }
+            }.run();
+        } else {
+            token = feed.execute(inTokenSpec.getCredentials(),
+                                 inTokenSpec.getMessage(),
+                                 inTokenSpec.getSubscribers());
+        }
+        verifyExecution(inLoginFails,
+                        inInitFails,
+                        inLoginThrows,
+                        inIsLoggedInThrows,
+                        inInitThrows,
+                        inExecThrows, 
+                        inGenerateTokenThrows, 
+                        inGetEventTranslatorThrows, 
+                        inTranslateToEventsThrows, 
+                        inTranslateToEventsReturnsNull, 
+                        inTranslateToEventsReturnsZeroEvents, 
+                        inBeforeExecuteReturnsFalse, 
+                        inGetMessageTranslatorThrows, 
+                        inTranslateThrows, 
+                        inAfterExecuteThrows, 
+                        inBeforeExecuteThrows, 
+                        false, 
+                        false, 
+                        feed, 
+                        token, 
+                        subscribers);
+        resetSubscribers(subscribers);
+        if(subscribers == null ||
+           subscribers.get(0) == null) {
+            new ExpectedTestFailure(NullPointerException.class) {
+                protected void execute()
+                throws Throwable
+                {
+                    feed.execute(inTokenSpec.getCredentials(),
+                                 inTokenSpec.getMessage(),
+                                 inTokenSpec.getSubscribers().get(0));
+                }
+            }.run();
+        } else {
+            if(inGenerateTokenThrows) {
+                new ExpectedTestFailure(FeedException.class,
+                                        MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                    protected void execute()
+                    throws Throwable
+                    {
+                        feed.execute(inTokenSpec.getCredentials(),
+                                     inTokenSpec.getMessage(),
+                                     inTokenSpec.getSubscribers().get(0));
+                    }
+                }.run();
+            } else {
+                token = feed.execute(inTokenSpec.getCredentials(),
+                                     inTokenSpec.getMessage(),
+                                     inTokenSpec.getSubscribers().get(0));
+            }
+        }
+        List<ISubscriber> listOfOne = new ArrayList<ISubscriber>();
+        listOfOne.add(subscribers.get(0));
+        verifyExecution(inLoginFails,
+                        inInitFails,
+                        inLoginThrows,
+                        inIsLoggedInThrows,
+                        inInitThrows,
+                        inExecThrows, 
+                        inGenerateTokenThrows, 
+                        inGetEventTranslatorThrows, 
+                        inTranslateToEventsThrows, 
+                        inTranslateToEventsReturnsNull, 
+                        inTranslateToEventsReturnsZeroEvents, 
+                        inBeforeExecuteReturnsFalse, 
+                        inGetMessageTranslatorThrows, 
+                        inTranslateThrows, 
+                        inAfterExecuteThrows, 
+                        inBeforeExecuteThrows, 
+                        false, 
+                        false, 
+                        feed, 
+                        token, 
+                        listOfOne);
+        resetSubscribers(subscribers);
+        if(subscribers == null ||
+           subscribers.get(0) == null) {
+                 new ExpectedTestFailure(NullPointerException.class) {
+                     protected void execute()
+                     throws Throwable
+                     {
+                         feed.execute(inTokenSpec.getCredentials(),
+                                      inTokenSpec.getMessage(),
+                                      inTokenSpec.getSubscribers().get(0));
+                     }
+                 }.run();
+        } else {
+            if(inGenerateTokenThrows) {
+                new ExpectedTestFailure(FeedException.class,
+                                        MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                    protected void execute()
+                    throws Throwable
+                    {
+                        feed.execute(inTokenSpec.getMessage(),
+                                     subscribers.get(0));
+                    }
+                }.run();
+            } else {
+                token = feed.execute(inTokenSpec.getMessage(),
+                                     subscribers.get(0));
+            }
+        }
+        verifyExecution(inLoginFails,
+                        inInitFails,
+                        inLoginThrows,
+                        inIsLoggedInThrows,
+                        inInitThrows,
+                        inExecThrows, 
+                        inGenerateTokenThrows, 
+                        inGetEventTranslatorThrows, 
+                        inTranslateToEventsThrows, 
+                        inTranslateToEventsReturnsNull, 
+                        inTranslateToEventsReturnsZeroEvents, 
+                        inBeforeExecuteReturnsFalse, 
+                        inGetMessageTranslatorThrows, 
+                        inTranslateThrows, 
+                        inAfterExecuteThrows, 
+                        inBeforeExecuteThrows, 
+                        false, 
+                        false, 
+                        feed, 
+                        token, 
+                        subscribers);
+    }
+    private void verifyExecution(boolean inLoginFails,
+                                 boolean inInitFails,
+                                 boolean inLoginThrows,
+                                 boolean inIsLoggedInThrows,
+                                 boolean inInitThrows,
+                                 boolean inExecThrows, 
+                                 boolean inGenerateTokenThrows, 
+                                 boolean inGetEventTranslatorThrows, 
+                                 boolean inTranslateToEventsThrows, 
+                                 boolean inTranslateToEventsReturnsNull, 
+                                 boolean inTranslateToEventsReturnsZeroEvents, 
+                                 boolean inBeforeExecuteReturnsFalse, 
+                                 boolean inGetMessageTranslatorThrows, 
+                                 boolean inTranslateThrows, 
+                                 boolean inAfterExecuteThrows, 
+                                 boolean inBeforeExecuteThrows, 
+                                 boolean inRequestReturnsZeroHandles, 
+                                 boolean inRequestReturnsNull, 
+                                 TestMarketDataFeed inFeed, 
+                                 TestMarketDataFeedToken inToken, 
+                                 List<? extends ISubscriber> inSubscribers)
+        throws Exception
+    {
+        if(inLoginFails ||
+           inInitFails ||
+           inInitThrows ||
+           inExecThrows ||
+           inLoginThrows ||
+           inIsLoggedInThrows ||
+           inBeforeExecuteReturnsFalse ||
+           inGetMessageTranslatorThrows ||
+           inTranslateThrows ||
+           inAfterExecuteThrows ||
+           inBeforeExecuteThrows) {
+            assertEquals(FeedStatus.ERROR,
+                         inFeed.getFeedStatus());
+            if(inLoginFails ||
+               inLoginThrows ||
+               inIsLoggedInThrows) {
+                assertEquals(IMarketDataFeedToken.Status.LOGIN_FAILED,
+                             inToken.getStatus());
+            } else if(inInitFails ||
+                      inInitThrows) {
+                assertEquals(IMarketDataFeedToken.Status.INITIALIZATION_FAILED,
+                             inToken.getStatus());
+            } else if(inExecThrows ||
+                      inBeforeExecuteReturnsFalse ||
+                      inBeforeExecuteThrows ||
+                      inAfterExecuteThrows) {
+                assertEquals(IMarketDataFeedToken.Status.EXECUTION_FAILED,
+                             inToken.getStatus());
+            }
+        } else {
+            if(inGenerateTokenThrows ||
+               inGetEventTranslatorThrows ||
+               inTranslateToEventsThrows ||
+               inTranslateToEventsReturnsNull ||
+               inTranslateToEventsReturnsZeroEvents) {
+                if(inGenerateTokenThrows) {
+                    assertNull(inToken);                    
+                    assertEquals(FeedStatus.OFFLINE,
+                                 inFeed.getFeedStatus());
+                } else {
+                    assertNotNull(inToken);
+                    assertEquals(Status.ACTIVE,
+                                 inToken.getStatus());
+                    assertEquals(FeedStatus.AVAILABLE,
+                                 inFeed.getFeedStatus());
+                }
+                if(inSubscribers != null) {
+                    for(ISubscriber subscriber : inSubscribers) {
+                        if(subscriber != null) {
+                            TestSubscriber s = (TestSubscriber)subscriber;
+                            assertEquals(0,
+                                         s.getPublishCount());
+                        }
+                    }
+                }
+            } else {
+                assertNotNull(inToken);
+                if(inSubscribers != null &&
+                   !inRequestReturnsZeroHandles &&
+                   !inRequestReturnsNull) {
+                    for(ISubscriber subscriber : inSubscribers) {
+                        if(subscriber != null) {
+                            final TestSubscriber s = (TestSubscriber)subscriber;
+                            wait(new Callable<Boolean>() {
+                                    @Override
+                                    public Boolean call()
+                                            throws Exception
+                                    {
+                                        return s.getData() != null;
+                                    }                                
+                            });
+                            assertEquals(1,
+                                         s.getPublishCount());
+                        }
+                    }
+                }
+                assertEquals(FeedStatus.AVAILABLE,
+                             inFeed.getFeedStatus());
+                assertEquals(Status.ACTIVE,
+                             inToken.getStatus());
+            }
+        }
+    }    
 }

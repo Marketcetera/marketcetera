@@ -11,7 +11,7 @@ import org.marketcetera.event.TestEventTranslator;
 import org.marketcetera.quickfix.TestMessageTranslator;
 
 /**
- *
+ * Test implementation of <code>AbstractMarketDataFeed</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
@@ -43,6 +43,17 @@ public class TestMarketDataFeed
     private boolean mInitFails = false;
     private boolean mExecutionFails = false;
     private boolean mCancelFails = false;
+    private boolean mExecuteReturnsNothing = false;
+    private boolean mExecuteReturnsNull = false;
+    private boolean mIsLoggedInThrows = false;
+    private boolean mLoginThrows = false;
+    private boolean mInitThrows = false;
+    private boolean mBeforeExecuteThrows = false;
+    private boolean mBeforeExecuteReturnsFalse = false;
+    private boolean mGenerateTokenThrows = false;
+    private boolean mGetEventTranslatorThrows = false;
+    private boolean mGetMessageTranslatorThrows = false;
+    private boolean mAfterExecuteThrows = false;
     
     private static final Random sRandom = new Random(System.nanoTime());
     
@@ -107,6 +118,9 @@ public class TestMarketDataFeed
     protected TestMarketDataFeedToken generateToken(MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> inTokenSpec)
             throws FeedException
     {
+        if(getGenerateTokenThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
         return TestMarketDataFeedToken.getToken(inTokenSpec,
                                                 this);
     }
@@ -116,7 +130,10 @@ public class TestMarketDataFeed
      */
     protected boolean doLogin(TestMarketDataFeedCredentials inCredentials)
     {
-        if(isLoginFails()) {
+        if(getLoginThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        if(getLoginFails()) {
             return false;
         }
 
@@ -138,7 +155,7 @@ public class TestMarketDataFeed
     protected List<String> doMarketDataRequest(String inData)
             throws FeedException
     {
-        if(isExecutionFails()) {
+        if(getExecutionFails()) {
             throw new FeedException("This exception is expected");
         }
         if(mDelay > 0) {
@@ -150,9 +167,15 @@ public class TestMarketDataFeed
         }
         String handle = String.format("%d",
                                       ++mCounter);
-        mCreatedHandles.add(handle);
-        mQueue.add(handle);
-        return Arrays.asList(handle);
+        if(!getExecuteReturnsNothing() &&
+           !getExecuteReturnsNull()) {
+            mCreatedHandles.add(handle);
+            mQueue.add(handle);
+        }
+        if(getExecuteReturnsNull()) {
+            return null;
+        }
+        return getExecuteReturnsNothing() ? new ArrayList<String>() : Arrays.asList(handle);
     }
     private final ConcurrentLinkedQueue<String> mQueue = new ConcurrentLinkedQueue<String>();
     
@@ -160,26 +183,35 @@ public class TestMarketDataFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#afterDoExecute()
      */
     @Override
-    protected void afterDoExecute(TestMarketDataFeedToken inToken)
+    protected void afterDoExecute(TestMarketDataFeedToken inToken, Throwable inException)
     {
+        if(getAfterExecuteThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
         String handle = mQueue.poll();
-        dataReceived(handle,
-                     this);
+        if(handle != null) {
+            dataReceived(handle,
+                         this);
+        }
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getMessageTranslator()
      */
     protected TestMessageTranslator getMessageTranslator()
     {
+        if(getGetMessageTranslatorThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
         return new TestMessageTranslator();
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn()
      */
     protected boolean isLoggedIn(TestMarketDataFeedCredentials inCredentials)
     {
+        if(getIsLoggedInThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
         return getState().isLoggedIn();
     }
 
@@ -208,7 +240,7 @@ public class TestMarketDataFeed
      *
      * @return a <code>TestMarketDataFeed</code> value
      */
-    public boolean isLoginFails()
+    public boolean getLoginFails()
     {
         return mLoginFails;
     }
@@ -247,7 +279,11 @@ public class TestMarketDataFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doInitialize(org.marketcetera.marketdata.AbstractMarketDataFeedToken)
      */
     protected boolean doInitialize(TestMarketDataFeedToken inToken)
+        throws InterruptedException
     {
+        if(getInitThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
         if(isInitFails()) {
             super.doInitialize(inToken);
             return false;
@@ -260,7 +296,7 @@ public class TestMarketDataFeed
      *
      * @return a <code>TestMarketDataFeed</code> value
      */
-    public boolean isExecutionFails()
+    public boolean getExecutionFails()
     {
         return mExecutionFails;
     }
@@ -301,6 +337,9 @@ public class TestMarketDataFeed
      */
     protected TestEventTranslator getEventTranslator()
     {
+        if(getGetEventTranslatorThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
         return new TestEventTranslator();
     }
     /**
@@ -340,5 +379,105 @@ public class TestMarketDataFeed
     {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+    @Override
+    protected boolean beforeDoExecute(TestMarketDataFeedToken inToken)
+        throws InterruptedException
+    {
+        if(getBeforeExecuteThrows()) {
+            throw new NullPointerException("This exception is expected");
+        }
+        if(getBeforeExecuteReturnsFalse()) {
+            return false;
+        }
+        return super.beforeDoExecute(inToken);
+    }
+    public boolean getExecuteReturnsNothing()
+    {
+        return mExecuteReturnsNothing;
+    }
+    public void setExecuteReturnsNothing(boolean executeReturnsNothing)
+    {
+        mExecuteReturnsNothing = executeReturnsNothing;
+    }
+    public boolean getIsLoggedInThrows()
+    {
+        return mIsLoggedInThrows;
+    }
+    public void setIsLoggedInThrows(boolean inIsLoggedInThrows)
+    {
+        mIsLoggedInThrows = inIsLoggedInThrows;
+    }
+    public boolean getLoginThrows()
+    {
+        return mLoginThrows;
+    }
+    public void setLoginThrows(boolean inLoginThrows)
+    {
+        mLoginThrows = inLoginThrows;
+    }
+    public boolean getInitThrows()
+    {
+        return mInitThrows;
+    }
+    public void setInitThrows(boolean inInitThrows)
+    {
+        mInitThrows = inInitThrows;
+    }
+    public boolean getBeforeExecuteThrows()
+    {
+        return mBeforeExecuteThrows;
+    }
+    public void setBeforeExecuteThrows(boolean inBeforeExecuteThrows)
+    {
+        mBeforeExecuteThrows = inBeforeExecuteThrows;
+    }
+    public boolean getGenerateTokenThrows()
+    {
+        return mGenerateTokenThrows;
+    }
+    public void setGenerateTokenThrows(boolean inGenerateTokenThrows)
+    {
+        mGenerateTokenThrows = inGenerateTokenThrows;
+    }
+    public boolean getGetEventTranslatorThrows()
+    {
+        return mGetEventTranslatorThrows;
+    }
+    public void setGetEventTranslatorThrows(boolean inGetEventTranslatorThrows)
+    {
+        mGetEventTranslatorThrows = inGetEventTranslatorThrows;
+    }
+    public boolean getBeforeExecuteReturnsFalse()
+    {
+        return mBeforeExecuteReturnsFalse;
+    }
+    public void setBeforeExecuteReturnsFalse(boolean inBeforeExecuteReturnsFalse)
+    {
+        mBeforeExecuteReturnsFalse = inBeforeExecuteReturnsFalse;
+    }
+    public boolean getGetMessageTranslatorThrows()
+    {
+        return mGetMessageTranslatorThrows;
+    }
+    public void setGetMessageTranslatorThrows(boolean inGetMessageTranslatorThrows)
+    {
+        mGetMessageTranslatorThrows = inGetMessageTranslatorThrows;
+    }
+    public boolean getAfterExecuteThrows()
+    {
+        return mAfterExecuteThrows;
+    }
+    public void setAfterExecuteThrows(boolean inAfterExecuteThrows)
+    {
+        mAfterExecuteThrows = inAfterExecuteThrows;
+    }
+    public boolean getExecuteReturnsNull()
+    {
+        return mExecuteReturnsNull;
+    }
+    public void setExecuteReturnsNull(boolean inExecuteReturnsNull)
+    {
+        mExecuteReturnsNull = inExecuteReturnsNull;
     }
 }
