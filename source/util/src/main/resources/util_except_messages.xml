@@ -1,3 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <messages>
+  <message id="thread_interrupted">
+    <locale language="en"> 
+	  <entry key="msg">Thread execution was interrupted</entry>
+    </locale>
+  </message>
+  <message id="throwable_ignored">
+    <locale language="en"> 
+	  <entry key="msg">Caught throwable was not propagated</entry>
+    </locale>
+  </message>
 </messages>

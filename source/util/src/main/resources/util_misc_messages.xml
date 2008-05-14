@@ -1,3 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <messages>
+  <message id="user_prompt">
+    <locale language="en"> 
+	  <entry key="msg">User: </entry>
+    </locale>
+  </message>
+  <message id="user_description">
+    <locale language="en"> 
+	  <entry key="msg">user name</entry>
+    </locale>
+  </message>
+  <message id="password_prompt">
+    <locale language="en"> 
+	  <entry key="msg">Password: </entry>
+    </locale>
+  </message>
+  <message id="password_description">
+    <locale language="en"> 
+	  <entry key="msg">password</entry>
+    </locale>
+  </message>
+  <message id="parsing_failed">
+    <locale language="en"> 
+	  <entry key="msg">Parsing of the command line has failed</entry>
+    </locale>
+  </message>
+  <message id="no_user">
+    <locale language="en"> 
+	  <entry key="msg">No user was specified</entry>
+    </locale>
+  </message>
+  <message id="no_password">
+    <locale language="en"> 
+	  <entry key="msg">No password was specified</entry>
+    </locale>
+  </message>
 </messages>
