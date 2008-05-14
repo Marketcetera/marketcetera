@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 
 public class DeleterTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"deleter"+File.separator;
@@ -77,7 +77,7 @@ public class DeleterTest
     private static void single
         (String name,
          String resolvedName)
-	throws I18NException
+        throws I18NException
     {
         cleanCopy();
         String rootName=setupCopy();
@@ -89,7 +89,7 @@ public class DeleterTest
             resolvedFile=new File(rootName+File.separator+resolvedName);
         }
 
-	Deleter.apply(file);
+        Deleter.apply(file);
         assertTrue(root.exists());
         assertFalse(file.exists());
         if (resolvedFile!=null) {
@@ -103,7 +103,7 @@ public class DeleterTest
         assertFalse(file.exists());
         if (resolvedFile!=null) {
             assertTrue(resolvedFile.exists());
-	}
+        }
     }
 
 
@@ -150,13 +150,17 @@ public class DeleterTest
     public void exception()
         throws Exception
     {
+        cleanCopy();
+        String rootName=setupCopy();
         try {
-            Deleter.apply(TEST_NONEXISTENT_FILE);
+            Deleter.apply(rootName+File.separator+TEST_PLAIN_FILE);
         } catch (I18NException ex) {
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_DELETE,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
     */
 }
