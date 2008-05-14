@@ -91,7 +91,7 @@ public class CopyUtilsTest
 
     @Before
     @After
-    public void deleteTestFile()
+    public void setupTearDownCopyUtilsTest()
         throws Exception
     {
         Deleter.apply(TEST_INPUT_FILE);

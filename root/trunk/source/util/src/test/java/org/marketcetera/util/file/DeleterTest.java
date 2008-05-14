@@ -108,7 +108,7 @@ public class DeleterTest
 
 
     @After
-    public void cleanUp()
+    public void tearDownDeleterTest()
         throws Exception
     {
         cleanCopy();

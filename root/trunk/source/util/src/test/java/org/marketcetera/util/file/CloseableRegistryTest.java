@@ -55,7 +55,7 @@ public class CloseableRegistryTest
 
 
     @Before
-    public void resetSequence()
+    public void setupCloseableRegistryTest()
     {
         OrderedCloseable.resetStaticSequence();
         Messages.PROVIDER.setLocale(Locale.US);
