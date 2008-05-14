@@ -90,13 +90,15 @@ public class WriterWrapperTest
          ByteArrayOutputStream out)
         throws Exception
     {
-        WriterWrapper wrapper=new WriterWrapper(name);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            WriterWrapper wrapper=new WriterWrapper(name);
+            r.register(wrapper);
             assertTrue(wrapper.getSkipClose());
             assertNotNull(wrapper.getWriter());
             wrapper.getWriter().write(VALUE);
         } finally {
-            wrapper.close();
+            r.close();
         }
         assertArrayEquals(VALUE_BYTES,out.toByteArray());
     }
