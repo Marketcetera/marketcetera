@@ -1,5 +1,6 @@
 package org.marketcetera.util.except;
 
+import java.io.InterruptedIOException;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
@@ -186,6 +187,8 @@ public class ExceptUtilsTest
         assertTrue(ExceptUtils.isInterruptException
                    (new InterruptedException()));
         assertTrue(ExceptUtils.isInterruptException
+                   (new InterruptedIOException()));
+        assertTrue(ExceptUtils.isInterruptException
                    (new I18NInterruptedException()));
         assertTrue(ExceptUtils.isInterruptException
                    (new I18NInterruptedRuntimeException()));
@@ -196,6 +199,7 @@ public class ExceptUtilsTest
     {
         interruptHelper(new CloneNotSupportedException(),false);
         interruptHelper(new InterruptedException(),true);
+        interruptHelper(new InterruptedIOException(),true);
         interruptHelper(new I18NInterruptedException(),true);
         interruptHelper(new I18NInterruptedRuntimeException(),true);
     }
@@ -205,6 +209,7 @@ public class ExceptUtilsTest
     {
         swallowHelper(new CloneNotSupportedException(),false);
         swallowHelper(new InterruptedException(),true);
+        swallowHelper(new InterruptedIOException(),true);
         swallowHelper(new I18NInterruptedException(),true);
         swallowHelper(new I18NInterruptedRuntimeException(),true);
     }
@@ -214,6 +219,7 @@ public class ExceptUtilsTest
     {
         wrapHelper(new CloneNotSupportedException(),false);
         wrapHelper(new InterruptedException(),true);
+        wrapHelper(new InterruptedIOException(),true);
         wrapHelper(new I18NInterruptedException(),true);
         wrapHelper(new I18NInterruptedRuntimeException(),true);
     }
