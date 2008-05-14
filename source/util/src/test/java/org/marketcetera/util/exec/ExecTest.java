@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.PrintStream;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -65,7 +66,7 @@ public class ExecTest
             (String args[])
             throws Exception
         {
-            Thread.sleep(SLEEP_DURATION*1000);
+            Thread.sleep(SLEEP_DURATION*10);
         }
     }
 
@@ -138,28 +139,28 @@ public class ExecTest
         {
             PrintStream stdOutSave=System.out;
             PrintStream stdErrSave=System.err;
-            ByteArrayOutputStream stdOut;
-            ByteArrayOutputStream stdErr;
+            ByteArrayOutputStream stdOutByteArray;
+            ByteArrayOutputStream stdErrByteArray;
             ExecResult result;
+            CloseableRegistry r=new CloseableRegistry();
             try {
-                stdOut=new ByteArrayOutputStream();
-                stdErr=new ByteArrayOutputStream();
-                try {
-                    System.setOut(new PrintStream(stdOut));
-                    System.setErr(new PrintStream(stdErr));
-                    result=ExecTest.run
-                        ((File)null,disposition,"CommandStreams");
-                } finally {
-                    stdErr.close();
-                    stdOut.close();
-                }
+                stdOutByteArray=new ByteArrayOutputStream();
+                PrintStream stdOutNew=new PrintStream(stdOutByteArray);
+                r.register(stdOutNew);
+                stdErrByteArray=new ByteArrayOutputStream();
+                PrintStream stdErrNew=new PrintStream(stdErrByteArray);
+                r.register(stdErrNew);
+                System.setOut(stdOutNew);
+                System.setErr(stdErrNew);
+                result=ExecTest.run((File)null,disposition,"CommandStreams");
             } finally {
+                r.close();
                 System.setErr(stdErrSave);
                 System.setOut(stdOutSave);
             }
             return new Redirector
-                (result.getExitCode(),stdOut.toByteArray(),
-                 stdErr.toByteArray(),result.getOutput());
+                (result.getExitCode(),stdOutByteArray.toByteArray(),
+                 stdErrByteArray.toByteArray(),result.getOutput());
         }
     }
 
@@ -274,12 +275,14 @@ public class ExecTest
     public void nonexistentCommand()
     {
         try {
-            run((File)null,Disposition.MEMORY,TEST_NONEXISTENT_FILE);
+            Exec.run((File)null,Disposition.MEMORY,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_EXECUTE,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -291,7 +294,9 @@ public class ExecTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_EXECUTE,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
