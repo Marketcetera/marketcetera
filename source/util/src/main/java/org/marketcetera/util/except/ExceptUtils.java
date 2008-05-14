@@ -1,5 +1,6 @@
 package org.marketcetera.util.except;
 
+import java.io.InterruptedIOException;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage;
@@ -113,8 +114,9 @@ public final class ExceptUtils
 
     /**
      * Checks if the given throwable is an instance of {@link
-     * InterruptedException}, {@link I18NInterruptedException}, or
-     * {@link I18NInterruptedRuntimeException}.
+     * InterruptedException}, {@link InterruptedIOException}, {@link
+     * I18NInterruptedException}, or {@link
+     * I18NInterruptedRuntimeException}.
      * 
      * @param throwable The throwable.
      *
@@ -125,6 +127,7 @@ public final class ExceptUtils
         (Throwable throwable)
     {
         return ((throwable instanceof InterruptedException) ||
+                (throwable instanceof InterruptedIOException) ||
                 (throwable instanceof I18NInterruptedException) ||
                 (throwable instanceof I18NInterruptedRuntimeException));
     }
