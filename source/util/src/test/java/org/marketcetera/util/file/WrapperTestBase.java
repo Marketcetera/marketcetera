@@ -26,7 +26,7 @@ public class WrapperTestBase
 
 
     @Before
-    public void deleteTestFile()
+    public void setupWrapperTestBase()
         throws Exception
     {
         Deleter.apply(TEST_FILE);

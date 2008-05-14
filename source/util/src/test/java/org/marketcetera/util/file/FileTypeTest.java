@@ -50,7 +50,7 @@ public class FileTypeTest
 
 
     @Before
-    public void setup()
+    public void setupFileTypeTest()
     {
         Messages.PROVIDER.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.WARN);
