@@ -88,13 +88,15 @@ public class OutputStreamWrapperTest
          ByteArrayOutputStream out)
         throws Exception
     {
-        OutputStreamWrapper wrapper=new OutputStreamWrapper(name);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            OutputStreamWrapper wrapper=new OutputStreamWrapper(name);
+            r.register(wrapper);
             assertTrue(wrapper.getSkipClose());
             assertNotNull(wrapper.getStream());
             wrapper.getStream().write(VALUE_BYTES);
         } finally {
-            wrapper.close();
+            r.close();
         }
         assertArrayEquals(VALUE_BYTES,out.toByteArray());
     }
