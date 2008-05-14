@@ -66,7 +66,7 @@ public enum FileType
                 }
             }
         } catch (IOException ex) {
-            Messages.LOGGER.error
+            Messages.LOGGER.warn
                 (FileType.class,ex,Messages.CANNOT_GET_TYPE,
                  file.getAbsolutePath());
         }
