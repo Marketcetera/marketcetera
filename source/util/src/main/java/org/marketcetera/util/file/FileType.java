@@ -50,6 +50,8 @@ public enum FileType
             if (!file.exists()) {
                 return NONEXISTENT;
             }
+            // EXTREME TEST 1: comment out the next line.
+            // if (true) throw new IOException();
             if (file.getCanonicalFile().equals(file.getAbsoluteFile())) {
                 if (file.isDirectory()) {
                     return DIR;
