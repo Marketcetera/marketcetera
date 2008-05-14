@@ -3,6 +3,7 @@ package org.marketcetera.util.except;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.I18NMessageProvider;
 
 /**
  * General-purpose utilities.
@@ -111,12 +112,45 @@ public final class ExceptUtils
     }
 
     /**
+     * Checks if the given throwable is an instance of {@link
+     * InterruptedException}, {@link I18NInterruptedException}, or
+     * {@link I18NInterruptedRuntimeException}.
+     * 
+     * @param throwable The throwable.
+     *
+     * @return True if so.
+     */
+
+    public static boolean isInterruptException
+        (Throwable throwable)
+    {
+        return ((throwable instanceof InterruptedException) ||
+                (throwable instanceof I18NInterruptedException) ||
+                (throwable instanceof I18NInterruptedRuntimeException));
+    }
+
+    /**
+     * If the given throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the calling thread is
+     * interrupted. Otherwise, this is a no-op.
+     * 
+     * @param throwable The throwable.
+     */
+
+    public static void interrupt
+        (Throwable throwable)
+    {
+        if (isInterruptException(throwable)) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    /**
      * Swallows the given throwable. It logs the given parameterized
      * message and throwable under the given logging category at the
      * warning level via the given logger proxy. Also, if the given
-     * throwable is an instance of {@link InterruptedException},
-     * {@link I18NInterruptedException}, or {@link
-     * I18NInterruptedRuntimeException}, then the calling thread is
+     * throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the calling thread is
      * interrupted.
      * 
      * @param throwable The throwable.
@@ -134,19 +168,14 @@ public final class ExceptUtils
          Object... params)
     {
         logger.warn(category,throwable,message,params);
-        if ((throwable instanceof InterruptedException) ||
-            (throwable instanceof I18NInterruptedException) ||
-            (throwable instanceof I18NInterruptedRuntimeException)) {
-            Thread.currentThread().interrupt();
-        }
+        interrupt(throwable);
     }
 
     /**
-     * Swallows the given throwable. It logs a standard message
+     * Swallows the given throwable. It logs a default message
      * alongside the throwable at the warning level. Also, if the
-     * given throwable is an instance of {@link InterruptedException},
-     * {@link I18NInterruptedException}, or {@link
-     * I18NInterruptedRuntimeException}, then the calling thread is
+     * given throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the calling thread is
      * interrupted.
      * 
      * @param throwable The throwable.
@@ -157,6 +186,116 @@ public final class ExceptUtils
     {
         swallow(throwable,Messages.LOGGER,ExceptUtils.class,
                 Messages.THROWABLE_IGNORED);
+    }
+
+    /**
+     * If the given throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the throwable is
+     * wrapped inside a {@link I18NInterruptedException}, and this
+     * exception is returned; also, the calling thread is
+     * interrupted. Otherwise, an {@link I18NException} is used to
+     * wrap the throwable, and returned. All arguments are passed
+     * as-is into the constructor of the wrapping exception.
+     * 
+     * @param throwable The throwable.
+     * @param provider The message provider.
+     * @param message The message.
+     * @param params The message parameters.
+     *
+     * @return The wrapping exception.
+     */
+
+    public static I18NException wrap
+        (Throwable throwable,
+         I18NMessageProvider provider,
+         I18NMessage message,
+         Object... params)
+    {
+        if (isInterruptException(throwable)) {
+            Thread.currentThread().interrupt();
+            return new I18NInterruptedException
+                (throwable,provider,message,params);
+        }
+        return new I18NException(throwable,provider,message,params);
+    }
+
+    /**
+     * If the given throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the throwable is
+     * wrapped inside a {@link I18NInterruptedException}, and this
+     * exception is returned; also, the calling thread is
+     * interrupted. Otherwise, an {@link I18NException} is used to
+     * wrap the throwable, and returned. All arguments are passed
+     * as-is into the constructor of the wrapping exception.
+     * 
+     * @param throwable The throwable.
+     *
+     * @return The wrapping exception.
+     */
+
+    public static I18NException wrap
+        (Throwable throwable)
+    {
+        if (isInterruptException(throwable)) {
+            Thread.currentThread().interrupt();
+            return new I18NInterruptedException(throwable);
+        }
+        return new I18NException(throwable);
+    }
+
+    /**
+     * If the given throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the throwable is
+     * wrapped inside a {@link I18NInterruptedRuntimeException}, and
+     * this exception is thrown; also, the calling thread is
+     * interrupted. Otherwise, an {@link I18NRuntimeException} is used
+     * to wrap the throwable. All arguments are passed as-is into the
+     * constructor of the wrapping exception.
+     * 
+     * @param throwable The throwable.
+     * @param provider The message provider.
+     * @param message The message.
+     * @param params The message parameters.
+     *
+     * @return The wrapping exception.
+     */
+
+    public static I18NRuntimeException wrapRuntime
+        (Throwable throwable,
+         I18NMessageProvider provider,
+         I18NMessage message,
+         Object... params)
+    {
+        if (isInterruptException(throwable)) {
+            Thread.currentThread().interrupt();
+            return new I18NInterruptedRuntimeException
+                (throwable,provider,message,params);
+        }
+        return new I18NRuntimeException(throwable,provider,message,params);
+    }
+
+    /**
+     * If the given throwable is an interruption exception per {@link
+     * #isInterruptException(Throwable)}, then the throwable is
+     * wrapped inside a {@link I18NInterruptedRuntimeException}, and
+     * this exception is thrown; also, the calling thread is
+     * interrupted. Otherwise, an {@link I18NRuntimeException} is used
+     * to wrap the throwable. All arguments are passed as-is into the
+     * constructor of the wrapping exception.
+     * 
+     * @param throwable The throwable.
+     *
+     * @return The wrapping exception.
+     */
+
+    public static I18NRuntimeException wrapRuntime
+        (Throwable throwable)
+    {
+        if (isInterruptException(throwable)) {
+            Thread.currentThread().interrupt();
+            return new I18NInterruptedRuntimeException(throwable);
+        }
+        return new I18NRuntimeException(throwable);
     }
 
 

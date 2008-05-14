@@ -5,7 +5,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.except.I18NInterruptedException;
 
 /**
  * A simple process executor. The executed process requires no input,
@@ -40,7 +42,10 @@ public final class Exec
      *
      * @return The execution result.
      *
-     * @throws I18NException Thrown if process execution fails.
+     * @throws I18NInterruptedException Thrown if process execution
+     * fails due to an interruption.
+     * @throws I18NException Thrown if process execution fails for any
+     * other reason.
      */
 
     public static ExecResult run
@@ -81,9 +86,9 @@ public final class Exec
             consumer=new InputThread
                 (command,process.getInputStream(),out,closeOut);
             consumer.start();
-        } catch (Exception ex) {
-            throw new I18NException
-                (ex,Messages.PROVIDER,Messages.CANNOT_EXECUTE,command);
+        } catch (Throwable t) {
+            throw ExceptUtils.wrap
+                (t,Messages.PROVIDER,Messages.CANNOT_EXECUTE,command);
         }
         try {
 
@@ -104,9 +109,9 @@ public final class Exec
             // Clean up.
 
             return new ExecResult(exitValue,capture);
-        } catch (Exception ex) {
-            throw new I18NException
-                (ex,Messages.PROVIDER,Messages.UNEXPECTED_TERMINATION,command);
+        } catch (Throwable t) {
+            throw ExceptUtils.wrap
+                (t,Messages.PROVIDER,Messages.UNEXPECTED_TERMINATION,command);
         } finally {
             process.destroy();
         }
