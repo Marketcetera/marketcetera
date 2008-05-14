@@ -4,6 +4,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.LinkedList;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.except.ExceptUtils;
 
 /**
  * A registry of {@link Closeable} instances.
@@ -54,8 +55,9 @@ public class CloseableRegistry
         for (Closeable closeable:mRegistry) {
             try {
                 closeable.close();
-            } catch (IOException ex) {
-                Messages.LOGGER.error(this,ex,Messages.CLOSING_FAILED);
+            } catch (Throwable t) {
+                ExceptUtils.swallow
+                    (t,Messages.LOGGER,this,Messages.CLOSING_FAILED);
             }
         }
     }
