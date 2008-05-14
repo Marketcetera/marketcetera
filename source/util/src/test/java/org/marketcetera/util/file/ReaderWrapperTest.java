@@ -76,13 +76,16 @@ public class ReaderWrapperTest
         (ByteArrayInputStream in)
         throws Exception
     {
-        ReaderWrapper wrapper=new ReaderWrapper(SpecialNames.STANDARD_INPUT);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            ReaderWrapper wrapper=
+                new ReaderWrapper(SpecialNames.STANDARD_INPUT);
+            r.register(wrapper);
             assertTrue(wrapper.getSkipClose());
             assertNotNull(wrapper.getReader());
             assertEquals(VALUE,IOUtils.toString(wrapper.getReader()));
         } finally {
-            wrapper.close();
+            r.close();
         }
     }
 
