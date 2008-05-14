@@ -59,7 +59,7 @@ public class CloseableRegistryTest
     {
         OrderedCloseable.resetStaticSequence();
         Messages.PROVIDER.setLocale(Locale.US);
-        setLevel(TEST_CATEGORY,Level.ERROR);
+        setLevel(TEST_CATEGORY,Level.WARN);
     }
 
 
@@ -90,8 +90,8 @@ public class CloseableRegistryTest
         assertEquals(1,t2.getSequence());
         assertEquals(2,t1.getSequence());
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent(events.next(),Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
-        assertEvent(events.next(),Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
+        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE);
+        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE);
         assertFalse(events.hasNext());
     }
 }
