@@ -44,9 +44,8 @@ public class ExceptUtilsTest
         ExceptUtils.checkInterruption();
     }
 
-    @Test(expected=InterruptedException.class)
+    @Test
     public void interruptionEmptyThrow()
-        throws Exception
     {
         Thread.currentThread().interrupt();
         try {
@@ -55,8 +54,9 @@ public class ExceptUtilsTest
             assertFalse(Thread.currentThread().isInterrupted());
             assertEquals("Thread execution was interrupted",ex.getMessage());
             assertNull(ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
@@ -67,9 +67,8 @@ public class ExceptUtilsTest
             (new CloneNotSupportedException());
     }
 
-    @Test(expected=InterruptedException.class)
+    @Test
     public void interruptionNestedThrow()
-        throws Exception
     {
         CloneNotSupportedException nested=new CloneNotSupportedException();
         Thread.currentThread().interrupt();
@@ -79,8 +78,9 @@ public class ExceptUtilsTest
             assertFalse(Thread.currentThread().isInterrupted());
             assertEquals("Thread execution was interrupted",ex.getMessage());
             assertEquals(nested,ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
@@ -90,9 +90,8 @@ public class ExceptUtilsTest
         ExceptUtils.checkInterruption(TEST_MSG_1);
     }
 
-    @Test(expected=InterruptedException.class)
+    @Test
     public void interruptionMessageThrow()
-        throws Exception
     {
         Thread.currentThread().interrupt();
         try {
@@ -101,8 +100,9 @@ public class ExceptUtilsTest
             assertFalse(Thread.currentThread().isInterrupted());
             assertEquals(TEST_MSG_1,ex.getMessage());
             assertNull(ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
@@ -113,9 +113,8 @@ public class ExceptUtilsTest
             (new CloneNotSupportedException(),TEST_MSG_1);
     }
 
-    @Test(expected=InterruptedException.class)
+    @Test
     public void interruptionMessageNestedThrow()
-        throws Exception
     {
         CloneNotSupportedException nested=new CloneNotSupportedException();
         Thread.currentThread().interrupt();
@@ -125,8 +124,9 @@ public class ExceptUtilsTest
             assertFalse(Thread.currentThread().isInterrupted());
             assertEquals(TEST_MSG_1,ex.getMessage());
             assertEquals(nested,ex.getCause());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     @Test
