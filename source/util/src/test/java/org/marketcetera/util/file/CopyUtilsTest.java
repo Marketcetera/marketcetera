@@ -32,12 +32,14 @@ public class CopyUtilsTest
         (String out)
         throws Exception
     {
-        InputStreamWrapper in=new InputStreamWrapper(TEST_INPUT_FILE);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            InputStreamWrapper in=new InputStreamWrapper(TEST_INPUT_FILE);
+            r.register(in);
             assertEquals(VALUE_BYTES.length,
                          CopyUtils.copyBytes(in.getStream(),true,out));
         } finally {
-            in.close();
+            r.close();
         }
     }
 
@@ -45,12 +47,14 @@ public class CopyUtilsTest
         (String in)
         throws Exception
     {
-        OutputStreamWrapper out=new OutputStreamWrapper(TEST_OUTPUT_FILE);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            OutputStreamWrapper out=new OutputStreamWrapper(TEST_OUTPUT_FILE);
+            r.register(out);
             assertEquals(VALUE_BYTES.length,
                          CopyUtils.copyBytes(in,out.getStream(),true));
         } finally {
-            out.close();
+            r.close();
         }
     }
 
@@ -58,12 +62,14 @@ public class CopyUtilsTest
         (String out)
         throws Exception
     {
-        ReaderWrapper in=new ReaderWrapper(TEST_INPUT_FILE);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            ReaderWrapper in=new ReaderWrapper(TEST_INPUT_FILE);
+            r.register(in);
             assertEquals(VALUE_CHARS.length,
                          CopyUtils.copyChars(in.getReader(),true,out));
         } finally {
-            in.close();
+            r.close();
         }
     }
 
@@ -71,12 +77,14 @@ public class CopyUtilsTest
         (String in)
         throws Exception
     {
-        WriterWrapper out=new WriterWrapper(TEST_OUTPUT_FILE);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            WriterWrapper out=new WriterWrapper(TEST_OUTPUT_FILE);
+            r.register(out);
             assertEquals(VALUE_CHARS.length,
                          CopyUtils.copyChars(in,out.getWriter(),true));
         } finally {
-            out.close();
+            r.close();
         }
     }
 
@@ -164,8 +172,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failFileBytes()
-        throws Exception
+	public void failFileBytesInput()
     {
         try {
             CopyUtils.copyBytes(TEST_NONEXISTENT_FILE,TEST_OUTPUT_FILE);
@@ -173,7 +180,15 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_FILES,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
+    }
+
+    @Test
+	public void failFileBytesOutput()
+        throws Exception
+    {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
         try {
             CopyUtils.copyBytes(TEST_INPUT_FILE,TEST_NONEXISTENT_FILE);
@@ -181,12 +196,13 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_FILES,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
-	public void failFileChars()
-        throws Exception
+	public void failFileCharsInput()
     {
         try {
             CopyUtils.copyChars(TEST_NONEXISTENT_FILE,TEST_OUTPUT_FILE);
@@ -194,7 +210,15 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_FILES,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
+    }
+
+    @Test
+	public void failFileCharsOutput()
+        throws Exception
+    {
         CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
         try {
             CopyUtils.copyChars(TEST_INPUT_FILE,TEST_NONEXISTENT_FILE);
@@ -202,7 +226,9 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_FILES,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -216,7 +242,9 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_ISTREAM,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -230,7 +258,9 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_OSTREAM,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -244,7 +274,9 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_READER,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -258,7 +290,9 @@ public class CopyUtilsTest
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_COPY_WRITER,
                  ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -269,7 +303,9 @@ public class CopyUtilsTest
         } catch (I18NException ex) {
             assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_DST,
                          ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -280,7 +316,9 @@ public class CopyUtilsTest
         } catch (I18NException ex) {
             assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_DST,
                          ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -291,7 +329,9 @@ public class CopyUtilsTest
         } catch (I18NException ex) {
             assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_SRC,
                          ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 
     @Test
@@ -302,6 +342,8 @@ public class CopyUtilsTest
         } catch (I18NException ex) {
             assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_SRC,
                          ex.getI18NMessage());
+            return;
         }
+        fail();
     }
 }
