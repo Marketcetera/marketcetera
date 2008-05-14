@@ -19,6 +19,7 @@ public class RegExAssertTest
     {
         try {
             assertMatches(null,"a");
+            fail();
         } catch (AssertionError ex) {
             assertEquals
                 ("pattern is null and does not match 'a'",ex.getMessage());
@@ -30,6 +31,7 @@ public class RegExAssertTest
     {
         try {
             assertMatches("a",null);
+            fail();
         } catch (AssertionError ex) {
             assertEquals
                 ("pattern 'a' does not match null",ex.getMessage());
@@ -41,6 +43,7 @@ public class RegExAssertTest
     {
         try {
             assertMatches("a","b");
+            fail();
         } catch (AssertionError ex) {
             assertEquals
                 ("pattern 'a' does not match 'b'",ex.getMessage());
@@ -52,6 +55,7 @@ public class RegExAssertTest
     {
         try {
             assertMatches("Right now,","a","b");
+            fail();
         } catch (AssertionError ex) {
             assertEquals
                 ("Right now, pattern 'a' does not match 'b'",ex.getMessage());
