@@ -1,6 +1,5 @@
 package org.marketcetera.util.except;
 
-import java.util.Locale;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
