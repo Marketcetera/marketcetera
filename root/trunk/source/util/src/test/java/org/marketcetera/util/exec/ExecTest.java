@@ -145,9 +145,11 @@ public class ExecTest
             CloseableRegistry r=new CloseableRegistry();
             try {
                 stdOutByteArray=new ByteArrayOutputStream();
+                r.register(stdOutByteArray);
                 PrintStream stdOutNew=new PrintStream(stdOutByteArray);
                 r.register(stdOutNew);
                 stdErrByteArray=new ByteArrayOutputStream();
+                r.register(stdErrByteArray);
                 PrintStream stdErrNew=new PrintStream(stdErrByteArray);
                 r.register(stdErrNew);
                 System.setOut(stdOutNew);
