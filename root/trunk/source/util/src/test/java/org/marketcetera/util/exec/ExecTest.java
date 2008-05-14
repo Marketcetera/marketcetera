@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.PrintStream;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.except.I18NInterruptedException;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
@@ -279,6 +280,7 @@ public class ExecTest
         try {
             Exec.run((File)null,Disposition.MEMORY,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            assertFalse(ex instanceof I18NInterruptedException);
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_EXECUTE,
                  ex.getI18NMessage());
@@ -293,6 +295,7 @@ public class ExecTest
         try {
             run(TEST_NONEXISTENT_FILE,Disposition.MEMORY,DIR_ROOT);
         } catch (I18NException ex) {
+            assertFalse(ex instanceof I18NInterruptedException);
             assertEquals
                 (ex.getDetail(),Messages.CANNOT_EXECUTE,
                  ex.getI18NMessage());
@@ -311,6 +314,7 @@ public class ExecTest
         child.interrupt();
         Thread.sleep(SLEEP_DURATION);
         I18NException ex=child.getException();
+        assertTrue(ex instanceof I18NInterruptedException);
         assertEquals
             (ex.getDetail(),Messages.UNEXPECTED_TERMINATION,
              ex.getI18NMessage());
