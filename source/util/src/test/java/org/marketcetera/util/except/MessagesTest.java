@@ -13,5 +13,13 @@ public class MessagesTest
     public void messagesExist()
     {
         Messages.PROVIDER.setLocale(Locale.US);
+        assertEquals
+            ("Thread execution was interrupted",
+             Messages.PROVIDER.getText
+             (Messages.THREAD_INTERRUPTED));
+        assertEquals
+            ("Caught throwable was not propagated",
+             Messages.PROVIDER.getText
+             (Messages.THROWABLE_IGNORED));
     }
 }
