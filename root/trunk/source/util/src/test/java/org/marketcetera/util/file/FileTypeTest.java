@@ -3,7 +3,6 @@ package org.marketcetera.util.file;
 import java.io.File;
 import java.util.Locale;
 import org.apache.log4j.Level;
-import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
@@ -49,14 +48,6 @@ public class FileTypeTest
     }
 
 
-    @Before
-    public void setupFileTypeTest()
-    {
-        Messages.PROVIDER.setLocale(Locale.US);
-        setLevel(TEST_CATEGORY,Level.WARN);
-    }
-
-
     @Test
     public void all()
     {
@@ -87,10 +78,23 @@ public class FileTypeTest
         assertEquals(LINK_DIR,get(TEST_DIR_LINK));
         assertEquals(NONEXISTENT,get(TEST_DANGLING_LINK));
         assertEquals(NONEXISTENT,get(TEST_RECURSIVE_LINK));
-
         assertEquals(UNKNOWN,get(TEST_UNKNOWN_FILE));
+    }
+
+    /*
+     * EXTREME TEST 1: run alone (no other tests in the same file,
+     * and no other units test) after uncommenting sections in main
+     * class.
+    @Test
+    public void exceptionThrown()
+    {
+        Messages.PROVIDER.setLocale(Locale.US);
+        setLevel(TEST_CATEGORY,Level.WARN);
+        assertEquals(UNKNOWN,get(TEST_PLAIN_FILE));
         assertSingleEvent
             (Level.WARN,TEST_CATEGORY,
-             "Cannot determine type of file '"+TEST_UNKNOWN_FILE+"'");
+             "Cannot determine type of file '"+
+             (new File(TEST_PLAIN_FILE)).getAbsolutePath()+"'");
     }
+    */
 }
