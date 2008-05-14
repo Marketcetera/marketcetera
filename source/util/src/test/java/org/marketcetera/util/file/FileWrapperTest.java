@@ -13,50 +13,63 @@ public class FileWrapperTest
     public void inputOutputStreams()
         throws Exception
     {
-        OutputStreamWrapper out=new OutputStreamWrapper(TEST_FILE);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            OutputStreamWrapper out=new OutputStreamWrapper(TEST_FILE);
+            r.register(out);
             assertFalse(out.getSkipClose());
             assertNotNull(out.getStream());
             out.getStream().write(VALUE_BYTES);
         } finally {
-            out.close();
+            r.close();
         }
 
-        InputStreamWrapper in=new InputStreamWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            InputStreamWrapper in=new InputStreamWrapper(TEST_FILE);
+            r.register(in);
             assertFalse(in.getSkipClose());
             assertNotNull(in.getStream());
             assertArrayEquals(VALUE_BYTES,IOUtils.toByteArray(in.getStream()));
         } finally {
-            in.close();
+            r.close();
         }
 
-        out=new OutputStreamWrapper(SpecialNames.PREFIX_APPEND+TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            OutputStreamWrapper out=
+                new OutputStreamWrapper(SpecialNames.PREFIX_APPEND+TEST_FILE);
+            r.register(out);
             out.getStream().write(VALUE_BYTES);
         } finally {
-            out.close();
+            r.close();
         }
-        in=new InputStreamWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            InputStreamWrapper in=new InputStreamWrapper(TEST_FILE);
+            r.register(in);
             assertArrayEquals
                 (ArrayUtils.addAll(VALUE_BYTES,VALUE_BYTES),
                  IOUtils.toByteArray(in.getStream()));
         } finally {
-            in.close();
+            r.close();
         }
         
-        out=new OutputStreamWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            OutputStreamWrapper out=new OutputStreamWrapper(TEST_FILE);
+            r.register(out);
             out.getStream().write(VALUE_BYTES);
         } finally {
-            out.close();
+            r.close();
         }
-        in=new InputStreamWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            InputStreamWrapper in=new InputStreamWrapper(TEST_FILE);
+            r.register(in);
             assertArrayEquals(VALUE_BYTES,IOUtils.toByteArray(in.getStream()));
         } finally {
-            in.close();
+            r.close();
         }
     }
 
@@ -64,48 +77,61 @@ public class FileWrapperTest
     public void readerWriter()
         throws Exception
     {
-        WriterWrapper out=new WriterWrapper(TEST_FILE);
+        CloseableRegistry r=new CloseableRegistry();
         try {
+            WriterWrapper out=new WriterWrapper(TEST_FILE);
+            r.register(out);
             assertFalse(out.getSkipClose());
             assertNotNull(out.getWriter());
             out.getWriter().write(VALUE);
         } finally {
-            out.close();
+            r.close();
         }
         
-        ReaderWrapper in=new ReaderWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            ReaderWrapper in=new ReaderWrapper(TEST_FILE);
+            r.register(in);
             assertFalse(in.getSkipClose());
             assertNotNull(in.getReader());
             assertEquals(VALUE,IOUtils.toString(in.getReader()));
         } finally {
-            in.close();
+            r.close();
         }
 
-        out=new WriterWrapper(SpecialNames.PREFIX_APPEND+TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            WriterWrapper out=
+                new WriterWrapper(SpecialNames.PREFIX_APPEND+TEST_FILE);
+            r.register(out);
             out.getWriter().write(VALUE);
         } finally {
-            out.close();
+            r.close();
         }
-        in=new ReaderWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            ReaderWrapper in=new ReaderWrapper(TEST_FILE);
+            r.register(in);
             assertEquals(VALUE+VALUE,IOUtils.toString(in.getReader()));
         } finally {
-            in.close();
+            r.close();
         }
 
-        out=new WriterWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            WriterWrapper out=new WriterWrapper(TEST_FILE);
+            r.register(out);
             out.getWriter().write(VALUE);
         } finally {
-            out.close();
+            r.close();
         }
-        in=new ReaderWrapper(TEST_FILE);
+        r=new CloseableRegistry();
         try {
+            ReaderWrapper in=new ReaderWrapper(TEST_FILE);
+            r.register(in);
             assertEquals(VALUE,IOUtils.toString(in.getReader()));
         } finally {
-            in.close();
+            r.close();
         }
     }
 }
