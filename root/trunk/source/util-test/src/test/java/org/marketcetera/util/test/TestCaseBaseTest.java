@@ -19,7 +19,7 @@ public class TestCaseBaseTest
 
 
     @Before
-    public void setupLoggingLevel()
+    public void setupTestCaseBaseTest()
     {
         setLevel(TEST_CATEGORY,Level.ERROR);
     }
