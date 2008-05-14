@@ -75,9 +75,9 @@ public class I18NLoggerProxy
      * logging category.
      * 
      * @param category The category.
+     * @param throwable The throwable.
      * @param message The message.
      * @param params The message parameters.
-     * @param throwable The throwable.
      */
     
 	public void error
@@ -141,9 +141,9 @@ public class I18NLoggerProxy
      * logging category.
      * 
      * @param category The category.
+     * @param throwable The throwable.
      * @param message The message.
      * @param params The message parameters.
-     * @param throwable The throwable.
      */
     
 	public void warn
@@ -209,9 +209,9 @@ public class I18NLoggerProxy
      * for the given logging category.
      * 
      * @param category The category.
+     * @param throwable The throwable.
      * @param message The message.
      * @param params The message parameters.
-     * @param throwable The throwable.
      */
     
 	public void info
@@ -276,9 +276,9 @@ public class I18NLoggerProxy
      * given logging category.
      * 
      * @param category The category.
+     * @param throwable The throwable.
      * @param message The message.
      * @param params The message parameters.
-     * @param throwable The throwable.
      */
     
 	public void debug
@@ -343,9 +343,9 @@ public class I18NLoggerProxy
      * logging category.
      * 
      * @param category The category.
+     * @param throwable The throwable.
      * @param message The message.
      * @param params The message parameters.
-     * @param throwable The throwable.
      */
     
 	public void trace
