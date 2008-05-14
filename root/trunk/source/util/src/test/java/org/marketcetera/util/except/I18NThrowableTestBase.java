@@ -39,7 +39,7 @@ public class I18NThrowableTestBase
         "Top-level test exception (expected)";
 
     @Before
-    public void setup()
+    public void setupI18NThrowableTestBase()
     {
         Messages.PROVIDER.setLocale(Locale.US);
     }

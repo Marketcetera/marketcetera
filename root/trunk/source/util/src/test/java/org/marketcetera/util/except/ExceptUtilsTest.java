@@ -31,7 +31,7 @@ public class ExceptUtilsTest
 
 
     @Before
-    public void setup()
+    public void setupExceptUtilsTest()
     {
         setLevel(TEST_CATEGORY,Level.WARN);
     }
