@@ -16,12 +16,10 @@ public class MessagesTest
         assertEquals
             ("Message not found: provider 'a'; id 'b'; entry 'c'; "+
              "parameters d",
-             Messages.PROVIDER.getText
-             (Messages.MESSAGE_NOT_FOUND,"a","b","c","d"));
+             Messages.MESSAGE_NOT_FOUND.getText("a","b","c","d"));
         assertEquals
             ("Unexpected exception: provider 'a'; id 'b'; entry 'c'; "+
              "parameters d",
-             Messages.PROVIDER.getText
-             (Messages.UNEXPECTED_EXCEPTION,"a","b","c","d"));
+             Messages.UNEXPECTED_EXCEPTION.getText("a","b","c","d"));
     }
 }
