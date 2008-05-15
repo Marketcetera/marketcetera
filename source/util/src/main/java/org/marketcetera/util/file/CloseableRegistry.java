@@ -56,8 +56,7 @@ public class CloseableRegistry
             try {
                 closeable.close();
             } catch (Throwable t) {
-                ExceptUtils.swallow
-                    (t,Messages.LOGGER,this,Messages.CLOSING_FAILED);
+                ExceptUtils.swallow(t,this,Messages.CLOSING_FAILED);
             }
         }
     }
