@@ -2,7 +2,6 @@ package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.log.LogUtils;
 
 /**
@@ -16,16 +15,15 @@ import org.marketcetera.util.log.LogUtils;
 
 @ClassVersion("$Id$")
 public class I18NException
-	extends Exception
+    extends Exception
     implements I18NThrowable
 {
 
     // INSTANCE DATA.
 
-	private I18NMessageProvider mProvider;
-	private I18NMessage mMessage;
-	private Object[] mParams;
-	
+    private I18NMessage mMessage;
+    private Object[] mParams;
+    
 
     // CONSTRUCTORS.
 
@@ -34,7 +32,7 @@ public class I18NException
      * cause.
      */
 
-	public I18NException() {}
+    public I18NException() {}
 
     /**
      * Constructs a new throwable without a message, but with the
@@ -43,53 +41,47 @@ public class I18NException
      * @param cause The cause.
      */
 
-	public I18NException
+    public I18NException
         (Throwable cause)
-	{
-		super(cause);
-	}
+    {
+        super(cause);
+    }
 
     /**
      * Constructs a new throwable with the given message, but without
      * an underlying cause.
      *
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      */
 
     public I18NException
-        (I18NMessageProvider provider,
-         I18NMessage message,
+        (I18NMessage message,
          Object... params)
-	{
-    	super(LogUtils.getSimpleMessage(provider,message,params));
-		mProvider=provider;
-    	mMessage=message;
-    	mParams=params;
-	}
+    {
+        super(LogUtils.getSimpleMessage(message,params));
+        mMessage=message;
+        mParams=params;
+    }
 
     /**
      * Constructs a new throwable with the given message and
      * underlying cause.
      *
      * @param cause The cause.
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      */
 
-	public I18NException
+    public I18NException
         (Throwable cause,
-         I18NMessageProvider provider,
          I18NMessage message,
          Object... params)
-	{
-    	super(LogUtils.getSimpleMessage(provider,message,params),cause);
-		mProvider=provider;
-	   	mMessage=message;
-	   	mParams=params;
-	}
+    {
+        super(LogUtils.getSimpleMessage(message,params),cause);
+        mMessage=message;
+        mParams=params;
+    }
 
 
     // I18NThrowable.
@@ -98,13 +90,13 @@ public class I18NException
     public String getLocalizedMessage()
     {
         return I18NExceptUtils.getLocalizedMessage(this);
-	}
+    }
 
     @Override
     public String getDetail()
     {
         return I18NExceptUtils.getDetail(this);
-	}
+    }
 
     @Override
     public String getLocalizedDetail()
@@ -113,20 +105,14 @@ public class I18NException
     }
     
     @Override
-	public I18NMessageProvider getI18NProvider()
-	{
-		return mProvider;
-	}
-	
+    public I18NMessage getI18NMessage()
+    {
+        return mMessage;
+    }
+    
     @Override
-	public I18NMessage getI18NMessage()
-	{
-		return mMessage;
-	}
-	
-    @Override
-	public Object[] getParams()
-	{
-		return mParams;
-	}
+    public Object[] getParams()
+    {
+        return mParams;
+    }
 }

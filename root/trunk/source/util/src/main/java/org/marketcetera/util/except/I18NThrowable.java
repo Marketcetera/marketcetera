@@ -2,20 +2,19 @@ package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessageProvider;
 
 /**
- * An internationalized throwable. At creation, the message and
- * provider may be set; upon message retrieval, {@link #getMessage()}
- * and {@link #getLocalizedMessage()} behave exactly as mandated by
- * {@link Throwable}, and as implemented by JDK throwables. {@link
+ * An internationalized throwable. At creation, the message may be
+ * set; upon message retrieval, {@link #getMessage()} and {@link
+ * #getLocalizedMessage()} behave exactly as mandated by {@link
+ * Throwable}, and as implemented by JDK throwables. {@link
  * #getDetail()} and {@link #getLocalizedDetail()} return a raw and
  * localized message respectively that includes both the receiver's
  * message as well as the associated message of the underlying cause
  * (both combined; or either one; or null, if none is set). A raw
  * message comprises the provider, message, and entry IDs, as well as
  * the message parameters; a localized message is looked up via a
- * supplied message provider.
+ * message's associated provider.
  *
  * @author tlerios
  * @version $Id$
@@ -73,14 +72,6 @@ interface I18NThrowable
      */
 
     String getLocalizedDetail();
-
-    /**
-     * Returns the receiver's message provider.
-     *
-     * @return The message provider. It may be null.
-     */
-
-    I18NMessageProvider getI18NProvider();
 
     /**
      * Returns the receiver's message.
