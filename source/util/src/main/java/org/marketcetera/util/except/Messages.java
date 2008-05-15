@@ -37,7 +37,7 @@ public interface Messages
      */
 
     static final I18NMessage THREAD_INTERRUPTED=
-        new I18NMessage("thread_interrupted");
+        new I18NMessage(LOGGER,"thread_interrupted");
     static final I18NMessage THROWABLE_IGNORED=
-        new I18NMessage("throwable_ignored");
+        new I18NMessage(LOGGER,"throwable_ignored");
 }
