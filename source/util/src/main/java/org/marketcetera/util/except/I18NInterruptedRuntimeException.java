@@ -17,6 +17,11 @@ public class I18NInterruptedRuntimeException
     extends I18NRuntimeException
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // CONSTRUCTORS.
 
     /**
