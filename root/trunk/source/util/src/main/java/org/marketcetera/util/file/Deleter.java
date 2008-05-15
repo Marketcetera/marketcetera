@@ -118,8 +118,7 @@ public class Deleter
         if (!file.delete()) {
             throw new IOException
                 (null,new I18NException
-                 (Messages.PROVIDER,Messages.CANNOT_DELETE,
-                  file.getAbsolutePath()));
+                 (Messages.CANNOT_DELETE,file.getAbsolutePath()));
         }
     }
 
