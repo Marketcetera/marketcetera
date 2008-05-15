@@ -53,10 +53,10 @@ final class I18NExceptUtils
     static String getLocalizedMessage
         (I18NThrowable t)
     {
-    	if (t.getI18NProvider()==null) {
+    	if (t.getI18NMessage()==null) {
 	    	return t.getMessage();
 	    }
-    	return t.getI18NProvider().getText(t.getI18NMessage(),t.getParams());
+    	return t.getI18NMessage().getText(t.getParams());
     }
 
     /**
@@ -73,7 +73,7 @@ final class I18NExceptUtils
         (I18NThrowable t)
     {
         String selfMessage=null;
-    	if (t.getI18NProvider()!=null) {
+    	if (t.getI18NMessage()!=null) {
 	    	selfMessage=t.getMessage();
         }
         String causeMessage=null;
