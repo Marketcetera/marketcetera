@@ -20,6 +20,7 @@ public class CloseableRegistryTest
     private static final String TEST_MESSAGE=
         "Closing failed";
 
+
     private static final class OrderedCloseable
         implements Closeable
     {
@@ -27,16 +28,17 @@ public class CloseableRegistryTest
 
         private int mSequence;
 
-        public static void resetStaticSequence()
+        static void resetStaticSequence()
         {
             sSequence=0;
         }
 
-        public int getSequence()
+        int getSequence()
         {
             return mSequence;
         }
 
+        @Override
         public void close()
         {
             mSequence=++sSequence;
@@ -46,6 +48,7 @@ public class CloseableRegistryTest
     private static final class ThrowingCloseable
         implements Closeable
     {
+        @Override
         public void close()
             throws IOException
         {

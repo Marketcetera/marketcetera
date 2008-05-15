@@ -16,12 +16,12 @@ public class WriterWrapperTest
         private int mClosures=0;
         private int mFlushes=0;
 
-        public int getClosures()
+        int getClosures()
         {
             return mClosures;
         }
 
-        public int getFlushes()
+        int getFlushes()
         {
             return mFlushes;
         }
