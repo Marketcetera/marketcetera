@@ -15,15 +15,12 @@ public class MessagesTest
         Messages.PROVIDER.setLocale(Locale.US);
         assertEquals
             ("Cannot copy output of command 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_OUTPUT,"a"));
+             Messages.CANNOT_COPY_OUTPUT.getText("a"));
         assertEquals
             ("Cannot execute command 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_EXECUTE,"a"));
+             Messages.CANNOT_EXECUTE.getText("a"));
         assertEquals
             ("Unexpected termination of command 'a'",
-             Messages.PROVIDER.getText
-             (Messages.UNEXPECTED_TERMINATION,"a"));
+             Messages.UNEXPECTED_TERMINATION.getText("a"));
     }
 }
