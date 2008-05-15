@@ -16,7 +16,7 @@ public class ReaderWrapperTest
     {
         private int mClosures=0;
 
-        public int getClosures()
+        int getClosures()
         {
             return mClosures;
         }
