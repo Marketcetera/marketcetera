@@ -34,7 +34,7 @@ public class I18NMessageProvider
      * stream resource (file) containing the message mappings.
      */
 
-	public static final String MESSAGE_FILE_EXTENSION=
+    public static final String MESSAGE_FILE_EXTENSION=
         "_messages.xml";
         // "_message.xml"; // EXTREME TEST 1.
 
@@ -43,37 +43,37 @@ public class I18NMessageProvider
      * cannot be used.
      */
 
-	private static final String MESSAGE_FILE_NOT_FOUND=
+    private static final String MESSAGE_FILE_NOT_FOUND=
         "Message file missing: provider '{}'; file '{}'";
-	private static final String MESSAGE_NOT_FOUND=
+    private static final String MESSAGE_NOT_FOUND=
         "Message missing: provider ''{0}''; id ''{1}''; entry ''{2}''; "+
         "parameters {3}";
-	private static final String UNEXPECTED_EXCEPTION_CONTEXT=
+    private static final String UNEXPECTED_EXCEPTION_CONTEXT=
         "Abnormal exception: provider ''{0}''; id ''{1}''; entry ''{2}''; "+
         "parameters {3}";
-	private static final String UNEXPECTED_EXCEPTION_TRACE=
+    private static final String UNEXPECTED_EXCEPTION_TRACE=
         "Abnormal exception: stack trace";
-	private static final String CORRUPTED_STORE=
+    private static final String CORRUPTED_STORE=
         "Corrupted/unavailable message map";
 
-	private static ThreadLocal<Locale> sLocale=new ThreadLocal<Locale>()
-	{
+    private static ThreadLocal<Locale> sLocale=new ThreadLocal<Locale>()
+    {
         @Override
         protected Locale initialValue()
         {
             return Locale.getDefault();
         }
-	};
+    };
 
 
     // INSTANCE DATA.
 
-	private String mProviderId;
+    private String mProviderId;
 
 
     // CONSTRUCTORS.
 
-	/**
+    /**
      * Creates a new message provider with the given ID. The provider
      * ID is combined with the suffix {@link #MESSAGE_FILE_EXTENSION}
      * to form the name of a mapping file. The file should be
@@ -83,21 +83,21 @@ public class I18NMessageProvider
      * @param providerId The provider ID.
      */
 
-	public I18NMessageProvider
+    public I18NMessageProvider
         (String providerId)
-	{
-		mProviderId=providerId;
-		String fileName=getProviderId()+MESSAGE_FILE_EXTENSION;
-		InputStream stream=getClass().getClassLoader().
-			getResourceAsStream(fileName);
-		if (stream==null) {
-			SLF4JLoggerProxy.error
+    {
+        mProviderId=providerId;
+        String fileName=getProviderId()+MESSAGE_FILE_EXTENSION;
+        InputStream stream=getClass().getClassLoader().
+            getResourceAsStream(fileName);
+        if (stream==null) {
+            SLF4JLoggerProxy.error
                 (this,MESSAGE_FILE_NOT_FOUND,getProviderId(),fileName);
             return;
-		}
-		MessageManager.addMessageProvider
+        }
+        MessageManager.addMessageProvider
             (getProviderId(),new XMLMessageProvider(stream));
-	}
+    }
 
 
     // CLASS METHODS.
@@ -109,10 +109,10 @@ public class I18NMessageProvider
      * @return The locale.
      */
 
-	public static Locale getLocale()
-	{
-		return sLocale.get();
-	}
+    public static Locale getLocale()
+    {
+        return sLocale.get();
+    }
 
     /**
      * Sets the locale used for message translation by all instances
@@ -122,12 +122,12 @@ public class I18NMessageProvider
      * @param locale The locale.
      */
 
-	public static void setLocale
+    public static void setLocale
         (Locale locale)
-	{
-		sLocale.set(locale);
-	}
-	
+    {
+        sLocale.set(locale);
+    }
+    
 
     // INSTANCE METHODS.
 
@@ -137,10 +137,10 @@ public class I18NMessageProvider
      * @return The ID.
      */
 
-	public String getProviderId()
-	{
-		return mProviderId;
-	}
+    public String getProviderId()
+    {
+        return mProviderId;
+    }
 
     /**
      * Returns the text of the given message in the given locale,
@@ -156,32 +156,32 @@ public class I18NMessageProvider
      * its IDs and parameters is returned.
      */
 
-	public String getText
+    public String getText
         (Locale locale,
          I18NMessage message,
          Object... params)
-	{
+    {
         String messageId=message.getMessageId();
-		String entryId=message.getEntryId();
-		try {
+        String entryId=message.getEntryId();
+        try {
             //throw new IllegalArgumentException(); // EXTREME TEST 2.
             return MessageManager.getText
                 (getProviderId(),messageId,entryId,params,locale);
-		} catch (Exception ex) {
+        } catch (Exception ex) {
 
             // Handle mutually recursive call.
 
-			if ((message==Messages.MESSAGE_NOT_FOUND) ||
-				(message==Messages.UNEXPECTED_EXCEPTION)) {
-				SLF4JLoggerProxy.error(this,CORRUPTED_STORE);
-				if (message==Messages.MESSAGE_NOT_FOUND) {
-					return MessageFormat.format(MESSAGE_NOT_FOUND,params);
-				}
+            if ((message==Messages.MESSAGE_NOT_FOUND) ||
+                (message==Messages.UNEXPECTED_EXCEPTION)) {
+                SLF4JLoggerProxy.error(this,CORRUPTED_STORE);
+                if (message==Messages.MESSAGE_NOT_FOUND) {
+                    return MessageFormat.format(MESSAGE_NOT_FOUND,params);
+                }
                 SLF4JLoggerProxy.error
                     (this,UNEXPECTED_EXCEPTION_TRACE,ex);
                 return MessageFormat.format
                     (UNEXPECTED_EXCEPTION_CONTEXT,params);
-			}
+            }
 
             // Turn arguments into a string.
 
@@ -192,21 +192,19 @@ public class I18NMessageProvider
             // for example, the core message map is missing.
 
             if (ex instanceof MessageNotFoundException) {
-                Messages.LOGGER.error
-                    (this,ex,Messages.MESSAGE_NOT_FOUND,getProviderId(),
-                     messageId,entryId,paramsText);
+                Messages.MESSAGE_NOT_FOUND.error
+                    (this,ex,getProviderId(),messageId,entryId,paramsText);
             } else {
-                Messages.LOGGER.error
-                    (this,ex,Messages.UNEXPECTED_EXCEPTION,getProviderId(),
-                     messageId,entryId,paramsText);
+                Messages.UNEXPECTED_EXCEPTION.error
+                    (this,ex,getProviderId(),messageId,entryId,paramsText);
                 SLF4JLoggerProxy.error(this,UNEXPECTED_EXCEPTION_TRACE,ex);
             }
 
             // Return simple form of message.
 
             return LogUtils.getSimpleMessage(this,message,params);
-		}
-	}
+        }
+    }
 
     /**
      * Returns the text of the given message in the locale associated
@@ -221,10 +219,10 @@ public class I18NMessageProvider
      * its IDs and parameters is returned.
      */
 
-	public String getText
+    public String getText
         (I18NMessage message,
          Object... params)
-	{
-		return getText(getLocale(),message,params);
-	}
+    {
+        return getText(getLocale(),message,params);
+    }
 }
