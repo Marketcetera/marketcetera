@@ -24,7 +24,7 @@ public class InputThreadTest
     {
         private int mClosures=0;
 
-        public int getClosures()
+        int getClosures()
         {
             return mClosures;
         }
@@ -76,7 +76,7 @@ public class InputThreadTest
     {
         private int mClosures=0;
 
-        public int getClosures()
+        int getClosures()
         {
             return mClosures;
         }
