@@ -15,43 +15,33 @@ public class MessagesTest
         Messages.PROVIDER.setLocale(Locale.US);
         assertEquals
             ("Closing failed",
-             Messages.PROVIDER.getText
-             (Messages.CLOSING_FAILED));
+             Messages.CLOSING_FAILED.getText());
         assertEquals
             ("Cannot determine type of file 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_GET_TYPE,"a"));
+             Messages.CANNOT_GET_TYPE.getText("a"));
         assertEquals
             ("Cannot delete file 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_DELETE,"a"));
+             Messages.CANNOT_DELETE.getText("a"));
         assertEquals
             ("Cannot copy from file 'a' to file 'b'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_FILES,"a","b"));
+             Messages.CANNOT_COPY_FILES.getText("a","b"));
         assertEquals
             ("Cannot copy from input stream to file 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_ISTREAM,"a"));
+             Messages.CANNOT_COPY_ISTREAM.getText("a"));
         assertEquals
             ("Cannot copy from reader to file 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_READER,"a"));
+             Messages.CANNOT_COPY_READER.getText("a"));
         assertEquals
             ("Cannot copy from file 'a' to output stream",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_OSTREAM,"a"));
+             Messages.CANNOT_COPY_OSTREAM.getText("a"));
         assertEquals
             ("Cannot copy from file 'a' to writer",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_WRITER,"a"));
+             Messages.CANNOT_COPY_WRITER.getText("a"));
         assertEquals
             ("Cannot copy from memory to file 'a'",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_MEMORY_SRC,"a"));
+             Messages.CANNOT_COPY_MEMORY_SRC.getText("a"));
         assertEquals
             ("Cannot copy from file 'a' to memory",
-             Messages.PROVIDER.getText
-             (Messages.CANNOT_COPY_MEMORY_DST,"a"));
+             Messages.CANNOT_COPY_MEMORY_DST.getText("a"));
     }
 }
