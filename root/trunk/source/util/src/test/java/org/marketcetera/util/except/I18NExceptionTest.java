@@ -32,7 +32,7 @@ public class I18NExceptionTest
     public void causeWithI18NMessage()
     {
         I18NException nested=new I18NException
-            (TestMessages.PROVIDER,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         causeWithI18NMessage
             (nested,new Exception(nested),new I18NException(nested));
     }
@@ -43,7 +43,7 @@ public class I18NExceptionTest
         myMessage
             (new Exception(TEST_MSG_1),
              new I18NException
-             (TestMessages.PROVIDER,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
     }
 
     @Test
@@ -53,8 +53,7 @@ public class I18NExceptionTest
         myMessageAndCauseWithoutMessage
             (nested,new Exception(TEST_MSG_1,nested),
              new I18NException
-             (nested,
-              TestMessages.PROVIDER,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
     }
 
     @Test
@@ -65,32 +64,29 @@ public class I18NExceptionTest
         myMessageAndCauseWithMessage
             (nested,new Exception(TEST_MSG_1,nested),
              new I18NException
-             (nested,
-              TestMessages.PROVIDER,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
     }
 
     @Test
     public void myMessageAndCauseWithI18NMessage()
     {
         I18NException nested=new I18NException
-            (TestMessages.PROVIDER,TestMessages.BOT_EXCEPTION);
+            (TestMessages.BOT_EXCEPTION);
         myMessageAndCauseWithI18NMessage
             (nested,new Exception(TEST_MSG_1,nested),
              new I18NException
-             (nested,
-              TestMessages.PROVIDER,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
     }
 
     @Test
     public void nesting()
     {
         I18NException exBot=new I18NException
-            (TestMessages.PROVIDER,TestMessages.BOT_EXCEPTION);
+            (TestMessages.BOT_EXCEPTION);
         I18NException exMid=new I18NException
-            (exBot,TestMessages.PROVIDER,TestMessages.MID_EXCEPTION,
-             MID_MSG_PARAM);
+            (exBot,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         I18NException exTop=new I18NException
-            (exMid,TestMessages.PROVIDER,TestMessages.TOP_EXCEPTION);
+            (exMid,TestMessages.TOP_EXCEPTION);
         nesting(exBot,exMid,exTop);
     }
 }
