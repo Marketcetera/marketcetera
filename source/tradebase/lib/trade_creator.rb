@@ -32,7 +32,7 @@ module TradeCreator
     price = getStringFieldValueIfPresent(qfMessage, Quickfix::LastPx.new)
     account = getStringFieldValueIfPresent(qfMessage, Quickfix::Account.new)
 
-    # convert from UTC to loal time zone
+    # convert from UTC to local time zone
     sendingTime_UTC = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
     pacificTZ = TZInfo::Timezone.get('America/Los_Angeles')
     sendingTime  = pacificTZ.utc_to_local(DateTime.parse(sendingTime_UTC))
