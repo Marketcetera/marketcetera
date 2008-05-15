@@ -19,6 +19,11 @@ public class I18NRuntimeException
     implements I18NThrowable
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // INSTANCE DATA.
 
     private I18NMessage mMessage;

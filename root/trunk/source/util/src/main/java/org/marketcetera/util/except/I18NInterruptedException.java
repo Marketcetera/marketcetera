@@ -17,6 +17,11 @@ public class I18NInterruptedException
     extends I18NException
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // CONSTRUCTORS.
 
     /**
