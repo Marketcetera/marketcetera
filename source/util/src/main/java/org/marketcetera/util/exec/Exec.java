@@ -87,8 +87,7 @@ public final class Exec
                 (command,process.getInputStream(),out,closeOut);
             consumer.start();
         } catch (Throwable t) {
-            throw ExceptUtils.wrap
-                (t,Messages.PROVIDER,Messages.CANNOT_EXECUTE,command);
+            throw ExceptUtils.wrap(t,Messages.CANNOT_EXECUTE,command);
         }
         try {
 
@@ -110,8 +109,7 @@ public final class Exec
 
             return new ExecResult(exitValue,capture);
         } catch (Throwable t) {
-            throw ExceptUtils.wrap
-                (t,Messages.PROVIDER,Messages.UNEXPECTED_TERMINATION,command);
+            throw ExceptUtils.wrap(t,Messages.UNEXPECTED_TERMINATION,command);
         } finally {
             process.destroy();
         }
