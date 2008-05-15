@@ -36,7 +36,7 @@ public final class ExceptUtils
     {
         if (Thread.interrupted()) {
             throw new InterruptedException
-                (Messages.PROVIDER.getText(Messages.THREAD_INTERRUPTED));
+                (Messages.THREAD_INTERRUPTED.getText());
         }
     }
 
@@ -80,7 +80,7 @@ public final class ExceptUtils
     {
         if (Thread.interrupted()) {
             InterruptedException ex=new InterruptedException
-                (Messages.PROVIDER.getText(Messages.THREAD_INTERRUPTED));
+                (Messages.THREAD_INTERRUPTED.getText());
             ex.initCause(cause);
             throw ex;
         }
@@ -151,13 +151,11 @@ public final class ExceptUtils
     /**
      * Swallows the given throwable. It logs the given parameterized
      * message and throwable under the given logging category at the
-     * warning level via the given logger proxy. Also, if the given
-     * throwable is an interruption exception per {@link
-     * #isInterruptException(Throwable)}, then the calling thread is
-     * interrupted.
+     * warning level. Also, if the given throwable is an interruption
+     * exception per {@link #isInterruptException(Throwable)}, then
+     * the calling thread is interrupted.
      * 
      * @param throwable The throwable.
-     * @param logger The logger proxy.
      * @param category The category.
      * @param message The message.
      * @param params The message parameters.
@@ -165,12 +163,11 @@ public final class ExceptUtils
 
     public static void swallow
         (Throwable throwable,
-         I18NLoggerProxy logger,
          Object category,
          I18NMessage message,
          Object... params)
     {
-        logger.warn(category,throwable,message,params);
+        message.warn(category,throwable,params);
         interrupt(throwable);
     }
 
@@ -187,8 +184,7 @@ public final class ExceptUtils
     public static void swallow
         (Throwable throwable)
     {
-        swallow(throwable,Messages.LOGGER,ExceptUtils.class,
-                Messages.THROWABLE_IGNORED);
+        swallow(throwable,ExceptUtils.class,Messages.THROWABLE_IGNORED);
     }
 
     /**
