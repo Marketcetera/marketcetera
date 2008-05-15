@@ -44,7 +44,7 @@ public class ExceptUtilsTest
         I18NException out=ExceptUtils.wrap
             (ex,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         assertEquals(TestMessages.MID_EXCEPTION,out.getI18NMessage());
-        assertEquals(new Object[] {MID_MSG_PARAM},out.getParams());
+        assertArrayEquals(new Object[] {MID_MSG_PARAM},out.getParams());
         assertEquals(ex,out.getCause());
         assertTrue(out instanceof I18NException);
         assertEquals(interruption,out instanceof I18NInterruptedException);
@@ -59,7 +59,7 @@ public class ExceptUtilsTest
         I18NRuntimeException outR=ExceptUtils.wrapRuntime
             (ex,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         assertEquals(TestMessages.MID_EXCEPTION,outR.getI18NMessage());
-        assertEquals(new Object[] {MID_MSG_PARAM},outR.getParams());
+        assertArrayEquals(new Object[] {MID_MSG_PARAM},outR.getParams());
         assertEquals(ex,outR.getCause());
         assertTrue(outR instanceof I18NRuntimeException);
         assertEquals(interruption,
