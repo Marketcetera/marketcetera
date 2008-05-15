@@ -7,7 +7,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class SLF4JLoggerProxyTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
         SLF4JLoggerProxyTest.class.getName();

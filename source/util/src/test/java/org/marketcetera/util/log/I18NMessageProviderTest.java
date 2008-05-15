@@ -11,7 +11,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class I18NMessageProviderTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
         I18NMessageProvider.class.getName();
@@ -66,34 +66,34 @@ public class I18NMessageProviderTest
     @Test
     public void retrievals()
     {
-    	assertEquals
+        assertEquals
             ("Hello",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_MSG));
-    	assertEquals
+        assertEquals
             ("Hello World!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,"World"));
-    	assertEquals
+        assertEquals
             ("Bonjour",TestMessages.PROVIDER.
              getText(Locale.FRENCH,TestMessages.HELLO_MSG));
-    	assertEquals
+        assertEquals
             ("Bonjour Le Monde!",TestMessages.PROVIDER.
              getText(Locale.FRENCH,TestMessages.HELLO_TITLE,"Le Monde"));
-    	assertEquals
+        assertEquals
             ("Hello",TestMessages.PROVIDER.
              getText(Locale.GERMAN,TestMessages.HELLO_MSG));
-    	assertEquals
+        assertEquals
             ("Hello Welt!",TestMessages.PROVIDER.
              getText(Locale.GERMAN,TestMessages.HELLO_TITLE,"Welt"));
 
-    	assertEquals
+        assertEquals
             ("Hello {0}!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,null));
 
         Messages.PROVIDER.setLocale(Locale.FRENCH);
-    	assertEquals
+        assertEquals
             ("Bonjour",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_MSG));
-    	assertEquals
+        assertEquals
             ("Bonjour Le Monde!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,"Le Monde"));
     }
@@ -107,7 +107,7 @@ public class I18NMessageProviderTest
              "Message file missing: provider 'nonexistent_prv'; file "+
              "'nonexistent_prv_messages.xml'");
 
-    	assertEquals
+        assertEquals
             ("provider 'nonexistent_prv'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ()",
              provider.getText(TestMessages.NONEXISTENT));
@@ -121,7 +121,7 @@ public class I18NMessageProviderTest
     @Test
     public void nonexistentMessage()
     {
-    	assertEquals
+        assertEquals
             ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
@@ -131,7 +131,7 @@ public class I18NMessageProviderTest
              "entry 'msg'; parameters ('a')");
 
         Messages.PROVIDER.setLocale(Locale.FRENCH);
-    	assertEquals
+        assertEquals
             ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
@@ -149,7 +149,7 @@ public class I18NMessageProviderTest
     @Test
     public void nonexistentSystemMappingFile()
     {
-    	assertEquals
+        assertEquals
             ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
@@ -180,7 +180,7 @@ public class I18NMessageProviderTest
     @Test
     public void exceptionThrown()
     {
-    	assertEquals
+        assertEquals
             ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
