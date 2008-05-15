@@ -75,6 +75,23 @@ public final class LogUtils
             "'; parameters "+getListText(params);
     }
 
+    /**
+     * Returns a simplified textual representation of the
+     * parameterized message.
+     *
+     * @param message The message.
+     * @param params The message parameters.
+     *
+     * @return The textual representation.
+     */
+
+    public static String getSimpleMessage
+        (I18NMessage message,
+         Object... params)
+    {
+        return getSimpleMessage(message.getMessageProvider(),message,params);
+    }
+
 
     // CONSTRUCTORS.
 
