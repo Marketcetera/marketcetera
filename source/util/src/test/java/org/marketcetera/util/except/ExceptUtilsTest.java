@@ -27,8 +27,7 @@ public class ExceptUtilsTest
          boolean interrupted)
     {
         ExceptUtils.swallow
-            (ex,TestMessages.LOGGER,
-             TEST_CATEGORY,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (ex,TEST_CATEGORY,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         assertEquals(interrupted,Thread.currentThread().interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN);
 
