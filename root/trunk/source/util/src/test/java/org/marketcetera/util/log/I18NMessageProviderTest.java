@@ -21,7 +21,7 @@ public class I18NMessageProviderTest
     {
         private Locale mLocale;
 
-        public Locale getLocale()
+        Locale getLocale()
         {
             return mLocale;
         }
