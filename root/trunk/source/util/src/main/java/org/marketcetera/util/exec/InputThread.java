@@ -75,8 +75,7 @@ class InputThread
         try {
             IOUtils.copyLarge(mIn,mOut);
         } catch (IOException ex) {
-            Messages.LOGGER.error
-                (this,ex,Messages.CANNOT_COPY_OUTPUT,mCommand);
+            Messages.CANNOT_COPY_OUTPUT.error(this,ex,mCommand);
         } finally {
             r.close();
         }
