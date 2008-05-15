@@ -52,7 +52,6 @@ public class I18NThrowableTestBase
         assertNull(t1.getLocalizedMessage());
         assertEquals(t1.getClass().getName(),t1.toString());
 
-        assertNull(t2.getI18NProvider());
         assertNull(t2.getI18NMessage());
         assertNull(t2.getParams());
         assertNull(t2.getCause());
@@ -83,7 +82,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+nestedMessage,
                      t1.toString());
 
-        assertNull(t2.getI18NProvider());
         assertNull(t2.getI18NMessage());
         assertNull(t2.getParams());
         assertEquals(tNested,t2.getCause());
@@ -116,7 +114,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+nestedMessage,
                      t1.toString());
 
-        assertNull(t2.getI18NProvider());
         assertNull(t2.getI18NMessage());
         assertNull(t2.getParams());
         assertEquals(tNested,t2.getCause());
@@ -149,7 +146,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+nestedMessage,
                      t1.toString());
 
-        assertNull(t2.getI18NProvider());
         assertNull(t2.getI18NMessage());
         assertNull(t2.getParams());
         assertEquals(tNested,t2.getCause());
@@ -179,7 +175,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.PROVIDER,t2.getI18NProvider());
         assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
         assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
         assertNull(t2.getCause());
@@ -210,7 +205,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.PROVIDER,t2.getI18NProvider());
         assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
         assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
         assertEquals(tNested,t2.getCause());
@@ -243,7 +237,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.PROVIDER,t2.getI18NProvider());
         assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
         assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
         assertEquals(tNested,t2.getCause());
@@ -274,7 +267,6 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.PROVIDER,t2.getI18NProvider());
         assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
         assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
         assertEquals(tNested,t2.getCause());

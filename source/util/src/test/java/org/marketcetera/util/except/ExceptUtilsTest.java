@@ -42,9 +42,7 @@ public class ExceptUtilsTest
          boolean interruption)
     {
         I18NException out=ExceptUtils.wrap
-            (ex,TestMessages.PROVIDER,
-             TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
-        assertEquals(TestMessages.PROVIDER,out.getI18NProvider());
+            (ex,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         assertEquals(TestMessages.MID_EXCEPTION,out.getI18NMessage());
         assertEquals(new Object[] {MID_MSG_PARAM},out.getParams());
         assertEquals(ex,out.getCause());
@@ -59,9 +57,7 @@ public class ExceptUtilsTest
         assertEquals(interruption,Thread.currentThread().interrupted());
 
         I18NRuntimeException outR=ExceptUtils.wrapRuntime
-            (ex,TestMessages.PROVIDER,
-             TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
-        assertEquals(TestMessages.PROVIDER,outR.getI18NProvider());
+            (ex,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
         assertEquals(TestMessages.MID_EXCEPTION,outR.getI18NMessage());
         assertEquals(new Object[] {MID_MSG_PARAM},outR.getParams());
         assertEquals(ex,outR.getCause());
