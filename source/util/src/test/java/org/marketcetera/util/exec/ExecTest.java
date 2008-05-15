@@ -81,13 +81,13 @@ public class ExecTest
         private String mCommand;
         private I18NException mException;
 
-        public ChildExec
+        ChildExec
             (String command)
         {
             mCommand=command;
         }
 
-        public I18NException getException()
+        I18NException getException()
         {
             return mException;
         }
@@ -113,7 +113,7 @@ public class ExecTest
         private byte[] mStdOut;
         private byte[] mStdErr;
 
-        public Redirector
+        Redirector
             (int exitCode,
              byte[] stdOut,
              byte[] stdErr,
@@ -124,17 +124,17 @@ public class ExecTest
             mStdErr=stdErr;
         }
 
-        public byte[] getStdOut()
+        byte[] getStdOut()
         {
             return mStdOut;
         }
 
-        public byte[] getStdErr()
+        byte[] getStdErr()
         {
             return mStdErr;
         }
 
-        public static Redirector get
+        static Redirector get
             (Disposition disposition)
             throws Exception
         {
