@@ -73,6 +73,7 @@ public class SmartLinksDirectoryWalkerTest
                     !".svn".equals(directory.getName()));
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void handleDirectoryStart
             (File directory,
@@ -88,6 +89,7 @@ public class SmartLinksDirectoryWalkerTest
             }
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void handleFile
             (File file,
