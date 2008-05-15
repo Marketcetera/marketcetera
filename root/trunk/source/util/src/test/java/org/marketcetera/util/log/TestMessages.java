@@ -12,12 +12,12 @@ public interface TestMessages
         new I18NLoggerProxy(PROVIDER);
 
     static final I18NMessage HELLO_MSG=
-        new I18NMessage("hello");
+        new I18NMessage(LOGGER,"hello");
     static final I18NMessage HELLO_TITLE=
-        new I18NMessage("hello","title");
+        new I18NMessage(LOGGER,"hello","title");
     static final I18NMessage LOG_MSG=
-        new I18NMessage("log");
+        new I18NMessage(LOGGER,"log");
 
     static final I18NMessage NONEXISTENT=
-        new I18NMessage("nonexistent_msg");
+        new I18NMessage(LOGGER,"nonexistent_msg");
 }

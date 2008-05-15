@@ -7,7 +7,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class MessagesTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     @Test
     public void messagesExist()
