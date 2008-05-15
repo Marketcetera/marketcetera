@@ -37,23 +37,23 @@ public interface Messages
      */
 
     static final I18NMessage CLOSING_FAILED=
-        new I18NMessage("closing_failed");
+        new I18NMessage(LOGGER,"closing_failed");
     static final I18NMessage CANNOT_GET_TYPE=
-        new I18NMessage("cannot_get_type");
+        new I18NMessage(LOGGER,"cannot_get_type");
     static final I18NMessage CANNOT_DELETE=
-        new I18NMessage("cannot_delete");
+        new I18NMessage(LOGGER,"cannot_delete");
     static final I18NMessage CANNOT_COPY_FILES=
-        new I18NMessage("cannot_copy_files");
+        new I18NMessage(LOGGER,"cannot_copy_files");
     static final I18NMessage CANNOT_COPY_ISTREAM=
-        new I18NMessage("cannot_copy_istream");
+        new I18NMessage(LOGGER,"cannot_copy_istream");
     static final I18NMessage CANNOT_COPY_READER=
-        new I18NMessage("cannot_copy_reader");
+        new I18NMessage(LOGGER,"cannot_copy_reader");
     static final I18NMessage CANNOT_COPY_OSTREAM=
-        new I18NMessage("cannot_copy_ostream");
+        new I18NMessage(LOGGER,"cannot_copy_ostream");
     static final I18NMessage CANNOT_COPY_WRITER=
-        new I18NMessage("cannot_copy_writer");
+        new I18NMessage(LOGGER,"cannot_copy_writer");
     static final I18NMessage CANNOT_COPY_MEMORY_SRC=
-        new I18NMessage("cannot_copy_memory_src");
+        new I18NMessage(LOGGER,"cannot_copy_memory_src");
     static final I18NMessage CANNOT_COPY_MEMORY_DST=
-        new I18NMessage("cannot_copy_memory_dst");
+        new I18NMessage(LOGGER,"cannot_copy_memory_dst");
 }
