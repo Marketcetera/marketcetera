@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.util.Locale;
 import org.marketcetera.core.ClassVersion;
 
 /**
@@ -20,65 +21,95 @@ import org.marketcetera.core.ClassVersion;
 public class I18NMessage
 {
 
-	// CLASS DATA.
-	
-	/**
+    // CLASS DATA.
+    
+    /**
      * The default entry ID.
      */
 
-	public static final String UNKNOWN_ENTRY_ID="msg";	
-	
+    public static final String UNKNOWN_ENTRY_ID="msg";    
+    
 
     // INSTANCE DATA.
 
-	private String mMessageId;
-	private String mEntryId;
+    private I18NLoggerProxy mLoggerProxy;
+    private String mMessageId;
+    private String mEntryId;
 
 
     // CONSTRUCTORS.
 
     /**
      * Creates a new internationalized message with the given message
-     * and entry IDs.
+     * and entry IDs. The logger proxy that can log the receiver is
+     * also supplied.
      *
+     * @param loggerProxy The logger proxy.
      * @param messageId The message ID.
      * @param entryId The entry ID.
      */
 
-	public I18NMessage
-        (String messageId,
+    public I18NMessage
+        (I18NLoggerProxy loggerProxy,
+         String messageId,
          String entryId)
-	{
-		mMessageId=messageId;
-		mEntryId=entryId;
-	}
+    {
+        mLoggerProxy=loggerProxy;
+        mMessageId=messageId;
+        mEntryId=entryId;
+    }
 
     /**
      * Creates a new internationalized message with the given message
-     * ID and the default entry ID.
+     * ID and the default entry ID. The logger proxy that can log the
+     * receiver is also supplied.
      *
+     * @param loggerProxy The logger proxy.
      * @param messageId The message ID.
      */
 
-	public I18NMessage
-        (String messageId)
-	{
-		this(messageId,UNKNOWN_ENTRY_ID);
-	}
+    public I18NMessage
+        (I18NLoggerProxy loggerProxy,
+         String messageId)
+    {
+        this(loggerProxy,messageId,UNKNOWN_ENTRY_ID);
+    }
 
 
-	// INSTANCE METHODS.
+    // INSTANCE METHODS.
     
+    /**
+     * Returns the logger proxy that can log the receiver.
+     *
+     * @return The proxy.
+     */
+
+    public I18NLoggerProxy getLoggerProxy()
+    {
+        return mLoggerProxy;
+    }
+
+    /**
+     * Returns the message provider that can map the receiver.
+     *
+     * @return The message provider.
+     */
+
+    public I18NMessageProvider getMessageProvider()
+    {
+        return getLoggerProxy().getMessageProvider();
+    }
+
     /**
      * Returns the receiver's message ID.
      *
      * @return The ID.
      */
 
-	public String getMessageId()
-	{
-		return mMessageId;
-	}
+    public String getMessageId()
+    {
+        return mMessageId;
+    }
 
     /**
      * Returns the receiver's entry ID.
@@ -86,8 +117,156 @@ public class I18NMessage
      * @return The ID.
      */
 
-	public String getEntryId()
-	{
-		return mEntryId;
-	}
+    public String getEntryId()
+    {
+        return mEntryId;
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NMessageProvider#getText(Locale,I18NMessage,Object...)}.
+     */
+
+    public String getText
+        (Locale locale,
+         Object... params)
+    {
+        return getMessageProvider().getText(locale,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NMessageProvider#getText(I18NMessage,Object...)}.
+     */
+
+    public String getText
+        (Object... params)
+    {
+        return getMessageProvider().getText(this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#error(Object,Throwable,I18NMessage,Object...)}.
+     */
+
+    public void error
+        (Object category,
+         Throwable throwable,
+         Object... params)
+    {
+        getLoggerProxy().error(category,throwable,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#error(Object,I18NMessage,Object...)}.
+     */
+    
+    public void error
+        (Object category,
+         Object... params)
+    {
+        getLoggerProxy().error(category,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#warn(Object,Throwable,I18NMessage,Object...)}.
+     */
+
+    public void warn
+        (Object category,
+         Throwable throwable,
+         Object... params)
+    {
+        getLoggerProxy().warn(category,throwable,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#warn(Object,I18NMessage,Object...)}.
+     */
+    
+    public void warn
+        (Object category,
+         Object... params)
+    {
+        getLoggerProxy().warn(category,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#info(Object,Throwable,I18NMessage,Object...)}.
+     */
+
+    public void info
+        (Object category,
+         Throwable throwable,
+         Object... params)
+    {
+        getLoggerProxy().info(category,throwable,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#info(Object,I18NMessage,Object...)}.
+     */
+    
+    public void info
+        (Object category,
+         Object... params)
+    {
+        getLoggerProxy().info(category,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#debug(Object,Throwable,I18NMessage,Object...)}.
+     */
+
+    public void debug
+        (Object category,
+         Throwable throwable,
+         Object... params)
+    {
+        getLoggerProxy().debug(category,throwable,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#debug(Object,I18NMessage,Object...)}.
+     */
+    
+    public void debug
+        (Object category,
+         Object... params)
+    {
+        getLoggerProxy().debug(category,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#trace(Object,Throwable,I18NMessage,Object...)}.
+     */
+
+    public void trace
+        (Object category,
+         Throwable throwable,
+         Object... params)
+    {
+        getLoggerProxy().trace(category,throwable,this,params);
+    }
+
+    /**
+     * A convenience method for {@link
+     * I18NLoggerProxy#trace(Object,I18NMessage,Object...)}.
+     */
+    
+    public void trace
+        (Object category,
+         Object... params)
+    {
+        getLoggerProxy().trace(category,this,params);
+    }
 }

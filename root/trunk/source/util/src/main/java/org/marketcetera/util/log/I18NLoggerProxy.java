@@ -17,37 +17,37 @@ public class I18NLoggerProxy
 
     // INSTANCE DATA.
 
-	private I18NMessageProvider mMessageProvider;
+    private I18NMessageProvider mMessageProvider;
 
 
     // CONSTRUCTORS.
 
-	/**
+    /**
      * Creates a new logger which uses the given message provider to
      * map messages onto text.
      *
      * @param messageProvider The message provider.
      */
 
-	public I18NLoggerProxy
+    public I18NLoggerProxy
         (I18NMessageProvider messageProvider)
-	{
-		mMessageProvider=messageProvider;
-	}
+    {
+        mMessageProvider=messageProvider;
+    }
 
 
-	// INSTANCE METHODS.
+    // INSTANCE METHODS.
 
-	/**
+    /**
      * Returns the receiver's message provider.
      *
      * @return The message provider.
      */
 
-	public I18NMessageProvider getMessageProvider()
-	{
-		return mMessageProvider;
-	}
+    public I18NMessageProvider getMessageProvider()
+    {
+        return mMessageProvider;
+    }
 
     /**
      * Logs the given throwable under the given logging category at
@@ -58,17 +58,17 @@ public class I18NLoggerProxy
      * @param throwable The throwable.
      */
     
-	public void error
+    public void error
         (Object category,
          Throwable throwable)
-	{
-		if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.error(category,throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.error(category,throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message and throwable under the
      * given logging category at the error level. No logging takes
      * place if logging of error messages is disabled for the given
@@ -80,20 +80,19 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void error
+    public void error
         (Object category,
          Throwable throwable,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.error
-            (category,getMessageProvider().getText(message,params),throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.error(category,message.getText(params),throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message under the given logging
      * category at the error level. No logging takes place if logging
      * of error messages is disabled for the given logging category.
@@ -103,17 +102,16 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void error
+    public void error
         (Object category,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.error
-            (category,getMessageProvider().getText(message,params));
-	}
+    {
+        if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.error(category,message.getText(params));
+    }
 
     /**
      * Logs the given throwable under the given logging category at
@@ -124,17 +122,17 @@ public class I18NLoggerProxy
      * @param throwable The throwable.
      */
     
-	public void warn
+    public void warn
         (Object category,
          Throwable throwable)
-	{
-		if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.warn(category,throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.warn(category,throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message and throwable under the
      * given logging category at the warning level. No logging takes
      * place if logging of warning messages is disabled for the given
@@ -146,20 +144,19 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void warn
+    public void warn
         (Object category,
          Throwable throwable,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.warn
-            (category,getMessageProvider().getText(message,params),throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.warn(category,message.getText(params),throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message under the given logging
      * category at the warning level. No logging takes place if
      * logging of warning messages is disabled for the given logging
@@ -170,17 +167,16 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void warn
+    public void warn
         (Object category,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.warn
-            (category,getMessageProvider().getText(message,params));
-	}
+    {
+        if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.warn(category,message.getText(params));
+    }
 
     /**
      * Logs the given throwable under the given logging category at
@@ -192,17 +188,17 @@ public class I18NLoggerProxy
      * @param throwable The throwable.
      */
     
-	public void info
+    public void info
         (Object category,
          Throwable throwable)
-	{
-		if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.info(category,throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.info(category,throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message and throwable under the
      * given logging category at the informational level. No logging
      * takes place if logging of informational messages is disabled
@@ -214,20 +210,19 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void info
+    public void info
         (Object category,
          Throwable throwable,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.info
-            (category,getMessageProvider().getText(message,params),throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.info(category,message.getText(params),throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message under the given logging
      * category at the informational level. No logging takes place if
      * logging of informational messages is disabled for the given
@@ -238,17 +233,16 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void info
+    public void info
         (Object category,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.info
-            (category,getMessageProvider().getText(message,params));
-	}
+    {
+        if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.info(category,message.getText(params));
+    }
 
     /**
      * Logs the given throwable under the given logging category at
@@ -259,17 +253,17 @@ public class I18NLoggerProxy
      * @param throwable The throwable.
      */
     
-	public void debug
+    public void debug
         (Object category,
          Throwable throwable)
-	{
-		if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.debug(category,throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.debug(category,throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message and throwable under the
      * given logging category at the debugging level. No logging takes
      * place if logging of debugging messages is disabled for the
@@ -281,20 +275,19 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void debug
+    public void debug
         (Object category,
          Throwable throwable,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.debug
-            (category,getMessageProvider().getText(message,params),throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.debug(category,message.getText(params),throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message under the given logging
      * category at the debugging level. No logging takes place if
      * logging of debugging messages is disabled for the given logging
@@ -305,17 +298,16 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void debug
+    public void debug
         (Object category,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.debug
-            (category,getMessageProvider().getText(message,params));
-	}
+    {
+        if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.debug(category,message.getText(params));
+    }
 
     /**
      * Logs the given throwable under the given logging category at
@@ -326,17 +318,17 @@ public class I18NLoggerProxy
      * @param throwable The throwable.
      */
     
-	public void trace
+    public void trace
         (Object category,
          Throwable throwable)
-	{
-		if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.trace(category,throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.trace(category,throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message and throwable under the
      * given logging category at the tracing level. No logging takes
      * place if logging of tracing messages is disabled for the given
@@ -348,20 +340,19 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void trace
+    public void trace
         (Object category,
          Throwable throwable,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.trace
-            (category,getMessageProvider().getText(message,params),throwable);
-	}
+    {
+        if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.trace(category,message.getText(params),throwable);
+    }
 
-	/**
+    /**
      * Logs the given parameterized message under the given logging
      * category at the tracing level. No logging takes place if
      * logging of tracing messages is disabled for the given logging
@@ -372,15 +363,14 @@ public class I18NLoggerProxy
      * @param params The message parameters.
      */
     
-	public void trace
+    public void trace
         (Object category,
          I18NMessage message,
          Object... params)
-	{
-		if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
-			return;
-		}
-		SLF4JLoggerProxy.trace
-            (category,getMessageProvider().getText(message,params));
-	}
+    {
+        if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
+            return;
+        }
+        SLF4JLoggerProxy.trace(category,message.getText(params));
+    }
 }
