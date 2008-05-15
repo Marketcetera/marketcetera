@@ -12,9 +12,9 @@ public interface TestMessages
         new I18NLoggerProxy(PROVIDER);
 
     static final I18NMessage BOT_EXCEPTION=
-        new I18NMessage("bot_exception");
+        new I18NMessage(LOGGER,"bot_exception");
     static final I18NMessage MID_EXCEPTION=
-        new I18NMessage("mid_exception");
+        new I18NMessage(LOGGER,"mid_exception");
     static final I18NMessage TOP_EXCEPTION=
-        new I18NMessage("top_exception");
+        new I18NMessage(LOGGER,"top_exception");
 }
