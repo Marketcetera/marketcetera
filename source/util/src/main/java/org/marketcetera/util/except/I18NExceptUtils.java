@@ -53,10 +53,10 @@ final class I18NExceptUtils
     static String getLocalizedMessage
         (I18NThrowable t)
     {
-    	if (t.getI18NMessage()==null) {
-	    	return t.getMessage();
-	    }
-    	return t.getI18NMessage().getText(t.getParams());
+        if (t.getI18NMessage()==null) {
+            return t.getMessage();
+        }
+        return t.getI18NMessage().getText(t.getParams());
     }
 
     /**
@@ -73,20 +73,20 @@ final class I18NExceptUtils
         (I18NThrowable t)
     {
         String selfMessage=null;
-    	if (t.getI18NMessage()!=null) {
-	    	selfMessage=t.getMessage();
+        if (t.getI18NMessage()!=null) {
+            selfMessage=t.getMessage();
         }
         String causeMessage=null;
         Throwable cause=t.getCause();
-    	if (cause!=null) {
+        if (cause!=null) {
             if (cause instanceof I18NThrowable) {
                 causeMessage=((I18NThrowable)cause).getDetail();
             } else {
                 causeMessage=cause.getMessage();
             }
-	    }
-    	return combine(selfMessage,causeMessage);
-	}
+        }
+        return combine(selfMessage,causeMessage);
+    }
 
     /**
      * Returns the localized message of the given internationalized
@@ -102,19 +102,19 @@ final class I18NExceptUtils
         (I18NThrowable t)
     {
         String selfMessage=null;
-    	if (t.getI18NProvider()!=null) {
-	    	selfMessage=t.getLocalizedMessage();
+        if (t.getI18NMessage()!=null) {
+            selfMessage=t.getLocalizedMessage();
         }
         String causeMessage=null;
         Throwable cause=t.getCause();
-    	if (cause!=null) {
+        if (cause!=null) {
             if (cause instanceof I18NThrowable) {
                 causeMessage=((I18NThrowable)cause).getLocalizedDetail();
             } else {
                 causeMessage=cause.getLocalizedMessage();
             }
-	    }
-    	return combine(selfMessage,causeMessage);
+        }
+        return combine(selfMessage,causeMessage);
     }
 
 

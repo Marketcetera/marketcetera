@@ -2,7 +2,6 @@ package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessageProvider;
 
 /**
  * An internationalized exception indicating interruption.
@@ -15,7 +14,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 
 @ClassVersion("$Id$")
 public class I18NInterruptedException
-	extends I18NException
+    extends I18NException
 {
 
     // CONSTRUCTORS.
@@ -25,9 +24,9 @@ public class I18NInterruptedException
      * message and no underlying cause.
      */
 
-	public I18NInterruptedException()
+    public I18NInterruptedException()
     {
-    	super(Messages.PROVIDER,Messages.THREAD_INTERRUPTED);
+        super(Messages.THREAD_INTERRUPTED);
     }
 
     /**
@@ -37,47 +36,43 @@ public class I18NInterruptedException
      * @param cause The cause.
      */
 
-	public I18NInterruptedException
+    public I18NInterruptedException
         (Throwable cause)
-	{
-		super(cause,Messages.PROVIDER,Messages.THREAD_INTERRUPTED);
-	}
+    {
+        super(cause,Messages.THREAD_INTERRUPTED);
+    }
 
     /**
      * Constructs a new throwable with the given message, but without
      * an underlying cause.
      *
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      */
 
     public I18NInterruptedException
-        (I18NMessageProvider provider,
-         I18NMessage message,
+        (I18NMessage message,
          Object... params)
-	{
-    	super(provider,message,params);
-	}
+    {
+        super(message,params);
+    }
 
     /**
      * Constructs a new throwable with the given message and
      * underlying cause.
      *
      * @param cause The cause.
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      */
 
-	public I18NInterruptedException
+    public I18NInterruptedException
         (Throwable cause,
-         I18NMessageProvider provider,
          I18NMessage message,
          Object... params)
-	{
-    	super(cause,provider,message,params);
-	}
+    {
+        super(cause,message,params);
+    }
 
 
     // CLASS METHODS.
@@ -124,7 +119,6 @@ public class I18NInterruptedException
      * so, throws an exception built using the associated
      * constructor. The interrupted status of the thread is cleared.
      *
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      *
@@ -133,13 +127,12 @@ public class I18NInterruptedException
      */
 
     public static void checkInterruption
-        (I18NMessageProvider provider,
-         I18NMessage message,
+        (I18NMessage message,
          Object... params)
         throws I18NInterruptedException
     {
         if (Thread.interrupted()) {
-            throw new I18NInterruptedException(provider,message,params);
+            throw new I18NInterruptedException(message,params);
         }
     }
 
@@ -149,7 +142,6 @@ public class I18NInterruptedException
      * constructor. The interrupted status of the thread is cleared.
      *
      * @param cause The cause.
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      *
@@ -159,14 +151,12 @@ public class I18NInterruptedException
 
     public static void checkInterruption
         (Throwable cause,
-         I18NMessageProvider provider,
          I18NMessage message,
          Object... params)
         throws I18NInterruptedException
     {
         if (Thread.interrupted()) {
-            throw new I18NInterruptedException
-                (cause,provider,message,params);
+            throw new I18NInterruptedException(cause,message,params);
         }
     }
 }

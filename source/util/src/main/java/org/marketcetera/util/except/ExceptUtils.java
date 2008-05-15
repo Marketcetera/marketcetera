@@ -4,7 +4,6 @@ import java.io.InterruptedIOException;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage;
-import org.marketcetera.util.log.I18NMessageProvider;
 
 /**
  * General-purpose utilities.
@@ -197,7 +196,6 @@ public final class ExceptUtils
      * as-is into the constructor of the wrapping exception.
      * 
      * @param throwable The throwable.
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      *
@@ -206,16 +204,14 @@ public final class ExceptUtils
 
     public static I18NException wrap
         (Throwable throwable,
-         I18NMessageProvider provider,
          I18NMessage message,
          Object... params)
     {
         if (isInterruptException(throwable)) {
             Thread.currentThread().interrupt();
-            return new I18NInterruptedException
-                (throwable,provider,message,params);
+            return new I18NInterruptedException(throwable,message,params);
         }
-        return new I18NException(throwable,provider,message,params);
+        return new I18NException(throwable,message,params);
     }
 
     /**
@@ -252,7 +248,6 @@ public final class ExceptUtils
      * constructor of the wrapping exception.
      * 
      * @param throwable The throwable.
-     * @param provider The message provider.
      * @param message The message.
      * @param params The message parameters.
      *
@@ -261,16 +256,15 @@ public final class ExceptUtils
 
     public static I18NRuntimeException wrapRuntime
         (Throwable throwable,
-         I18NMessageProvider provider,
          I18NMessage message,
          Object... params)
     {
         if (isInterruptException(throwable)) {
             Thread.currentThread().interrupt();
             return new I18NInterruptedRuntimeException
-                (throwable,provider,message,params);
+                (throwable,message,params);
         }
-        return new I18NRuntimeException(throwable,provider,message,params);
+        return new I18NRuntimeException(throwable,message,params);
     }
 
     /**
