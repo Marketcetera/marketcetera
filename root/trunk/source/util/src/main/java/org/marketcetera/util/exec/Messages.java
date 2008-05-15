@@ -37,9 +37,9 @@ public interface Messages
      */
 
     static final I18NMessage CANNOT_COPY_OUTPUT=
-        new I18NMessage("cannot_copy_output");
+        new I18NMessage(LOGGER,"cannot_copy_output");
     static final I18NMessage CANNOT_EXECUTE=
-        new I18NMessage("cannot_execute");
+        new I18NMessage(LOGGER,"cannot_execute");
     static final I18NMessage UNEXPECTED_TERMINATION=
-        new I18NMessage("unexpected_termination");
+        new I18NMessage(LOGGER,"unexpected_termination");
 }
