@@ -73,7 +73,7 @@
             <argument>src/test/resources/smallMarket.csv</argument>
             <argument>orderloader.xml</argument>
           </arguments>
-	  <classpathScope>test</classpathScope>
+          <classpathScope>test</classpathScope>
         </configuration>
       </plugin>
     </plugins>
