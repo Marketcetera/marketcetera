@@ -77,7 +77,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <configuration>
           <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
-	  <classpathScope>test</classpathScope>
+          <classpathScope>test</classpathScope>
         </configuration>
       </plugin>
     </plugins>
