@@ -23,8 +23,8 @@
 
   <modules>
     <module>core</module>
-    <module>ors</module>
     <module>orderloader</module>
+    <module>ors</module>
     <module>util</module>
     <module>util-test</module>
   </modules>
