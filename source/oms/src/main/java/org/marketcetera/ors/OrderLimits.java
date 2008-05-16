@@ -1,4 +1,4 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -75,7 +75,7 @@ public class OrderLimits {
         if (FIXMessageUtil.isOrderSingle(inMessage) ||
             FIXMessageUtil.isCancelReplaceRequest(inMessage)) {
             if(disallowMarketOrders) {
-                verifyMarketOrder(inMessage, OMSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED);
+                verifyMarketOrder(inMessage, ORSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED);
             }
             verifyMaxQty(inMessage);
             verifyMaxNotional(inMessage);
@@ -87,7 +87,7 @@ public class OrderLimits {
     protected void verifyMaxPrice(Message inMessage) throws FieldNotFound, OrderLimitException {
         BigDecimal maxPrice = getMaxPrice();
         if(maxPrice != null) {
-            verifyMarketOrder(inMessage, OMSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED_PRICE);
+            verifyMarketOrder(inMessage, ORSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED_PRICE);
             BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));
             if(maxPrice.compareTo(price) < 0) {
                 throw OrderLimitException.createMaxPriceException(price, maxPrice, inMessage.getString(Symbol.FIELD));
@@ -98,7 +98,7 @@ public class OrderLimits {
     protected void verifyMinPrice(Message inMessage) throws FieldNotFound, OrderLimitException {
         BigDecimal minPrice = getMinPrice();
         if(minPrice != null) {
-            verifyMarketOrder(inMessage, OMSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED_PRICE);
+            verifyMarketOrder(inMessage, ORSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED_PRICE);
             BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));
             if(minPrice.compareTo(price) > 0) {
                 throw OrderLimitException.createMinPriceException(price, minPrice, inMessage.getString(Symbol.FIELD));
@@ -109,7 +109,7 @@ public class OrderLimits {
     protected void verifyMaxNotional(Message inMessage) throws FieldNotFound, OrderLimitException {
         BigDecimal maxNotional = getMaxNotionalPerOrder();
         if(maxNotional != null) {
-            verifyMarketOrder(inMessage, OMSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED_PRICE);
+            verifyMarketOrder(inMessage, ORSMessageKey.ERROR_OL_MARKET_NOT_ALLOWED_PRICE);
             BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));
             BigDecimal qty = new BigDecimal(inMessage.getString(OrderQty.FIELD));
             BigDecimal notional = price.multiply(qty);
@@ -131,7 +131,7 @@ public class OrderLimits {
         }
     }
 
-    protected void verifyMarketOrder(Message inMessage, OMSMessageKey msgKey) throws OrderLimitException, FieldNotFound {
+    protected void verifyMarketOrder(Message inMessage, ORSMessageKey msgKey) throws OrderLimitException, FieldNotFound {
         if(OrdType.MARKET == inMessage.getChar(OrdType.FIELD)) {
             throw new OrderLimitException(msgKey.getLocalizedMessage(inMessage.getString(Symbol.FIELD)));
         }

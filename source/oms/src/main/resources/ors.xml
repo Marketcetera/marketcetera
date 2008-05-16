@@ -13,11 +13,11 @@
     </bean>
 
     <bean id="requestQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="oms-commands"/>
+        <constructor-arg value="ors-commands"/>
     </bean>
 
     <bean id="replyTopic" class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg value="oms-messages"/>
+        <constructor-arg value="ors-messages"/>
     </bean>
 
     <bean id="tradeRecorderQueue" class="org.apache.activemq.command.ActiveMQQueue">
@@ -62,7 +62,7 @@
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID [, sessionQualifier] -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg ref="fixVersion"/>
-        <constructor-arg value="MKTC-OMS"/>
+        <constructor-arg value="MKTC-ORS"/>
         <constructor-arg value="MRKTC-EXCH"/>
     </bean>
 

@@ -7,7 +7,7 @@ import quickfix.Message;
 
 /**
  * Interface for all custom order modifiers that can be created by
- * Marketcetera Platform users, added to the OMS to be executed
+ * Marketcetera Platform users, added to the ORS to be executed
  * before the orders are sent out to FIX destinations.
  * An example can be a modifier that always adds a {@link quickfix.field.SecurityID} field
  * containing the value of the {@link quickfix.field.Symbol} field.

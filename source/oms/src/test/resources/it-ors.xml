@@ -20,7 +20,7 @@
   </bean>
 	
   <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    <property name="brokerURL" value="vm://it-oms?broker.persistent=false"/>
+    <property name="brokerURL" value="vm://it-ors?broker.persistent=false"/>
   </bean>
 
     <!-- Reply Topic listener -->
@@ -71,12 +71,12 @@
         </property>
     </bean>
 
-    <bean id="incomingTopicHandler" class="org.marketcetera.oms.TopicListener" scope="prototype">
+    <bean id="incomingTopicHandler" class="org.marketcetera.ors.TopicListener" scope="prototype">
     </bean>
 
     <bean id="quickfixSender" class="org.marketcetera.quickfix.NullQuickFIXSender"/>
 
-    <bean id="qfApplication" class="org.marketcetera.oms.QuickFIXApplication" scope="singleton">
+    <bean id="qfApplication" class="org.marketcetera.ors.QuickFIXApplication" scope="singleton">
         <constructor-arg ref="fixMessageFactory"/>
         <property name="jmsOperations" ref="outgoingJmsTemplate"/>
     </bean>

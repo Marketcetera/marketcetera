@@ -420,7 +420,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 		
 		/**
 		 * Note that the MaturityDate and StrikePrice in the order are not used
-		 * by the OMS. They are used here to have a place for the data binding
+		 * by the ORS. They are used here to have a place for the data binding
 		 * to store the data. The code part of the option contract symbol
 		 * represents that data.
 		 */

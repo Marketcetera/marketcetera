@@ -16,8 +16,8 @@
     </bean>
 
     <!-- topic for copies of all incoming commands -->
-    <bean id="omsCommandsCopyTopic" class="org.apache.activemq.command.ActiveMQTopic">
-        <constructor-arg value="oms-commands-copy"/>
+    <bean id="orsCommandsCopyTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="ors-commands-copy"/>
     </bean>
 
     <bean id="commandsCopierJmsTemplate" class="org.springframework.jms.core.JmsTemplate">
@@ -25,7 +25,7 @@
         <property name="messageConverter">
             <bean class="org.marketcetera.spring.JMSFIXMessageConverter"/>
         </property>
-        <property name="defaultDestination" ref="omsCommandsCopyTopic"/>
+        <property name="defaultDestination" ref="orsCommandsCopyTopic"/>
     </bean>
     
     <!-- note that this needs to use the non-pooled connection factory -->
@@ -40,7 +40,7 @@
     </bean>
 
     <!-- Declare all the message modifiers that need to be applied to all outgoing messages -->
-    <bean id="messageModifierMgr" class="org.marketcetera.oms.MessageModifierManager">
+    <bean id="messageModifierMgr" class="org.marketcetera.ors.MessageModifierManager">
         <constructor-arg>
             <list>
                 <ref bean="defaultMessageModifier"/>
@@ -50,7 +50,7 @@
     </bean>
 
     <!-- a thread safe non-pooled MessageListener -->
-    <bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype">
+    <bean id="outgoingMessageHandler" class="org.marketcetera.ors.OutgoingMessageHandler" scope="prototype">
         <constructor-arg ref="fixMessageFactory"/>
         <constructor-arg ref="orderLimits"/>
         <constructor-arg ref="qfApplication"/>
@@ -80,8 +80,8 @@
         <constructor-arg ref="fixDictionaryPath"/>
     </bean>
 
-    <!-- MBean for managing OMS -->
-    <bean id="omsAdmin" class="org.marketcetera.oms.mbeans.OMSAdmin">
+    <!-- MBean for managing ORS -->
+    <bean id="orsAdmin" class="org.marketcetera.ors.mbeans.ORSAdmin">
         <constructor-arg ref="quickfixSender"/>
         <constructor-arg ref="fixMessageFactory"/>
         <constructor-arg ref="idFactory"/>

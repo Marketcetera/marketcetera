@@ -1,10 +1,13 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.ors.OrderLimitException;
+import org.marketcetera.ors.OrderLimits;
+import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import quickfix.Message;
@@ -26,7 +29,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
-        return new FIXVersionTestSuite(OrderLimitsTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(OrderLimitsTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
                 FIXVersionTestSuite.ALL_VERSIONS);
     }
 

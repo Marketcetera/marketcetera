@@ -1,4 +1,4 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
@@ -64,7 +64,7 @@ public class OutgoingMessageHandler {
     }
 
     /** Only supports NewOrderSingle, OrderCancelReplace and OrderCancel orders at this point
-     * Rejects orders that are of the wrong FIX version, or if the OMS is not logged on to a FIX destination.
+     * Rejects orders that are of the wrong FIX version, or if the ORS is not logged on to a FIX destination.
      * Runs the incoming orders through message modifiers, and forwards them on to a FIX destination.
      * @param message Incoming message
      * @return ExecutionReport for this message
@@ -73,7 +73,7 @@ public class OutgoingMessageHandler {
     @SuppressWarnings({"ThrowableInstanceNeverThrown"})
     public Message handleMessage(Message message) throws MarketceteraException {
         if(message == null) {
-            LoggerAdapter.error(OMSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
+            LoggerAdapter.error(ORSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
             return null;
         }
 
@@ -87,7 +87,7 @@ public class OutgoingMessageHandler {
         }
         
         if(!qfApp.isLoggedOn()) {
-            Message notLoggedOnReject = createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
+            Message notLoggedOnReject = createRejectionMessage(new MarketceteraException(ORSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
                     message);
             // explicitly remove the OrdStatus b/c we don't know what it is - we aren't logged on
             notLoggedOnReject.setField(new OrdStatus(OrdStatus.REJECTED));
@@ -98,11 +98,11 @@ public class OutgoingMessageHandler {
         try {
             String version = message.getHeader().getField(new BeginString()).getValue();
             if(!msgFactory.getBeginString().equals(version)) {
-                return createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(
+                return createRejectionMessage(new MarketceteraException(ORSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(
                                                     msgFactory.getBeginString(), version)), message);
             }
         } catch (FieldNotFound fieldNotFound) {
-            return createRejectionMessage(new MarketceteraException(OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION.getLocalizedMessage()),
+            return createRejectionMessage(new MarketceteraException(ORSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION.getLocalizedMessage()),
                     message);
         }
 
@@ -135,10 +135,10 @@ public class OutgoingMessageHandler {
             try {
                 String msgType = message.getHeader().getString(MsgType.FIELD);
                 returnExecReport = createBusinessMessageReject(msgType,
-                        OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
+                        ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
                         FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType)));
             } catch (FieldNotFound fieldNotFound) {
-                returnExecReport = createBusinessMessageReject("UNKNOWN", OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
+                returnExecReport = createBusinessMessageReject("UNKNOWN", ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
             }
         } catch (MarketceteraException e) {
         	returnExecReport = createRejectionMessage(e, message);
@@ -210,7 +210,7 @@ public class OutgoingMessageHandler {
         
         
         String msg = (causeEx.getMessage() == null) ? causeEx.toString() : causeEx.getMessage();
-        LoggerAdapter.error(OMSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, existingOrder), this);
+        LoggerAdapter.error(ORSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, existingOrder), this);
         if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Reason for above rejection: "+msg, causeEx, this); }
         rejection.setString(Text.FIELD, msg);
         // manually set the ClOrdID since it's not required in the dictionary but is for electronic orders
@@ -307,7 +307,7 @@ public class OutgoingMessageHandler {
         try {
             return new ExecID(idFactory.getNext());
         } catch(NoMoreIDsException ex) {
-            LoggerAdapter.error(OMSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
+            LoggerAdapter.error(ORSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
             return new ExecID("ZZ-INTERNAL");
         }
     }

@@ -14,14 +14,14 @@ import quickfix.StringField;
  * This examples copies Symbol (55) to SecurityID (48):
  * <pre>
  *  &lt;bean id="fieldDuplicator" class="org.marketcetera.quickfix.messagemodifiers.FieldDuplicatorMessageModifier"&gt;
- *      &lt;contructor-arg&gt;55&lt;/constructor-arg&gt;
- *      &lt;contructor-arg&gt;48&lt;/constructor-arg&gt;
+ *      &lt;constructor-arg&gt;55&lt;/constructor-arg&gt;
+ *      &lt;constructor-arg&gt;48&lt;/constructor-arg&gt;
  *  &lt;/bean&gt;
  * </pre>
  *
- * Add the modifier to teh list of other message modifiers in the OutgoingMessageHandler bean in oms-shared.xml:
+ * Add the modifier to the list of other message modifiers in the OutgoingMessageHandler bean in ors-shared.xml:
  * <pre>
- *  &lt;bean id="outgoingMessageHandler" class="org.marketcetera.oms.OutgoingMessageHandler" scope="prototype"&gt;
+ *  &lt;bean id="outgoingMessageHandler" class="org.marketcetera.ors.OutgoingMessageHandler" scope="prototype"&gt;
  *  ...
  *      &lt;property name="orderModifiers"&gt;
  *          &lt;list>
