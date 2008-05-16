@@ -72,7 +72,7 @@ public class JMSFIXMessageConverter implements MessageConverter {
         return qfMessage;
 	}
 
-    /** Converts from the OMS to the JMS queue format - ie from a FIX Message -> JMS message */
+    /** Converts from the ORS to the JMS queue format - ie from a FIX Message -> JMS message */
     public Message toMessage(Object message, Session session) throws JMSException, MessageConversionException {
 		javax.jms.Message jmsMessage = null;
 		if (serializeToString){

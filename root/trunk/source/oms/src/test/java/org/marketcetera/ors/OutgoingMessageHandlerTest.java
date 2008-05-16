@@ -1,7 +1,13 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
+import org.marketcetera.ors.MessageModifierManager;
+import org.marketcetera.ors.ORSMessageKey;
+import org.marketcetera.ors.OrderLimits;
+import org.marketcetera.ors.OrderRoutingSystem;
+import org.marketcetera.ors.OutgoingMessageHandler;
+import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.DefaultMessageModifier.MessageFieldType;
 import org.marketcetera.spring.MockJmsTemplate;
@@ -17,10 +23,10 @@ import java.util.HashSet;
 /**
  * Tests the code coming out of {@link OutgoingMessageHandler} class
  * @author Toli Kuznets
- * @version $Id$
+ * @version $Id: OutgoingMessageHandlerTest.java 3587 2008-04-24 23:38:47Z tlerios $
  */
-@ClassVersion("$Id$")
-public class OrderManagerTest extends FIXVersionedTestCase
+@ClassVersion("$Id: OutgoingMessageHandlerTest.java 3587 2008-04-24 23:38:47Z tlerios $")
+public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 {
 	/* a bunch of random made-up header/trailer/field values */
     public static final String HEADER_57_VAL = "CERT";
@@ -29,7 +35,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
     public static final String FIELDS_37_VAL = "37-regField";
     public static final String FIELDS_14_VAL = "37";
 
-    public OrderManagerTest(String inName, FIXVersion version) {
+    public OutgoingMessageHandlerTest(String inName, FIXVersion version) {
         super(inName, version);
     }
 
@@ -37,11 +43,11 @@ public class OrderManagerTest extends FIXVersionedTestCase
     {
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
-        suite.addTest(new OrderManagerTest("testNewExecutionReportFromOrder", FIXVersion.FIX41));
-        suite.init(new MessageBundleInfo[]{OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO});
+        suite.addTest(new OutgoingMessageHandlerTest("testNewExecutionReportFromOrder", FIXVersion.FIX41));
+        suite.init(new MessageBundleInfo[]{OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO});
         return suite;
 /*/
-        return new FIXVersionTestSuite(OrderManagerTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(OutgoingMessageHandlerTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
                 FIXVersionTestSuite.ALL_VERSIONS,
                 new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")),
                 new FIXVersion[]{FIXVersion.FIX40});
@@ -118,7 +124,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         Message wrongMsg = msgFactory.newOrderCancelReject();
         wrongMsg.getHeader().setField(new MsgSeqNum(23));
         Message reject = handler.handleMessage(wrongMsg);
-        verifyBMRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
+        verifyBMRejection(reject, msgFactory, ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
                 fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_CANCEL_REJECT));
     }
 
@@ -395,8 +401,8 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertNull(handler.handleMessage(null));        
     }
 
-    /** verify the OMS sends back a rejection when it receives a message of incompatible or unknown verison
-     * this test is hardcoded with OMS at fix40 so exclude it from multi-version tests */
+    /** verify the ORS sends back a rejection when it receives a message of incompatible or unknown verison
+     * this test is hardcoded with ORS at fix40 so exclude it from multi-version tests */
     public void testIncompatibleFIXVersions() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(FIXVersion.FIX40.getMessageFactory());
         Message msg = new quickfix.fix41.Message();
@@ -404,12 +410,12 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));
         assertEquals("didn't get a reject", OrdStatus.REJECTED+"", reject.getString(OrdStatus.FIELD));
         assertEquals("didn't get a right reason",
-                OMSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(FIXVersion.FIX40.toString(), FIXVersion.FIX41.toString()),
+                ORSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(FIXVersion.FIX40.toString(), FIXVersion.FIX41.toString()),
                 reject.getString(Text.FIELD));
 
         // now test it with no fix version at all
         reject = handler.handleMessage(new Message());
-        verifyRejection(reject, msgFactory, OMSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
+        verifyRejection(reject, msgFactory, ORSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
     }
 
     public void testOrderListNotSupported() throws Exception {
@@ -418,13 +424,13 @@ public class OrderManagerTest extends FIXVersionedTestCase
         orderList.setField(new Symbol("TOLI"));
         orderList.getHeader().setField(new MsgSeqNum(23));
         Message reject = handler.handleMessage(orderList);
-        verifyBMRejection(reject, msgFactory, OMSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
+        verifyBMRejection(reject, msgFactory, ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
                 fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_LIST));
     }
 
 
-    /** verify that OMS rejects messages if it's not connected to a FIX destination */
-    public void testMessageRejectedLoggedOutOMS() throws Exception {
+    /** verify that ORS rejects messages if it's not connected to a FIX destination */
+    public void testMessageRejectedLoggedOutORS() throws Exception {
         MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         NullQuickFIXSender sender = new NullQuickFIXSender();
         handler.setQuickFIXSender(sender);
@@ -438,7 +444,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
         execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
         assertEquals(0, sender.getCapturedMessages().size());
-        verifyRejection(execReport, msgFactory, OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
+        verifyRejection(execReport, msgFactory, ORSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
 
         // verify goes through again after log on
         sender.getCapturedMessages().clear();
@@ -449,10 +455,10 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
     }
 
-    /** bug #433 - need to modify the reject being sent back in case the OMS is not logged on
+    /** bug #433 - need to modify the reject being sent back in case the ORS is not logged on
      * verify the reject coming back does not have the OrdStatus set
      */
-    public void testOrderCancelRejectWhenOMSNotLoggedOn() throws Exception {
+    public void testOrderCancelRejectWhenORSNotLoggedOn() throws Exception {
         MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         NullQuickFIXSender sender = new NullQuickFIXSender();
         handler.setQuickFIXSender(sender);
@@ -465,7 +471,7 @@ public class OrderManagerTest extends FIXVersionedTestCase
         assertEquals(0, sender.getCapturedMessages().size());
         assertEquals(MsgType.ORDER_CANCEL_REJECT, reject.getHeader().getString(MsgType.FIELD));
         assertEquals("OrdStatus should not set", OrdStatus.REJECTED, reject.getChar(OrdStatus.FIELD));
-        assertEquals("didn't get a right reason", OMSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage(),
+        assertEquals("didn't get a right reason", ORSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage(),
                 reject.getString(Text.FIELD));
     }
 

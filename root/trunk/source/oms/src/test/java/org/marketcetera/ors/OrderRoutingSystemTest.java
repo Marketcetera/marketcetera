@@ -1,7 +1,9 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
+import org.marketcetera.ors.OrderRoutingSystem;
+import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
@@ -19,30 +21,30 @@ import java.util.concurrent.Semaphore;
 import java.math.BigDecimal;
 
 /**
- * Setup an OMS through Sring configuration.
+ * Setup an ORS through Sring configuration.
  * Attach and additional sender on the JMS queue (outoingJMSTemplate) and a receiver on the topic (replyListener).
  * Send a buy order on the queue, and make sure that we have these:
  * 1. we get a confirmation execution report on the JMS topic
  * 2. we get an outgoing FIX message on the FIX listener
  *
  * @author Toli Kuznets
- * @version $Id$
+ * @version $Id: OrderRoutingSystemTest.java 3587 2008-04-24 23:38:47Z tlerios $
  */
-@ClassVersion("$Id$")
-public class OrderManagementSystemTest extends FIXVersionedTestCase
+@ClassVersion("$Id: OrderRoutingSystemTest.java 3587 2008-04-24 23:38:47Z tlerios $")
+public class OrderRoutingSystemTest extends FIXVersionedTestCase
 {
     private static ClassPathXmlApplicationContext appContext;
     private static JmsTemplate jmsQueueSender;
     private static NullQuickFIXSender qfSender;
 
-    public OrderManagementSystemTest(String inName, FIXVersion version)
+    public OrderRoutingSystemTest(String inName, FIXVersion version)
     {
         super(inName, version);
     }
 
     public static Test suite()
     {
-        return new FIXVersionTestSuite(OrderManagementSystemTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(OrderRoutingSystemTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
                 new FIXVersion[]{FIXVersion.FIX42});
     }
 
@@ -51,20 +53,20 @@ public class OrderManagementSystemTest extends FIXVersionedTestCase
         super.setUp();
         try {
         	appContext = new ClassPathXmlApplicationContext(new String[]{"message-modifiers.xml", "order-limits.xml",
-                    "oms-shared.xml", "it-oms.xml"});
+                    "ors-shared.xml", "it-ors.xml"});
 			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
             // simulate logon
             QuickFIXApplication qfApp = (QuickFIXApplication) appContext.getBean("qfApplication");
             qfApp.onLogon(null);
         } catch (Exception e) {
-            LoggerAdapter.error("Unable to initialize OMS", e, OrderManagementSystemTest.class.getName());
-            fail("Unable to init OMS: "+e.getMessage());
+            LoggerAdapter.error("Unable to initialize ORS", e, OrderRoutingSystemTest.class.getName());
+            fail("Unable to init ORS: "+e.getMessage());
         }
 	}
 
 	/** This is more of an integration test
-     * Star the entire OMS, and then create an additional JMS topic queueSender (bound to
+     * Star the entire ORS, and then create an additional JMS topic queueSender (bound to
      * output on the queue and read/write on the JMS topic).
      *
      * Send a BUY on the order queue, and then make sure we get the auto-generated ExecReport

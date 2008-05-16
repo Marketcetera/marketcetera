@@ -16,10 +16,10 @@
     <artifactId>source</artifactId>
     <version>0.4.3-SNAPSHOT</version>
   </parent>
-  <artifactId>oms</artifactId>
+  <artifactId>ors</artifactId>
   <packaging>jar</packaging>
 
-  <name>OMS</name>
+  <name>ORS</name>
 
   <dependencies>
 
@@ -76,7 +76,8 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <configuration>
-          <mainClass>org.marketcetera.oms.OrderManagementSystem</mainClass>
+          <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+	  <classpathScope>test</classpathScope>
         </configuration>
       </plugin>
     </plugins>

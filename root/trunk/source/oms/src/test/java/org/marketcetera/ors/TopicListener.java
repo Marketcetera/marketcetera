@@ -1,4 +1,4 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import quickfix.Message;
 

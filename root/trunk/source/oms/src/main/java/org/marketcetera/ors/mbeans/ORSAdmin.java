@@ -1,4 +1,4 @@
-package org.marketcetera.oms.mbeans;
+package org.marketcetera.ors.mbeans;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
@@ -6,26 +6,27 @@ import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.oms.OMSMessageKey;
+import org.marketcetera.ors.ORSMessageKey;
+
 import quickfix.Message;
 import quickfix.SessionID;
 import quickfix.SessionNotFound;
 import quickfix.field.*;
 
 /**
- * Implements the {@link OMSAdminMBean} interface
+ * Implements the {@link ORSAdminMBean} interface
  *
  * @author toli
  * @version $Id$
  */
 
 @ClassVersion("$Id$")
-public class OMSAdmin implements OMSAdminMBean {
+public class ORSAdmin implements ORSAdminMBean {
     protected IQuickFIXSender quickFIXSender;
     private FIXMessageFactory fixMessageFactory;
     private IDFactory idFactory;
 
-    public OMSAdmin(IQuickFIXSender qfSender, FIXMessageFactory msgFactory, IDFactory idFactory)
+    public ORSAdmin(IQuickFIXSender qfSender, FIXMessageFactory msgFactory, IDFactory idFactory)
             throws NoMoreIDsException, ClassNotFoundException {
         quickFIXSender = qfSender;
         fixMessageFactory = msgFactory;
@@ -65,7 +66,7 @@ public class OMSAdmin implements OMSAdminMBean {
         try {
             return idFactory.getNext();
         } catch(NoMoreIDsException ex) {
-            LoggerAdapter.error(OMSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
+            LoggerAdapter.error(ORSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
             return "ZZ-INTERNAL";
         }
     }

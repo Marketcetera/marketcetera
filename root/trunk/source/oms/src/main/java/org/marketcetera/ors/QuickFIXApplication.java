@@ -1,4 +1,4 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.LoggerAdapter;
@@ -40,7 +40,7 @@ public class QuickFIXApplication implements Application {
 
                 jmsOperations.convertAndSend(message);
             } catch (Exception ex) {
-                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
+                LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
             }
         }
@@ -61,12 +61,12 @@ public class QuickFIXApplication implements Application {
                     // Support OpenFIX certification - we reject all DeliverToCompID since we don't redilever
                     Message reject = fixMessageFactory.createSessionReject(message, SessionRejectReason.COMPID_PROBLEM);
                     reject.setString(Text.FIELD,
-                            OMSMessageKey.ERROR_DELIVER_TO_COMP_ID_NOT_HANDLED.getLocalizedMessage(message.getHeader().getString(DeliverToCompID.FIELD)));
+                            ORSMessageKey.ERROR_DELIVER_TO_COMP_ID_NOT_HANDLED.getLocalizedMessage(message.getHeader().getString(DeliverToCompID.FIELD)));
                     quickFIXSender.sendToTarget(reject);
                     return;
                 }
             } catch (Exception ex) {
-                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
+                LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
             }
         }
@@ -80,7 +80,7 @@ public class QuickFIXApplication implements Application {
 
         if (FIXMessageUtil.isTradingSessionStatus(message)) {
             if (LoggerAdapter.isDebugEnabled(this)) {
-                LoggerAdapter.debug(OMSMessageKey.TRADE_SESSION_STATUS.getLocalizedMessage(
+                LoggerAdapter.debug(ORSMessageKey.TRADE_SESSION_STATUS.getLocalizedMessage(
                         FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD,
                                 message.getString(TradSesStatus.FIELD))), this);
             }
@@ -112,7 +112,7 @@ public class QuickFIXApplication implements Application {
             try {
                 jmsOperations.convertAndSend(logout);
             } catch (Exception ex) {
-                LoggerAdapter.error(OMSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
+                LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
                 if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
             }
         }
@@ -121,7 +121,7 @@ public class QuickFIXApplication implements Application {
     /** Apply message modifiers to all outgoing to-admin messages (such as logout/login)
      * In case the underlying QFJ engine is sending a reject (ie the counterparty sent us a
      * malformed ExecReport for example) we want to add some more information to it and
-     * send a copy of the reject on the shared oms-messages topic as well so that the
+     * send a copy of the reject on the shared ors-messages topic as well so that the
      * outgoing reject is visible in Photon and to other subscribers
      * */
     public void toAdmin(Message message, SessionID session) {
@@ -134,7 +134,7 @@ public class QuickFIXApplication implements Application {
                     String origText = message.getString(Text.FIELD);
                     String msgType = (message.isSetField(MsgType.FIELD)) ? null : message.getString(RefMsgType.FIELD);
                     String msgTypeName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType);
-                    String combinedText = OMSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(msgTypeName, origText);
+                    String combinedText = ORSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(msgTypeName, origText);
                     message.setString(Text.FIELD, combinedText);
                 } catch (FieldNotFound fieldNotFound) {
                     // ignore - don't modify the message, send original error through

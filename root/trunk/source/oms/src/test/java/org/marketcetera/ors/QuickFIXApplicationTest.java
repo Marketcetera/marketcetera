@@ -1,7 +1,11 @@
-package org.marketcetera.oms;
+package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
+import org.marketcetera.ors.MessageModifierManager;
+import org.marketcetera.ors.ORSMessageKey;
+import org.marketcetera.ors.OrderRoutingSystem;
+import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.spring.MockJmsTemplate;
 import org.springframework.jms.JmsException;
@@ -33,7 +37,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
-        return new FIXVersionTestSuite(QuickFIXApplicationTest.class, OrderManagementSystem.OMS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(QuickFIXApplicationTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
                 FIXVersionTestSuite.ALL_VERSIONS);
     }
 
@@ -176,7 +180,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
         // send it through
         qfApp.toAdmin(reject, sessionID);
-        String expectedErr = OMSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(
+        String expectedErr = ORSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(
                 fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.EXECUTION_REPORT), "Invalid tag number");
         assertEquals(expectedErr, reject.getString(Text.FIELD));
         assertEquals("Reject should've been copied to JMS", 1, jmsTemplate.getSentMessages().size());

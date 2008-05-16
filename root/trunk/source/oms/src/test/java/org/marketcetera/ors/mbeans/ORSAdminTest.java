@@ -1,10 +1,11 @@
-package org.marketcetera.oms.mbeans;
+package org.marketcetera.ors.mbeans;
 
 import junit.framework.Test;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.InMemoryIDFactory;
+import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
 import quickfix.Message;
@@ -18,18 +19,18 @@ import quickfix.field.Password;
  */
 
 @ClassVersion("$Id$")
-public class OMSAdminTest extends FIXVersionedTestCase {
-    public OMSAdminTest(String inName, FIXVersion version) {
+public class ORSAdminTest extends FIXVersionedTestCase {
+    public ORSAdminTest(String inName, FIXVersion version) {
         super(inName, version);
     }
 
     public static Test suite() {
-        return new FIXVersionTestSuite(OMSAdminTest.class, FIXVersionTestSuite.ALL_VERSIONS);
+        return new FIXVersionTestSuite(ORSAdminTest.class, FIXVersionTestSuite.ALL_VERSIONS);
     }
 
     public void testSendPasswordReset() throws Exception {
         NullQuickFIXSender qfSender = new NullQuickFIXSender();
-        OMSAdmin admin = new OMSAdmin(qfSender, msgFactory, new InMemoryIDFactory(100));
+        ORSAdmin admin = new ORSAdmin(qfSender, msgFactory, new InMemoryIDFactory(100));
         admin.sendPasswordReset("sender", "target", "old", "new");
         assertEquals(1, qfSender.getCapturedMessages().size());
         Message msg = qfSender.getCapturedMessages().get(0);
