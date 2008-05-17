@@ -7,7 +7,7 @@
  	   http://www.springframework.org/schema/beans/spring-beans.xsd">
 
     <bean id="requestQueue" class="org.apache.activemq.command.ActiveMQQueue">
-        <constructor-arg value="oms-commands"/>
+        <constructor-arg value="ors-commands"/>
     </bean>
 
     <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
