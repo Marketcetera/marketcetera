@@ -8,12 +8,12 @@ import org.marketcetera.core.ClassVersion;
  * setting of system properties from a Spring configuration file.
  *
  * @author tlerios
- * @version $Id: Messages.java 1797 2008-04-24 01:34:08Z tlerios $
+ * @version $Id$
  */
 
 /* $License$ */
 
-@ClassVersion("$Id: Messages.java 1797 2008-04-24 01:34:08Z tlerios $")
+@ClassVersion("$Id$")
 public class SystemPropertiesSetter
 {
 
