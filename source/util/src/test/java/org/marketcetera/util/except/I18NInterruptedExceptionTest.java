@@ -60,7 +60,7 @@ public class I18NInterruptedExceptionTest
         try {
             I18NInterruptedException.checkInterruption();
         } catch (I18NInterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NBoundMessage());
             assertNull(ex.getCause());
@@ -85,7 +85,7 @@ public class I18NInterruptedExceptionTest
         try {
             I18NInterruptedException.checkInterruption(nested);
         } catch (I18NInterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NBoundMessage());
             assertEquals(nested,ex.getCause());
@@ -112,7 +112,7 @@ public class I18NInterruptedExceptionTest
                 (new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         } catch (I18NInterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
                          m.getMessage());
@@ -144,7 +144,7 @@ public class I18NInterruptedExceptionTest
                  (new I18NBoundMessage1P
                   (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
         } catch (I18NInterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
                          m.getMessage());
