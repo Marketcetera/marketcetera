@@ -2,6 +2,7 @@ package org.marketcetera.util.except;
 
 import java.util.Locale;
 import org.junit.Before;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -52,8 +53,7 @@ public class I18NThrowableTestBase
         assertNull(t1.getLocalizedMessage());
         assertEquals(t1.getClass().getName(),t1.toString());
 
-        assertNull(t2.getI18NMessage());
-        assertNull(t2.getParams());
+        assertNull(t2.getI18NBoundMessage());
         assertNull(t2.getCause());
 
         assertNull(t2.getMessage());
@@ -82,8 +82,7 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+nestedMessage,
                      t1.toString());
 
-        assertNull(t2.getI18NMessage());
-        assertNull(t2.getParams());
+        assertNull(t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(nestedMessage,t2.getMessage());
@@ -114,8 +113,7 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+nestedMessage,
                      t1.toString());
 
-        assertNull(t2.getI18NMessage());
-        assertNull(t2.getParams());
+        assertNull(t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(nestedMessage,t2.getMessage());
@@ -146,8 +144,7 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+nestedMessage,
                      t1.toString());
 
-        assertNull(t2.getI18NMessage());
-        assertNull(t2.getParams());
+        assertNull(t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(nestedMessage,t2.getMessage());
@@ -175,8 +172,9 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
-        assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
+        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
+        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
+        assertEquals(MID_MSG_PARAM,m.getParam1());
         assertNull(t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -205,8 +203,9 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
-        assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
+        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
+        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
+        assertEquals(MID_MSG_PARAM,m.getParam1());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -237,8 +236,9 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
-        assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
+        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
+        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
+        assertEquals(MID_MSG_PARAM,m.getParam1());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -267,8 +267,9 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        assertEquals(TestMessages.MID_EXCEPTION,t2.getI18NMessage());
-        assertArrayEquals(new Object[] {MID_MSG_PARAM},t2.getParams());
+        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
+        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
+        assertEquals(MID_MSG_PARAM,m.getParam1());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());

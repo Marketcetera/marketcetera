@@ -1,6 +1,7 @@
 package org.marketcetera.util.except;
 
 import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 public class I18NRuntimeExceptionTest
 	extends I18NThrowableTestBase
@@ -34,7 +35,8 @@ public class I18NRuntimeExceptionTest
     public void causeWithI18NMessage()
     {
         I18NRuntimeException nested=new I18NRuntimeException
-            (TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         causeWithI18NMessage
             (nested,new RuntimeException(nested),
              new I18NRuntimeException(nested));
@@ -46,7 +48,8 @@ public class I18NRuntimeExceptionTest
         myMessage
             (new RuntimeException(TEST_MSG_1),
              new I18NRuntimeException
-             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -56,7 +59,8 @@ public class I18NRuntimeExceptionTest
         myMessageAndCauseWithoutMessage
             (nested,new RuntimeException(TEST_MSG_1,nested),
              new I18NRuntimeException
-             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -67,7 +71,8 @@ public class I18NRuntimeExceptionTest
         myMessageAndCauseWithMessage
             (nested,new RuntimeException(TEST_MSG_1,nested),
              new I18NRuntimeException
-             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -78,7 +83,8 @@ public class I18NRuntimeExceptionTest
         myMessageAndCauseWithI18NMessage
             (nested,new RuntimeException(TEST_MSG_1,nested),
              new I18NRuntimeException
-             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -87,7 +93,8 @@ public class I18NRuntimeExceptionTest
         I18NRuntimeException exBot=new I18NRuntimeException
             (TestMessages.BOT_EXCEPTION);
         I18NRuntimeException exMid=new I18NRuntimeException
-            (exBot,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (exBot,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         I18NRuntimeException exTop=new I18NRuntimeException
             (exMid,TestMessages.TOP_EXCEPTION);
         nesting(exBot,exMid,exTop);

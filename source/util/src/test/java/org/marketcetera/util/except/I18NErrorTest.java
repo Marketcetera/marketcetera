@@ -1,6 +1,7 @@
 package org.marketcetera.util.except;
 
 import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 public class I18NErrorTest
 	extends I18NThrowableTestBase
@@ -29,7 +30,8 @@ public class I18NErrorTest
     public void causeWithI18NMessage()
     {
         I18NError nested=new I18NError
-            (TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         causeWithI18NMessage
             (nested,new Error(nested),new I18NError(nested));
     }
@@ -40,7 +42,8 @@ public class I18NErrorTest
         myMessage
             (new Error(TEST_MSG_1),
              new I18NError
-             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -50,7 +53,8 @@ public class I18NErrorTest
         myMessageAndCauseWithoutMessage
             (nested,new Error(TEST_MSG_1,nested),
              new I18NError
-             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -60,7 +64,8 @@ public class I18NErrorTest
         myMessageAndCauseWithMessage
             (nested,new Error(TEST_MSG_1,nested),
              new I18NError
-             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -71,7 +76,8 @@ public class I18NErrorTest
         myMessageAndCauseWithI18NMessage
             (nested,new Error(TEST_MSG_1,nested),
              new I18NError
-             (nested,TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+             (nested,new I18NBoundMessage1P
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
     }
 
     @Test
@@ -80,7 +86,8 @@ public class I18NErrorTest
         I18NError exBot=new I18NError
             (TestMessages.BOT_EXCEPTION);
         I18NError exMid=new I18NError
-            (exBot,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (exBot,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         I18NError exTop=new I18NError
             (exMid,TestMessages.TOP_EXCEPTION);
         nesting(exBot,exMid,exTop);
