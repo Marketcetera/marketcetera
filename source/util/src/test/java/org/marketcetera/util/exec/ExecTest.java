@@ -3,10 +3,12 @@ package org.marketcetera.util.exec;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
+import org.apache.log4j.Level;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
 import org.marketcetera.util.file.CloseableRegistry;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -67,7 +69,11 @@ public class ExecTest
             (String args[])
             throws Exception
         {
-            Thread.sleep(SLEEP_DURATION*10);
+            for (int i=0;i<5;i++) {
+                // EXTREME TEST 1: some output is required.
+                System.err.println(i);
+                Thread.sleep(SLEEP_DURATION);
+            }
         }
     }
 
@@ -281,9 +287,10 @@ public class ExecTest
             Exec.run((File)null,Disposition.MEMORY,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
             assertFalse(ex instanceof I18NInterruptedException);
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_EXECUTE,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_EXECUTE,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -296,9 +303,10 @@ public class ExecTest
             run(TEST_NONEXISTENT_FILE,Disposition.MEMORY,DIR_ROOT);
         } catch (I18NException ex) {
             assertFalse(ex instanceof I18NInterruptedException);
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_EXECUTE,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_EXECUTE,m.getMessage());
+            assertEquals(getJava(),m.getParam1());
             return;
         }
         fail();
@@ -315,8 +323,23 @@ public class ExecTest
         Thread.sleep(SLEEP_DURATION);
         I18NException ex=child.getException();
         assertTrue(ex instanceof I18NInterruptedException);
+        I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
         assertEquals
-            (ex.getDetail(),Messages.UNEXPECTED_TERMINATION,
-             ex.getI18NMessage());
+            (ex.getDetail(),Messages.UNEXPECTED_TERMINATION,m.getMessage());
+        assertEquals(getJava(),m.getParam1());
     }
+
+    /*
+     * EXTREME TEST 1: run alone (no other tests in the same file,
+     * and no other units test) after uncommenting sections in main
+     * class.
+    @Test
+    public void exception()
+        throws Exception
+    {
+        run((File)null,Disposition.MEMORY,"CommandSleep");
+        assertSingleEvent(Level.ERROR,InputThread.class.getName(),
+                          "Cannot copy output of command '"+getJava()+"'");
+    }
+     */
 }
