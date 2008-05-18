@@ -1,9 +1,11 @@
 package org.marketcetera.util.except;
 
 import java.io.InterruptedIOException;
+import java.nio.channels.ClosedByInterruptException;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import static org.junit.Assert.*;
 
@@ -27,7 +29,8 @@ public class ExceptUtilsTest
          boolean interrupted)
     {
         ExceptUtils.swallow
-            (ex,TEST_CATEGORY,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
+            (ex,TEST_CATEGORY,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         assertEquals(interrupted,Thread.currentThread().interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN);
 
@@ -42,9 +45,11 @@ public class ExceptUtilsTest
          boolean interruption)
     {
         I18NException out=ExceptUtils.wrap
-            (ex,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
-        assertEquals(TestMessages.MID_EXCEPTION,out.getI18NMessage());
-        assertArrayEquals(new Object[] {MID_MSG_PARAM},out.getParams());
+            (ex,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+        I18NBoundMessage1P m=(I18NBoundMessage1P)out.getI18NBoundMessage();
+        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
+        assertEquals(MID_MSG_PARAM,m.getParam1());
         assertEquals(ex,out.getCause());
         assertTrue(out instanceof I18NException);
         assertEquals(interruption,out instanceof I18NInterruptedException);
@@ -57,9 +62,11 @@ public class ExceptUtilsTest
         assertEquals(interruption,Thread.currentThread().interrupted());
 
         I18NRuntimeException outR=ExceptUtils.wrapRuntime
-            (ex,TestMessages.MID_EXCEPTION,MID_MSG_PARAM);
-        assertEquals(TestMessages.MID_EXCEPTION,outR.getI18NMessage());
-        assertArrayEquals(new Object[] {MID_MSG_PARAM},outR.getParams());
+            (ex,new I18NBoundMessage1P
+             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+        I18NBoundMessage1P m=(I18NBoundMessage1P)outR.getI18NBoundMessage();
+        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
+        assertEquals(MID_MSG_PARAM,m.getParam1());
         assertEquals(ex,outR.getCause());
         assertTrue(outR instanceof I18NRuntimeException);
         assertEquals(interruption,
@@ -184,6 +191,8 @@ public class ExceptUtilsTest
         assertTrue(ExceptUtils.isInterruptException
                    (new InterruptedIOException()));
         assertTrue(ExceptUtils.isInterruptException
+                   (new ClosedByInterruptException()));
+        assertTrue(ExceptUtils.isInterruptException
                    (new I18NInterruptedException()));
         assertTrue(ExceptUtils.isInterruptException
                    (new I18NInterruptedRuntimeException()));
@@ -195,6 +204,7 @@ public class ExceptUtilsTest
         interruptHelper(new CloneNotSupportedException(),false);
         interruptHelper(new InterruptedException(),true);
         interruptHelper(new InterruptedIOException(),true);
+        interruptHelper(new ClosedByInterruptException(),true);
         interruptHelper(new I18NInterruptedException(),true);
         interruptHelper(new I18NInterruptedRuntimeException(),true);
     }
@@ -205,6 +215,7 @@ public class ExceptUtilsTest
         swallowHelper(new CloneNotSupportedException(),false);
         swallowHelper(new InterruptedException(),true);
         swallowHelper(new InterruptedIOException(),true);
+        swallowHelper(new ClosedByInterruptException(),true);
         swallowHelper(new I18NInterruptedException(),true);
         swallowHelper(new I18NInterruptedRuntimeException(),true);
     }
@@ -215,6 +226,7 @@ public class ExceptUtilsTest
         wrapHelper(new CloneNotSupportedException(),false);
         wrapHelper(new InterruptedException(),true);
         wrapHelper(new InterruptedIOException(),true);
+        wrapHelper(new ClosedByInterruptException(),true);
         wrapHelper(new I18NInterruptedException(),true);
         wrapHelper(new I18NInterruptedRuntimeException(),true);
     }
