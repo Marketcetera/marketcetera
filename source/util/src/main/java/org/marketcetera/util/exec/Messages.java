@@ -2,7 +2,7 @@ package org.marketcetera.util.exec;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
 
 /**
@@ -36,10 +36,10 @@ public interface Messages
      * The messages.
      */
 
-    static final I18NMessage CANNOT_COPY_OUTPUT=
-        new I18NMessage(LOGGER,"cannot_copy_output");
-    static final I18NMessage CANNOT_EXECUTE=
-        new I18NMessage(LOGGER,"cannot_execute");
-    static final I18NMessage UNEXPECTED_TERMINATION=
-        new I18NMessage(LOGGER,"unexpected_termination");
+    static final I18NMessage1P CANNOT_COPY_OUTPUT=
+        new I18NMessage1P(LOGGER,"cannot_copy_output");
+    static final I18NMessage1P CANNOT_EXECUTE=
+        new I18NMessage1P(LOGGER,"cannot_execute");
+    static final I18NMessage1P UNEXPECTED_TERMINATION=
+        new I18NMessage1P(LOGGER,"unexpected_termination");
 }

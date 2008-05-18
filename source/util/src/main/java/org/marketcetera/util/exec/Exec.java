@@ -8,6 +8,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /**
  * A simple process executor. The executed process requires no input,
@@ -87,8 +88,16 @@ public final class Exec
                 (command,process.getInputStream(),out,closeOut);
             consumer.start();
         } catch (Throwable t) {
-            throw ExceptUtils.wrap(t,Messages.CANNOT_EXECUTE,command);
+            throw ExceptUtils.wrap(t,new I18NBoundMessage1P
+                                   (Messages.CANNOT_EXECUTE,command));
         }
+        /* EXTREME TEST 1: uncomment this comment.
+        try {
+            Thread.sleep(1000);
+            consumer.interrupt();
+            process.getInputStream().close();
+        } catch (Throwable t) {}
+        */
         try {
 
             // Wait for process to end, and retain its exit code.
@@ -109,7 +118,8 @@ public final class Exec
 
             return new ExecResult(exitValue,capture);
         } catch (Throwable t) {
-            throw ExceptUtils.wrap(t,Messages.UNEXPECTED_TERMINATION,command);
+            throw ExceptUtils.wrap(t,new I18NBoundMessage1P
+                                   (Messages.UNEXPECTED_TERMINATION,command));
         } finally {
             process.destroy();
         }
