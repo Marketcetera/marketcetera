@@ -5,6 +5,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -177,9 +179,11 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyBytes(TEST_NONEXISTENT_FILE,TEST_OUTPUT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage2P m=(I18NBoundMessage2P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_FILES,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_FILES,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
+            assertEquals(TEST_OUTPUT_FILE,m.getParam2());
             return;
         }
         fail();
@@ -193,9 +197,11 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyBytes(TEST_INPUT_FILE,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage2P m=(I18NBoundMessage2P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_FILES,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_FILES,m.getMessage());
+            assertEquals(TEST_INPUT_FILE,m.getParam1());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam2());
             return;
         }
         fail();
@@ -207,9 +213,11 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyChars(TEST_NONEXISTENT_FILE,TEST_OUTPUT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage2P m=(I18NBoundMessage2P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_FILES,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_FILES,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
+            assertEquals(TEST_OUTPUT_FILE,m.getParam2());
             return;
         }
         fail();
@@ -223,9 +231,11 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyChars(TEST_INPUT_FILE,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage2P m=(I18NBoundMessage2P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_FILES,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_FILES,m.getMessage());
+            assertEquals(TEST_INPUT_FILE,m.getParam1());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam2());
             return;
         }
         fail();
@@ -239,9 +249,10 @@ public class CopyUtilsTest
         try {
             copyIStream(TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_ISTREAM,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_ISTREAM,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -255,9 +266,10 @@ public class CopyUtilsTest
         try {
             copyOStream(TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_OSTREAM,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_OSTREAM,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -271,9 +283,10 @@ public class CopyUtilsTest
         try {
             copyReader(TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_READER,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_READER,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -287,9 +300,10 @@ public class CopyUtilsTest
         try {
             copyWriter(TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_COPY_WRITER,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_COPY_WRITER,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -301,8 +315,10 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyBytes(TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
-            assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_DST,
-                         ex.getI18NMessage());
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_MEMORY_DST,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -314,8 +330,10 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyChars(TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
-            assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_DST,
-                         ex.getI18NMessage());
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_MEMORY_DST,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -327,8 +345,10 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyBytes(VALUE_BYTES,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
-            assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_SRC,
-                         ex.getI18NMessage());
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_MEMORY_SRC,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
@@ -340,8 +360,10 @@ public class CopyUtilsTest
         try {
             CopyUtils.copyChars(VALUE_CHARS,TEST_NONEXISTENT_FILE);
         } catch (I18NException ex) {
-            assertEquals(ex.getDetail(),Messages.CANNOT_COPY_MEMORY_SRC,
-                         ex.getI18NMessage());
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
+            assertEquals
+                (ex.getDetail(),Messages.CANNOT_COPY_MEMORY_SRC,m.getMessage());
+            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
             return;
         }
         fail();
