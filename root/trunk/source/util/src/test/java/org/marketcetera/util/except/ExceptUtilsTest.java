@@ -2,6 +2,8 @@ package org.marketcetera.util.except;
 
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.FileLockInterruptionException;
+import javax.naming.InterruptedNamingException;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
@@ -193,6 +195,10 @@ public class ExceptUtilsTest
         assertTrue(ExceptUtils.isInterruptException
                    (new ClosedByInterruptException()));
         assertTrue(ExceptUtils.isInterruptException
+                   (new FileLockInterruptionException()));
+        assertTrue(ExceptUtils.isInterruptException
+                   (new InterruptedNamingException()));
+        assertTrue(ExceptUtils.isInterruptException
                    (new I18NInterruptedException()));
         assertTrue(ExceptUtils.isInterruptException
                    (new I18NInterruptedRuntimeException()));
@@ -205,6 +211,8 @@ public class ExceptUtilsTest
         interruptHelper(new InterruptedException(),true);
         interruptHelper(new InterruptedIOException(),true);
         interruptHelper(new ClosedByInterruptException(),true);
+        interruptHelper(new FileLockInterruptionException(),true);
+        interruptHelper(new InterruptedNamingException(),true);
         interruptHelper(new I18NInterruptedException(),true);
         interruptHelper(new I18NInterruptedRuntimeException(),true);
     }
@@ -216,6 +224,8 @@ public class ExceptUtilsTest
         swallowHelper(new InterruptedException(),true);
         swallowHelper(new InterruptedIOException(),true);
         swallowHelper(new ClosedByInterruptException(),true);
+        swallowHelper(new FileLockInterruptionException(),true);
+        swallowHelper(new InterruptedNamingException(),true);
         swallowHelper(new I18NInterruptedException(),true);
         swallowHelper(new I18NInterruptedRuntimeException(),true);
     }
@@ -227,6 +237,8 @@ public class ExceptUtilsTest
         wrapHelper(new InterruptedException(),true);
         wrapHelper(new InterruptedIOException(),true);
         wrapHelper(new ClosedByInterruptException(),true);
+        wrapHelper(new FileLockInterruptionException(),true);
+        wrapHelper(new InterruptedNamingException(),true);
         wrapHelper(new I18NInterruptedException(),true);
         wrapHelper(new I18NInterruptedRuntimeException(),true);
     }
