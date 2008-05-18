@@ -2,8 +2,8 @@ package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessageProvider;
-import org.marketcetera.util.log.I18NMessage;
 
 /**
  * The internationalization constants used by this package.
@@ -36,8 +36,8 @@ public interface Messages
      * The messages.
      */
 
-    static final I18NMessage THREAD_INTERRUPTED=
-        new I18NMessage(LOGGER,"thread_interrupted");
-    static final I18NMessage THROWABLE_IGNORED=
-        new I18NMessage(LOGGER,"throwable_ignored");
+    static final I18NMessage0P THREAD_INTERRUPTED=
+        new I18NMessage0P(LOGGER,"thread_interrupted");
+    static final I18NMessage0P THROWABLE_IGNORED=
+        new I18NMessage0P(LOGGER,"throwable_ignored");
 }

@@ -1,9 +1,11 @@
 package org.marketcetera.util.except;
 
 import java.io.InterruptedIOException;
+import java.nio.channels.ClosedByInterruptException;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage;
 
 /**
  * General-purpose utilities.
@@ -127,6 +129,7 @@ public final class ExceptUtils
     {
         return ((throwable instanceof InterruptedException) ||
                 (throwable instanceof InterruptedIOException) ||
+                (throwable instanceof ClosedByInterruptException) ||
                 (throwable instanceof I18NInterruptedException) ||
                 (throwable instanceof I18NInterruptedRuntimeException));
     }
@@ -157,16 +160,14 @@ public final class ExceptUtils
      * @param throwable The throwable.
      * @param category The category.
      * @param message The message.
-     * @param params The message parameters.
      */
 
     public static void swallow
         (Throwable throwable,
          Object category,
-         I18NMessage message,
-         Object... params)
+         I18NBoundMessage message)
     {
-        message.warn(category,throwable,params);
+        message.warn(category,throwable);
         interrupt(throwable);
     }
 
@@ -197,21 +198,19 @@ public final class ExceptUtils
      * 
      * @param throwable The throwable.
      * @param message The message.
-     * @param params The message parameters.
      *
      * @return The wrapping exception.
      */
 
     public static I18NException wrap
         (Throwable throwable,
-         I18NMessage message,
-         Object... params)
+         I18NBoundMessage message)
     {
         if (isInterruptException(throwable)) {
             Thread.currentThread().interrupt();
-            return new I18NInterruptedException(throwable,message,params);
+            return new I18NInterruptedException(throwable,message);
         }
-        return new I18NException(throwable,message,params);
+        return new I18NException(throwable,message);
     }
 
     /**
@@ -249,22 +248,19 @@ public final class ExceptUtils
      * 
      * @param throwable The throwable.
      * @param message The message.
-     * @param params The message parameters.
      *
      * @return The wrapping exception.
      */
 
     public static I18NRuntimeException wrapRuntime
         (Throwable throwable,
-         I18NMessage message,
-         Object... params)
+         I18NBoundMessage message)
     {
         if (isInterruptException(throwable)) {
             Thread.currentThread().interrupt();
-            return new I18NInterruptedRuntimeException
-                (throwable,message,params);
+            return new I18NInterruptedRuntimeException(throwable,message);
         }
-        return new I18NRuntimeException(throwable,message,params);
+        return new I18NRuntimeException(throwable,message);
     }
 
     /**

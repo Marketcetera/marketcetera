@@ -1,7 +1,7 @@
 package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.LogUtils;
 
 /**
@@ -26,8 +26,7 @@ public class I18NError
 
     // INSTANCE DATA.
 
-    private I18NMessage mMessage;
-    private Object[] mParams;
+    private I18NBoundMessage mMessage;
     
 
     // CONSTRUCTORS.
@@ -57,16 +56,13 @@ public class I18NError
      * an underlying cause.
      *
      * @param message The message.
-     * @param params The message parameters.
      */
 
     public I18NError
-        (I18NMessage message,
-         Object... params)
+        (I18NBoundMessage message)
     {
-        super(LogUtils.getSimpleMessage(message,params));
+        super(LogUtils.getSimpleMessage(message));
         mMessage=message;
-        mParams=params;
     }
 
     /**
@@ -75,17 +71,14 @@ public class I18NError
      *
      * @param cause The cause.
      * @param message The message.
-     * @param params The message parameters.
      */
 
     public I18NError
         (Throwable cause,
-         I18NMessage message,
-         Object... params)
+         I18NBoundMessage message)
     {
-        super(LogUtils.getSimpleMessage(message,params),cause);
+        super(LogUtils.getSimpleMessage(message),cause);
         mMessage=message;
-        mParams=params;
     }
 
 
@@ -108,16 +101,10 @@ public class I18NError
     {
         return I18NExceptUtils.getLocalizedDetail(this);
     }
-    
+
     @Override
-    public I18NMessage getI18NMessage()
+    public I18NBoundMessage getI18NBoundMessage()
     {
         return mMessage;
-    }
-    
-    @Override
-    public Object[] getParams()
-    {
-        return mParams;
     }
 }

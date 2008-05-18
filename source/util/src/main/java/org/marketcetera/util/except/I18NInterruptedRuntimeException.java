@@ -1,7 +1,7 @@
 package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * An internationalized runtime exception indicating interruption.
@@ -52,14 +52,12 @@ public class I18NInterruptedRuntimeException
      * an underlying cause.
      *
      * @param message The message.
-     * @param params The message parameters.
      */
 
     public I18NInterruptedRuntimeException
-        (I18NMessage message,
-         Object... params)
+        (I18NBoundMessage message)
     {
-        super(message,params);
+        super(message);
     }
 
     /**
@@ -68,15 +66,13 @@ public class I18NInterruptedRuntimeException
      *
      * @param cause The cause.
      * @param message The message.
-     * @param params The message parameters.
      */
 
     public I18NInterruptedRuntimeException
         (Throwable cause,
-         I18NMessage message,
-         Object... params)
+         I18NBoundMessage message)
     {
-        super(cause,message,params);
+        super(cause,message);
     }
 
 
@@ -125,19 +121,17 @@ public class I18NInterruptedRuntimeException
      * constructor. The interrupted status of the thread is cleared.
      *
      * @param message The message.
-     * @param params The message parameters.
      *
      * @throws I18NInterruptedRuntimeException Thrown if the calling
      * thread was interrupted.
      */
 
     public static void checkInterruption
-        (I18NMessage message,
-         Object... params)
+        (I18NBoundMessage message)
         throws I18NInterruptedRuntimeException
     {
         if (Thread.interrupted()) {
-            throw new I18NInterruptedRuntimeException(message,params);
+            throw new I18NInterruptedRuntimeException(message);
         }
     }
 
@@ -148,7 +142,6 @@ public class I18NInterruptedRuntimeException
      *
      * @param cause The cause.
      * @param message The message.
-     * @param params The message parameters.
      *
      * @throws I18NInterruptedRuntimeException Thrown if the calling
      * thread was interrupted.
@@ -156,12 +149,11 @@ public class I18NInterruptedRuntimeException
 
     public static void checkInterruption
         (Throwable cause,
-         I18NMessage message,
-         Object... params)
+         I18NBoundMessage message)
         throws I18NInterruptedRuntimeException
     {
         if (Thread.interrupted()) {
-            throw new I18NInterruptedRuntimeException(cause,message,params);
+            throw new I18NInterruptedRuntimeException(cause,message);
         }
     }
 }
