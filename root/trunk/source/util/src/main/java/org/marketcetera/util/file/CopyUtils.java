@@ -9,6 +9,8 @@ import org.apache.commons.io.IOUtils;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 
 /**
  * Utilities for copying data. The participating media include files,
@@ -53,7 +55,8 @@ public final class CopyUtils
             registry.register(outW);
             return IOUtils.copyLarge(inW.getStream(),outW.getStream());
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_FILES,in,out);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage2P
+                                   (Messages.CANNOT_COPY_FILES,in,out));
         } finally {
             registry.close();
         }
@@ -86,7 +89,8 @@ public final class CopyUtils
             registry.register(outW);
             return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_FILES,in,out);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage2P
+                                   (Messages.CANNOT_COPY_FILES,in,out));
         } finally {
             registry.close();
         }
@@ -122,7 +126,8 @@ public final class CopyUtils
             registry.register(outW);
             return IOUtils.copyLarge(inW.getStream(),outW.getStream());
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_ISTREAM,in,out);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_ISTREAM,out));
         } finally {
             registry.close();
         }
@@ -158,7 +163,8 @@ public final class CopyUtils
             registry.register(outW);
             return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_READER,in,out);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_READER,out));
         } finally {
             registry.close();
         }
@@ -193,7 +199,8 @@ public final class CopyUtils
             registry.register(outW);
             return IOUtils.copyLarge(inW.getStream(),outW.getStream());
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_OSTREAM,in,out);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_OSTREAM,in));
         } finally {
             registry.close();
         }
@@ -229,7 +236,8 @@ public final class CopyUtils
             registry.register(outW);
             return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_WRITER,in,out);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_WRITER,in));
         } finally {
             registry.close();
         }
@@ -260,7 +268,8 @@ public final class CopyUtils
                 inW.close();
             }
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_MEMORY_DST,name);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_MEMORY_DST,name));
         }
     }
 
@@ -289,7 +298,8 @@ public final class CopyUtils
                 inW.close();
             }
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_MEMORY_DST,name);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_MEMORY_DST,name));
         }
     }
 
@@ -317,7 +327,8 @@ public final class CopyUtils
                 outW.close();
             }
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_MEMORY_SRC,name);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_MEMORY_SRC,name));
         }
     }
 
@@ -346,7 +357,8 @@ public final class CopyUtils
                 outW.close();
             }
         } catch (IOException ex) {
-            throw ExceptUtils.wrap(ex,Messages.CANNOT_COPY_MEMORY_SRC,name);
+            throw ExceptUtils.wrap(ex,new I18NBoundMessage1P
+                                   (Messages.CANNOT_COPY_MEMORY_SRC,name));
         }
     }
 
