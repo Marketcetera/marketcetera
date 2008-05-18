@@ -64,7 +64,7 @@ public class ExceptUtilsTest
         I18NRuntimeException outR=ExceptUtils.wrapRuntime
             (ex,new I18NBoundMessage1P
              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
-        I18NBoundMessage1P m=(I18NBoundMessage1P)outR.getI18NBoundMessage();
+        m=(I18NBoundMessage1P)outR.getI18NBoundMessage();
         assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
         assertEquals(MID_MSG_PARAM,m.getParam1());
         assertEquals(ex,outR.getCause());
