@@ -8,6 +8,7 @@ import org.marketcetera.util.exec.Disposition;
 import org.marketcetera.util.exec.Exec;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
@@ -152,12 +153,14 @@ public class DeleterTest
     {
         cleanCopy();
         String rootName=setupCopy();
+        String name=rootName+File.separator+TEST_PLAIN_FILE;
         try {
-            Deleter.apply(rootName+File.separator+TEST_PLAIN_FILE);
+            Deleter.apply(name);
         } catch (I18NException ex) {
+            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_DELETE,
-                 ex.getI18NMessage());
+                (ex.getDetail(),Messages.CANNOT_DELETE,m.getMessage());
+            assertEquals((new File(name)).getAbsolutePath(),m.getParam1());
             return;
         }
         fail();
