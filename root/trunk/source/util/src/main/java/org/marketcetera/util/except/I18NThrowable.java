@@ -1,7 +1,7 @@
 package org.marketcetera.util.except;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NMessage;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * An internationalized throwable. At creation, the message may be
@@ -79,13 +79,5 @@ interface I18NThrowable
      * @return The message. It may be null.
      */
 
-    I18NMessage getI18NMessage();
-
-    /**
-     * Returns the receiver's message parameters.
-     *
-     * @return The parameters. It may be null.
-     */
-
-    Object[] getParams();
+    I18NBoundMessage getI18NBoundMessage();
 }
