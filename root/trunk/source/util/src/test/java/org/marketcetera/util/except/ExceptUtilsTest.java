@@ -105,7 +105,7 @@ public class ExceptUtilsTest
         try {
             ExceptUtils.checkInterruption();
         } catch (InterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             assertEquals("Thread execution was interrupted",ex.getMessage());
             assertNull(ex.getCause());
             return;
@@ -129,7 +129,7 @@ public class ExceptUtilsTest
         try {
             ExceptUtils.checkInterruption(nested);
         } catch (InterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             assertEquals("Thread execution was interrupted",ex.getMessage());
             assertEquals(nested,ex.getCause());
             return;
@@ -151,7 +151,7 @@ public class ExceptUtilsTest
         try {
             ExceptUtils.checkInterruption(TEST_MSG_1);
         } catch (InterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             assertEquals(TEST_MSG_1,ex.getMessage());
             assertNull(ex.getCause());
             return;
@@ -175,7 +175,7 @@ public class ExceptUtilsTest
         try {
             ExceptUtils.checkInterruption(nested,TEST_MSG_1);
         } catch (InterruptedException ex) {
-            assertFalse(Thread.currentThread().isInterrupted());
+            assertTrue(Thread.interrupted());
             assertEquals(TEST_MSG_1,ex.getMessage());
             assertEquals(nested,ex.getCause());
             return;
