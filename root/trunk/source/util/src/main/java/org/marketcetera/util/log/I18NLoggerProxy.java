@@ -89,7 +89,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.error(category,message.getText(params),throwable);
+        SLF4JLoggerProxy.error
+            (category,getMessageProvider().getText(message,params),throwable);
     }
 
     /**
@@ -110,7 +111,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isErrorEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.error(category,message.getText(params));
+        SLF4JLoggerProxy.error
+            (category,getMessageProvider().getText(message,params));
     }
 
     /**
@@ -153,7 +155,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.warn(category,message.getText(params),throwable);
+        SLF4JLoggerProxy.warn
+            (category,getMessageProvider().getText(message,params),throwable);
     }
 
     /**
@@ -175,7 +178,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isWarnEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.warn(category,message.getText(params));
+        SLF4JLoggerProxy.warn
+            (category,getMessageProvider().getText(message,params));
     }
 
     /**
@@ -219,7 +223,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.info(category,message.getText(params),throwable);
+        SLF4JLoggerProxy.info
+            (category,getMessageProvider().getText(message,params),throwable);
     }
 
     /**
@@ -241,7 +246,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isInfoEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.info(category,message.getText(params));
+        SLF4JLoggerProxy.info
+            (category,getMessageProvider().getText(message,params));
     }
 
     /**
@@ -284,7 +290,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.debug(category,message.getText(params),throwable);
+        SLF4JLoggerProxy.debug
+            (category,getMessageProvider().getText(message,params),throwable);
     }
 
     /**
@@ -306,7 +313,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isDebugEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.debug(category,message.getText(params));
+        SLF4JLoggerProxy.debug
+            (category,getMessageProvider().getText(message,params));
     }
 
     /**
@@ -349,7 +357,8 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.trace(category,message.getText(params),throwable);
+        SLF4JLoggerProxy.trace
+            (category,getMessageProvider().getText(message,params),throwable);
     }
 
     /**
@@ -371,6 +380,7 @@ public class I18NLoggerProxy
         if (!SLF4JLoggerProxy.isTraceEnabled(category)) {
             return;
         }
-        SLF4JLoggerProxy.trace(category,message.getText(params));
+        SLF4JLoggerProxy.trace
+            (category,getMessageProvider().getText(message,params));
     }
 }

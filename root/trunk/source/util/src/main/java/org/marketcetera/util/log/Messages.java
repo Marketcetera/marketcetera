@@ -33,8 +33,8 @@ public interface Messages
      * The messages.
      */
 
-    static final I18NMessage MESSAGE_NOT_FOUND=
-        new I18NMessage(LOGGER,"message_not_found");
-    static final I18NMessage UNEXPECTED_EXCEPTION=
-        new I18NMessage(LOGGER,"unexpected_exception");
+    static final I18NMessage4P MESSAGE_NOT_FOUND=
+        new I18NMessage4P(LOGGER,"message_not_found");
+    static final I18NMessage4P UNEXPECTED_EXCEPTION=
+        new I18NMessage4P(LOGGER,"unexpected_exception");
 }

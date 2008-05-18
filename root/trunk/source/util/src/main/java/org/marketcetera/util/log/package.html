@@ -1,0 +1,201 @@
+<html
+
+<head>
+<title>Logging and internationalization framework</title>
+</head>
+
+<body>
+
+<p>This is a multi-tiered logging and internationalization (i18n)
+framework.</p>
+
+
+<h3>Lowest tier: {@link
+org.marketcetera.util.log.SLF4JLoggerProxy}</h3>
+
+<p>At the lowest layer, the framework offers a simple proxy to SLF4J
+via {@link org.marketcetera.util.log.SLF4JLoggerProxy}, wherein the
+proxy automatically determines the right category under which a
+message should be logged. At this level, string are directly logged
+(there is no i18n). Calls to logging methods can be guarded via the
+provided {@link
+org.marketcetera.util.log.SLF4JLoggerProxy#isErrorEnabled(Object)}
+method and its counterparts for other logging levels. But such guards
+are not essential because the logging methods allow for a placeholder
+string and varargs object arguments (e.g. a message such
+as <code>"Hello {}!"</code> and argument <code>"world"</code> is
+logged as <code>"Hello world!"</code>).</p>
+
+
+<h3>Middle tier: {@link org.marketcetera.util.log.I18NMessage}</h3>
+
+<p>At the next layer, strings are not directly used. Instead, message
+handles are used, and they are translated into strings at run-time;
+this is the basis for composing i18n code that is localized at
+run-time. Message handles are instances of {@link
+org.marketcetera.util.log.I18NMessage}. The translation into strings
+is done via {@link org.marketcetera.util.log.I18NMessageProvider}, at
+which time the varargs object arguments are also supplied. That is,
+retrieving the actual localized string and replacing placeholders with
+their actual values is done in a single step. Similarly, i18n messages
+can be logged via {@link org.marketcetera.util.log.I18NLoggerProxy} by
+supplying a message handle and the varargs object arguments to the
+logger.</p>
+
+<p>Calls to logging methods need not be guarded; if guarding is
+desired, use the methods of the {@link
+org.marketcetera.util.log.SLF4JLoggerProxy} tier.</p>
+
+
+<h3>Top tier (unbound): <code>I18NMessage<i>x</i>P</code></h3>
+
+<p>{@link org.marketcetera.util.log.I18NMessage0P}, {@link
+org.marketcetera.util.log.I18NMessage1P}, ..., {@link
+org.marketcetera.util.log.I18NMessageNP} are classes that enable the
+compiler to confirm that the number of arguments supplied at
+localization matches the number of placeholders. That is, the message
+handle is created as an instance of
+a <code>I18NMessage<i>x</i>P</code> class instead of the generic
+{@link org.marketcetera.util.log.I18NMessage}; and localization and
+logging is done via methods of the
+same <code>I18NMessage<i>x</i>P</code> class. The methods
+of <code>I18NMessage<i>x</i>P</code> accept exactly <i>x</i>
+arguments. {@link org.marketcetera.util.log.I18NMessageNP} is a
+special case that accepts an arbitrary number of arguments (to allow
+for a large <i>x</i> for which no
+class <code>I18NMessage<i>x</i>P</code> is provided).</p>
+
+
+<h3>Top tier (bound): <code>I18NBoundMessage<i>x</i>P</code></h3>
+
+<p>{@link org.marketcetera.util.log.I18NBoundMessage0P}, {@link
+org.marketcetera.util.log.I18NBoundMessage1P}, ..., {@link
+org.marketcetera.util.log.I18NBoundMessageNP} are classes that combine
+a corresponding <code>I18NMessage<i>x</i>P</code> instance and the
+message arguments into a single
+object. A <code>I18NBoundMessage<i>x</i>P</code> instance is not
+localized yet, but the arguments to the message are fixed. These
+instances are used when a message and its arguments need to be
+supplied to another object for delayed localization (e.g. the message
+of an exception). Localization is done via methods of the {@link
+org.marketcetera.util.log.I18NBoundMessage} interface, which all
+the <code>I18NBoundMessage<i>x</i>P</code> implement.</p>
+
+<p>Note that {@link org.marketcetera.util.log.I18NBoundMessage0P} is
+conceptually identical to a {@link
+org.marketcetera.util.log.I18NMessage0P} because there are no
+placeholders in such a message. This is why {@link
+org.marketcetera.util.log.I18NMessage0P} also implements the {@link
+org.marketcetera.util.log.I18NBoundMessage} interface, and can thus be
+used directly where an {@link
+org.marketcetera.util.log.I18NBoundMessage} is needed.</p>
+
+
+<h3>Design pattern</h3>
+
+<p>The following design pattern is recommended for users of this
+framework.</p>
+
+<p>First, define an interface class called <code>Messages</code> in
+each of your packages. This is what such an interface looks like:</p>
+
+<pre>
+public interface Messages
+{
+    static final I18NMessageProvider PROVIDER=
+        new I18NMessageProvider("util_file");
+
+    static final I18NLoggerProxy LOGGER=
+        new I18NLoggerProxy(PROVIDER);
+
+    static final I18NMessage0P CLOSING_FAILED=
+        new I18NMessage0P(LOGGER,"closing_failed");
+    static final I18NMessage1P CANNOT_GET_TYPE=
+        new I18NMessage1P(LOGGER,"cannot_get_type");
+
+    ... more messages
+}
+</pre>
+
+<p>The <code>util_file</code> string above points to a file that
+contains the localized messages, in the commons-i18n syntax (in which
+placeholders are of the form <code>{<i>n</i>}</code>,
+not <code>{}</code>). The full file name sought
+is <code>util_file_messages.xml</code>, and it should reside in your
+project's <code>src/main/resources</code>. Here is a sample file:</p>
+
+<pre>
+&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
+&lt;messages&gt;
+  &lt;message id="closing_failed"&gt;
+    &lt;locale language="en"&gt; 
+	  &lt;entry key="msg"&gt;Closing failed&lt;/entry&gt;
+    &lt;/locale&gt;
+    &lt;locale language="fr"&gt; 
+	  &lt;entry key="msg"&gt;Closing failed in french&lt;/entry&gt;
+    &lt;/locale&gt;
+  &lt;/message&gt;
+  &lt;message id="cannot_get_type"&gt;
+    &lt;locale language="en"&gt; 
+	  &lt;entry key="msg"&gt;Cannot determine type of file ''{0}''&lt;/entry&gt;
+    &lt;/locale&gt;
+  &lt;/message&gt;
+ 
+  ... more messages
+&lt;/messages&gt;
+</pre>
+
+<p>You should also define a test class
+called <code>MessagesTest</code>, which ensures each of your message
+handles can be resolved in the US locale:</p>
+
+<pre>
+public class MessagesTest
+    extends TestCaseBase
+{
+    &#x40;Test
+    public void messagesExist()
+    {
+        Messages.PROVIDER.setLocale(Locale.US);
+        assertEquals
+            ("Closing failed",
+             Messages.CLOSING_FAILED.getText());
+        assertEquals
+            ("Cannot determine type of file 'a'",
+             Messages.CANNOT_GET_TYPE.getText("a"));
+ 
+        ... more messages
+    }
+}
+</pre>
+
+<p>Here is sample code to localize or log a message:</p>
+
+<pre>
+class MyClass {
+ ...
+ // Lowest tier.
+ SLF4JLoggerProxy.error(this,"My message is {}","hello");
+
+ // Middle tier.
+ String text=Messages.PROVIDER.getText(Messages.CANNOT_GET_TYPE,"myfile.xml");
+ Messages.LOGGER.error(this,Messages.CANNOT_GET_TYPE,"myfile.xml");
+
+ // Top tier (unbound).
+ text=Messages.CANNOT_GET_TYPE.getText("myfile.xml");
+ Messages.CANNOT_GET_TYPE.error(this,"myfile.xml");
+
+ // Top tier (bound).
+ myMethod(new I18NBoundMessage1P(Messages.CANNOT_GET_TYPE,"myfile.xml"));
+ ...
+ void myMethod(I18NBoundMessage message) {
+   String text=message.getText();
+   message.error(this);
+ }
+ ...
+}
+</pre>
+
+</body>
+
+</html>

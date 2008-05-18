@@ -92,6 +92,21 @@ public final class LogUtils
         return getSimpleMessage(message.getMessageProvider(),message,params);
     }
 
+    /**
+     * Returns a simplified textual representation of the
+     * parameterized message.
+     *
+     * @param message The message.
+     *
+     * @return The textual representation.
+     */
+
+    public static String getSimpleMessage
+        (I18NBoundMessage message)
+    {
+        return getSimpleMessage(message.getMessage(),message.getParams());
+    }
+
 
     // CONSTRUCTORS.
 
