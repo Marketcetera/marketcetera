@@ -2,6 +2,8 @@ package org.marketcetera.util.except;
 
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.FileLockInterruptionException;
+import javax.naming.InterruptedNamingException;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage;
@@ -130,6 +132,8 @@ public final class ExceptUtils
         return ((throwable instanceof InterruptedException) ||
                 (throwable instanceof InterruptedIOException) ||
                 (throwable instanceof ClosedByInterruptException) ||
+                (throwable instanceof FileLockInterruptionException) ||
+                (throwable instanceof InterruptedNamingException) ||
                 (throwable instanceof I18NInterruptedException) ||
                 (throwable instanceof I18NInterruptedRuntimeException));
     }
