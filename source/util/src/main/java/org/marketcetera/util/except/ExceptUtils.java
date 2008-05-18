@@ -144,14 +144,18 @@ public final class ExceptUtils
      * interrupted. Otherwise, this is a no-op.
      * 
      * @param throwable The throwable.
+     *
+     * @return True if the calling thread was interrupted.
      */
 
-    public static void interrupt
+    public static boolean interrupt
         (Throwable throwable)
     {
         if (isInterruptException(throwable)) {
             Thread.currentThread().interrupt();
+            return true;
         }
+        return false;
     }
 
     /**
@@ -164,15 +168,17 @@ public final class ExceptUtils
      * @param throwable The throwable.
      * @param category The category.
      * @param message The message.
+     *
+     * @return True if the calling thread was interrupted.
      */
 
-    public static void swallow
+    public static boolean swallow
         (Throwable throwable,
          Object category,
          I18NBoundMessage message)
     {
         message.warn(category,throwable);
-        interrupt(throwable);
+        return interrupt(throwable);
     }
 
     /**
@@ -183,12 +189,14 @@ public final class ExceptUtils
      * interrupted.
      * 
      * @param throwable The throwable.
+     *
+     * @return True if the calling thread was interrupted.
      */
 
-    public static void swallow
+    public static boolean swallow
         (Throwable throwable)
     {
-        swallow(throwable,ExceptUtils.class,Messages.THROWABLE_IGNORED);
+        return swallow(throwable,ExceptUtils.class,Messages.THROWABLE_IGNORED);
     }
 
     /**
