@@ -37,7 +37,7 @@ public final class ExceptUtils
     public static void checkInterruption()
         throws InterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException
                 (Messages.THREAD_INTERRUPTED.getText());
         }
@@ -59,7 +59,7 @@ public final class ExceptUtils
         (String message)
         throws InterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             throw new InterruptedException(message);
         }
     }
@@ -81,7 +81,7 @@ public final class ExceptUtils
         (Throwable cause)
         throws InterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             InterruptedException ex=new InterruptedException
                 (Messages.THREAD_INTERRUPTED.getText());
             ex.initCause(cause);
@@ -108,7 +108,7 @@ public final class ExceptUtils
          String message)
         throws InterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             InterruptedException ex=new InterruptedException(message);
             ex.initCause(cause);
             throw ex;

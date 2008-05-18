@@ -90,7 +90,7 @@ public class I18NInterruptedException
     public static void checkInterruption()
         throws I18NInterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             throw new I18NInterruptedException();
         }
     }
@@ -110,7 +110,7 @@ public class I18NInterruptedException
         (Throwable cause)
         throws I18NInterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             throw new I18NInterruptedException(cause);
         }
     }
@@ -130,7 +130,7 @@ public class I18NInterruptedException
         (I18NBoundMessage message)
         throws I18NInterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             throw new I18NInterruptedException(message);
         }
     }
@@ -152,7 +152,7 @@ public class I18NInterruptedException
          I18NBoundMessage message)
         throws I18NInterruptedException
     {
-        if (Thread.interrupted()) {
+        if (Thread.currentThread().isInterrupted()) {
             throw new I18NInterruptedException(cause,message);
         }
     }
