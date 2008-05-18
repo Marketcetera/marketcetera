@@ -60,7 +60,7 @@ public class DeleterTest
         throw new AssertionError("Unknown platform");
     }
 
-    private static String setupCopy()
+    private static String createCopy()
         throws I18NException
     {
         if (OperatingSystem.LOCAL.isUnix()) {
@@ -81,7 +81,7 @@ public class DeleterTest
         throws I18NException
     {
         cleanCopy();
-        String rootName=setupCopy();
+        String rootName=createCopy();
         String fileName=rootName+File.separator+name;
         File root=new File(rootName);
         File file=new File(fileName);
@@ -98,7 +98,7 @@ public class DeleterTest
         }
 
         cleanCopy();
-        setupCopy();
+        createCopy();
         Deleter.apply(fileName);
         assertTrue(root.exists());
         assertFalse(file.exists());
@@ -152,7 +152,7 @@ public class DeleterTest
         throws Exception
     {
         cleanCopy();
-        String rootName=setupCopy();
+        String rootName=createCopy();
         String name=rootName+File.separator+TEST_PLAIN_FILE;
         try {
             Deleter.apply(name);
