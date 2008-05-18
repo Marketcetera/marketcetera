@@ -22,7 +22,7 @@ public class ExceptUtilsTest
         (Exception ex,
          boolean interrupted)
     {
-        ExceptUtils.interrupt(ex);
+        assertEquals(interrupted,ExceptUtils.interrupt(ex));
         assertEquals(interrupted,Thread.currentThread().interrupted());
     }
 
@@ -30,13 +30,13 @@ public class ExceptUtilsTest
         (Exception ex,
          boolean interrupted)
     {
-        ExceptUtils.swallow
-            (ex,TEST_CATEGORY,new I18NBoundMessage1P
-             (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+        assertEquals(interrupted,ExceptUtils.swallow
+                     (ex,TEST_CATEGORY,new I18NBoundMessage1P
+                      (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
         assertEquals(interrupted,Thread.currentThread().interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN);
 
-        ExceptUtils.swallow(ex);
+        assertEquals(interrupted,ExceptUtils.swallow(ex));
         assertEquals(interrupted,Thread.currentThread().interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,
                           "Caught throwable was not propagated");
