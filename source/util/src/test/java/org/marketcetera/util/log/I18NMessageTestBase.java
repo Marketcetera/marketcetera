@@ -73,6 +73,8 @@ public class I18NMessageTestBase
         assertEquals(textEn,m.getText());
         assertEquals(testFr,m.getText(Locale.FRENCH));
 
+        assertEquals(textEn,m.toString());
+
         m.error(TEST_CATEGORY,TEST_THROWABLE);
         assertSingleEvent(Level.ERROR,TEST_CATEGORY,textEn);
         m.error(TEST_CATEGORY);
