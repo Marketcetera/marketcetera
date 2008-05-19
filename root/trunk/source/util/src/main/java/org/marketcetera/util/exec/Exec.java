@@ -57,7 +57,7 @@ public final class Exec
     {
         String command=args[0];
         Process process;
-        InputThread consumer;
+        InputThread consumer=null;
         OutputStream out;
         try {
 
@@ -88,6 +88,9 @@ public final class Exec
                 (command,process.getInputStream(),out,closeOut);
             consumer.start();
         } catch (Throwable t) {
+            if (consumer!=null) {
+                consumer.interrupt();
+            }
             throw ExceptUtils.wrap(t,new I18NBoundMessage1P
                                    (Messages.CANNOT_EXECUTE,command));
         }

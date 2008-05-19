@@ -54,6 +54,7 @@ class InputThread
          OutputStream out,
          boolean closeOut)
     {
+        super(command);
         setDaemon(true);
         mCommand=command;
         mIn=in;
