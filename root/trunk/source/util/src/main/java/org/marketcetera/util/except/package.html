@@ -133,9 +133,12 @@ caller how long it'll need to run).</p>
 
 <p>The approach recommended by our framework is to leave the flag
 turned on, and have your code turn it off explicitly if it so sees
-fit. If you turn it off, it is best to wrap your code after this
-switch inside a <code>try</code> block, and turn the flag on again
-inside a <code>finally</code> clause.</p>
+fit. This is because, if the framework turned the flag off for you, it
+would gives you a false sense of safety: there is nothing that stops
+another thread from setting the flag asynchronously during you cleanup
+attempt, and thus derailing it. So it is best to write your code
+assuming the flag is set (and, if you turn it off, that it can be set
+again at any time), and take proper steps to handle those cases.</p>
 
 <p>To assist the above code designs, this framework provides the
 following tools:</p>
