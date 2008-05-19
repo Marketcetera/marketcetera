@@ -156,4 +156,13 @@ public class I18NBoundMessageBase
     {
         getLoggerProxy().trace(category,getMessage(),getParams());
     }
+
+
+    // Object.
+
+    @Override
+    public String toString()
+    {
+        return getText();
+    }
 }

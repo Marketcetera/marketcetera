@@ -149,4 +149,13 @@ public class I18NMessage0P
     {
         getLoggerProxy().trace(category,this);
     }
+
+
+    // Object.
+
+    @Override
+    public String toString()
+    {
+        return getText();
+    }
 }
