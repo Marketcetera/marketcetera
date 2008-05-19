@@ -190,7 +190,7 @@ void rethrowInterruptedIfFailed()
     } catch (InterruptedException ex) {
         // An I18NInterruptedException is thrown that wraps ex.
         // The thread interrupted flag is set.
-        ExceptUtils.wrap(ex);
+        throw ExceptUtils.wrap(ex);
     }
     ... 
 }
@@ -207,7 +207,7 @@ void rethrowAnyIfFailed()
         // sleep, then an I18NInterruptedException is thrown that wraps ex,
         // and the thread interrupted flag is set. Otherwise, ex is
         // wrapped by an I18NException, which is thrown.
-        ExceptUtils.wrap(ex);
+        throw ExceptUtils.wrap(ex);
     }
     ... 
 }
