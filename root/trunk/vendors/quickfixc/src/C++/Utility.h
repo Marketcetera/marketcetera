@@ -59,7 +59,9 @@
 
 #ifdef _MSC_VER
 /////////////////////////////////////////////
+#ifndef _WINSOCKAPI_ 
 #include <Winsock2.h>
+#endif
 #include <process.h>
 #include <direct.h>
 #include <time.h>

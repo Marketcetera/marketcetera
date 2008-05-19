@@ -2,8 +2,8 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "quickfix_net_messages_vs8", "src\.NET\quickfix_net_messages_vs8.csproj", "{30A02EEB-AF70-4B20-8B97-0AFF2485EFB9}"
 	ProjectSection(ProjectDependencies) = postProject
-		{FCE44FC5-2E80-4F7B-A11F-2974C0FAFC8C} = {FCE44FC5-2E80-4F7B-A11F-2974C0FAFC8C}
 		{D5D558EA-BBAC-4862-A946-D3881BACE3B7} = {D5D558EA-BBAC-4862-A946-D3881BACE3B7}
+		{FCE44FC5-2E80-4F7B-A11F-2974C0FAFC8C} = {FCE44FC5-2E80-4F7B-A11F-2974C0FAFC8C}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "example_executor_csharp_vs8", "examples\executor\csharp\example_executor_csharp_vs8.csproj", "{BA234002-9F1A-4B01-98D6-DE05C7E78B58}"
@@ -61,6 +61,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_unit_vs8", "src\test_u
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_acceptance_runner_vs8", "test\atrun\test_acceptance_runner_vs8.vcproj", "{A58C8BD5-3602-4886-80A0-CD4FFED42144}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "quickfix_vs8_ruby", "src\ruby\quickfix_vs8_ruby.vcproj", "{AB339416-018D-4AD9-B345-AE5AF4B0652A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D5D558EA-BBAC-4862-A946-D3881BACE3B7} = {D5D558EA-BBAC-4862-A946-D3881BACE3B7}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -202,6 +207,16 @@ Global
 		{A58C8BD5-3602-4886-80A0-CD4FFED42144}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{A58C8BD5-3602-4886-80A0-CD4FFED42144}.Release|Win32.ActiveCfg = Release|Win32
 		{A58C8BD5-3602-4886-80A0-CD4FFED42144}.Release|Win32.Build.0 = Release|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Debug|Win32.Build.0 = Debug|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Release|Win32.ActiveCfg = Release|Win32
+		{AB339416-018D-4AD9-B345-AE5AF4B0652A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
