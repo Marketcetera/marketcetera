@@ -27,7 +27,9 @@
 #endif
 
 #ifdef _MSC_VER
+#ifndef _WINSOCKAPI_ 
 #include <Winsock2.h>
+#endif
 typedef int socklen_t;
 #else
 #include <sys/types.h>

@@ -23,3 +23,6 @@
 
 // Define if you have ftime
 #define HAVE_FTIME 1
+
+// Define if you want to build the ruby API wrapper
+#define HAVE_RUBY 1

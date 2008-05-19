@@ -22,7 +22,7 @@
 #endif
 
 %{
-#include <config.h>
+//#include <config.h>
 #include "../C++/Exceptions.h"
 #include "../C++/Field.h"
 #include "../C++/Message.h"
@@ -203,14 +203,14 @@ using namespace FIX;
   }
 }
 
-%pythoncode %{
 #ifdef SWIGPYTHON
+%pythoncode %{
 import thread
 
 def _quickfix_start_thread(i_or_a):
 	i_or_a.block()
-#endif
 %}
+#endif
 
 %feature("shadow") FIX::Initiator::start() %{
 def start(self):
@@ -486,8 +486,8 @@ def start(self):
 %include "../C++/SocketAcceptor.h"
 %include "../C++/DataDictionary.h"
 
-%pythoncode %{
 #ifdef SWIGPYTHON
+%pythoncode %{
 class SocketInitiator(SocketInitiatorBase):
 	application = 0
 	storeFactory = 0
@@ -521,5 +521,5 @@ class SocketAcceptor(SocketAcceptorBase):
 		self.storeFactory = storeFactory
 		self.settings = settings
 		self.logFactory = logFactory
-#endif
 %}
+#endif
