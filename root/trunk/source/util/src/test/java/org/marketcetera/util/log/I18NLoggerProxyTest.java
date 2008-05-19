@@ -12,25 +12,29 @@ public class I18NLoggerProxyTest
 {
     private static final String TEST_CATEGORY=
         I18NLoggerProxyTest.class.getName();
-    private static final String TEST_MSG_ENGLISH=
+    private static final String TEST_MSG_EN=
         "Test here (expected): 'a'";
-    private static final String TEST_MSG_FRENCH=
+    private static final String TEST_MSG_FR=
         "Test voil\u00E0 (attendu): 'a'";
+    private static final String TEST_MSG_EN_NULL=
+        "Test here (expected): 'null'";
+    private static final String TEST_MSG_FR_NULL=
+        "Test voil\u00E0 (attendu): 'null'";
+    private static final String TEST_MSG_EN_NOSUB=
+        "Test here (expected): ''{0}''";
+    private static final String TEST_MSG_FR_NOSUB=
+        "Test voil\u00E0 (attendu): ''{0}''";
     private static final Exception TEST_THROWABLE=
         new IllegalArgumentException("Test exception (expected)");
 
 
-    @Test
-    public void providerIsValid()
+    private void messageCheck
+        (Locale locale,
+         String msg,
+         String msgNull,
+         String msgNoSub)
     {
-        assertEquals
-            (TestMessages.PROVIDER,TestMessages.LOGGER.getMessageProvider());
-    }
-
-    @Test
-    public void messages()
-    {
-        Messages.PROVIDER.setLocale(Locale.US);
+        Messages.PROVIDER.setLocale(locale);
         setLevel(TEST_CATEGORY,Level.OFF);
 
         TestMessages.LOGGER.error
@@ -49,10 +53,28 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.ERROR,TEST_CATEGORY,msg);
         TestMessages.LOGGER.error(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.ERROR,TEST_CATEGORY,msg);
+
+        TestMessages.LOGGER.error
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,msgNoSub);
+        TestMessages.LOGGER.error
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,msgNoSub);
+
+        TestMessages.LOGGER.error
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,msgNull);
+        TestMessages.LOGGER.error
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,msgNull);
 
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -70,10 +92,28 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.WARN,TEST_CATEGORY,msg);
         TestMessages.LOGGER.warn(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.WARN,TEST_CATEGORY,msg);
+
+        TestMessages.LOGGER.warn
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.WARN,TEST_CATEGORY,msgNoSub);
+        TestMessages.LOGGER.warn
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.WARN,TEST_CATEGORY,msgNoSub);
+
+        TestMessages.LOGGER.warn
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.WARN,TEST_CATEGORY,msgNull);
+        TestMessages.LOGGER.warn
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.WARN,TEST_CATEGORY,msgNull);
 
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -91,10 +131,28 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.INFO,TEST_CATEGORY,msg);
         TestMessages.LOGGER.info(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.INFO,TEST_CATEGORY,msg);
+
+        TestMessages.LOGGER.info
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,msgNoSub);
+        TestMessages.LOGGER.info
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,msgNoSub);
+
+        TestMessages.LOGGER.info
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,msgNull);
+        TestMessages.LOGGER.info
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,msgNull);
 
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -112,10 +170,28 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.DEBUG,TEST_CATEGORY,msg);
         TestMessages.LOGGER.debug(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.DEBUG,TEST_CATEGORY,msg);
+
+        TestMessages.LOGGER.debug
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.DEBUG,TEST_CATEGORY,msgNoSub);
+        TestMessages.LOGGER.debug
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
+        assertSingleEvent
+            (Level.DEBUG,TEST_CATEGORY,msgNoSub);
+
+        TestMessages.LOGGER.debug
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.DEBUG,TEST_CATEGORY,msgNull);
+        TestMessages.LOGGER.debug
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.DEBUG,TEST_CATEGORY,msgNull);
 
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -133,18 +209,45 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.TRACE,TEST_CATEGORY,msg);
         TestMessages.LOGGER.trace(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,TEST_MSG_ENGLISH);
+            (Level.TRACE,TEST_CATEGORY,msg);
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
         TestMessages.LOGGER.trace
-            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,TEST_MSG_FRENCH);
-        TestMessages.LOGGER.trace(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
+            (Level.TRACE,TEST_CATEGORY,msgNoSub);
+        TestMessages.LOGGER.trace
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,TEST_MSG_FRENCH);
+            (Level.TRACE,TEST_CATEGORY,msgNoSub);
+
+        TestMessages.LOGGER.trace
+            (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.TRACE,TEST_CATEGORY,msgNull);
+        TestMessages.LOGGER.trace
+            (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
+        assertSingleEvent
+            (Level.TRACE,TEST_CATEGORY,msgNull);
+    }
+
+
+    @Test
+    public void providerIsValid()
+    {
+        assertEquals
+            (TestMessages.PROVIDER,TestMessages.LOGGER.getMessageProvider());
+    }
+
+
+    @Test
+    public void messages()
+    {
+        messageCheck
+            (Locale.US,TEST_MSG_EN,TEST_MSG_EN_NULL,TEST_MSG_EN_NOSUB);
+        messageCheck
+            (Locale.FRENCH,TEST_MSG_FR,TEST_MSG_FR_NULL,TEST_MSG_FR_NOSUB);
     }
 }

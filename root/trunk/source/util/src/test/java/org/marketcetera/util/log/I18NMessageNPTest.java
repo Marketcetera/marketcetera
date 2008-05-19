@@ -22,6 +22,24 @@ public class I18NMessageNPTest
         "PN ttl (expected) fr "+TEST_P1+" "+TEST_P2+" "+TEST_P3+" "+TEST_P4+
         " "+TEST_P5+" "+TEST_P6+" "+TEST_P7;
 
+    private static final String TEST_MSG_EN_NULL=
+        "PN msg (expected) en null null null null null null null";
+    private static final String TEST_TTL_EN_NULL=
+        "PN ttl (expected) en null null null null null null null";
+    private static final String TEST_MSG_FR_NULL=
+        "PN msg (expected) fr null null null null null null null";
+    private static final String TEST_TTL_FR_NULL=
+        "PN ttl (expected) fr null null null null null null null";
+
+    private static final String TEST_MSG_EN_NOSUB=
+        "PN msg (expected) en {0} {1} {2} {3} {4} {5} {6}";
+    private static final String TEST_TTL_EN_NOSUB=
+        "PN ttl (expected) en {0} {1} {2} {3} {4} {5} {6}";
+    private static final String TEST_MSG_FR_NOSUB=
+        "PN msg (expected) fr {0} {1} {2} {3} {4} {5} {6}";
+    private static final String TEST_TTL_FR_NOSUB=
+        "PN ttl (expected) fr {0} {1} {2} {3} {4} {5} {6}";
+
 
     private static void castOverride
         (I18NMessageNP m) {}
@@ -163,5 +181,26 @@ public class I18NMessageNPTest
                    (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,TEST_P5,
                     TEST_P6,TEST_P7),params,TestMessages.PN_TTL,
                    TEST_TTL_EN,TEST_TTL_FR);
+
+        params=new Object[] {null,null,null,null,null,null,null};
+        boundTests(new I18NBoundMessageNP
+                   (TestMessages.PN_MSG,(Object)null,(Object)null,(Object)null,
+                    (Object)null,(Object)null,(Object)null,(Object)null),
+                   params,
+                   TestMessages.PN_MSG,TEST_MSG_EN_NULL,TEST_MSG_FR_NULL);
+        boundTests(new I18NBoundMessageNP
+                   (TestMessages.PN_TTL,(Object)null,(Object)null,(Object)null,
+                    (Object)null,(Object)null,(Object)null,(Object)null),
+                   params,
+                   TestMessages.PN_TTL,TEST_TTL_EN_NULL,TEST_TTL_FR_NULL);
+
+        boundTests(new I18NBoundMessageNP
+                   (TestMessages.PN_MSG,(Object[])null),
+                   null,
+                   TestMessages.PN_MSG,TEST_MSG_EN_NOSUB,TEST_MSG_FR_NOSUB);
+        boundTests(new I18NBoundMessageNP
+                   (TestMessages.PN_TTL,(Object[])null),
+                   null,
+                   TestMessages.PN_TTL,TEST_TTL_EN_NOSUB,TEST_TTL_FR_NOSUB);
     }
 }

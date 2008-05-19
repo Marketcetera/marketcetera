@@ -88,6 +88,9 @@ public class I18NMessageProviderTest
         assertEquals
             ("Hello {0}!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,(Object[])null));
+        assertEquals
+            ("Hello null!",TestMessages.PROVIDER.
+             getText(TestMessages.HELLO_TITLE,(Object)null));
 
         Messages.PROVIDER.setLocale(Locale.FRENCH);
         assertEquals
