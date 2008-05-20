@@ -136,6 +136,8 @@ public class ReconnectMarketDataFeedJob extends Job {
 						                                                                 marketDataFeedService, 
 						                                                                 null);
 		    			marketDataFeedService.setServiceRegistration(registration);
+		    			// announce this market feed to the script registry
+		    	        PhotonPlugin.getDefault().getScriptRegistry().connectToMarketDataFeed(targetQuoteFeed);
 		    			succeeded = true;
 		    			break;
 	    			} else {

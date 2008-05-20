@@ -120,10 +120,8 @@ public class TS_Photon {
 		suite.addTestSuite(StockOrderTicketXSWTTest.class);
 		suite.addTestSuite(OptionOrderTicketControllerTest.class);
 		suite.addTestSuite(SWTTestViewTest.class);
-		
-//		suite.addTest(new MarketDataViewTest("testShowQuote"));
-		
-		return suite;
+
+        return suite; 
 	}
 
 	private static void installMockDataFeed() throws FeedException, NoMoreIDsException {
@@ -142,7 +140,6 @@ public class TS_Photon {
 		// register mock feed
 		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(new MockMarketDataFeed());
 		bundleContext.registerService(MarketDataFeedService.class.getName(), feedService, null);
-		
+		PhotonPlugin.getDefault().getScriptRegistry().connectToMarketDataFeed(feedService.getMarketDataFeed());
 	}
-
 }

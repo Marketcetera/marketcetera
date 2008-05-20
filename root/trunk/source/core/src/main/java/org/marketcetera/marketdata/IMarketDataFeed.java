@@ -130,4 +130,19 @@ public interface IMarketDataFeed<T extends IMarketDataFeedToken<C>,
     public T execute(Message inMessage,
                      List<? extends ISubscriber> inSubscribers)
         throws FeedException;
+    /**
+     * Subscribes to all market data passing through the feed.
+     * 
+     * <p>Subscribers will be notified of all market data received
+     * from all queries.
+     *
+     * @param inSubscriber an <code>ISubscriber</code> value
+     */
+    public void subscribeToAll(ISubscriber inSubscriber);
+    /**
+     * Unsubscribes to all market data passing through the feed.
+     *
+     * @param inSubscriber an <code>ISubscriber</code> value
+     */
+    public void unsubscribeFromAll(ISubscriber inSubscriber);
 }

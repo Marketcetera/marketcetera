@@ -48,13 +48,6 @@ public class AbstractMarketDataFeedTest
     public static Test suite() 
     {
         TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
-//        TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite();
-//        suite.addTest(new AbstractMarketDataFeedTest("testDataReceived"));
-//        suite.addTest(new AbstractMarketDataFeedTest("testCancel"));
-//      suite.addTest(new AbstractMarketDataFeedTest("testExecute"));
-//        suite.addTest(new AbstractMarketDataFeedTest("testExecuteFailures"));
-//      suite.addTest(new AbstractMarketDataFeedTest("testPublishEventsThrowsException"));
-        
         return suite;
     }        
     public void testConstructor()
@@ -350,6 +343,63 @@ public class AbstractMarketDataFeedTest
         }.run();
         feed.dataReceived("handle",
                           null);
+    }
+    /**
+     * Tests the subscribe to all queries function.
+     *
+     * @throws Exception
+     */
+    public void testSubscribeAll()
+        throws Exception
+    {
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        // create three subscribers - 1 & 3 will be assigned to specific queries,
+        //  2 will be a general subscriber (all messages)
+        TestSubscriber s1 = new TestSubscriber();
+        TestSubscriber s2 = new TestSubscriber();
+        TestSubscriber s3 = new TestSubscriber();
+        feed.subscribeToAll(s2);
+        // execute two queries
+        feed.execute(credentials,
+                     mMessage,
+                     s1);
+        feed.execute(credentials,
+                     mMessage,
+                     s3);
+        // wait for the results to come in
+        waitForPublication(s1);
+        waitForPublication(s2);
+        waitForPublication(s3);
+        // 1 & 3 should have gotten one event, 2 should get both
+        assertEquals(1,
+                     s1.getPublishCount());
+        assertEquals(2,
+                     s2.getPublishCount());
+        assertEquals(1,
+                     s3.getPublishCount());
+        // unsubscribe from general
+        feed.unsubscribeFromAll(s2);
+        // reset the subscriber counters
+        resetSubscribers(Arrays.asList(new TestSubscriber[] { s1, s2, s3 } ));
+        // re-execute the queries
+        feed.execute(credentials,
+                     mMessage,
+                     s1);
+        feed.execute(credentials,
+                     mMessage,
+                     s3);
+        // wait for the publications, making sure 2 receives none
+        // this is deterministic because 3 won't be notified until 2 would have been by the first query
+        waitForPublication(s1);
+        waitForPublication(s3);
+        // 2 did not get notified this time
+        assertEquals(1,
+                     s1.getPublishCount());
+        assertEquals(0,
+                     s2.getPublishCount());
+        assertEquals(1,
+                     s3.getPublishCount());
     }
     
     private static class TestFeedComponentListener
@@ -1376,15 +1426,8 @@ public class AbstractMarketDataFeedTest
                    !inRequestReturnsNull) {
                     for(ISubscriber subscriber : inSubscribers) {
                         if(subscriber != null) {
-                            final TestSubscriber s = (TestSubscriber)subscriber;
-                            wait(new Callable<Boolean>() {
-                                    @Override
-                                    public Boolean call()
-                                            throws Exception
-                                    {
-                                        return s.getData() != null;
-                                    }                                
-                            });
+                            TestSubscriber s = (TestSubscriber)subscriber;
+                            waitForPublication(s);
                             assertEquals(1,
                                          s.getPublishCount());
                         }
@@ -1396,5 +1439,18 @@ public class AbstractMarketDataFeedTest
                              inToken.getStatus());
             }
         }
-    }    
+    }
+    
+    private void waitForPublication(final TestSubscriber inSubscriber)
+        throws Exception
+    {
+        wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return inSubscriber.getData() != null;
+            }                                
+        });
+    }
 }
