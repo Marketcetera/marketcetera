@@ -7,7 +7,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class SystemPropertiesSetterTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_PREFIX_NAME=
         "testName";
