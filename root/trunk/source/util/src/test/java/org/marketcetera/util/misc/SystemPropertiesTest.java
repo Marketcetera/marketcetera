@@ -1,6 +1,5 @@
 package org.marketcetera.util.misc;
 
-import java.util.Locale;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
