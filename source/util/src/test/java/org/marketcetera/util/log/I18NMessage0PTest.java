@@ -1,6 +1,7 @@
 package org.marketcetera.util.log;
 
 import java.util.Locale;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Level;
 import org.junit.Test;
 
@@ -27,9 +28,10 @@ public class I18NMessage0PTest
         (I18NBoundMessage msg,
          I18NBoundMessage ttl)
     {
-        Object[] params=new Object[] {};
-        boundTests(msg,params,TestMessages.P0_MSG,TEST_MSG_EN,TEST_MSG_FR);
-        boundTests(ttl,params,TestMessages.P0_TTL,TEST_TTL_EN,TEST_TTL_FR);
+        boundTests(msg,ArrayUtils.EMPTY_OBJECT_ARRAY,
+                   TestMessages.P0_MSG,TEST_MSG_EN,TEST_MSG_FR);
+        boundTests(ttl,ArrayUtils.EMPTY_OBJECT_ARRAY,
+                   TestMessages.P0_TTL,TEST_TTL_EN,TEST_TTL_FR);
     }
 
 
