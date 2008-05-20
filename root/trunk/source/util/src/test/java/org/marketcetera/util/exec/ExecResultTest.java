@@ -6,7 +6,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class ExecResultTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final int TEST_CODE=1;
     private static final byte[] TEST_OUTPUT=new byte[] {1,2};

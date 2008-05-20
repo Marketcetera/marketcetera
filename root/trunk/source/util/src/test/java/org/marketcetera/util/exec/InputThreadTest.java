@@ -6,12 +6,13 @@ import java.io.OutputStream;
 import java.util.Locale;
 import org.apache.log4j.Level;
 import org.junit.Test;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
 
 public class InputThreadTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
         InputThread.class.getName();
@@ -115,7 +116,7 @@ public class InputThreadTest
     public void cannotCopy()
         throws Exception
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.ERROR);
         single(true);
         single(false);
