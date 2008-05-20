@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 public class I18NExceptionTest
-	extends I18NThrowableTestBase
+    extends I18NThrowableTestBase
 {
     @Test
     public void empty()
