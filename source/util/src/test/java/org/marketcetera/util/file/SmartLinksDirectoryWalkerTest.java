@@ -49,12 +49,12 @@ public class SmartLinksDirectoryWalkerTest
 
         public String[] getFiles()
         {
-            return mFiles.toArray(new String[0]);
+            return mFiles.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
         }
 
         public String[] getDirectories()
         {
-            return mDirectories.toArray(new String[]{});
+            return mDirectories.toArray(ArrayUtils.EMPTY_STRING_ARRAY);
         }
 
         public int getMaxDepth()
@@ -115,7 +115,7 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation
             (new String[] {TEST_FILE},walker.getFiles());
         assertArrayPermutation
-            (new String[0],walker.getDirectories());
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertEquals(0,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
@@ -124,9 +124,10 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation
             (new String[] {TEST_FILE},walker.getFiles());
         assertArrayPermutation
-            (new String[0],walker.getDirectories());
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertArrayPermutation
-            (new String[] {TEST_FILE},results.toArray(new String[0]));
+            (new String[] {TEST_FILE},results.toArray
+             (ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(0,walker.getMaxDepth());
 
         walker=new ListWalker(true);
@@ -134,7 +135,7 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation
             (new String[] {TEST_FILE},walker.getFiles());
         assertArrayPermutation
-            (new String[0],walker.getDirectories());
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertEquals(0,walker.getMaxDepth());
         
         results=new Vector<String>();
@@ -143,9 +144,10 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation
             (new String[] {TEST_FILE},walker.getFiles());
         assertArrayPermutation
-            (new String[0],walker.getDirectories());
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertArrayPermutation
-            (new String[] {TEST_FILE},results.toArray(new String[0]));
+            (new String[] {TEST_FILE},
+             results.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(0,walker.getMaxDepth());
     }
 
@@ -160,7 +162,7 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation
             (new String[] {TEST_LINK_NAME},walker.getFiles());
         assertArrayPermutation
-            (new String[0],walker.getDirectories());
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertEquals(0,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
@@ -169,10 +171,10 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation
             (new String[] {TEST_LINK_NAME},walker.getFiles());
         assertArrayPermutation
-            (new String[0],walker.getDirectories());
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertArrayPermutation
             (new String[] {TEST_LINK_NAME},
-             results.toArray(new String[0]));
+             results.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(0,walker.getMaxDepth());
 
         walker=new ListWalker(true);
@@ -192,7 +194,7 @@ public class SmartLinksDirectoryWalkerTest
             (new String[] {TEST_LINK_NAME},walker.getDirectories());
         assertArrayPermutation
             (new String[] {TEST_LINK_NAME,TEST_LINK_CONTENTS},
-             results.toArray(new String[0]));
+             results.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(1,walker.getMaxDepth());
     }
 
@@ -202,16 +204,22 @@ public class SmartLinksDirectoryWalkerTest
     {
         ListWalker walker=new ListWalker(false);
         walker.apply(TEST_NONEXISTENT_FILE);
-        assertArrayPermutation(new String[0],walker.getFiles());
-        assertArrayPermutation(new String[0],walker.getDirectories());
+        assertArrayPermutation
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getFiles());
+        assertArrayPermutation
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
         assertEquals(-1,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
         walker=new ListWalker(true);
         walker.apply(TEST_NONEXISTENT_FILE,results);
-        assertArrayPermutation(new String[0],walker.getFiles());
-        assertArrayPermutation(new String[0],walker.getDirectories());
-        assertArrayPermutation(new String[0],results.toArray(new String[0]));
+        assertArrayPermutation
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getFiles());
+        assertArrayPermutation
+            (ArrayUtils.EMPTY_STRING_ARRAY,walker.getDirectories());
+        assertArrayPermutation
+            (ArrayUtils.EMPTY_STRING_ARRAY,
+             results.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(-1,walker.getMaxDepth());
     }
 
@@ -240,7 +248,7 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation(dirs,walker.getDirectories());
         assertArrayPermutation
             (ArrayUtils.addAll(files,dirs),
-             results.toArray(new String[0]));
+             results.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(3,walker.getMaxDepth());
 
         files=TEST_FILE_LIST;
@@ -265,7 +273,7 @@ public class SmartLinksDirectoryWalkerTest
         assertArrayPermutation(dirs,walker.getDirectories());
         assertArrayPermutation
             (ArrayUtils.addAll(files,dirs),
-             results.toArray(new String[0]));
+             results.toArray(ArrayUtils.EMPTY_STRING_ARRAY));
         assertEquals(3,walker.getMaxDepth());
     }
 }
