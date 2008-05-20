@@ -33,7 +33,7 @@ public final class LogUtils
         if (list==null) {
             list=new Object[] {null};
         }
-        StringBuffer buffer=new StringBuffer();
+        StringBuilder buffer=new StringBuilder();
         buffer.append('(');
         boolean first=true;
         for (Object e:list) {
