@@ -12,7 +12,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class CopyUtilsTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"copy_utils"+File.separator;
@@ -102,7 +102,7 @@ public class CopyUtilsTest
 
 
     @Test
-	public void copyBytesMemory()
+    public void copyBytesMemory()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -128,7 +128,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void copyBytesFiles()
+    public void copyBytesFiles()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -138,7 +138,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void copyCharsMemory()
+    public void copyCharsMemory()
         throws Exception
     {
         CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
@@ -164,7 +164,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void copyCharsFiles()
+    public void copyCharsFiles()
         throws Exception
     {
         CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
@@ -174,7 +174,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failFileBytesInput()
+    public void failFileBytesInput()
     {
         try {
             CopyUtils.copyBytes(TEST_NONEXISTENT_FILE,TEST_OUTPUT_FILE);
@@ -190,7 +190,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failFileBytesOutput()
+    public void failFileBytesOutput()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -208,7 +208,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failFileCharsInput()
+    public void failFileCharsInput()
     {
         try {
             CopyUtils.copyChars(TEST_NONEXISTENT_FILE,TEST_OUTPUT_FILE);
@@ -224,7 +224,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failFileCharsOutput()
+    public void failFileCharsOutput()
         throws Exception
     {
         CopyUtils.copyChars(VALUE_CHARS,TEST_INPUT_FILE);
@@ -242,7 +242,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failIStream()
+    public void failIStream()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -259,7 +259,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failOStream()
+    public void failOStream()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -276,7 +276,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failReader()
+    public void failReader()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -293,7 +293,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failWriter()
+    public void failWriter()
         throws Exception
     {
         CopyUtils.copyBytes(VALUE_BYTES,TEST_INPUT_FILE);
@@ -310,7 +310,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failMemoryDstBytes()
+    public void failMemoryDstBytes()
     {
         try {
             CopyUtils.copyBytes(TEST_NONEXISTENT_FILE);
@@ -325,7 +325,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failMemoryDstChars()
+    public void failMemoryDstChars()
     {
         try {
             CopyUtils.copyChars(TEST_NONEXISTENT_FILE);
@@ -340,7 +340,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failMemorySrcBytes()
+    public void failMemorySrcBytes()
     {
         try {
             CopyUtils.copyBytes(VALUE_BYTES,TEST_NONEXISTENT_FILE);
@@ -355,7 +355,7 @@ public class CopyUtilsTest
     }
 
     @Test
-	public void failMemorySrcChars()
+    public void failMemorySrcChars()
     {
         try {
             CopyUtils.copyChars(VALUE_CHARS,TEST_NONEXISTENT_FILE);

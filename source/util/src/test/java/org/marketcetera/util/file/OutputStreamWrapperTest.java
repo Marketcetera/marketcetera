@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class OutputStreamWrapperTest
-	extends WrapperTestBase
+    extends WrapperTestBase
 {
     private static final class CloseCounterOutputStream
         extends OutputStream
@@ -44,7 +44,7 @@ public class OutputStreamWrapperTest
     }
 
     @Test
-	public void basics()
+    public void basics()
         throws Exception
     {
         CloseCounterOutputStream counter=new CloseCounterOutputStream();
@@ -118,7 +118,7 @@ public class OutputStreamWrapperTest
     }
 
     @Test
-	public void wrappers()
+    public void wrappers()
         throws Exception
     {
         testStandardOutputStream();

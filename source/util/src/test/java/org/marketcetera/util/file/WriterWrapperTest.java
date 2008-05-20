@@ -8,7 +8,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class WriterWrapperTest
-	extends WrapperTestBase
+    extends WrapperTestBase
 {
     private static final class CloseCounterWriter
         extends Writer
@@ -46,7 +46,7 @@ public class WriterWrapperTest
     }
 
     @Test
-	public void basics()
+    public void basics()
         throws Exception
     {
         CloseCounterWriter counter=new CloseCounterWriter();
@@ -120,7 +120,7 @@ public class WriterWrapperTest
     }
 
     @Test
-	public void wrappers()
+    public void wrappers()
         throws Exception
     {
         testStandardOutputStream();

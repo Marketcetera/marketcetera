@@ -1,9 +1,10 @@
 package org.marketcetera.util.file;
 
 import java.io.File;
-import java.util.Locale;
-import org.apache.log4j.Level;
+//import java.util.Locale;
+//import org.apache.log4j.Level;
 import org.junit.Test;
+//import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -12,10 +13,10 @@ import static org.junit.Assume.*;
 import static org.marketcetera.util.file.FileType.*;
 
 public class FileTypeTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
-    private static final String TEST_CATEGORY=
-        FileType.class.getName();
+//  private static final String TEST_CATEGORY=
+//      FileType.class.getName();
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"file_type"+File.separator;
     private static final String TEST_PLAIN_FILE=
@@ -88,7 +89,7 @@ public class FileTypeTest
     @Test
     public void exceptionThrown()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.WARN);
         assertEquals(UNKNOWN,get(TEST_PLAIN_FILE));
         assertSingleEvent

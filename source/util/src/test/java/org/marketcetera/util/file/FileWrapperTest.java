@@ -7,7 +7,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class FileWrapperTest
-	extends WrapperTestBase
+    extends WrapperTestBase
 {
     @Test
     public void inputOutputStreams()
