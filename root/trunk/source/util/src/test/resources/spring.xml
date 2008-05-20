@@ -10,7 +10,15 @@
   http://www.springframework.org/schema/util
   http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
-  <util:list id="propertiesFiles">
+  <bean
+   id="propertiesFile"
+   class="java.lang.String">
+    <constructor-arg
+     value="classpath:spring.properties"/>
+  </bean>
+
+  <util:list
+   id="propertiesFiles">
     <value>classpath:spring.properties</value>
     <value>classpath:spring_override.properties</value>
   </util:list>
