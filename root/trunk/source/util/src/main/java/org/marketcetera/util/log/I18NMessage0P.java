@@ -1,6 +1,7 @@
 package org.marketcetera.util.log;
 
 import java.util.Locale;
+import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.core.ClassVersion;
 
 /**
@@ -59,7 +60,7 @@ public class I18NMessage0P
     @Override
     public Object[] getParams()
     {
-        return new Object[0];
+        return ArrayUtils.EMPTY_OBJECT_ARRAY;
     }
 
     @Override
