@@ -9,7 +9,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ReaderWrapperTest
-	extends WrapperTestBase
+    extends WrapperTestBase
 {
     private static final class CloseCounterReader
         extends Reader
@@ -38,7 +38,7 @@ public class ReaderWrapperTest
     }
 
     @Test
-	public void basics()
+    public void basics()
         throws Exception
     {
         CloseCounterReader counter=new CloseCounterReader();
@@ -90,7 +90,7 @@ public class ReaderWrapperTest
     }
 
     @Test
-	public void wrappers()
+    public void wrappers()
         throws Exception
     {
         testStandardInputStream();

@@ -8,10 +8,8 @@ import java.io.PrintStream;
 import org.junit.Before;
 import org.marketcetera.util.test.TestCaseBase;
 
-import static org.junit.Assert.*;
-
 public class WrapperTestBase
-	extends TestCaseBase
+    extends TestCaseBase
 {
     protected static final String TEST_ROOT=
         DIR_ROOT+File.separator+"wrappers"+File.separator;
@@ -37,7 +35,7 @@ public class WrapperTestBase
         (ByteArrayInputStream in)
         throws Exception {}
 
-	protected void testStandardInputStream()
+    protected void testStandardInputStream()
         throws Exception
     {
         InputStream stdInSave=System.in;
@@ -58,7 +56,7 @@ public class WrapperTestBase
         (ByteArrayOutputStream out)
         throws Exception {}
 
-	protected void testStandardOutputStream()
+    protected void testStandardOutputStream()
         throws Exception
     {
         PrintStream stdOutSave=System.out;
@@ -81,7 +79,7 @@ public class WrapperTestBase
         (ByteArrayOutputStream err)
         throws Exception {}
 
-	protected void testStandardErrorStream()
+    protected void testStandardErrorStream()
         throws Exception
     {
         PrintStream stdErrSave=System.err;

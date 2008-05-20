@@ -8,12 +8,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
 
 public class CloseableRegistryTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
         CloseableRegistry.class.getName();
@@ -61,7 +62,7 @@ public class CloseableRegistryTest
     public void setupCloseableRegistryTest()
     {
         OrderedCloseable.resetStaticSequence();
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.WARN);
     }
 

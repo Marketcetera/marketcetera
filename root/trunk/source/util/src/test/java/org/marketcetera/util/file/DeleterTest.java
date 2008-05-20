@@ -6,9 +6,9 @@ import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.exec.Disposition;
 import org.marketcetera.util.exec.Exec;
+//import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;

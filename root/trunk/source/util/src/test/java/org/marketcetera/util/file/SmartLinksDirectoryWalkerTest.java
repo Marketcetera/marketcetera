@@ -14,7 +14,7 @@ import static org.junit.Assume.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
 
 public class SmartLinksDirectoryWalkerTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"directory_walker"+File.separator;
@@ -62,6 +62,7 @@ public class SmartLinksDirectoryWalkerTest
             return mMaxDepth;
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected boolean handleDirectory
             (File directory,

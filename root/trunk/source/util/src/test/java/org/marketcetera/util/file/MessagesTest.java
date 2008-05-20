@@ -2,17 +2,18 @@ package org.marketcetera.util.file;
 
 import java.util.Locale;
 import org.junit.Test;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
 
 public class MessagesTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     @Test
     public void messagesExist()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         assertEquals
             ("Closing failed",
              Messages.CLOSING_FAILED.getText());
