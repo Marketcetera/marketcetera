@@ -1,7 +1,6 @@
 package org.marketcetera.util.file;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.LinkedList;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;

@@ -52,6 +52,7 @@ public class Deleter
          * @see DirectoryWalker#handleDirectoryEnd(File,int,Collection)
          */
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void handleDirectoryEnd
             (File directory,
@@ -68,6 +69,7 @@ public class Deleter
          * @see DirectoryWalker#handleFile(File,int,Collection)
          */
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void handleFile
             (File file,
