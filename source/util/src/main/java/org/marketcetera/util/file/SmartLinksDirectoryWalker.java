@@ -106,7 +106,7 @@ public abstract class SmartLinksDirectoryWalker
      * followed during traversal.
      *
      * @return True if so.
-     **/
+     */
 
     public boolean getFollowLinks()
     {
