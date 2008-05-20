@@ -104,21 +104,21 @@ public enum OperatingSystem
     @Override
     public String toString()
     {
-        StringBuilder buffer=new StringBuilder();
-        buffer.append(super.toString());
+        StringBuilder builder=new StringBuilder();
+        builder.append(super.toString());
         if (getJavaName()!=null) {
-            buffer.append(',');
-            buffer.append(getJavaName());
+            builder.append(',');
+            builder.append(getJavaName());
         }
         if (isWin32()) {
-            buffer.append(',');
-            buffer.append(LABEL_WIN32);
+            builder.append(',');
+            builder.append(LABEL_WIN32);
         }
         if (isUnix()) {
-            buffer.append(',');
-            buffer.append(LABEL_UNIX);
+            builder.append(',');
+            builder.append(LABEL_UNIX);
         }
-        return buffer.toString();
+        return builder.toString();
     }
 
 
