@@ -86,6 +86,7 @@ public abstract class SmartLinksDirectoryWalker
      * @see DirectoryWalker#handleDirectory(File,int,Collection)
      */
 
+    @SuppressWarnings("unchecked")
     @Override
     protected boolean handleDirectory
         (File directory,
@@ -125,6 +126,7 @@ public abstract class SmartLinksDirectoryWalker
      * @throws IOException Thrown if an I/O error occurs.
      */
 
+    @SuppressWarnings("unchecked")
     public void apply
         (File root,
          Collection results)
@@ -172,6 +174,7 @@ public abstract class SmartLinksDirectoryWalker
      * @throws IOException Thrown if an I/O error occurs.
      */
 
+    @SuppressWarnings("unchecked")
     public void apply
         (String name,
          Collection results)
