@@ -1,6 +1,5 @@
 package org.marketcetera.util.log;
 
-import java.util.Locale;
 import org.marketcetera.core.ClassVersion;
 
 /**
