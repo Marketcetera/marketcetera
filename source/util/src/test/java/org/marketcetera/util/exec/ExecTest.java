@@ -12,6 +12,7 @@ import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -19,7 +20,7 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.test.RegExAssert.*;
 
 public class ExecTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
         InputThread.class.getName();
@@ -221,7 +222,7 @@ public class ExecTest
     @Before
     public void setupExecTest()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.TRACE);
     }
 
