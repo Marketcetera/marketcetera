@@ -8,7 +8,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import static org.junit.Assert.*;
 
 public class SpringUtilsTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_NAME_BEAN=
         "testNameBean";
@@ -33,7 +33,7 @@ public class SpringUtilsTest
     @Test
     public void stringBean()
     {
-		GenericApplicationContext context=new GenericApplicationContext();
+        GenericApplicationContext context=new GenericApplicationContext();
         SpringUtils.addStringBean(context,TEST_NAME_BEAN,TEST_VALUE);
         assertEquals(TEST_VALUE,context.getBean(TEST_NAME_BEAN));
     }
@@ -41,7 +41,7 @@ public class SpringUtilsTest
     @Test
     public void propertiesConfigurerString()
     {
-		GenericApplicationContext context=
+        GenericApplicationContext context=
             new GenericApplicationContext
             (new ClassPathXmlApplicationContext(TEST_SPRING_FILE));
         SpringUtils.addPropertiesConfigurer
@@ -55,7 +55,7 @@ public class SpringUtilsTest
     @Test
     public void propertiesConfigurerList()
     {
-		GenericApplicationContext context=
+        GenericApplicationContext context=
             new GenericApplicationContext
             (new ClassPathXmlApplicationContext(TEST_SPRING_FILE));
         SpringUtils.addPropertiesConfigurer
