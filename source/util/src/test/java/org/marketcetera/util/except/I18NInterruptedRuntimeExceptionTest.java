@@ -6,7 +6,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import static org.junit.Assert.*;
 
 public class I18NInterruptedRuntimeExceptionTest
-	extends I18NThrowableTestBase
+    extends I18NThrowableTestBase
 {
     @Test
     public void empty()

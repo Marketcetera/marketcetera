@@ -3,12 +3,13 @@ package org.marketcetera.util.except;
 import java.util.Locale;
 import org.junit.Before;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
 
 public class I18NThrowableTestBase
-	extends TestCaseBase
+    extends TestCaseBase
 {
     protected static final String TEST_MSG_1=
         "Test message 1 (expected)";
@@ -42,7 +43,7 @@ public class I18NThrowableTestBase
     @Before
     public void setupI18NThrowableTestBase()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
     }
 
     protected static void empty
@@ -62,7 +63,7 @@ public class I18NThrowableTestBase
         assertNull(t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName(),t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertNull(t2.getMessage());
         assertNull(t2.getLocalizedMessage());
         assertNull(t2.getDetail());
@@ -92,7 +93,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(nestedMessage,t2.getMessage());
         assertEquals(nestedMessage,t2.getLocalizedMessage());
         assertNull(t2.getDetail());
@@ -123,7 +124,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(nestedMessage,t2.getMessage());
         assertEquals(nestedMessage,t2.getLocalizedMessage());
         assertEquals(TEST_MSG_1,t2.getDetail());
@@ -154,7 +155,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(nestedMessage,t2.getMessage());
         assertEquals(nestedMessage,t2.getLocalizedMessage());
         assertEquals(MID_MSG,t2.getDetail());
@@ -184,7 +185,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(MID_MSG,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
         assertEquals(MID_MSG,t2.getDetail());
@@ -215,7 +216,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(MID_MSG,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
         assertEquals(MID_MSG,t2.getDetail());
@@ -248,7 +249,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(MID_MSG,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
         assertEquals(MID_MSG+suffix,t2.getDetail());
@@ -279,7 +280,7 @@ public class I18NThrowableTestBase
         assertEquals(t2.getClass().getName()+": "+MID_MSG_EN,
                      t2.toString());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(MID_MSG,t2.getMessage());
         assertEquals(MID_MSG_FR,t2.getLocalizedMessage());
         assertEquals(MID_MSG+" ("+BOT_MSG+")",t2.getDetail());
@@ -306,7 +307,7 @@ public class I18NThrowableTestBase
             (TOP_MSG_ALL+" ("+MID_MSG_EN+" ("+BOT_MSG_EN+"))",
              tTop.getLocalizedDetail());
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals(BOT_MSG,tBot.getDetail());
         assertEquals(BOT_MSG_FR,tBot.getLocalizedDetail());
         assertEquals

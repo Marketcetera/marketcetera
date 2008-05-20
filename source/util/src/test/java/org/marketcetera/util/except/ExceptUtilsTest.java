@@ -12,7 +12,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import static org.junit.Assert.*;
 
 public class ExceptUtilsTest
-	extends I18NThrowableTestBase
+    extends I18NThrowableTestBase
 {
     private static final String TEST_CATEGORY=
         ExceptUtils.class.getName();
@@ -23,7 +23,7 @@ public class ExceptUtilsTest
          boolean interrupted)
     {
         assertEquals(interrupted,ExceptUtils.interrupt(ex));
-        assertEquals(interrupted,Thread.currentThread().interrupted());
+        assertEquals(interrupted,Thread.interrupted());
     }
 
     private void swallowHelper
@@ -33,11 +33,11 @@ public class ExceptUtilsTest
         assertEquals(interrupted,ExceptUtils.swallow
                      (ex,TEST_CATEGORY,new I18NBoundMessage1P
                       (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
-        assertEquals(interrupted,Thread.currentThread().interrupted());
+        assertEquals(interrupted,Thread.interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN);
 
         assertEquals(interrupted,ExceptUtils.swallow(ex));
-        assertEquals(interrupted,Thread.currentThread().interrupted());
+        assertEquals(interrupted,Thread.interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,
                           "Caught throwable was not propagated");
     }
@@ -55,13 +55,13 @@ public class ExceptUtilsTest
         assertEquals(ex,out.getCause());
         assertTrue(out instanceof I18NException);
         assertEquals(interruption,out instanceof I18NInterruptedException);
-        assertEquals(interruption,Thread.currentThread().interrupted());
+        assertEquals(interruption,Thread.interrupted());
 
         out=ExceptUtils.wrap(ex);
         assertEquals(ex,out.getCause());
         assertTrue(out instanceof I18NException);
         assertEquals(interruption,out instanceof I18NInterruptedException);
-        assertEquals(interruption,Thread.currentThread().interrupted());
+        assertEquals(interruption,Thread.interrupted());
 
         I18NRuntimeException outR=ExceptUtils.wrapRuntime
             (ex,new I18NBoundMessage1P
@@ -73,14 +73,14 @@ public class ExceptUtilsTest
         assertTrue(outR instanceof I18NRuntimeException);
         assertEquals(interruption,
                      outR instanceof I18NInterruptedRuntimeException);
-        assertEquals(interruption,Thread.currentThread().interrupted());
+        assertEquals(interruption,Thread.interrupted());
 
         outR=ExceptUtils.wrapRuntime(ex);
         assertEquals(ex,outR.getCause());
         assertTrue(outR instanceof I18NRuntimeException);
         assertEquals(interruption,
                      outR instanceof I18NInterruptedRuntimeException);
-        assertEquals(interruption,Thread.currentThread().interrupted());
+        assertEquals(interruption,Thread.interrupted());
     }
 
 
