@@ -25,7 +25,7 @@ public class SystemPropertiesSetter
      * entry value removes the associated system property.
      *
      * @param map The map.
-     **/
+     */
 
     public void setMap(Map<String,String> map)
     {
