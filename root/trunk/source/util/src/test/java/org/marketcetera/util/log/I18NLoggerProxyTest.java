@@ -8,7 +8,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class I18NLoggerProxyTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
         I18NLoggerProxyTest.class.getName();
@@ -34,7 +34,7 @@ public class I18NLoggerProxyTest
          String msgNull,
          String msgNoSub)
     {
-        Messages.PROVIDER.setLocale(locale);
+        I18NMessageProvider.setLocale(locale);
         setLevel(TEST_CATEGORY,Level.OFF);
 
         TestMessages.LOGGER.error

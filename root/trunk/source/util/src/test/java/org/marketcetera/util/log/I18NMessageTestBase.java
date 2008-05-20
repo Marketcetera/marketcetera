@@ -37,7 +37,7 @@ public class I18NMessageTestBase
     @Before
     public void setupI18NMessageXPTestBase()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.TRACE);
     }
 

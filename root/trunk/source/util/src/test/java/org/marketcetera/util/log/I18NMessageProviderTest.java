@@ -1,9 +1,7 @@
 package org.marketcetera.util.log;
 
-import java.util.Iterator;
 import java.util.Locale;
 import org.apache.log4j.Level;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
@@ -29,8 +27,8 @@ public class I18NMessageProviderTest
         @Override
         public void run()
         {
-            Messages.PROVIDER.setLocale(Locale.GERMAN);
-            mLocale=Messages.PROVIDER.getLocale();
+            I18NMessageProvider.setLocale(Locale.GERMAN);
+            mLocale=I18NMessageProvider.getLocale();
         }
     }
 
@@ -38,7 +36,7 @@ public class I18NMessageProviderTest
     @Before
     public void setupI18NMessageProviderTest()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.ERROR);
     }
 
@@ -47,14 +45,14 @@ public class I18NMessageProviderTest
     public void localeSetPerThread()
         throws Exception
     {
-        assertEquals(Locale.US,Messages.PROVIDER.getLocale());
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
-        assertEquals(Locale.FRENCH,Messages.PROVIDER.getLocale());
+        assertEquals(Locale.US,I18NMessageProvider.getLocale());
+        I18NMessageProvider.setLocale(Locale.FRENCH);
+        assertEquals(Locale.FRENCH,I18NMessageProvider.getLocale());
         TestThread t=new TestThread();
         t.start();
         t.join();
         assertEquals(Locale.GERMAN,t.getLocale());
-        assertEquals(Locale.FRENCH,Messages.PROVIDER.getLocale());
+        assertEquals(Locale.FRENCH,I18NMessageProvider.getLocale());
     }
 
     @Test
@@ -92,7 +90,7 @@ public class I18NMessageProviderTest
             ("Hello null!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,(Object)null));
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals
             ("Bonjour",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_MSG));
@@ -133,7 +131,7 @@ public class I18NMessageProviderTest
              "Message not found: provider 'log_test'; id 'nonexistent_msg'; "+
              "entry 'msg'; parameters ('a')");
 
-        Messages.PROVIDER.setLocale(Locale.FRENCH);
+        I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals
             ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
