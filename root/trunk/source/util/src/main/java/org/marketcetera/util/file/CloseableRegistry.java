@@ -24,7 +24,7 @@ public class CloseableRegistry
     private LinkedList<Closeable> mRegistry=new LinkedList<Closeable>();
 
 
-	// INSTANCE METHODS.
+    // INSTANCE METHODS.
 
     /**
      * Registers a {@link Closeable} instance with the receiver. An
