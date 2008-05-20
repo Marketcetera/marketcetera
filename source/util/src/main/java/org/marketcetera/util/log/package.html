@@ -149,7 +149,7 @@ public class MessagesTest
     &#x40;Test
     public void messagesExist()
     {
-        Messages.PROVIDER.setLocale(Locale.US);
+        I18NMessageProvider.setLocale(Locale.US);
         assertEquals
             ("Closing failed",
              Messages.CLOSING_FAILED.getText());
