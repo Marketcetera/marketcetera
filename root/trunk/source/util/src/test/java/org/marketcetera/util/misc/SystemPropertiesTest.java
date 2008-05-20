@@ -6,7 +6,7 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 
 public class SystemPropertiesTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     @Test
     public void propertiesExist()

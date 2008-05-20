@@ -6,7 +6,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 public class MessagesTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     @Test
     public void messagesExist()

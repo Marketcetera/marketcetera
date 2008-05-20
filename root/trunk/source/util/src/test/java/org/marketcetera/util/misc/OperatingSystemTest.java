@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 import static org.marketcetera.util.misc.OperatingSystem.*;
 
 public class OperatingSystemTest
-	extends TestCaseBase
+    extends TestCaseBase
 {
     private static void single
         (OperatingSystem os,
