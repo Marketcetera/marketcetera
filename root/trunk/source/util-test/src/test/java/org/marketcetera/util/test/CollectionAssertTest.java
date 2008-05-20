@@ -1,5 +1,6 @@
 package org.marketcetera.util.test;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -13,7 +14,7 @@ public class CollectionAssertTest
         assertArrayPermutation
             (null,null);
         assertArrayPermutation
-            (new String[0],new String[0]);
+            (ArrayUtils.EMPTY_STRING_ARRAY,ArrayUtils.EMPTY_STRING_ARRAY);
         assertArrayPermutation
             (new Integer[] {1},new Integer[] {1});
         assertArrayPermutation
@@ -28,7 +29,7 @@ public class CollectionAssertTest
     public void expectedNull()
     {
         try {
-            assertArrayPermutation(null,new String[0]);
+            assertArrayPermutation(null,ArrayUtils.EMPTY_STRING_ARRAY);
         } catch (AssertionError ex) {
             assertEquals
                 ("expected array is null but actual is not",ex.getMessage());
@@ -41,7 +42,7 @@ public class CollectionAssertTest
     public void actualNull()
     {
         try {
-            assertArrayPermutation(new String[0],null);
+            assertArrayPermutation(ArrayUtils.EMPTY_STRING_ARRAY,null);
         } catch (AssertionError ex) {
             assertEquals
                 ("actual array is null but expected is not",ex.getMessage());
