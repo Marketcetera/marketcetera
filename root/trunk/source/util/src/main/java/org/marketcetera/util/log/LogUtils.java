@@ -33,24 +33,24 @@ public final class LogUtils
         if (list==null) {
             list=new Object[] {null};
         }
-        StringBuilder buffer=new StringBuilder();
-        buffer.append('(');
+        StringBuilder builder=new StringBuilder();
+        builder.append('(');
         boolean first=true;
         for (Object e:list) {
             if (!first) {
-                buffer.append(',');
+                builder.append(',');
             }
             if (e==null) {
-                buffer.append("[null]");
+                builder.append("[null]");
             } else {
-                buffer.append('\'');
-                buffer.append(e.toString());
-                buffer.append('\'');
+                builder.append('\'');
+                builder.append(e.toString());
+                builder.append('\'');
             }
             first=false;
         }
-        buffer.append(')');
-        return buffer.toString();
+        builder.append(')');
+        return builder.toString();
     }
 
     /**
