@@ -122,4 +122,15 @@ public class TestSubscriber
     {
         mPublishCount = inPublishCount;
     }
+    /**
+     * Resets the data collectors.
+     * 
+     * <p>After calling this method, the subscriber will be returned
+     * to its initial creation state.
+     */
+    public void reset()
+    {
+        setPublishCount(0);
+        setData(null);        
+    }
 }

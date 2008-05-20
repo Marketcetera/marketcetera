@@ -183,7 +183,8 @@ public class TestMarketDataFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#afterDoExecute()
      */
     @Override
-    protected void afterDoExecute(TestMarketDataFeedToken inToken, Throwable inException)
+    protected void afterDoExecute(TestMarketDataFeedToken inToken, 
+                                  Throwable inException)
     {
         if(getAfterExecuteThrows()) {
             throw new NullPointerException("This exception is expected");
@@ -191,7 +192,7 @@ public class TestMarketDataFeed
         String handle = mQueue.poll();
         if(handle != null) {
             dataReceived(handle,
-                         this);
+                         inToken.getTokenSpec().getMessage());
         }
     }
     /* (non-Javadoc)

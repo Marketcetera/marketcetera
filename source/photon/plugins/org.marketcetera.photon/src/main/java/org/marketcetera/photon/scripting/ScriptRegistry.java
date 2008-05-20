@@ -19,6 +19,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.jruby.bsf.JRubyPlugin;
 import org.jruby.exceptions.RaiseException;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.EventBase;
+import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -70,7 +73,62 @@ public class ScriptRegistry implements InitializingBean {
 		logger = PhotonPlugin.getMainConsoleLogger();
 		registeredStrategies = new HashMap<String, Strategy>();
 	}
-
+	/**
+	 * this subscriber is used to register with each market data feed to receive every market data tick
+	 * to pass to the scripts
+	 */
+	private final ISubscriber mFeedSubscriber = new ISubscriber() {
+        @Override
+        public boolean isInteresting(Object inData)
+        {
+            if(inData instanceof EventBase &&
+                    ((EventBase)inData).getFIXMessage() != null) {
+                return true;
+            }
+            PhotonPlugin.getMainConsoleLogger().warn(String.format("Discarding %s because it is the wrong type or doesn't have a FIX message attached: scripts will not receive this data and they should",
+                                                                   inData));
+            return false;
+        }
+        @Override
+        public void publishTo(Object inData)
+        {
+            onMarketDataEvent(((EventBase)inData).getFIXMessage());
+        }           
+	};
+	/**
+     * Connects the script registry to the given market data feed.
+     * 
+     * <p>Indicates to this <code>ScriptRegistry</code> that the given
+     * <code>IMarketDataFeed</code> is capable of receiving data.  The
+     * same feed may be passed multiple times to this method with no
+     * ill effects.
+     * 
+     * @param inFeed a <code>IMarketDataFeed</code> value
+	 */	
+	@SuppressWarnings("unchecked")
+    public void connectToMarketDataFeed(IMarketDataFeed inFeed)
+	{
+        logger.debug(String.format("Registering feed %s with the Script Registry",
+                                   inFeed));
+	    inFeed.subscribeToAll(mFeedSubscriber);
+	}
+	/**
+	 * Disconnects the script registry from the given market data feed.
+	 *
+	 * <p>Executing this method will cause the given data feed to stop delivering
+	 * messages to this <code>ScriptRegistry</code>.  Calling this method with
+	 * a feed to which this <code>ScriptRegistry</code> is not already connected
+	 * with have no effect.
+	 * 
+     * @param inFeed a <code>IMarketDataFeed</code> value
+	 */
+    @SuppressWarnings("unchecked")
+	public void disconnectFromMarketDataFeed(IMarketDataFeed inFeed)
+	{
+        logger.debug(String.format("Unregistering feed %s with the Script Registry",
+                                   inFeed));
+        inFeed.unsubscribeFromAll(mFeedSubscriber);
+	}
 	
 	private void initBSFManager() throws BSFException {
 		currentClasspath = new Classpath();

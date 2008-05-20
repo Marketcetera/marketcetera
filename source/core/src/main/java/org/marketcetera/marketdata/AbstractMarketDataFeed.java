@@ -99,6 +99,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     private final PublisherEngine mFeedStatusPublisher = new PublisherEngine();
     /**
+     * publish/subscribe engine for market data messages
+     */
+    private final PublisherEngine mAllPublisher = new PublisherEngine();
+    /**
      * the last set of credentials passed to the feed
      */
     private C mLatestCredentials;
@@ -323,6 +327,26 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         return execute(getLatestCredentials(),
                        inMessage,
                        inSubscribers);
+    }    
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.IMarketDataFeed#subscribeToAll(org.marketcetera.core.publisher.ISubscriber)
+     */
+    @Override
+    public void subscribeToAll(ISubscriber inSubscriber)
+    {
+        synchronized(mAllPublisher) {
+            mAllPublisher.subscribe(inSubscriber);
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.IMarketDataFeed#unsubscribeFromAll(org.marketcetera.core.publisher.ISubscriber)
+     */
+    @Override
+    public void unsubscribeFromAll(ISubscriber inSubscriber)
+    {
+        synchronized(mAllPublisher) {
+            mAllPublisher.unsubscribe(inSubscriber);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IFeedComponent#getFeedStatus()
@@ -604,19 +628,8 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 E eventTranslator = getEventTranslator();
                 List<EventBase> events = eventTranslator.translate(inData);
                 for(EventBase event : events) {
-                    try {
-                        token.publish(event);
-                    } catch (InterruptedException e) {
-                        throw e;
-                    } catch (Throwable t) {
-                        if(LoggerAdapter.isWarnEnabled(this)) {
-                            // TODO move to message catalog
-                            LoggerAdapter.warn(String.format("Unable to publish event %s to subscribers",
-                                                             event),
-                                               t,
-                                               this);
-                        }
-                    }
+                    publishMarketData(event);
+                    token.publish(event);
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -807,6 +820,20 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     private void setLatestCredentials(C inLatestCredentials)
     {
         mLatestCredentials = inLatestCredentials;
+    }
+    /**
+     * Publishes market data to all subscribers.
+     *
+     * <p>Subscribers subscribed to {@link #subscribeToAll(ISubscriber)} will
+     * be notified of market data passed to this method.
+     * 
+     * @param inEvent an <code>EventBase</code> value
+     */
+    private void publishMarketData(EventBase inEvent)
+    {
+        synchronized(mAllPublisher) {
+            mAllPublisher.publish(inEvent);
+        }
     }
     /*
      * the following are private helper classes

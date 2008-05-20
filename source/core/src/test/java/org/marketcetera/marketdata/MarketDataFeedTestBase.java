@@ -74,8 +74,7 @@ public class MarketDataFeedTestBase
         if(inSubscriber == null) {
             return;
         }
-        inSubscriber.setPublishCount(0);
-        inSubscriber.setData(null);        
+        inSubscriber.reset();
     }
     protected void resetSubscribers(List<? extends ISubscriber> inSubscribers)
     {

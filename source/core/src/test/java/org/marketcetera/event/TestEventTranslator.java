@@ -6,6 +6,8 @@ import java.util.List;
 
 import org.marketcetera.core.MarketceteraException;
 
+import quickfix.Message;
+
 /**
  * Test implementation of <code>IEventTranslator</code>.
  *
@@ -34,8 +36,13 @@ public class TestEventTranslator
         if(getTranslateToEventsReturnsZeroEvents()) {
             return new ArrayList<EventBase>();
         }
+        Message message = null;
+        if(inData instanceof Message) {
+            message = (Message)inData;
+        }
         return Arrays.asList(new EventBase[] { new UnknownEvent(System.nanoTime(),
-                                                                System.currentTimeMillis()) });
+                                                                System.currentTimeMillis(),
+                                                                message) });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
