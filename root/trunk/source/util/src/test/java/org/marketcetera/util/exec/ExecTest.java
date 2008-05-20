@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
 import java.util.Locale;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
@@ -232,7 +233,7 @@ public class ExecTest
         Redirector result=Redirector.get(Disposition.STDOUT);
         assertEquals(TEST_EXIT_CODE,result.getExitCode());
         assertArrayEquals(TEST_OUTPUT,result.getStdOut());
-        assertArrayEquals(new byte[0],result.getStdErr());
+        assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY,result.getStdErr());
         assertNull(result.getOutput());
     }
 
@@ -242,7 +243,7 @@ public class ExecTest
     {
         Redirector result=Redirector.get(Disposition.STDERR);
         assertEquals(TEST_EXIT_CODE,result.getExitCode());
-        assertArrayEquals(new byte[0],result.getStdOut());
+        assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY,result.getStdOut());
         assertArrayEquals(TEST_OUTPUT,result.getStdErr());
         assertNull(result.getOutput());
     }
@@ -253,8 +254,8 @@ public class ExecTest
     {
         Redirector result=Redirector.get(Disposition.MEMORY);
         assertEquals(TEST_EXIT_CODE,result.getExitCode());
-        assertArrayEquals(new byte[0],result.getStdOut());
-        assertArrayEquals(new byte[0],result.getStdErr());
+        assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY,result.getStdOut());
+        assertArrayEquals(ArrayUtils.EMPTY_BYTE_ARRAY,result.getStdErr());
         assertArrayEquals(TEST_OUTPUT,result.getOutput());
     }
 
