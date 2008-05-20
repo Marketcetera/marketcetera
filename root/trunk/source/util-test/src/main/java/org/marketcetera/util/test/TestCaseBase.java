@@ -112,7 +112,7 @@ public class TestCaseBase
     public void setupTestCaseBase()
     {
         mAppender=new MemoryAppender();
-		BasicConfigurator.configure(getAppender());
+        BasicConfigurator.configure(getAppender());
     }
 
     /**

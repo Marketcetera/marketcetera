@@ -20,7 +20,7 @@ public class MemoryAppenderTest
     public void appenderStoresMessages()
     {
         MemoryAppender appender=new MemoryAppender();
-		BasicConfigurator.configure(appender);
+        BasicConfigurator.configure(appender);
 
         Logger logger=Logger.getLogger(TEST_CATEGORY);
         logger.setLevel(Level.ERROR);
