@@ -53,7 +53,7 @@ public final class SpringUtils
      * @param context The context.
      * @param configurerName The bean name.
      * @param locationRef The name of the bean whose value is the
-     * properties' locations.
+     * properties' locations (can be a string or a list).
      */
 
     public static void addPropertiesConfigurer
