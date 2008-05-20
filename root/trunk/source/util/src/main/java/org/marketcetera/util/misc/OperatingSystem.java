@@ -49,7 +49,7 @@ public enum OperatingSystem
      */
 
     public static final OperatingSystem LOCAL=
-        get(System.getProperty("os.name"));
+        get(SystemProperties.OS_NAME);
 
 
     // INSTANCE DATA.
@@ -104,7 +104,7 @@ public enum OperatingSystem
     @Override
     public String toString()
     {
-        StringBuffer buffer=new StringBuffer();
+        StringBuilder buffer=new StringBuilder();
         buffer.append(super.toString());
         if (getJavaName()!=null) {
             buffer.append(',');
