@@ -2,7 +2,6 @@ package org.marketcetera.util.exec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.InputStream;
 import java.io.OutputStream;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
