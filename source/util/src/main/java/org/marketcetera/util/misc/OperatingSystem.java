@@ -7,7 +7,8 @@ import org.marketcetera.core.ClassVersion;
  * <code>os.name</code> system property for each operating system is
  * associated with its corresponding enumerated value.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

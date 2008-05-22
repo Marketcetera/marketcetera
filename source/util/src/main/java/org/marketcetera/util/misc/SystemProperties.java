@@ -6,7 +6,8 @@ import org.marketcetera.core.ClassVersion;
  * Constants for all standard system properties, as listed in the
  * {@link System} class.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
