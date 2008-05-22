@@ -1,5 +1,13 @@
 package org.marketcetera.util.exec;
 
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

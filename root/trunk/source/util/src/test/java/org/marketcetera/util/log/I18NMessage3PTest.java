@@ -1,5 +1,13 @@
 package org.marketcetera.util.log;
 
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import java.util.Locale;
 import org.apache.log4j.Level;
 import org.junit.Test;

@@ -1,5 +1,13 @@
 package org.marketcetera.util.except;
 
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import org.junit.Test;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 

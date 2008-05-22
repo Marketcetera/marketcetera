@@ -1,5 +1,13 @@
 package org.marketcetera.util.file;
 
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import java.util.Locale;
 import org.junit.Test;
 import org.marketcetera.util.log.I18NMessageProvider;
