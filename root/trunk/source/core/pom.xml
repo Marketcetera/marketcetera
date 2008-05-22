@@ -41,12 +41,12 @@
       <artifactId>glazedlists_java15</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring</artifactId>
-    </dependency>
-    <dependency>
       <groupId>commons-i18n</groupId>
       <artifactId>commons-i18n</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring</artifactId>
     </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
