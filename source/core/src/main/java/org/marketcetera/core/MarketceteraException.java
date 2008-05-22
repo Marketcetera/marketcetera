@@ -7,6 +7,8 @@ package org.marketcetera.core;
 @ClassVersion("$Id$")
 public class MarketceteraException extends Exception
 {
+    private static final long serialVersionUID=1L;
+
     Throwable nestedException;
 
     /** Should used with an already localized string

@@ -1,11 +1,12 @@
 package org.marketcetera.core;
 
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.ConfigurableApplicationContext;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXVersion;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -18,6 +19,9 @@ import java.util.concurrent.Semaphore;
  */
 @ClassVersion("$Id$")
 public abstract class ApplicationBase implements Clock {
+
+    public static final String USERNAME_BEAN_NAME="runtimeUsername";
+    public static final String PASSWORD_BEAN_NAME="runtimePassword";
 
     protected static LoggerAdapter sLogger;
     private ClassPathXmlApplicationContext appCtx;
@@ -38,13 +42,42 @@ public abstract class ApplicationBase implements Clock {
         sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
     }
 
-    public ConfigurableApplicationContext createApplicationContext(String[] ctxFileNames, boolean registerShutdownHook) throws MarketceteraException {
-        appCtx = new ClassPathXmlApplicationContext(ctxFileNames) {
-            protected void onClose() {
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("in shutdown hook", this); }
-                super.onClose();
+    private static final class MyApplicationContext
+        extends ClassPathXmlApplicationContext
+    {
+        MyApplicationContext
+            (String[] paths)
+        {
+            super(paths);
+        }
+
+        MyApplicationContext
+            (String[] paths,
+             ApplicationContext parent)
+        {
+            super(paths,parent);
+        }
+
+        protected void onClose()
+        {
+            if(LoggerAdapter.isDebugEnabled(this)) {
+                LoggerAdapter.debug("in shutdown hook", this);
             }
-        };
+            super.onClose();
+        }
+    };
+
+    public ConfigurableApplicationContext createApplicationContext
+        (String[] ctxFileNames,
+         ApplicationContext parent,
+         boolean registerShutdownHook)
+        throws MarketceteraException
+    {
+        if (parent==null) {
+            appCtx=new MyApplicationContext(ctxFileNames);
+        } else {
+            appCtx=new MyApplicationContext(ctxFileNames,parent);
+        }
 
         if(registerShutdownHook) {
             appCtx.registerShutdownHook();
@@ -53,6 +86,14 @@ public abstract class ApplicationBase implements Clock {
         fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         msgFactory = fixVersion.getMessageFactory();
         return appCtx;
+    }
+
+    public ConfigurableApplicationContext createApplicationContext
+        (String[] ctxFileNames,
+         boolean registerShutdownHook)
+        throws MarketceteraException
+    {
+        return createApplicationContext(ctxFileNames,null,registerShutdownHook);
     }
 
     /** Create a semaphor and wait for it forever (noone will ever signal it).
