@@ -17,7 +17,8 @@ import org.marketcetera.core.ClassVersion;
  * occurs on a thread without {@link #setLocale(Locale)} called
  * beforehand.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

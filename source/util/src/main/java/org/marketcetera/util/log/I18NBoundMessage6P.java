@@ -6,7 +6,8 @@ import org.marketcetera.core.ClassVersion;
  * A bound message, representing the combination of an {@link
  * I18NMessage6P} and its six parameters.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

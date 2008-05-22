@@ -8,7 +8,8 @@ import org.slf4j.LoggerFactory;
  * SLF4J proxy with automatic logger selection and variable number of
  * arguments.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

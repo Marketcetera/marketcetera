@@ -10,7 +10,8 @@ import org.marketcetera.core.ClassVersion;
  * and can be omitted (in which case it defaults to {@link
  * #UNKNOWN_ENTRY_ID}).
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
