@@ -1,5 +1,13 @@
 package org.marketcetera.util.test;
 
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 
