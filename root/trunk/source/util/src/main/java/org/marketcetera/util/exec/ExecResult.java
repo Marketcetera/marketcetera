@@ -8,7 +8,8 @@ import org.marketcetera.core.ClassVersion;
  * captured contents of the interleaved standard output and error
  * streams.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

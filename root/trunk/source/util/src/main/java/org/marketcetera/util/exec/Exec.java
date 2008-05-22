@@ -15,7 +15,8 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * directed to either the JVM's standard output or error stream, or to
  * an in-memory array.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
@@ -111,6 +112,7 @@ public final class Exec
             // output.
 
             consumer.join();
+            consumer=null;
             byte[] capture=null;
             if (disposition==Disposition.MEMORY) {
                 capture=((ByteArrayOutputStream)out).toByteArray();
@@ -120,6 +122,9 @@ public final class Exec
 
             return new ExecResult(exitValue,capture);
         } catch (Throwable t) {
+            if (consumer!=null) {
+                consumer.interrupt();
+            }
             throw ExceptUtils.wrap(t,new I18NBoundMessage1P
                                    (Messages.UNEXPECTED_TERMINATION,command));
         } finally {
