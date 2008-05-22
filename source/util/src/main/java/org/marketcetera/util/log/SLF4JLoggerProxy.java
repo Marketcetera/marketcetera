@@ -1,9 +1,5 @@
 package org.marketcetera.util.log;
 
-import org.marketcetera.core.ClassVersion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * SLF4J proxy with automatic logger selection and variable number of
  * arguments.
@@ -14,6 +10,10 @@ import org.slf4j.LoggerFactory;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ClassVersion("$Id$")
 public final class SLF4JLoggerProxy

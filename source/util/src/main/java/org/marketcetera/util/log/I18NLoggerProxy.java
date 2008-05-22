@@ -1,7 +1,5 @@
 package org.marketcetera.util.log;
 
-import org.marketcetera.core.ClassVersion;
-
 /**
  * A logger which supports internationalized messages.
  * 
@@ -11,6 +9,8 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NLoggerProxy
