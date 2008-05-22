@@ -1,7 +1,5 @@
 package org.marketcetera.util.exec;
 
-import org.marketcetera.core.ClassVersion;
-
 /**
  * The allowed destinations for the interleaved standard output and
  * error streams of a process.
@@ -12,6 +10,8 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public enum Disposition
