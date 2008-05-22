@@ -1,8 +1,5 @@
 package org.marketcetera.util.log;
 
-import java.util.Locale;
-import org.marketcetera.core.ClassVersion;
-
 /**
  * An internationalized message, requiring exactly five parameters.
  * 
@@ -12,6 +9,9 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import java.util.Locale;
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NMessage5P

@@ -1,13 +1,5 @@
 package org.marketcetera.util.log;
 
-import java.io.InputStream;
-import java.text.MessageFormat;
-import java.util.Locale;
-import org.apache.commons.i18n.MessageManager;
-import org.apache.commons.i18n.MessageNotFoundException;
-import org.apache.commons.i18n.XMLMessageProvider;
-import org.marketcetera.core.ClassVersion;
-
 /**
  * An internationalized message provider, mapping instances of {@link
  * I18NMessage} onto text. The locale used for the translation is
@@ -23,6 +15,14 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import java.io.InputStream;
+import java.text.MessageFormat;
+import java.util.Locale;
+import org.apache.commons.i18n.MessageManager;
+import org.apache.commons.i18n.MessageNotFoundException;
+import org.apache.commons.i18n.XMLMessageProvider;
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NMessageProvider

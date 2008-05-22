@@ -1,9 +1,5 @@
 package org.marketcetera.util.log;
 
-import java.util.Locale;
-import org.apache.commons.lang.ArrayUtils;
-import org.marketcetera.core.ClassVersion;
-
 /**
  * An internationalized message, requiring exactly zero parameters.
  * 
@@ -13,6 +9,10 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import java.util.Locale;
+import org.apache.commons.lang.ArrayUtils;
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NMessage0P

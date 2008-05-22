@@ -1,7 +1,5 @@
 package org.marketcetera.util.log;
 
-import org.marketcetera.core.ClassVersion;
-
 /**
  * A bound message, representing a {@link I18NMessage0P}.
  * 
@@ -11,6 +9,8 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NBoundMessage0P

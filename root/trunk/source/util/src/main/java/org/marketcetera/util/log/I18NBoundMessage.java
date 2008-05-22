@@ -1,8 +1,5 @@
 package org.marketcetera.util.log;
 
-import java.util.Locale;
-import org.marketcetera.core.ClassVersion;
-
 /**
  * A bound message, representing the combination of an {@link
  * I18NMessage} and its parameters, if any.
@@ -13,6 +10,9 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import java.util.Locale;
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public interface I18NBoundMessage
