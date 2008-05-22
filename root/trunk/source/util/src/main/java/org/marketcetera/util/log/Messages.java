@@ -5,7 +5,8 @@ import org.marketcetera.core.ClassVersion;
 /**
  * The internationalization constants used by this package.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

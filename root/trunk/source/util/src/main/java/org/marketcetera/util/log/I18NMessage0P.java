@@ -7,7 +7,8 @@ import org.marketcetera.core.ClassVersion;
 /**
  * An internationalized message, requiring exactly zero parameters.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

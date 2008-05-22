@@ -5,7 +5,8 @@ import org.marketcetera.core.ClassVersion;
 /**
  * A bound message, representing a {@link I18NMessage0P}.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
