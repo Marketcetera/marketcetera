@@ -1,12 +1,5 @@
 package org.marketcetera.util.except;
 
-import java.io.InterruptedIOException;
-import java.nio.channels.ClosedByInterruptException;
-import java.nio.channels.FileLockInterruptionException;
-import javax.naming.InterruptedNamingException;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage;
-
 /**
  * General-purpose utilities.
  * 
@@ -16,6 +9,13 @@ import org.marketcetera.util.log.I18NBoundMessage;
  */
 
 /* $License$ */
+
+import java.io.InterruptedIOException;
+import java.nio.channels.ClosedByInterruptException;
+import java.nio.channels.FileLockInterruptionException;
+import javax.naming.InterruptedNamingException;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 @ClassVersion("$Id$")
 public final class ExceptUtils

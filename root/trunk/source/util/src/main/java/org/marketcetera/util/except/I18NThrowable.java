@@ -1,8 +1,5 @@
 package org.marketcetera.util.except;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage;
-
 /**
  * An internationalized throwable. At creation, the message may be
  * set; upon message retrieval, {@link #getMessage()} and {@link
@@ -22,6 +19,9 @@ import org.marketcetera.util.log.I18NBoundMessage;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 @ClassVersion("$Id$")
 interface I18NThrowable

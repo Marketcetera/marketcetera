@@ -1,8 +1,5 @@
 package org.marketcetera.util.except;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage;
-
 /**
  * An internationalized runtime exception indicating interruption.
  * 
@@ -12,6 +9,9 @@ import org.marketcetera.util.log.I18NBoundMessage;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 @ClassVersion("$Id$")
 public class I18NInterruptedRuntimeException
