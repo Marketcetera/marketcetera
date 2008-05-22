@@ -11,7 +11,8 @@ import org.marketcetera.core.ClassVersion;
  * its type cannot be determined). On Unix systems, unresolvable
  * (dangling or recursive) links are {@link #NONEXISTENT}.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

@@ -6,7 +6,8 @@ import org.marketcetera.core.ClassVersion;
  * Special names used to denote standard streams or operations on
  * regular files.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
