@@ -1,13 +1,5 @@
 package org.marketcetera.util.spring;
 
-import org.marketcetera.core.ClassVersion;
-import org.springframework.beans.MutablePropertyValues;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
-import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
-import org.springframework.beans.factory.config.RuntimeBeanReference;
-import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.context.support.GenericApplicationContext;
-
 /**
  * Utilities for the Spring framework.
  *
@@ -17,6 +9,14 @@ import org.springframework.context.support.GenericApplicationContext;
  */
 
 /* $License$ */
+
+import org.marketcetera.core.ClassVersion;
+import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.config.ConstructorArgumentValues;
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
+import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.context.support.GenericApplicationContext;
 
 @ClassVersion("$Id$")
 public final class SpringUtils
