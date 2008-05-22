@@ -7,7 +7,8 @@ import org.marketcetera.core.ClassVersion;
  * Sets system properties from a map. Its intended usage is to enable
  * setting of system properties from a Spring configuration file.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

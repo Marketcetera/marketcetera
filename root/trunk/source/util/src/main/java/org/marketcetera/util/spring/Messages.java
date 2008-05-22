@@ -7,7 +7,8 @@ import org.marketcetera.util.log.I18NMessageProvider;
 /**
  * The internationalization constants used by this package.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

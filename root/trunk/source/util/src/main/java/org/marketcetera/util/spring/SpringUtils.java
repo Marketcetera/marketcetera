@@ -11,7 +11,8 @@ import org.springframework.context.support.GenericApplicationContext;
 /**
  * Utilities for the Spring framework.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
