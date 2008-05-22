@@ -7,7 +7,8 @@ import org.marketcetera.util.log.LogUtils;
 /**
  * An internationalized error.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

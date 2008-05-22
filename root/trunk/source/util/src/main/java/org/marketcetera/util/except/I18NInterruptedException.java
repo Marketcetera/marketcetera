@@ -6,7 +6,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /**
  * An internationalized exception indicating interruption.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

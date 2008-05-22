@@ -16,7 +16,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * the message parameters; a localized message is looked up via a
  * message's associated provider.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
