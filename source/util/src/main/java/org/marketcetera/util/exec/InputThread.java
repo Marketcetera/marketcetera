@@ -10,7 +10,8 @@ import org.marketcetera.util.file.CloseableRegistry;
 /**
  * A thread that consumes an input stream.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
