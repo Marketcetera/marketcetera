@@ -14,7 +14,8 @@ import static org.junit.Assert.*;
 /**
  * Base class for test cases.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

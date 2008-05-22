@@ -9,7 +9,8 @@ import org.marketcetera.core.ClassVersion;
  * Retains logging events to a memory list, for use by tests that need
  * to confirm generation of such events.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
