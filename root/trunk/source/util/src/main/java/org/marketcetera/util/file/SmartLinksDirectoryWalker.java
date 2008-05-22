@@ -1,17 +1,19 @@
 package org.marketcetera.util.file;
 
+/**
+ * A {@link DirectoryWalker} which provides convenience methods to
+ * initiate traversal, and (optionally) does not follow symbolic
+ * links.
+ */
+
+/* $License$ */
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Collection;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.filefilter.IOFileFilter;
-
-/**
- * A {@link DirectoryWalker} which provides convenience methods to
- * initiate traversal, and (optionally) does not follow symbolic
- * links.
- */
 
 public abstract class SmartLinksDirectoryWalker
     extends DirectoryWalker
