@@ -1,11 +1,5 @@
 package org.marketcetera.util.test;
 
-import org.apache.commons.collections.Bag;
-import org.apache.commons.collections.bag.HashBag;
-import org.marketcetera.core.ClassVersion;
-
-import static org.junit.Assert.*;
-
 /**
  * Assertions for collections.
  * 
@@ -15,6 +9,12 @@ import static org.junit.Assert.*;
  */
 
 /* $License$ */
+
+import org.apache.commons.collections.Bag;
+import org.apache.commons.collections.bag.HashBag;
+import org.marketcetera.core.ClassVersion;
+
+import static org.junit.Assert.*;
 
 @ClassVersion("$Id")
 public final class CollectionAssert

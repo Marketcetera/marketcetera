@@ -1,10 +1,5 @@
 package org.marketcetera.util.test;
 
-import java.util.regex.Pattern;
-import org.marketcetera.core.ClassVersion;
-
-import static org.junit.Assert.*;
-
 /**
  * Assertions based on regular expression matching.
  * 
@@ -14,6 +9,11 @@ import static org.junit.Assert.*;
  */
 
 /* $License$ */
+
+import java.util.regex.Pattern;
+import org.marketcetera.core.ClassVersion;
+
+import static org.junit.Assert.*;
 
 @ClassVersion("$Id")
 public final class RegExAssert
