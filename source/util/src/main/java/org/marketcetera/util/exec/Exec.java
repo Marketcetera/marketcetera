@@ -1,14 +1,5 @@
 package org.marketcetera.util.exec;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.OutputStream;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.except.I18NInterruptedException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-
 /**
  * A simple process executor. The executed process requires no input,
  * and the interleaved mix of its standard output and error streams is
@@ -21,6 +12,15 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  */
 
 /* $License$ */
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.except.I18NInterruptedException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 @ClassVersion("$Id$")
 public final class Exec
