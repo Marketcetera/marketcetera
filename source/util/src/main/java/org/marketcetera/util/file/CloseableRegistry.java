@@ -8,7 +8,8 @@ import org.marketcetera.util.except.ExceptUtils;
 /**
  * A registry of {@link Closeable} instances.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

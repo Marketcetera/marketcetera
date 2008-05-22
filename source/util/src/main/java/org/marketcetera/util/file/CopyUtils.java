@@ -16,7 +16,8 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
  * Utilities for copying data. The participating media include files,
  * arrays, streams, or some combinations thereof.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

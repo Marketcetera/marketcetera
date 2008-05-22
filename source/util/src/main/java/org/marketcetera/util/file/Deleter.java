@@ -11,7 +11,8 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * Deletes a file or directory recursively. It does not follow
  * symbolic links in the process.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 

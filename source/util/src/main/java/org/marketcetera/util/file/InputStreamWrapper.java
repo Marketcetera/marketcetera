@@ -18,7 +18,8 @@ import static org.marketcetera.util.file.SpecialNames.*;
  * closed directly, i.e. without going through the wrapper's {@link
  * #close()} method.
  *
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
