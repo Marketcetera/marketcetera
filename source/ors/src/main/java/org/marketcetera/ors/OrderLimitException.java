@@ -12,6 +12,9 @@ import java.math.BigDecimal;
 
 @ClassVersion("$Id$")
 public class OrderLimitException extends MarketceteraException {
+
+    private static final long serialVersionUID=1L;
+
     public OrderLimitException(String localizedMsg) {
         super(localizedMsg);
     }
