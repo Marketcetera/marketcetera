@@ -9,7 +9,8 @@ import static org.junit.Assert.*;
 /**
  * Assertions for collections.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
