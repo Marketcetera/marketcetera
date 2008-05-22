@@ -10,7 +10,8 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /**
  * General-purpose utilities.
  * 
- * @author tlerios
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
  * @version $Id$
  */
 
