@@ -1,5 +1,15 @@
 package org.marketcetera.util.test;
 
+/**
+ * Base class for test cases.
+ * 
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import java.io.File;
 import java.util.NoSuchElementException;
 import org.apache.log4j.BasicConfigurator;
@@ -10,16 +20,6 @@ import org.junit.Before;
 import org.marketcetera.core.ClassVersion;
 
 import static org.junit.Assert.*;
-
-/**
- * Base class for test cases.
- * 
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
 
 @ClassVersion("$Id")
 public class TestCaseBase

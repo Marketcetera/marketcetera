@@ -1,10 +1,5 @@
 package org.marketcetera.util.test;
 
-import java.util.LinkedList;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
-import org.marketcetera.core.ClassVersion;
-
 /**
  * Retains logging events to a memory list, for use by tests that need
  * to confirm generation of such events.
@@ -15,6 +10,11 @@ import org.marketcetera.core.ClassVersion;
  */
 
 /* $License$ */
+
+import java.util.LinkedList;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.spi.LoggingEvent;
+import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id")
 public class MemoryAppender
