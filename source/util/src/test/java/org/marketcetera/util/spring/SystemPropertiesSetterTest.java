@@ -1,5 +1,13 @@
 package org.marketcetera.util.spring;
 
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
+
 import java.util.HashMap;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
