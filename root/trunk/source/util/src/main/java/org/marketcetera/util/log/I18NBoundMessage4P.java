@@ -15,7 +15,7 @@ import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NBoundMessage4P
-    extends I18NBoundMessageBase
+    extends I18NBoundMessageBase<I18NMessage4P>
 {
 
     // CONSTRUCTORS.
@@ -34,15 +34,6 @@ public class I18NBoundMessage4P
          Object p4)
     {
         super(message,p1,p2,p3,p4);
-    }
-
-
-    // I18NBoundMessageBase.
-    
-    @Override
-    public I18NMessage4P getMessage()
-    {
-        return (I18NMessage4P)(super.getMessage());
     }
 
 

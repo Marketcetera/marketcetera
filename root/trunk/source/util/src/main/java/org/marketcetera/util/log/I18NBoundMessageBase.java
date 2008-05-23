@@ -15,13 +15,13 @@ import org.marketcetera.core.ClassVersion;
 /* $License$ */
 
 @ClassVersion("$Id$")
-public class I18NBoundMessageBase
+public class I18NBoundMessageBase<T extends I18NMessage>
     implements I18NBoundMessage
 {
 
     // INSTANCE DATA.
 
-    private I18NMessage mMessage;
+    private T mMessage;
     private Object[] mParams;
 
 
@@ -36,7 +36,7 @@ public class I18NBoundMessageBase
      */
 
     I18NBoundMessageBase
-        (I18NMessage message,
+        (T message,
          Object... params)
     {
         mMessage=message;
@@ -59,7 +59,7 @@ public class I18NBoundMessageBase
     }
 
     @Override
-    public I18NMessage getMessage()
+    public T getMessage()
     {
         return mMessage;
     }
