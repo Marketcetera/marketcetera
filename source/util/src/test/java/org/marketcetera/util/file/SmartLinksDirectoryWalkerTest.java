@@ -26,10 +26,14 @@ public class SmartLinksDirectoryWalkerTest
 {
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"directory_walker"+File.separator;
+    private static final String TEST_DIR_WIN32=
+        "win32";
+    private static final String TEST_DIR_UNIX=
+        "unix";
     private static final String TEST_ROOT_WIN32=
-        TEST_ROOT+"win32"+File.separator;
+        TEST_ROOT+TEST_DIR_WIN32+File.separator;
     private static final String TEST_ROOT_UNIX=
-        TEST_ROOT+"unix"+File.separator;
+        TEST_ROOT+TEST_DIR_UNIX+File.separator;
     private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE=
@@ -43,7 +47,7 @@ public class SmartLinksDirectoryWalkerTest
     private static final String[] TEST_FILE_LIST=new String[] {
         "a.txt", "b.txt","c.txt","d.txt",TEST_LINK_CONTENTS};
     private static final String[] TEST_DIR_LIST=new String[] {
-        "a","b","c","d","directory_walker"};
+        "a","b","c","d"};
 
 
     public static final class ListWalker
@@ -117,17 +121,6 @@ public class SmartLinksDirectoryWalkerTest
                 mMaxDepth=depth;
             }
         }
-    }
-
-    private static String getLocalRoot()
-    {
-        if (OperatingSystem.LOCAL.isUnix()) {
-            return TEST_ROOT_UNIX;
-        }
-        if (OperatingSystem.LOCAL.isWin32()) {
-            return TEST_ROOT_WIN32;
-        }
-        throw new AssertionError("Unknown platform");
     }
 
 
@@ -252,12 +245,20 @@ public class SmartLinksDirectoryWalkerTest
     public void walk()
         throws Exception
     {
+        String root;
+        String dir;
         String[] files=TEST_FILE_LIST;
-        String[] dirs=TEST_DIR_LIST;
         if (OperatingSystem.LOCAL.isUnix()) {
+            dir=TEST_DIR_UNIX;
+            root=TEST_ROOT_UNIX;
             files=(String[])ArrayUtils.add(files,TEST_LINK_NAME);
-        } 
-        String root=getLocalRoot();
+        } else if (OperatingSystem.LOCAL.isWin32()) {
+            dir=TEST_DIR_WIN32;
+            root=TEST_ROOT_WIN32;
+        } else {
+            throw new AssertionError("Unknown platform");
+        }
+        String[] dirs=(String[])ArrayUtils.add(TEST_DIR_LIST,dir);
 
         ListWalker walker=new ListWalker(false);
         walker.apply(root);
@@ -276,10 +277,8 @@ public class SmartLinksDirectoryWalkerTest
         assertEquals(3,walker.getMaxDepth());
 
         files=TEST_FILE_LIST;
-        dirs=TEST_DIR_LIST;
-        if (OperatingSystem.LOCAL.isWin32()) {
-            files=(String[])ArrayUtils.add(files,TEST_LINK_NAME+".lnk");
-        } else if (OperatingSystem.LOCAL.isUnix()) {
+        dirs=(String[])ArrayUtils.add(TEST_DIR_LIST,dir);
+        if (OperatingSystem.LOCAL.isUnix()) {
             files=(String[])ArrayUtils.add(files,TEST_LINK_CONTENTS);
             dirs=(String[])ArrayUtils.add(dirs,TEST_LINK_NAME);
         } 
