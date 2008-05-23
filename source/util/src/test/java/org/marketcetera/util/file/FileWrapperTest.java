@@ -1,5 +1,11 @@
 package org.marketcetera.util.file;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,12 +13,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.ArrayUtils;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class FileWrapperTest
     extends WrapperTestBase

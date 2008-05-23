@@ -1,13 +1,5 @@
 package org.marketcetera.util.file;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
@@ -20,6 +12,14 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class SmartLinksDirectoryWalkerTest
     extends TestCaseBase
