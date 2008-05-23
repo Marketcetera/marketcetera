@@ -1,5 +1,10 @@
 package org.marketcetera.util.test;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.marketcetera.util.test.RegExAssert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,11 +12,6 @@ package org.marketcetera.util.test;
  */
 
 /* $License$ */
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.RegExAssert.*;
 
 public class RegExAssertTest
 {

@@ -1,13 +1,5 @@
 package org.marketcetera.util.test;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.util.LinkedList;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
@@ -16,6 +8,14 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class MemoryAppenderTest
 {
