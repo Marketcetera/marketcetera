@@ -1,13 +1,5 @@
 package org.marketcetera.util.except;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.util.Locale;
 import org.junit.Before;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -15,6 +7,14 @@ import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class I18NThrowableTestBase
     extends TestCaseBase
