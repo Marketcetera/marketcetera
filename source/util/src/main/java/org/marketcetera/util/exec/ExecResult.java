@@ -1,5 +1,7 @@
 package org.marketcetera.util.exec;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * A container for the result of a process execution. This comprises
  * an exit code and (if {@link Disposition#MEMORY} is elected) the
@@ -12,8 +14,6 @@ package org.marketcetera.util.exec;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class ExecResult
