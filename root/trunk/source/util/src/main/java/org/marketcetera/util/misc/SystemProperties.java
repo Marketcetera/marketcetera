@@ -1,5 +1,7 @@
 package org.marketcetera.util.misc;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * Constants for all standard system properties, as listed in the
  * {@link System} class.
@@ -10,8 +12,6 @@ package org.marketcetera.util.misc;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public interface SystemProperties
