@@ -1,5 +1,11 @@
 package org.marketcetera.util.log;
 
+import org.apache.log4j.Level;
+import org.junit.Test;
+import org.marketcetera.util.test.TestCaseBase;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,12 +13,6 @@ package org.marketcetera.util.log;
  */
 
 /* $License$ */
-
-import org.apache.log4j.Level;
-import org.junit.Test;
-import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
 
 public class SLF4JLoggerProxyTest
     extends TestCaseBase

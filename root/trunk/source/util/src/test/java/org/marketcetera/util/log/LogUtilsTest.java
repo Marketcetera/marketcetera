@@ -1,5 +1,9 @@
 package org.marketcetera.util.log;
 
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,10 +11,6 @@ package org.marketcetera.util.log;
  */
 
 /* $License$ */
-
-import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class LogUtilsTest
 {
