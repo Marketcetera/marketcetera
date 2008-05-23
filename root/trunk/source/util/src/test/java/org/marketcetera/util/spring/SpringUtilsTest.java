@@ -1,5 +1,12 @@
 package org.marketcetera.util.spring;
 
+import org.junit.Test;
+import org.marketcetera.util.test.TestCaseBase;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,13 +14,6 @@ package org.marketcetera.util.spring;
  */
 
 /* $License$ */
-
-import org.junit.Test;
-import org.marketcetera.util.test.TestCaseBase;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.GenericApplicationContext;
-
-import static org.junit.Assert.*;
 
 public class SpringUtilsTest
     extends TestCaseBase
