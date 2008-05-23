@@ -1,5 +1,9 @@
 package org.marketcetera.util.misc;
 
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessageProvider;
+
 /**
  * The internationalization constants used by this package.
  *
@@ -9,10 +13,6 @@ package org.marketcetera.util.misc;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessageProvider;
 
 @ClassVersion("$Id$")
 public interface Messages

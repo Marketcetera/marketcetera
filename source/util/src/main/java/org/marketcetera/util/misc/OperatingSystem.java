@@ -1,5 +1,7 @@
 package org.marketcetera.util.misc;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * An enumeration of operating systems. The expected value of the
  * <code>os.name</code> system property for each operating system is
@@ -11,8 +13,6 @@ package org.marketcetera.util.misc;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public enum OperatingSystem
