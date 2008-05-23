@@ -26,7 +26,11 @@ public class SmartLinksDirectoryWalkerTest
 {
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"directory_walker"+File.separator;
-    protected static final String TEST_NONEXISTENT_FILE=
+    private static final String TEST_ROOT_WIN32=
+        TEST_ROOT+"win32"+File.separator;
+    private static final String TEST_ROOT_UNIX=
+        TEST_ROOT+"unix"+File.separator;
+    private static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent";
     private static final String TEST_FILE=
         "a.txt";
@@ -115,6 +119,36 @@ public class SmartLinksDirectoryWalkerTest
         }
     }
 
+    private static final String TEST_PLAIN_FILE=
+        "file.txt";
+    private static final String TEST_PLAIN_DIR=
+        "dir";
+    private static final String TEST_PLAIN_DIR_CONTENTS=
+        TEST_PLAIN_DIR+File.separator+"b.txt";
+    private static final String TEST_NONEXISTENT_FILE=
+        TEST_ROOT+"nonexistent";
+    private static final String TEST_FILE_LINK=
+        "file_link";
+    private static final String TEST_DIR_LINK=
+        "dir_link";
+    private static final String TEST_DANGLING_LINK=
+        "dangling_link";
+    private static final String TEST_RECURSIVE_LINK=
+        "recursive_link";
+
+
+    private static String getLocalRoot()
+    {
+        if (OperatingSystem.LOCAL.isUnix()) {
+            return TEST_ROOT_UNIX;
+        }
+        if (OperatingSystem.LOCAL.isWin32()) {
+            return TEST_ROOT_WIN32;
+        }
+        throw new AssertionError("Unknown platform");
+    }
+
+
     @Test
     public void singleFile()
         throws Exception
@@ -167,7 +201,7 @@ public class SmartLinksDirectoryWalkerTest
         assumeTrue(OperatingSystem.LOCAL.isUnix());
 
         ListWalker walker=new ListWalker(false);
-        walker.apply(TEST_ROOT+TEST_LINK_PATH);
+        walker.apply(TEST_ROOT_UNIX+TEST_LINK_PATH);
         assertArrayPermutation
             (new String[] {TEST_LINK_NAME},walker.getFiles());
         assertArrayPermutation
@@ -176,7 +210,7 @@ public class SmartLinksDirectoryWalkerTest
 
         Vector<String> results=new Vector<String>();
         walker=new ListWalker(false);
-        walker.apply(TEST_ROOT+TEST_LINK_PATH,results);
+        walker.apply(TEST_ROOT_UNIX+TEST_LINK_PATH,results);
         assertArrayPermutation
             (new String[] {TEST_LINK_NAME},walker.getFiles());
         assertArrayPermutation
@@ -187,7 +221,7 @@ public class SmartLinksDirectoryWalkerTest
         assertEquals(0,walker.getMaxDepth());
 
         walker=new ListWalker(true);
-        walker.apply(TEST_ROOT+TEST_LINK_PATH);
+        walker.apply(TEST_ROOT_UNIX+TEST_LINK_PATH);
         assertArrayPermutation
             (new String[] {TEST_LINK_CONTENTS},walker.getFiles());
         assertArrayPermutation
@@ -196,7 +230,7 @@ public class SmartLinksDirectoryWalkerTest
 
         results=new Vector<String>();
         walker=new ListWalker(true);
-        walker.apply(TEST_ROOT+TEST_LINK_PATH,results);
+        walker.apply(TEST_ROOT_UNIX+TEST_LINK_PATH,results);
         assertArrayPermutation
             (new String[] {TEST_LINK_CONTENTS},walker.getFiles());
         assertArrayPermutation
@@ -238,21 +272,20 @@ public class SmartLinksDirectoryWalkerTest
     {
         String[] files=TEST_FILE_LIST;
         String[] dirs=TEST_DIR_LIST;
-        if (OperatingSystem.LOCAL.isWin32()) {
-            files=(String[])ArrayUtils.add(files,TEST_LINK_NAME+".lnk");
-        } else if (OperatingSystem.LOCAL.isUnix()) {
+        if (OperatingSystem.LOCAL.isUnix()) {
             files=(String[])ArrayUtils.add(files,TEST_LINK_NAME);
         } 
+        String root=getLocalRoot();
 
         ListWalker walker=new ListWalker(false);
-        walker.apply(TEST_ROOT);
+        walker.apply(root);
         assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(dirs,walker.getDirectories());
         assertEquals(3,walker.getMaxDepth());
 
         Vector<String> results=new Vector<String>();
         walker=new ListWalker(false);
-        walker.apply(TEST_ROOT,results);
+        walker.apply(root,results);
         assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(dirs,walker.getDirectories());
         assertArrayPermutation
@@ -270,14 +303,14 @@ public class SmartLinksDirectoryWalkerTest
         } 
 
         walker=new ListWalker(true);
-        walker.apply(TEST_ROOT);
+        walker.apply(root);
         assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(dirs,walker.getDirectories());
         assertEquals(3,walker.getMaxDepth());
 
         results=new Vector<String>();
         walker=new ListWalker(true);
-        walker.apply(TEST_ROOT,results);
+        walker.apply(root,results);
         assertArrayPermutation(files,walker.getFiles());
         assertArrayPermutation(dirs,walker.getDirectories());
         assertArrayPermutation
