@@ -1,5 +1,9 @@
 package org.marketcetera.util.except;
 
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.LogUtils;
+
 /**
  * An internationalized exception.
  * 
@@ -9,10 +13,6 @@ package org.marketcetera.util.except;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.LogUtils;
 
 @ClassVersion("$Id$")
 public class I18NException

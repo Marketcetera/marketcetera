@@ -1,5 +1,7 @@
 package org.marketcetera.util.except;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * Utilities supporting message generation.
  * 
@@ -9,8 +11,6 @@ package org.marketcetera.util.except;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 final class I18NExceptUtils
