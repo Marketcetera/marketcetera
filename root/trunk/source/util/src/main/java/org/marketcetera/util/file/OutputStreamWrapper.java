@@ -1,5 +1,15 @@
 package org.marketcetera.util.file;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import org.marketcetera.core.ClassVersion;
+
+import static org.marketcetera.util.file.SpecialNames.*;
+
 /**
  * A wrapped output stream. It may wrap a regular file, the standard
  * output or error stream, or any other {@link OutputStream}
@@ -14,16 +24,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import org.marketcetera.core.ClassVersion;
-
-import static org.marketcetera.util.file.SpecialNames.*;
 
 @ClassVersion("$Id$")
 public class OutputStreamWrapper

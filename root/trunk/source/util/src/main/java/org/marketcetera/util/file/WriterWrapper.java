@@ -1,5 +1,16 @@
 package org.marketcetera.util.file;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import org.marketcetera.core.ClassVersion;
+
+import static org.marketcetera.util.file.SpecialNames.*;
+
 /**
  * A wrapped writer. It may wrap a regular file, the standard output
  * or error stream, or any other {@link Writer} instance. This wrapper
@@ -14,17 +25,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import org.marketcetera.core.ClassVersion;
-
-import static org.marketcetera.util.file.SpecialNames.*;
 
 @ClassVersion("$Id$")
 public class WriterWrapper

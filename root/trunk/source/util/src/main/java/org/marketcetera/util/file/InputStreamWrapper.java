@@ -1,5 +1,15 @@
 package org.marketcetera.util.file;
 
+import java.io.Closeable;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import org.marketcetera.core.ClassVersion;
+
+import static org.marketcetera.util.file.SpecialNames.*;
+
 /**
  * A wrapped input stream. It may wrap a regular file, the standard
  * input stream, or any other {@link InputStream} instance. This
@@ -14,16 +24,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import org.marketcetera.core.ClassVersion;
-
-import static org.marketcetera.util.file.SpecialNames.*;
 
 @ClassVersion("$Id$")
 public class InputStreamWrapper

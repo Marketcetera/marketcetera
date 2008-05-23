@@ -1,5 +1,12 @@
 package org.marketcetera.util.file;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collection;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+
 /**
  * Deletes a file or directory recursively. It does not follow
  * symbolic links in the process.
@@ -10,13 +17,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Collection;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 
 @ClassVersion("$Id$")
 public class Deleter
