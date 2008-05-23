@@ -119,24 +119,6 @@ public class SmartLinksDirectoryWalkerTest
         }
     }
 
-    private static final String TEST_PLAIN_FILE=
-        "file.txt";
-    private static final String TEST_PLAIN_DIR=
-        "dir";
-    private static final String TEST_PLAIN_DIR_CONTENTS=
-        TEST_PLAIN_DIR+File.separator+"b.txt";
-    private static final String TEST_NONEXISTENT_FILE=
-        TEST_ROOT+"nonexistent";
-    private static final String TEST_FILE_LINK=
-        "file_link";
-    private static final String TEST_DIR_LINK=
-        "dir_link";
-    private static final String TEST_DANGLING_LINK=
-        "dangling_link";
-    private static final String TEST_RECURSIVE_LINK=
-        "recursive_link";
-
-
     private static String getLocalRoot()
     {
         if (OperatingSystem.LOCAL.isUnix()) {
