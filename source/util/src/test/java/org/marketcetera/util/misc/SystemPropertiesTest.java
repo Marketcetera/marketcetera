@@ -1,5 +1,10 @@
 package org.marketcetera.util.misc;
 
+import org.junit.Test;
+import org.marketcetera.util.test.TestCaseBase;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,11 +12,6 @@ package org.marketcetera.util.misc;
  */
 
 /* $License$ */
-
-import org.junit.Test;
-import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
 
 public class SystemPropertiesTest
     extends TestCaseBase
