@@ -1,13 +1,5 @@
 package org.marketcetera.util.file;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.File;
 import org.junit.After;
 import org.junit.Before;
@@ -18,6 +10,14 @@ import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class CopyUtilsTest
     extends TestCaseBase

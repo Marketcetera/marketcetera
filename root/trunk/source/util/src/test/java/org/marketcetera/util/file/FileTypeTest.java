@@ -1,13 +1,5 @@
 package org.marketcetera.util.file;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.File;
 //import java.util.Locale;
 //import org.apache.log4j.Level;
@@ -19,6 +11,14 @@ import org.marketcetera.util.test.TestCaseBase;
 import static org.junit.Assert.*;
 import static org.junit.Assume.*;
 import static org.marketcetera.util.file.FileType.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class FileTypeTest
     extends TestCaseBase

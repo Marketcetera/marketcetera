@@ -1,13 +1,5 @@
 package org.marketcetera.util.file;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -15,6 +7,14 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import org.junit.Before;
 import org.marketcetera.util.test.TestCaseBase;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class WrapperTestBase
     extends TestCaseBase

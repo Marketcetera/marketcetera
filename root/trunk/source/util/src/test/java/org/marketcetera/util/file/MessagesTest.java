@@ -1,5 +1,12 @@
 package org.marketcetera.util.file;
 
+import java.util.Locale;
+import org.junit.Test;
+import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.test.TestCaseBase;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,13 +14,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.util.Locale;
-import org.junit.Test;
-import org.marketcetera.util.log.I18NMessageProvider;
-import org.marketcetera.util.test.TestCaseBase;
-
-import static org.junit.Assert.*;
 
 public class MessagesTest
     extends TestCaseBase
