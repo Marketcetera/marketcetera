@@ -35,8 +35,7 @@ module TradeCreator
     # convert from UTC to local time zone
     sendingTime_UTC = getHeaderStringFieldValueIfPresent(qfMessage, Quickfix::SendingTime.new)
     pacificTZ = TZInfo::Timezone.get('America/Los_Angeles')
-    sendingTime  = pacificTZ.utc_to_local(DateTime.parse(sendingTime_UTC))
-
+    sendingTime  = ((pacificTZ.utc_to_local(DateTime.parse(sendingTime_UTC))).strftime("%Y-%m-%d %H:%M:%S"))
     commission = getStringFieldValueIfPresent(qfMessage, Quickfix::Commission.new)
 
     logger.debug("creating trade for "+Side.get_human_side(@side) + " " + quantity + " " +
