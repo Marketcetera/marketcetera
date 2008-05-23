@@ -1,5 +1,7 @@
 package org.marketcetera.util.log;
 
+import org.junit.Test;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,8 +9,6 @@ package org.marketcetera.util.log;
  */
 
 /* $License$ */
-
-import org.junit.Test;
 
 public class I18NMessageTest
     extends I18NMessageTestBase
