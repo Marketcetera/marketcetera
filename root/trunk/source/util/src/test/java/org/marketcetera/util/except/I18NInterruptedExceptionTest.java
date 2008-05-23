@@ -1,5 +1,10 @@
 package org.marketcetera.util.except;
 
+import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+
+import static org.junit.Assert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,11 +12,6 @@ package org.marketcetera.util.except;
  */
 
 /* $License$ */
-
-import org.junit.Test;
-import org.marketcetera.util.log.I18NBoundMessage1P;
-
-import static org.junit.Assert.*;
 
 public class I18NInterruptedExceptionTest
     extends I18NThrowableTestBase

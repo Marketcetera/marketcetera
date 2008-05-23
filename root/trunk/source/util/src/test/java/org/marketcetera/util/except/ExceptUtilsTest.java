@@ -1,13 +1,5 @@
 package org.marketcetera.util.except;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
@@ -18,6 +10,14 @@ import org.junit.Test;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import static org.junit.Assert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class ExceptUtilsTest
     extends I18NThrowableTestBase

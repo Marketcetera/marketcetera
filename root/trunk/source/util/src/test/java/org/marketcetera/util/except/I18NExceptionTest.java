@@ -1,5 +1,8 @@
 package org.marketcetera.util.except;
 
+import org.junit.Test;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,9 +10,6 @@ package org.marketcetera.util.except;
  */
 
 /* $License$ */
-
-import org.junit.Test;
-import org.marketcetera.util.log.I18NBoundMessage1P;
 
 public class I18NExceptionTest
     extends I18NThrowableTestBase

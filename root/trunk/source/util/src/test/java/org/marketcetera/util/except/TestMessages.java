@@ -1,5 +1,10 @@
 package org.marketcetera.util.except;
 
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessageProvider;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,11 +12,6 @@ package org.marketcetera.util.except;
  */
 
 /* $License$ */
-
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessageProvider;
 
 public interface TestMessages
 {
