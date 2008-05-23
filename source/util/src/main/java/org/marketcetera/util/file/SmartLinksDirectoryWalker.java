@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Collection;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.marketcetera.core.ClassVersion;
 
 /**
  * A {@link DirectoryWalker} which provides convenience methods to
