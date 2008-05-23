@@ -1,16 +1,5 @@
 package org.marketcetera.util.file;
 
-/**
- * Utilities for copying data. The participating media include files,
- * arrays, streams, or some combinations thereof.
- *
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -22,6 +11,17 @@ import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
+
+/**
+ * Utilities for copying data. The participating media include files,
+ * arrays, streams, or some combinations thereof.
+ *
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 @ClassVersion("$Id$")
 public final class CopyUtils

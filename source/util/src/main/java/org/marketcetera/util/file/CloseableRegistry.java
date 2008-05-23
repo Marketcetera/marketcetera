@@ -1,5 +1,10 @@
 package org.marketcetera.util.file;
 
+import java.io.Closeable;
+import java.util.LinkedList;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.except.ExceptUtils;
+
 /**
  * A registry of {@link Closeable} instances.
  *
@@ -9,11 +14,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.io.Closeable;
-import java.util.LinkedList;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.except.ExceptUtils;
 
 @ClassVersion("$Id$")
 public class CloseableRegistry

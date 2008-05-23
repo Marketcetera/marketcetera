@@ -1,5 +1,9 @@
 package org.marketcetera.util.file;
 
+import java.io.File;
+import java.io.IOException;
+import org.marketcetera.core.ClassVersion;
+
 /**
  * A file type. Files on NTFS are limited to the following types:
  * {@link #NONEXISTENT}, {@link #FILE}, {@link #DIR} (folder), and
@@ -13,10 +17,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import java.io.File;
-import java.io.IOException;
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public enum FileType

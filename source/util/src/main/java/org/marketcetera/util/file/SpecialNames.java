@@ -1,5 +1,7 @@
 package org.marketcetera.util.file;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * Special names used to denote standard streams or operations on
  * regular files.
@@ -10,8 +12,6 @@ package org.marketcetera.util.file;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public interface SpecialNames
