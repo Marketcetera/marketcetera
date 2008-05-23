@@ -1,5 +1,8 @@
 package org.marketcetera.util.spring;
 
+import java.util.Map;
+import org.marketcetera.core.ClassVersion;
+
 /**
  * Sets system properties from a map. Its intended usage is to enable
  * setting of system properties from a Spring configuration file.
@@ -10,9 +13,6 @@ package org.marketcetera.util.spring;
  */
 
 /* $License$ */
-
-import java.util.Map;
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class SystemPropertiesSetter
