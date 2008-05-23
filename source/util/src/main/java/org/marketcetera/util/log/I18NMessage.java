@@ -1,5 +1,7 @@
 package org.marketcetera.util.log;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * An internationalized message, represented using a pair of textual
  * keys referencing the message text; keys-text maps are stored
@@ -14,8 +16,6 @@ package org.marketcetera.util.log;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public class I18NMessage

@@ -1,5 +1,7 @@
 package org.marketcetera.util.log;
 
+import org.marketcetera.core.ClassVersion;
+
 /**
  * General-purpose utilities.
  * 
@@ -9,8 +11,6 @@ package org.marketcetera.util.log;
  */
 
 /* $License$ */
-
-import org.marketcetera.core.ClassVersion;
 
 @ClassVersion("$Id$")
 public final class LogUtils
