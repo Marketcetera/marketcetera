@@ -51,29 +51,29 @@ public class I18NMessageTest
     @Test
     public void bound()
     {
-        boundTests(new I18NBoundMessageBase
+        boundTests(new I18NBoundMessageBase<I18NMessage>
                    (TestMessages.BASE_MSG,TEST_P1),
                    new Object[] {TEST_P1},
                    TestMessages.BASE_MSG,TEST_MSG_EN,TEST_MSG_FR);
-        boundTests(new I18NBoundMessageBase
+        boundTests(new I18NBoundMessageBase<I18NMessage>
                    (TestMessages.BASE_TTL,TEST_P1,TEST_P2),
                    new Object[] {TEST_P1,TEST_P2},
                    TestMessages.BASE_TTL,TEST_TTL_EN,TEST_TTL_FR);
 
-        boundTests(new I18NBoundMessageBase
+        boundTests(new I18NBoundMessageBase<I18NMessage>
                    (TestMessages.BASE_MSG,(Object)null),
                    new Object[] {null},
                    TestMessages.BASE_MSG,TEST_MSG_EN_NULL,TEST_MSG_FR_NULL);
-        boundTests(new I18NBoundMessageBase
+        boundTests(new I18NBoundMessageBase<I18NMessage>
                    (TestMessages.BASE_TTL,(Object)null,(Object)null),
                    new Object[] {null,null},
                    TestMessages.BASE_TTL,TEST_TTL_EN_NULL,TEST_TTL_FR_NULL);
 
-        boundTests(new I18NBoundMessageBase
+        boundTests(new I18NBoundMessageBase<I18NMessage>
                    (TestMessages.BASE_MSG,(Object[])null),
                    null,
                    TestMessages.BASE_MSG,TEST_MSG_EN_NOSUB,TEST_MSG_FR_NOSUB);
-        boundTests(new I18NBoundMessageBase
+        boundTests(new I18NBoundMessageBase<I18NMessage>
                    (TestMessages.BASE_TTL,(Object[])null),
                    null,
                    TestMessages.BASE_TTL,TEST_TTL_EN_NOSUB,TEST_TTL_FR_NOSUB);
