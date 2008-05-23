@@ -1,13 +1,5 @@
 package org.marketcetera.util.exec;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.PrintStream;
@@ -26,6 +18,14 @@ import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
 import static org.marketcetera.util.test.RegExAssert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class ExecTest
     extends TestCaseBase
