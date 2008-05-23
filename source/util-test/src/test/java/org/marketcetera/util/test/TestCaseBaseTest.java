@@ -1,13 +1,5 @@
 package org.marketcetera.util.test;
 
-/**
- * @author tlerios@marketcetera.com
- * @since 0.5.0
- * @version $Id$
- */
-
-/* $License$ */
-
 import java.io.File;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -16,6 +8,14 @@ import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+/**
+ * @author tlerios@marketcetera.com
+ * @since 0.5.0
+ * @version $Id$
+ */
+
+/* $License$ */
 
 public class TestCaseBaseTest
     extends TestCaseBase

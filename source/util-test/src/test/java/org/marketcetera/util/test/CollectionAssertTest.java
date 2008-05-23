@@ -1,5 +1,11 @@
 package org.marketcetera.util.test;
 
+import org.apache.commons.lang.ArrayUtils;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+import static org.marketcetera.util.test.CollectionAssert.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -7,12 +13,6 @@ package org.marketcetera.util.test;
  */
 
 /* $License$ */
-
-import org.apache.commons.lang.ArrayUtils;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-import static org.marketcetera.util.test.CollectionAssert.*;
 
 public class CollectionAssertTest
 {
