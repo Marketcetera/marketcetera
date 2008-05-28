@@ -21,19 +21,20 @@ class DiagnosticsController < ApplicationController
     @xml_time  = pacificTZ.local_to_utc(Time.local(*result.to_a))
 
     @process_info = {}
-    @process_info['ActiveMQ'] = %x{netstat -an | grep 61616}
-    @process_info['STOMP'] = %x{netstat -an | grep 61613}
     
     if (!RUBY_PLATFORM =~ "mswin")
-    @process_info['OMS'] = %x{ps auxww|grep OrderManagementSystem | grep -v grep}
-    @process_info['JMS_Poller'] = %x{ps auxww|grep poller | grep -v grep}
-    @process_info['MySQL'] = %x{ps auxww|grep mysqld | grep -v grep}
-
-    @networking_eth0 = %x{ifconfig eth0}
+      @process_info['OMS'] = %x{ps auxww|grep OrderManagementSystem | grep -v grep}
+      @process_info['JMS_Poller'] = %x{ps auxww|grep poller | grep -v grep}
+      @process_info['MySQL'] = %x{ps auxww|grep mysqld | grep -v grep}
+      @process_info['ActiveMQ'] = %x{netstat -an | grep 61616}
+      @process_info['STOMP'] = %x{netstat -an | grep 61613}
+      @networking_eth0 = %x{ifconfig eth0}
     else #windows - partial implementaion - need 'ps' replacement for windows 
       @process_info['OMS'] = ""
       @process_info['JMS_Poller'] = ""
-      @process_info['MySql'] = ""      
+      @process_info['MySql'] = ""
+      @process_info['ActiveMQ'] = "" 
+      @process_info['STOMP'] = "" 
       @networking_eth0 = %x{ipconfig}
     end 
 
