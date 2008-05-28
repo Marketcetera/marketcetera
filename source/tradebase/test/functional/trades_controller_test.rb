@@ -74,7 +74,8 @@ class TradesControllerTest < MarketceteraTestBase
                    :trade_type => "T", :side => Side::QF_SIDE_CODE[:buy], 
                        :price_per_share => "50.12")
     t.create_trade(t.quantity, "SYMBOL WITH SPACES", t.price_per_share, 19.99,  "USD",
-                          "A COUNT WITH SPACES", DateTime.civil(2006, 10, 20, 12, 23, 0))
+		                             "A COUNT WITH SPACES", DateTime.civil(2006, 10, 20, 12, 23, 0).to_s(:db))
+														    
     t.save
     
     get :list
@@ -90,7 +91,7 @@ class TradesControllerTest < MarketceteraTestBase
     assert_tag :tag => "td", :content => "A&nbsp;COU...PACES"
 
     # verify the post-date is displayed according to format
-    assert_tag :tag => 'td', :content => "20-Oct-06 12:23:00 PDT"
+    assert_tag :tag => 'td', :content => "20-Oct-06 12:23:00 Pacific Standard Time"
   end
 
   # bug #123

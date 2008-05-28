@@ -85,7 +85,7 @@ class TradeTest < MarketceteraTestBase
     # now start verifying everything
     assert_not_nil Account.find_by_nickname(account), "account doesn't exist"
     assert_equal 20, theTrade.quantity
-    assert_equal Date.civil(2006, 7,8), theTrade.journal_post_date
+    assert_equal Date.civil(2006, 7,8).to_s(:db), theTrade.journal_post_date.strftime("%Y-%m-%d")
     assert_nums_equal 420.23, theTrade.price_per_share
     assert_nums_equal 19.99, theTrade.total_commission
     assert_nums_equal 420.23 * theTrade.quantity, theTrade.total_price
