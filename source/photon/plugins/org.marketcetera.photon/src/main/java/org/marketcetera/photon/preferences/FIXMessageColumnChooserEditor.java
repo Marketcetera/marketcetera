@@ -32,6 +32,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -40,12 +42,24 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 
 import ca.odell.glazedlists.BasicEventList;
 
+/* $License$ */
+
 /**
  * 
+ * The Editor for choosing various FIX message field columns in the Preferences Page.
+ * 
  * @author caroline.leung@softwaregoodness.com
+ * @author anshul@marketcetera.com
  *
  */
+@ClassVersion("$Id$")
 public class FIXMessageColumnChooserEditor extends FieldEditor {
+	/**
+	 * Name to use for a fix field that for whatever reason doesn't have
+	 * human field name.
+	 */
+	private static final String UNKNOWN_FIX_FIELD_NAME = "Unknown";
+
 	protected static final String CUSTOM_FIELD_PREFIX = "Custom Field";
 		
 	private FIXMessageColumnPreferenceParser parser;
@@ -282,12 +296,31 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		fieldEntryToFieldIDMap = new LinkedHashMap<String, Integer>();
 		for (int i = 0; i < FIXMessageUtil.getMaxFIXFields(); i++) {
 			if (FIXMessageUtil.isValidField(i)) {
-				String fieldName = fixDictionary.getHumanFieldName(i);
-				String fieldEntry = fieldName + " (" + i + ")";
+				String fieldEntry = getFixFieldDisplayName(i);
 				fieldEntryToFieldIDMap.put(fieldEntry, i);
 			}
 		}
 	}
+	
+	/**
+	 * Return the localized display name for the supplied FIX field number.
+	 * @param i The FIX field number.
+	 * @return The localized display name for the FIX field.
+	 */
+	private String getFixFieldDisplayName(int i) {
+		String humanFieldName = fixDictionary.getHumanFieldName(i);
+		StringBuilder sb;
+		if(humanFieldName != null) {
+			sb = new StringBuilder(
+					FIXFieldLocalizer.getLocalizedFIXFieldName(
+					humanFieldName));
+		} else {
+			sb = new StringBuilder(UNKNOWN_FIX_FIELD_NAME);
+		}
+		
+		return  sb.append("(").append(i).append(")").toString();
+	}
+	
 	private void addCustomFieldToFieldEntryMap(String fieldName, int fieldID) {
 		if (fieldEntryToFieldIDMap != null) {
 			fieldEntryToFieldIDMap.put(fieldName, fieldID);
@@ -295,7 +328,10 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 	}
 	
 	private String getCustomFieldName(int fieldID) {
-		return CUSTOM_FIELD_PREFIX + " (" + fieldID + ")"; 		
+		return new StringBuffer(CUSTOM_FIELD_PREFIX)
+		.append(" (").append(fieldID).append(")")
+		.toString(); 		
+
 	}
 	
 	protected void addCustomFieldToAvailableFieldsList(int fieldID) {
@@ -326,11 +362,11 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		for (int intField : savedIntFields) {
 			String fieldName;
 			if (FIXMessageUtil.isValidField(intField)) {
-				fieldName = fixDictionary.getHumanFieldName(intField);				
+				fieldName = getFixFieldDisplayName(intField);				
 			} else {
-				fieldName = CUSTOM_FIELD_PREFIX;
+				fieldName = getCustomFieldName(intField);
 			}
-			fieldsList.add(fieldName + " (" + intField + ")");
+			fieldsList.add(fieldName);
 		}
 		return fieldsList;
 	}
