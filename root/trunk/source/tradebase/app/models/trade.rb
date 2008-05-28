@@ -176,7 +176,7 @@ class Trade < ActiveRecord::Base
   end
   
   ##### Helper Methods #####
-
+   # Note that trade_date here is a string and not a Date object as all callers format it using to_s(:db)
    def create_trade_journal(total_commission, currency_alpha_code, trade_date, description)
       notional = self.quantity * self.price_per_share
       logger.debug("creating a trade for "+self.tradeable_m_symbol_root + " for "+notional.to_s + "/("+total_commission.to_s + ")")

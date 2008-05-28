@@ -176,7 +176,7 @@ class QueriesControllerTest < MarketceteraTestBase
 
   # test the case of bug #477 - need to have a trade have a timestamp past midnight on today
   def test_on_date_today_past_midnight
-    t1 = create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", DateTime.now, "bob", "4.53", "ZAI")
+    t1 = create_test_trade(100, 400, Side::QF_SIDE_CODE[:buy], "acct1", DateTime.now.to_s(:db), "bob", "4.53", "ZAI")
     get :trade_search, {:from_date => Date.today.to_s, :to_date => Date.today.to_s}
 
     assert_response :success
