@@ -67,7 +67,7 @@ binmode(OUT);
 print OUT '@ECHO OFF'.$sep.$sep;
 print OUT 'CD /D %~dp0..'.$sep;
 print OUT 'CALL ..\\setEnv.bat'.$sep.$sep;
-print OUT '%JAVA_HOME%\\bin\\java.exe '.$javaArgs.'^'.$sep;
+print OUT 'java.exe '.$javaArgs.'^'.$sep;
 print OUT ' -cp conf^'.$sep;
 foreach $jar (@jars) {
 	print OUT ';"%METC_HOME%\\'.$artifact.'\\lib\\'.$jar.'"^'.$sep;
@@ -84,7 +84,7 @@ binmode(OUT);
 print OUT '#!/bin/sh'.$sep.$sep;
 print OUT 'cd $(dirname $0)/..'.$sep;
 print OUT '. ../setEnv.sh'.$sep.$sep;
-print OUT 'exec ${JAVA_HOME}/bin/java '.$javaArgs.'\\'.$sep;
+print OUT 'exec java '.$javaArgs.'\\'.$sep;
 print OUT ' -cp conf\\'.$sep;
 foreach $jar (@jars) {
 	print OUT ':"${METC_HOME}/'.$artifact.'/lib/'.$jar.'"\\'.$sep;
