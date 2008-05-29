@@ -17,7 +17,6 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Logger;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
@@ -161,12 +160,17 @@ public class MarketceteraFeed
 	{
 		return isRunning;
 	}
+	
+	private void setIsRunning(boolean inIsRunning)
+	{
+	    isRunning = inIsRunning;
+	}
 
 	public void start() 
 	{
 		synchronized(this) {
 			try {
-				if (!isRunning) {
+				if (!isRunning()) {
 					logger.info("Starting connection to: "+url);
 					MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
 					SessionSettings sessionSettings;
@@ -186,10 +190,12 @@ public class MarketceteraFeed
 					messageFactory = new MessageFactory();
 					socketInitiator = new SocketInitiator(this, messageStoreFactory, sessionSettings, logFactory, messageFactory);
 					socketInitiator.start();
-					isRunning = true;
+					setIsRunning(true);
+					// this method intentionally does not call super.start() because the actual start mechanism happens in fromAdmin
 				}
 			} catch (Throwable t) {
-				logger.error("Exception trying to start Marketcetera feed: "+t.getLocalizedMessage());
+				logger.error("Exception trying to start Marketcetera feed",
+				             t);
 				setFeedStatus(FeedStatus.ERROR);
 			}
 		}
@@ -198,9 +204,11 @@ public class MarketceteraFeed
 	public void stop() 
 	{
 		synchronized(this) {
-			if (isRunning) {
+			if (isRunning()) {
 				logger.info("Stopping connection to: "+url);
 				socketInitiator.stop(true);
+				setIsRunning(false);
+				super.stop();
 			}
 		}
 	}
@@ -220,6 +228,7 @@ public class MarketceteraFeed
 			} catch (FieldNotFound fnf) {
 				feedType = FeedType.LIVE;
 			}
+			setFeedStatus(FeedStatus.AVAILABLE);
 			logger.info("Marketcetera feed received Logon");
 		} else if (MsgType.LOGOUT.equals(msgType)) {
 			String text = "";
@@ -433,10 +442,6 @@ public class MarketceteraFeed
             List<Group> groups = AbstractMessageTranslator.getGroups(inData);
             for(Group group : groups) {
                 MSymbol symbol = AbstractMessageTranslator.getSymbol(group);
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Found group with symbol: " + symbol,
-                                        this);
-                }
                 handles.add(symbol.getBaseSymbol());
             }
             addSubscription(doQuery(inData),
@@ -538,6 +543,6 @@ public class MarketceteraFeed
     @Override
     protected boolean isLoggedIn(MarketceteraFeedCredentials inCredentials)
     {
-        return isRunning;
+        return isRunning();
     }
 }

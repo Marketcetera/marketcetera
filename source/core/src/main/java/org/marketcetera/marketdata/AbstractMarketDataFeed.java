@@ -2,8 +2,10 @@ package org.marketcetera.marketdata;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -217,6 +219,12 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     public final T execute(MarketDataFeedTokenSpec<C> inTokenSpec)
             throws FeedException
     {
+        // check the status of the feed - if it's not running, the feed isn't
+        //  ready to be used
+        if(!getFeedStatus().isRunning()) {
+            throw new FeedException(String.format("The feed is at status \"%s\" and cannot execute requests.",
+                                                  getFeedStatus()));
+        }
         C credentials = inTokenSpec.getCredentials();
         // the credentials supplied are the best available to us - either given
         //  as part of this query or those originally supplied - either way,
@@ -597,9 +605,24 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         if(inFeedStatus == null) {
             throw new NullPointerException();
         }
-        if(!(mFeedStatus.equals(inFeedStatus))) {
-            mFeedStatus = inFeedStatus;
-            mFeedStatusPublisher.publish(this);
+        synchronized(this) {
+            // if the new status is not the same as the old one, act on it, otherwise ignore it to reduce noise
+            if(!(mFeedStatus.equals(inFeedStatus))) {
+                // if the old status was "off-line" and the new status is "available" then
+                //  we need to do something to get the ball back rolling
+                try {
+                    if(!mFeedStatus.isRunning() &&
+                       inFeedStatus.isRunning()) {
+                        doReconnectToFeed();
+                    }
+                } finally {
+                    // regardless of whether the above succeeds or fails, make sure
+                    //  that the feed status is set appropriately and the subscribers
+                    //  are notified
+                    mFeedStatus = inFeedStatus;
+                    mFeedStatusPublisher.publish(this);
+                }
+            }
         }
     }
     /**
@@ -783,6 +806,69 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         }
     }
     /**
+     * Executes the steps necessary when the connection to the feed has been
+     * resumed.
+     */
+    private void doReconnectToFeed()
+    {
+        if(LoggerAdapter.isDebugEnabled(this)) {
+            LoggerAdapter.debug("Reconnected to feed, resubmitting queries",
+                                this);
+        }
+        // retrieve all the tokens for active queries
+        Collection<T> tokens = mHandleHolder.getTokens();
+        // these tokens need to be resubmitted to the feed
+        // the token must still be valid because the various subscribers
+        //  will still be listening.  the query represented by the token
+        //  needs to be resubmitted to the feed and the resulting handles
+        //  need to be added to the collection.
+        for(T token : tokens) {
+            // remove old record of this query
+            doHandleInvalidation(mHandleHolder.removeToken(token));
+            // newly submit query, allowing its new handles to be added
+            if(LoggerAdapter.isDebugEnabled(this)) {
+                LoggerAdapter.debug(String.format("Resubmitting %s",
+                                                  token),
+                                    this);
+            }
+            try {
+                if(!doExecute(token)) {
+                    token.setStatus(Status.EXECUTION_FAILED);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+    /**
+     * Executes the invalidation of the handles passed.
+     * 
+     * <p>The feed will be notified that each handle passed is invalid.
+     * 
+     * @param inHandles a <code>List&lt;MarketDataHandle&gt;</code> value
+     */
+    private void doHandleInvalidation(List<MarketDataHandle> inHandles)
+    {
+        for(MarketDataHandle handle : inHandles) {
+            try {
+                doCancel(handle.decompose());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                if(LoggerAdapter.isWarnEnabled(this)) {
+                    LoggerAdapter.warn(MessageKey.WARNING_MARKET_DATA_FEED_CANNOT_CANCEL_SUBSCRIPTION.getLocalizedMessage(handle),
+                                       e,
+                                       this);
+                }
+            } catch (Throwable t) {
+                if(LoggerAdapter.isWarnEnabled(this)) {
+                    LoggerAdapter.warn(MessageKey.WARNING_MARKET_DATA_FEED_CANNOT_CANCEL_SUBSCRIPTION.getLocalizedMessage(handle),
+                                       t,
+                                       this);
+                }
+            }
+        }
+    }
+    /**
      * Returns a {@link MarketDataHandle} instance encapsulating the given data feed proto-handle.
      *
      * @param inSeed a <code>String</code> value containing the proto-handle returned from
@@ -890,7 +976,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         public T call()
                 throws Exception
         {
-            setFeedStatus(FeedStatus.UNKNOWN);
             C credentials = mCredentials;
             T token = mToken;
 
@@ -923,7 +1008,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             }
             if(!succeeded) {
                 // bail out expressing sadness
-                setFeedStatus(FeedStatus.ERROR);
                 token.setStatus(IMarketDataFeedToken.Status.LOGIN_FAILED);
                 return token;
             }
@@ -949,11 +1033,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 succeeded = false;
             }
             if(!succeeded) {
-                setFeedStatus(FeedStatus.ERROR);
                 token.setStatus(IMarketDataFeedToken.Status.INITIALIZATION_FAILED);
                 return token;
             }
-            setFeedStatus(FeedStatus.AVAILABLE);
             // feed should be ready for commands
             // execute command, wait for status response, not responses to the actual command
             succeeded = false;
@@ -976,7 +1058,6 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 succeeded = false;
             }
             if(!succeeded) {
-                setFeedStatus(FeedStatus.ERROR);
                 token.setStatus(IMarketDataFeedToken.Status.EXECUTION_FAILED);
                 return token;
             }
@@ -999,11 +1080,11 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         /**
          * stores client response handles by token - note that these two collections must be kept in sync
          */
-        private final Hashtable<T,List<MarketDataHandle>> mHandlesByToken = new Hashtable<T,List<MarketDataHandle>>();
+        private final Map<T,List<MarketDataHandle>> mHandlesByToken = new HashMap<T,List<MarketDataHandle>>();
         /**
          * stores tokens by handle - note that these two collections must be kept in sync
          */
-        private final Hashtable<MarketDataHandle,T> mTokensByHandle = new Hashtable<MarketDataHandle,T>();
+        private final Map<MarketDataHandle,T> mTokensByHandle = new HashMap<MarketDataHandle,T>();
         /**
          * object used for synchronization lock for these two collections
          */
@@ -1080,6 +1161,17 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                 }
             }
             return handles;
+        }
+        /**
+         * Returns all the tokens in no particular order.
+         * 
+         * @return a <code>Collection&lt;T&gt;</code> value
+         */
+        private List<T> getTokens()
+        {
+            synchronized(mLock) {
+                return new ArrayList(mTokensByHandle.values());
+            }
         }
     }
     /**

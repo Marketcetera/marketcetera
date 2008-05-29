@@ -192,6 +192,7 @@ public class ScriptRegistryTest extends TestCase {
         TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
         TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
                                                          credentials);
+        feed.start();
         // add a subscriber so we know when the message gets through
         final TestSubscriber subscriber = new TestSubscriber();
         // this is the registry we'll use to check the messages

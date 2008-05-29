@@ -16,6 +16,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.TestSubscriber;
+import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TestEventTranslator;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
@@ -47,7 +48,7 @@ public class AbstractMarketDataFeedTest
     }
     public static Test suite() 
     {
-        TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
+       TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
         return suite;
     }        
     public void testConstructor()
@@ -142,6 +143,7 @@ public class AbstractMarketDataFeedTest
     {
         final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
                                                                new TestMarketDataFeedCredentials());
+        feed.start();
         List<ISubscriber> subscribers = Arrays.asList(new ISubscriber[0]);
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
@@ -353,6 +355,7 @@ public class AbstractMarketDataFeedTest
         throws Exception
     {
         TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        feed.start();
         TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
         // create three subscribers - 1 & 3 will be assigned to specific queries,
         //  2 will be a general subscriber (all messages)
@@ -400,6 +403,134 @@ public class AbstractMarketDataFeedTest
                      s2.getPublishCount());
         assertEquals(1,
                      s3.getPublishCount());
+    }
+    /**
+     * Tests the ability of a feed to resubmit active queries
+     * upon reconnect.
+     * 
+     * @throws Exception if the test fails
+     */
+    public void testReconnect()
+        throws Exception
+    {
+        // 1) Create feed, verify status is !running, verify no active queries
+        // 2) Start feed, verify status is running, verify no active queries
+        // 3) Submit a query, verify subscriber gets response
+        // 4) Stop feed, verify status is !running, verify active queries
+        // 5) Start feed, verify status is running, verify active queries
+        // 6) Verify subscriber gets update
+        // #1
+        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        assertEquals(FeedStatus.OFFLINE,
+                     feed.getFeedStatus());
+        assertFalse(feed.getFeedStatus().isRunning());
+        assertTrue(feed.getCreatedHandles().isEmpty());
+        // #2
+        feed.start();
+        assertEquals(FeedStatus.AVAILABLE,
+                     feed.getFeedStatus());
+        assertTrue(feed.getFeedStatus().isRunning());
+        assertTrue(feed.getCreatedHandles().isEmpty());
+        // #3
+        TestSubscriber s1 = new TestSubscriber();
+        Message message0 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("test") }), 
+                                                                            false);
+        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(),
+                                                                                                                message0,
+                                                                                                                Arrays.asList(new TestSubscriber[] { s1 } ));
+        TestMarketDataFeedToken token = feed.execute(spec);
+        waitForPublication(s1);
+        assertEquals(message0,
+                     ((EventBase)s1.getData()).getFIXMessage());
+        assertEquals(1,
+                     s1.getPublishCount());
+        assertEquals(Status.ACTIVE,
+                     token.getStatus());
+        // #4
+        feed.stop();
+        assertEquals(FeedStatus.OFFLINE,
+                     feed.getFeedStatus());
+        assertFalse(feed.getFeedStatus().isRunning());
+        List<String> handleList1 = feed.getCreatedHandles();
+        assertEquals(1,
+                     handleList1.size());
+        // #5
+        // reset the statistics on s1
+        s1.reset();
+        assertEquals(0,
+                     s1.getPublishCount());
+        // restart feed, should trigger a resubmission of the query for message0
+        feed.start();
+        assertEquals(FeedStatus.AVAILABLE,
+                     feed.getFeedStatus());
+        assertTrue(feed.getFeedStatus().isRunning());
+        assertEquals(handleList1,
+                     feed.getCanceledHandles());
+        // #6
+        // query should have been resubmitted,
+        waitForPublication(s1);
+        assertEquals(1,
+                     s1.getPublishCount());
+        assertEquals(message0,
+                     ((EventBase)s1.getPublications().get(0)).getFIXMessage());
+        // now check to make sure that the resubmitted query has a new handle
+        List<String> handleList2 = feed.getCreatedHandles();
+        assertEquals(2,
+                     handleList2.size());
+        // create two new messages to use
+        Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("COLIN") }), 
+                                                                            false);
+        Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("NOT-COLIN") }), 
+                                                                            false);
+        assertFalse(message1.equals(message2));
+        // reset the subscriber counters
+        s1.reset();
+        // submit data to the old handle
+        feed.submitData(handleList1.get(0), 
+                        message1);
+        // we could wait for a little bit and make sure the data wasn't received,
+        //  but that wouldn't be deterministic.  instead, we'll right away submit a
+        //  second message to the new handle and make sure that s1 got that one and
+        //  only that one.  since the second message will have to be delivered after
+        //  the first one, once we're sure the second one has gotten through, if the
+        //  first one still isn't there, then we know for sure it worked as planned
+        feed.submitData(handleList2.get(1),
+                        message2);
+        waitForPublication(s1);
+        assertEquals(1,
+                     s1.getPublishCount());
+        assertEquals(message2,
+                     ((EventBase)s1.getPublications().get(0)).getFIXMessage());
+        // bonus testing - make a resubmission fail and verify that the token status is set correctly
+        // there is already one active query represented by "spec" and "token" - add another one that
+        //  we can set to fail when it is resubmitted
+        s1.reset();
+        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec2 = MarketDataFeedTokenSpec.generateTokenSpec(spec.getCredentials(), 
+                                                                                                                 spec.getMessage(), 
+                                                                                                                 spec.getSubscribers());
+        TestMarketDataFeedToken token2 = feed.execute(spec2);
+        waitForPublication(s1);
+        assertEquals(spec.getMessage(),
+                     ((EventBase)s1.getData()).getFIXMessage());
+        assertEquals(1,
+                     s1.getPublishCount());
+        assertEquals(Status.ACTIVE,
+                     token2.getStatus());
+        // the feed now has 2 active queries
+        feed.stop();
+        // before we restart the feed, set the first query to fail on resubmission
+        s1.reset();
+        token.setShouldFail(true);
+        feed.start();
+        assertEquals(FeedStatus.AVAILABLE,
+                     feed.getFeedStatus());
+        assertTrue(feed.getFeedStatus().isRunning());
+        waitForPublication(s1);
+        // check token status
+        assertEquals(Status.EXECUTION_FAILED,
+                     token.getStatus());
+        assertEquals(Status.ACTIVE,
+                     token2.getStatus());
     }
     
     private static class TestFeedComponentListener
@@ -521,6 +652,7 @@ public class AbstractMarketDataFeedTest
         assertTrue(subscriber2.getPublishThrows());
         assertFalse(subscriber3.getPublishThrows());
         TestMarketDataFeed feed = new TestMarketDataFeed();
+        feed.start();
         TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
         List<ISubscriber> subscribers = Arrays.asList(new ISubscriber[] { subscriber1, subscriber2, subscriber3 } );
         TestMarketDataFeedToken token = feed.execute(credentials,
@@ -580,6 +712,7 @@ public class AbstractMarketDataFeedTest
                                                          "TestMarketDataFeed",
                                                          credentials,
                                                          25);
+        feed.start();
         List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
         List<TestMarketDataFeedToken> tokens = new ArrayList<TestMarketDataFeedToken>();
         for(int i=0;i<1000;i++) {
@@ -608,6 +741,7 @@ public class AbstractMarketDataFeedTest
         throws Exception
     {
         final TestMarketDataFeed feed = new TestMarketDataFeed();
+        feed.start();
         final TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
         final TestSubscriber subscriber = new TestSubscriber();
         
@@ -1138,6 +1272,7 @@ public class AbstractMarketDataFeedTest
                                                                "obnoxious-feed-name-with-dashes",
                                                                null,
                                                                0);
+        feed.start();
         final List<? extends ISubscriber> subscribers = inTokenSpec.getSubscribers();
         if(subscribers != null) {
             for(ISubscriber subscriber : subscribers) {
@@ -1375,7 +1510,7 @@ public class AbstractMarketDataFeedTest
            inTranslateThrows ||
            inAfterExecuteThrows ||
            inBeforeExecuteThrows) {
-            assertEquals(FeedStatus.ERROR,
+            assertEquals(FeedStatus.AVAILABLE,
                          inFeed.getFeedStatus());
             if(inLoginFails ||
                inLoginThrows ||
@@ -1401,7 +1536,7 @@ public class AbstractMarketDataFeedTest
                inTranslateToEventsReturnsZeroEvents) {
                 if(inGenerateTokenThrows) {
                     assertNull(inToken);                    
-                    assertEquals(FeedStatus.OFFLINE,
+                    assertEquals(FeedStatus.AVAILABLE,
                                  inFeed.getFeedStatus());
                 } else {
                     assertNotNull(inToken);
