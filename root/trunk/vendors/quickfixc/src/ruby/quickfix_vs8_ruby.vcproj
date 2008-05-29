@@ -29,7 +29,7 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				Description="Performing Custom Build Step - Copying .rb files"
-				CommandLine="cp $(InputDir)\quickfix*.rb $(OutDir)"
+				CommandLine="copy $(InputDir)\quickfix*.rb $(OutDir)"
 				Outputs="$(OutDir)\quickfix40.rb;$(OutDir)\quickfix41.rb;$(OutDir)\quickfix42.rb;$(OutDir)\quickfix43.rb;$(OutDir)\quickfix44.rb;$(OutDir)\quickfix_fields.rb;$(OutDir)\quickfix_ruby.rb"
 			/>
 			<Tool
@@ -119,7 +119,7 @@
 			<Tool
 				Name="VCCustomBuildTool"
 				Description="Performing Custom Build Step - Copying .rb files"
-				CommandLine="cp $(InputDir)\quickfix*.rb $(OutDir)\ruby"
+				CommandLine="copy $(InputDir)\quickfix*.rb $(OutDir)\ruby"
 				Outputs="$(OutDir)\ruby\quickfix40.rb;$(OutDir)\ruby\quickfix41.rb;$(OutDir)\ruby\quickfix42.rb;$(OutDir)\ruby\quickfix43.rb;$(OutDir)\ruby\quickfix44.rb;$(OutDir)\ruby\quickfix_fields.rb;$(OutDir)\ruby\quickfix_ruby.rb"
 			/>
 			<Tool
