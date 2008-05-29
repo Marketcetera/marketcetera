@@ -28,7 +28,7 @@
 			<map>
                 <entry key="ConnectionType" value="initiator"/>
                 <entry key="HeartBtInt" value="30"/>
-                <entry key="FileStorePath" value="store"/>
+                <entry key="FileStorePath" value="${quickfix.store}"/>
                 <entry key="StartTime" value="00:00:00"/>
                 <entry key="EndTime" value="00:00:00"/>
                 <entry key="DataDictionary" value-ref="fixDictionaryPath"/>

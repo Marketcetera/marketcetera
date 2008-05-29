@@ -24,12 +24,13 @@
         <constructor-arg value="trade-recorder"/>
     </bean>
 
-    <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-        <property name="brokerURL" value="tcp://localhost:61616"/>
-<!--
-        <property name="userName" value="user1"/>
-        <property name="password" value="password1"/>
--->
+    <bean
+     id="connectionFactory"
+     class="org.apache.activemq.ActiveMQConnectionFactory"
+     depends-on="systemPropertiesSetter">
+        <property name="brokerURL" value="${activemq.brokerUrl}"/>
+        <property name="userName" ref="runtimeUsername"/>
+        <property name="password" ref="runtimePassword"/>
     </bean>
 
     <!-- Spring JMS Template -->
@@ -62,8 +63,8 @@
     <!-- The argument order is as follows: FIX begin string, senderCompID, targetCompID [, sessionQualifier] -->
     <bean id="defaultSessionID" class="quickfix.SessionID">
         <constructor-arg ref="fixVersion"/>
-        <constructor-arg value="MKTC-ORS"/>
-        <constructor-arg value="MRKTC-EXCH"/>
+        <constructor-arg value="${quickfix.senderCompId}"/>
+        <constructor-arg value="${quickfix.targetCompId}"/>
     </bean>
 
     <bean id="fixVersionEnum" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
@@ -88,9 +89,9 @@
 
     <!-- Location (host/port) of the FIX reciever we are connecting to -->
     <bean id="socketConnectHostValue" class="java.lang.String">
-        <constructor-arg value="exchange.marketcetera.com"/>
+        <constructor-arg value="${quickfix.destination}"/>
     </bean>
     <bean id="socketConnectPortValue" class="java.lang.String">
-        <constructor-arg value="7001"/>
+        <constructor-arg value="${quickfix.port}"/>
     </bean>
 </beans>
