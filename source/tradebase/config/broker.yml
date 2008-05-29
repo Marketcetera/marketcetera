@@ -9,9 +9,9 @@ development:
     # Stomp Adapter Properties #
     ############################
     adapter: stomp
+    login: "tradebase"
+    passcode: "tradebase_password"
     # properties below are all defaults for this adapter
-    # login: ""
-    # passcode: ""
     # host: localhost
     # port: 61613
     # reliable: true
@@ -24,9 +24,9 @@ test:
 production:
     adapter: stomp
     reliable: true
+    login: "tradebase"
+    passcode: "tradebase_password"
     # properties below are all defaults for this adapter
-    # login: ""
-    # passcode: ""
     # host: localhost
     # port: 61613
     # reliable: true
