@@ -49,7 +49,6 @@ my(@patternsAll)=(
 );
 
 my(%patternsCustom)=(
-	'public/source/oms' => ('store'),
 	'public/source/photon/plugins/org.marketcetera.core' => ('bin'),
 	'public/source/photon/plugins/com.swtworkbench.community.xswt' => ('bin'),
 	'public/source/photon/plugins/org.marketcetera.bogusfeed' => ('bin')
@@ -124,7 +123,7 @@ sub walk ()
 		}
 		if (($absName=~m#/source/photon/#) && (-e $_.'/META-INF')) {
 			@patterns=(@patterns,@patternsPhotonTop);
-		} elsif ((-e $_.'/pom.xml') && (-e $_.'/src')) {
+		} elsif (-e $_.'/pom.xml') {
 			@patterns=(@patterns,@patternsMavenTop);
 		} else {
 			@patterns=(@patterns,@patternsAll);
