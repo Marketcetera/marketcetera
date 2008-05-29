@@ -6,10 +6,10 @@ import org.marketcetera.core.MessageKey;
 
 /**
  * @author toli
- * @version $Id: ORSMessageKey.java 3587 2008-04-24 23:38:47Z tlerios $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: ORSMessageKey.java 3587 2008-04-24 23:38:47Z tlerios $")
+@ClassVersion("$Id$")
 public enum ORSMessageKey implements LocalizedMessage {
     ERROR_INIT_PROPNAME_IGNORE("ors.init.ignoring_propname"),
     ERROR_INCOMING_MSG_NULL("ors.error_incoming_msg_null"),
