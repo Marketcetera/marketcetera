@@ -1,5 +1,10 @@
 package org.marketcetera.orderloader;
 
+import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.spring.SpringUtils;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
+
 import org.marketcetera.core.*;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
@@ -10,12 +15,12 @@ import quickfix.Message;
 import quickfix.StringField;
 import quickfix.field.*;
 
-import javax.jms.JMSException;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.*;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.util.*;
+import javax.jms.JMSException;
 
 /**
  *  Simple class to read a CSV file containing orders and load them into the
@@ -39,6 +44,10 @@ public class OrderLoader extends ApplicationBase
     private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
     private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory";
 
+    private static final String CFG_BASE_FILE_NAME=CONF_DIR+"orderloader_base.xml";
+
+    private static StandardAuthentication authentication;
+
     protected static String MKT_PRICE = "MKT";
     protected static String TIME_LIMIT_DAY = "DAY";
     public static final String CFG_FILE_NAME = "orderloader.xml";
@@ -53,18 +62,28 @@ public class OrderLoader extends ApplicationBase
     protected Vector<String> failedOrders;
     public static final String COMMENT_MARKER = "#";
 
-    public OrderLoader() throws Exception
+    public OrderLoader
+        (String username,
+         String password) throws Exception
     {
+        StaticApplicationContext parentContext=
+            new StaticApplicationContext
+            (new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
+        SpringUtils.addStringBean(parentContext,USERNAME_BEAN_NAME,username);
+        SpringUtils.addStringBean(parentContext,PASSWORD_BEAN_NAME,password);
+        parentContext.refresh();
+
         numProcessedOrders = numComments = numBlankLines = 0;
         failedOrders = new Vector<String>();
-        createApplicationContext(new String[] {getConfigName()}, true);
+        createApplicationContext
+            (new String[] {getConfigName()},parentContext,true);
         URL idFactoryURL = new URL((String) getAppCtx().getBean(ID_FACTORY_URL_NAME));
         idFactory = new HttpDatabaseIDFactory(idFactoryURL);
         try {
             idFactory.getNext();
         } catch(NoMoreIDsException ex) {
             // don't print the entire stacktrace, just the message
-            LoggerAdapter.error(MessageKey.ERROR_DBFACTORY_FAILED_INIT.getLocalizedMessage(idFactoryURL, ex.getMessage()), this);
+            LoggerAdapter.warn(MessageKey.ERROR_DBFACTORY_FAILED_INIT.getLocalizedMessage(idFactoryURL, ex.getMessage()), this);
         }
     }
 
@@ -88,8 +107,12 @@ public class OrderLoader extends ApplicationBase
      */
     protected static void usage()
     {
-        System.out.println("Usage: java OrderLoader <CSV input file>");
-        System.out.println("Example file format should be: Symbol,Side,OrderQty,Price,TimeInForce,Account");
+        System.err.println("Usage: java "+OrderLoader.class.getName()+
+                           " <CSV input file>");
+        System.err.println("Example file format should be: Symbol,Side,OrderQty,Price,TimeInForce,Account");
+        System.err.println("Authentication options:");
+        System.err.println();
+        authentication.printUsage(System.err);
         System.exit(1);
     }
 
@@ -105,11 +128,25 @@ public class OrderLoader extends ApplicationBase
      */
     public static void main(String[] args) throws Exception
     {
-        if (args.length < 1) {
+        authentication=new StandardAuthentication(CFG_BASE_FILE_NAME,args);
+        if (!authentication.setValues()) {
             usage();
         }
-        OrderLoader loader = new OrderLoader();
-        loader.parseAndSendOrders(new FileInputStream(args[0]));
+
+        args=authentication.getOtherArgs();
+        if (args.length<1) {
+            System.err.println("Missing input file");
+            usage();
+        }
+        if (args.length>1) {
+            System.err.println("Too many arguments");
+            usage();
+        }
+        String file=args[0];
+
+        OrderLoader loader = new OrderLoader
+            (authentication.getUser(),authentication.getPasswordAsString());
+        loader.parseAndSendOrders(new FileInputStream(file));
         loader.printReport();
         ((Service) loader.getAppCtx().getBean(POOLED_CONNECTION_FACTORY_NAME)).stop();
         loader.getAppCtx().stop();
