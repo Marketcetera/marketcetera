@@ -131,6 +131,7 @@ public class TestSubscriber
     public void reset()
     {
         setPublishCount(0);
-        setData(null);        
+        setData(null);
+        mPublications.clear();
     }
 }

@@ -10,6 +10,8 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.TestEventTranslator;
 import org.marketcetera.quickfix.TestMessageTranslator;
 
+import quickfix.Message;
+
 /**
  * Test implementation of <code>AbstractMarketDataFeed</code>.
  *
@@ -22,7 +24,8 @@ public class TestMarketDataFeed
                                    TestMarketDataFeedCredentials,
                                    TestMessageTranslator,
                                    TestEventTranslator,
-                                   String,TestMarketDataFeed>
+                                   String,
+                                   TestMarketDataFeed>
 {
     private final int mDelay;
     
@@ -325,12 +328,12 @@ public class TestMarketDataFeed
     
     public List<String> getCanceledHandles()
     {
-        return mCanceledHandles;
+        return new ArrayList<String>(mCanceledHandles);
     }
     
     public List<String> getCreatedHandles()
     {
-        return mCreatedHandles;
+        return new ArrayList<String>(mCreatedHandles);
     }
 
     /* (non-Javadoc)
@@ -390,6 +393,10 @@ public class TestMarketDataFeed
         }
         if(getBeforeExecuteReturnsFalse()) {
             return false;
+        }
+        if(inToken != null &&
+           inToken.getShouldFail()) {
+            throw new NullPointerException("This exception is expected");
         }
         return super.beforeDoExecute(inToken);
     }
@@ -480,5 +487,19 @@ public class TestMarketDataFeed
     public void setExecuteReturnsNull(boolean inExecuteReturnsNull)
     {
         mExecuteReturnsNull = inExecuteReturnsNull;
+    }
+    /**
+     * Causes the given message to be submitted in reference to the given handle.
+     * 
+     * <p>This method can be used to simulate a repeatedly-updated subscription.
+     * 
+     * @param inHandle a <code>String</code> value
+     * @param inMessage a <code>Message</code> value
+     */
+    public void submitData(String inHandle,
+                           Message inMessage)
+    {
+        dataReceived(inHandle,
+                     inMessage);
     }
 }

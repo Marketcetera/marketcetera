@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutionException;
 public class TestMarketDataFeedToken
     extends AbstractMarketDataFeedToken<TestMarketDataFeed,TestMarketDataFeedCredentials>
 {
+    private boolean mShouldFail = false;
     /**
      * Create a new <code>TestMarketDataFeedToken</code> instance.
      *
@@ -36,5 +37,21 @@ public class TestMarketDataFeedToken
         throws InterruptedException, ExecutionException
     {
         getPublisher().publishAndWait(inData);
+    }
+
+    /**
+     * @return the shouldFail
+     */
+    public boolean getShouldFail()
+    {
+        return mShouldFail;
+    }
+
+    /**
+     * @param inShouldFail the shouldFail to set
+     */
+    public void setShouldFail(boolean inShouldFail)
+    {
+        mShouldFail = inShouldFail;
     }
 }

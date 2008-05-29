@@ -56,6 +56,7 @@ public class AbstractMarketDataFeedTokenTest
                                                                mMessage, 
                                                                Arrays.asList(new ISubscriber[0]));
         mFeed = new TestMarketDataFeed();
+        mFeed.start();
         mToken = TestMarketDataFeedToken.getToken(mTokenSpec,
                                                   mFeed);
     }
