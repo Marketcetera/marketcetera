@@ -72,17 +72,55 @@
     </dependency>
   </dependencies>
 
-  <!-- Command-line execution. -->
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>exec-maven-plugin</artifactId>
-        <configuration>
-          <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
-          <classpathScope>test</classpathScope>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+  <profiles>
+
+    <!-- Command-line execution. -->
+    <profile>
+      <id>execute</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Assembly. -->
+    <profile>
+      <id>assembly</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <configuration>
+              <descriptors>
+                <descriptor>assembly.xml</descriptor>
+              </descriptors>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <executable>${perl.home}/bin/perl</executable>
+              <arguments>
+                <argument>../../tools/scripts/createScript.pl</argument>
+                <argument>-j</argument>
+                <argument>-c</argument>
+                <argument>${project.build.directory}/${project.artifactId}</argument>
+                <argument>runORS</argument>
+                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>
