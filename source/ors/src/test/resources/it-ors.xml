@@ -19,7 +19,10 @@
     <constructor-arg value="test-messages"/>
   </bean>
 	
-  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+  <bean
+   id="connectionFactory"
+   class="org.apache.activemq.ActiveMQConnectionFactory"
+   depends-on="systemPropertiesSetter">
     <property name="brokerURL" value="vm://it-ors?broker.persistent=false"/>
   </bean>
 

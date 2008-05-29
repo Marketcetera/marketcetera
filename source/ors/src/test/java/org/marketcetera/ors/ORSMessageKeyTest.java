@@ -10,10 +10,10 @@ import junit.framework.TestCase;
 
 /**
  * @author toli
- * @version $Id: ORSMessageKeyTest.java 3587 2008-04-24 23:38:47Z tlerios $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: ORSMessageKeyTest.java 3587 2008-04-24 23:38:47Z tlerios $")
+@ClassVersion("$Id$")
 public class ORSMessageKeyTest extends TestCase {
     public ORSMessageKeyTest(String inName) {
         super(inName);

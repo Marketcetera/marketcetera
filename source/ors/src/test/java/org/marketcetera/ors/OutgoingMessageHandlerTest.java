@@ -23,9 +23,9 @@ import java.util.HashSet;
 /**
  * Tests the code coming out of {@link OutgoingMessageHandler} class
  * @author Toli Kuznets
- * @version $Id: OutgoingMessageHandlerTest.java 3587 2008-04-24 23:38:47Z tlerios $
+ * @version $Id$
  */
-@ClassVersion("$Id: OutgoingMessageHandlerTest.java 3587 2008-04-24 23:38:47Z tlerios $")
+@ClassVersion("$Id$")
 public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 {
 	/* a bunch of random made-up header/trailer/field values */

@@ -12,10 +12,10 @@ import quickfix.field.Symbol;
 
 /**
  * @author toli
- * @version $Id: ORSStartupTest.java 3587 2008-04-24 23:38:47Z tlerios $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: ORSStartupTest.java 3587 2008-04-24 23:38:47Z tlerios $")
+@ClassVersion("$Id$")
 public class ORSStartupTest extends TestCase {
 
     private boolean failed = false;
