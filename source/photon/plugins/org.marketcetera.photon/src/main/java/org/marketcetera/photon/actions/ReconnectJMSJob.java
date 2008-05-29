@@ -3,6 +3,8 @@
  */
 package org.marketcetera.photon.actions;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.log4j.Logger;
@@ -10,12 +12,18 @@ import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWTException;
+import org.eclipse.ui.progress.UIJob;
+import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
 import org.marketcetera.photon.messaging.ScriptingControllerListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
+import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
@@ -31,13 +39,54 @@ import org.springframework.jms.core.JmsOperations;
  * @author gmiller
  *
  */
-public class ReconnectJMSJob extends Job {
+public class ReconnectJMSJob extends UIJob {
 
 	
 
 	private static AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
 	private final boolean disconnectOnly;
 
+	private static class CreateApplicationContextRunnable
+		implements IRunnableWithProgress
+	{
+		private ClassPathXmlApplicationContext jmsApplicationContext=null;
+		private Throwable failure=null;
+		private StaticApplicationContext brokerContext;
+		
+		public CreateApplicationContextRunnable(StaticApplicationContext brokerContext) {
+			this.brokerContext = brokerContext;
+		}
+
+		@Override
+		public void run(IProgressMonitor monitor)
+		throws InvocationTargetException,
+		InterruptedException {
+			try {
+				setJmsApplicationContext(new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerContext));
+			} catch (Throwable ex) {
+				setFailure(ex);
+			}				
+		}
+		
+		public ClassPathXmlApplicationContext getJmsApplicationContext() {
+			return jmsApplicationContext;
+		}
+
+		public void setJmsApplicationContext(
+				ClassPathXmlApplicationContext jmsApplicationContext) {
+			this.jmsApplicationContext = jmsApplicationContext;
+		}
+
+		public Throwable getFailure() {
+			return failure;
+		}
+
+		public void setFailure(Throwable failure) {
+			this.failure = failure;
+		}
+	}
+
+	
 	public ReconnectJMSJob(String name) {
 		this(name, false);
 	}
@@ -51,7 +100,7 @@ public class ReconnectJMSJob extends Job {
 	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
+	public IStatus runInUIThread(IProgressMonitor monitor) {
 		if (reconnectInProgress.getAndSet(true))
 			return Status.CANCEL_STATUS;
 
@@ -82,11 +131,43 @@ public class ReconnectJMSJob extends Job {
 		
 				try {
 					monitor.beginTask("Connect message server", 4);
+
 					String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
-					StaticApplicationContext brokerURLContext = getBrokerURLApplicationContext(url);
-					final ClassPathXmlApplicationContext jmsApplicationContext;
-				
-					jmsApplicationContext = new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerURLContext);
+					ClassPathXmlApplicationContext jmsApplicationContext=null;
+					Random random=new Random();
+					LoginDialog loginDialog = new LoginDialog(null);
+					while (true){
+						try {
+							if (loginDialog.open() != Window.OK){
+								return Status.CANCEL_STATUS;
+							}
+						} catch (SWTException ex) {
+							logger.error("Error connecting to ORS (cannot show login dialog)", ex);							
+							return Status.CANCEL_STATUS;
+						}
+						ConnectionDetails details=loginDialog.getConnectionDetails();
+						StaticApplicationContext brokerContext =
+							getBrokerApplicationContext(url,details.getUserId(),details.getPassword());
+						ProgressMonitorDialog progress = new ProgressMonitorDialog(null);
+						progress.setCancelable(false);
+						CreateApplicationContextRunnable runnable=new CreateApplicationContextRunnable(brokerContext);
+						try {
+							progress.run(true, true,runnable);
+						} catch (InvocationTargetException ex){
+							logger.error("Error connecting to ORS (cannot show progress dialog)", ex);							
+							return Status.CANCEL_STATUS;
+						} catch (InterruptedException ex){
+							logger.error("Error connecting to ORS (cannot show progress dialog)", ex);							
+							return Status.CANCEL_STATUS;
+						} 
+						Throwable failure=runnable.getFailure();
+						if (failure==null) {
+							jmsApplicationContext=runnable.getJmsApplicationContext();
+							break;
+						}
+						Thread.sleep(500+random.nextInt(1000));
+						logger.error("Error connecting to ORS (JMS connect failed)", failure);							
+					}
 			
 					SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
 					photonControllerContainer.setExceptionListener(feedService);
@@ -137,18 +218,33 @@ public class ReconnectJMSJob extends Job {
 		}
 		return Status.OK_STATUS;
 	}
-	private static StaticApplicationContext getBrokerURLApplicationContext(String url) {
-		StaticApplicationContext brokerURLContext;
-		brokerURLContext = new StaticApplicationContext();
-		if (url != null){
-			RootBeanDefinition brokerURLBeanDefinition = new RootBeanDefinition(String.class);
-			ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
-			constructorArgumentValues.addGenericArgumentValue(url);
-			brokerURLBeanDefinition.setConstructorArgumentValues(constructorArgumentValues );
-			brokerURLContext.registerBeanDefinition("brokerURL", brokerURLBeanDefinition);
-		}
-		brokerURLContext.refresh();
-		return brokerURLContext;
+
+    private static void inject
+        (StaticApplicationContext context,
+         String name,
+         String value)
+    {
+        if (value==null) {
+            return;
+        }
+        RootBeanDefinition bean = new RootBeanDefinition(String.class);
+        ConstructorArgumentValues constructorArgumentValues = new ConstructorArgumentValues();
+        constructorArgumentValues.addGenericArgumentValue(value);
+        bean.setConstructorArgumentValues(constructorArgumentValues );
+        context.registerBeanDefinition(name,bean);
+    }
+
+	private static StaticApplicationContext getBrokerApplicationContext
+        (String url,
+         String username,
+         String password) {
+		StaticApplicationContext context;
+		context=new StaticApplicationContext();
+        inject(context,"brokerURL",url);
+        inject(context,ApplicationBase.USERNAME_BEAN_NAME,username);
+        inject(context,ApplicationBase.PASSWORD_BEAN_NAME,password);
+		context.refresh();
+		return context;
 	}
 
 	public static void disconnect(ServiceTracker jmsFeedTracker)
