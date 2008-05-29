@@ -176,7 +176,7 @@
 
   <profiles>
     <profile>
-      <id>Simple Compile</id>
+      <id>simple.compile</id>
       <build>
         <plugins>
           <plugin>
@@ -191,7 +191,7 @@
       </build>
     </profile>
     <profile>
-      <id>Safe Compile</id>
+      <id>safe.compile</id>
       <build>
         <plugins>
           <plugin>
@@ -230,7 +230,6 @@
           <artifactId>maven-javadoc-plugin</artifactId>
           <configuration>
             <aggregate>true</aggregate>
-            <overview>${project.basedir}/tools/javadoc/overview.html</overview>
             <links>
               <link>http://java.sun.com/javaee/${javaee.version}/docs/api/</link>
               <link>http://java.sun.com/javase/${javase.version}/docs/api/</link>
@@ -243,6 +242,17 @@
               <link>http://commons.apache.org/vfs/apidocs/</link>
               <link>http://commons.apache.org/cli/api-release/</link>
             </links>
+          </configuration>
+        </plugin>
+
+        <!-- mvn assembly:assembly -->
+        <plugin>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <!-- Version 2.2-beta-2 throws NPE under dependency management. -->
+          <version>2.1</version>
+          <configuration>
+            <finalName>${project.artifactId}</finalName>
+            <appendAssemblyId>false</appendAssemblyId>
           </configuration>
         </plugin>
 

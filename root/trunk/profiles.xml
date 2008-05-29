@@ -22,14 +22,16 @@
         <jruby.home>C:\jruby1.0.3</jruby.home>
         <!-- Optional: local Jython installation. -->
         <jython.home>C:\jython2.2.1</jython.home>
+        <!-- Optional: local Perl installation. -->
+        <perl.home>C:\Perl</perl.home>
       </properties>
     </profile>
   </profiles>
 
   <activeProfiles>
     <!-- Default error-checking. -->
-    <!-- <activeProfile>Simple Compile</activeProfile> -->
+    <!-- <activeProfile>simple.compile</activeProfile> -->
     <!-- Detailed error-checking. -->
-    <activeProfile>Safe Compile</activeProfile>
+    <activeProfile>safe.compile</activeProfile>
   </activeProfiles>
 </project>
