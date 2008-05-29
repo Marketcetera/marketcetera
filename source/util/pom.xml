@@ -59,8 +59,9 @@
     </dependency>
   </dependencies>
 
-  <!-- Command-line execution. -->
   <profiles>
+
+    <!-- Command-line execution: test. -->
     <profile>
       <id>setter.context</id>
       <build>
@@ -76,6 +77,8 @@
         </plugins>
       </build>
     </profile>
+
+    <!-- Command-line execution: test. -->
     <profile>
       <id>standard.authentication.arg</id>
       <build>
@@ -95,6 +98,8 @@
         </plugins>
       </build>
     </profile>
+
+    <!-- Command-line execution: test. -->
     <profile>
       <id>standard.authentication.noarg</id>
       <build>
