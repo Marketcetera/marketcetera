@@ -1,5 +1,10 @@
 package org.marketcetera.ors;
 
+import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.spring.SpringUtils;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
+
 import org.marketcetera.core.*;
 import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.quickfixj.jmx.JmxExporter;
@@ -26,15 +31,20 @@ import java.util.List;
  * </ol>
  *
  * @author gmiller
- * $Id: OrderRoutingSystem.java 3587 2008-04-24 23:38:47Z tlerios $
+ * $Id$
  */
-@ClassVersion("$Id: OrderRoutingSystem.java 3587 2008-04-24 23:38:47Z tlerios $")
+@ClassVersion("$Id$")
 public class OrderRoutingSystem extends ApplicationBase {
+
+    private static final String CFG_BASE_FILE_NAME=CONF_DIR+"ors_base.xml";
 
     private static final String LOGGER_NAME = OrderRoutingSystem.class.getName();
     public static final MessageBundleInfo ORS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("ors", "ors_messages");
-    public static final String[] APP_CONTEXT_CONFIG_FILES = {"quickfixj.xml", "message-modifiers.xml",
-            "order-limits.xml", "ors.xml", "ors-shared.xml"};
+    public static final String[] APP_CONTEXT_CONFIG_FILES =
+    {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml",
+     "ors.xml", "ors-shared.xml"};
+
+    private static StandardAuthentication authentication;
 
     protected List<MessageBundleInfo> getLocalMessageBundles() {
         LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
@@ -42,11 +52,41 @@ public class OrderRoutingSystem extends ApplicationBase {
         return bundles;
     }
 
+    private static void usage()
+    {
+        System.err.println("Usage: java "+
+                           OrderRoutingSystem.class.getName());
+        System.err.println("Authentication options:");
+        System.err.println();
+        authentication.printUsage(System.err);
+        System.exit(1);
+    }
+
     public static void main(String [] args) throws ConfigFileLoadingException
     {
         try {
+            authentication=new StandardAuthentication(CFG_BASE_FILE_NAME,args);
+            if (!authentication.setValues()) {
+                usage();
+            }
+            args=authentication.getOtherArgs();
+            if (args.length!=0) {
+                System.err.println("No arguments are allowed");
+                usage();
+            }
+            StaticApplicationContext parentContext=
+                new StaticApplicationContext
+                (new FileSystemXmlApplicationContext(CFG_BASE_FILE_NAME));
+            SpringUtils.addStringBean
+                (parentContext,USERNAME_BEAN_NAME,
+                 authentication.getUser());
+            SpringUtils.addStringBean
+                (parentContext,PASSWORD_BEAN_NAME,
+                 authentication.getPasswordAsString());
+            parentContext.refresh();
+
             OrderRoutingSystem ors = new OrderRoutingSystem();
-            ApplicationContext appCtx = ors.createApplicationContext(APP_CONTEXT_CONFIG_FILES, true);
+            ApplicationContext appCtx = ors.createApplicationContext(APP_CONTEXT_CONFIG_FILES, parentContext, true);
 
             if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
                 String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);
