@@ -6,14 +6,12 @@
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
   http://activemq.org/config/1.0 http://activemq.apache.org/schema/core/activemq-core-5.0.0.xsd">
 
-    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"/>
-
     <amq:broker useJmx="true" brokerName="ORS_BROKER" persistent="false" useShutdownHook="false">
-<!--
-        <plugins>
-            <simpleAuthenticationPlugin userGroups="#groups" userPasswords="#users"/>
-        </plugins>
--->
+
+     <amq:plugins>
+       <amq:jaasAuthenticationPlugin configuration="ors-amq-domain" />
+     </amq:plugins>
+
         <!--
             <persistenceAdapter>
               <journaledJDBC journalLogFiles="5" dataDirectory="foo"/>
@@ -25,17 +23,5 @@
             <amq:transportConnector uri="stomp://localhost:61613"/>
         </amq:transportConnectors>
     </amq:broker>
-<!--
-    <util:map id="users">
-        <entry key="user1" value="password1"/>
-    </util:map>
-    
-    <util:map id="groups">
-        <entry key="user1">
-            <ref bean="group1"/>
-        </entry>
-    </util:map>
-    <util:set id="group1"/>
--->
 
 </beans>

@@ -6,6 +6,23 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
+  <bean
+   class=
+    "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+   <property name="locations" ref="propertiesFiles"/>
+  </bean>
+
+  <bean
+   id="systemPropertiesSetter"
+   class="org.marketcetera.util.spring.SystemPropertiesSetter">
+    <property name="map">
+      <map>
+        <entry key="java.security.auth.login.config"
+         value="${java.security.auth.login.config}"/>
+      </map>
+    </property>
+  </bean>
+
     <bean id="listener" class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
         <property name="delegate" ref="outgoingMessageHandler"/>
         <property name="defaultListenerMethod" value="handleMessage"/>
