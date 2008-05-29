@@ -380,7 +380,7 @@ public class OrderLoaderTest extends TestCase
 
         public MyOrderLoader(boolean fSendPassThrough) throws Exception
         {
-            super();
+            super("enduser","enduser_password");
             mSendPassThrough = fSendPassThrough;
         }
 
