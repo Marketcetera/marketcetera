@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
@@ -19,6 +20,21 @@ import java.util.concurrent.Semaphore;
  */
 @ClassVersion("$Id$")
 public abstract class ApplicationBase implements Clock {
+
+    public static final String CONF_DIR_PROP="org.marketcetera.confDir";
+    public static final String CONF_DIR;
+
+    static {
+        String confDir=System.getProperty(CONF_DIR_PROP);
+        if (confDir==null) {
+            confDir="src"+File.separator+"test"+File.separator+"sample_data"+
+                File.separator+"conf";
+        }
+        if (!confDir.endsWith(File.separator)) {
+            confDir+=File.separator;
+        }
+        CONF_DIR=confDir;
+    }
 
     public static final String USERNAME_BEAN_NAME="runtimeUsername";
     public static final String PASSWORD_BEAN_NAME="runtimePassword";
