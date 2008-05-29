@@ -1,4 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
 
 <beans
  xmlns="http://www.springframework.org/schema/beans"
@@ -14,13 +21,12 @@
    id="propertiesFile"
    class="java.lang.String">
     <constructor-arg
-     value="classpath:spring.properties"/>
+     value="file:src/test/sample_data/spring/spring.properties"/>
   </bean>
 
   <util:list
    id="propertiesFiles">
-    <value>classpath:spring.properties</value>
-    <value>classpath:spring_override.properties</value>
+    <value>file:src/test/sample_data/spring/spring.properties</value>
+    <value>file:src/test/sample_data/spring/spring_override.properties</value>
   </util:list>
-
 </beans>
