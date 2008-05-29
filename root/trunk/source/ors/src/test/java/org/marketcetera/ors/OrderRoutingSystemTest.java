@@ -8,6 +8,7 @@ import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
 import org.marketcetera.quickfix.MessageRouteManager;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
@@ -28,9 +29,9 @@ import java.math.BigDecimal;
  * 2. we get an outgoing FIX message on the FIX listener
  *
  * @author Toli Kuznets
- * @version $Id: OrderRoutingSystemTest.java 3587 2008-04-24 23:38:47Z tlerios $
+ * @version $Id$
  */
-@ClassVersion("$Id: OrderRoutingSystemTest.java 3587 2008-04-24 23:38:47Z tlerios $")
+@ClassVersion("$Id$")
 public class OrderRoutingSystemTest extends FIXVersionedTestCase
 {
     private static ClassPathXmlApplicationContext appContext;
@@ -52,8 +53,11 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
 	protected void setUp() throws Exception {
         super.setUp();
         try {
-        	appContext = new ClassPathXmlApplicationContext(new String[]{"message-modifiers.xml", "order-limits.xml",
-                    "ors-shared.xml", "it-ors.xml"});
+        	appContext = new ClassPathXmlApplicationContext
+                (new String[]{"message-modifiers.xml", "order-limits.xml",
+                              "ors-shared.xml", "it-ors.xml"},
+                new FileSystemXmlApplicationContext
+                    (ApplicationBase.CONF_DIR+"ors_base.xml"));
 			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
             qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
             // simulate logon
