@@ -1,13 +1,13 @@
-# Superclass for report describing OMS update
+# Superclass for report describing ORS update
 # Can read the date from params hash
-class OMSUpdate < Tableless
+class ORSUpdate < Tableless
   include ApplicationHelper
 
   attr_reader :sender_id, :file
 
   # takes an incoming params hash
   def initialize(params)
-    @sender_id = get_non_empty_string_from_two(params, :oms, :sender_id, nil)
+    @sender_id = get_non_empty_string_from_two(params, :ors, :sender_id, nil)
   end
 
   def validate

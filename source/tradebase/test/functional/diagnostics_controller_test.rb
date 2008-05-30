@@ -18,17 +18,17 @@ class DiagnosticsControllerTest < Test::Unit::TestCase
     assert :success
   end
 
-  def test_server_info_nonworking_oms
+  def test_server_info_nonworking_ors
     get :server_info
     assert :template => 'server_info'
     assert :success
 
-    assert_tag :tag => 'p', :content => /error connecting to the OMS/
+    assert_tag :tag => 'p', :content => /error connecting to the ORS/
   end
 
-  def test_oms_log_display
-    get :oms_log_display
-    assert :template => 'oms_log_display'
+  def test_ors_log_display
+    get :ors_log_display
+    assert :template => 'ors_log_display'
     assert :success
   end
 
