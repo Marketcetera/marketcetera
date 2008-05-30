@@ -215,10 +215,23 @@
     <pluginManagement>
       <plugins>
 
+        <!-- test jar generation -->
+        <plugin>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+
+        <!-- mvn exec:exec or exec:java -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>exec-maven-plugin</artifactId>
+          <version>1.1</version>
+        </plugin>
+
         <!-- mvn test -->
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.4.2</version>
           <configuration>
             <disableXmlReport>true</disableXmlReport>
           </configuration>
@@ -226,8 +239,8 @@
 
         <!-- mvn javadoc:javadoc -->
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
+          <version>2.4</version>
           <configuration>
             <aggregate>true</aggregate>
             <links>
@@ -264,6 +277,7 @@
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
           <artifactId>maven-jaxb2-plugin</artifactId>
+          <version>0.5</version>
           <executions>
             <execution>
               <goals>
