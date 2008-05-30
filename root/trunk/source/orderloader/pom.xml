@@ -107,7 +107,7 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <executable>${perl.home}/bin/perl</executable>
+              <executable>${perl.path}</executable>
               <arguments>
                 <argument>../../tools/scripts/createScript.pl</argument>
                 <argument>-c</argument>
