@@ -112,7 +112,6 @@
               <arguments>
                 <argument>../../tools/scripts/createScript.pl</argument>
                 <argument>-j</argument>
-                <argument>-c</argument>
                 <argument>${project.build.directory}/${project.artifactId}</argument>
                 <argument>runORS</argument>
                 <argument>org.marketcetera.ors.OrderRoutingSystem</argument>

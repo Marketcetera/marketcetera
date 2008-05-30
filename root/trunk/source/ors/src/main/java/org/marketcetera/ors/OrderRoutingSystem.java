@@ -36,7 +36,8 @@ import java.util.List;
 @ClassVersion("$Id$")
 public class OrderRoutingSystem extends ApplicationBase {
 
-    private static final String CFG_BASE_FILE_NAME=CONF_DIR+"ors_base.xml";
+    private static final String CFG_BASE_FILE_NAME=
+        "file:"+CONF_DIR+"ors_base.xml";
 
     private static final String LOGGER_NAME = OrderRoutingSystem.class.getName();
     public static final MessageBundleInfo ORS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("ors", "ors_messages");
