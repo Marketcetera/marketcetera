@@ -1,4 +1,4 @@
-# Run-time executable script generator.
+# Run-time Windows and Unix executable script generator.
 #
 # Author: tlerios@marketcetera.com
 # Since: 0.5.0
