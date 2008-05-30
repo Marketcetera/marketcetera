@@ -62,7 +62,7 @@ my($script)=$bin.'/'.$scriptBase.'.bat';
 open(OUT,'>'.$script);
 binmode(OUT);
 print OUT '@ECHO OFF'.$sep.$sep;
-print OUT 'CALL %~dp0..\\..\\setEnv.bat'.$sep;
+print OUT 'CALL "%~dp0..\\..\\setEnv.bat"'.$sep;
 print OUT 'java.exe '.$commonArgs.' -Dorg.marketcetera.appDir="%METC_HOME%\\'.$artifact.'"^'.$sep;
 print OUT ' -cp "%METC_HOME%\\'.$artifact.'\\conf"^'.$sep;
 foreach $jar (@jars) {
@@ -78,7 +78,7 @@ my($script)=$bin.'/'.$scriptBase.'.sh';
 open(OUT,'>'.$script);
 binmode(OUT);
 print OUT '#!/bin/sh'.$sep.$sep;
-print OUT '. $(dirname $0)/../../setEnv.sh'.$sep;
+print OUT '. "$(dirname $0)/../../setEnv.sh"'.$sep;
 print OUT 'exec java '.$commonArgs.' -Dorg.marketcetera.appDir="${METC_HOME}/'.$artifact.'"\\'.$sep;
 print OUT ' -cp "${METC_HOME}/'.$artifact.'/conf"\\'.$sep;
 foreach $jar (@jars) {
