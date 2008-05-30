@@ -1,2 +1,2 @@
-module UpdateOmsHelper
+module UpdateOrsHelper
 end

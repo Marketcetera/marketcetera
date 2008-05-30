@@ -21,6 +21,6 @@ module NavigationHelper
     'marks' => 'pnl',
     'import_marks' => 'pnl',
     'diagnostics' => 'help',
-    'update_oms' => 'help'
+    'update_ors' => 'help'
   }
 end

@@ -1,13 +1,13 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../unit/marketcetera_test_base'
-require 'update_oms_controller'
+require 'update_ors_controller'
 
 # Re-raise errors caught by the controller.
-class UpdateOmsController; def rescue_action(e) raise e end; end
+class UpdateOrsController; def rescue_action(e) raise e end; end
 
-class UpdateOmsControllerTest < MarketceteraTestBase
+class UpdateOrsControllerTest < MarketceteraTestBase
   def setup
-    @controller = UpdateOmsController.new
+    @controller = UpdateOrsController.new
     @request    = ActionController::TestRequest.new
     @response   = ActionController::TestResponse.new
   end
