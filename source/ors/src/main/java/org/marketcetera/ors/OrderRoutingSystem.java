@@ -104,6 +104,7 @@ public class OrderRoutingSystem extends ApplicationBase {
             ors.startWaitingForever();
             if(LoggerAdapter.isDebugEnabled(LOGGER_NAME)) { LoggerAdapter.debug("ORS main finishing", LOGGER_NAME); }
         } catch (Exception ex) {
+            LoggerAdapter.error("Stack trace", ex, LOGGER_NAME);
             LoggerAdapter.error(MessageKey.ERROR.getLocalizedMessage(), ex, LOGGER_NAME);
         } finally {
             LoggerAdapter.info(MessageKey.APP_EXIT.getLocalizedMessage(), LOGGER_NAME);
