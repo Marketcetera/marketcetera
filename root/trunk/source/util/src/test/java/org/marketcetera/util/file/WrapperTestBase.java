@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintStream;
+import org.junit.After;
 import org.junit.Before;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -32,7 +33,8 @@ public class WrapperTestBase
 
 
     @Before
-    public void setupWrapperTestBase()
+    @After
+    public void setupTearDownWrapperTestBase()
         throws Exception
     {
         Deleter.apply(TEST_FILE);
