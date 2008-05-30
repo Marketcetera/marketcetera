@@ -12,8 +12,8 @@ use Getopt::Std;
 
 # Extract arguments.
 
-use vars qw($opt_j $opt_c);
-getopts('jc');
+use vars qw($opt_j);
+getopts('j');
 
 # Error checking.
 
@@ -59,15 +59,11 @@ closedir(DIR);
 
 my($sep)="\r\n";
 my($script)=$bin.'/'.$scriptBase.'.bat';
-my($args)=$commonArgs.' -Dhome.dir="%METC_HOME%\\'.$artifact.'"';
-if ($opt_c) {
-	$args.=' -Dorg.marketcetera.confDir="%METC_HOME%\\'.$artifact.'\\conf"';
-}
 open(OUT,'>'.$script);
 binmode(OUT);
 print OUT '@ECHO OFF'.$sep.$sep;
 print OUT 'CALL %~dp0..\\..\\setEnv.bat'.$sep;
-print OUT 'java.exe '.$args.'^'.$sep;
+print OUT 'java.exe '.$commonArgs.' -Dorg.marketcetera.appDir="%METC_HOME%\\'.$artifact.'"^'.$sep;
 print OUT ' -cp "%METC_HOME%\\'.$artifact.'\\conf"^'.$sep;
 foreach $jar (@jars) {
 	print OUT ';"%METC_HOME%\\'.$artifact.'\\lib\\'.$jar.'"^'.$sep;
@@ -79,15 +75,11 @@ close(OUT);
 
 my($sep)="\n";
 my($script)=$bin.'/'.$scriptBase.'.sh';
-my($args)=$commonArgs.' -Dhome.dir="${METC_HOME}/'.$artifact.'"';
-if ($opt_c) {
-	$args.=' -Dorg.marketcetera.confDir="${METC_HOME}/'.$artifact.'/conf"';
-}
 open(OUT,'>'.$script);
 binmode(OUT);
 print OUT '#!/bin/sh'.$sep.$sep;
 print OUT '. $(dirname $0)/../../setEnv.sh'.$sep;
-print OUT 'exec java '.$args.'\\'.$sep;
+print OUT 'exec java '.$commonArgs.' -Dorg.marketcetera.appDir="${METC_HOME}/'.$artifact.'"\\'.$sep;
 print OUT ' -cp "${METC_HOME}/'.$artifact.'/conf"\\'.$sep;
 foreach $jar (@jars) {
 	print OUT ':"${METC_HOME}/'.$artifact.'/lib/'.$jar.'"\\'.$sep;
