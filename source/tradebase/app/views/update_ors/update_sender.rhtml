@@ -1,10 +1,10 @@
 <%= render :partial => 'shared/breadcrumbs',
            :locals=> { :top_level => "Update SenderCompID", :top_level_controller => 'diagnostics', :action_name=>'update_sender'} %>
 <h1>Update SenderCompID</h1>
-<p>We tried updating the OMS configuration file at <%=  @file %> by setting the <em>SenderCompID</em> to <em><%= @report.sender_id %></em>.</p>
+<p>We tried updating the ORS configuration file at <%=  @file %> by setting the <em>SenderCompID</em> to <em><%= @report.sender_id %></em>.</p>
 
 <% if(!@report.nil? && !@report.errors[:config_file].nil?) %>
-  <p>Unable to read OMS configuration file at <%= @file %>. <br>
+  <p>Unable to read ORS configuration file at <%= @file %>. <br>
      Are you sure you are running this on an appliance and that you haven't changed moved anything?<br>
   </p>
   <p>Please contact Marketcetera support at <%= mail_to 'bugs@marketcetera.com' %>.</p>
@@ -14,9 +14,9 @@
       <%=h @post_sub %>
   </pre>
   <p>
-      It is now necessary to restart the OMS.
-      You can do it by restarting the entire appliance, or, if you are familiar with Linux you can restart the OMS using the
+      It is now necessary to restart the ORS.
+      You can do it by restarting the entire appliance, or, if you are familiar with Linux you can restart the ORS using the
       procedure described in the <a href="http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/Appliance#ApplianceConfiguration">documentation</a>:
   </p>
-      <pre><em>sudo /etc/init.d/oms restart</em></pre>
+      <pre><em>sudo /etc/init.d/ors restart</em></pre>
 <% end %>
