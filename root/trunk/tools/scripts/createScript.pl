@@ -33,12 +33,9 @@ my($artifact)=($root=~m/[\/\\]([^\/\\]+)$/io);
 my($lib)=$root.'/lib';
 my($bin)=$root.'/bin';
 my($logs)=$root.'/logs';
-my($javaArgs)="-Xms384m -Xmx600m";
+my($commonArgs)='-Xms384m -Xmx600m';
 if ($opt_j) {
-	$javaArgs.=" -Dcom.sun.management.jmxremote";
-}
-if ($opt_c) {
-	$javaArgs.=" -Dorg.marketcetera.confDir=conf";
+	$commonArgs.=' -Dcom.sun.management.jmxremote';
 }
 
 # Create output directory.
@@ -62,13 +59,16 @@ closedir(DIR);
 
 my($sep)="\r\n";
 my($script)=$bin.'/'.$scriptBase.'.bat';
+my($args)=$commonArgs.' -Dhome.dir="%METC_HOME%\\'.$artifact.'"';
+if ($opt_c) {
+	$args.=' -Dorg.marketcetera.confDir="%METC_HOME%\\'.$artifact.'\\conf"';
+}
 open(OUT,'>'.$script);
 binmode(OUT);
 print OUT '@ECHO OFF'.$sep.$sep;
-print OUT 'CD /D %~dp0..'.$sep;
-print OUT 'CALL ..\\setEnv.bat'.$sep.$sep;
-print OUT 'java.exe '.$javaArgs.'^'.$sep;
-print OUT ' -cp conf^'.$sep;
+print OUT 'CALL %~dp0..\\..\\setEnv.bat'.$sep;
+print OUT 'java.exe '.$args.'^'.$sep;
+print OUT ' -cp "%METC_HOME%\\'.$artifact.'\\conf"^'.$sep;
 foreach $jar (@jars) {
 	print OUT ';"%METC_HOME%\\'.$artifact.'\\lib\\'.$jar.'"^'.$sep;
 }
@@ -79,13 +79,16 @@ close(OUT);
 
 my($sep)="\n";
 my($script)=$bin.'/'.$scriptBase.'.sh';
+my($args)=$commonArgs.' -Dhome.dir="${METC_HOME}/'.$artifact.'"';
+if ($opt_c) {
+	$args.=' -Dorg.marketcetera.confDir="${METC_HOME}/'.$artifact.'/conf"';
+}
 open(OUT,'>'.$script);
 binmode(OUT);
 print OUT '#!/bin/sh'.$sep.$sep;
-print OUT 'cd $(dirname $0)/..'.$sep;
-print OUT '. ../setEnv.sh'.$sep.$sep;
-print OUT 'exec java '.$javaArgs.'\\'.$sep;
-print OUT ' -cp conf\\'.$sep;
+print OUT '. $(dirname $0)/../../setEnv.sh'.$sep;
+print OUT 'exec java '.$args.'\\'.$sep;
+print OUT ' -cp "${METC_HOME}/'.$artifact.'/conf"\\'.$sep;
 foreach $jar (@jars) {
 	print OUT ':"${METC_HOME}/'.$artifact.'/lib/'.$jar.'"\\'.$sep;
 }
