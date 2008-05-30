@@ -1,18 +1,18 @@
 <%= render :partial => 'shared/breadcrumbs', 
-           :locals=> { :top_level => "Update OMS Configuration", :top_level_controller => 'diagnostics', :action_name=>''} %>
-<h1>Update OMS Configuration</h1>
+           :locals=> { :top_level => "Update ORS Configuration", :top_level_controller => 'diagnostics', :action_name=>''} %>
+<h1>Update ORS Configuration</h1>
 <%= if(!@report.nil?)
        error_messages_for_report :report
     end %>
 <p>Please specify the <em>SenderCompID</em> you would like to use, and the password for <em>marketcetera</em> user on the appliance.<br>
-    You will then need to restart the OMS manually.
+    You will then need to restart the ORS manually.
 </p>
-<% form_tag({ :controller =>'update_oms', :action => 'update_sender'}, :method => :post) do -%>
+<% form_tag({ :controller =>'update_ors', :action => 'update_sender'}, :method => :post) do -%>
   <fieldset>
     <div class="form_left">
-      <label for="oms_sender_id">SenderCompID</label>
+      <label for="ors_sender_id">SenderCompID</label>
       <% if(!@report.nil? && !@report.errors[:sender_id].nil?) %><div class="fieldWithErrors"><% end -%>
-        <%=  text_field 'oms', 'sender_id' %>
+        <%=  text_field 'ors', 'sender_id' %>
       <% if(!@report.nil? && !@report.errors[:sender_id].nil?) %></div><% end -%>
     </div>
   </fieldset>
