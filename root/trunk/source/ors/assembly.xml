@@ -27,6 +27,11 @@
   </fileSets>
   <files>
     <file>
+      <!--
+        - Assembly 2.1 interprets default mode of 0644 as *decimal*;
+        - as a workaround, use 420 decimal which results in 0644 octal.
+        -->
+      <fileMode>420</fileMode>
       <source>../core/src/main/sample_data/conf/log4j.properties</source>
       <outputDirectory>conf</outputDirectory>
       <filtered>true</filtered>
