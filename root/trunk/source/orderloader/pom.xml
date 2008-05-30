@@ -110,7 +110,6 @@
               <executable>${perl.path}</executable>
               <arguments>
                 <argument>../../tools/scripts/createScript.pl</argument>
-                <argument>-c</argument>
                 <argument>${project.build.directory}/${project.artifactId}</argument>
                 <argument>runOrderloader</argument>
                 <argument>org.marketcetera.orderloader.OrderLoader</argument>

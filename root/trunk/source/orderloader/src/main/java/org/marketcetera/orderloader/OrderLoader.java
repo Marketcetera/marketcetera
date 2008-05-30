@@ -44,7 +44,8 @@ public class OrderLoader extends ApplicationBase
     private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
     private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory";
 
-    private static final String CFG_BASE_FILE_NAME=CONF_DIR+"orderloader_base.xml";
+    private static final String CFG_BASE_FILE_NAME=
+        "file:"+CONF_DIR+"orderloader_base.xml";
 
     private static StandardAuthentication authentication;
 
