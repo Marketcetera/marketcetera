@@ -49,6 +49,7 @@ my(@patternsAll)=(
 );
 
 my(%patternsCustom)=(
+	'public' => ('profiles.xml'),
 	'public/source/photon/plugins/org.marketcetera.core' => ('bin'),
 	'public/source/photon/plugins/com.swtworkbench.community.xswt' => ('bin'),
 	'public/source/photon/plugins/org.marketcetera.bogusfeed' => ('bin')
@@ -93,10 +94,11 @@ sub walk ()
 {
 	my($absName)=File::Spec->rel2abs($_);
 	$absName=~s#\\#/#g;
+	($absName)=($absName=~/(((public)|(private)).*)/);
 
 	my($external);
 	foreach $external (@externals) {
-		if ($absName=~/${external}$/) {
+		if ($absName eq $external) {
 			warn 'Ignoring external directory: '.$File::Find::name."\n";
 			$File::Find::prune=1;
 			return;
@@ -116,7 +118,7 @@ sub walk ()
 		my(@patterns)=();
 		my($key);
 		foreach $key (keys(%patternsCustom)) {
-			if ($absName=~/${key}$/) {
+			if ($absName eq $key) {
 				@patterns=(@patterns,$patternsCustom{$key});
 				last;
 			}
@@ -142,7 +144,7 @@ sub walk ()
 	my($executable)=0;
 	my($key);
 	foreach $key (@executables) {
-		if ($absName=~/${key}$/) {
+		if ($absName eq $key) {
 			$executable=1;
 		}
 	}
