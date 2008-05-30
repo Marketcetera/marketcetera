@@ -25,7 +25,7 @@
   http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
   <util:list id="propertiesFiles">
-    <value>file:conf/orderloader_default.properties</value>
-    <value>file:conf/orderloader_user.properties</value>
+    <value>file:${home.dir}/conf/orderloader_default.properties</value>
+    <value>file:${home.dir}/conf/orderloader_user.properties</value>
   </util:list>
 </beans>
