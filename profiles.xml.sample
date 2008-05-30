@@ -23,7 +23,7 @@
         <!-- Optional: local Jython installation. -->
         <jython.home>C:\jython2.2.1</jython.home>
         <!-- Optional: local Perl installation. -->
-        <perl.home>C:\Perl</perl.home>
+        <perl.path>C:\Perl\bin\perl</perl.path>
       </properties>
     </profile>
   </profiles>
