@@ -21,19 +21,20 @@ import java.util.concurrent.Semaphore;
 @ClassVersion("$Id$")
 public abstract class ApplicationBase implements Clock {
 
-    public static final String CONF_DIR_PROP="org.marketcetera.confDir";
+    public static final String APP_DIR_PROP="org.marketcetera.appDir";
+    public static final String APP_DIR;
     public static final String CONF_DIR;
 
     static {
-        String confDir=System.getProperty(CONF_DIR_PROP);
-        if (confDir==null) {
-            confDir="src"+File.separator+"test"+File.separator+"sample_data"+
-                File.separator+"conf";
+        String appDir=System.getProperty(APP_DIR_PROP);
+        if (appDir==null) {
+            appDir="src"+File.separator+"test"+File.separator+"sample_data";
         }
-        if (!confDir.endsWith(File.separator)) {
-            confDir+=File.separator;
+        if (!appDir.endsWith(File.separator)) {
+            appDir+=File.separator;
         }
-        CONF_DIR=confDir;
+        APP_DIR=appDir;
+        CONF_DIR=APP_DIR+"conf"+File.separator;
     }
 
     public static final String USERNAME_BEAN_NAME="runtimeUsername";
