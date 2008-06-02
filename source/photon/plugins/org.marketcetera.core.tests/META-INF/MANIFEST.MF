@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Core Tests Plug-in
 Bundle-SymbolicName: org.marketcetera.core.tests
-Bundle-Version: 0.4.2
+Bundle-Version: 0.5.0
 Bundle-Vendor: Marketcetera, Inc.
 Require-Bundle: org.marketcetera.core,
  org.junit
