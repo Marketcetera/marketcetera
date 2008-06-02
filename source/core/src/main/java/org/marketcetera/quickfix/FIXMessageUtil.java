@@ -392,10 +392,18 @@ public class FIXMessageUtil {
 
 	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
 		if (fieldMap.isSetField(fieldNumber)){
-			throw new MarketceteraException(MessageKey.FIX_FIELD_ALREADY_SET.getLocalizedMessage(fieldNumber));
-		} else {
-			fieldMap.setField(new StringField(fieldNumber, value));
+			StringField testField = new StringField(fieldNumber);
+			try {
+				fieldMap.getField(testField);
+				if(testField.getValue().equals(value)){
+					return;
+				}
+			} catch (FieldNotFound ignored) {
+				//Unexpected as isSetField() returned true
+				//Don't do anything so that we set the field before we return.
+			}
 		}
+		fieldMap.setField(new StringField(fieldNumber, value));
 	}
 
 	public static String getTextOrEncodedText(Message aMessage, String defaultString) {

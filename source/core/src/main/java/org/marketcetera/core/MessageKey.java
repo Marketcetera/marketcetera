@@ -16,7 +16,6 @@ public enum MessageKey implements LocalizedMessage {
     JMX_BEAN_FAILURE("core.init.jmx_reg_error"),
 
     FIX_FNF("core.error.fix.fnf"),
-    FIX_FIELD_ALREADY_SET("core.error.fix.field_already_set"),
     FIX_OUTGOING_NO_MSGTYPE("core.error.fix.outgoing_no_msgtype"),
     FIX_UNEXPECTED_MSGTYPE("core.error.fix.unexpected_msgtype"),
     FIX_VERSION_UNSUPPORTED("core.error.fix.version_unsuppported"),
