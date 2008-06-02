@@ -32,12 +32,14 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.program.Program;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -69,6 +71,8 @@ public class LoginDialog extends Dialog {
 	private static final String SAVED = "saved-connections";
 
 	private static final String LAST_USER = "prefs_last_connection";
+	
+	private Shell mShell;
 
 	public LoginDialog(Shell parentShell) {
 		super(parentShell);
@@ -77,6 +81,7 @@ public class LoginDialog extends Dialog {
 
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
+        mShell = newShell;
 		newShell.setText("ORS Login");
 		// load the image from the product definition
 		IProduct product = Platform.getProduct();
@@ -160,23 +165,43 @@ public class LoginDialog extends Dialog {
 		if (connectionDetails != null)
 			lastUser = connectionDetails.getUserId();
 		initializeUsers(lastUser);
-
+		Link link = new Link(mShell, 
+		                     SWT.BORDER);
+		link.setText("Get <a href=\"http://www.marketcetera.com/0.5.0/docs/authentication\">help</a> with ORS log-in configuration.");
+		link.addListener(SWT.Selection, 
+		                 new Listener() {
+            public void handleEvent(Event event) 
+            {
+                // execute the native action associated with a URL
+                Program.launch(event.text);
+            }
+        });
+		
 		return composite;
 	}
 
-	protected void createButtonsForButtonBar(Composite parent) {
+	protected void createButtonsForButtonBar(Composite parent) 
+	{
 		Button removeCurrentUser = createButton(parent,
-				IDialogConstants.CLIENT_ID, "&Delete User", false);
-		removeCurrentUser.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		                                        IDialogConstants.CLIENT_ID,
+		                                        "&Clear",
+		                                        false);
+		removeCurrentUser.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
 				savedDetails.remove(userIdText.getText());
 				initializeUsers("");
 			}
 		});
-		createButton(parent, IDialogConstants.OK_ID, "&Login", true);
-		createButton(parent, IDialogConstants.CANCEL_ID,
-				IDialogConstants.CANCEL_LABEL, false);
-
+		createButton(parent,
+		             IDialogConstants.OK_ID,
+		             "&Login",
+		             true);
+		createButton(parent,
+		             IDialogConstants.CANCEL_ID,
+		             IDialogConstants.CANCEL_LABEL,
+		             false);
 	}
 
 	protected void initializeUsers(String defaultUser) {
