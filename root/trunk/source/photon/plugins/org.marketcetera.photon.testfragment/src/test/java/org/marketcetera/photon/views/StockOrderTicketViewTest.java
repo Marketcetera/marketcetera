@@ -327,6 +327,11 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 	 * Tests that enabled custom fields (the header and body kind) are inserted into outgoing messages.
 	 */
 	public void testEnabledCustomFieldsAddedToMessage() throws Exception {
+		doTestEnabledCustomFieldsAddedToMessage(msgFactory.newLimitOrder("1",  //$NON-NLS-1$
+				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+				TimeInForce.DAY, null));
+	}
+	private void doTestEnabledCustomFieldsAddedToMessage(Message message) throws Exception {
 		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
 
 		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
@@ -353,13 +358,10 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			// Ignore
 		}
 		
-		Message newMessage = msgFactory.newLimitOrder("1",  //$NON-NLS-1$
-				Side.BUY, BigDecimal.TEN, new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
-				TimeInForce.DAY, null);
-		stockOrderTicketModel.setOrderMessage(newMessage);
+		stockOrderTicketModel.setOrderMessage(message);
 
 		
-		Date oldTime = newMessage.getUtcTimeStamp(TransactTime.FIELD);
+		Date oldTime = message.getUtcTimeStamp(TransactTime.FIELD);
 		Thread.sleep(100); // because of windows clock granularity problems
 		stockOrderTicketModel.completeMessage();
 		
@@ -368,13 +370,9 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		assertFalse("completeMessage() should set different value for TransactTime", 
 				oldTime.getTime() == updatedMessage.getUtcTimeStamp(TransactTime.FIELD).getTime());
 		assertNotNull( updatedMessage );
-		try {
-			quickfix.Message.Header header = updatedMessage.getHeader();
-			String value = header.getString(DeliverToCompID.FIELD);  // header field
-			assertEquals("ABCD", value);  //$NON-NLS-1$
-		} catch (FieldNotFound e) {
-			fail();
-		}
+		quickfix.Message.Header header = updatedMessage.getHeader();
+		String value = header.getString(DeliverToCompID.FIELD);  // header field
+		assertEquals("ABCD", value);  //$NON-NLS-1$
 		try {
 			updatedMessage.getString(DeliverToCompID.FIELD);
 			//shouldn't be in the body.
@@ -382,12 +380,66 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		} catch (FieldNotFound e) {
 			//expected result
 		}
+		value = updatedMessage.getString(PrevClosePx.FIELD);  // body field
+		assertEquals("EFGH", value);  //$NON-NLS-1$
+	}
+	/**
+	 * Test for bug #378. Verify that a cancel replace order with enabled custom fields
+	 * doesn't fail with custom field already present errors.
+	 * 
+	 */
+	public void testCancelReplaceWithCustomFieldsAddedToMessage() throws Exception {
+		OrderTicketModel stockOrderTicketModel = PhotonPlugin.getDefault().getStockOrderTicketModel();
+		//Run the test to get a message with custom fields in it
+		doTestEnabledCustomFieldsAddedToMessage(
+				msgFactory.newCancelReplaceFromMessage(
+						msgFactory.newLimitOrder("1",  //$NON-NLS-1$
+						Side.BUY, BigDecimal.TEN, 
+						new MSymbol("DREI"), BigDecimal.ONE,  //$NON-NLS-1$
+						TimeInForce.DAY, null)));
+		//The message already has custom fields, try and complete the
+		//message again. This shouldn't cause an exception in 
+		//FIXMessageUtil.insertFieldIfMissing()
+		stockOrderTicketModel.completeMessage();
+		Message updatedMessage = stockOrderTicketModel.getOrderMessage();
+		assertNotNull( updatedMessage );
+		//Verify that the updated message has expected field values.
+		quickfix.Message.Header header = updatedMessage.getHeader();
+		String value = header.getString(DeliverToCompID.FIELD);  // header field
+		assertEquals("ABCD", value);  //$NON-NLS-1$
 		try {
-			String value = updatedMessage.getString(PrevClosePx.FIELD);  // body field
-			assertEquals("EFGH", value);  //$NON-NLS-1$
-		} catch (FieldNotFound e) {
+			updatedMessage.getString(DeliverToCompID.FIELD);
+			//shouldn't be in the body.
 			fail();
+		} catch (FieldNotFound e) {
+			//expected result
 		}
+		value = updatedMessage.getString(PrevClosePx.FIELD);  // body field
+		assertEquals("EFGH", value);  //$NON-NLS-1$
+		//Now change the values of the custom fields and verify that they are updated
+		ScopedPreferenceStore prefStore = PhotonPlugin.getDefault().getPreferenceStore();
+		prefStore.setValue(CustomOrderFieldPage.CUSTOM_FIELDS_PREFERENCE, 
+				"" + DeliverToCompID.FIELD + "=PQRS" + "&" + PrevClosePx.FIELD + "=XYZ");  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		//Since new fields are added we need to re-enable them
+		((CustomField) stockOrderTicketModel.getCustomFieldsList().get(0)).setEnabled(true);
+		((CustomField) stockOrderTicketModel.getCustomFieldsList().get(1)).setEnabled(true);
+
+		stockOrderTicketModel.completeMessage();
+		updatedMessage = stockOrderTicketModel.getOrderMessage();
+		assertNotNull( updatedMessage );
+		//Verify that the updated message has expected field values.
+		header = updatedMessage.getHeader();
+		value = header.getString(DeliverToCompID.FIELD);  // header field
+		assertEquals("PQRS", value);  //$NON-NLS-1$
+		try {
+			updatedMessage.getString(DeliverToCompID.FIELD);
+			//shouldn't be in the body.
+			fail();
+		} catch (FieldNotFound e) {
+			//expected result
+		}
+		value = updatedMessage.getString(PrevClosePx.FIELD);  // body field
+		assertEquals("XYZ", value);  //$NON-NLS-1$
 	}
 	
 	/**

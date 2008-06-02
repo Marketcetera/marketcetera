@@ -16,8 +16,8 @@ public class CancelReplaceTypeImageTest extends TestCase {
 
 	public void testGetImages() {
 		String[] images = CancelReplaceTypeImage.getImages();
-		assertEquals("P",images[0]);
-		assertEquals("Q", images[1]);
+		assertEquals("Q",images[0]);
+		assertEquals("P", images[1]);
 	}
 
 }
