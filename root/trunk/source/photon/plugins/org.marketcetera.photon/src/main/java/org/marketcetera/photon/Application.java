@@ -1,5 +1,9 @@
 package org.marketcetera.photon;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.util.logging.LogManager;
 
@@ -42,6 +46,21 @@ public class Application implements IApplication, IPropertyChangeListener {
 	 */
 	private static final String JAVA_LOGGING_CONFIG = "java.util.logging.properties";
 
+    /**
+     * The system property name that contains photon installation
+     * directory
+     */
+	private static final String APP_DIR_PROP="org.marketcetera.appDir";
+	
+	/**
+	 * The configuration sub directory for the application
+	 */
+	private static final String CONF_DIR = "conf";
+
+	/**
+	 * Delay for rereading log4j configuration.
+	 */
+	private static final int LOGGER_WATCH_DELAY = 20*1000;
 
 
 	public void propertyChange(PropertyChangeEvent event) {
@@ -57,26 +76,7 @@ public class Application implements IApplication, IPropertyChangeListener {
 	 * @see PlatformUI#createAndRunWorkbench(Display, org.eclipse.ui.application.WorkbenchAdvisor)
 	 */
 	public Object start(IApplicationContext context) throws Exception {
-		// Fetch the java process ID. Do note that this mechanism relies on
-		// a non-public interface of the jvm but its very useful to be able
-		// to use the pid.
-		String id = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9]", "");
-		if(id == null || id.trim().length() < 1) {
-			id = String.valueOf(System.currentTimeMillis());  
-		}
-		// Supply the pid as a system property so that it can be used in
-		// log 4j configuration
-		System.setProperty(PROCESS_UNIQUE_PROPERTY,id);
-		// Configure loggers
-		LogManager.getLogManager().readConfiguration(getClass().
-				getClassLoader().getResourceAsStream(
-						JAVA_LOGGING_CONFIG));
-		// Remove default configuration done via log4j.properties file
-		// present in one of the jars that we depend on 
-		BasicConfigurator.resetConfiguration();
-		//Explicitly configure log4j via photon log4j configuration file.
-		PropertyConfigurator.configure(getClass().
-				getClassLoader().getResource(LOG4J_CONFIG));
+		configureLogs();
 		
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 
@@ -90,6 +90,82 @@ public class Application implements IApplication, IPropertyChangeListener {
 		} finally {
 			display.dispose();
 		}
+	}
+
+
+	/**
+	 * Configure Logs
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private void configureLogs() throws FileNotFoundException, IOException {
+		// Fetch the java process ID. Do note that this mechanism relies on
+		// a non-public interface of the jvm but its very useful to be able
+		// to use the pid.
+		String id = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9]", "");
+		if(id == null || id.trim().length() < 1) {
+			id = String.valueOf(System.currentTimeMillis());  
+		}
+		// Supply the pid as a system property so that it can be used in
+		// log 4j configuration
+		System.setProperty(PROCESS_UNIQUE_PROPERTY,id);
+		//Figure out if the application install dir is specified
+        String appDir=System.getProperty(APP_DIR_PROP);
+        File confDir = null;
+		// Configure loggers
+        if(appDir != null) {
+        	File dir = new File(appDir,CONF_DIR);
+        	if(dir.isDirectory()) {
+        		confDir = dir;
+        	}
+        }
+        // Configure Java Logging
+        boolean logConfigured = false;
+        if (confDir != null) {
+            File logConfig = new File(confDir,JAVA_LOGGING_CONFIG);
+			if (logConfig.isFile()) {
+				FileInputStream fis = null;
+				try {
+					fis = new FileInputStream(logConfig);
+					LogManager.getLogManager().readConfiguration(fis);
+					logConfigured = true;
+				} catch (Exception ignored) {
+				} finally {
+					if (fis != null) {
+						try {
+							fis.close();
+						} catch (IOException ignored) {
+						}
+					}
+				}
+
+			}
+		}
+		//Do default configuration, if its not already done.
+        if(!logConfigured) {
+    		LogManager.getLogManager().readConfiguration(getClass().
+    				getClassLoader().getResourceAsStream(
+    						JAVA_LOGGING_CONFIG));
+        }
+        
+        // Configure Log4j
+		// Remove default configuration done via log4j.properties file
+		// present in one of the jars that we depend on 
+		BasicConfigurator.resetConfiguration();
+		logConfigured = false;
+		if(confDir != null) {
+	        File logConfig = new File(confDir,LOG4J_CONFIG);
+	        if(logConfig.isFile()) {
+	        	PropertyConfigurator.configureAndWatch(
+	        			logConfig.getAbsolutePath(),LOGGER_WATCH_DELAY);
+	        	logConfigured = true;
+	        } 			
+		}
+        if(!logConfigured) {
+    		//Do default log4j configuration, if its not already done.
+    		PropertyConfigurator.configure(getClass().
+    				getClassLoader().getResource(LOG4J_CONFIG));
+        }
 	}
 
 
