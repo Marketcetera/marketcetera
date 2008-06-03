@@ -41,7 +41,7 @@ public class QuickFIXApplication implements Application {
                 jmsOperations.convertAndSend(message);
             } catch (Exception ex) {
                 LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
+                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Failed Sending Message:"+message, ex, this); }
             }
         }
 	}
@@ -67,7 +67,7 @@ public class QuickFIXApplication implements Application {
                 }
             } catch (Exception ex) {
                 LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
+                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Failed sending message: "+message, ex, this); }
             }
         }
 
@@ -113,7 +113,7 @@ public class QuickFIXApplication implements Application {
                 jmsOperations.convertAndSend(logout);
             } catch (Exception ex) {
                 LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("reason for above exception: "+ex, ex, this); }
+                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("failed sending message: "+logout, ex, this); }
             }
         }
     }
