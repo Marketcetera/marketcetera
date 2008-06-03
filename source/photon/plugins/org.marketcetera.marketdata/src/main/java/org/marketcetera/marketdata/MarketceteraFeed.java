@@ -15,6 +15,7 @@ import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
@@ -60,13 +61,17 @@ import quickfix.field.TestMessageIndicator;
 import quickfix.field.Text;
 import quickfix.fix44.MessageFactory;
 
+/* $License$ */
+
 /**
  * A sample implementation of a market data feed.
  *
  * <p>This feed will return random market data for every symbol queried.
  *
  * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                    MarketceteraFeedCredentials,

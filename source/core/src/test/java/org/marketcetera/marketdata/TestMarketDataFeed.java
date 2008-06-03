@@ -2,23 +2,27 @@ package org.marketcetera.marketdata;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.TestEventTranslator;
 import org.marketcetera.quickfix.TestMessageTranslator;
 
-import quickfix.Message;
+/* $License$ */
 
 /**
  * Test implementation of <code>AbstractMarketDataFeed</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public class TestMarketDataFeed
     extends AbstractMarketDataFeed<TestMarketDataFeedToken,
                                    TestMarketDataFeedCredentials,
@@ -57,11 +61,13 @@ public class TestMarketDataFeed
     private boolean mGetEventTranslatorThrows = false;
     private boolean mGetMessageTranslatorThrows = false;
     private boolean mAfterExecuteThrows = false;
+    private boolean mShouldTimeout = false;
+    private long mTimeout = 60;
     
     private static final Random sRandom = new Random(System.nanoTime());
     
-    private List<String> mCanceledHandles = new ArrayList<String>();
-    private List<String> mCreatedHandles = new ArrayList<String>();
+    private Set<String> mCanceledHandles = new LinkedHashSet<String>();
+    private Set<String> mCreatedHandles = new LinkedHashSet<String>();
     
     public TestMarketDataFeed() 
         throws NoMoreIDsException
@@ -193,6 +199,9 @@ public class TestMarketDataFeed
             throw new NullPointerException("This exception is expected");
         }
         String handle = mQueue.poll();
+        if(inToken != null) {
+            inToken.setHandle(handle);
+        }
         if(handle != null) {
             dataReceived(handle,
                          inToken.getTokenSpec().getMessage());
@@ -213,6 +222,13 @@ public class TestMarketDataFeed
      */
     protected boolean isLoggedIn(TestMarketDataFeedCredentials inCredentials)
     {
+        if(getShouldTimeout()) {
+            try {
+                Thread.sleep((getTimeout() + 5) * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         if(getIsLoggedInThrows()) {
             throw new NullPointerException("This exception is expected");
         }
@@ -344,7 +360,7 @@ public class TestMarketDataFeed
         if(getGetEventTranslatorThrows()) {
             throw new NullPointerException("This exception is expected");
         }
-        return new TestEventTranslator();
+        return TestEventTranslator.getTestEventTranslator();
     }
     /**
      * Get the cancelFails value.
@@ -489,17 +505,47 @@ public class TestMarketDataFeed
         mExecuteReturnsNull = inExecuteReturnsNull;
     }
     /**
-     * Causes the given message to be submitted in reference to the given handle.
+     * Causes the given data to be submitted in reference to the given handle.
      * 
      * <p>This method can be used to simulate a repeatedly-updated subscription.
      * 
      * @param inHandle a <code>String</code> value
-     * @param inMessage a <code>Message</code> value
+     * @param inData an <code>Object</code> value
      */
     public void submitData(String inHandle,
-                           Message inMessage)
+                           Object inData)
     {
         dataReceived(inHandle,
-                     inMessage);
+                     inData);
+    }
+    /**
+     * Get the timeout value.
+     *
+     * @return a <code>TestMarketDataFeed</code> value
+     */
+    public boolean getShouldTimeout()
+    {
+        return mShouldTimeout;
+    }
+    /**
+     * Sets the timeout value.
+     *
+     * @param a <code>TestMarketDataFeed</code> value
+     */
+    public void setShouldTimeout(boolean inTimeout)
+    {
+        mShouldTimeout = inTimeout;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getTimeout()
+     */
+    @Override
+    protected long getTimeout()
+    {
+        if(getShouldTimeout()) {
+            mTimeout = 10;
+            return mTimeout;
+        }
+        return super.getTimeout();
     }
 }

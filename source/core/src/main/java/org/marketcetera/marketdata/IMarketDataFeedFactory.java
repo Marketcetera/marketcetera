@@ -1,6 +1,9 @@
 package org.marketcetera.marketdata;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
+
+/* $License$ */
 
 /**
  * Returns an {@link IMarketDataFeed} instance.
@@ -12,9 +15,11 @@ import org.marketcetera.core.MarketceteraException;
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
-public interface IMarketDataFeedFactory<F extends IMarketDataFeed,C extends IMarketDataFeedCredentials> 
+@ClassVersion("$Id$")
+public interface IMarketDataFeedFactory<F extends IMarketDataFeed<? extends IMarketDataFeedToken<C>,C>,
+                                        C extends IMarketDataFeedCredentials> 
 {
     /**
      * Returns a data feed object that can resolve queries.

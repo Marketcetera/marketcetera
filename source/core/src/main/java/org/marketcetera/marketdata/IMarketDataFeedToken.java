@@ -1,14 +1,18 @@
 package org.marketcetera.marketdata;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.IPublisher;
+
+/* $License$ */
 
 /**
  * Represents a transaction with an {@link IMarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
         extends IPublisher
 {
@@ -17,15 +21,46 @@ public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 0.43-SNAPSHOT
+     * @since 0.5.0
      */
     public enum Status {
-        NOT_STARTED, 
-        RUNNING, 
-        ACTIVE, 
-        CANCELED, 
-        LOGIN_FAILED, 
-        INITIALIZATION_FAILED, 
+        /**
+         * indicates that a token has been created, but it has not yet begun the process of
+         * execution
+         */
+        NOT_STARTED,
+        /**
+         * execution is under way but has not yet been completed
+         */
+        RUNNING,
+        /**
+         * execution has been completed and the query is actively receiving updates
+         */
+        ACTIVE,
+        /**
+         * the query is in the process of being resubmitted
+         */
+        RESUBMITTING,
+        /**
+         * the query was active when the feed was stopped
+         */
+        SUSPENDED,
+        /**
+         * the user canceled the query
+         */
+        CANCELED,
+        /**
+         * the feed was not logged in to when the query was submitted and login with
+         * the token's credentials failed
+         */
+        LOGIN_FAILED,
+        /**
+         * query initialization on the feed failed
+         */
+        INITIALIZATION_FAILED,
+        /**
+         * query execution failed
+         */
         EXECUTION_FAILED;
 
         /**
@@ -37,6 +72,8 @@ public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
         {
             return this.equals(NOT_STARTED) ||
                    this.equals(RUNNING) ||
+                   this.equals(RESUBMITTING) ||
+                   this.equals(SUSPENDED) ||
                    this.equals(ACTIVE);
         }
     };    

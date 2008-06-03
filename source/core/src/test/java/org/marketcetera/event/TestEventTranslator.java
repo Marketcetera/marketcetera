@@ -4,23 +4,36 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
 
 import quickfix.Message;
 
+/* $License$ */
 /**
  * Test implementation of <code>IEventTranslator</code>.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public class TestEventTranslator
-        implements IEventTranslator
+        extends AbstractEventTranslator
 {
     private static boolean sTranslateToEventsThrows = false;
     private static boolean sTranslateToEventsReturnsNull = false;
     private static boolean sTranslateToEventsReturnsZeroEvents = false;
+    private static TestEventTranslator sInstance = new TestEventTranslator();
+    /**
+     * Gets a <code>TestEventTranslator</code> value.
+     *
+     * @return a <code>TestEventTranslator</code> value
+     */
+    public static TestEventTranslator getTestEventTranslator()
+    {
+        return sInstance;
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
@@ -39,6 +52,11 @@ public class TestEventTranslator
         Message message = null;
         if(inData instanceof Message) {
             message = (Message)inData;
+        }
+        if(inData instanceof SymbolExchangeEvent) {
+            SymbolExchangeEvent see = (SymbolExchangeEvent)inData;
+            updateEventFixMessageSnapshot(see);
+            return Arrays.asList(new EventBase[] { see });
         }
         return Arrays.asList(new EventBase[] { new UnknownEvent(System.nanoTime(),
                                                                 System.currentTimeMillis(),
