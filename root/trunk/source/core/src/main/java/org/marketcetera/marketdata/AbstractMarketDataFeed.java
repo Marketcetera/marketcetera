@@ -10,7 +10,10 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.InternalID;
@@ -30,6 +33,8 @@ import org.marketcetera.quickfix.IMessageTranslator;
 import quickfix.Message;
 import quickfix.field.MarketDepth;
 import quickfix.field.SubscriptionRequestType;
+
+/* $License$ */
 
 /**
  * An abstract base class for all market data feeds. 
@@ -53,14 +58,15 @@ import quickfix.field.SubscriptionRequestType;
  * @author andrei@lissovski.org
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since 0.5.0
  */
-@SuppressWarnings("unchecked")
+@ClassVersion("$Id$")
 public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F,C>, 
                                              C extends IMarketDataFeedCredentials, 
                                              X extends IMessageTranslator<D>, 
                                              E extends IEventTranslator,
                                              D,
-                                             F extends AbstractMarketDataFeed> 
+                                             F extends AbstractMarketDataFeed<?,?,?,?,?,?>> 
     implements IMarketDataFeed<T,C> 
 {
     /**
@@ -257,25 +263,12 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         if(subscribers != null) {
             token.subscribeAll(subscribers);
         }
-        // construct the object that will be invoked by the ThreadPool - this object is used
-        //  to execute the query represented by the token
-        ExecutorThread thread = new ExecutorThread(token,
-                                                   credentials);        
         try {
-            // this command executes the request using the connector.  the connector has all the information it needs
-            //  to execute the request because of the token.  this command is asynchronous.
-            Future<T> response = sPool.submit(thread);
-            // wait for the response to be returned.  this doesn't mean that the results are back yet, just that
-            //  the request has been received and acknowledged by the feed service.  if you can dig it, it's an
-            //  asynchronous request for an asynchronous response.
-            return response.get();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+            return submitToken(token,
+                               credentials);
+        } catch (TimeoutException e) {
             throw new FeedException(MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage(),
                                     e);
-        } catch (Throwable t) {
-            throw new FeedException(MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage(),
-                                    t);
         }
     }
     /* (non-Javadoc)
@@ -389,6 +382,34 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     public void stop()
     {
+        // get all the tokens from active queries
+        List<T> tokens = mHandleHolder.getTokens();
+        for(T token : tokens) {
+            // for each token, suspend the query.  this amounts to canceling the query
+            //  on the datafeed side but keeping the token in the active list.  this
+            //  accomplishes two goals:
+            //   1) if the feed is truly stopping and not restarting, we clean up our
+            //      connections with the datafeed
+            //   2) if the feed is being restarted, we have a record of all the queries
+            //      that were active before
+            if(LoggerAdapter.isDebugEnabled(this)) {
+                LoggerAdapter.debug(String.format("Suspending %s",
+                                                  token),
+                                    this);
+            }
+            token.setStatus(Status.SUSPENDED);
+            // this performs the cancel on the datafeed side
+            doHandleInvalidation(mHandleHolder.getHandles(token));
+        }
+        try {
+            doLogout();
+        } catch (InterruptedException e) {
+            if(LoggerAdapter.isDebugEnabled(this)) {
+                LoggerAdapter.debug("Interrupted while logging out of feed, skipping",
+                                    e,
+                                    this);
+            }
+        }
         setFeedStatus(FeedStatus.OFFLINE);
     }
     /* (non-Javadoc)
@@ -589,6 +610,20 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                                   Throwable inException)
         throws InterruptedException
     {
+    }
+    /**
+     * Gets the number of seconds to wait for an execution to be acknowledged.
+     *
+     * <p>This method returns 60.  Subclasses may override this method to return a different value.
+     * The timeout applies to calls to {@link #execute(MarketDataFeedTokenSpec)}.  Note that the
+     * feed is not obligated to return data within the time limit, merely to acknowledge log-in and
+     * query submission.
+     *  
+     * @return a <code>long</code> value containing the number of seconds to wait before timing out
+     */
+    protected long getTimeout()
+    {
+        return 60;
     }
     /*
      * the following methods may be called by implementing subclasses but may not
@@ -825,18 +860,34 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         for(T token : tokens) {
             // remove old record of this query
             doHandleInvalidation(mHandleHolder.removeToken(token));
+            // set status to indicate it is being resubmitted
+            token.setStatus(Status.RESUBMITTING);
             // newly submit query, allowing its new handles to be added
             if(LoggerAdapter.isDebugEnabled(this)) {
                 LoggerAdapter.debug(String.format("Resubmitting %s",
                                                   token),
                                     this);
             }
+            // resubmit the token with the token's credentials
+            C credentials = token.getTokenSpec().getCredentials();
             try {
-                if(!doExecute(token)) {
-                    token.setStatus(Status.EXECUTION_FAILED);
+                submitToken(token, 
+                            credentials);
+            } catch (TimeoutException e) {
+                if(LoggerAdapter.isErrorEnabled(this)) {
+                    LoggerAdapter.error(String.format("Failed to resubmit %s",
+                                                      token),
+                                                      e,
+                                                      this);
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+                break;
+            } catch (FeedException e) {
+                if(LoggerAdapter.isWarnEnabled(this)) {
+                    LoggerAdapter.warn(String.format("Failed to resubmit %s",
+                                                     token),
+                                                     e,
+                                                     this);
+                }
             }
         }
     }
@@ -921,6 +972,52 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             mAllPublisher.publish(inEvent);
         }
     }
+    /**
+     * Returns the provider name associated with this feed.
+     *
+     * @return a <code>String</code> value
+     */
+    private String getProviderName()
+    {
+        return mProviderName;
+    }
+    /**
+     * Causes the given token to be executed with the given credentials.
+     *
+     * @param inToken a <code>T</code> value
+     * @param inCredentials a <code>C</code> value
+     * @return a <code>T</code> value
+     * @throws TimeoutException if the execute times out before returning 
+     * @throws FeedException if an exception occurs
+     */
+    private T submitToken(T inToken,
+                          C inCredentials) 
+        throws FeedException, TimeoutException
+    {
+        // construct the object that will be invoked by the ThreadPool - this object is used
+        //  to execute the query represented by the token
+        ExecutorThread thread = new ExecutorThread(inToken,
+                                                   inCredentials);        
+        try {
+            // this command executes the request using the connector.  the connector has all the information it needs
+            //  to execute the request because of the token.  this command is asynchronous.
+            Future<T> response = sPool.submit(thread);
+            // wait for the response to be returned for a max of 1 minute.  this doesn't mean that the results are back yet, just that
+            //  the request has been received and acknowledged by the feed service.  if you can dig it, it's an
+            //  asynchronous request for an asynchronous response.
+            return response.get(getTimeout(),
+                                TimeUnit.SECONDS);
+        } catch (TimeoutException e) {
+            throw e;
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new FeedException(MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage(),
+                                    e);
+        } catch (Throwable t) {
+            throw new FeedException(MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage(),
+                                    t);
+        }
+    }
     /*
      * the following are private helper classes
      */
@@ -945,8 +1042,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 0.43-SNAPSHOT
+     * @since 0.5.0
      */
+    @ClassVersion("$Id$")
     private class ExecutorThread
         implements Callable<T>
     {
@@ -1073,8 +1171,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 0.43-SNAPSHOT
+     * @since 0.5.0
      */    
+    @ClassVersion("$Id$")
     private class HandleHolder
     {
         /**
@@ -1163,6 +1262,22 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             return handles;
         }
         /**
+         * Gets the handles associated with the given token.
+         *
+         * @param inToken a <code>T</code> value
+         * @return a <code>List&lt;MarketDataHandle&gt;</code> value
+         */
+        private List<MarketDataHandle> getHandles(T inToken)
+        {            
+            synchronized(mLock) {
+                List<MarketDataHandle> handles = mHandlesByToken.get(inToken);
+                if(handles == null) {
+                    handles = new ArrayList<MarketDataHandle>();
+                }
+                return handles;
+            }
+        }
+        /**
          * Returns all the tokens in no particular order.
          * 
          * @return a <code>Collection&lt;T&gt;</code> value
@@ -1170,10 +1285,10 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         private List<T> getTokens()
         {
             synchronized(mLock) {
-                return new ArrayList(mTokensByHandle.values());
+                return new ArrayList<T>(mTokensByHandle.values());
             }
         }
-    }
+   }
     /**
      * A unique handle to associate data feed requests with responses.
      *
@@ -1188,8 +1303,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *       
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 0.43-SNAPSHOT
+     * @since 0.5.0
      */
+    @ClassVersion("$Id$")
     private class MarketDataHandle
     {
         /**
@@ -1215,7 +1331,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             }
             mProtoHandle = inHandle;
             mHandle = String.format("%s-%s",
-                                    mProviderName,
+                                    getProviderName(),
                                     inHandle);
         }
         /**
@@ -1272,8 +1388,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * 
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 0.43-SNAPSHOT
+     * @since 0.5.0
      */
+    @ClassVersion("$Id$")
     private static class FeedComponentListenerWrapper
         implements ISubscriber
     {

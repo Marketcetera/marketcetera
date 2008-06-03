@@ -20,6 +20,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
@@ -31,6 +32,17 @@ import org.marketcetera.quickfix.ConnectionConstants;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 
+/* $License$ */
+
+/**
+ * Creates connections to market data feed plug-ins.
+ *
+ * @author gmiller
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since 0.5.0
+ */
+@ClassVersion("$Id$")
 public class ReconnectMarketDataFeedJob extends Job {
 
 	private static AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
@@ -118,7 +130,7 @@ public class ReconnectMarketDataFeedJob extends Job {
                             throw e;
                         }
                         IMarketDataFeedCredentials credentials = (IMarketDataFeedCredentials)credentialsGetter.invoke(credentialsClass,
-                                                                                                                      preferences);
+                                                                                           preferences);
 			    		logger.debug(String.format("Credentials %s created",
 			    		                           credentials));
 			    		// create the feed object itself
@@ -148,9 +160,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	
 	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: done examining "+extensions.length+" extensions"); }
 		} catch (Throwable t) {
-			logger.error(String.format("Exception connecting to market data feed: %s",
-			                           t.getMessage()), 
-			             t);
+			logger.error(new StringBuilder("Exception connecting to market data feed: ").append(t));
 			return Status.CANCEL_STATUS;
 		} finally {
 			reconnectInProgress.set(false);

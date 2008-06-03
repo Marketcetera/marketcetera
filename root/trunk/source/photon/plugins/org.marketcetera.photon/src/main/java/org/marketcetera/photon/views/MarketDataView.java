@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.MSymbol;
@@ -61,6 +62,8 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
 
+/* $License$ */
+
 /**
  * Market data view.
  * 
@@ -68,7 +71,11 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @author caroline.leung@softwaregoodness.com
  * @author andrei.lissovski@softwaregoodness.com
  * @author michael.lossos@softwaregoodness.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public class MarketDataView extends MessagesView implements IMSymbolListener, IFeedComponentListener, ISubscriber {
 
 
@@ -335,7 +342,9 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
                     for (MessageHolder holder : list) {
                         Message message = holder.getMessage();
                         try {
-                            if (message.getString(Symbol.FIELD).equals(quote.getString(Symbol.FIELD))) {
+                            String holderMessageSymbol = message.getString(Symbol.FIELD);
+                            String quoteMessageSymbol = quote.getString(Symbol.FIELD);
+                            if (holderMessageSymbol.equals(quoteMessageSymbol)) {
                                 IncomingMessageHolder newHolder = new IncomingMessageHolder(quote);
                                 list.set(i, 
                                          newHolder);

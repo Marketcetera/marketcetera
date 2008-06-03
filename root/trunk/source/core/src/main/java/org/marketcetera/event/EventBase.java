@@ -2,7 +2,11 @@ package org.marketcetera.event;
 
 import java.util.Date;
 
+import org.marketcetera.core.ClassVersion;
+
 import quickfix.Message;
+
+/* $License$ */
 
 /**
  * Base class for all market events.
@@ -10,8 +14,9 @@ import quickfix.Message;
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public abstract class EventBase 
 {
     /**
@@ -25,7 +30,7 @@ public abstract class EventBase
     /**
      * underlying FIX message for this market event
      */
-	private final Message fixMessage;
+	private Message fixMessage;
 
     /**
      * Create a new <code>EventBase</code> instance.
@@ -97,5 +102,14 @@ public abstract class EventBase
     public Date getTimestampAsDate()
     {
         return new Date(getTimestamp());
+    }
+    /**
+     * Updates the FIX message.
+     *
+     * @param inMessage a <code>Message</code> value to replace the current one
+     */
+    final void updateFixMessage(Message inMessage)
+    {
+        fixMessage = inMessage;
     }
 }

@@ -2,17 +2,22 @@ package org.marketcetera.marketdata;
 
 import java.util.concurrent.ExecutionException;
 
+import org.marketcetera.core.ClassVersion;
+
+/* $License$ */
 
 /**
  * Test implementation of {@link AbstractMarketDataFeedToken}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$")
 public class TestMarketDataFeedToken
     extends AbstractMarketDataFeedToken<TestMarketDataFeed,TestMarketDataFeedCredentials>
 {
+    private String mHandle;
     private boolean mShouldFail = false;
     /**
      * Create a new <code>TestMarketDataFeedToken</code> instance.
@@ -38,7 +43,14 @@ public class TestMarketDataFeedToken
     {
         getPublisher().publishAndWait(inData);
     }
-
+    void setHandle(String inHandle)
+    {
+        mHandle = inHandle;
+    }
+    public String getHandle()
+    {
+        return mHandle;
+    }
     /**
      * @return the shouldFail
      */
