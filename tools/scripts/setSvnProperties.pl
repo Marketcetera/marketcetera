@@ -18,7 +18,7 @@ if (@ARGV!=1) {
 	die "\n";
 }
 
-# Create lists of ignored files.
+# Configuration.
 
 my($ignoreFile)=$ENV{'TEMP'}.'/ignoreFile';
 
@@ -92,9 +92,15 @@ sub run($)
 
 sub walk ()
 {
+	if (-d && (/^\.svn$/io || /^target$/io)) {
+		warn 'Ignoring subversion/target: '.$File::Find::name."\n";
+		$File::Find::prune=1;
+		return;
+	}
+
 	my($absName)=File::Spec->rel2abs($_);
 	$absName=~s#\\#/#g;
-	($absName)=($absName=~/(((public)|(private)).*)/);
+	($absName)=($absName=~/(((public)|(private)).*)/io);
 
 	my($external);
 	foreach $external (@externals) {
@@ -103,11 +109,6 @@ sub walk ()
 			$File::Find::prune=1;
 			return;
 		}
-	}
-
-	if (-d && (/^\.svn$/io || /^target$/io)) {
-		$File::Find::prune=1;
-		return;
 	}
 
 	if (-d) {
