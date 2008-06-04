@@ -1,0 +1,9 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Currencies", :action_name => "Enter New Currency Pair", :top_level_controller => @controller.controller_name } %>
+<h1>Enter Currency Pair</h1>
+
+<% form_tag :action => 'create' do -%>
+  <%= render :partial => 'form' %>
+  <%= render :partial => '/shared/clear_create_form_buttons' %>
+<% end -%>
+

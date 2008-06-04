@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+    <x:import>
+        <package name="java.lang"/>                     <!-- For java.lang.String -->
+        <package name="org.eclipse.swt.widgets"/>       <!-- For Label -->
+        <package name="org.eclipse.swt.layout"/>        <!-- For FillLayout -->
+    </x:import>
+    
+    <!-- If parent has no layout manager, we must specify one ourselves, otherwise this can
+         be safely omitted. -->
+    <layout x:class="fillLayout"/>
+    
+    <!-- Say hello... -->
+    <label text="Hello, world"/>
+</xswt>
