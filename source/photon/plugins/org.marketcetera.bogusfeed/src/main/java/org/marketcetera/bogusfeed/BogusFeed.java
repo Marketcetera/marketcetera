@@ -89,6 +89,10 @@ public class BogusFeed
      */
     private final Random random = new Random(System.nanoTime());
     /**
+     * static instance of <code>BogusFeed</code>
+     */
+    private static BogusFeed sInstance;
+    /**
      * Returns an instance of <code>BogusFeed</code>.
      *
      * @param inProviderName a <code>String</code> value
@@ -101,8 +105,12 @@ public class BogusFeed
                                  BogusFeedCredentials inCredentials) 
         throws NoMoreIDsException
     {
-        return new BogusFeed(inProviderName,
-                             inCredentials);
+        if(sInstance != null) {
+            return sInstance;
+        }
+        sInstance =  new BogusFeed(inProviderName,
+                                   inCredentials);
+        return sInstance;
     }
     /**
      * Create a new BogusFeed instance.
@@ -247,14 +255,14 @@ public class BogusFeed
     @Override
     protected final BogusFeedEventTranslator getEventTranslator()
     {
-        return new BogusFeedEventTranslator();
+        return BogusFeedEventTranslator.getInstance();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getMessageTranslator()
      */
     protected final BogusFeedMessageTranslator getMessageTranslator()
     {
-        return new BogusFeedMessageTranslator();
+        return BogusFeedMessageTranslator.getInstance();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials)
