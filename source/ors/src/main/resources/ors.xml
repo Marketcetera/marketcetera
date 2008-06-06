@@ -75,7 +75,7 @@
 
     <!-- JDBC Setup for ID table -->
     <bean name="JdbcDriver" class="java.lang.String"><constructor-arg value="com.mysql.jdbc.Driver"/></bean>
-    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost/marketcetera"/></bean>
+    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera"/></bean>
     <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
     <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
 
