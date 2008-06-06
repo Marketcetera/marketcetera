@@ -1,5 +1,0 @@
-Apache Commons I18n
-Copyright 2004-2005 The Apache Software Foundation
-
-This product includes software developed by
-The Apache Software Foundation (http://www.apache.org/).
