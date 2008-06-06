@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CSV Plug-in
+Bundle-SymbolicName: org.skife.kasparov.csv
+Bundle-Version: 1.0
+Bundle-ClassPath: lib/csv-1.0.jar
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Localization: plugin
+Export-Package: org.skife.csv
