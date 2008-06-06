@@ -14,6 +14,7 @@ import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.messagehistory.OutgoingMessageHolder;
+import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
@@ -33,6 +34,14 @@ import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
 import ca.odell.glazedlists.EventList;
 
+/*
+ * $License$
+ */
+
+/**
+ * Tests the order ticket screens.
+ * @version $Id$
+ */
 public class OrderManagerTest extends TestCase {
 
     public static Date THE_TRANSACT_TIME;
@@ -40,6 +49,7 @@ public class OrderManagerTest extends TestCase {
     public static String CL_ORD_ID = "CLORDID";
    
     private static FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+    private static FIXDataDictionary dataDictionary = FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX42);
 
     public static Message getTestableExecutionReport() throws FieldNotFound {
             Message aMessage = msgFactory.newExecutionReport("456", CL_ORD_ID, "987", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal("12.3"), new BigDecimal(500),
@@ -158,7 +168,7 @@ public class OrderManagerTest extends TestCase {
 		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancelReplace = holder.getMessage();
 		assertEquals(MsgType.ORDER_CANCEL_REPLACE_REQUEST, filledCancelReplace.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().validate(filledCancelReplace, true);
+		dataDictionary.getDictionary().validate(filledCancelReplace, true);
 		assertEquals("1", filledCancelReplace.getString(OrderQty.FIELD));
 	}
 
@@ -183,9 +193,8 @@ public class OrderManagerTest extends TestCase {
 		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
 		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
 		Message filledCancel = holder.getMessage();
-
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().validate(filledCancel, true);
+		dataDictionary.getDictionary().validate(filledCancel, true);
 	}
 
 
@@ -213,7 +222,7 @@ public class OrderManagerTest extends TestCase {
 		Message filledCancel = holder.getMessage();
 
 		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().validate(filledCancel, true);
+		dataDictionary.getDictionary().validate(filledCancel, true);
 		assertEquals(myClOrdID, filledCancel.getString(OrigClOrdID.FIELD));
 		assertEquals("1000", filledCancel.getString(ClOrdID.FIELD));
 		assertEquals("QWER", filledCancel.getString(Symbol.FIELD));

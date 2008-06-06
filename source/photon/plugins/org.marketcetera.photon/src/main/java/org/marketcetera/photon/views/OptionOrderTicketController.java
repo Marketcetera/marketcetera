@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.swt.widgets.Display;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.Pair;
@@ -43,7 +44,16 @@ import quickfix.field.SecurityReqID;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
+/*
+ * $License$
+ */
 
+/**
+ * The Option Order Ticket View Controller
+ * @version $Id$
+ *
+ */
+@ClassVersion ("$Id$")
 public class OptionOrderTicketController 
 	 extends OrderTicketController<OptionOrderTicketModel> {
 
@@ -234,6 +244,7 @@ public class OptionOrderTicketController
 	 */
 	public void clear() {
 		getOrderTicketModel().clearOrderMessage();
+		getOrderTicketModel().clearUnderlyingMarketData();
 	}
 
 
