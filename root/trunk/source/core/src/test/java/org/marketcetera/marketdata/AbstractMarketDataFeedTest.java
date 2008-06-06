@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.Semaphore;
 
 import junit.framework.Test;
@@ -1645,18 +1644,5 @@ public class AbstractMarketDataFeedTest
                              inToken.getStatus());
             }
         }
-    }
-    
-    private void waitForPublication(final TestSubscriber inSubscriber)
-        throws Exception
-    {
-        wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return inSubscriber.getData() != null;
-            }                                
-        });
-    }
+    }    
 }

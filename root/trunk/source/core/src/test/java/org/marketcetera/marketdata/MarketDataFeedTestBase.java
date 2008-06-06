@@ -137,5 +137,27 @@ public class MarketDataFeedTestBase
             Thread.sleep(100);
         }
         fail("Condition not reached in 60s");
-    }    
+    }
+    /**
+     * Waits until the given subscriber receives a publication.
+     * 
+     * <p>This method is guaranteed to wait until the passed subscriber has been notified.  Note that in order
+     * for the method to be deterministic, the subscriber will have to have been reset {@link TestSubscriber#reset()}
+     * before executing the statement that causes the subscriber to be notified.
+     *
+     * @param inSubscriber a <code>TestSubscriber</code> value
+     * @throws Exception if an error occurs
+     */
+    public static void waitForPublication(final TestSubscriber inSubscriber)
+        throws Exception
+    {
+        wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                throws Exception
+            {
+                return inSubscriber.getData() != null;
+            }
+        });
+    }
 }
