@@ -2,7 +2,6 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.concurrent.Callable;
 
 import junit.framework.TestSuite;
 
@@ -213,11 +212,14 @@ public class AbstractEventTranslatorTest
                        trade);
         // submit an ask for a different symbol, make sure it doesn't affect this one
         String newSymbol = "colin-is-the-symbol";
+        TestSubscriber t2 = new TestSubscriber();
         MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> newSpec = MarketDataFeedTokenSpec.generateTokenSpec(mSpec.getCredentials(), 
                                                                                                                    AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(newSymbol) } ), 
                                                                                                                                                                     true),
-                                                                                                                   mSpec.getSubscribers());
+                                                                                                                   Arrays.asList(new TestSubscriber[] { t2 } ));
         TestMarketDataFeedToken newToken = mFeed.execute(newSpec);
+        assertFalse(newToken.getHandle().equals(token.getHandle()));
+        waitForPublication(t2);
         QuantityTuple newAsk = new QuantityTuple(new BigDecimal("7654321.01234567"),
                                                  new BigDecimal("1123485923.1273495"));
         askE = new AskEvent(System.currentTimeMillis(),
@@ -271,14 +273,7 @@ public class AbstractEventTranslatorTest
         mFeed.submitData(inToken.getHandle(), 
                          event);
         // wait for the subscriber to be notified
-        wait(new Callable<Boolean>() {
-            @Override
-            public Boolean call()
-                    throws Exception
-            {
-                return subscriber.getPublishCount() != 0;
-            }
-        });
+        waitForPublication(subscriber);
         // grab the (updated) FIX message from the subscriber and verify the contents
         Message snapshot = ((SymbolExchangeEvent)subscriber.getData()).getFIXMessage();
         // the snapshot may have a bid, ask, or trade, or some combination of the three
@@ -360,7 +355,16 @@ public class AbstractEventTranslatorTest
                   null,
                   inSymbol,
                   "My-exchange");
-        }        
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return String.format("DoNothingEvent %d",
+                                 hashCode());
+        }
     }
     /**
      * A wrapper class for the quantities associated with a symbol event.
@@ -445,6 +449,14 @@ public class AbstractEventTranslatorTest
             } else if (!mSize.equals(other.mSize))
                 return false;
             return true;
+        }
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return new StringBuilder().append(getSize()).append(" ").append(getPrice()).toString();
         }
     }
 }
