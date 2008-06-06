@@ -1,0 +1,21 @@
+<%= render :partial => 'shared/breadcrumbs',
+    :locals=> { :top_level => "P &amp; L", :action_name => "Import Marks", :top_level_controller => 'pnl' } %>
+<h1>Imported <%= @valid_marks %>/<%= @total_count %> Marks</h1>
+
+<% if (@report.line_errors.length > 0) %>
+<p>Some marks were not imported due to the following errors:</p>
+<p></p>
+<div>
+<% output = ""
+   @report.line_errors.each { |row|
+   output += "<p><div class='highlightedText'>Failed Import: "+h(row[:line]) + "</div>\n"
+   output += "<ul>\n"
+   row[:error].each_full {|msg| output += "<li>"+h(msg)+"</li>\n" }
+   output += "</ul>\n</p>\n"
+   } %>
+<%= output %>
+</div>
+<% end %>
+<p>See all marks on the <%= link_to "query page", :action => "index", :controller => 'marks' %>.</p>
+
+

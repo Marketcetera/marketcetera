@@ -1,0 +1,16 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+toli_div:
+  id: 1
+  amount: 20
+  description: "toli dividend"
+  currency_id: 154
+  equity_id: 3
+
+sunw_div:
+  id: 2
+  amount: 1.23
+  description: "this never happens"
+  currency_id: 3
+  equity_id: 1
+  
+  
