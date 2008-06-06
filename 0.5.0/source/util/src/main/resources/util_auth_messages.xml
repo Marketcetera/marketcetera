@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: tlerios@marketcetera.com
+  - Since: 0.5.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<messages>
+  <message id="context_failed">
+    <locale language="en"> 
+	  <entry key="msg">Context failed to authenticate</entry>
+    </locale>
+  </message>
+  <message id="context_anonymous">
+    <locale language="en"> 
+	  <entry key="msg">(anonymous context)</entry>
+    </locale>
+  </message>
+  <message id="context_overrides">
+    <locale language="en"> 
+	  <entry key="msg">(overriding context)</entry>
+    </locale>
+  </message>
+  <message id="console_unavailable">
+    <locale language="en"> 
+	  <entry key="msg">The console is unavailable</entry>
+    </locale>
+  </message>
+  <message id="parsing_failed">
+    <locale language="en"> 
+	  <entry key="msg">Parsing of the command line failed</entry>
+    </locale>
+  </message>
+
+  <message id="spring_name">
+    <locale language="en"> 
+	  <entry key="msg">Spring framework</entry>
+    </locale>
+  </message>
+  <message id="cli_name">
+    <locale language="en"> 
+	  <entry key="msg">Command-line options</entry>
+    </locale>
+  </message>
+  <message id="console_name">
+    <locale language="en"> 
+	  <entry key="msg">Console terminal</entry>
+    </locale>
+  </message>
+
+  <message id="user_prompt">
+    <locale language="en"> 
+	  <entry key="msg">User: </entry>
+    </locale>
+  </message>
+  <message id="user_description">
+    <locale language="en"> 
+	  <entry key="msg">user name</entry>
+    </locale>
+  </message>
+  <message id="user_spring_usage">
+    <locale language="en"> 
+	  <entry key="msg">Set ''{0}'' to username in properties file</entry>
+    </locale>
+  </message>
+  <message id="user_cli_usage">
+    <locale language="en"> 
+	  <entry key="msg">-{0} or -{1} followed by username</entry>
+    </locale>
+  </message>
+  <message id="user_console_usage">
+    <locale language="en"> 
+	  <entry key="msg">Type username when prompted</entry>
+    </locale>
+  </message>
+  <message id="no_user">
+    <locale language="en"> 
+	  <entry key="msg">No user was specified</entry>
+    </locale>
+  </message>
+
+  <message id="password_prompt">
+    <locale language="en"> 
+	  <entry key="msg">Password: </entry>
+    </locale>
+  </message>
+  <message id="password_description">
+    <locale language="en"> 
+	  <entry key="msg">password</entry>
+    </locale>
+  </message>
+  <message id="password_spring_usage">
+    <locale language="en"> 
+	  <entry key="msg">Set ''{0}'' to password in properties file</entry>
+    </locale>
+  </message>
+  <message id="password_cli_usage">
+    <locale language="en"> 
+	  <entry key="msg">-{0} or -{1} followed by password</entry>
+    </locale>
+  </message>
+  <message id="password_console_usage">
+    <locale language="en"> 
+	  <entry key="msg">Type password when prompted (password won't echo)</entry>
+    </locale>
+  </message>
+  <message id="no_password">
+    <locale language="en"> 
+	  <entry key="msg">No password was specified</entry>
+    </locale>
+  </message>
+</messages>

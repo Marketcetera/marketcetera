@@ -1,0 +1,98 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-sandbox-parent</artifactId>
+    <version>5</version>
+  </parent>
+
+  <artifactId>commons-csv</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>Commons CSV (Sandbox)</name>
+  <url>http://commons.apache.org/sandbox/csv/</url>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <developers>
+    <developer>
+      <id>bayard</id>
+      <name>Henri Yandell</name>
+      <email>bayard@apache.org</email>
+      <organization>Apache</organization>
+    </developer>
+    <developer>
+      <name>Martin van den Bemt</name>
+      <id>mvdb</id>
+      <email>mvdb@apache.org</email>
+      <organization>Apache</organization>
+    </developer>
+    <developer>
+      <name>Yonik Seeley</name>
+      <id>yonik</id>
+      <email>yonik@apache.org</email>
+      <organization>Apache</organization>
+    </developer>
+  </developers>
+  <contributors>
+  </contributors>
+
+  <scm>
+    <connection>scm:svn:http://svn.apache.org/repos/asf/commons/sandbox/csv/trunk</connection>
+    <developerConnection>scm:svn:https://svn.apache.org/repos/asf/commons/sandbox/csv/trunk</developerConnection>
+    <url>http://svn.apache.org/repos/asf/commons/sandbox/csv/trunk</url>
+  </scm>
+
+  <distributionManagement>
+    <site>
+      <id>apache.website</id>
+      <name>Apache Website</name>
+      <url>${commons.deployment.protocol}://people.apache.org/www/commons.apache.org/sandbox/csv/</url>
+    </site>
+  </distributionManagement>
+
+  <properties>
+    <commons.componentid>csv</commons.componentid>
+    <commons.jira.componentid>12311182</commons.jira.componentid>
+  </properties> 
+
+  <build>
+      <sourceDirectory>src/java</sourceDirectory>
+      <testSourceDirectory>src/test</testSourceDirectory> 
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changes-plugin</artifactId>
+        <version>2.0-beta-2</version>
+        <configuration>
+          <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
+        </configuration>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>changes-report</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <configuration>
+          <configLocation>checkstyle.xml</configLocation>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>

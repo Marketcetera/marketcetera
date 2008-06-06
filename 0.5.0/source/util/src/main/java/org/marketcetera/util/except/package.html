@@ -1,0 +1,265 @@
+<body>
+
+<p>Nested exception framework with internationalization (i18n) and
+thread interruption support.</p>
+
+<h2>General usage</h2>
+
+<p>This package provides classes to represent exceptions whose message
+is subject to i18n; that is, the exception message is retained as a
+handle, that is localized at a later time by code that catches the
+exception. For example:</p>
+
+<pre>
+throw new I18NException(Messages.CANNOT_SET_TIME);
+...
+catch (I18NException ex) {
+    // Shows error for inability to set time, translated to a thread-
+    // specific locale. "Category" is the logging category.
+    ex.getI18NBoundMessage().error("Category",ex);
+}
+</pre>
+
+<p>Nested exceptions are also supported, and localization can be
+delayed until the wrapping exception is caught. For example:</p>
+
+<pre>
+throw new I18NException(Messages.CANNOT_SET_TIME);
+...
+catch (I18NException ex) {
+    throw new I18NException(ex,Messages.NTP_FAILED);
+}
+...
+catch (I18NException ex) {
+    // Shows error for NTP failure due to its inability to set time.
+    ex.getI18NBoundMessage().error("Category",ex);
+}
+</pre>
+
+<p>When the exception message to be thrown requires arguments, those
+are supplied by creating an {@link
+org.marketcetera.util.log.I18NBoundMessage}. For example:
+
+<pre>
+throw new I18NException(new I18NBoundMessage1P
+    (Messages.CANNOT_FIND_FILE,file.getAbsolutePath());
+</pre>
+
+<p>In addition to the checked exception {@link
+org.marketcetera.util.except.I18NException}, the framework also
+provides the runtime exception {@link
+org.marketcetera.util.except.I18NRuntimeException} and the error
+{@link org.marketcetera.util.except.I18NError}.</p>
+
+<p>With nested exceptions, the JDK follows certain conventions on
+how <code>getMessage()</code>, <code>getLocalizedMessage()</code>,
+and <code>toString()</code> behave. These conventions do not always
+produce user-friendly or complete messages for nested exceptions, so
+two methods are provided for that task: <code>getDetail()</code>
+and <code>getLocalizedDetail()</code>.</p>
+
+<p>Utilities for commons design patterns are also provided in {@link
+org.marketcetera.util.except.ExceptUtils}, such as swallowing
+exception after displaying a warning message, or wrapping an exception
+in another exception.</p>
+
+<p>Note that, when you use this framework, your unit tests can check
+that an expected exception contains the right message by checking
+message handles and parameters, instead of relying on a less reliable
+locale-specific string comparison. For example:</p>
+
+<pre>
+&#x40Test
+public void findWorks()
+{
+    try {
+        findFile(NAME);
+    } catch (I18NException ex) {
+        I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
+        assertEquals
+            (ex.getDetail(),Messages.CANNOT_FIND_FILE,m.getMessage());
+        assertEquals(NAME,m.getParam1());
+        return;
+    }
+    fail();
+}
+</pre>
+
+<h2>Thread interruption</h2>
+
+<p>In Java, thread interruption cannot occur without the cooperation
+of the interrupted thread: a second thread sets the first
+thread's <i>interrupted</i> flag, and the first thread is supposed to
+check that flag relatively often, detect this request for
+interruption, and terminate as soon as possible.</p>
+
+<p>JDK facilities like {@link java.lang.Thread#sleep(long)} throw an
+{@link java.lang.InterruptedException} when the thread is
+interrupted. This is often mistaken as "the right way" to handle an
+interruption, but this is not true. The JDK throws an exception
+because {@link java.lang.Thread#sleep(long)} was unable to complete
+successfully the task assigned to it, i.e. suspend execution for a
+predetermined interval.</p>
+
+<p>The "right" way to handle thread interruption depends on the task
+at hand. A method may choose to throw an {@link
+java.lang.InterruptedException} as soon as it sees that the thread's
+interrupted flag is set; this should be done if the method is unable
+to complete its assigned task due to that interruption. However, it is
+equally reasonable for a method to ignore the interruption altogether,
+and continue on with its task, if, for example, the method expects
+completion to take place soon. It is also reasonable for a method to
+ignore the interruption temporarily while it gracefully abandons its
+task and cleans up, and then terminate by throwing an exception.</p>
+
+<p>Similarly, a long-running task is expected to check the thread's
+interrupted flag at regular intervals. A long-running task that
+involves no blocking I/O or calls to {@link
+java.lang.Thread#sleep(long)} or other such methods would have no
+other way to detect that it has been asked to terminate.</p>
+
+<p>To compound the confusion, when the JDK throws an {@link
+java.lang.InterruptedException}, it clears the interrupted flag, the
+intent being that the caller who catches the exception may proceed
+with cleanup without worrying about calls into the JDK (or other
+libraries) that would terminate prematurely or refuse to work because
+they see the interrupted flag set. APIs added in more recent JDK's,
+however, will leave the flag set (e.g. when an {@link
+java.nio.channels.ClosedByInterruptException} is thrown); the intent
+here is any APIs a method calls during cleanup should be able to
+refuse to do their work if they believe the task assigned to them
+would take too long (the API implementation knows better than the
+caller how long it'll need to run).</p>
+
+<p>The approach recommended by our framework is to leave the flag
+turned on, and have your code turn it off explicitly if it so sees
+fit. This is because, if the framework turned the flag off for you, it
+would gives you a false sense of safety: there is nothing that stops
+another thread from setting the flag asynchronously during your cleanup
+attempt, and thus derailing it. So it is best to write your code
+assuming the flag is set (and, if you turn it off, that it can be set
+again at any time), and take proper steps to handle those cases.</p>
+
+<p>To assist the above code designs, this framework provides the
+following tools:</p>
+
+<ul>
+
+<p><li>The exception classes {@link
+org.marketcetera.util.except.I18NInterruptedException} and {@link
+org.marketcetera.util.except.I18NInterruptedRuntimeException}, which
+can be thrown to indicate unsuccessful task completion due to
+interruption. These are subclasses of {@link
+org.marketcetera.util.except.I18NException} and {@link
+org.marketcetera.util.except.I18NRuntimeException} respectively, and
+include a default i18n message for interruption.</li></p>
+
+<p><li>The wrapping utilities in {@link
+org.marketcetera.util.except.ExceptUtils} use these classes instead of
+the generic {@link org.marketcetera.util.except.I18NException} and
+{@link org.marketcetera.util.except.I18NRuntimeException} when the
+wrapped exception indicates an interruption; these utilities also
+ensure that, in such a case, the interrupted flag is set.</li></p>
+
+<p><li>The exception swallowing utilities in {@link
+org.marketcetera.util.except.ExceptUtils} also set the interrupted
+flag if the exception being swallowed indicates an
+interruption.</li></p>
+
+<p><li>{@link org.marketcetera.util.except.I18NInterruptedException}
+and {@link
+org.marketcetera.util.except.I18NInterruptedRuntimeException} provide
+static methods such as {@link
+org.marketcetera.util.except.I18NInterruptedException#checkInterruption()}
+that make it easy for your code to check if interruption has occured
+(i.e. the interrupt flag is set) and, if so, throw the exception on
+your behalf (while leaving the flag set).</li></p>
+
+<p><li>{@link org.marketcetera.util.except.ExceptUtils} provides similar
+static methods that throw an {@link
+java.lang.InterruptedException} (the flag remains set).</li></p>
+
+</ul>
+
+<p>Here are some samples that use the above utilities:</p>
+
+<pre>
+void rethrowInterruptedIfFailed()
+    throws I18NException
+{
+    ...
+    try {
+        Thread.sleep(1000);
+    } catch (InterruptedException ex) {
+        // An I18NInterruptedException is thrown that wraps ex.
+        // The thread interrupted flag is set.
+        throw ExceptUtils.wrap(ex);
+    }
+    ... 
+}
+
+void rethrowAnyIfFailed()
+    throws I18NException
+{
+    ...
+    try {
+        stream.close();
+        Thread.sleep(1000);
+    } catch (Exception ex) {
+        // If the exception caught is an InterruptedException from the
+        // sleep, then an I18NInterruptedException is thrown that wraps ex,
+        // and the thread interrupted flag is set. Otherwise, ex is
+        // wrapped by an I18NException, which is thrown.
+        throw ExceptUtils.wrap(ex);
+    }
+    ... 
+}
+
+void ignoreAllIfFailed()
+    throws I18NException
+{
+    ...
+    try {
+        stream.close();
+        Thread.sleep(1000);
+    } catch (Exception ex) {
+        // A warning message is shown with the exception. If the
+        // exception thrown is an InterruptedException from the
+        // sleep, the thread interrupted flag is set.
+        ExceptUtils.swallow(ex);
+    }
+    // Continue on.
+    ... 
+}
+
+void ignoreAllUntilEnd()
+    throws I18NException
+{
+    // Perform first half of task.
+    ...
+
+    // If the interrupted flag is set, terminate now and throw an
+    // I18NInterruptedException (and leave the flag set).
+    I18NInterruptedException.checkInterruption();
+
+    // Perform second half of task.
+    ... 
+}
+
+void ignoreAllUntilEndSignatureForcedBySuperclass()
+{
+    // Perform first half of task.
+    ...
+
+    // If the interrupted flag is set, terminate now and throw an
+    // I18NInterruptedRuntimeException (and leave the flag set).
+    // An I18NInterruptedRuntimeException is used because the method
+    // signature cannot be changed (it is set by the superclass).
+    I18NInterruptedRuntimeException.checkInterruption();
+
+    // Perform second half of task.
+    ... 
+}
+</pre>
+
+</body>
