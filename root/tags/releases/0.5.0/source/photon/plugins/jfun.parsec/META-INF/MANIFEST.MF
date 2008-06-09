@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JParsec Plug-in
+Bundle-SymbolicName: jfun.parsec
+Bundle-Version: 1.1
+Eclipse-LazyStart: false
+Bundle-ClassPath: lib/jparsec-1.1.jar
+Bundle-Vendor: Marketcetera, Inc.
+Bundle-Localization: plugin
+Export-Package: jfun.parsec,
+ jfun.parsec.pattern,
+ jfun.parsec.tokens,
+ jfun.parsec.trace,
+ jfun.util

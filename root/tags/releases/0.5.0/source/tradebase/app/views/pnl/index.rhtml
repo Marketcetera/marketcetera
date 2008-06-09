@@ -1,0 +1,29 @@
+<%= render :partial => 'shared/breadcrumbs', 
+           :locals=> { :top_level => "P &amp; L", :top_level_controller => 'pnl', :action_name=>''} %>
+<h1>P &amp; L</h1>
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+    end %>
+<p>Please choose from the following P &amp; L calculations:</p>
+    <% form_tag({ :controller =>'pnl', :action => 'report'}, :method => :get) do -%>
+        <fieldset>
+            <h2>P &amp; L by Account</h2>
+            <p>Compute a P &amp; L for a particular account.</p>
+            <label for="account_nickname">Account</label>
+            <% if(!@report.nil? && !@report.errors[:account].nil?) %>
+                <div class="fieldWithErrors">
+            <% end -%>
+            <%= text_field_with_auto_complete :account, :nickname %>
+            <% if(!@report.nil? && !@report.errors[:account].nil?)%>
+                </div>
+            <% end -%>
+            <%= render :partial => 'shared/from_to_date_fields', 
+                       :locals => { :suffix => "acct", :errors => (@report.nil?) ? nil : @report.errors,
+                                    :errSfx => (@report.nil?) ? '' : @report.suffix, :two_col => true  } %>
+            <input type="hidden" name='suffix' value="acct"/>
+        </fieldset>
+        <div>
+            <%= submit_tag 'P &amp; L by Account', :class => "submit floatright"  %>
+            <div class="clear"></div>
+        </div>
+    <% end -%>

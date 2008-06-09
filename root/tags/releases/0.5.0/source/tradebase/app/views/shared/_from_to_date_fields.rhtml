@@ -1,0 +1,20 @@
+                <div class="form_left">
+                    <label for="from_date_<%= suffix %>">From</label>
+<% if(!errors.nil? && !errors['from_date'].nil? && errSfx == suffix) %><div class="fieldWithErrors"><% end -%>
+                    <div id="from_date_<%= suffix %>" class="date">
+                        <%= date_select "date_"+suffix, 'from', :order => [:year, :month, :day], :options => {:class=> 'year'}  %>
+                    </div>
+<% if(!errors.nil? && !errors['from_date'].nil? && errSfx == suffix) %></div><% end -%>
+<% if(two_col) %>
+                </div>
+                <div class="form_right">
+<% else %>
+                <div class="clear"></div>
+<% end -%>
+                    <label for="to_date_<%= suffix %>">To</label>
+<% if(!errors.nil? && !errors['to_date'].nil? && errSfx == suffix) %><div class="fieldWithErrors"><% end -%>
+                    <div id="to_date_<%= suffix %>" class="date">
+                        <%= date_select "date_"+suffix, 'to', :order => [:year, :month, :day] %>
+<% if(!errors.nil? && !errors['to_date'].nil? && errSfx == suffix) %></div><% end -%>
+                    </div>
+                </div>
