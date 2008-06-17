@@ -1,0 +1,7 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P &amp; L", :action_name => "List Marks", :top_level_controller => 'pnl' } %>
+<h1>Listing Marks on <%= @on_date %></h1>
+
+<%= render :partial => 'marks/mark_list_display' %>
+
+<%= pagination_links(@mark_pages,  :params => { @param_name => @param_value, :on_date => @on_date }) %>
