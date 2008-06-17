@@ -1,0 +1,16 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+GBPUSD:
+  id: 1001
+  first_currency_id: 2
+  second_currency_id: 154
+
+ZAIUSD:
+  id: 1002
+  first_currency_id: 3
+  second_currency_id: 154
+
+
+EURUSD:
+  id: 1003
+  first_currency_id: 4
+  second_currency_id: 154
