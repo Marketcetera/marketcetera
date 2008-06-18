@@ -10,7 +10,7 @@ class DiagnosticsController < ApplicationController
     @host_resolution['localhost'] = check_hostname_resolution('localhost')
    
     check_etc_hosts_marketcetera_ip_address 
-    if (!RUBY_PLATFORM =~ /mswin32/)  
+    if !(RUBY_PLATFORM =~ /mswin32/)  
       @host_resolution['marketcetera'] = check_hostname_resolution('marketcetera')
     else # windows doesnt need this check - just filling it in for now - TODO  
       @host_resolution['marketcetera'] = check_hostname_resolution('www.marketcetera.com') 
@@ -27,7 +27,7 @@ class DiagnosticsController < ApplicationController
 
     @process_info = {}
     
-    if (!RUBY_PLATFORM =~ /mswin32/)
+    if !(RUBY_PLATFORM =~ /mswin32/)
       @process_info['ORS'] = %x{ps auxww|grep OrderRoutingSystem | grep -v grep}
       @process_info['JMS_Poller'] = %x{ps auxww|grep poller | grep -v grep}
       @process_info['MySQL'] = %x{ps auxww|grep mysqld | grep -v grep}
@@ -59,8 +59,8 @@ class DiagnosticsController < ApplicationController
 
   # Displays the ORS server log
   def ors_log_display
-    if (!RUBY_PLATFORM =~ /mswin32/)
-      @log = %x{tail -2000 /var/log/marketcetera/ors.log}
+    if !(RUBY_PLATFORM =~ /mswin32/)
+      @log = %x{tail -2000 /opt/marketcetera/ors/logs/ors.log}
     else # windows only - can be used for *nix in the future
       if ((File.exist?("#{ENV['METC_HOME']}" + "\\ors\\logs\\ors.log")))
          lines = File.readlines("#{ENV['METC_HOME']}" + "\\ors\\logs\\ors.log")
@@ -76,7 +76,7 @@ class DiagnosticsController < ApplicationController
   end
 
   def tradebase_log_display
-    if  (!RUBY_PLATFORM =~ /mswin32/)	   
+    if  !(RUBY_PLATFORM =~ /mswin32/)	   
     @log = %x{tail -2000 log/#{RAILS_ENV}.log}
     else # windows only - can be used for *nux in the future
       if ((File.exist?("#{ENV['METC_HOME']}" + "\\tradebase\\log\\#{RAILS_ENV}.log")))  
