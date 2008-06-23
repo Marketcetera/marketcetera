@@ -45,6 +45,7 @@ public abstract class ApplicationBase implements Clock {
     protected FIXMessageFactory msgFactory;
     protected FIXVersion fixVersion;
     protected FIXDataDictionary fixDD;
+    private boolean waitingForever = false;
     private static final String FIX_VERSION_NAME = "fixVersionEnum";
 
     public ApplicationBase()
@@ -119,14 +120,27 @@ public abstract class ApplicationBase implements Clock {
      */
     public void startWaitingForever()
     {
+        waitingForever = true;
         try {
             if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Starting to wait forever", this); }
             new Semaphore(0).acquire();
         } catch (InterruptedException e) {
             LoggerAdapter.debug("Exception in sema wait", e, this);
+        } finally {
+            waitingForever = false;
         }
     }
 
+    /**
+     * Returns true if the application is running
+     * the {@link #startWaitingForever()} method
+     * @return true if the application is running a
+     * thread thats waiting for ever.
+     */
+    public boolean isWaitingForever() {
+        return waitingForever;
+    }
+    
     /** Get the FIX version associated with this application */
     public FIXVersion getFIXVersion()
     {

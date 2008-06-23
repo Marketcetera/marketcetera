@@ -46,6 +46,7 @@ public class OrderRoutingSystem extends ApplicationBase {
      "ors.xml", "ors-shared.xml"};
 
     private static StandardAuthentication authentication;
+    private volatile static OrderRoutingSystem instance = null;
 
     protected List<MessageBundleInfo> getLocalMessageBundles() {
         LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
@@ -86,8 +87,8 @@ public class OrderRoutingSystem extends ApplicationBase {
                  authentication.getPasswordAsString());
             parentContext.refresh();
 
-            OrderRoutingSystem ors = new OrderRoutingSystem();
-            ApplicationContext appCtx = ors.createApplicationContext(APP_CONTEXT_CONFIG_FILES, parentContext, true);
+            instance = new OrderRoutingSystem();
+            ApplicationContext appCtx = instance.createApplicationContext(APP_CONTEXT_CONFIG_FILES, parentContext, true);
 
             if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
                 String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);
@@ -102,7 +103,7 @@ public class OrderRoutingSystem extends ApplicationBase {
             ORSAdmin orsAdmin = (ORSAdmin) appCtx.getBean("orsAdmin", ORSAdmin.class);
             mbeanServer.registerMBean(orsAdmin, new ObjectName("org.marketcetera.ors.mbean:type=ORSAdmin"));
 
-            ors.startWaitingForever();
+            instance.startWaitingForever();
             if(LoggerAdapter.isDebugEnabled(LOGGER_NAME)) { LoggerAdapter.debug("ORS main finishing", LOGGER_NAME); }
         } catch (Exception ex) {
             LoggerAdapter.error("Stack trace", ex, LOGGER_NAME);
@@ -111,5 +112,14 @@ public class OrderRoutingSystem extends ApplicationBase {
             LoggerAdapter.info(MessageKey.APP_EXIT.getLocalizedMessage(), LOGGER_NAME);
         }
     }
+
+    /**
+     * Returns the application instance.
+     * @return the ORS instance. Null, if the application is not completely configured.
+     */
+    static OrderRoutingSystem getInstance() {
+        return instance;
+    }
+
 }
 
