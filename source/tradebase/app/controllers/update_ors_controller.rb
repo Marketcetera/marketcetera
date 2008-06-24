@@ -15,10 +15,10 @@ class UpdateOrsController < ApplicationController
       return
     end
 
-    if RUBY_PLATFORM =~ /mswin32/
+    if  (RUBY_PLATFORM =~ /mswin32/) 
       @file = "#{ENV['METC_HOME']}" + "\\ors\\conf\\ors.xml"
     else
-      @file = "/opt/marketcetera/platform/conf/ors.xml"
+      @file = "/opt/marketcetera/ors/conf/ors.xml"
     end
     if(!File.file?(@file))
       @report.errors.add(:config_file, "Unable to find ORS config file at #{@file}")

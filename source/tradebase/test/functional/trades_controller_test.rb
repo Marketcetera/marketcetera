@@ -91,7 +91,7 @@ class TradesControllerTest < MarketceteraTestBase
     assert_tag :tag => "td", :content => "A&nbsp;COU...PACES"
 
     # verify the post-date is displayed according to format
-    assert_tag :tag => 'td', :content => "20-Oct-06 12:23:00 Pacific Standard Time"
+    assert_tag :tag => 'td', :content => /20-Oct-06 12:23:00 P/
   end
 
   # bug #123
