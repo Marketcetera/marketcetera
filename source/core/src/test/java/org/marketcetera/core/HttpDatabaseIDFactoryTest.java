@@ -49,7 +49,7 @@ public class HttpDatabaseIDFactoryTest extends TestCase {
     {
         URL url = new URL("http://www.bogus.example.com/no/such/url");
         final HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url);
-        new ExpectedTestFailure(NoMoreIDsException.class, "bogus.example") {
+        new ExpectedTestFailure(NoMoreIDsException.class) {
             protected void execute() throws Throwable {
                 factory.grabIDs();
             }
