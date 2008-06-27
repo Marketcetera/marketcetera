@@ -1,7 +1,7 @@
 package org.marketcetera.util.auth;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A wrapper around a data holder that sets the holder's data. A

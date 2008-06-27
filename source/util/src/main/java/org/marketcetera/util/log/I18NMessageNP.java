@@ -1,7 +1,7 @@
 package org.marketcetera.util.log;
 
 import java.util.Locale;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * An internationalized message, accepting an arbitrary number of

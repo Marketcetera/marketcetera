@@ -7,7 +7,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 import static org.marketcetera.util.file.SpecialNames.*;
 

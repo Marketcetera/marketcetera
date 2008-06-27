@@ -2,8 +2,8 @@ package org.marketcetera.util.auth;
 
 import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.spring.SpringUtils;
 import org.springframework.context.support.GenericApplicationContext;
 

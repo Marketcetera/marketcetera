@@ -1,8 +1,8 @@
 package org.marketcetera.util.except;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.LogUtils;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * An internationalized exception.

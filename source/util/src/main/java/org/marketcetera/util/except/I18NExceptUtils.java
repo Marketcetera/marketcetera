@@ -1,6 +1,6 @@
 package org.marketcetera.util.except;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Utilities supporting message generation.

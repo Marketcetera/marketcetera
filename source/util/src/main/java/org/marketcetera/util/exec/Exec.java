@@ -3,11 +3,11 @@ package org.marketcetera.util.exec;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.OutputStream;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A simple process executor. The executed process requires no input,

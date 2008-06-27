@@ -2,7 +2,7 @@ package org.marketcetera.util.file;
 
 import java.io.File;
 import java.io.IOException;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A file type. Files on NTFS are limited to the following types:

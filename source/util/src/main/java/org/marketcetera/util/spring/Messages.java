@@ -1,8 +1,8 @@
 package org.marketcetera.util.spring;
 
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * The internationalization constants used by this package.

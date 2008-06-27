@@ -1,7 +1,6 @@
 package org.marketcetera.util.misc;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.marketcetera.core.ClassVersion;
 
 /**
  * Utilities for iterables.

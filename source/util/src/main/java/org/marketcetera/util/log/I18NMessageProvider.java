@@ -6,7 +6,7 @@ import java.util.Locale;
 import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.MessageNotFoundException;
 import org.apache.commons.i18n.XMLMessageProvider;
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * An internationalized message provider, mapping instances of {@link

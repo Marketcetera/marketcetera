@@ -2,9 +2,9 @@ package org.marketcetera.util.auth;
 
 import java.io.PrintStream;
 import java.util.LinkedList;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A context, comprising a group of setters. The context provides an

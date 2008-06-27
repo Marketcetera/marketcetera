@@ -2,8 +2,8 @@ package org.marketcetera.util.file;
 
 import java.io.Closeable;
 import java.util.LinkedList;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A registry of {@link Closeable} instances.
