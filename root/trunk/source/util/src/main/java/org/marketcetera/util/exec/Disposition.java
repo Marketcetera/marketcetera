@@ -1,6 +1,6 @@
 package org.marketcetera.util.exec;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * The allowed destinations for the interleaved standard output and

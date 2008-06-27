@@ -6,11 +6,11 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
 import org.apache.commons.io.IOUtils;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Utilities for copying data. The participating media include files,

@@ -1,6 +1,6 @@
 package org.marketcetera.util.log;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

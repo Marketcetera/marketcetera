@@ -1,8 +1,8 @@
 package org.marketcetera.util.auth;
 
 import java.io.Console;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A setter that obtains holder data via the console. It is supported

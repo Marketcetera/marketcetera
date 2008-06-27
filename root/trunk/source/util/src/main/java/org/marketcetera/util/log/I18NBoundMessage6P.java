@@ -1,6 +1,6 @@
 package org.marketcetera.util.log;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A bound message, representing the combination of an {@link

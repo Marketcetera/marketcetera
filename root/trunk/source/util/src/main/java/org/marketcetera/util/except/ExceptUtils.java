@@ -4,8 +4,8 @@ import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
 import javax.naming.InterruptedNamingException;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * General-purpose utilities.

@@ -1,6 +1,6 @@
 package org.marketcetera.util.exec;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A container for the result of a process execution. This comprises

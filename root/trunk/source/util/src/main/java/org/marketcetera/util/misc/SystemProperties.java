@@ -1,7 +1,5 @@
 package org.marketcetera.util.misc;
 
-import org.marketcetera.core.ClassVersion;
-
 /**
  * Constants for all standard system properties, as listed in the
  * {@link System} class.

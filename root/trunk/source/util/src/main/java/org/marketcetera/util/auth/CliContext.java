@@ -4,10 +4,10 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * A context for command-line setters ({@link CliSetter}). This

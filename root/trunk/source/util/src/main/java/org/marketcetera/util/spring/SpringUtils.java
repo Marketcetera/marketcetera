@@ -1,6 +1,6 @@
 package org.marketcetera.util.spring;
 
-import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.misc.ClassVersion;
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
