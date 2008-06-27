@@ -1,7 +1,6 @@
 package org.marketcetera.util.test;
 
 import java.util.regex.Pattern;
-import org.marketcetera.core.ClassVersion;
 
 import static org.junit.Assert.*;
 
@@ -15,7 +14,6 @@ import static org.junit.Assert.*;
 
 /* $License$ */
 
-@ClassVersion("$Id")
 public final class RegExAssert
 {
 
