@@ -29,6 +29,10 @@
     <!-- Compile. -->
     <dependency>
       <groupId>${public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${public.package}</groupId>
       <artifactId>util</artifactId>
     </dependency>
 
