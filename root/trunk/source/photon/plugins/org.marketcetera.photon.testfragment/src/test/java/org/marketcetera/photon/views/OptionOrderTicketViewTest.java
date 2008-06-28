@@ -1,9 +1,11 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.i18n.MessageManager;
@@ -77,7 +79,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 	
 	public OptionOrderTicketViewTest(String name) {
 		super(name);
-        BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
 	}
 
     @Override
@@ -88,7 +89,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 			fail("Test view was not created");
 		}
 		
-		MarketDataFeedService feedService = MockMarketDataFeed.registerMockMarketDataFeed();
+		MarketDataFeedService<?> feedService = MockMarketDataFeed.registerMockMarketDataFeed();
 		mockFeed = MockMarketDataFeed.getMockMarketDataFeed(feedService);
 		
 		controller = PhotonPlugin.getDefault().getOptionOrderTicketController();
@@ -641,19 +642,24 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol("IBM"));
 		
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(1206576015015L), "BGUS"); // 3/26/2008 5PM PST
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, new BigDecimal(23), new BigDecimal(24), new Date(1206576015015L), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE, new BigDecimal(25), new BigDecimal(26), new Date(1206576015015L), "BGUS"); 
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE_VOLUME, new BigDecimal(27), new BigDecimal(28), new Date(1206576015015L), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(29), new BigDecimal(30), new Date(1206576015015L), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(31), new BigDecimal(32), new Date(1206576015015L), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(31), new BigDecimal(32), new Date(1206576015015L), "BGUS");
+		// set the system TZ to UTC to ensure that timestamps are in UTC - this is just a short-cut for testing
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		Date testDate = new Date(1206576015015L); // 3/26/2008 5PM PST
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, testDate, "BGUS");
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, new BigDecimal(23), new BigDecimal(24), testDate, "BGUS");
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE, new BigDecimal(25), new BigDecimal(26), testDate, "BGUS"); 
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE_VOLUME, new BigDecimal(27), new BigDecimal(28), testDate, "BGUS");
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(29), new BigDecimal(30), testDate, "BGUS");
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(31), new BigDecimal(32), testDate, "BGUS");
+		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(31), new BigDecimal(32), testDate, "BGUS");
 
 		controller.doOnPrimaryQuote(quoteMessageToSend);
-		
+		// create the expected result for the timestamp above
+		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
+		String testResult = formatter.format(testDate);
 		assertEquals(true, optionOrderTicket.getUnderlyingMarketDataComposite().getVisible());
 		assertEquals("25", optionOrderTicket.getUnderlyingLastPriceLabel().getText());
-		assertEquals("16:00", optionOrderTicket.getUnderlyingLastUpdatedTimeLabel().getText());
+		assertEquals(testResult, optionOrderTicket.getUnderlyingLastUpdatedTimeLabel().getText());
 		assertEquals(true, optionOrderTicket.getUnderlyingBidPriceLabel().getVisible());
 		assertEquals("IBM", optionOrderTicket.getUnderlyingSymbolLabel().getText());
 		assertEquals("1", optionOrderTicket.getUnderlyingBidPriceLabel().getText());
