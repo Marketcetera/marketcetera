@@ -1,0 +1,471 @@
+/*************************************************************
+
+  global.css v0.1
+  (c) 2006 Brandon Quintana
+  http://www.brandonquintana.com *** bcqwork@aim.com
+
+  last modified: October 30, 2006
+
+ *************************************************************/
+
+/* BEGIN GLOBAL CSS */
+
+* { margin: 0; padding: 0; }
+
+a { color: #e57358; }
+
+img { border: 0; }
+
+body {
+  background: #f4f4f4 url(../images/bg.jpg) repeat-y;
+  font-family: arial, verdana, sans-serif;
+  font-size: 0.8em;
+  color: #627176;
+}
+
+#productcontainer {
+  margin: 10px 0 10px 37px;
+  width: 894px;
+}
+
+#navitem { display: none; visibility: hidden; }
+
+.clear {
+  clear: both;
+  height: 1px;
+  font: 0px/0px sans-serif;
+}
+
+.floatright {
+  float: right;
+}
+
+.errorExplanation {
+  margin-top: 10px;
+  border: 1px solid #880000;
+  background: #ffeeee;
+  color: #000000;
+}
+
+#errorExplanation h2{
+  position: relative;
+  background: #880000;
+  color: #ffffff;
+  font-size: 1.0em;
+  line-height: 1.2em;
+  padding: 0 10px 0 10px;
+}
+
+#errorExplanation p {
+  font-size: 0.9em;
+  padding: 10px;
+}
+
+#errorExplanation ul {
+  font-size: 0.9em;
+  margin: 0 10px 10px 40px;
+}
+
+/* Generic error/notice for for output of flash[] notices */
+#notice {
+  color: #ffffff;
+  background: #008040;
+  font-size: 1.0em;
+  line-height: 1.2em;
+  margin-bottom: 10px;
+  padding: 3px, 0px, 3px, 0px;
+}
+
+#error_notice {
+  background: #880000;
+  color: #ffffff;
+  font-size: 1.0em;
+  padding: 3px, 0px, 3px, 0px;
+  line-height: 1.2em;
+  margin-bottom: 10px;
+}
+
+
+/* Override the CSS for fields with errors to move the bottom margin from 
+   the form field to the wrapping div */
+#body .right_column .fieldWithErrors select, 
+#body .right_column .fieldWithErrors input, 
+#body .right_column .error fieldWithErrors { 
+	margin-bottom: 0;
+}
+.fieldWithErrors {
+  padding: 2px;
+  margin-bottom: 10px;
+  background-color: #880000;
+  display: table;
+}
+
+
+/* END GLOBAL CSS */
+
+/* BEGIN HEADER CSS */
+
+#header #logo {
+  float: left;
+  width: 150px;
+}
+
+#header #slogan {
+  float: right;
+  width: 224px;
+  margin-top: 20px;
+}
+
+/* END HEADER CSS */
+
+#body {
+  margin: 10px 0 10px 0;
+  background: url(../images/bodybg.jpg) 160px repeat-y;
+  padding-bottom: 40px;
+}
+
+#body .left_column {
+  float: left;
+  width: 150px;
+}
+
+#body .left_column #navigation {
+  list-style-type: none;
+}
+
+#body .left_column #navigation li {
+  border: 1px solid #ffffff;
+}
+
+#body .left_column #navigation li a {
+  background: #f4f4f4;
+  border-left: 4px solid #627176;
+  padding: 5px 10px 5px 10px;
+  font-weight: bold;
+  color: #627176;
+  text-decoration: none;
+  display: block;
+}
+
+#body .left_column #navigation li a:hover, #body .left_column #navigation li .active {
+  border-left: 4px solid #e57358;
+  background: #eaeaea;
+  color: #e57358;
+}
+
+#body .left_column #navigation li ul {
+  list-style-type: none;
+  margin: 0 0 5px 4px;
+  font-size: 0.9em;
+}
+
+#body .left_column #navigation li ul li{
+  border: 1px solid #fafafa;
+}
+
+#body .left_column #navigation li ul li a {
+  border: 0;
+  background: #fafafa;
+  padding: 2px 0 2px 20px;
+  font-weight: normal;
+  color: #e57358;
+}
+
+#body .left_column #navigation li ul li a:hover, #body .left_column #navigation li ul li .active {
+  border: 0;
+  color: #627176;
+  background: #fafafa;
+  text-decoration: underline;
+}
+
+#body .right_column {
+  float: right;
+  width: 720px;
+  position: relative;
+}
+
+#body .right_column #breadcrumbs {
+  font-size: 0.9em;
+  list-style-type: none;
+}
+
+#body .right_column #breadcrumbs li {
+  float: left;
+  padding-bottom: 10px;
+  margin-left: 0;
+}
+
+#body .right_column #breadcrumbs li a {
+  text-decoration: none;
+}
+
+#body .right_column #breadcrumbs li a:hover, #body .right_column #breadcrumbs li .active {
+  color: #627176;
+  text-decoration: underline;
+}
+
+#body .right_column #breadcrumbs li span {
+  padding: 0 5px 0 5px;
+}
+
+#body .right_column h1 {
+  font-size: 1.5em;
+}
+
+#body .right_column h1 span {
+  font-size: 0.9em;
+}
+
+#body .right_column h2 {
+  font-size: 1.1em;
+}
+
+#body .right_column p {
+  margin-top: 10px;
+}
+
+#body .right_column table {
+  font-size: 0.9em;
+  width: 720px;
+  padding: 1px;
+  border-collapse: collapse;
+  margin: 10px 0 10px 0;
+}
+
+#body .right_column table tr {
+  border-bottom: 1px solid #aaaaaa;
+  text-align: left;
+}
+
+#body .right_column table tr th {
+  background: #dddddd;
+  padding: 5px;
+  border: 1px solid #aaaaaa;
+}
+
+#body .right_column table .odd {
+  background: #eeeeee;
+}
+
+#body .right_column table tr td {
+  padding: 0px 3px 0px 3px;
+  border: 1px solid #aaaaaa;
+  color: #000000;
+}
+
+/** Right-justify numbers */
+#body .right_column table tr td.number, #body .right_column table tr td.total {
+  text-align: right;
+}
+
+/** Red color for negative P&L */
+#body .right_column table tr td span.negative, #body .right_column table tr td.negative {
+  text-align: right;
+  color: #e57358;
+}
+
+#body .right_column .pagination {
+  list-style-type: none;
+}
+
+#body .right_column .pagination li {
+  float: left;
+  margin-right: 5px;
+  font-size: 0.9em;
+}
+
+#body .right_column fieldset {
+  border: 1px solid #cccccc;
+  padding: 10px;
+  margin: 10px 0 10px 0;
+}
+
+#body .right_column fieldset p {
+  margin-bottom: 10px;
+}
+
+#body .right_column fieldset .form_left {
+  float: left;
+  width: 340px;
+}
+
+#body .right_column fieldset .form_right {
+  float: right;
+  width: 340px;
+}
+
+#body .right_column fieldset label {
+  display: block;
+  font-size: 0.9em;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+#body .right_column fieldset select, #body .right_column fieldset input {
+  width: 135px;
+  margin: 0 0 10px 0;
+  font-size: 1.0em;
+}
+
+#body .right_column fieldset input#all_dates {
+  width: 14px;
+  margin: 0 0 10px 0;
+}
+
+#body .right_column fieldset .data {
+  margin-bottom: 10px;
+  color: #000000;
+}
+
+#body .right_column fieldset select {
+  width: 140px;
+}
+
+#body .right_column fieldset .radio, 
+#body .right_column fieldset .checkbox {
+  float: left;
+  width: auto;
+  margin: 0 3px 2px 15px;
+}
+
+#body .right_column fieldset .radio_label, 
+#body .right_column fieldset .checkbox_label {
+  font-weight: normal;
+  vertical-align: middle;
+}
+
+#body .right_column fieldset .view_underline {
+  border-bottom: 1px solid #cccccc;
+}
+
+#body .right_column fieldset .view_background {
+  background: #eeeeee;
+  padding-left: 5px;
+}
+
+#body .right_column fieldset .view_data {
+  padding-left: 5px;
+}
+
+#body .right_column fieldset .date select { 
+	width: 100px; 
+	margin-right: 5px;
+}
+
+/** MarksImport pages */
+#body .right_column .highlightedText {
+  background: #f4f4f4;
+}
+
+#body .right_column li {
+ margin-left: 15px;
+}
+
+/* this doesn't work b/c we can't individually specify day/year/month in date_select code in rails
+#body .right_column fieldset .year {
+  width: 90px;
+  margin-right: 5px;
+}
+
+#body .right_column fieldset .month {
+  width: 100px;
+  margin-right: 5px;
+}
+
+#body .right_column fieldset .day {
+  width: 60px;
+}
+
+*/
+
+#body .right_column fieldset #trade_comment, 
+#body .right_column fieldset #dividend_description, 
+#body .right_column fieldset .description {
+  width: 335px; height: 55px;  
+}
+
+body .right_column fieldset #subset_content {
+  padding-left: 50px;
+}
+
+#body .right_column .submit {
+  color: #ffffff;
+  background: #e57358;
+  border: 1px solid #e57358;;
+  padding: 2px 0 2px 0;
+  font-weight: bold;
+  margin-bottom: 10px;
+  width: 150px;
+  text-align: center;
+}
+
+#body .right_column .reset {
+  color: #e57358;
+  background: #ffffff;
+  border: 1px solid #e57358;
+  padding: 2px 10px 2px 10px;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+#body .right_column #dashboard h1 {
+  margin-top: 10px;
+}
+
+#body .right_column #dashboard .dash_board_list {
+  margin-left: 30px;
+}
+
+#body .right_column .tile {
+  float: left;
+  width: 353px;
+  margin: 0 10px 10px 0;
+  border: 1px solid #cccccc;
+}
+
+#body .right_column .norightmargin {
+  margin-right: 0;
+}
+
+#body .right_column .tile h2 {
+  background: #eeeeee;
+  padding-left: 10px;
+  font-size: 1.0em;
+  line-height: 1.5em;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #cccccc;
+}
+
+#body .right_column .tile a {
+  text-decoration: none;
+  color: #627176;
+  font-weight: bold;
+  line-height: 25px;
+  padding-top: 10px;
+  margin-bottom: 10px;
+}
+
+#body .right_column .tile a img {
+  padding: 10px 0px 0px 10px;
+  margin-bottom: 10px;
+  vertical-align: middle;
+}
+
+#body .right_column .tile a:hover {
+  color: #e57358;
+}
+
+/* BEGIN BODY CSS */
+
+/* END BODY CSS */
+
+/* BEGIN FOOTER CSS */
+
+#footer {
+  border-top: 4px solid #f0f0f0;
+  padding-top: 5px;
+  text-align: center;
+  font-size: 0.8em;
+}
+
+/* END FOOTER CSS */
