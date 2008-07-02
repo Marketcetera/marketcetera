@@ -23,6 +23,9 @@ public class I18NMessageProviderTest
 {
     private static final String TEST_CATEGORY=
         I18NMessageProvider.class.getName();
+    private static final String TEST_LOCATION=
+        TEST_CATEGORY;
+
 
     private static final class TestThread
         extends Thread
@@ -116,7 +119,7 @@ public class I18NMessageProviderTest
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,
              "Message file missing: provider 'nonexistent_prv'; file "+
-             "'nonexistent_prv_messages.xml'");
+             "'nonexistent_prv_messages.xml'",TEST_LOCATION);
 
         assertEquals
             ("provider 'nonexistent_prv'; id 'nonexistent_msg'; entry 'msg'; "+
@@ -126,7 +129,7 @@ public class I18NMessageProviderTest
             (Level.ERROR,TEST_CATEGORY,
              "Message not found: "+
              "provider 'nonexistent_prv'; id 'nonexistent_msg'; entry 'msg'; "+
-             "parameters ()");
+             "parameters ()",TEST_LOCATION);
     }
 
     @Test
@@ -139,7 +142,7 @@ public class I18NMessageProviderTest
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,
              "Message not found: provider 'log_test'; id 'nonexistent_msg'; "+
-             "entry 'msg'; parameters ('a')");
+             "entry 'msg'; parameters ('a')",TEST_LOCATION);
 
         I18NMessageProvider.setLocale(Locale.FRENCH);
         assertEquals
@@ -150,7 +153,7 @@ public class I18NMessageProviderTest
             (Level.ERROR,TEST_CATEGORY,
              "Message n'a pas \u00E9t\u00E9 trouv\u00E9e: fournisseur "+
              "'log_test'; identit\u00E9 'nonexistent_msg'; entr\u00E9e 'msg'; "+
-             "param\u00E8tres ('a')");
+             "param\u00E8tres ('a')",TEST_LOCATION);
     }
 
     /*
@@ -167,19 +170,19 @@ public class I18NMessageProviderTest
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Message file missing: provider 'util_log'; "+
-             "file 'util_log_message.xml'");
-        assertEvent
-            (events.next(),Level.ERROR,TEST_CATEGORY,
              "Message file missing: provider 'log_test'; "+
-             "file 'log_test_message.xml'");
+             "file 'log_test_message.xml'",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Corrupted/unavailable message map");
+             "Message file missing: provider 'util_log'; "+
+             "file 'util_log_message.xml'",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Corrupted/unavailable message map",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Message missing: provider 'log_test'; id 'nonexistent_msg'; "+
-             "entry 'msg'; parameters ('a')");
+             "entry 'msg'; parameters ('a')",TEST_LOCATION);
         assertFalse(events.hasNext());
     }
     */
@@ -199,17 +202,17 @@ public class I18NMessageProviderTest
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Corrupted/unavailable message map");
+             "Corrupted/unavailable message map",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Abnormal exception: stack trace");
+             "Abnormal exception: stack trace",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Abnormal exception: provider 'log_test'; id 'nonexistent_msg'; "+
-             "entry 'msg'; parameters ('a')");
+             "entry 'msg'; parameters ('a')",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Abnormal exception: stack trace");
+             "Abnormal exception: stack trace",TEST_LOCATION);
         assertFalse(events.hasNext());
     }
     */

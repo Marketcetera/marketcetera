@@ -25,6 +25,8 @@ public class FileTypeTest
 {
 //  private static final String TEST_CATEGORY=
 //      FileType.class.getName();
+//  private static final String TEST_LOCATION=
+//      TEST_CATEGORY;
     private static final String TEST_ROOT=
         DIR_ROOT+File.separator+"file_type"+File.separator;
     private static final String TEST_PLAIN_FILE=
@@ -103,7 +105,7 @@ public class FileTypeTest
         assertSingleEvent
             (Level.WARN,TEST_CATEGORY,
              "Cannot determine type of file '"+
-             (new File(TEST_PLAIN_FILE)).getAbsolutePath()+"'");
+             (new File(TEST_PLAIN_FILE)).getAbsolutePath()+"'",TEST_LOCATION);
     }
     */
 }

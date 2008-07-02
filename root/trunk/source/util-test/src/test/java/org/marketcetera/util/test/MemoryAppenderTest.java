@@ -20,9 +20,11 @@ import static org.junit.Assert.*;
 public class MemoryAppenderTest
 {
     private static final String TEST_CATEGORY=
-        MemoryAppenderTest.class.getName();
+        "TestCategory";
     private static final String TEST_MESSAGE=
         "Test message (expected)";
+    private static final String TEST_LOCATION=
+        MemoryAppenderTest.class.getName();
 
     @Test
     public void appenderStoresMessages()
@@ -42,6 +44,8 @@ public class MemoryAppenderTest
         assertEquals(Level.ERROR,event.getLevel());
         assertEquals(TEST_CATEGORY,event.getLoggerName());
         assertEquals(TEST_MESSAGE,event.getMessage());
+        assertEquals
+            (TEST_LOCATION,event.getLocationInformation().getClassName());
 
         appender.clear();
         assertEquals(0,events.size());

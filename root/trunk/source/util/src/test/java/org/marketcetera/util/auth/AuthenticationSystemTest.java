@@ -31,6 +31,8 @@ public class AuthenticationSystemTest
         "x";
     private static final String TEST_MESSAGE=
         "Test message";
+    private static final String TEST_LOCATION=
+        TEST_CATEGORY;
 
 
     private static class MyHolder
@@ -183,7 +185,7 @@ public class AuthenticationSystemTest
 
         assertEquals(TEST_VALUE,holder1.getValue());
 
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
+        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
     }
 
     @Test

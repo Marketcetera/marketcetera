@@ -44,6 +44,8 @@ public class ExecTest
         DIR_ROOT+File.separator+"nonexistent";
     private static final int SLEEP_DURATION=
         1000;
+//  private static final String TEST_LOCATION=
+//      TEST_CATEGORY;
 
 
     /*
@@ -360,8 +362,9 @@ public class ExecTest
         throws Exception
     {
         run((File)null,Disposition.MEMORY,"CommandSleep");
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,
-                          "Cannot copy output of command '"+getJava()+"'");
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,
+             "Cannot copy output of command '"+getJava()+"'",TEST_LOCATION);
     }
      */
 }

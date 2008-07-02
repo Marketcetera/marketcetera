@@ -8,6 +8,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -26,6 +27,8 @@ public class CloseableRegistryTest
 {
     private static final String TEST_CATEGORY=
         CloseableRegistry.class.getName();
+    private static final String TEST_LOCATION=
+        ExceptUtils.class.getName();
     private static final String TEST_MESSAGE=
         "Closing failed";
 
@@ -102,8 +105,10 @@ public class CloseableRegistryTest
         assertEquals(1,t2.getSequence());
         assertEquals(2,t1.getSequence());
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
-        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE);
-        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE);
+        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE,
+                    TEST_LOCATION);
+        assertEvent(events.next(),Level.WARN,TEST_CATEGORY,TEST_MESSAGE,
+                    TEST_LOCATION);
         assertFalse(events.hasNext());
     }
 }
