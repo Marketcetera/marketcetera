@@ -24,6 +24,8 @@ public class ExceptUtilsTest
 {
     private static final String TEST_CATEGORY=
         ExceptUtils.class.getName();
+    private static final String TEST_LOCATION=
+        TEST_CATEGORY;
 
 
     private static void interruptHelper
@@ -42,12 +44,12 @@ public class ExceptUtilsTest
                      (ex,TEST_CATEGORY,new I18NBoundMessage1P
                       (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
         assertEquals(interrupted,Thread.interrupted());
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN);
+        assertSingleEvent(Level.WARN,TEST_CATEGORY,MID_MSG_EN,TEST_LOCATION);
 
         assertEquals(interrupted,ExceptUtils.swallow(ex));
         assertEquals(interrupted,Thread.interrupted());
         assertSingleEvent(Level.WARN,TEST_CATEGORY,
-                          "Caught throwable was not propagated");
+                          "Caught throwable was not propagated",TEST_LOCATION);
     }
 
     private static void wrapHelper

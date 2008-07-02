@@ -19,6 +19,16 @@ public class I18NBoundMessageBase<T extends I18NMessage>
     implements I18NBoundMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NBoundMessageBase.class.getName();
+
+
     // INSTANCE DATA.
 
     private T mMessage;
@@ -88,14 +98,16 @@ public class I18NBoundMessageBase<T extends I18NMessage>
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().error(category,throwable,getMessage(),getParams());
+        getLoggerProxy().errorProxy
+            (SELF_PROXY,category,throwable,getMessage(),getParams());
     }
 
     @Override
     public void error
         (Object category)
     {
-        getLoggerProxy().error(category,getMessage(),getParams());
+        getLoggerProxy().errorProxy
+            (SELF_PROXY,category,getMessage(),getParams());
     }
 
     @Override
@@ -103,14 +115,16 @@ public class I18NBoundMessageBase<T extends I18NMessage>
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().warn(category,throwable,getMessage(),getParams());
+        getLoggerProxy().warnProxy
+            (SELF_PROXY,category,throwable,getMessage(),getParams());
     }
     
     @Override
     public void warn
         (Object category)
     {
-        getLoggerProxy().warn(category,getMessage(),getParams());
+        getLoggerProxy().warnProxy
+            (SELF_PROXY,category,getMessage(),getParams());
     }
 
     @Override
@@ -118,14 +132,16 @@ public class I18NBoundMessageBase<T extends I18NMessage>
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().info(category,throwable,getMessage(),getParams());
+        getLoggerProxy().infoProxy
+            (SELF_PROXY,category,throwable,getMessage(),getParams());
     }
     
     @Override
     public void info
         (Object category)
     {
-        getLoggerProxy().info(category,getMessage(),getParams());
+        getLoggerProxy().infoProxy
+            (SELF_PROXY,category,getMessage(),getParams());
     }
 
     @Override
@@ -133,14 +149,16 @@ public class I18NBoundMessageBase<T extends I18NMessage>
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().debug(category,throwable,getMessage(),getParams());
+        getLoggerProxy().debugProxy
+            (SELF_PROXY,category,throwable,getMessage(),getParams());
     }
     
     @Override
     public void debug
         (Object category)
     {
-        getLoggerProxy().debug(category,getMessage(),getParams());
+        getLoggerProxy().debugProxy
+            (SELF_PROXY,category,getMessage(),getParams());
     }
 
     @Override
@@ -148,14 +166,16 @@ public class I18NBoundMessageBase<T extends I18NMessage>
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().trace(category,throwable,getMessage(),getParams());
+        getLoggerProxy().traceProxy
+            (SELF_PROXY,category,throwable,getMessage(),getParams());
     }
 
     @Override
     public void trace
         (Object category)
     {
-        getLoggerProxy().trace(category,getMessage(),getParams());
+        getLoggerProxy().traceProxy
+            (SELF_PROXY,category,getMessage(),getParams());
     }
 
 

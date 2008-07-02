@@ -21,9 +21,11 @@ public class TestCaseBaseTest
     extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
-        TestCaseBaseTest.class.getName();
+        "TestCategory";
     private static final String TEST_MESSAGE=
         "Test message (expected)";
+    private static final String TEST_LOCATION=
+        TestCaseBaseTest.class.getName();
 
 
     @Before
@@ -75,10 +77,11 @@ public class TestCaseBaseTest
     {
         Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
         LoggingEvent event=getAppender().getEvents().getLast();
-        assertEvent(event,Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
-        assertEvent(event,null,TEST_CATEGORY,TEST_MESSAGE);
-        assertEvent(event,Level.ERROR,null,TEST_MESSAGE);
-        assertEvent(event,Level.ERROR,TEST_CATEGORY,null);
+        assertEvent(event,Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        assertEvent(event,null,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        assertEvent(event,Level.ERROR,null,TEST_MESSAGE,TEST_LOCATION);
+        assertEvent(event,Level.ERROR,TEST_CATEGORY,null,TEST_LOCATION);
+        assertEvent(event,Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,null);
     }
 
     @Test(expected=AssertionError.class)
@@ -86,7 +89,7 @@ public class TestCaseBaseTest
     {
         Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
         assertEvent(getAppender().getEvents().getLast(),
-                    Level.WARN,TEST_CATEGORY,TEST_MESSAGE);
+                    Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
     }
 
     @Test(expected=AssertionError.class)
@@ -94,7 +97,7 @@ public class TestCaseBaseTest
     {
         Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
         assertEvent(getAppender().getEvents().getLast(),
-                    Level.ERROR,"",TEST_MESSAGE);
+                    Level.ERROR,"",TEST_MESSAGE,TEST_LOCATION);
     }
 
     @Test(expected=AssertionError.class)
@@ -102,7 +105,7 @@ public class TestCaseBaseTest
     {
         Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
         assertEvent(getAppender().getEvents().getLast(),
-                    Level.ERROR,TEST_CATEGORY,"");
+                    Level.ERROR,TEST_CATEGORY,"",TEST_LOCATION);
     }
 
 
@@ -126,18 +129,18 @@ public class TestCaseBaseTest
     public void lastEventCorrect()
     {
         Logger.getLogger(TEST_CATEGORY).error(TEST_MESSAGE);
-        assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
+        assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         assertEquals(1,getAppender().getEvents().size());
         setLevel(TEST_CATEGORY,Level.INFO);
         Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertLastEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE);
+        assertLastEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         assertEquals(2,getAppender().getEvents().size());
     }
 
     @Test(expected=AssertionError.class)
     public void noLastEvent()
     {
-        assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
+        assertLastEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
     }
 
 
@@ -146,18 +149,18 @@ public class TestCaseBaseTest
     {
         setLevel(TEST_CATEGORY,Level.WARN);
         Logger.getLogger(TEST_CATEGORY).warn(TEST_MESSAGE);
-        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_MESSAGE);
+        assertSingleEvent(Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         assertNoEvents();
         setLevel(TEST_CATEGORY,Level.INFO);
         Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE);
+        assertSingleEvent(Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
         assertNoEvents();
     }
 
     @Test(expected=AssertionError.class)
     public void noSingleEvent()
     {
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
+        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
     }
 
     @Test(expected=AssertionError.class)
@@ -166,6 +169,6 @@ public class TestCaseBaseTest
         Logger.getLogger(TEST_CATEGORY).warn(TEST_MESSAGE);
         setLevel(TEST_CATEGORY,Level.INFO);
         Logger.getLogger(TEST_CATEGORY).info(TEST_MESSAGE);
-        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE);
+        assertSingleEvent(Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
     }
 }

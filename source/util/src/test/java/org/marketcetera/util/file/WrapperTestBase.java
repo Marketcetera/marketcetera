@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.PrintStream;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.marketcetera.util.test.TestCaseBase;
 
 /**
@@ -17,6 +18,7 @@ import org.marketcetera.util.test.TestCaseBase;
 
 /* $License$ */
 
+@Ignore
 public class WrapperTestBase
     extends TestCaseBase
 {

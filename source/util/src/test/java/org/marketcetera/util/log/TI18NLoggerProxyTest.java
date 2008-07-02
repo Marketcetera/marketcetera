@@ -15,11 +15,11 @@ import static org.junit.Assert.*;
 
 /* $License$ */
 
-public class I18NLoggerProxyTest
+public class TI18NLoggerProxyTest
     extends TestCaseBase
 {
     private static final String TEST_CATEGORY=
-        I18NLoggerProxyTest.class.getName();
+        "TestCategory";
     private static final String TEST_MSG_EN=
         "Test here (expected): 'a'";
     private static final String TEST_MSG_FR=
@@ -34,6 +34,8 @@ public class I18NLoggerProxyTest
         "Test voil\u00E0 (attendu): ''{0}''";
     private static final Exception TEST_THROWABLE=
         new IllegalArgumentException("Test exception (expected)");
+    private static final String TEST_LOCATION=
+        TI18NLoggerProxyTest.class.getName();
 
 
     private void messageCheck
@@ -57,32 +59,33 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TEST_THROWABLE);
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE);
+            (Level.ERROR,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE,
+             TEST_LOCATION);
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,msg);
+            (Level.ERROR,TEST_CATEGORY,msg,TEST_LOCATION);
         TestMessages.LOGGER.error(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,msg);
+            (Level.ERROR,TEST_CATEGORY,msg,TEST_LOCATION);
 
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,msgNoSub);
+            (Level.ERROR,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,msgNoSub);
+            (Level.ERROR,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
 
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,msgNull);
+            (Level.ERROR,TEST_CATEGORY,msgNull,TEST_LOCATION);
         TestMessages.LOGGER.error
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,msgNull);
+            (Level.ERROR,TEST_CATEGORY,msgNull,TEST_LOCATION);
 
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -96,32 +99,33 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE);
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE);
+            (Level.WARN,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE,
+             TEST_LOCATION);
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,msg);
+            (Level.WARN,TEST_CATEGORY,msg,TEST_LOCATION);
         TestMessages.LOGGER.warn(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,msg);
+            (Level.WARN,TEST_CATEGORY,msg,TEST_LOCATION);
 
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,msgNoSub);
+            (Level.WARN,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,msgNoSub);
+            (Level.WARN,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
 
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,msgNull);
+            (Level.WARN,TEST_CATEGORY,msgNull,TEST_LOCATION);
         TestMessages.LOGGER.warn
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.WARN,TEST_CATEGORY,msgNull);
+            (Level.WARN,TEST_CATEGORY,msgNull,TEST_LOCATION);
 
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -135,32 +139,33 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE);
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE);
+            (Level.INFO,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE,
+             TEST_LOCATION);
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,msg);
+            (Level.INFO,TEST_CATEGORY,msg,TEST_LOCATION);
         TestMessages.LOGGER.info(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,msg);
+            (Level.INFO,TEST_CATEGORY,msg,TEST_LOCATION);
 
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,msgNoSub);
+            (Level.INFO,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,msgNoSub);
+            (Level.INFO,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
 
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,msgNull);
+            (Level.INFO,TEST_CATEGORY,msgNull,TEST_LOCATION);
         TestMessages.LOGGER.info
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.INFO,TEST_CATEGORY,msgNull);
+            (Level.INFO,TEST_CATEGORY,msgNull,TEST_LOCATION);
 
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -174,32 +179,33 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE);
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE);
+            (Level.DEBUG,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE,
+             TEST_LOCATION);
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,msg);
+            (Level.DEBUG,TEST_CATEGORY,msg,TEST_LOCATION);
         TestMessages.LOGGER.debug(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,msg);
+            (Level.DEBUG,TEST_CATEGORY,msg,TEST_LOCATION);
 
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,msgNoSub);
+            (Level.DEBUG,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,msgNoSub);
+            (Level.DEBUG,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
 
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,msgNull);
+            (Level.DEBUG,TEST_CATEGORY,msgNull,TEST_LOCATION);
         TestMessages.LOGGER.debug
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.DEBUG,TEST_CATEGORY,msgNull);
+            (Level.DEBUG,TEST_CATEGORY,msgNull,TEST_LOCATION);
 
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE);
@@ -213,32 +219,33 @@ public class I18NLoggerProxyTest
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE);
+            (Level.TRACE,TEST_CATEGORY,SLF4JLoggerProxy.UNKNOWN_MESSAGE,
+             TEST_LOCATION);
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,msg);
+            (Level.TRACE,TEST_CATEGORY,msg,TEST_LOCATION);
         TestMessages.LOGGER.trace(TEST_CATEGORY,TestMessages.LOG_MSG,"a");
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,msg);
+            (Level.TRACE,TEST_CATEGORY,msg,TEST_LOCATION);
 
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,msgNoSub);
+            (Level.TRACE,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object[])null);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,msgNoSub);
+            (Level.TRACE,TEST_CATEGORY,msgNoSub,TEST_LOCATION);
 
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TEST_THROWABLE,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,msgNull);
+            (Level.TRACE,TEST_CATEGORY,msgNull,TEST_LOCATION);
         TestMessages.LOGGER.trace
             (TEST_CATEGORY,TestMessages.LOG_MSG,(Object)null);
         assertSingleEvent
-            (Level.TRACE,TEST_CATEGORY,msgNull);
+            (Level.TRACE,TEST_CATEGORY,msgNull,TEST_LOCATION);
     }
 
 

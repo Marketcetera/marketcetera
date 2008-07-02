@@ -18,6 +18,16 @@ public class I18NMessage6P
     extends I18NMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NMessage6P.class.getName();
+
+
     // CONSTRUCTORS.
 
     /**
@@ -98,7 +108,8 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().error(category,throwable,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().errorProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -115,7 +126,7 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().error(category,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -133,7 +144,8 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().warn(category,throwable,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().warnProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -150,7 +162,7 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().warn(category,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -168,7 +180,8 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().info(category,throwable,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().infoProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -185,7 +198,7 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().info(category,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -203,7 +216,8 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().debug(category,throwable,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().debugProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -220,7 +234,7 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().debug(category,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -238,7 +252,8 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().trace(category,throwable,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().traceProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5,p6);
     }
 
     /**
@@ -255,6 +270,6 @@ public class I18NMessage6P
          Object p5,
          Object p6)
     {
-        getLoggerProxy().trace(category,this,p1,p2,p3,p4,p5,p6);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5,p6);
     }
 }

@@ -18,6 +18,16 @@ public class I18NMessage5P
     extends I18NMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NMessage5P.class.getName();
+
+
     // CONSTRUCTORS.
 
     /**
@@ -95,7 +105,8 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().error(category,throwable,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().errorProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -111,7 +122,7 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().error(category,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -128,7 +139,8 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().warn(category,throwable,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().warnProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -144,7 +156,7 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().warn(category,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -161,7 +173,8 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().info(category,throwable,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().infoProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -177,7 +190,7 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().info(category,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -194,7 +207,8 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().debug(category,throwable,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().debugProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -210,7 +224,7 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().debug(category,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -227,7 +241,8 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().trace(category,throwable,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().traceProxy
+            (SELF_PROXY,category,throwable,this,p1,p2,p3,p4,p5);
     }
 
     /**
@@ -243,6 +258,6 @@ public class I18NMessage5P
          Object p4,
          Object p5)
     {
-        getLoggerProxy().trace(category,this,p1,p2,p3,p4,p5);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,this,p1,p2,p3,p4,p5);
     }
 }

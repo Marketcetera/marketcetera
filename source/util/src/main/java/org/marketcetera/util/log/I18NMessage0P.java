@@ -20,6 +20,16 @@ public class I18NMessage0P
     implements I18NBoundMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NMessage0P.class.getName();
+
+
     // CONSTRUCTORS.
 
     /**
@@ -82,14 +92,14 @@ public class I18NMessage0P
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().error(category,throwable,this);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,throwable,this);
     }
 
     @Override
     public void error
         (Object category)
     {
-        getLoggerProxy().error(category,this);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,this);
     }
 
     @Override
@@ -97,14 +107,14 @@ public class I18NMessage0P
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().warn(category,throwable,this);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,throwable,this);
     }
     
     @Override
     public void warn
         (Object category)
     {
-        getLoggerProxy().warn(category,this);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,this);
     }
 
     @Override
@@ -112,14 +122,14 @@ public class I18NMessage0P
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().info(category,throwable,this);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,throwable,this);
     }
     
     @Override
     public void info
         (Object category)
     {
-        getLoggerProxy().info(category,this);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,this);
     }
 
     @Override
@@ -127,14 +137,14 @@ public class I18NMessage0P
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().debug(category,throwable,this);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,throwable,this);
     }
     
     @Override
     public void debug
         (Object category)
     {
-        getLoggerProxy().debug(category,this);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,this);
     }
 
     @Override
@@ -142,14 +152,14 @@ public class I18NMessage0P
         (Object category,
          Throwable throwable)
     {
-        getLoggerProxy().trace(category,throwable,this);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,throwable,this);
     }
     
     @Override
     public void trace
         (Object category)
     {
-        getLoggerProxy().trace(category,this);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,this);
     }
 
 

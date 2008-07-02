@@ -2,6 +2,7 @@ package org.marketcetera.util.test;
 
 import java.util.LinkedList;
 import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.PatternLayout;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -21,6 +22,7 @@ public class MemoryAppender
 
     // INSTANCE DATA.
 
+    private PatternLayout mLayout=new PatternLayout("%C");
     private LinkedList<LoggingEvent> mEvents=new LinkedList<LoggingEvent>();
 
 
@@ -30,6 +32,10 @@ public class MemoryAppender
     protected void append
         (LoggingEvent event)
     {
+        // A side-effect of formatting is that the location
+        // information of the event is set.
+        mLayout.format(event);
+
         mEvents.add(event);
     }
 

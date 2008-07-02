@@ -19,6 +19,16 @@ public class I18NMessageNP
     extends I18NMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NMessageNP.class.getName();
+
+
     // CONSTRUCTORS.
 
     /**
@@ -84,7 +94,7 @@ public class I18NMessageNP
          Throwable throwable,
          Object... ps)
     {
-        getLoggerProxy().error(category,throwable,this,ps);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,throwable,this,ps);
     }
 
     /**
@@ -96,7 +106,7 @@ public class I18NMessageNP
         (Object category,
          Object... ps)
     {
-        getLoggerProxy().error(category,this,ps);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,this,ps);
     }
 
     /**
@@ -109,7 +119,7 @@ public class I18NMessageNP
          Throwable throwable,
          Object... ps)
     {
-        getLoggerProxy().warn(category,throwable,this,ps);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,throwable,this,ps);
     }
 
     /**
@@ -121,7 +131,7 @@ public class I18NMessageNP
         (Object category,
          Object... ps)
     {
-        getLoggerProxy().warn(category,this,ps);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,this,ps);
     }
 
     /**
@@ -134,7 +144,7 @@ public class I18NMessageNP
          Throwable throwable,
          Object... ps)
     {
-        getLoggerProxy().info(category,throwable,this,ps);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,throwable,this,ps);
     }
 
     /**
@@ -146,7 +156,7 @@ public class I18NMessageNP
         (Object category,
          Object... ps)
     {
-        getLoggerProxy().info(category,this,ps);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,this,ps);
     }
 
     /**
@@ -159,7 +169,7 @@ public class I18NMessageNP
          Throwable throwable,
          Object... ps)
     {
-        getLoggerProxy().debug(category,throwable,this,ps);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,throwable,this,ps);
     }
 
     /**
@@ -171,7 +181,7 @@ public class I18NMessageNP
         (Object category,
          Object... ps)
     {
-        getLoggerProxy().debug(category,this,ps);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,this,ps);
     }
 
     /**
@@ -184,7 +194,7 @@ public class I18NMessageNP
          Throwable throwable,
          Object... ps)
     {
-        getLoggerProxy().trace(category,throwable,this,ps);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,throwable,this,ps);
     }
 
     /**
@@ -196,6 +206,6 @@ public class I18NMessageNP
         (Object category,
          Object... ps)
     {
-        getLoggerProxy().trace(category,this,ps);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,this,ps);
     }
 }

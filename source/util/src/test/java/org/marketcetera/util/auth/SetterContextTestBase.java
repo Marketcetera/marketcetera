@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Locale;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NMessageProvider;
@@ -21,6 +22,7 @@ import static org.junit.Assert.*;
 
 /* $License$ */
 
+@Ignore
 public class SetterContextTestBase
     extends TestCaseBase
 {

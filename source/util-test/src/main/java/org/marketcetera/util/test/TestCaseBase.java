@@ -86,7 +86,8 @@ public class TestCaseBase
         (LoggingEvent event,
          Level level,
          String logger,
-         String message)
+         String message,
+         String location)
     {
         if (level!=null) {
             assertEquals(level,event.getLevel());
@@ -96,6 +97,10 @@ public class TestCaseBase
         }
         if (message!=null) {
             assertEquals(message,event.getMessage());
+        }
+        if (location!=null) {
+            assertEquals
+                (location,event.getLocationInformation().getClassName());
         }
     }
 
@@ -136,8 +141,9 @@ public class TestCaseBase
 
     /**
      * Asserts that the contents of the receiver's collector's most
-     * recent event match the given expected level, logger name, and
-     * message. The assertion fails if the receiver has no events.
+     * recent event match the given expected level, logger name,
+     * message, and location. The assertion fails if the receiver has
+     * no events.
      *
      * @param level The expected level. Use null to indicate "don't
      * care".
@@ -145,12 +151,15 @@ public class TestCaseBase
      * "don't care".
      * @param message The expected message. Use null to indicate
      * "don't care".
+     * @param location The expected location. Use null to indicate
+     * "don't care".
      */
 
     protected void assertLastEvent
         (Level level,
          String logger,
-         String message)
+         String message,
+         String location)
     {
         LoggingEvent event=null;
         try {
@@ -158,14 +167,14 @@ public class TestCaseBase
         } catch (NoSuchElementException ex) {
             fail("List is empty");
         }
-        assertEvent(event,level,logger,message);
+        assertEvent(event,level,logger,message,location);
     }
 
     /**
      * Asserts that the receiver's collector contains a single event,
      * and that its contents match the given expected level, logger
-     * name, and message. The collector's list of retained events is
-     * cleared upon success.
+     * name, message, and location. The collector's list of retained
+     * events is cleared upon success.
      *
      * @param level The expected level. Use null to indicate "don't
      * care".
@@ -173,15 +182,18 @@ public class TestCaseBase
      * "don't care".
      * @param message The expected message. Use null to indicate
      * "don't care".
+     * @param location The expected location. Use null to indicate
+     * "don't care".
      */
 
     protected void assertSingleEvent
         (Level level,
          String logger,
-         String message)
+         String message,
+         String location)
     {
         assertEquals(1,getAppender().getEvents().size());
-        assertLastEvent(level,logger,message);
+        assertLastEvent(level,logger,message,location);
         getAppender().clear();
     }
 }

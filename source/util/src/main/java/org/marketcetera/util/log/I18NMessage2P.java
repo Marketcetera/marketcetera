@@ -18,6 +18,16 @@ public class I18NMessage2P
     extends I18NMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NMessage2P.class.getName();
+
+
     // CONSTRUCTORS.
 
     /**
@@ -86,7 +96,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().error(category,throwable,this,p1,p2);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,throwable,this,p1,p2);
     }
 
     /**
@@ -99,7 +109,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().error(category,this,p1,p2);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,this,p1,p2);
     }
 
     /**
@@ -113,7 +123,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().warn(category,throwable,this,p1,p2);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,throwable,this,p1,p2);
     }
 
     /**
@@ -126,7 +136,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().warn(category,this,p1,p2);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,this,p1,p2);
     }
 
     /**
@@ -140,7 +150,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().info(category,throwable,this,p1,p2);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,throwable,this,p1,p2);
     }
 
     /**
@@ -153,7 +163,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().info(category,this,p1,p2);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,this,p1,p2);
     }
 
     /**
@@ -167,7 +177,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().debug(category,throwable,this,p1,p2);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,throwable,this,p1,p2);
     }
 
     /**
@@ -180,7 +190,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().debug(category,this,p1,p2);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,this,p1,p2);
     }
 
     /**
@@ -194,7 +204,7 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().trace(category,throwable,this,p1,p2);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,throwable,this,p1,p2);
     }
 
     /**
@@ -207,6 +217,6 @@ public class I18NMessage2P
          Object p1,
          Object p2)
     {
-        getLoggerProxy().trace(category,this,p1,p2);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,this,p1,p2);
     }
 }

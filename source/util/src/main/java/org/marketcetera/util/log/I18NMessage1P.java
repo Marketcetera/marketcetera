@@ -18,6 +18,16 @@ public class I18NMessage1P
     extends I18NMessage
 {
 
+    // CLASS DATA.
+
+    /**
+     * The logging proxy name.
+     */
+
+    private final static String SELF_PROXY=
+        I18NMessage1P.class.getName();
+
+
     // CONSTRUCTORS.
 
     /**
@@ -83,7 +93,7 @@ public class I18NMessage1P
          Throwable throwable,
          Object p1)
     {
-        getLoggerProxy().error(category,throwable,this,p1);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,throwable,this,p1);
     }
 
     /**
@@ -95,7 +105,7 @@ public class I18NMessage1P
         (Object category,
          Object p1)
     {
-        getLoggerProxy().error(category,this,p1);
+        getLoggerProxy().errorProxy(SELF_PROXY,category,this,p1);
     }
 
     /**
@@ -108,7 +118,7 @@ public class I18NMessage1P
          Throwable throwable,
          Object p1)
     {
-        getLoggerProxy().warn(category,throwable,this,p1);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,throwable,this,p1);
     }
 
     /**
@@ -120,7 +130,7 @@ public class I18NMessage1P
         (Object category,
          Object p1)
     {
-        getLoggerProxy().warn(category,this,p1);
+        getLoggerProxy().warnProxy(SELF_PROXY,category,this,p1);
     }
 
     /**
@@ -133,7 +143,7 @@ public class I18NMessage1P
          Throwable throwable,
          Object p1)
     {
-        getLoggerProxy().info(category,throwable,this,p1);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,throwable,this,p1);
     }
 
     /**
@@ -145,7 +155,7 @@ public class I18NMessage1P
         (Object category,
          Object p1)
     {
-        getLoggerProxy().info(category,this,p1);
+        getLoggerProxy().infoProxy(SELF_PROXY,category,this,p1);
     }
 
     /**
@@ -158,7 +168,7 @@ public class I18NMessage1P
          Throwable throwable,
          Object p1)
     {
-        getLoggerProxy().debug(category,throwable,this,p1);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,throwable,this,p1);
     }
 
     /**
@@ -170,7 +180,7 @@ public class I18NMessage1P
         (Object category,
          Object p1)
     {
-        getLoggerProxy().debug(category,this,p1);
+        getLoggerProxy().debugProxy(SELF_PROXY,category,this,p1);
     }
 
     /**
@@ -183,7 +193,7 @@ public class I18NMessage1P
          Throwable throwable,
          Object p1)
     {
-        getLoggerProxy().trace(category,throwable,this,p1);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,throwable,this,p1);
     }
 
     /**
@@ -195,6 +205,6 @@ public class I18NMessage1P
         (Object category,
          Object p1)
     {
-        getLoggerProxy().trace(category,this,p1);
+        getLoggerProxy().traceProxy(SELF_PROXY,category,this,p1);
     }
 }

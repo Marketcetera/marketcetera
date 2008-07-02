@@ -2,6 +2,7 @@ package org.marketcetera.util.except;
 
 import java.util.Locale;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
@@ -16,6 +17,7 @@ import static org.junit.Assert.*;
 
 /* $License$ */
 
+@Ignore
 public class I18NThrowableTestBase
     extends TestCaseBase
 {

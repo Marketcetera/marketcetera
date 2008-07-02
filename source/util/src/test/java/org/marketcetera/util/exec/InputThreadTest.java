@@ -26,6 +26,8 @@ public class InputThreadTest
         InputThread.class.getName();
     private static final int SLEEP_DURATION=
         1000;
+    private static final String TEST_LOCATION=
+        TEST_CATEGORY;
 
 
     private static final class GenerousInputStream
@@ -114,7 +116,7 @@ public class InputThreadTest
         Thread.sleep(SLEEP_DURATION/2);
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,
-             "Cannot copy output of command 'command'");
+             "Cannot copy output of command 'command'",TEST_LOCATION);
         assertEquals(1,in.getClosures());
         assertEquals((closeOut?1:0),out.getClosures());
     }
