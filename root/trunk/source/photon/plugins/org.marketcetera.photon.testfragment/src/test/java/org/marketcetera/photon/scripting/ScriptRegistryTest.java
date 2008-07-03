@@ -20,12 +20,12 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.publisher.TestSubscriber;
+import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.marketdata.TestMarketDataFeed;
-import org.marketcetera.marketdata.TestMarketDataFeedCredentials;
+import org.marketcetera.marketdata.MockMarketDataFeed;
+import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.PhotonPlugin;
@@ -189,12 +189,12 @@ public class ScriptRegistryTest extends TestCase {
          */
         // step #1, the setup
         // this is the feed we'll use to connect to the registry        
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
                                                          credentials);
         feed.start();
         // add a subscriber so we know when the message gets through
-        final TestSubscriber subscriber = new TestSubscriber();
+        final MockSubscriber subscriber = new MockSubscriber();
         // this is the registry we'll use to check the messages
         final TestScriptRegistry registry = new TestScriptRegistry();
         // create three distinct messages to use, making sure they are distinguishable from each other
