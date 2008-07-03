@@ -11,7 +11,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public class TestMessageTranslator
+public class MockMessageTranslator
         extends AbstractMessageTranslator<String>
 {
     private static boolean sTranslateThrows = false;
@@ -19,7 +19,7 @@ public class TestMessageTranslator
      * Create a new TestMessageTranslator instance.
      *
      */
-    public TestMessageTranslator()
+    public MockMessageTranslator()
     {
     }
 

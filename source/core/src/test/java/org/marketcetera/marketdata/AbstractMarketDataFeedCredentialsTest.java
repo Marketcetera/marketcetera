@@ -38,18 +38,18 @@ public class AbstractMarketDataFeedCredentialsTest
     {
         super.setUp();
         
-        TestMarketDataFeedCredentials.sValidateThrowsThrowable = false;
+        MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
     }
 
     public void testConstructor()
         throws Exception
     {
         // we can't say for sure that nulls are not allowed - that depends on the subclass implementation
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials(null);
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials(null);
         assertEquals(null,
                      credentials.getURL());
         String url = "http://url-" + System.nanoTime();
-        credentials = new TestMarketDataFeedCredentials(url);
+        credentials = new MockMarketDataFeedCredentials(url);
         assertEquals(url,
                      credentials.getURL());
     }
@@ -57,23 +57,23 @@ public class AbstractMarketDataFeedCredentialsTest
     public void testValidate()
         throws Exception
     {
-        TestMarketDataFeedCredentials.sValidateThrowsThrowable = true;
+        MockMarketDataFeedCredentials.sValidateThrowsThrowable = true;
         new ExpectedTestFailure(FeedException.class) {
             protected void execute()
                     throws Throwable
             {
-                new TestMarketDataFeedCredentials(null);            }
+                new MockMarketDataFeedCredentials(null);            }
         }.run();     
     }
     
     public void testEquals()
         throws Exception
     {
-        TestMarketDataFeedCredentials c1 = new TestMarketDataFeedCredentials("url1");
-        TestMarketDataFeedCredentials c2 = new TestMarketDataFeedCredentials("url2");
-        TestMarketDataFeedCredentials c3 = new TestMarketDataFeedCredentials("url1");
-        TestMarketDataFeedCredentials c4 = new TestMarketDataFeedCredentials("url1");
-        TestMarketDataFeedCredentials c5 = new TestMarketDataFeedCredentials(null);
+        MockMarketDataFeedCredentials c1 = new MockMarketDataFeedCredentials("url1");
+        MockMarketDataFeedCredentials c2 = new MockMarketDataFeedCredentials("url2");
+        MockMarketDataFeedCredentials c3 = new MockMarketDataFeedCredentials("url1");
+        MockMarketDataFeedCredentials c4 = new MockMarketDataFeedCredentials("url1");
+        MockMarketDataFeedCredentials c5 = new MockMarketDataFeedCredentials(null);
         
         assertFalse(c1.equals(null));
         assertFalse(c1.equals(this));

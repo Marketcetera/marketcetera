@@ -58,53 +58,53 @@ public class PublisherEngineNotifierTest
         doRunTest(null,
                   this);
         
-        doRunTest(new ArrayList<TestSubscriber>(),
+        doRunTest(new ArrayList<MockSubscriber>(),
                   null);        
-        doRunTest(new ArrayList<TestSubscriber>(),
+        doRunTest(new ArrayList<MockSubscriber>(),
                   this);
         
-        TestSubscriber s1 = new TestSubscriber(false,
+        MockSubscriber s1 = new MockSubscriber(false,
                                                false,
                                                false);
-        TestSubscriber s2 = new TestSubscriber(false,
-                                               false,
-                                               true);
-        TestSubscriber s3 = new TestSubscriber(false,
-                                               true,
-                                               false);
-        TestSubscriber s4 = new TestSubscriber(false,
-                                               true,
-                                               true);
-        TestSubscriber s5 = new TestSubscriber(true,
-                                               false,
-                                               false);
-        TestSubscriber s6 = new TestSubscriber(true,
+        MockSubscriber s2 = new MockSubscriber(false,
                                                false,
                                                true);
-        TestSubscriber s7 = new TestSubscriber(true,
+        MockSubscriber s3 = new MockSubscriber(false,
                                                true,
                                                false);
-        TestSubscriber s8 = new TestSubscriber(true,
+        MockSubscriber s4 = new MockSubscriber(false,
+                                               true,
+                                               true);
+        MockSubscriber s5 = new MockSubscriber(true,
+                                               false,
+                                               false);
+        MockSubscriber s6 = new MockSubscriber(true,
+                                               false,
+                                               true);
+        MockSubscriber s7 = new MockSubscriber(true,
+                                               true,
+                                               false);
+        MockSubscriber s8 = new MockSubscriber(true,
                                                true,
                                                true);
         
-        doRunTest(Arrays.asList(new TestSubscriber[] { s1 }),
+        doRunTest(Arrays.asList(new MockSubscriber[] { s1 }),
                   null);
-        doRunTest(Arrays.asList(new TestSubscriber[] { s1 }),
+        doRunTest(Arrays.asList(new MockSubscriber[] { s1 }),
                   this);
 
-        doRunTest(Arrays.asList(new TestSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 }),
+        doRunTest(Arrays.asList(new MockSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 }),
                   null);
-        doRunTest(Arrays.asList(new TestSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 }),
+        doRunTest(Arrays.asList(new MockSubscriber[] { s1, s2, s3, s4, s5, s6, s7, s8 }),
                   this);
     }
     
-    private void doRunTest(List<TestSubscriber> inSubscribers,
+    private void doRunTest(List<MockSubscriber> inSubscribers,
                            Object inData)
         throws Exception
     {
         if(inSubscribers != null) {
-            for(TestSubscriber s : inSubscribers) {
+            for(MockSubscriber s : inSubscribers) {
                 s.setData(null);
             }
         }
@@ -115,7 +115,7 @@ public class PublisherEngineNotifierTest
             return;
         }
         int lastCounter = 0;
-        for(TestSubscriber s : inSubscribers) {
+        for(MockSubscriber s : inSubscribers) {
             if(s.getInteresting() &&
                !(s.getInterestingThrows() ||
                  s.getPublishThrows())) {

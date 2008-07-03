@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutionException;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public class TestPublisher
+public class MockPublisher
         implements IPublisher
 {
     private PublisherEngine mEngine = new PublisherEngine();

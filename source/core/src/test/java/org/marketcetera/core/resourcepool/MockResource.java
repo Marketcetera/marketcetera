@@ -6,7 +6,7 @@ package org.marketcetera.core.resourcepool;
  * @author <a href="mailto:colin@marketcetera.com">colin</a>
  * @version $Id$
  */
-public class TestResource
+public class MockResource
         implements Resource, Comparable
 {
     static enum STATE { UNITIALIZED, INITIALIZED, ALLOCATED, DAMAGED, RETURNED, RELEASED, SHUTDOWN };
@@ -28,13 +28,13 @@ public class TestResource
     /**
      * Create a new TestResource instance.
      */
-    public TestResource()
+    public MockResource()
     {
         this("user_" + System.nanoTime(),
              "password_" + System.nanoTime());
     }
     
-    public TestResource(String inUser,
+    public MockResource(String inUser,
                         String inPassword)
     {
         setState(STATE.UNITIALIZED);
@@ -109,13 +109,13 @@ public class TestResource
             return AFTER;
         }
         
-        if(!(inOther instanceof TestResource)) {
+        if(!(inOther instanceof MockResource)) {
             return BEFORE;
         }
 
         if (this == inOther) return EQUAL;
         
-        TestResource other = (TestResource)inOther;
+        MockResource other = (MockResource)inOther;
         return (new Integer(getID()).compareTo(new Integer(other.getID())));
     }
 
@@ -156,7 +156,7 @@ public class TestResource
             return false;
         if (getClass() != obj.getClass())
             return false;
-        final TestResource other = (TestResource) obj;
+        final MockResource other = (MockResource) obj;
         if (mID != other.mID)
             return false;
         return true;

@@ -8,13 +8,9 @@ import junit.framework.TestSuite;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.publisher.TestSubscriber;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
-import org.marketcetera.marketdata.MarketDataFeedTestBase;
-import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.TestMarketDataFeed;
-import org.marketcetera.marketdata.TestMarketDataFeedCredentials;
-import org.marketcetera.marketdata.TestMarketDataFeedToken;
+import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
+import org.marketcetera.marketdata.*;
 
 import quickfix.Message;
 import quickfix.field.MDEntryPx;
@@ -35,10 +31,10 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 public class AbstractEventTranslatorTest
         extends MarketDataFeedTestBase
 {
-    private MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> mSpec;
-    private TestMarketDataFeed mFeed;
+    private MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> mSpec;
+    private MockMarketDataFeed mFeed;
     private String mSymbol;
-    private TestEventTranslator mTranslator;
+    private MockEventTranslator mTranslator;
     /**
      * Create a new AbstractEventTranslatorTest instance.
      *
@@ -64,10 +60,10 @@ public class AbstractEventTranslatorTest
         mSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
                                                           AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(mSymbol) }), 
                                                                                                            true), 
-                                                          Arrays.asList(new TestSubscriber[] { new TestSubscriber() } ));
-        mFeed = new TestMarketDataFeed();
+                                                          Arrays.asList(new MockSubscriber[] { new MockSubscriber() } ));
+        mFeed = new MockMarketDataFeed();
         mFeed.start();
-        mTranslator = new TestEventTranslator();
+        mTranslator = new MockEventTranslator();
     }
     /**
      * Test control paths through {@link AbstractEventTranslator#updateEventFixMessageSnapshot(EventBase)}.
@@ -78,7 +74,7 @@ public class AbstractEventTranslatorTest
         throws Exception
     {
         // submit a query that will give us a handle to work with
-        TestMarketDataFeedToken token = mFeed.execute(mSpec);
+        MockMarketDataFeedToken token = mFeed.execute(mSpec);
         // verify the snapshot is empty to start with
         verifySnapshot(mSymbol,
                        token,
@@ -212,12 +208,12 @@ public class AbstractEventTranslatorTest
                        trade);
         // submit an ask for a different symbol, make sure it doesn't affect this one
         String newSymbol = "colin-is-the-symbol";
-        TestSubscriber t2 = new TestSubscriber();
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> newSpec = MarketDataFeedTokenSpec.generateTokenSpec(mSpec.getCredentials(), 
+        MockSubscriber t2 = new MockSubscriber();
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> newSpec = MarketDataFeedTokenSpec.generateTokenSpec(mSpec.getCredentials(),
                                                                                                                    AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(newSymbol) } ), 
                                                                                                                                                                     true),
-                                                                                                                   Arrays.asList(new TestSubscriber[] { t2 } ));
-        TestMarketDataFeedToken newToken = mFeed.execute(newSpec);
+                                                                                                                   Arrays.asList(new MockSubscriber[] { t2 } ));
+        MockMarketDataFeedToken newToken = mFeed.execute(newSpec);
         assertFalse(newToken.getHandle().equals(token.getHandle()));
         waitForPublication(t2);
         QuantityTuple newAsk = new QuantityTuple(new BigDecimal("7654321.01234567"),
@@ -255,7 +251,7 @@ public class AbstractEventTranslatorTest
      * @throws Exception if an error occurs
      */
     private void verifySnapshot(String inSymbol,
-                                TestMarketDataFeedToken inToken,
+                                MockMarketDataFeedToken inToken,
                                 QuantityTuple inBid,
                                 QuantityTuple inAsk,
                                 QuantityTuple inTrade)
@@ -264,7 +260,7 @@ public class AbstractEventTranslatorTest
         // to verify the snapshot held in the belly of the translator, pass in an EventBase object
         //  into the event translator loop and verify the FIX message that comes out
         // grab a subscriber that we can guarantee will be notified by the new data
-        final TestSubscriber subscriber = (TestSubscriber)inToken.getTokenSpec().getSubscribers().get(0);
+        final MockSubscriber subscriber = (MockSubscriber)inToken.getTokenSpec().getSubscribers().get(0);
         subscriber.reset();
         // create an event that won't change the information in the snapshot returned but will trigger
         //  the update mechanism

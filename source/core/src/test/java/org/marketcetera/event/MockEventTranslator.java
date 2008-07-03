@@ -18,19 +18,19 @@ import quickfix.Message;
  * @since 0.5.0
  */
 @ClassVersion("$Id$")
-public class TestEventTranslator
+public class MockEventTranslator
         extends AbstractEventTranslator
 {
     private static boolean sTranslateToEventsThrows = false;
     private static boolean sTranslateToEventsReturnsNull = false;
     private static boolean sTranslateToEventsReturnsZeroEvents = false;
-    private static TestEventTranslator sInstance = new TestEventTranslator();
+    private static MockEventTranslator sInstance = new MockEventTranslator();
     /**
      * Gets a <code>TestEventTranslator</code> value.
      *
      * @return a <code>TestEventTranslator</code> value
      */
-    public static TestEventTranslator getTestEventTranslator()
+    public static MockEventTranslator getTestEventTranslator()
     {
         return sInstance;
     }

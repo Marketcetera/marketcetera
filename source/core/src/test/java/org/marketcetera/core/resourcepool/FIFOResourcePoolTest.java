@@ -20,9 +20,9 @@ import org.marketcetera.core.MessageKey;
 public class FIFOResourcePoolTest 
 	extends TestCase 
 {
-    protected TestFIFOResourcePool mTestPool;
-    protected TestResource mResource1;
-    protected TestResource mResource2;
+    protected MockFIFOResourcePool mTestPool;
+    protected MockResource mResource1;
+    protected MockResource mResource2;
     
 	public FIFOResourcePoolTest(String inName) 
 	{
@@ -41,20 +41,20 @@ public class FIFOResourcePoolTest
     {
         super.setUp();
         
-        mTestPool = new TestFIFOResourcePool();
-        TestResource.setInitializeException(null);
-        TestResource.setAllocateException(null);
-        mResource1 = new TestResource();
-        mResource2 = new TestResource();
+        mTestPool = new MockFIFOResourcePool();
+        MockResource.setInitializeException(null);
+        MockResource.setAllocateException(null);
+        mResource1 = new MockResource();
+        mResource2 = new MockResource();
     }
 
     public void testConstructor()
         throws Exception
     {
-        TestFIFOResourcePool pool = new TestFIFOResourcePool();
+        MockFIFOResourcePool pool = new MockFIFOResourcePool();
         assertEquals(0,
                      pool.getPoolSize());
-        assertFalse(pool.poolContains(new TestResource()));
+        assertFalse(pool.poolContains(new MockResource()));
     }
     
     public void testPoolIterator()
@@ -125,7 +125,7 @@ public class FIFOResourcePoolTest
         assertTrue(mTestPool.poolContains(mResource1));
         
         // get it back
-        TestResource r = (TestResource) mTestPool.allocateNextResource(null);
+        MockResource r = (MockResource) mTestPool.allocateNextResource(null);
         assertEquals(mResource1,
                      r);
         assertEquals(0,
@@ -135,7 +135,7 @@ public class FIFOResourcePoolTest
         // add another resource
         mTestPool.addResourceToPool(mResource2);
         // the parameter to allocate doesn't do anything
-        r = (TestResource) mTestPool.allocateNextResource(this);
+        r = (MockResource) mTestPool.allocateNextResource(this);
         assertEquals(mResource2,
                      r);
         assertEquals(0,
@@ -148,7 +148,7 @@ public class FIFOResourcePoolTest
     {
         assertEquals(0,
                      mTestPool.getPoolSize());
-        TestResource r = (TestResource) mTestPool.getNextResource(null);
+        MockResource r = (MockResource) mTestPool.getNextResource(null);
         assertNotNull(r);
         assertFalse(r.equals(mResource1));
         assertFalse(r.equals(mResource2));
@@ -161,7 +161,7 @@ public class FIFOResourcePoolTest
         assertEquals(r,
                      mTestPool.getPoolIterator().next());
         
-        TestResource newR = (TestResource) mTestPool.getNextResource(this);
+        MockResource newR = (MockResource) mTestPool.getNextResource(this);
         assertEquals(0,
                      mTestPool.getPoolSize());
         assertEquals(r,
@@ -268,7 +268,7 @@ public class FIFOResourcePoolTest
     public void testResourceOrder()
         throws Exception
     {
-        TestResource r3 = new TestResource();
+        MockResource r3 = new MockResource();
         assertEquals(0,
                      mTestPool.getPoolSize());
         mTestPool.addResourceToPool(mResource2);

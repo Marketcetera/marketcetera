@@ -18,7 +18,7 @@ import org.marketcetera.core.MarketceteraTestSuite;
 public class PublisherEngineTest
         extends TestCase
 {
-    private TestPublisher mPublisher;
+    private MockPublisher mPublisher;
     
     public PublisherEngineTest(String inArg0)
     {
@@ -35,7 +35,7 @@ public class PublisherEngineTest
             throws Exception
     {
         super.setUp();
-        mPublisher = new TestPublisher();
+        mPublisher = new MockPublisher();
     }
 
     public void testInitializeThreadPool()
@@ -57,7 +57,7 @@ public class PublisherEngineTest
     {
         mPublisher.subscribe(null);
         mPublisher.publishAndWait(this);
-        TestSubscriber s = new TestSubscriber();
+        MockSubscriber s = new MockSubscriber();
         mPublisher.subscribe(s);
         assertEquals(0,
                      s.getPublishCount());
@@ -85,7 +85,7 @@ public class PublisherEngineTest
     {
         mPublisher.unsubscribe(null);
         mPublisher.publish(this);
-        TestSubscriber s = new TestSubscriber();
+        MockSubscriber s = new MockSubscriber();
         assertEquals(0,
                      s.getPublishCount());
         assertEquals(null,
@@ -118,13 +118,13 @@ public class PublisherEngineTest
     public void testParallel()
         throws Exception
     {
-        TestPublisher[] publishers = new TestPublisher[50];
+        MockPublisher[] publishers = new MockPublisher[50];
         for(int i=0;i<50;i++) {
-            publishers[i] = new TestPublisher();
+            publishers[i] = new MockPublisher();
         }
-        TestSubscriber[] subscribers = new TestSubscriber[500];
+        MockSubscriber[] subscribers = new MockSubscriber[500];
         for(int i=0;i<subscribers.length;i++) {
-            subscribers[i] = new TestSubscriber();
+            subscribers[i] = new MockSubscriber();
         }
         
         Thread[] threads = new Thread[20];
@@ -142,11 +142,11 @@ public class PublisherEngineTest
         implements Runnable
     {
         private Random r = new Random(System.nanoTime());
-        private TestPublisher[] mPublishers;
-        private TestSubscriber[] mSubscribers;
+        private MockPublisher[] mPublishers;
+        private MockSubscriber[] mSubscribers;
         
-        public Tester(TestPublisher[] inPublishers,
-                      TestSubscriber[] inSubscribers)
+        public Tester(MockPublisher[] inPublishers,
+                      MockSubscriber[] inSubscribers)
         {
             mPublishers = inPublishers;
             mSubscribers = inSubscribers; 
@@ -155,7 +155,7 @@ public class PublisherEngineTest
         public void run()
         {
             for(int i=0;i<10;i++) {
-                for(TestSubscriber s : mSubscribers) {
+                for(MockSubscriber s : mSubscribers) {
                     int publisher = r.nextInt(50);
                     int flag = r.nextInt(3);
                     switch(flag) {

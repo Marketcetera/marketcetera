@@ -2,7 +2,7 @@ package org.marketcetera.core.resourcepool;
 
 import java.util.Iterator;
 
-class TestFIFOResourcePool 
+class MockFIFOResourcePool
     extends FIFOResourcePool 
 {
     private boolean mThrowDuringCreateResource = false;
@@ -11,18 +11,18 @@ class TestFIFOResourcePool
     private boolean mEmptyPoolBeforeAllocation = false;
     private boolean mThrowDuringPoolContains = false;
     
-    TestFIFOResourcePool()
+    MockFIFOResourcePool()
     {
         super();
     }
     
-    protected TestResource createResource(Object inData)
+    protected MockResource createResource(Object inData)
             throws ResourcePoolException
     {
         if(getThrowDuringCreateResource()) {
             throw new NullPointerException("This exception is expected");
         }
-        return new TestResource();
+        return new MockResource();
     }
     
     /* (non-Javadoc)

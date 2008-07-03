@@ -3,7 +3,7 @@ package org.marketcetera.core.resourcepool;
 import java.util.Iterator;
 
 
-public class TestReservationResourcePool
+public class MockReservationResourcePool
         extends ReservationResourcePool
 {
     private boolean mRenderThrows = false;
@@ -13,9 +13,9 @@ public class TestReservationResourcePool
     private boolean mAddResourceThrows = false;
     private boolean mResourceContentionThrows = false;
     private boolean mReleaseResourceThrows = false;
-    private TestResource mLastResourceCreated = null;
+    private MockResource mLastResourceCreated = null;
     
-    protected TestResource createResource(Object inData)
+    protected MockResource createResource(Object inData)
             throws ResourcePoolException
     {
         setLastResourceCreated(null);
@@ -32,7 +32,7 @@ public class TestReservationResourcePool
         } else {
             data = (ReservationData)inData;
         }
-        TestResource resource = new TestResource(data.getUser(),
+        MockResource resource = new MockResource(data.getUser(),
                                                  data.getPassword());
         setLastResourceCreated(resource);
         return resource;
@@ -46,7 +46,7 @@ public class TestReservationResourcePool
         if(getRenderReturnsNull()) {
             return null;
         }
-        TestResource r = (TestResource) inResource;
+        MockResource r = (MockResource) inResource;
         return new ReservationData(r.getUser(),
                                    r.getPassword());
     }
@@ -56,7 +56,7 @@ public class TestReservationResourcePool
      */
     public String toString()
     {
-        return "TestReservationResourcePool(" + hashCode() + ")";
+        return "MockReservationResourcePool(" + hashCode() + ")";
     }
 
     static class ReservationData
@@ -194,10 +194,10 @@ public class TestReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#getNextResource(java.lang.Object)
      */
-    protected TestResource getNextResource(Object inData)
+    protected MockResource getNextResource(Object inData)
             throws ResourcePoolException
     {
-        return (TestResource)super.getNextResource(inData);
+        return (MockResource)super.getNextResource(inData);
     }
 
     /**
@@ -262,7 +262,7 @@ public class TestReservationResourcePool
     /**
      * @return the lastResourceCreated
      */
-    TestResource getLastResourceCreated()
+    MockResource getLastResourceCreated()
     {
         return mLastResourceCreated;
     }
@@ -270,7 +270,7 @@ public class TestReservationResourcePool
     /**
      * @param inLastResourceCreated the lastResourceCreated to set
      */
-    void setLastResourceCreated(TestResource inLastResourceCreated)
+    void setLastResourceCreated(MockResource inLastResourceCreated)
     {
         mLastResourceCreated = inLastResourceCreated;
     }
@@ -278,32 +278,32 @@ public class TestReservationResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#allocateResource(org.marketcetera.core.resourcepool.Resource)
      */
-    protected TestResource allocateResource(Resource inResource)
+    protected MockResource allocateResource(Resource inResource)
     {
-        return (TestResource)super.allocateResource(inResource);
+        return (MockResource)super.allocateResource(inResource);
     }
 
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#requestResource(java.lang.Object)
      */
-    protected TestResource requestResource(Object inData)
+    protected MockResource requestResource(Object inData)
             throws ResourcePoolException
     {
-        return (TestResource)super.requestResource(inData);
+        return (MockResource)super.requestResource(inData);
     }
 
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ReservationResourcePool#resourceContention(org.marketcetera.core.resourcepool.ReservationResourcePool.ReservationEntry)
      */
-    protected TestResource resourceContention(ReservationEntry inReservationEntry)
+    protected MockResource resourceContention(ReservationEntry inReservationEntry)
             throws ResourcePoolException
     {
-        TestResource r = (TestResource)inReservationEntry.getResource();
+        MockResource r = (MockResource)inReservationEntry.getResource();
         r.setContentionStamp(System.currentTimeMillis());
         if(getResourceContentionThrows()) {
             throw new NullPointerException("This exception is expected");
         }
-        return (TestResource)super.resourceContention(inReservationEntry);
+        return (MockResource)super.resourceContention(inReservationEntry);
     }
 
     /**
