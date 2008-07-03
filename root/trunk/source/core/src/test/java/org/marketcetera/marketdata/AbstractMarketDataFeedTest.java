@@ -15,14 +15,14 @@ import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.core.publisher.TestSubscriber;
+import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.TestEventTranslator;
+import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.TestMessageTranslator;
+import org.marketcetera.quickfix.MockMessageTranslator;
 
 import quickfix.Group;
 import quickfix.Message;
@@ -63,7 +63,7 @@ public class AbstractMarketDataFeedTest
             protected void execute()
                     throws Throwable
             {
-                new TestMarketDataFeed(null,
+                new MockMarketDataFeed(null,
                                        providerName,
                                        null,
                                        0);
@@ -73,14 +73,14 @@ public class AbstractMarketDataFeedTest
             protected void execute()
             throws Throwable
             {
-                new TestMarketDataFeed(type,
+                new MockMarketDataFeed(type,
                                        null,
                                        null,
                                        0);
             }
         }.run();                             
         
-        TestMarketDataFeed feed = new TestMarketDataFeed(type,
+        MockMarketDataFeed feed = new MockMarketDataFeed(type,
                                                          providerName,
                                                          null,
                                                          0);
@@ -90,9 +90,9 @@ public class AbstractMarketDataFeedTest
         assertNotNull(feed.getID());
         assertEquals(FeedStatus.OFFLINE,
                      feed.getFeedStatus());
-        feed = new TestMarketDataFeed(type,
+        feed = new MockMarketDataFeed(type,
                                       providerName,
-                                      new TestMarketDataFeedCredentials(),
+                                      new MockMarketDataFeedCredentials(),
                                       0);
         assertNotNull(feed);
         assertEquals(type,
@@ -130,7 +130,7 @@ public class AbstractMarketDataFeedTest
     public void testNoCredentialsSupplied()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
@@ -144,8 +144,8 @@ public class AbstractMarketDataFeedTest
     public void testCancel()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
-                                                               new TestMarketDataFeedCredentials());
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
+                                                               new MockMarketDataFeedCredentials());
         feed.start();
         List<ISubscriber> subscribers = Arrays.asList(new ISubscriber[0]);
         new ExpectedTestFailure(NullPointerException.class) {
@@ -156,7 +156,7 @@ public class AbstractMarketDataFeedTest
             }
         }.run();
 
-        TestMarketDataFeedToken token = feed.execute(mMessage,
+        MockMarketDataFeedToken token = feed.execute(mMessage,
                                                      subscribers);
         feed.cancel(token);
         verifyAllCanceled(feed);
@@ -179,7 +179,7 @@ public class AbstractMarketDataFeedTest
     public void testStart()
     	throws Exception
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         assertFalse(feed.isRunning());
         feed.start();
         assertTrue(feed.isRunning());
@@ -190,22 +190,22 @@ public class AbstractMarketDataFeedTest
     public void testStop()
         throws Exception
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT") } ),
                                                                             true);
         Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ),
                                                                             true);
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
-        TestSubscriber subscriber = new TestSubscriber();
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec1 = MarketDataFeedTokenSpec.generateTokenSpec(credentials,
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
+        MockSubscriber subscriber = new MockSubscriber();
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec1 = MarketDataFeedTokenSpec.generateTokenSpec(credentials,
                                                                                                                  message1, 
-                                                                                                                 Arrays.asList(new TestSubscriber[] { subscriber } ));
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec2 = MarketDataFeedTokenSpec.generateTokenSpec(credentials,
+                                                                                                                 Arrays.asList(new MockSubscriber[] { subscriber } ));
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec2 = MarketDataFeedTokenSpec.generateTokenSpec(credentials,
                                                                                                                  message2, 
-                                                                                                                 Arrays.asList(new TestSubscriber[] { subscriber } ));
+                                                                                                                 Arrays.asList(new MockSubscriber[] { subscriber } ));
         feed.start();
-        TestMarketDataFeedToken token1 = feed.execute(spec1);
-        TestMarketDataFeedToken token2 = feed.execute(spec2);
+        MockMarketDataFeedToken token1 = feed.execute(spec1);
+        MockMarketDataFeedToken token2 = feed.execute(spec2);
         assertEquals(Status.ACTIVE,
                      token1.getStatus());
         assertEquals(Status.ACTIVE,
@@ -223,13 +223,13 @@ public class AbstractMarketDataFeedTest
     public void testDoInitialize()
         throws Exception
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         feed.setInitFails(false);
         assertTrue(feed.doInitialize(null));
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
                                                                                                                      mMessage, 
                                                                                                                      Arrays.asList(new ISubscriber[0]));
-        TestMarketDataFeedToken token = TestMarketDataFeedToken.getToken(tokenSpec, 
+        MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
         assertTrue(feed.doInitialize(token));
     }
@@ -237,12 +237,12 @@ public class AbstractMarketDataFeedTest
     public void testBeforeDoExecute()
         throws Exception
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         assertTrue(feed.beforeDoExecute(null));
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
                                                                                                                      mMessage, 
                                                                                                                      Arrays.asList(new ISubscriber[0]));
-        TestMarketDataFeedToken token = TestMarketDataFeedToken.getToken(tokenSpec, 
+        MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
         assertTrue(feed.beforeDoExecute(token));
     }
@@ -250,11 +250,11 @@ public class AbstractMarketDataFeedTest
     public void testAfterDoExecute()
         throws Exception
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
                                                                                                                      mMessage, 
                                                                                                                      Arrays.asList(new ISubscriber[0]));
-        TestMarketDataFeedToken token = TestMarketDataFeedToken.getToken(tokenSpec, 
+        MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(tokenSpec,
                                                                          feed);
         feed.afterDoExecute(null, null);
         feed.afterDoExecute(token, null);
@@ -263,7 +263,7 @@ public class AbstractMarketDataFeedTest
     public void testSetFeedStatus()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
@@ -307,7 +307,7 @@ public class AbstractMarketDataFeedTest
     public void testFeedComponentListener()
     	throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
@@ -370,7 +370,7 @@ public class AbstractMarketDataFeedTest
     public void testDataReceived()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
@@ -390,14 +390,14 @@ public class AbstractMarketDataFeedTest
     public void testSubscribeAll()
         throws Exception
     {
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         feed.start();
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         // create three subscribers - 1 & 3 will be assigned to specific queries,
         //  2 will be a general subscriber (all messages)
-        TestSubscriber s1 = new TestSubscriber();
-        TestSubscriber s2 = new TestSubscriber();
-        TestSubscriber s3 = new TestSubscriber();
+        MockSubscriber s1 = new MockSubscriber();
+        MockSubscriber s2 = new MockSubscriber();
+        MockSubscriber s3 = new MockSubscriber();
         feed.subscribeToAll(s2);
         // execute two queries
         feed.execute(credentials,
@@ -420,7 +420,7 @@ public class AbstractMarketDataFeedTest
         // unsubscribe from general
         feed.unsubscribeFromAll(s2);
         // reset the subscriber counters
-        resetSubscribers(Arrays.asList(new TestSubscriber[] { s1, s2, s3 } ));
+        resetSubscribers(Arrays.asList(new MockSubscriber[] { s1, s2, s3 } ));
         // re-execute the queries
         feed.execute(credentials,
                      mMessage,
@@ -448,10 +448,10 @@ public class AbstractMarketDataFeedTest
     public void testTimeout()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         feed.start();
         feed.setShouldTimeout(true);
-        final MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(), 
+        final MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
                                                                                                                       AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") } ), 
                                                                                                                                                                        true), 
                                                                                                                       new ArrayList<ISubscriber>());
@@ -480,7 +480,7 @@ public class AbstractMarketDataFeedTest
         // 5) Start feed, verify status is running, verify active queries
         // 6) Verify subscriber gets update
         // #1
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN);
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
         assertEquals(FeedStatus.OFFLINE,
                      feed.getFeedStatus());
         assertFalse(feed.getFeedStatus().isRunning());
@@ -492,13 +492,13 @@ public class AbstractMarketDataFeedTest
         assertTrue(feed.getFeedStatus().isRunning());
         assertTrue(feed.getCreatedHandles().isEmpty());
         // #3
-        TestSubscriber s1 = new TestSubscriber();
+        MockSubscriber s1 = new MockSubscriber();
         Message message0 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("test") }), 
                                                                             false);
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new TestMarketDataFeedCredentials(),
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
                                                                                                                 message0,
-                                                                                                                Arrays.asList(new TestSubscriber[] { s1 } ));
-        TestMarketDataFeedToken token = feed.execute(spec);
+                                                                                                                Arrays.asList(new MockSubscriber[] { s1 } ));
+        MockMarketDataFeedToken token = feed.execute(spec);
         waitForPublication(s1);
         assertEquals(message0,
                      ((EventBase)s1.getData()).getFIXMessage());
@@ -572,10 +572,10 @@ public class AbstractMarketDataFeedTest
         // there is already one active query represented by "spec" and "token" - add another one that
         //  we can set to fail when it is resubmitted
         s1.reset();
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> spec2 = MarketDataFeedTokenSpec.generateTokenSpec(spec.getCredentials(), 
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec2 = MarketDataFeedTokenSpec.generateTokenSpec(spec.getCredentials(),
                                                                                                                  spec.getMessage(), 
                                                                                                                  spec.getSubscribers());
-        TestMarketDataFeedToken token2 = feed.execute(spec2);
+        MockMarketDataFeedToken token2 = feed.execute(spec2);
         waitForPublication(s1);
         assertEquals(spec.getMessage(),
                      ((EventBase)s1.getData()).getFIXMessage());
@@ -636,7 +636,7 @@ public class AbstractMarketDataFeedTest
 			}
 		}
     }
-    private void verifyAllCanceled(TestMarketDataFeed inFeed)
+    private void verifyAllCanceled(MockMarketDataFeed inFeed)
         throws Exception
     {
         List<String> createdHandles = inFeed.getCreatedHandles();
@@ -714,18 +714,18 @@ public class AbstractMarketDataFeedTest
     public void testPublishEventsThrowsException()
         throws Exception
     {
-        TestSubscriber subscriber1 = new TestSubscriber();
-        TestSubscriber subscriber2 = new TestSubscriber();
-        TestSubscriber subscriber3 = new TestSubscriber();
+        MockSubscriber subscriber1 = new MockSubscriber();
+        MockSubscriber subscriber2 = new MockSubscriber();
+        MockSubscriber subscriber3 = new MockSubscriber();
         subscriber2.setPublishThrows(true);
         assertFalse(subscriber1.getPublishThrows());
         assertTrue(subscriber2.getPublishThrows());
         assertFalse(subscriber3.getPublishThrows());
-        TestMarketDataFeed feed = new TestMarketDataFeed();
+        MockMarketDataFeed feed = new MockMarketDataFeed();
         feed.start();
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         List<ISubscriber> subscribers = Arrays.asList(new ISubscriber[] { subscriber1, subscriber2, subscriber3 } );
-        TestMarketDataFeedToken token = feed.execute(credentials,
+        MockMarketDataFeedToken token = feed.execute(credentials,
                                                      mMessage,
                                                      subscribers);
         // make sure that 1 & 3 received publications despite 2's rudeness
@@ -747,7 +747,7 @@ public class AbstractMarketDataFeedTest
     public void testExecute()
     	throws Exception
     {
-        TestSubscriber subscriber = new TestSubscriber();
+        MockSubscriber subscriber = new MockSubscriber();
         for(int a=0;a<=1;a++) {
             for(int b=0;b<=1;b++) {
                 doExecuteTest(a==0 ? null : mMessage,
@@ -777,28 +777,28 @@ public class AbstractMarketDataFeedTest
     public void testParallelExecution()
         throws Exception
     {
-        TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
-        TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
-                                                         "TestMarketDataFeed",
+        MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
+        MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
+                                                         "MockMarketDataFeed",
                                                          credentials,
                                                          25);
         feed.start();
-        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
-        List<TestMarketDataFeedToken> tokens = new ArrayList<TestMarketDataFeedToken>();
+        List<MockSubscriber> subscribers = new ArrayList<MockSubscriber>();
+        List<MockMarketDataFeedToken> tokens = new ArrayList<MockMarketDataFeedToken>();
         for(int i=0;i<1000;i++) {
-            TestSubscriber s = new TestSubscriber();
+            MockSubscriber s = new MockSubscriber();
             subscribers.add(s);
-            MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(credentials, 
+            MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(credentials,
                                                                                                                          mMessage, 
                                                                                                                          subscribers);
             tokens.add(feed.execute(tokenSpec));
         }
-        for(TestSubscriber s : subscribers) {
+        for(MockSubscriber s : subscribers) {
             while(s.getData() == null) {
                 Thread.sleep(50);
             }
         }
-        for(TestMarketDataFeedToken token : tokens) {
+        for(MockMarketDataFeedToken token : tokens) {
             feed.cancel(token);
         }
         assertEquals(feed.getCreatedHandles(),
@@ -810,10 +810,10 @@ public class AbstractMarketDataFeedTest
     public void testExecuteFailures()
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed();
+        final MockMarketDataFeed feed = new MockMarketDataFeed();
         feed.start();
-        final TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
-        final TestSubscriber subscriber = new TestSubscriber();
+        final MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
+        final MockSubscriber subscriber = new MockSubscriber();
         
         // test nulls
         // test execute I
@@ -828,7 +828,7 @@ public class AbstractMarketDataFeedTest
         for(int a=0;a<=1;a++) {
             for(int b=0;b<=1;b++) {
                 for(int c=0;c<=1;c++) {
-                    final TestMarketDataFeedCredentials myCredentials = a==0 ? null : credentials;
+                    final MockMarketDataFeedCredentials myCredentials = a==0 ? null : credentials;
                     final Message myMessage = b==0 ? null : mMessage; 
                     final ISubscriber mySubscriber = c==0 ? null : subscriber;
                     final List<ISubscriber> mySubscribers = c==0 ? null : Arrays.asList(mySubscriber);
@@ -1260,7 +1260,7 @@ public class AbstractMarketDataFeedTest
                       true);
     }
     private void doExecuteTest(final Message inMessage,
-                               final TestSubscriber inSubscriber, 
+                               final MockSubscriber inSubscriber,
                                boolean inLoginFails, 
                                boolean inInitFails, 
                                boolean inLoginThrows, 
@@ -1281,7 +1281,7 @@ public class AbstractMarketDataFeedTest
                                boolean inRequestReturnsNull)
         throws Exception
     {
-        final TestMarketDataFeedCredentials credentials = new TestMarketDataFeedCredentials();
+        final MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         if(inMessage == null) {
             new ExpectedTestFailure(NullPointerException.class) {
                 protected void execute()
@@ -1289,13 +1289,13 @@ public class AbstractMarketDataFeedTest
                 {
                     MarketDataFeedTokenSpec.generateTokenSpec(credentials, 
                                                               inMessage, 
-                                                              Arrays.asList(new TestSubscriber[] { inSubscriber }));
+                                                              Arrays.asList(new MockSubscriber[] { inSubscriber }));
                 }
             }.run();                             
         } else {
-            MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(credentials, 
+            MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(credentials,
                                                                                                                          inMessage, 
-                                                                                                                         Arrays.asList(new TestSubscriber[] { inSubscriber }));
+                                                                                                                         Arrays.asList(new MockSubscriber[] { inSubscriber }));
             doExecuteTest(tokenSpec,
                           inLoginFails,
                           inInitFails,
@@ -1317,7 +1317,7 @@ public class AbstractMarketDataFeedTest
                           inRequestReturnsNull);
         }
     }
-    private void doExecuteTest(final MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> inTokenSpec,
+    private void doExecuteTest(final MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> inTokenSpec,
                                boolean inLoginFails, 
                                boolean inInitFails, 
                                boolean inLoginThrows, 
@@ -1338,7 +1338,7 @@ public class AbstractMarketDataFeedTest
                                boolean inRequestReturnsNull)
         throws Exception
     {
-        final TestMarketDataFeed feed = new TestMarketDataFeed(FeedType.UNKNOWN,
+        final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
                                                                "obnoxious-feed-name-with-dashes",
                                                                null,
                                                                0);
@@ -1347,7 +1347,7 @@ public class AbstractMarketDataFeedTest
         if(subscribers != null) {
             for(ISubscriber subscriber : subscribers) {
                 if(subscriber != null) {
-                    TestSubscriber s = (TestSubscriber)subscriber;
+                    MockSubscriber s = (MockSubscriber)subscriber;
                     assertNull(s.getData());
                 }
             }
@@ -1360,18 +1360,18 @@ public class AbstractMarketDataFeedTest
         feed.setInitThrows(inInitThrows);
         feed.setGenerateTokenThrows(inGenerateTokenThrows);
         feed.setGetEventTranslatorThrows(inGetEventTranslatorThrows);
-        TestEventTranslator.setTranslateToEventsThrows(inTranslateToEventsThrows);
-        TestEventTranslator.setTranslateToEventsReturnsNull(inTranslateToEventsReturnsNull);
-        TestEventTranslator.setTranslateToEventsReturnsZeroEvents(inTranslateToEventsReturnsZeroEvents);
+        MockEventTranslator.setTranslateToEventsThrows(inTranslateToEventsThrows);
+        MockEventTranslator.setTranslateToEventsReturnsNull(inTranslateToEventsReturnsNull);
+        MockEventTranslator.setTranslateToEventsReturnsZeroEvents(inTranslateToEventsReturnsZeroEvents);
         feed.setBeforeExecuteReturnsFalse(inBeforeExecuteReturnsFalse);
         feed.setGetMessageTranslatorThrows(inGetMessageTranslatorThrows);
-        TestMessageTranslator.setTranslateThrows(inTranslateThrows);
+        MockMessageTranslator.setTranslateThrows(inTranslateThrows);
         feed.setAfterExecuteThrows(inAfterExecuteThrows);
         feed.setBeforeExecuteThrows(inBeforeExecuteThrows);
         feed.setExecuteReturnsNothing(inRequestReturnsZeroHandles);
         feed.setExecuteReturnsNull(inRequestReturnsNull);
         // execute a test with each of the execute overloads
-        TestMarketDataFeedToken token = null;
+        MockMarketDataFeedToken token = null;
         if(inGenerateTokenThrows) {
             new ExpectedTestFailure(FeedException.class,
                                     MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
@@ -1564,8 +1564,8 @@ public class AbstractMarketDataFeedTest
                                  boolean inBeforeExecuteThrows, 
                                  boolean inRequestReturnsZeroHandles, 
                                  boolean inRequestReturnsNull, 
-                                 TestMarketDataFeed inFeed, 
-                                 TestMarketDataFeedToken inToken, 
+                                 MockMarketDataFeed inFeed,
+                                 MockMarketDataFeedToken inToken,
                                  List<? extends ISubscriber> inSubscribers)
         throws Exception
     {
@@ -1618,7 +1618,7 @@ public class AbstractMarketDataFeedTest
                 if(inSubscribers != null) {
                     for(ISubscriber subscriber : inSubscribers) {
                         if(subscriber != null) {
-                            TestSubscriber s = (TestSubscriber)subscriber;
+                            MockSubscriber s = (MockSubscriber)subscriber;
                             assertEquals(0,
                                          s.getPublishCount());
                         }
@@ -1631,7 +1631,7 @@ public class AbstractMarketDataFeedTest
                    !inRequestReturnsNull) {
                     for(ISubscriber subscriber : inSubscribers) {
                         if(subscriber != null) {
-                            TestSubscriber s = (TestSubscriber)subscriber;
+                            MockSubscriber s = (MockSubscriber)subscriber;
                             waitForPublication(s);
                             assertEquals(1,
                                          s.getPublishCount());

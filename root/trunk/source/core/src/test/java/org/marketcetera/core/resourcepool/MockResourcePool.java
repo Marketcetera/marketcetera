@@ -10,7 +10,7 @@ import java.util.LinkedList;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public class TestResourcePool
+public class MockResourcePool
         extends ResourcePool
 {
     private final LinkedList<Resource> mResources;
@@ -24,7 +24,7 @@ public class TestResourcePool
      * Create a new <code>TestResourcePool</code> object.
      *
      */
-    public TestResourcePool()
+    public MockResourcePool()
     {
         mResources = new LinkedList<Resource>();        
     }
@@ -42,13 +42,13 @@ public class TestResourcePool
             Boolean flag = getThrowDuringAddToPool();
             if(flag == null ||
                flag.equals(new Boolean(false))) {
-                mResources.addLast((TestResource)inResource);            
+                mResources.addLast((MockResource)inResource);
             } 
             if(flag != null) {
                 throw new NullPointerException("This exception is expected");
             }
         } else {
-            mResources.addLast((TestResource)inResource);            
+            mResources.addLast((MockResource)inResource);
         }
     }
 
@@ -58,7 +58,7 @@ public class TestResourcePool
     protected Resource createResource(Object inData)
             throws ResourcePoolException
     {
-        return new TestResource();
+        return new MockResource();
     }
 
     /* (non-Javadoc)
@@ -161,11 +161,11 @@ public class TestResourcePool
     /* (non-Javadoc)
      * @see org.marketcetera.core.resourcepool.ResourcePool#requestResource(java.lang.Object)
      */
-    protected TestResource requestResource(Object inData)
+    protected MockResource requestResource(Object inData)
             throws ResourcePoolException
     {
         setInReturn(false);
-        return (TestResource)super.requestResource(inData);
+        return (MockResource)super.requestResource(inData);
     }
 
     /**

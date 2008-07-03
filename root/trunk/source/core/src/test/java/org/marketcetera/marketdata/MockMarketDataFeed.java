@@ -10,8 +10,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.event.TestEventTranslator;
-import org.marketcetera.quickfix.TestMessageTranslator;
+import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.quickfix.MockMessageTranslator;
 
 /* $License$ */
 
@@ -23,13 +23,13 @@ import org.marketcetera.quickfix.TestMessageTranslator;
  * @since 0.5.0
  */
 @ClassVersion("$Id$")
-public class TestMarketDataFeed
-    extends AbstractMarketDataFeed<TestMarketDataFeedToken,
-                                   TestMarketDataFeedCredentials,
-                                   TestMessageTranslator,
-                                   TestEventTranslator,
+public class MockMarketDataFeed
+    extends AbstractMarketDataFeed<MockMarketDataFeedToken,
+        MockMarketDataFeedCredentials,
+        MockMessageTranslator,
+        MockEventTranslator,
                                    String,
-                                   TestMarketDataFeed>
+        MockMarketDataFeed>
 {
     private final int mDelay;
     
@@ -69,7 +69,7 @@ public class TestMarketDataFeed
     private Set<String> mCanceledHandles = new LinkedHashSet<String>();
     private Set<String> mCreatedHandles = new LinkedHashSet<String>();
     
-    public TestMarketDataFeed() 
+    public MockMarketDataFeed()
         throws NoMoreIDsException
     {
         this(FeedType.SIMULATED,
@@ -82,11 +82,11 @@ public class TestMarketDataFeed
      * @param inCredentials
      * @throws NoMoreIDsException 
      */
-    public TestMarketDataFeed(FeedType inFeedType) 
+    public MockMarketDataFeed(FeedType inFeedType)
         throws NoMoreIDsException
     {
         this(inFeedType,
-             TestMarketDataFeed.class.toString(),
+             MockMarketDataFeed.class.toString(),
              null,
              0);
     }
@@ -97,19 +97,19 @@ public class TestMarketDataFeed
      * @param inCredentials
      * @throws NoMoreIDsException 
      */
-    public TestMarketDataFeed(FeedType inFeedType,
-                              TestMarketDataFeedCredentials inCredentials) 
+    public MockMarketDataFeed(FeedType inFeedType,
+                              MockMarketDataFeedCredentials inCredentials)
         throws NoMoreIDsException
     {
         this(inFeedType,
-             TestMarketDataFeed.class.toString(),
+             MockMarketDataFeed.class.toString(),
              inCredentials,
              0);
     }
 
-    public TestMarketDataFeed(FeedType inFeedType,
+    public MockMarketDataFeed(FeedType inFeedType,
                               String inProviderName,
-                              TestMarketDataFeedCredentials inCredentials,
+                              MockMarketDataFeedCredentials inCredentials,
                               int inDelay) 
         throws NoMoreIDsException
     {
@@ -124,20 +124,20 @@ public class TestMarketDataFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(quickfix.Message)
      */
     @Override
-    protected TestMarketDataFeedToken generateToken(MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> inTokenSpec)
+    protected MockMarketDataFeedToken generateToken(MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> inTokenSpec)
             throws FeedException
     {
         if(getGenerateTokenThrows()) {
             throw new NullPointerException("This exception is expected");
         }
-        return TestMarketDataFeedToken.getToken(inTokenSpec,
+        return MockMarketDataFeedToken.getToken(inTokenSpec,
                                                 this);
     }
 
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials)
      */
-    protected boolean doLogin(TestMarketDataFeedCredentials inCredentials)
+    protected boolean doLogin(MockMarketDataFeedCredentials inCredentials)
     {
         if(getLoginThrows()) {
             throw new NullPointerException("This exception is expected");
@@ -192,7 +192,7 @@ public class TestMarketDataFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#afterDoExecute()
      */
     @Override
-    protected void afterDoExecute(TestMarketDataFeedToken inToken, 
+    protected void afterDoExecute(MockMarketDataFeedToken inToken,
                                   Throwable inException)
     {
         if(getAfterExecuteThrows()) {
@@ -210,17 +210,17 @@ public class TestMarketDataFeed
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getMessageTranslator()
      */
-    protected TestMessageTranslator getMessageTranslator()
+    protected MockMessageTranslator getMessageTranslator()
     {
         if(getGetMessageTranslatorThrows()) {
             throw new NullPointerException("This exception is expected");
         }
-        return new TestMessageTranslator();
+        return new MockMessageTranslator();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn()
      */
-    protected boolean isLoggedIn(TestMarketDataFeedCredentials inCredentials)
+    protected boolean isLoggedIn(MockMarketDataFeedCredentials inCredentials)
     {
         if(getShouldTimeout()) {
             try {
@@ -298,7 +298,7 @@ public class TestMarketDataFeed
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doInitialize(org.marketcetera.marketdata.AbstractMarketDataFeedToken)
      */
-    protected boolean doInitialize(TestMarketDataFeedToken inToken)
+    protected boolean doInitialize(MockMarketDataFeedToken inToken)
         throws InterruptedException
     {
         if(getInitThrows()) {
@@ -355,12 +355,12 @@ public class TestMarketDataFeed
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getEventTranslator()
      */
-    protected TestEventTranslator getEventTranslator()
+    protected MockEventTranslator getEventTranslator()
     {
         if(getGetEventTranslatorThrows()) {
             throw new NullPointerException("This exception is expected");
         }
-        return TestEventTranslator.getTestEventTranslator();
+        return MockEventTranslator.getTestEventTranslator();
     }
     /**
      * Get the cancelFails value.
@@ -401,7 +401,7 @@ public class TestMarketDataFeed
         throw new UnsupportedOperationException();
     }
     @Override
-    protected boolean beforeDoExecute(TestMarketDataFeedToken inToken)
+    protected boolean beforeDoExecute(MockMarketDataFeedToken inToken)
         throws InterruptedException
     {
         if(getBeforeExecuteThrows()) {

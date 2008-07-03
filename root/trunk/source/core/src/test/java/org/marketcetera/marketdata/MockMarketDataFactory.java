@@ -10,14 +10,14 @@ import org.marketcetera.marketdata.IFeedComponent.FeedType;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public class TestMarketDataFactory
-        implements IMarketDataFeedFactory<TestMarketDataFeed,TestMarketDataFeedCredentials>
+public class MockMarketDataFactory
+        implements IMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>
 {
-    private AbstractMarketDataFeedFactory<TestMarketDataFeed,TestMarketDataFeedCredentials> mInnerFactory = 
-            new AbstractMarketDataFeedFactory<TestMarketDataFeed,TestMarketDataFeedCredentials>() {
+    private AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials> mInnerFactory =
+            new AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>() {
         private static final String PROVIDER = "TEST";
 
-        public TestMarketDataFeed getMarketDataFeed()
+        public MockMarketDataFeed getMarketDataFeed()
             throws MarketceteraException
         {
             return getMarketDataFeed(null);            
@@ -28,15 +28,15 @@ public class TestMarketDataFactory
             return PROVIDER;
         }
 
-        public TestMarketDataFeed getMarketDataFeed(TestMarketDataFeedCredentials inCredentials)
+        public MockMarketDataFeed getMarketDataFeed(MockMarketDataFeedCredentials inCredentials)
                 throws MarketceteraException
         {
-            return new TestMarketDataFeed(FeedType.SIMULATED,
+            return new MockMarketDataFeed(FeedType.SIMULATED,
                                           inCredentials);
         }                
     };
 
-    public TestMarketDataFeed getMarketDataFeed()
+    public MockMarketDataFeed getMarketDataFeed()
         throws MarketceteraException
     {
         return mInnerFactory.getMarketDataFeed();
@@ -49,7 +49,7 @@ public class TestMarketDataFactory
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
-    public TestMarketDataFeed getMarketDataFeed(TestMarketDataFeedCredentials inCredentials)
+    public MockMarketDataFeed getMarketDataFeed(MockMarketDataFeedCredentials inCredentials)
             throws MarketceteraException
     {
         return mInnerFactory.getMarketDataFeed(inCredentials);

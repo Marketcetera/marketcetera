@@ -10,7 +10,7 @@ import java.util.List;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public class TestSubscriber
+public class MockSubscriber
     implements ISubscriber
 {
     private boolean mInteresting = false;
@@ -22,14 +22,14 @@ public class TestSubscriber
     private int mPublishCount = 0;
     private List<Object> mPublications;
     
-    public TestSubscriber()
+    public MockSubscriber()
     {
         this(true,
              false,
              false);
     }
     
-    public TestSubscriber(boolean inInteresting,
+    public MockSubscriber(boolean inInteresting,
                           boolean inInterestingThrows,
                           boolean inPublishThrows)
     {

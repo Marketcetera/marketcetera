@@ -8,9 +8,9 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.core.publisher.TestSubscriber;
-import org.marketcetera.event.TestEventTranslator;
-import org.marketcetera.quickfix.TestMessageTranslator;
+import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.quickfix.MockMessageTranslator;
 
 import quickfix.Message;
 
@@ -26,7 +26,7 @@ public class MarketDataFeedTestBase
 {
     private static MarketDataFeedTestSuite sSuite;
     protected Message mMessage;
-    protected TestMarketDataFeedCredentials mCredentials;
+    protected MockMarketDataFeedCredentials mCredentials;
     
     /**
      * Create a new <code>MarketDataFeedTestBase</code> instance.
@@ -60,16 +60,16 @@ public class MarketDataFeedTestBase
             throws Exception
     {
         super.setUp();
-        TestMarketDataFeedCredentials.sValidateThrowsThrowable = false;
-        TestEventTranslator.setTranslateToEventsReturnsZeroEvents(false);
-        TestEventTranslator.setTranslateToEventsThrows(false);
-        TestEventTranslator.setTranslateToEventsReturnsNull(false);
-        TestMessageTranslator.setTranslateThrows(false);
+        MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
+        MockEventTranslator.setTranslateToEventsReturnsZeroEvents(false);
+        MockEventTranslator.setTranslateToEventsThrows(false);
+        MockEventTranslator.setTranslateToEventsReturnsNull(false);
+        MockMessageTranslator.setTranslateThrows(false);
         mMessage = MarketDataFeedTestSuite.generateFIXMessage();
-        mCredentials = new TestMarketDataFeedCredentials();
+        mCredentials = new MockMarketDataFeedCredentials();
     }    
 
-    protected void resetSubscriber(TestSubscriber inSubscriber)
+    protected void resetSubscriber(MockSubscriber inSubscriber)
     {
         if(inSubscriber == null) {
             return;
@@ -83,7 +83,7 @@ public class MarketDataFeedTestBase
         }
         for(ISubscriber subscriber : inSubscribers) {
             if(subscriber != null) {
-                TestSubscriber s = (TestSubscriber)subscriber;
+                MockSubscriber s = (MockSubscriber)subscriber;
                 resetSubscriber(s);
             }
         }
@@ -142,13 +142,13 @@ public class MarketDataFeedTestBase
      * Waits until the given subscriber receives a publication.
      * 
      * <p>This method is guaranteed to wait until the passed subscriber has been notified.  Note that in order
-     * for the method to be deterministic, the subscriber will have to have been reset {@link TestSubscriber#reset()}
+     * for the method to be deterministic, the subscriber will have to have been reset {@link org.marketcetera.core.publisher.MockSubscriber#reset()}
      * before executing the statement that causes the subscriber to be notified.
      *
      * @param inSubscriber a <code>TestSubscriber</code> value
      * @throws Exception if an error occurs
      */
-    public static void waitForPublication(final TestSubscriber inSubscriber)
+    public static void waitForPublication(final MockSubscriber inSubscriber)
         throws Exception
     {
         wait(new Callable<Boolean>() {

@@ -12,14 +12,14 @@ import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.resourcepool.ReservationResourcePool.ReservationEntry;
-import org.marketcetera.core.resourcepool.TestReservationResourcePool.ReservationData;
-import org.marketcetera.core.resourcepool.TestResource.STATE;
+import org.marketcetera.core.resourcepool.MockReservationResourcePool.ReservationData;
+import org.marketcetera.core.resourcepool.MockResource.STATE;
 
 public class ReservationResourcePoolTest
         extends TestCase
 {
-    protected TestReservationResourcePool mTestPool;
-    protected TestReservationResourcePool.ReservationData mData;
+    protected MockReservationResourcePool mTestPool;
+    protected MockReservationResourcePool.ReservationData mData;
     
     public ReservationResourcePoolTest(String inName)
     {
@@ -38,8 +38,8 @@ public class ReservationResourcePoolTest
     {
         super.setUp();
 
-        mTestPool = new TestReservationResourcePool();
-        mData = new TestReservationResourcePool.ReservationData("my_user-" + System.nanoTime(),
+        mTestPool = new MockReservationResourcePool();
+        mData = new MockReservationResourcePool.ReservationData("my_user-" + System.nanoTime(),
                                                                 "my_password-" + System.nanoTime());
     }
     
@@ -63,7 +63,7 @@ public class ReservationResourcePoolTest
         }.run();
         assertEquals(0,
                      mTestPool.getPoolSize());
-        TestResource r = new TestResource();
+        MockResource r = new MockResource();
         mTestPool.addResourceToPool(r);
         assertEquals(1,
                      mTestPool.getPoolSize());
@@ -87,7 +87,7 @@ public class ReservationResourcePoolTest
             protected void execute()
                     throws Throwable
             {
-                mTestPool.addResourceToPool(new TestResource());
+                mTestPool.addResourceToPool(new MockResource());
             }
         }.run();
     }
@@ -96,10 +96,10 @@ public class ReservationResourcePoolTest
         throws Exception
     {
         assertFalse(mTestPool.reservationExistsFor(null));
-        TestResource r1 = new TestResource();
+        MockResource r1 = new MockResource();
         mTestPool.addResourceToPool(r1);
         assertTrue(mTestPool.reservationExistsFor(mTestPool.getReservationKey(r1)));
-        TestResource r2 = new TestResource();
+        MockResource r2 = new MockResource();
         assertFalse(mTestPool.reservationExistsFor(mTestPool.getReservationKey(r2)));
     }
     
@@ -107,7 +107,7 @@ public class ReservationResourcePoolTest
         throws Exception
     {
         assertNull(mTestPool.getReservationByKey(null));
-        TestResource r1 = new TestResource();
+        MockResource r1 = new MockResource();
         Object key = mTestPool.renderReservationKey(r1);
         assertNull(mTestPool.getReservationByKey(key));
         assertNull(mTestPool.getReservationByKey(this));
@@ -141,11 +141,11 @@ public class ReservationResourcePoolTest
                     throws Throwable
             {
                 mTestPool.addToReservationBook(null,
-                                               new TestResource());
+                                               new MockResource());
             }
         }.run();
         
-        TestResource r1 = new TestResource();
+        MockResource r1 = new MockResource();
         Object key = mTestPool.renderReservationKey(r1);
         assertNotNull(r1);
         assertNotNull(key);
@@ -158,7 +158,7 @@ public class ReservationResourcePoolTest
         assertEquals(r1,
                      entry.getResource());
         
-        TestResource r2 = new TestResource();
+        MockResource r2 = new MockResource();
         mTestPool.addToReservationBook(key,
                                        r2);
         assertTrue(mTestPool.reservationExistsFor(key));
@@ -170,7 +170,7 @@ public class ReservationResourcePoolTest
     public void testgetReservationKey()
         throws Exception
     {
-        TestResource r1 = new TestResource();
+        MockResource r1 = new MockResource();
         Object key = mTestPool.renderReservationKey(r1);
         
         assertNull(mTestPool.getReservationKey(null));
@@ -202,7 +202,7 @@ public class ReservationResourcePoolTest
         assertEquals(0,
                      mTestPool.getPoolSize());
         // get "any" resource, that is, not one with a reservation
-        TestResource r1 = mTestPool.getNextResource(null);
+        MockResource r1 = mTestPool.getNextResource(null);
         assertNotNull(r1);
         assertEquals(0,
                      mTestPool.getPoolSize());
@@ -213,14 +213,14 @@ public class ReservationResourcePoolTest
         assertEquals(1,
                      mTestPool.getPoolSize());
         mTestPool.poolContains(r1);
-        TestResource newR1 = mTestPool.getNextResource(data1);
+        MockResource newR1 = mTestPool.getNextResource(data1);
         assertEquals(r1,
                      newR1);
         // request a specific resource that does not yet exist in the pool
         ReservationData data2 = new ReservationData("some_user",
                                                     "some_password");
         assertFalse(mTestPool.reservationExistsFor(data2));
-        TestResource r2 = mTestPool.getNextResource(data2);
+        MockResource r2 = mTestPool.getNextResource(data2);
         assertEquals(data2,
                      mTestPool.renderReservationKey(r2));        
     }
@@ -252,7 +252,7 @@ public class ReservationResourcePoolTest
         mTestPool.setAddResourceThrows(true);
         doGetNextResourceExceptionHandlingTest(null);
         assertNotNull(mTestPool.getLastResourceCreated());
-        assertEquals(TestResource.STATE.RELEASED,
+        assertEquals(MockResource.STATE.RELEASED,
                      mTestPool.getLastResourceCreated().getState());
         
         // repeat the same tests above, this time for a specific reservation
@@ -281,7 +281,7 @@ public class ReservationResourcePoolTest
         mTestPool.setAddResourceThrows(true);
         doGetNextResourceExceptionHandlingTest(data);
         assertNotNull(mTestPool.getLastResourceCreated());
-        assertEquals(TestResource.STATE.RELEASED,
+        assertEquals(MockResource.STATE.RELEASED,
                      mTestPool.getLastResourceCreated().getState());
     }
     
@@ -302,9 +302,9 @@ public class ReservationResourcePoolTest
         throws Exception
     {
         // superclass returns a resource normall
-        TestResource r1 = (TestResource)mTestPool.requestResource(null);
+        MockResource r1 = (MockResource)mTestPool.requestResource(null);
         assertNotNull(r1);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         // get superclass to throw a ResourcePoolException
         mTestPool.shutdown();
@@ -327,12 +327,12 @@ public class ReservationResourcePoolTest
         assertEquals(0,
                      mTestPool.getPoolSize());
         assertNull(mTestPool.allocateResource(null));
-        TestResource r1 = new TestResource();
+        MockResource r1 = new MockResource();
         assertNull(mTestPool.allocateResource(r1));
         mTestPool.addResourceToPool(r1);
         assertEquals(1,
                      mTestPool.getPoolSize());
-        TestResource r2 = mTestPool.allocateResource(r1);
+        MockResource r2 = mTestPool.allocateResource(r1);
         assertEquals(r1,
                      r2);
         assertEquals(0,
@@ -351,9 +351,9 @@ public class ReservationResourcePoolTest
                 mTestPool.allocateResource();
             }
         }.run();
-        TestResource r1 = new TestResource();
-        TestResource r2 = new TestResource();
-        TestResource r3 = new TestResource();
+        MockResource r1 = new MockResource();
+        MockResource r2 = new MockResource();
+        MockResource r3 = new MockResource();
         mTestPool.addResourceToPool(r1);
         mTestPool.addResourceToPool(r3);
         mTestPool.addResourceToPool(r2);
@@ -384,12 +384,12 @@ public class ReservationResourcePoolTest
             }
         }.run();
         // create a resource with no reservations waiting
-        TestResource r1 = mTestPool.requestResource(null);
+        MockResource r1 = mTestPool.requestResource(null);
         assertNotNull(r1);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         mTestPool.releaseResource(r1);
-        assertEquals(TestResource.STATE.RELEASED,
+        assertEquals(MockResource.STATE.RELEASED,
                      r1.getState());
     }
     
@@ -405,18 +405,18 @@ public class ReservationResourcePoolTest
         }.run();
 
         // normal case
-        TestResource r1 = mTestPool.requestResource(null);
+        MockResource r1 = mTestPool.requestResource(null);
         assertNotNull(r1);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         mTestPool.returnResource(r1);
-        assertEquals(TestResource.STATE.RETURNED,
+        assertEquals(MockResource.STATE.RETURNED,
                      r1.getState());
         
         // make superclass throw an exception
-        final TestResource r2 = mTestPool.requestResource(null);
+        final MockResource r2 = mTestPool.requestResource(null);
         assertNotNull(r2);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r2.getState());        
         mTestPool.shutdown();
         new ExpectedTestFailure(ResourcePoolShuttingDownException.class){
@@ -427,17 +427,17 @@ public class ReservationResourcePoolTest
             }
         }.run();
         // reset test pool
-        mTestPool = new TestReservationResourcePool();
+        mTestPool = new MockReservationResourcePool();
         // render reservation key throws an exception, still able to function
         r1 = mTestPool.requestResource(null);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         mTestPool.setRenderThrows(true);
         mTestPool.returnResource(r1);
-        assertEquals(TestResource.STATE.RETURNED,
+        assertEquals(MockResource.STATE.RETURNED,
                      r1.getState());
         // key does not exist
-        final TestResource r3 = new TestResource();
+        final MockResource r3 = new MockResource();
         new ExpectedTestFailure(ReleasedResourceException.class){
             protected void execute()
                     throws Throwable
@@ -450,11 +450,11 @@ public class ReservationResourcePoolTest
     public void testGetAllocatedResourceByReservation()
         throws Exception
     {
-        TestResource r1 = mTestPool.requestResource(null);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        MockResource r1 = mTestPool.requestResource(null);
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         Object r1Reservation = mTestPool.renderReservationKey(r1);
-        assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
+        assertTrue(r1Reservation instanceof MockReservationResourcePool.ReservationData);
         //      no contentions yet
         assertEquals(0,
                      r1.getContentionStamp());
@@ -465,18 +465,18 @@ public class ReservationResourcePoolTest
         doContentionTest(r1Reservation,
                          r1,
                          r1, 
-                         TestResource.STATE.ALLOCATED, 
+                         MockResource.STATE.ALLOCATED,
                          null);
     }
 
     public void testContentionThrowsResourcePoolException()
         throws Exception
     {
-        TestResource r1 = mTestPool.requestResource(null);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        MockResource r1 = mTestPool.requestResource(null);
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         Object r1Reservation = mTestPool.renderReservationKey(r1);
-        assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
+        assertTrue(r1Reservation instanceof MockReservationResourcePool.ReservationData);
         //      no contentions yet
         assertEquals(0,
                      r1.getContentionStamp());
@@ -488,7 +488,7 @@ public class ReservationResourcePoolTest
         doContentionTest(r1Reservation,
                          r1,
                          null, 
-                         TestResource.STATE.RETURNED, 
+                         MockResource.STATE.RETURNED,
                          ResourcePoolException.class);
     }
 
@@ -496,31 +496,31 @@ public class ReservationResourcePoolTest
         throws Exception
     {
         //      tests what happens when a non-functional resource is returned with outstanding requesters
-        TestResource r1 = mTestPool.requestResource(null);
+        MockResource r1 = mTestPool.requestResource(null);
         assertEquals(0,
                      mTestPool.getPoolSize());
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         Object r1Reservation = mTestPool.renderReservationKey(r1);
-        assertTrue(r1Reservation instanceof TestReservationResourcePool.ReservationData);
+        assertTrue(r1Reservation instanceof MockReservationResourcePool.ReservationData);
         //      no contentions yet
         assertEquals(0,
                      r1.getContentionStamp());
         //      r1 is in the reservation system by this key
         assertEquals(r1,
                      mTestPool.getReservationByKey(r1Reservation).getResource());
-        r1.setState(TestResource.STATE.DAMAGED);
+        r1.setState(MockResource.STATE.DAMAGED);
 
         doContentionTest(r1Reservation,
                          r1,
                          null, 
-                         TestResource.STATE.RELEASED, 
+                         MockResource.STATE.RELEASED,
                          ResourcePoolException.class);
     }
 
     protected void doContentionTest(Object inReservation,
-                                    TestResource inResource,
-                                    TestResource inReturnedResource, 
+                                    MockResource inResource,
+                                    MockResource inReturnedResource,
                                     STATE inReturnedResourceState, 
                                     Class inExceptionClass)
     throws Exception
@@ -559,7 +559,7 @@ public class ReservationResourcePoolTest
         implements Runnable
     {
         private Object mReservation;
-        private TestResource mResource;
+        private MockResource mResource;
         private Throwable mException;
         private Semaphore mStartSemaphore;
 
@@ -577,7 +577,7 @@ public class ReservationResourcePoolTest
         {
             mStartSemaphore.release();
             try {
-                setResource((TestResource)mTestPool.requestResource(getReservation()));
+                setResource((MockResource)mTestPool.requestResource(getReservation()));
             } catch (Throwable t) {
                 if(LoggerAdapter.isDebugEnabled(this)) { 
                     LoggerAdapter.debug("Requester thread caught exception",
@@ -607,7 +607,7 @@ public class ReservationResourcePoolTest
         /**
          * @return the resource
          */
-        private TestResource getResource()
+        private MockResource getResource()
         {
             return mResource;
         }
@@ -615,7 +615,7 @@ public class ReservationResourcePoolTest
         /**
          * @param inResource the resource to set
          */
-        private void setResource(TestResource inResource)
+        private void setResource(MockResource inResource)
         {
             mResource = inResource;
         }

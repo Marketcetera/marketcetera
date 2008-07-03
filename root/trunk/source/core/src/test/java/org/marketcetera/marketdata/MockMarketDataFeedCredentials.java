@@ -7,12 +7,12 @@ package org.marketcetera.marketdata;
  * @version $Id$
  * @since 0.43-SNAPSHOT
  */
-public class TestMarketDataFeedCredentials
+public class MockMarketDataFeedCredentials
     extends AbstractMarketDataFeedCredentials
 {
     public static boolean sValidateThrowsThrowable = false;
 
-    public TestMarketDataFeedCredentials() 
+    public MockMarketDataFeedCredentials()
         throws FeedException
     {
         this("http://url-" + System.nanoTime());        
@@ -24,7 +24,7 @@ public class TestMarketDataFeedCredentials
      * @param inURL
      * @throws FeedException
      */
-    public TestMarketDataFeedCredentials(String inURL)
+    public MockMarketDataFeedCredentials(String inURL)
         throws FeedException
     {
         super(inURL);

@@ -8,7 +8,7 @@ import junit.framework.Test;
 
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.core.publisher.TestSubscriber;
+import org.marketcetera.core.publisher.MockSubscriber;
 
 import quickfix.Message;
 
@@ -43,7 +43,7 @@ public class MarketDataFeedTokenSpecTest
     {
         List<? extends ISubscriber> emptySubscribers = new ArrayList<ISubscriber>();
         List nonemptySubscribers = new ArrayList();
-        nonemptySubscribers.add(new TestSubscriber());
+        nonemptySubscribers.add(new MockSubscriber());
         nonemptySubscribers.add(new DoNothingSubscriber());
         for(int a=0;a<=1;a++) {
             for(int b=0;b<=1;b++) {
@@ -66,12 +66,12 @@ public class MarketDataFeedTokenSpecTest
     public void testUnmodifiableSubscriberList()
         throws Exception
     {
-        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
-        final TestSubscriber s1 = new TestSubscriber();
-        final TestSubscriber s2 = new TestSubscriber();
+        List<MockSubscriber> subscribers = new ArrayList<MockSubscriber>();
+        final MockSubscriber s1 = new MockSubscriber();
+        final MockSubscriber s2 = new MockSubscriber();
         subscribers.add(s1);
         subscribers.add(s2);
-        MarketDataFeedTokenSpec<TestMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
+        MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials,
                                                                                                                      mMessage, 
                                                                                                                      subscribers);
         final List<? extends ISubscriber> returnedSubscribers = tokenSpec.getSubscribers();
@@ -93,9 +93,9 @@ public class MarketDataFeedTokenSpecTest
         }.run();      
     }
     
-    private void doValidateTokenSpec(final TestMarketDataFeedCredentials inCredentials,
+    private void doValidateTokenSpec(final MockMarketDataFeedCredentials inCredentials,
                                      final Message inMessage,
-                                     final List<TestSubscriber> inSubscribers)
+                                     final List<MockSubscriber> inSubscribers)
         throws Exception
     {
         if(inCredentials == null ||

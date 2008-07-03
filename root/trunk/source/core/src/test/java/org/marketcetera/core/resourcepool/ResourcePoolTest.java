@@ -12,7 +12,7 @@ import org.marketcetera.core.MessageKey;
 public class ResourcePoolTest
         extends TestCase
 {
-    private TestResourcePool mTestPool;
+    private MockResourcePool mTestPool;
     
     public ResourcePoolTest(String inArg0)
     {
@@ -33,7 +33,7 @@ public class ResourcePoolTest
             throws Exception
     {
         super.setUp();
-        mTestPool = new TestResourcePool();
+        mTestPool = new MockResourcePool();
     }
 
     public void testConstructor()
@@ -54,26 +54,26 @@ public class ResourcePoolTest
         throws Exception
     {
         assertFalse(mTestPool.getPoolIterator().hasNext());
-        TestResource r = mTestPool.requestResource(null);
+        MockResource r = mTestPool.requestResource(null);
         assertNotNull(r);
         mTestPool.returnResource(r);
         assertTrue(mTestPool.getPoolIterator().hasNext());
-        assertEquals(TestResource.STATE.RETURNED,
+        assertEquals(MockResource.STATE.RETURNED,
                      r.getState());
         doShutdownTest();
-        assertEquals(TestResource.STATE.SHUTDOWN,
+        assertEquals(MockResource.STATE.SHUTDOWN,
                      r.getState());
     }
     
     public void testShutdownThrowsDuringStop()
         throws Exception
     {
-        TestResource r = mTestPool.requestResource(null);
+        MockResource r = mTestPool.requestResource(null);
         assertNotNull(r);
         mTestPool.returnResource(r);
         r.setThrowDuringStop(true);
         doShutdownTest();
-        assertEquals(TestResource.STATE.SHUTDOWN,
+        assertEquals(MockResource.STATE.SHUTDOWN,
                      r.getState());
     }
 
@@ -115,10 +115,10 @@ public class ResourcePoolTest
         mTestPool.setThrowDuringGetNextResource(null);
         
         try {
-            TestResource.setAllocateException(new NullPointerException("This exception is expected"));
+            MockResource.setAllocateException(new NullPointerException("This exception is expected"));
             doRequestTest();
         } finally {
-            TestResource.setAllocateException(null);
+            MockResource.setAllocateException(null);
         }
 
         mTestPool.setThrowDuringGetNextResource(null);
@@ -137,9 +137,9 @@ public class ResourcePoolTest
     protected void doRequestTest()
         throws Exception
     {
-        TestResource r1 =  mTestPool.requestResource(null);
+        MockResource r1 =  mTestPool.requestResource(null);
         assertNotNull(r1);
-        TestResource r2 =  mTestPool.requestResource(this);
+        MockResource r2 =  mTestPool.requestResource(this);
         assertNotNull(r2);
     }
     
@@ -207,14 +207,14 @@ public class ResourcePoolTest
         throws Exception
     {
         assertFalse(mTestPool.getPoolIterator().hasNext());
-        TestResource r1 = mTestPool.requestResource(null);
+        MockResource r1 = mTestPool.requestResource(null);
         assertNotNull(r1);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         assertFalse(mTestPool.getPoolIterator().hasNext());
         r1.setIsFunctionalException(inIsFunctionalThrows);
         r1.setReleaseException(inReleaseThrows);
-        r1.setState(inResourceFunctional ? r1.getState() : TestResource.STATE.DAMAGED);
+        r1.setState(inResourceFunctional ? r1.getState() : MockResource.STATE.DAMAGED);
         r1.setReturnException(inReturnedThrows);
         mTestPool.setThrowDuringVerify(inVerify);
         mTestPool.setThrowDuringAddToPool(inAddToPoolThrows);
@@ -224,25 +224,25 @@ public class ResourcePoolTest
         if(inResourceFunctional) {
             if(inIsFunctionalThrows) {
                 assertFalse(mTestPool.getPoolIterator().hasNext());
-                assertEquals(TestResource.STATE.RELEASED,
+                assertEquals(MockResource.STATE.RELEASED,
                              r1.getState());
             } else {
                 if(inVerify) {
                     assertFalse(mTestPool.getPoolIterator().hasNext());
-                    assertEquals(TestResource.STATE.RELEASED,
+                    assertEquals(MockResource.STATE.RELEASED,
                                  r1.getState());
                 } else {
                     if(inAddToPoolThrows != null &&
                        inAddToPoolThrows.equals(new Boolean(false))) {
                         assertTrue(mTestPool.getPoolIterator().hasNext());
-                        assertEquals(TestResource.STATE.RETURNED,
+                        assertEquals(MockResource.STATE.RETURNED,
                                      r1.getState());
                     }
                 }
             }
         } else {
             assertFalse(mTestPool.getPoolIterator().hasNext());
-            assertEquals(TestResource.STATE.RELEASED,
+            assertEquals(MockResource.STATE.RELEASED,
                          r1.getState());
         }
         
@@ -252,15 +252,15 @@ public class ResourcePoolTest
     public void testReleaseResource()
         throws Exception
     {
-        TestResource r1 = mTestPool.requestResource(null);
+        MockResource r1 = mTestPool.requestResource(null);
         assertNotNull(r1);
         r1.setReleaseException(false);
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      r1.getState());
         mTestPool.releaseResource(r1);
-        assertEquals(TestResource.STATE.RELEASED,
+        assertEquals(MockResource.STATE.RELEASED,
                      r1.getState());
-        final TestResource r2 = mTestPool.requestResource(null);
+        final MockResource r2 = mTestPool.requestResource(null);
         assertNotNull(r2);
         r2.setReleaseException(true);
         new ExpectedTestFailure(ReleasedResourceException.class) {
@@ -356,9 +356,9 @@ public class ResourcePoolTest
         mTestPool.execute(inBlock);
         
         assertNotNull(inBlock.getResource());
-        assertEquals(inResourceFunctional ? TestResource.STATE.RETURNED : TestResource.STATE.RELEASED,
+        assertEquals(inResourceFunctional ? MockResource.STATE.RETURNED : MockResource.STATE.RELEASED,
                      inBlock.getResource().getState());
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      inBlock.getInternalState());
 
         inBlock.setResource(null);
@@ -368,18 +368,18 @@ public class ResourcePoolTest
                           this);        
 
         assertNotNull(inBlock.getResource());
-        assertEquals(inResourceFunctional ? TestResource.STATE.RETURNED : TestResource.STATE.RELEASED,
+        assertEquals(inResourceFunctional ? MockResource.STATE.RETURNED : MockResource.STATE.RELEASED,
                      inBlock.getResource().getState());
-        assertEquals(TestResource.STATE.ALLOCATED,
+        assertEquals(MockResource.STATE.ALLOCATED,
                      inBlock.getInternalState());
     }
     
     static class TestExecutable
         implements ExecutableBlock
     {
-        private TestResource mResource;
+        private MockResource mResource;
         private Throwable mThrowable;
-        private TestResource.STATE mInternalState;
+        private MockResource.STATE mInternalState;
         private boolean mSabotageResource;
         
         TestExecutable()
@@ -398,10 +398,10 @@ public class ResourcePoolTest
         public Object execute(Resource inResource)
                 throws Throwable
         {
-            setResource((TestResource)inResource);
+            setResource((MockResource)inResource);
             setInternalState(getResource().getState());
             if(getSabotageResource()) {
-                getResource().setState(TestResource.STATE.DAMAGED);
+                getResource().setState(MockResource.STATE.DAMAGED);
             }
             Throwable t = getThrowable();
             if(t != null) {
@@ -413,7 +413,7 @@ public class ResourcePoolTest
         /**
          * @return the resource
          */
-        TestResource getResource()
+        MockResource getResource()
         {
             return mResource;
         }
@@ -421,7 +421,7 @@ public class ResourcePoolTest
         /**
          * @param inResource the resource to set
          */
-        void setResource(TestResource inResource)
+        void setResource(MockResource inResource)
         {
             mResource = inResource;
         }
@@ -445,7 +445,7 @@ public class ResourcePoolTest
         /**
          * @return the internalState
          */
-        TestResource.STATE getInternalState()
+        MockResource.STATE getInternalState()
         {
             return mInternalState;
         }
@@ -453,7 +453,7 @@ public class ResourcePoolTest
         /**
          * @param inInternalState the internalState to set
          */
-        void setInternalState(TestResource.STATE inInternalState)
+        void setInternalState(MockResource.STATE inInternalState)
         {
             mInternalState = inInternalState;
         }
