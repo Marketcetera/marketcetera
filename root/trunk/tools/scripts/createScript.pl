@@ -4,6 +4,10 @@
 # Since: 0.5.0
 # Version: $Id$
 # $License$
+#
+# FUTURE: If messages are an output of the generated scripts, then 
+#         those messages will have to be localized using resource
+#         bundles, not hard-coded.
 
 
 use strict;
