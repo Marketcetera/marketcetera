@@ -114,29 +114,22 @@ public interface Messages
 contains the localized messages, in the commons-i18n syntax (in which
 placeholders are of the form <code>{<i>n</i>}</code>,
 not <code>{}</code>). The full file name sought
-is <code>util_file_messages.xml</code>, and it should reside in your
-project's <code>src/main/resources</code>. Here is a sample file:</p>
+is <code>util_file_messages.properties</code>, and it should reside in
+your project's <code>src/main/resources</code>. Here is a sample
+file:</p>
 
 <pre>
-&lt;?xml version="1.0" encoding="UTF-8" ?&gt;
-&lt;messages&gt;
-  &lt;message id="closing_failed"&gt;
-    &lt;locale language="en"&gt; 
-	  &lt;entry key="msg"&gt;Closing failed&lt;/entry&gt;
-    &lt;/locale&gt;
-    &lt;locale language="fr"&gt; 
-	  &lt;entry key="msg"&gt;Closing failed in french&lt;/entry&gt;
-    &lt;/locale&gt;
-  &lt;/message&gt;
-  &lt;message id="cannot_get_type"&gt;
-    &lt;locale language="en"&gt; 
-	  &lt;entry key="msg"&gt;Cannot determine type of file ''{0}''&lt;/entry&gt;
-    &lt;/locale&gt;
-  &lt;/message&gt;
- 
-  ... more messages
-&lt;/messages&gt;
+closing_failed.msg=Closing failed
+cannot_get_type.msg=Cannot determine type of file ''{0}''
 </pre>
+
+<p>Additional files can be provided for additional locales, using the
+standard Java resource bundle system. For example, the
+file <code>util_file_messages_fr.properties</code> can contain
+messages in French;
+or <code>util_file_messages_fr_CA.properties</code> can be used for
+French in Canada and <code>util_file_messages_fr_FR.properties</code>
+for French in France.</p>
 
 <p>You should also define a test class
 called <code>MessagesTest</code>, which ensures each of your message

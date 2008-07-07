@@ -1,9 +1,9 @@
 package org.marketcetera.util.log;
 
-//import java.util.Iterator;
+import java.util.Iterator;
 import java.util.Locale;
 import org.apache.log4j.Level;
-//import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
@@ -97,6 +97,26 @@ public class I18NMessageProviderTest
              getText(Locale.GERMAN,TestMessages.HELLO_TITLE,"Welt"));
 
         assertEquals
+            ("There are no orders ma'am.",TestMessages.PROVIDER.
+             getText(TestMessages.CHOICE_MSG,0));
+        assertEquals
+            ("There is just one order ma'am.",TestMessages.PROVIDER.
+             getText(TestMessages.CHOICE_MSG,1));
+        assertEquals
+            ("There are 2 orders ma'am.",TestMessages.PROVIDER.
+             getText(TestMessages.CHOICE_MSG,2));
+
+        assertEquals
+            ("Pas des ordres ma'am.",TestMessages.PROVIDER.
+             getText(Locale.FRENCH,TestMessages.CHOICE_MSG,0));
+        assertEquals
+            ("Seulemont un ordre ma'am.",TestMessages.PROVIDER.
+             getText(Locale.FRENCH,TestMessages.CHOICE_MSG,1));
+        assertEquals
+            ("Il y a 2 ordres ma'am.",TestMessages.PROVIDER.
+             getText(Locale.FRENCH,TestMessages.CHOICE_MSG,2));
+
+        assertEquals
             ("Hello {0}!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,(Object[])null));
         assertEquals
@@ -116,10 +136,16 @@ public class I18NMessageProviderTest
     public void nonexistentMappingFile()
     {
         I18NMessageProvider provider=new I18NMessageProvider("nonexistent_prv");
-        assertSingleEvent
-            (Level.ERROR,TEST_CATEGORY,
-             "Message file missing: provider 'nonexistent_prv'; file "+
-             "'nonexistent_prv_messages.xml'",TEST_LOCATION);
+        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Message file missing: provider 'nonexistent_prv'; base name "+
+             "'nonexistent_prv_messages'",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Abnormal exception: stack trace",TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
 
         assertEquals
             ("provider 'nonexistent_prv'; id 'nonexistent_msg'; entry 'msg'; "+
@@ -171,11 +197,17 @@ public class I18NMessageProviderTest
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Message file missing: provider 'log_test'; "+
-             "file 'log_test_message.xml'",TEST_LOCATION);
+             "base name 'log_test_message'",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Abnormal exception: stack trace",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Message file missing: provider 'util_log'; "+
-             "file 'util_log_message.xml'",TEST_LOCATION);
+             "base name 'util_log_message'",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Abnormal exception: stack trace",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Corrupted/unavailable message map",TEST_LOCATION);

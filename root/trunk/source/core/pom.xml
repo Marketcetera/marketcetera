@@ -59,6 +59,7 @@
       <scope>compile</scope>
     </dependency>
 
+    <!-- Testing. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
