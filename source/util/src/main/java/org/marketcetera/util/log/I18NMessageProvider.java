@@ -5,7 +5,7 @@ import java.text.MessageFormat;
 import java.util.Locale;
 import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.MessageNotFoundException;
-import org.apache.commons.i18n.XMLMessageProvider;
+import org.apache.commons.i18n.ResourceBundleMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -36,8 +36,8 @@ public class I18NMessageProvider
      */
 
     public static final String MESSAGE_FILE_EXTENSION=
-        "_messages.xml";
-        // "_message.xml"; // EXTREME TEST 1.
+        "_messages";
+        // "_message"; // EXTREME TEST 1.
 
     /*
      * Hard-coded message text for messages used when the mapping file
@@ -45,7 +45,7 @@ public class I18NMessageProvider
      */
 
     private static final String MESSAGE_FILE_NOT_FOUND=
-        "Message file missing: provider '{}'; file '{}'";
+        "Message file missing: provider '{}'; base name '{}'";
     private static final String MESSAGE_NOT_FOUND=
         "Message missing: provider ''{0}''; id ''{1}''; entry ''{2}''; "+
         "parameters {3}";
@@ -88,16 +88,17 @@ public class I18NMessageProvider
         (String providerId)
     {
         mProviderId=providerId;
-        String fileName=getProviderId()+MESSAGE_FILE_EXTENSION;
-        InputStream stream=getClass().getClassLoader().
-            getResourceAsStream(fileName);
-        if (stream==null) {
+        String baseName=getProviderId()+MESSAGE_FILE_EXTENSION;
+        ResourceBundleMessageProvider provider;
+        try {
+            provider=new ResourceBundleMessageProvider(baseName);
+        } catch (MessageNotFoundException ex) {
             SLF4JLoggerProxy.error
-                (this,MESSAGE_FILE_NOT_FOUND,getProviderId(),fileName);
+                (this,MESSAGE_FILE_NOT_FOUND,getProviderId(),baseName);
+            SLF4JLoggerProxy.error(this,UNEXPECTED_EXCEPTION_TRACE,ex);
             return;
         }
-        MessageManager.addMessageProvider
-            (getProviderId(),new XMLMessageProvider(stream));
+        MessageManager.addMessageProvider(getProviderId(),provider);
     }
 
 

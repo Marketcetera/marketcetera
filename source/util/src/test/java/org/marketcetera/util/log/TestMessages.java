@@ -24,6 +24,8 @@ public interface TestMessages
         new I18NMessage0P(LOGGER,"hello");
     static final I18NMessage1P HELLO_TITLE=
         new I18NMessage1P(LOGGER,"hello","title");
+    static final I18NMessage1P CHOICE_MSG=
+        new I18NMessage1P(LOGGER,"choice");
     static final I18NMessage1P LOG_MSG=
         new I18NMessage1P(LOGGER,"log");
 
