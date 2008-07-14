@@ -1,13 +1,12 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Marketcetera Core Plug-in
+Bundle-Name: Core Plug-in
 Bundle-SymbolicName: org.marketcetera.core
 Bundle-Version: 0.5.0
-Bundle-ClassPath: src/main/resources/,
- .
+Bundle-ClassPath: core-0.5.0.jar
+Bundle-Vendor: Marketcetera, Inc.
 Eclipse-LazyStart: false
 Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
-Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,
@@ -23,7 +22,8 @@ Export-Package: .,
  org.marketcetera.quickfix.messagefactory,
  org.marketcetera.quickfix.messagemodifiers,
  org.marketcetera.spring,
- org.marketcetera.symbology
+ org.marketcetera.symbology,
+ quickfix.spring
 Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.apache.log4j;visibility:=reexport,
  org.quickfixj;visibility:=reexport,
@@ -33,3 +33,5 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.junit;resolution:=optional,
  org.quickfixj;visibility:=reexport,
  net.java.dev.glazedlists;visibility:=reexport
+
+
