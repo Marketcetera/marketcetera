@@ -66,9 +66,9 @@
     </dependency>
   </dependencies>
 
-  <!-- Place tests into a jar for use during testing of other packages. -->
   <build>
     <plugins>
+      <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
         <executions>
@@ -78,6 +78,22 @@
             </goals>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Core Eclipse integration. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+              <triggers>auto,full,incremental,</triggers>
+              <arguments>
+                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Jar To Core Plugin dir.launch</LaunchConfigHandle>
+			  </arguments>
+            </buildCommand>
+          </additionalBuildcommands>
+        </configuration>
       </plugin>
     </plugins>
   </build>
