@@ -54,6 +54,6 @@ public class MultiQueryOrderStringTestHelper<C extends EntityBase,
     }
 
     private static final String[] STRINGS = {
-            "2", "A", "B", "1", "á", "Ä", "b", "ä", "a"
+            "2", "A", "B", "1", "\u00E1", "\u00C4",  "b", "\u00E4", "a"
     };
 }
