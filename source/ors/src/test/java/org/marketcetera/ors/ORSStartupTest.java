@@ -2,6 +2,7 @@ package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigFileLoadingException;
+import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -34,7 +35,7 @@ public class ORSStartupTest extends TestCase {
      */
     public void testRealORSStartup() throws Exception {
         failed = false;
-        (new Thread(new Runnable() {
+        final Thread thread = new Thread(new Runnable() {
             public void run() {
                 try {
                     OrderRoutingSystem.main(new String[0]);
@@ -43,10 +44,11 @@ public class ORSStartupTest extends TestCase {
                     failureEx = e;
                 }
             }
-        })).start();
+        });
+        thread.start();
         //Wait for ORS to start.
-        while(OrderRoutingSystem.getInstance() == null ||
-                (!OrderRoutingSystem.getInstance().isWaitingForever())) {
+        while(thread.isAlive() && (OrderRoutingSystem.getInstance() == null ||
+                (!OrderRoutingSystem.getInstance().isWaitingForever()))) {
             Thread.sleep(10000);
         }
 
