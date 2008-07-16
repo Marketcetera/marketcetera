@@ -38,7 +38,6 @@ public class LoggerAdapter extends Logger
     {
         if(sLogger != null) { return sLogger; }
 
-        System.out.println("initializing logger for " + name);
         sLogger = new LoggerAdapter(name);
         PropertyConfigurator.configureAndWatch
             (ApplicationBase.CONF_DIR+LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);

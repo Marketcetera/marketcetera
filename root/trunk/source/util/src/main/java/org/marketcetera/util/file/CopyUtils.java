@@ -245,6 +245,66 @@ public final class CopyUtils
     }
 
     /**
+     * Copies the given character stream to the given character sink.
+     * Both the source and sink are closed on return.
+     *
+     * @param in The character source, as interpreted by
+     * {@link ReaderWrapper#ReaderWrapper(java.io.Reader)} 
+     * @param out The character sink, as interpreted by
+     * {@link WriterWrapper#WriterWrapper(java.io.Writer)}
+     *
+     * @return The number of characters copied.
+     *
+     * @throws I18NException Thrown if there is a data read/write
+     * error.
+     */
+    public static long copyChars(Reader in, Writer out) throws I18NException
+    {
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            ReaderWrapper inW = new ReaderWrapper(in);
+            registry.register(inW);
+            WriterWrapper outW = new WriterWrapper(out);
+            registry.register(outW);
+            return IOUtils.copyLarge(inW.getReader(),outW.getWriter());
+        } catch(IOException ex) {
+            throw ExceptUtils.wrap(ex);
+        } finally {
+            registry.close();
+        }
+    }
+
+    /**
+     * Copies the given byte stream to the given sink.
+     * Both the source and sink are closed on return.
+     * 
+     * @param in The byte source, as interpreted by
+     * {@link InputStreamWrapper#InputStreamWrapper(java.io.InputStream)} 
+     * @param out The byte sink, as interpreted by
+     * {@link OutputStreamWrapper#OutputStreamWrapper(java.io.OutputStream)}
+     *
+     * @return The number of bytes copied.
+     * 
+     * @throws I18NException Thrown if there is a data read/write
+     * error.
+     */
+    public static long copyBytes(InputStream in, OutputStream out) throws I18NException
+    {
+        CloseableRegistry registry = new CloseableRegistry();
+        try {
+            InputStreamWrapper inW = new InputStreamWrapper(in);
+            registry.register(inW);
+            OutputStreamWrapper outW = new OutputStreamWrapper(out);
+            registry.register(outW);
+            return IOUtils.copyLarge(inW.getStream(), outW.getStream());
+        } catch(IOException ex) {
+            throw ExceptUtils.wrap(ex);
+        } finally {
+            registry.close();
+        }
+    }
+
+    /**
      * Copies the byte stream at the given named location into memory,
      * returning a byte array.
      *

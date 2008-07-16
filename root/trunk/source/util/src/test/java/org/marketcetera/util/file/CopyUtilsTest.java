@@ -1,6 +1,7 @@
 package org.marketcetera.util.file;
 
-import java.io.File;
+import java.io.*;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -179,6 +180,94 @@ public class CopyUtilsTest
         assertEquals(VALUE_CHARS.length,
                      CopyUtils.copyChars(TEST_INPUT_FILE,TEST_OUTPUT_FILE));
         assertArrayEquals(VALUE_CHARS,CopyUtils.copyChars(TEST_OUTPUT_FILE));
+    }
+    @Test
+    public void copyCharsReaderWriter()
+        throws Exception
+    {
+        IsClosedReader sr = new IsClosedReader(VALUE);
+        IsClosedWriter sw = new IsClosedWriter();
+        assertFalse(sr.isClosed());
+        assertFalse(sr.isClosed());
+        CopyUtils.copyChars(sr,sw);
+        assertEquals(VALUE,sw.toString());
+        //verify that the streams are closed
+        assertTrue(sr.isClosed());
+        assertTrue(sw.isClosed());
+    }
+
+    /**
+     * Class to verify that the writer is closed
+     */
+    private static class IsClosedWriter extends StringWriter {
+        public void close() throws IOException {
+            super.close();
+            closed = true;
+        }
+        public boolean isClosed() {
+            return closed;
+        }
+        private boolean closed = false;
+    }
+    /**
+     * Class to verify that the reader is closed
+     */
+    private static class IsClosedReader extends StringReader {
+        public IsClosedReader(String s) {
+            super(s);
+        }
+
+        public void close() {
+            super.close();
+            closed = true;
+        }
+
+        public boolean isClosed() {
+            return closed;
+        }
+        private boolean closed = false;
+    }
+
+    @Test
+    public void copyBytesInputOutputStream()
+        throws Exception
+    {
+        IsClosedInputStream i = new IsClosedInputStream(VALUE_BYTES);
+        IsClosedOutputStream o = new IsClosedOutputStream();
+        assertFalse(i.isClosed());
+        assertFalse(o.isClosed());
+        CopyUtils.copyBytes(i,o);
+        assertArrayEquals(VALUE_BYTES,o.toByteArray());
+        //verify that the streams are closed
+        assertTrue(i.isClosed());
+        assertTrue(o.isClosed());
+    }
+    private static class IsClosedInputStream extends ByteArrayInputStream {
+        public IsClosedInputStream(byte[] buf) {
+            super(buf);
+        }
+        public boolean isClosed() {
+            return closed;
+        }
+
+        public void close() throws IOException {
+            super.close();
+            closed = true;
+        }
+
+        private boolean closed = false;
+    }
+    private static class IsClosedOutputStream extends ByteArrayOutputStream {
+        public boolean isClosed() {
+            return closed;
+        }
+
+        public void close() throws IOException {
+            super.close();
+            closed = true;
+        }
+
+        private boolean closed = false;
     }
 
     @Test
