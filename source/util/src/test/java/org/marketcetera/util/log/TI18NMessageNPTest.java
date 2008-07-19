@@ -30,6 +30,10 @@ public class TI18NMessageNPTest
         "PN ttl (expected) fr "+TEST_P1+" "+TEST_P2+" "+TEST_P3+" "+TEST_P4+
         " "+TEST_P5+" "+TEST_P6+" "+TEST_P7;
 
+    private static final String TEST_MSG_MISMATCH_EN=
+        "PN msg (expected) en "+TEST_P1+" "+TEST_P2+" "+TEST_P3+" "+TEST_P4+
+        " "+TEST_P5+" "+TEST_P6+" {6}";
+
     private static final String TEST_MSG_EN_NULL=
         "PN msg (expected) en null null null null null null null";
     private static final String TEST_TTL_EN_NULL=
@@ -175,6 +179,31 @@ public class TI18NMessageNPTest
             (TEST_CATEGORY,TEST_P1,TEST_P2,TEST_P3,TEST_P4,TEST_P5,TEST_P6,
              TEST_P7);
         assertSingleEvent(Level.TRACE,TEST_CATEGORY,TEST_TTL_EN,TEST_LOCATION);
+    }
+
+    @Test
+    public void countMismatch()
+    {
+        TestMessages.PN_MSG.error
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+             TEST_P5,TEST_P6);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,TEST_MSG_MISMATCH_EN,TEST_LOCATION);
+        TestMessages.PN_MSG.error
+            (TEST_CATEGORY,TEST_P1,TEST_P2,TEST_P3,TEST_P4,TEST_P5,TEST_P6);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,TEST_MSG_MISMATCH_EN,TEST_LOCATION);
+
+        TestMessages.PN_MSG.error
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+             TEST_P5,TEST_P6,TEST_P7,TEST_P7);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
+        TestMessages.PN_MSG.error
+            (TEST_CATEGORY,TEST_P1,TEST_P2,TEST_P3,TEST_P4,TEST_P5,TEST_P6,
+             TEST_P7,TEST_P7);
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,TEST_MSG_EN,TEST_LOCATION);
     }
 
     @Test

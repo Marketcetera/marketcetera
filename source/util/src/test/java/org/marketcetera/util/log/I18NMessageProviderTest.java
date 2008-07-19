@@ -97,6 +97,16 @@ public class I18NMessageProviderTest
              getText(Locale.GERMAN,TestMessages.HELLO_TITLE,"Welt"));
 
         assertEquals
+            ("Hello a {0} 'a' \"a\" b!",TestMessages.PROVIDER.
+             getText(TestMessages.HELLO_ECHO,"a","b"));
+        assertEquals
+            ("Bonjour a {0} 'a' \"a\" {1}!",TestMessages.PROVIDER.
+             getText(Locale.FRENCH,TestMessages.HELLO_ECHO,"a"));
+        assertEquals
+            ("Bonjour a {0} 'a' \"a\" b!",TestMessages.PROVIDER.
+             getText(Locale.FRENCH,TestMessages.HELLO_ECHO,"a","b","c"));
+
+        assertEquals
             ("There are no orders ma'am.",TestMessages.PROVIDER.
              getText(TestMessages.CHOICE_MSG,0));
         assertEquals
