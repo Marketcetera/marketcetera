@@ -1,7 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.file.CopyUtils;
+import org.marketcetera.util.file.CopyCharsUtils;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -43,7 +43,7 @@ public class DataTypeTest extends NDEntityTestBase<DataTypes,SummaryDataType> {
         assertTrue(f.exists());
         assertEquals(0,f.length());
         //Now write stuff to the file
-        CopyUtils.copyChars(randomString().toCharArray(), f.getAbsolutePath());
+        CopyCharsUtils.copy(randomString().toCharArray(), f.getAbsolutePath());
         //make state changes
         changeAttributes(d);
         //Write to the clob
@@ -67,8 +67,8 @@ public class DataTypeTest extends NDEntityTestBase<DataTypes,SummaryDataType> {
         //Verify that the clob was correctly read
         assertTrue(read.exists());
         assertEquals(f.length(), read.length());
-        assertArrayEquals(CopyUtils.copyChars(f.getAbsolutePath()),
-                CopyUtils.copyChars(read.getAbsolutePath()));
+        assertArrayEquals(CopyCharsUtils.copy(f.getAbsolutePath()),
+                CopyCharsUtils.copy(read.getAbsolutePath()));
         f.delete();
         read.delete();
     }
@@ -88,7 +88,7 @@ public class DataTypeTest extends NDEntityTestBase<DataTypes,SummaryDataType> {
         assertTrue(f.exists());
         assertEquals(0,f.length());
         //Now write stuff to the file
-        CopyUtils.copyChars(randomString().toCharArray(), f.getAbsolutePath());
+        CopyCharsUtils.copy(randomString().toCharArray(), f.getAbsolutePath());
         //Make state changes
         changeAttributes(d);
         //Write to the blob
@@ -112,8 +112,8 @@ public class DataTypeTest extends NDEntityTestBase<DataTypes,SummaryDataType> {
         //Verify that the blob was correctly read.
         assertTrue(read.exists());
         assertEquals(f.length(), read.length());
-        assertTrue(Arrays.equals(CopyUtils.copyChars(f.getAbsolutePath()),
-                CopyUtils.copyChars(read.getAbsolutePath())));
+        assertTrue(Arrays.equals(CopyCharsUtils.copy(f.getAbsolutePath()),
+                     CopyCharsUtils.copy(read.getAbsolutePath())));
     }
 
     /**

@@ -1,8 +1,10 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.file.CopyUtils;
+import org.marketcetera.util.file.CopyBytesUtils;
+import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.unicode.UnicodeCharset;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -340,12 +342,17 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
             try {
                 if (!lc.isRead()) {
                     if(lc.isClob()) {
-                        CopyUtils.copyChars(new InputStreamReader(
-                                lc.getUrl().openStream(),"UTF-8"),
-                                d.getCharLob().setCharacterStream(1));
+                        CopyCharsUtils.copy(new InputStreamReader(
+                                    lc.getUrl().openStream(),
+                                    UnicodeCharset.UTF8.getName()),
+                                false,
+                                d.getCharLob().setCharacterStream(1),
+                                false);
                     } else {
-                        CopyUtils.copyBytes(lc.getUrl().openStream(),
-                                d.getBinaryLob().setBinaryStream(1));
+                        CopyBytesUtils.copy(lc.getUrl().openStream(),
+                                false,
+                                d.getBinaryLob().setBinaryStream(1),
+                                false);
                     }
                 }
             } catch (I18NException e) {
@@ -451,11 +458,15 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
             try {
                 if(lc.isRead()) {
                     if(lc.isClob()) {
-                        CopyUtils.copyChars(d.getCharLob().getCharacterStream(),
-                                new FileWriter(lc.getUrl().getPath()));
+                        CopyCharsUtils.copy(d.getCharLob().getCharacterStream(),
+                                false,                
+                                new FileWriter(lc.getUrl().getPath()),
+                                false);
                     } else {
-                        CopyUtils.copyBytes(d.getBinaryLob().getBinaryStream(),
-                                new FileOutputStream(lc.getUrl().getPath()));
+                        CopyBytesUtils.copy(d.getBinaryLob().getBinaryStream(),
+                                false,
+                                new FileOutputStream(lc.getUrl().getPath()),
+                                false);
                     }
                 }
             } catch (I18NException e) {
