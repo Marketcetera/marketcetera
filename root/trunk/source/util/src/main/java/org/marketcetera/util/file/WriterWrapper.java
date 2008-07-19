@@ -3,11 +3,12 @@ package org.marketcetera.util.file;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.unicode.SignatureCharset;
+import org.marketcetera.util.unicode.UnicodeFileWriter;
+import org.marketcetera.util.unicode.UnicodeOutputStreamWriter;
 
 import static org.marketcetera.util.file.SpecialNames.*;
 
@@ -52,10 +53,60 @@ public class WriterWrapper
      * SpecialNames#STANDARD_ERROR}).</li>
      * </ul>
      *
-     * @param name The file name.
+     * A writer that can inject unicode BOMs is used as a proxy; that
+     * writer uses the given signature/charset.
      *
-     * @throws IOException Thrown if a writer cannot be built for the
-     * standard output or error.
+     * @param name The file name.
+     * @param requestedSignatureCharset The signature/charset. It may
+     * be null to use the default JVM charset.
+     *
+     * @throws FileNotFoundException Thrown if the name represents a
+     * regular file, and it cannot be opened for writing.
+     */
+
+    public WriterWrapper
+        (String name,
+         SignatureCharset requestedSignatureCharset)
+        throws FileNotFoundException
+    {
+        if (name.equals(STANDARD_OUTPUT)) {
+            mWriter=new UnicodeOutputStreamWriter
+                (System.out,requestedSignatureCharset);
+            mSkipClose=true;
+            return;
+        }
+        if (name.equals(STANDARD_ERROR)) {
+            mWriter=new UnicodeOutputStreamWriter
+                (System.err,requestedSignatureCharset);
+            mSkipClose=true;
+            return;
+        }
+        if (!name.startsWith(PREFIX_APPEND)) {
+            mWriter=new UnicodeFileWriter(name,requestedSignatureCharset);
+            return;
+        }
+        mWriter=new UnicodeFileWriter
+            (name.substring(PREFIX_APPEND.length()),true,
+             requestedSignatureCharset);
+    }
+
+    /**
+     * Creates a new wrapped writer that wraps:
+     *
+     * <ul>
+     * <li>the regular file with the given name (data is appended to the
+     * file if the name is prefixed by {@link SpecialNames#PREFIX_APPEND}),
+     * or</li>
+     * <li>the standard output stream (if the name is {@link
+     * SpecialNames#STANDARD_OUTPUT}), or</li>
+     * <li>the standard error stream (if the name is {@link
+     * SpecialNames#STANDARD_ERROR}).</li>
+     * </ul>
+     *
+     * The default JVM charset is used to convert characters into
+     * bytes.
+     *
+     * @param name The file name.
      *
      * @throws FileNotFoundException Thrown if the name represents a
      * regular file, and it cannot be opened for writing.
@@ -63,40 +114,48 @@ public class WriterWrapper
 
     public WriterWrapper
         (String name)
-        throws FileNotFoundException,
-               IOException
+        throws FileNotFoundException
     {
-        if (name.equals(STANDARD_OUTPUT)) {
-            mWriter=new OutputStreamWriter(System.out);
-            mSkipClose=true;
-            return;
-        }
-        if (name.equals(STANDARD_ERROR)) {
-            mWriter=new OutputStreamWriter(System.err);
-            mSkipClose=true;
-            return;
-        }
-        if (!name.startsWith(PREFIX_APPEND)) {
-            mWriter=new FileWriter(name);
-            return;
-        }
-        mWriter=new FileWriter(name.substring(PREFIX_APPEND.length()),true);
+        this(name,null);
+    }
+
+    /**
+     * Creates a new wrapped writer that wraps the given regular
+     * file. A writer that can inject unicode BOMs is used as a proxy;
+     * that writer uses the given signature/charset.
+     *
+     * @param file The file.
+     * @param requestedSignatureCharset The signature/charset. It may
+     * be null to use the default JVM charset.
+     *
+     * @throws FileNotFoundException Thrown if the file cannot be
+     * opened for writing.
+     */
+
+    public WriterWrapper
+        (File file,
+         SignatureCharset requestedSignatureCharset)
+        throws FileNotFoundException
+    {
+        mWriter=new UnicodeFileWriter(file,requestedSignatureCharset);
     }
 
     /**
      * Creates a new wrapped writer that wraps the given regular file.
+     * The default JVM charset is used to convert characters into
+     * bytes.
      *
      * @param file The file.
      *
-     * @throws IOException Thrown if the file cannot be opened for
-     * writing.
+     * @throws FileNotFoundException Thrown if the file cannot be
+     * opened for writing.
      */
 
     public WriterWrapper
         (File file)
-        throws IOException
+        throws FileNotFoundException
     {
-        mWriter=new FileWriter(file);
+        this(file,null);
     }
 
     /**

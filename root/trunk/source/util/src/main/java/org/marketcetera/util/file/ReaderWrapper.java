@@ -3,11 +3,12 @@ package org.marketcetera.util.file;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.util.unicode.DecodingStrategy;
+import org.marketcetera.util.unicode.UnicodeFileReader;
+import org.marketcetera.util.unicode.UnicodeInputStreamReader;
 
 import static org.marketcetera.util.file.SpecialNames.*;
 
@@ -42,31 +43,75 @@ public class ReaderWrapper
     /**
      * Creates a new wrapped reader that wraps the regular file with
      * the given name, or the standard input stream (if the name is
-     * {@link SpecialNames#STANDARD_INPUT}).
+     * {@link SpecialNames#STANDARD_INPUT}). A reader that recognizes
+     * unicode BOMs is used as a proxy; that reader uses the given
+     * decoding strategy.
+     *
+     * @param name The file name.
+     * @param decodingStrategy The decoding strategy. It may be null
+     * to use the default JVM charset.
+     *
+     * @throws FileNotFoundException Thrown if the name represents a
+     * regular file, and it cannot be opened for reading.
+     */
+
+    public ReaderWrapper
+        (String name,
+         DecodingStrategy decodingStrategy)
+        throws FileNotFoundException
+    {
+        if (name.equals(STANDARD_INPUT)) {
+            mReader=new UnicodeInputStreamReader(System.in,decodingStrategy);
+            mSkipClose=true;
+            return;
+        }
+        mReader=new UnicodeFileReader(name,decodingStrategy);
+    }
+
+    /**
+     * Creates a new wrapped reader that wraps the regular file with
+     * the given name, or the standard input stream (if the name is
+     * {@link SpecialNames#STANDARD_INPUT}). The default JVM charset
+     * is used to convert bytes into characters.
      *
      * @param name The file name.
      *
      * @throws FileNotFoundException Thrown if the name represents a
      * regular file, and it cannot be opened for reading.
-     * @throws IOException Thrown if the name represents the standard
-     * input stream, and a reader cannot be built for it.
      */
 
     public ReaderWrapper
         (String name)
-        throws FileNotFoundException,
-               IOException
+        throws FileNotFoundException
     {
-        if (name.equals(STANDARD_INPUT)) {
-            mReader=new InputStreamReader(System.in);
-            mSkipClose=true;
-            return;
-        }
-        mReader=new FileReader(name);
+        this(name,null);
+    }
+
+    /**
+     * Creates a new wrapped reader that wraps the given regular
+     * file. A reader that recognizes unicode BOMs is used as a proxy;
+     * that reader uses the given decoding strategy.
+     *
+     * @param file The file.
+     * @param decodingStrategy The decoding strategy. It may be null
+     * to use the default JVM charset.
+     *
+     * @throws FileNotFoundException Thrown if the file cannot be
+     * opened for reading.
+     */
+
+    public ReaderWrapper
+        (File file,
+         DecodingStrategy decodingStrategy)
+        throws FileNotFoundException
+    {
+        mReader=new UnicodeFileReader(file,decodingStrategy);
     }
 
     /**
      * Creates a new wrapped reader that wraps the given regular file.
+     * The default JVM charset is used to convert bytes into
+     * characters.
      *
      * @param file The file.
      *
@@ -78,7 +123,7 @@ public class ReaderWrapper
         (File file)
         throws FileNotFoundException
     {
-        mReader=new FileReader(file);
+        this(file,null);
     }
 
     /**
