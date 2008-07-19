@@ -142,6 +142,7 @@ sub walk ()
 		return;
 	}
 
+	my($quoted)='"'.$_.'"';
 	my($executable)=0;
 	my($key);
 	foreach $key (@executables) {
@@ -150,9 +151,9 @@ sub walk ()
 		}
 	}
 	if ($executable) {
-		run('svn propset svn:executable "*" '.$_);
+		run('svn propset svn:executable "*" '.$quoted);
 	} else {
-		run('svn propdel svn:executable '.$_);
+		run('svn propdel svn:executable '.$quoted);
 	}
 
 	my($mime);
@@ -163,11 +164,11 @@ sub walk ()
 	} elsif (/\.xml$/io) {
 		$mime='text/xml';
 	} else {
-		$mime=`file --brief --mime $_`;
+		$mime=`file --brief --mime $quoted`;
 		chop($mime);
 	}
-	run('svn propset svn:mime-type "'.$mime.'" '.$_);
-	run('svn propset svn:keywords "Id Revision" '.$_);
+	run('svn propset svn:mime-type "'.$mime.'" '.$quoted);
+	run('svn propset svn:keywords "Id Revision" '.$quoted);
 }
 
 find(\&walk,$ARGV[0]);
