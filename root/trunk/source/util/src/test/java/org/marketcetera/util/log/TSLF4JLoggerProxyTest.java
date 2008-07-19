@@ -76,6 +76,9 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.error(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,TEST_MESSAGE+" a {}",TEST_LOCATION);
+        SLF4JLoggerProxy.error(TEST_CATEGORY,TEST_MESSAGE,"a");
+        assertSingleEvent
+            (Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
 
         assertFalse
             (SLF4JLoggerProxy.isWarnEnabled(TEST_CATEGORY));
@@ -101,6 +104,9 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.warn(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
         assertSingleEvent
             (Level.WARN,TEST_CATEGORY,TEST_MESSAGE+" a {}",TEST_LOCATION);
+        SLF4JLoggerProxy.warn(TEST_CATEGORY,TEST_MESSAGE,"a");
+        assertSingleEvent
+            (Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
 
         assertFalse
             (SLF4JLoggerProxy.isInfoEnabled(TEST_CATEGORY));
@@ -126,6 +132,9 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.info(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
         assertSingleEvent
             (Level.INFO,TEST_CATEGORY,TEST_MESSAGE+" a {}",TEST_LOCATION);
+        SLF4JLoggerProxy.info(TEST_CATEGORY,TEST_MESSAGE,"a");
+        assertSingleEvent
+            (Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
 
         assertFalse
             (SLF4JLoggerProxy.isDebugEnabled(TEST_CATEGORY));
@@ -151,6 +160,9 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.debug(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
         assertSingleEvent
             (Level.DEBUG,TEST_CATEGORY,TEST_MESSAGE+" a {}",TEST_LOCATION);
+        SLF4JLoggerProxy.debug(TEST_CATEGORY,TEST_MESSAGE,"a");
+        assertSingleEvent
+            (Level.DEBUG,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
 
         assertFalse
             (SLF4JLoggerProxy.isTraceEnabled(TEST_CATEGORY));
@@ -176,5 +188,8 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.trace(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
         assertSingleEvent
             (Level.TRACE,TEST_CATEGORY,TEST_MESSAGE+" a {}",TEST_LOCATION);
+        SLF4JLoggerProxy.trace(TEST_CATEGORY,TEST_MESSAGE,"a");
+        assertSingleEvent
+            (Level.TRACE,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
     }
 }
