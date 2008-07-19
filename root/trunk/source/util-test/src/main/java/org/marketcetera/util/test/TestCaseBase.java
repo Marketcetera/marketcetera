@@ -33,18 +33,25 @@ public class TestCaseBase
         "src"+File.separator+"test"+File.separator+"sample_data";
 
     /**
+     * The root directory for target files.
+     */
+
+    protected static final String DIR_TARGET=
+        "target";
+
+    /**
      * The root directory for class files.
      */
 
     protected static final String DIR_CLASSES=
-        "target"+File.separator+"classes";
+        DIR_TARGET+File.separator+"classes";
 
     /**
      * The root directory for test class files.
      */
 
     protected static final String DIR_TEST_CLASSES=
-        "target"+File.separator+"test-classes";
+        DIR_TARGET+File.separator+"test-classes";
 
 
     // INSTANCE DATA.

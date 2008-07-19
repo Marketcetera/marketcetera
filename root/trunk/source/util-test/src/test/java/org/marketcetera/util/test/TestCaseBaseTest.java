@@ -47,6 +47,7 @@ public class TestCaseBaseTest
     public void dirsExist()
     {
         testDirExists(DIR_ROOT);
+        testDirExists(DIR_TARGET);
         testDirExists(DIR_CLASSES);
         testDirExists(DIR_CLASSES+File.separator+"org");
         testDirExists(DIR_TEST_CLASSES);
