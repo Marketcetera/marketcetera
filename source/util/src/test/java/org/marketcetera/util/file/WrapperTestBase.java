@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.marketcetera.util.test.TestCaseBase;
 
+import static org.marketcetera.util.test.UnicodeData.*;
+
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -29,9 +31,9 @@ public class WrapperTestBase
     protected static final String TEST_NONEXISTENT_FILE=
         TEST_ROOT+"nonexistent"+File.separator+"nonexistent";
     protected static final String VALUE=
-        "marketcetera";
+        HELLO_EN;
     protected static final byte[] VALUE_BYTES=
-        VALUE.getBytes();
+        HELLO_EN_NAT;
 
 
     @Before
@@ -58,8 +60,8 @@ public class WrapperTestBase
             System.setIn(stdIn);
             testStandardInputStream(stdIn);
         } finally {
-            r.close();
             System.setIn(stdInSave);
+            r.close();
         }
     }
 
@@ -81,8 +83,8 @@ public class WrapperTestBase
             System.setOut(stdOut);
             testStandardOutputStream(stdOutByteArray);
         } finally {
-            r.close();
             System.setOut(stdOutSave);
+            r.close();
         }
     }
 
@@ -104,8 +106,8 @@ public class WrapperTestBase
             System.setErr(stdErr);
             testStandardErrorStream(stdErrByteArray);
         } finally {
-            r.close();
             System.setErr(stdErrSave);
+            r.close();
         }
     }
 }

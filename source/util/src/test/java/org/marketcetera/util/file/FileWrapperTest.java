@@ -1,10 +1,14 @@
 package org.marketcetera.util.file;
 
+import java.io.File;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
+import org.marketcetera.util.unicode.DecodingStrategy;
+import org.marketcetera.util.unicode.SignatureCharset;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.UnicodeData.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -65,7 +69,8 @@ public class FileWrapperTest
         
         r=new CloseableRegistry();
         try {
-            OutputStreamWrapper out=new OutputStreamWrapper(TEST_FILE);
+            OutputStreamWrapper out=new OutputStreamWrapper
+                (new File(TEST_FILE));
             r.register(out);
             out.getStream().write(VALUE_BYTES);
         } finally {
@@ -73,7 +78,8 @@ public class FileWrapperTest
         }
         r=new CloseableRegistry();
         try {
-            InputStreamWrapper in=new InputStreamWrapper(TEST_FILE);
+            InputStreamWrapper in=new InputStreamWrapper
+                (new File(TEST_FILE));
             r.register(in);
             assertArrayEquals(VALUE_BYTES,IOUtils.toByteArray(in.getStream()));
         } finally {
@@ -87,7 +93,7 @@ public class FileWrapperTest
     {
         CloseableRegistry r=new CloseableRegistry();
         try {
-            WriterWrapper out=new WriterWrapper(TEST_FILE);
+            WriterWrapper out=new WriterWrapper(new File(TEST_FILE));
             r.register(out);
             assertFalse(out.getSkipClose());
             assertNotNull(out.getWriter());
@@ -98,7 +104,7 @@ public class FileWrapperTest
         
         r=new CloseableRegistry();
         try {
-            ReaderWrapper in=new ReaderWrapper(TEST_FILE);
+            ReaderWrapper in=new ReaderWrapper(new File(TEST_FILE));
             r.register(in);
             assertFalse(in.getSkipClose());
             assertNotNull(in.getReader());
@@ -127,17 +133,39 @@ public class FileWrapperTest
 
         r=new CloseableRegistry();
         try {
-            WriterWrapper out=new WriterWrapper(TEST_FILE);
+            WriterWrapper out=new WriterWrapper
+                (new File(TEST_FILE),SignatureCharset.UTF8_UTF8);
             r.register(out);
-            out.getWriter().write(VALUE);
+            out.getWriter().write(COMBO);
         } finally {
             r.close();
         }
         r=new CloseableRegistry();
         try {
-            ReaderWrapper in=new ReaderWrapper(TEST_FILE);
+            ReaderWrapper in=new ReaderWrapper
+                (new File(TEST_FILE),DecodingStrategy.SIG_REQ);
             r.register(in);
-            assertEquals(VALUE,IOUtils.toString(in.getReader()));
+            assertEquals(COMBO,IOUtils.toString(in.getReader()));
+        } finally {
+            r.close();
+        }
+
+        r=new CloseableRegistry();
+        try {
+            WriterWrapper out=new WriterWrapper
+                (SpecialNames.PREFIX_APPEND+TEST_FILE,
+                 SignatureCharset.UTF8_UTF8);
+            r.register(out);
+            out.getWriter().write(COMBO);
+        } finally {
+            r.close();
+        }
+        r=new CloseableRegistry();
+        try {
+            ReaderWrapper in=new ReaderWrapper
+                (TEST_FILE,DecodingStrategy.SIG_REQ);
+            r.register(in);
+            assertEquals(COMBO+COMBO,IOUtils.toString(in.getReader()));
         } finally {
             r.close();
         }

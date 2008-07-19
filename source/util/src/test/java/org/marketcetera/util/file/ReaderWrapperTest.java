@@ -2,11 +2,16 @@ package org.marketcetera.util.file;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.Reader;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
+import org.marketcetera.util.unicode.DecodingStrategy;
+import org.marketcetera.util.unicode.Signature;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.UnicodeData.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -97,10 +102,34 @@ public class ReaderWrapperTest
         }
     }
 
+    private void testStandardInputStreamUnicode()
+        throws Exception
+    {
+        InputStream stdInSave=System.in;
+        CloseableRegistry r=new CloseableRegistry();
+        try {
+            ByteArrayInputStream stdIn=new ByteArrayInputStream
+                (ArrayUtils.addAll(Signature.UTF8.getMark(),COMBO_UTF8));
+            r.register(stdIn);
+            System.setIn(stdIn);
+            ReaderWrapper wrapper=
+                new ReaderWrapper(SpecialNames.STANDARD_INPUT,
+                                  DecodingStrategy.SIG_REQ);
+            r.register(wrapper);
+            assertTrue(wrapper.getSkipClose());
+            assertNotNull(wrapper.getReader());
+            assertEquals(COMBO,IOUtils.toString(wrapper.getReader()));
+        } finally {
+            System.setIn(stdInSave);
+            r.close();
+        }
+    }
+
     @Test
     public void wrappers()
         throws Exception
     {
         testStandardInputStream();
+        testStandardInputStreamUnicode();
     }
 }

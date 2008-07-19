@@ -2,10 +2,15 @@ package org.marketcetera.util.file;
 
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
+import java.io.PrintStream;
 import java.io.Writer;
+import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
+import org.marketcetera.util.unicode.Signature;
+import org.marketcetera.util.unicode.SignatureCharset;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.UnicodeData.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -127,11 +132,65 @@ public class WriterWrapperTest
         testStandardStream(SpecialNames.STANDARD_ERROR,err);
     }
 
+    private void testStandardOutputStreamUnicode()
+        throws Exception
+    {
+        PrintStream stdOutSave=System.out;
+        CloseableRegistry r=new CloseableRegistry();
+        ByteArrayOutputStream stdOutByteArray=new ByteArrayOutputStream();
+        try {
+            r.register(stdOutByteArray);
+            PrintStream stdOut=new PrintStream(stdOutByteArray);
+            r.register(stdOut);
+            System.setOut(stdOut);
+            WriterWrapper wrapper=new WriterWrapper
+                (SpecialNames.STANDARD_OUTPUT,SignatureCharset.UTF8_UTF8);
+            r.register(wrapper);
+            assertTrue(wrapper.getSkipClose());
+            assertNotNull(wrapper.getWriter());
+            wrapper.getWriter().write(COMBO);
+        } finally {
+            System.setOut(stdOutSave);
+            r.close();
+        }
+        assertArrayEquals
+            (ArrayUtils.addAll(Signature.UTF8.getMark(),COMBO_UTF8),
+             stdOutByteArray.toByteArray());
+    }
+
+    private void testStandardErrorStreamUnicode()
+        throws Exception
+    {
+        PrintStream stdErrSave=System.err;
+        CloseableRegistry r=new CloseableRegistry();
+        ByteArrayOutputStream stdErrByteArray=new ByteArrayOutputStream();
+        try {
+            r.register(stdErrByteArray);
+            PrintStream stdErr=new PrintStream(stdErrByteArray);
+            r.register(stdErr);
+            System.setErr(stdErr);
+            WriterWrapper wrapper=new WriterWrapper
+                (SpecialNames.STANDARD_ERROR,SignatureCharset.UTF8_UTF8);
+            r.register(wrapper);
+            assertTrue(wrapper.getSkipClose());
+            assertNotNull(wrapper.getWriter());
+            wrapper.getWriter().write(COMBO);
+        } finally {
+            System.setErr(stdErrSave);
+            r.close();
+        }
+        assertArrayEquals
+            (ArrayUtils.addAll(Signature.UTF8.getMark(),COMBO_UTF8),
+             stdErrByteArray.toByteArray());
+    }
+
     @Test
     public void wrappers()
         throws Exception
     {
         testStandardOutputStream();
+        testStandardOutputStreamUnicode();
         testStandardErrorStream();
+        testStandardErrorStreamUnicode();
     }
 }
