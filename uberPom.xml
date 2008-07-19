@@ -119,9 +119,9 @@
         <version>[20080514]</version>
       </dependency>
       <dependency>
-          <groupId>javax.persistence</groupId>
-          <artifactId>persistence-api</artifactId>
-          <version>[1.0]</version>
+        <groupId>javax.persistence</groupId>
+        <artifactId>persistence-api</artifactId>
+        <version>[1.0]</version>
       </dependency>
 
       <!-- Runtime. -->
@@ -162,34 +162,34 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-          <groupId>org.hibernate</groupId>
-          <artifactId>hibernate-entitymanager</artifactId>
-          <version>3.3.2.GA</version>
-          <scope>runtime</scope>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>[3.3.2.GA]</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
-          <groupId>org.hibernate</groupId>
-          <artifactId>hibernate</artifactId>
-          <version>3.2.6.ga</version>
-          <scope>runtime</scope>
+        <groupId>org.hibernate</groupId>
+        <artifactId>hibernate</artifactId>
+        <version>[3.2.6.ga]</version>
+        <scope>runtime</scope>
       </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>2.8.0</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xerces</artifactId>
-            <version>2.4.0</version>
-            <scope>runtime</scope>
-        </dependency>
       <dependency>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
-          <version>0.9.1.1</version>
-          <scope>runtime</scope>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>[2.8.0]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xerces</artifactId>
+        <version>[2.4.0]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>c3p0</groupId>
+        <artifactId>c3p0</artifactId>
+        <version>[0.9.1.1]</version>
+        <scope>runtime</scope>
       </dependency>
 
       <!-- Testing. -->
@@ -256,7 +256,7 @@
     <pluginManagement>
       <plugins>
 
-        <!-- test jar generation -->
+        <!-- Test jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.2</version>
@@ -275,7 +275,7 @@
           <version>2.4.2</version>
           <configuration>
             <disableXmlReport>true</disableXmlReport>
-			<forkMode>always</forkMode>
+            <forkMode>always</forkMode>
           </configuration>
         </plugin>
 
@@ -373,16 +373,13 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-      <repository>
-          <url>http://download.java.net/maven/2</url>
-          <id>java.net</id>
-          <releases>
-              <enabled>true</enabled>
-          </releases>
-          <snapshots>
-              <enabled>false</enabled>
-          </snapshots>
-      </repository>
+    <repository>
+      <id>java.net</id>
+      <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>internal</id>
       <url>http://repo.marketcetera.org/maven</url>
