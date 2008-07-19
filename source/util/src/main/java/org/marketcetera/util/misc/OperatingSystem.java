@@ -53,7 +53,7 @@ public enum OperatingSystem
 
     // INSTANCE DATA.
 
-    private String mJavaName;
+    private final String mJavaName;
 
 
     // CONSTRUCTORS.
