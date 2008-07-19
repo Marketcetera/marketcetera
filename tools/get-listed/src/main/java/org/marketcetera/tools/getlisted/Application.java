@@ -20,7 +20,7 @@ import org.marketcetera.market.generated.ObjectFactory;
 import org.marketcetera.market.generated.Securities;
 import org.marketcetera.market.generated.Security;
 */
-import org.marketcetera.util.file.CopyUtils;
+import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.file.ReaderWrapper;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -79,7 +79,7 @@ public class Application
         //        URLConnection connection=(new URL(URL+NYSE)).openConnection();
         //        CopyUtils.copyBytes(connection.getInputStream(),false,NYSE+EXT);
 
-        char[] csvRaw=CopyUtils.copyChars(NYSE+EXT);
+        char[] csvRaw=CopyCharsUtils.copy(NYSE+EXT);
         StringBuffer csvOut=new StringBuffer();
         char prev3=' ';
         char prev2='"';
