@@ -32,10 +32,10 @@ import org.marketcetera.core.ClassVersion;
  * 
  * <p>This class may be used as is, or subclassed as required.
  * 
- * @version $Id: $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: $")
+@ClassVersion("$Id$")
 public class PasswordStringFieldEditor extends FieldEditor {
 
     /**
