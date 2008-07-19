@@ -45,18 +45,25 @@ public interface Messages
         new I18NMessage1P(LOGGER,"cannot_get_type");
     static final I18NMessage1P CANNOT_DELETE=
         new I18NMessage1P(LOGGER,"cannot_delete");
+
     static final I18NMessage2P CANNOT_COPY_FILES=
         new I18NMessage2P(LOGGER,"cannot_copy_files");
-    static final I18NMessage1P CANNOT_COPY_ISTREAM=
-        new I18NMessage1P(LOGGER,"cannot_copy_istream");
-    static final I18NMessage1P CANNOT_COPY_READER=
-        new I18NMessage1P(LOGGER,"cannot_copy_reader");
-    static final I18NMessage1P CANNOT_COPY_OSTREAM=
-        new I18NMessage1P(LOGGER,"cannot_copy_ostream");
-    static final I18NMessage1P CANNOT_COPY_WRITER=
-        new I18NMessage1P(LOGGER,"cannot_copy_writer");
     static final I18NMessage1P CANNOT_COPY_MEMORY_SRC=
         new I18NMessage1P(LOGGER,"cannot_copy_memory_src");
     static final I18NMessage1P CANNOT_COPY_MEMORY_DST=
         new I18NMessage1P(LOGGER,"cannot_copy_memory_dst");
+
+    static final I18NMessage0P CANNOT_COPY_STREAMS=
+        new I18NMessage0P(LOGGER,"cannot_copy_streams");
+    static final I18NMessage1P CANNOT_COPY_ISTREAM=
+        new I18NMessage1P(LOGGER,"cannot_copy_istream");
+    static final I18NMessage1P CANNOT_COPY_OSTREAM=
+        new I18NMessage1P(LOGGER,"cannot_copy_ostream");
+
+    static final I18NMessage0P CANNOT_COPY_CSTREAMS=
+        new I18NMessage0P(LOGGER,"cannot_copy_cstreams");
+    static final I18NMessage1P CANNOT_COPY_READER=
+        new I18NMessage1P(LOGGER,"cannot_copy_reader");
+    static final I18NMessage1P CANNOT_COPY_WRITER=
+        new I18NMessage1P(LOGGER,"cannot_copy_writer");
 }
