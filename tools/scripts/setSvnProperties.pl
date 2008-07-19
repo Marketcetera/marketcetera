@@ -49,34 +49,48 @@ my(@patternsAll)=(
 );
 
 my(%patternsCustom)=(
-	'public' => ('profiles.xml'),
-	'public/source/photon/plugins/org.marketcetera.core' => ('bin'),
-	'public/source/photon/plugins/com.swtworkbench.community.xswt' => ('bin'),
-	'public/source/photon/plugins/org.marketcetera.bogusfeed' => ('bin')
+	'public'
+	  => ('profiles.xml'),
+	'private/source/photon/plugins/com.marketcetera.marketdata.opentick'
+	  => ('bin'),
+	'private/source/photon/plugins/com.marketcetera.marketdata.opentick.tests'
+	  => ('bin'),
+	'public/source/photon/plugins/com.swtworkbench.community.xswt'
+	  => ('bin'),
+	'public/source/photon/plugins/org.marketcetera.bogusfeed'
+	  => ('bin'),
 );
 
 my(@externals)=(
 	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/1.8',
 	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/site_ruby',
-	'public/source/photon/plugins/org.marketcetera.core/src/main',
 	'public/source/photon/plugins/org.marketcetera.core.tests/src/test',
-	'public/source/tradebase/vendor/plugins/debug_view_helper'
+	'public/source/tradebase/vendor/plugins/debug_view_helper',
 );
 
 my(@executables)=(
-	'public/source/tradebase/script/server',
-	'public/source/tradebase/script/runner',
-	'public/source/tradebase/script/poller',
-	'public/source/tradebase/script/plugin',
-	'public/source/tradebase/script/generate',
-	'public/source/tradebase/script/destroy',
-	'public/source/tradebase/script/console',
-	'public/source/tradebase/script/breakpointer',
+	'private/tools/install4j/misc/getbins.sh',
+	'private/tools/install4j/template-win/.shortcuts/editORSConfig.bat',
+	'private/tools/install4j/template-win/.shortcuts/editTradebaseConfig.bat',
+	'private/tools/install4j/template-win/setEnv.bat',
+	'private/tools/install4j/template-win/sql/create_db.bat',
+	'private/tools/install4j/template-win/sql/start_mysql.bat',
+	'private/tools/install4j/template-win/sql/stop_mysql.bat',
+	'private/tools/install4j/template-win/sql/wait.bat',
+	'private/tools/install4j/template-win/startServerComponents.bat',
 	'public/source/tradebase/script/about',
+	'public/source/tradebase/script/breakpointer',
+	'public/source/tradebase/script/console',
+	'public/source/tradebase/script/destroy',
+	'public/source/tradebase/script/generate',
+	'public/source/tradebase/script/performance/benchmarker',
+	'public/source/tradebase/script/performance/profiler',
+	'public/source/tradebase/script/plugin',
+	'public/source/tradebase/script/poller',
 	'public/source/tradebase/script/process/reaper',
 	'public/source/tradebase/script/process/spawner',
-	'public/source/tradebase/script/performance/benchmarker',
-	'public/source/tradebase/script/performance/profiler'
+	'public/source/tradebase/script/runner',
+	'public/source/tradebase/script/server',
 );
 
 # Run command.
