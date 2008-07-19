@@ -1,6 +1,5 @@
 package org.marketcetera.util.log;
 
-import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.Locale;
 import org.apache.commons.i18n.MessageManager;

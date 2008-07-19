@@ -16,8 +16,10 @@ org.marketcetera.util.log.SLF4JLoggerProxy#isErrorEnabled(Object)}
 method and its counterparts for other logging levels. But such guards
 are not essential because the logging methods allow for a placeholder
 string and varargs object arguments (e.g. a message such
-as <code>"Hello {}!"</code> and argument <code>"world"</code> is
-logged as <code>"Hello world!"</code>).</p>
+as <code>Hello {}!</code> and argument <code>world</code> is logged
+as <code>Hello world!</code>). If the numbers of placeholders and
+arguments are unequal, then all extra occurences of <code>{}</code>
+are displayed as <code>{}</code>, or extra arguments are ignored.</p>
 
 
 <h3>Middle tier: {@link org.marketcetera.util.log.I18NMessage}</h3>
@@ -113,7 +115,7 @@ public interface Messages
 <p>The <code>util_file</code> string above points to a file that
 contains the localized messages, in the commons-i18n syntax (in which
 placeholders are of the form <code>{<i>n</i>}</code>,
-not <code>{}</code>). The full file name sought
+not <code>{}</code> as we saw earlier for SLF4J). The full file name sought
 is <code>util_file_messages.properties</code>, and it should reside in
 your project's <code>src/main/resources</code>. Here is a sample
 file:</p>
@@ -122,6 +124,17 @@ file:</p>
 closing_failed.msg=Closing failed
 cannot_get_type.msg=Cannot determine type of file ''{0}''
 </pre>
+
+<p>The odd syntax <code>''{0}''</code> (two single quotes on each
+side) produces a message that reads <code>'a'</code> when the first
+message parameter is the
+string <code>a</code>. Similarly, <code>'{0}'</code>
+produces <code>{0}</code>; <code>"{0}"</code> (one double quote on
+each side) produces <code>"a"</code> (because a double quote is not a
+special character); and <code>{0}</code> produces <code>a</code>. If
+the numbers of placeholders and arguments are unequal, then all extra
+occurences of <code>{<i>n</i>}</code> are displayed
+as <code>{<i>n</i>}</code>, or extra arguments are ignored.
 
 <p>Additional files can be provided for additional locales, using the
 standard Java resource bundle system. For example, the
