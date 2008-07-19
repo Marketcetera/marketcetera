@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
 /**
  * @author tlerios@marketcetera.com
  * @since 0.5.0
- * @version $Id: MessagesTest.java 9211 2008-05-23 08:56:22Z tlerios $
+ * @version $Id$
  */
 
 /* $License$ */
