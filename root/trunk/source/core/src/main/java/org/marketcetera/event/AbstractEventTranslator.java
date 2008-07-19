@@ -30,10 +30,10 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * value.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: $")
+@ClassVersion("$Id$")
 public abstract class AbstractEventTranslator
         implements IEventTranslator
 {
@@ -124,10 +124,10 @@ public abstract class AbstractEventTranslator
      * Encapsulates the parts of a market data snapshot for a symbol.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.5.0
      */
-    @ClassVersion("$Id: $")
+    @ClassVersion("$Id$")
     private static class EventTuple
     {
         /**
