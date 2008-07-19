@@ -25,12 +25,12 @@
   <name>Core</name>
 
   <dependencies>
+
+    <!-- Compile. -->
     <dependency>
       <groupId>${public.package}</groupId>
       <artifactId>util</artifactId>
     </dependency>
-
-    <!-- Compile. -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
@@ -56,8 +56,8 @@
       <artifactId>commons-i18n</artifactId>
     </dependency>
     <dependency>
-        <groupId>javax.persistence</groupId>
-        <artifactId>persistence-api</artifactId>
+      <groupId>javax.persistence</groupId>
+      <artifactId>persistence-api</artifactId>
     </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
@@ -66,38 +66,36 @@
       <artifactId>log4j</artifactId>
       <scope>compile</scope>
     </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-          <scope>test</scope>
-      </dependency>
 
     <!-- Runtime dependencies -->
-      <dependency>
-          <groupId>org.hibernate</groupId>
-          <artifactId>hibernate-entitymanager</artifactId>
-          <scope>test</scope>
-      </dependency>
     <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-        <scope>test</scope>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-entitymanager</artifactId>
     </dependency>
-      <dependency>
-          <groupId>c3p0</groupId>
-          <artifactId>c3p0</artifactId>
-          <scope>test</scope>
-      </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>c3p0</groupId>
+      <artifactId>c3p0</artifactId>
+    </dependency>
 
     <!-- Testing. -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
     <plugins>
+
       <!-- Place tests into a jar for use during testing of other packages. -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
@@ -110,7 +108,7 @@
         </executions>
       </plugin>
 
-      <!-- Core Eclipse integration. -->
+      <!-- Add custom build tool to generated Eclipse project. -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
@@ -125,41 +123,43 @@
           </additionalBuildcommands>
         </configuration>
       </plugin>
-        <!-- plugin configuration to generate schema sql -->
-        <plugin>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>hibernate3-maven-plugin</artifactId>
-            <executions>
-                <execution>
-                    <!-- Choose a phase in which the persistence.xml file has been copied over -->
-                    <phase>process-test-resources</phase>
-                    <goals>
-                        <goal>hbm2ddl</goal>
-                    </goals>
-                </execution>
-            </executions>
-            <configuration>
-                <components>
-                    <component>
-                        <name>hbm2ddl</name>
-                        <implementation>annotationconfiguration</implementation>
-                    </component>
-                </components>
-                <componentProperties>
-                    <implementation>jpaconfiguration</implementation>
-                    <persistenceunit>unit-testing</persistenceunit>
-                    <outputfilename>schema.sql</outputfilename>
-                    <jdk5>true</jdk5>
-                    <drop>false</drop>
-                    <create>true</create>
-                    <export>false</export>
-                    <format>true</format>
-                </componentProperties>
-            </configuration>
-        </plugin>
+
+      <!-- Database schema generator. -->
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>hibernate3-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <!-- In this phase, the persistence.xml file has been copied. -->
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>hbm2ddl</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <components>
+            <component>
+              <name>hbm2ddl</name>
+              <implementation>annotationconfiguration</implementation>
+            </component>
+          </components>
+          <componentProperties>
+            <implementation>jpaconfiguration</implementation>
+            <persistenceunit>unit-testing</persistenceunit>
+            <outputfilename>schema.sql</outputfilename>
+            <jdk5>true</jdk5>
+            <drop>false</drop>
+            <create>true</create>
+            <export>false</export>
+            <format>true</format>
+          </componentProperties>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
+  <!-- Copy generated jar into photon plugin area. -->
   <profiles>
     <profile>
 	<id>eclipse-folders</id>
@@ -174,7 +174,7 @@
                    <configuration>
                      <tasks>
                        <property name="targetDir" value="../photon/plugins/org.marketcetera.core/" />
-                       <copy file="target/core-${pom.version}.jar" todir="${targetDir}" />
+                       <copy file="target/core-${project.version}.jar" todir="${targetDir}" />
                      </tasks>
                    </configuration>
                    <goals>
