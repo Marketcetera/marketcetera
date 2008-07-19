@@ -24,10 +24,10 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * Tests {@link AbstractEventTranslator}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: $")
+@ClassVersion("$Id$")
 public class AbstractEventTranslatorTest
         extends MarketDataFeedTestBase
 {
@@ -333,7 +333,7 @@ public class AbstractEventTranslatorTest
      * snapshot record for the symbol to be updated.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.5.0
      */
     public static class DoNothingEvent
@@ -366,7 +366,7 @@ public class AbstractEventTranslatorTest
      * A wrapper class for the quantities associated with a symbol event.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.5.0
      */
     private static class QuantityTuple
