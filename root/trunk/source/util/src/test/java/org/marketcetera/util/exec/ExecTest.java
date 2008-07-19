@@ -179,9 +179,9 @@ public class ExecTest
                 System.setErr(stdErrNew);
                 result=ExecTest.run((File)null,disposition,"CommandStreams");
             } finally {
-                r.close();
                 System.setErr(stdErrSave);
                 System.setOut(stdOutSave);
+                r.close();
             }
             return new Redirector
                 (result.getExitCode(),stdOutByteArray.toByteArray(),
