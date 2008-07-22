@@ -340,6 +340,30 @@ public final class SLF4JLoggerProxy
     }
 
     /**
+     * Logs the given parameterized message and throwable under the
+     * given logging category at the error level.
+     * 
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    public static void error
+        (Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isErrorEnabled()) {
+            return;
+        }
+        errorProxy(SELF_PROXY,category,message,params);
+        errorProxy(SELF_PROXY,category,throwable);
+    }
+
+    /**
      * Returns true if logging of warning messages is enabled for the
      * given logging category.
      * 
@@ -517,6 +541,30 @@ public final class SLF4JLoggerProxy
          Object... params)
     {
         warnProxy(SELF_PROXY,category,message,params);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
+     * given logging category at the warning level.
+     * 
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    public static void warn
+        (Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isWarnEnabled()) {
+            return;
+        }
+        warnProxy(SELF_PROXY,category,message,params);
+        warnProxy(SELF_PROXY,category,throwable);
     }
 
     /**
@@ -702,6 +750,30 @@ public final class SLF4JLoggerProxy
     }
 
     /**
+     * Logs the given parameterized message and throwable under the
+     * given logging category at the informational level.
+     * 
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    public static void info
+        (Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isInfoEnabled()) {
+            return;
+        }
+        infoProxy(SELF_PROXY,category,message,params);
+        infoProxy(SELF_PROXY,category,throwable);
+    }
+
+    /**
      * Returns true if logging of debugging messages is enabled for
      * the given logging category.
      * 
@@ -879,6 +951,30 @@ public final class SLF4JLoggerProxy
          Object... params)
     {
         debugProxy(SELF_PROXY,category,message,params);
+    }
+
+    /**
+     * Logs the given parameterized message and throwable under the
+     * given logging category at the debugging level.
+     * 
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    public static void debug
+        (Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isDebugEnabled()) {
+            return;
+        }
+        debugProxy(SELF_PROXY,category,message,params);
+        debugProxy(SELF_PROXY,category,throwable);
     }
     
     /**
@@ -1061,6 +1157,30 @@ public final class SLF4JLoggerProxy
         traceProxy(SELF_PROXY,category,message,params);
     }
 
+    /**
+     * Logs the given parameterized message and throwable under the
+     * given logging category at the tracing level.
+     * 
+     * @param category The category.
+     * @param throwable The throwable.
+     * @param message The message.
+     * @param params The message parameters.
+     */
+    
+    public static void trace
+        (Object category,
+         Throwable throwable,
+         String message,
+         Object... params)
+    {
+        Logger logger=getLogger(category);
+        if (!logger.isTraceEnabled()) {
+            return;
+        }
+        traceProxy(SELF_PROXY,category,message,params);
+        traceProxy(SELF_PROXY,category,throwable);
+    }
+    
 
     // CONSTRUCTORS.
 
