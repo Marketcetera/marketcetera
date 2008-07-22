@@ -1,6 +1,8 @@
 package org.marketcetera.util.log;
 
+import java.util.Iterator;
 import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -58,6 +60,8 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.error(TEST_CATEGORY,TEST_THROWABLE);
         SLF4JLoggerProxy.error(TEST_CATEGORY,TEST_MESSAGE,TEST_THROWABLE);
         SLF4JLoggerProxy.error(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
+        SLF4JLoggerProxy.error
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
         assertNoEvents();
 
         setLevel(TEST_CATEGORY,Level.ERROR);
@@ -79,6 +83,17 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.error(TEST_CATEGORY,TEST_MESSAGE,"a");
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        SLF4JLoggerProxy.error
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
+        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             TEST_MESSAGE+" a",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
 
         assertFalse
             (SLF4JLoggerProxy.isWarnEnabled(TEST_CATEGORY));
@@ -86,6 +101,8 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.warn(TEST_CATEGORY,TEST_THROWABLE);
         SLF4JLoggerProxy.warn(TEST_CATEGORY,TEST_MESSAGE,TEST_THROWABLE);
         SLF4JLoggerProxy.warn(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
+        SLF4JLoggerProxy.warn
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
         assertNoEvents();
 
         setLevel(TEST_CATEGORY,Level.WARN);
@@ -107,6 +124,17 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.warn(TEST_CATEGORY,TEST_MESSAGE,"a");
         assertSingleEvent
             (Level.WARN,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        SLF4JLoggerProxy.warn
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
+        events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.WARN,TEST_CATEGORY,
+             TEST_MESSAGE+" a",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.WARN,TEST_CATEGORY,
+             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
 
         assertFalse
             (SLF4JLoggerProxy.isInfoEnabled(TEST_CATEGORY));
@@ -114,6 +142,8 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.info(TEST_CATEGORY,TEST_THROWABLE);
         SLF4JLoggerProxy.info(TEST_CATEGORY,TEST_MESSAGE,TEST_THROWABLE);
         SLF4JLoggerProxy.info(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
+        SLF4JLoggerProxy.info
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
         assertNoEvents();
 
         setLevel(TEST_CATEGORY,Level.INFO);
@@ -135,6 +165,17 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.info(TEST_CATEGORY,TEST_MESSAGE,"a");
         assertSingleEvent
             (Level.INFO,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        SLF4JLoggerProxy.info
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
+        events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.INFO,TEST_CATEGORY,
+             TEST_MESSAGE+" a",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.INFO,TEST_CATEGORY,
+             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
 
         assertFalse
             (SLF4JLoggerProxy.isDebugEnabled(TEST_CATEGORY));
@@ -142,6 +183,8 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.debug(TEST_CATEGORY,TEST_THROWABLE);
         SLF4JLoggerProxy.debug(TEST_CATEGORY,TEST_MESSAGE,TEST_THROWABLE);
         SLF4JLoggerProxy.debug(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
+        SLF4JLoggerProxy.debug
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
         assertNoEvents();
 
         setLevel(TEST_CATEGORY,Level.DEBUG);
@@ -163,6 +206,17 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.debug(TEST_CATEGORY,TEST_MESSAGE,"a");
         assertSingleEvent
             (Level.DEBUG,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        SLF4JLoggerProxy.debug
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
+        events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.DEBUG,TEST_CATEGORY,
+             TEST_MESSAGE+" a",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.DEBUG,TEST_CATEGORY,
+             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
 
         assertFalse
             (SLF4JLoggerProxy.isTraceEnabled(TEST_CATEGORY));
@@ -170,6 +224,8 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.trace(TEST_CATEGORY,TEST_THROWABLE);
         SLF4JLoggerProxy.trace(TEST_CATEGORY,TEST_MESSAGE,TEST_THROWABLE);
         SLF4JLoggerProxy.trace(TEST_CATEGORY,TEST_MESSAGE+" {} {}","a");
+        SLF4JLoggerProxy.trace
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
         assertNoEvents();
 
         setLevel(TEST_CATEGORY,Level.TRACE);
@@ -191,5 +247,16 @@ public class TSLF4JLoggerProxyTest
         SLF4JLoggerProxy.trace(TEST_CATEGORY,TEST_MESSAGE,"a");
         assertSingleEvent
             (Level.TRACE,TEST_CATEGORY,TEST_MESSAGE,TEST_LOCATION);
+        SLF4JLoggerProxy.trace
+            (TEST_CATEGORY,TEST_THROWABLE,TEST_MESSAGE+" {}","a");
+        events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.TRACE,TEST_CATEGORY,
+             TEST_MESSAGE+" a",TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.TRACE,TEST_CATEGORY,
+             SLF4JLoggerProxy.UNKNOWN_MESSAGE,TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
     }
 }
