@@ -59,6 +59,22 @@ public class CollectionAssertTest
         fail();
     }
 
+
+    @Test
+    public void differentClass()
+    {
+        try {
+            assertArrayPermutation(new Number[0],new Integer[0]);
+        } catch (AssertionError ex) {
+            assertEquals
+                ("expected array class is "+Number[].class.getName()+
+                 " but actual array class is "+Integer[].class.getName(),
+                 ex.getMessage());
+            return;
+        }
+        fail();
+    }
+
     @Test
     public void sameLengthDifferentElements()
     {
