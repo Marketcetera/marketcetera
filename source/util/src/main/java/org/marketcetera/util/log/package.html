@@ -91,8 +91,11 @@ org.marketcetera.util.log.I18NBoundMessage} is needed.</p>
 <p>The following design pattern is recommended for users of this
 framework.</p>
 
-<p>First, define an interface class called <code>Messages</code> in
-each of your packages. This is what such an interface looks like:</p>
+<p>First, define an interface called <code>Messages</code> in each of
+your packages. This is what such an interface looks like; note that
+all message-related fields must be static and non-null (otherwise the
+localization utilities in {@link org.marketcetera.util.l10n} will
+ignore them):</p>
 
 <pre>
 public interface Messages
@@ -146,27 +149,8 @@ for French in France.</p>
 
 <p>You should also define a test class
 called <code>MessagesTest</code>, which ensures each of your message
-handles can be resolved in the US locale:</p>
-
-<pre>
-public class MessagesTest
-    extends TestCaseBase
-{
-    &#x40;Test
-    public void messagesExist()
-    {
-        I18NMessageProvider.setLocale(Locale.US);
-        assertEquals
-            ("Closing failed",
-             Messages.CLOSING_FAILED.getText());
-        assertEquals
-            ("Cannot determine type of file 'a'",
-             Messages.CANNOT_GET_TYPE.getText("a"));
- 
-        ... more messages
-    }
-}
-</pre>
+handles can be resolved in the fallback locale; see the {@link
+org.marketcetera.util.l10n} package for the recommended approach.</p>
 
 <p>Here is sample code to localize or log a message:</p>
 
@@ -174,7 +158,7 @@ public class MessagesTest
 class MyClass {
  ...
  // Lowest tier.
- SLF4JLoggerProxy.error(this,"My message is {}","hello");
+ SLF4JLoggerProxy.debug(this,"My message is {}","hello");
 
  // Middle tier.
  String text=Messages.PROVIDER.getText(Messages.CANNOT_GET_TYPE,"myfile.xml");

@@ -60,6 +60,15 @@ public class I18NMessage0P
     }
 
 
+    // I18NMessage.
+
+    @Override
+    public int getParamCount()
+    {
+        return 0;
+    }
+
+
     // I18NBoundMessage.
 
     @Override
