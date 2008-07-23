@@ -31,10 +31,10 @@ public interface TestMessages
     static final I18NMessage1P LOG_MSG=
         new I18NMessage1P(LOGGER,"log");
 
-    static final I18NMessage BASE_MSG=
-        new I18NMessage(LOGGER,"base");
-    static final I18NMessage BASE_TTL=
-        new I18NMessage(LOGGER,"base","ttl");
+    static final I18NMessageNP BASE_MSG=
+        new I18NMessageNP(LOGGER,"base");
+    static final I18NMessageNP BASE_TTL=
+        new I18NMessageNP(LOGGER,"base","ttl");
 
     static final I18NMessage0P P0_MSG=
         new I18NMessage0P(LOGGER,"p0");

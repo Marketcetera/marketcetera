@@ -49,7 +49,8 @@ public class TI18NMessage0PTest
     public void basic()
     {
         unboundTests
-            (new I18NMessage0P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+            (0,
+             new I18NMessage0P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
              new I18NMessage0P(TestMessages.LOGGER,TEST_MSG_ID));
     }
 
