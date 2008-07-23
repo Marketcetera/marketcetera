@@ -84,7 +84,7 @@ public class SignatureTest
     public void multiMatch()
     {
         byte[] data=UTF8.getMark();
-        assertNull(getPrefixMatch(new Signature[0],data));
+        assertNull(getPrefixMatch(Signature.EMPTY_ARRAY,data));
         assertNull(getPrefixMatch(new Signature[]
             {UTF16BE,UTF16LE,UTF32BE,UTF32LE},data));
         assertEquals(NONE,getPrefixMatch(new Signature[]
