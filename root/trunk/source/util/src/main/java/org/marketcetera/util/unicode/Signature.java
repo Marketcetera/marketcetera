@@ -26,6 +26,11 @@ public enum Signature
     UTF32LE(new byte[] {(byte)0xFF,(byte)0xFE,(byte)0x00,(byte)0x00});
 
 
+    // CLASS DATA.
+
+    public static final Signature[] EMPTY_ARRAY=new Signature[0];
+
+
     // INSTANCE DATA.
 
     private final byte[] mMark;

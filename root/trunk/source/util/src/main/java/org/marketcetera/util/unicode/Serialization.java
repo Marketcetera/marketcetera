@@ -105,7 +105,7 @@ public enum Serialization
             }
         }
         Signature match=Signature.getPrefixMatch
-            (signatures.toArray(new Signature[0]),data);
+            (signatures.toArray(Signature.EMPTY_ARRAY),data);
         for (Serialization serialization:candidates) {
             for (SignatureCharset sc:serialization.getSignatureCharsets()) {
                 if (sc.getSignature()==match) {
