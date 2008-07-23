@@ -59,6 +59,15 @@ public class I18NMessageNP
     }
 
 
+    // I18NMessage.
+
+    @Override
+    public int getParamCount()
+    {
+        return -1;
+    }
+
+
     // INSTANCE METHODS.
 
     /**

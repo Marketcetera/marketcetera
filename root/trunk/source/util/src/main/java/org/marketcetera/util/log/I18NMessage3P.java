@@ -58,6 +58,15 @@ public class I18NMessage3P
     }
 
 
+    // I18NMessage.
+
+    @Override
+    public int getParamCount()
+    {
+        return 3;
+    }
+
+
     // INSTANCE METHODS.
 
     /**

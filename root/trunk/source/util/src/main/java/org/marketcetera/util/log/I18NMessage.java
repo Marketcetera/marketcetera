@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 @ClassVersion("$Id$")
-public class I18NMessage
+public abstract class I18NMessage
 {
 
     // CLASS DATA.
@@ -121,4 +121,12 @@ public class I18NMessage
     {
         return mEntryId;
     }
+
+    /**
+     * Returns the number of parameters the receiver expects.
+     *
+     * @return The number of parameters; -1 indicates a variable number.
+     */
+
+    public abstract int getParamCount();
 }
