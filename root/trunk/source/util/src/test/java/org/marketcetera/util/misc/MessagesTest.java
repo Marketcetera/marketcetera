@@ -1,9 +1,10 @@
 package org.marketcetera.util.misc;
 
-import java.util.Locale;
 import org.junit.Test;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.l10n.MessageComparator;
 import org.marketcetera.util.test.TestCaseBase;
+
+import static org.junit.Assert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -17,8 +18,10 @@ public class MessagesTest
     extends TestCaseBase
 {
     @Test
-    public void messagesExist()
+    public void messagesMatch()
+        throws Exception
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        MessageComparator comparator=new MessageComparator(Messages.class);
+        assertTrue(comparator.getDifferences(),comparator.isMatch());
     }
 }
