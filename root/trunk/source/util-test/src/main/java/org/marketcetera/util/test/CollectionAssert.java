@@ -1,5 +1,6 @@
 package org.marketcetera.util.test;
 
+import java.util.Arrays;
 import org.apache.commons.collections.Bag;
 import org.apache.commons.collections.bag.HashBag;
 
@@ -19,24 +20,6 @@ public final class CollectionAssert
 {
 
     // CLASS METHODS.
-
-    /**
-     * Returns a bag with the same elements as the given array.
-     *
-     * @param array The array.
-     *
-     * @return The bag.
-     */
-
-    private static Bag toBag
-        (Object[] array)
-    {
-        Bag bag=new HashBag();
-        for (Object e:array) {
-            bag.add(e);
-        }
-        return bag;
-    }
 
     /**
      * Asserts that the two given arrays are permutations of each
@@ -64,9 +47,12 @@ public final class CollectionAssert
             content="expected array is null but actual is not";
         } else if (actual==null) {
             content="actual array is null but expected is not";
+        } else if (expected.getClass()!=actual.getClass()) {
+            content="expected array class is "+expected.getClass().getName()+
+                " but actual array class is "+actual.getClass().getName();
         } else {
-            Bag expectedBag=toBag(expected);
-            Bag actualBag=toBag(actual);
+            Bag expectedBag=new HashBag(Arrays.asList(expected));
+            Bag actualBag=new HashBag(Arrays.asList(actual));
             for (Object e:expectedBag) {
                 if (!actualBag.remove(e,1)) {
                     content="actual is missing '"+e+"'";
