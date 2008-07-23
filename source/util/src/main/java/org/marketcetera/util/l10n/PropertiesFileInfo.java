@@ -101,7 +101,7 @@ public class PropertiesFileInfo
             }
             messageInfo.put
                 (key,new PropertyMessageInfo
-                 (key,format.getFormats().length,messageText));
+                 (key,format.getFormatsByArgumentIndex().length,messageText));
         }
         mMessageInfo=messageInfo.values().toArray
             (PropertyMessageInfo.EMPTY_ARRAY);

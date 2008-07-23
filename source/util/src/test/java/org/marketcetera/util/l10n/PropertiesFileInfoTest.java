@@ -66,7 +66,7 @@ public class PropertiesFileInfoTest
         assertEquals(locale,info.getLocale());
         assertArrayPermutation
             (new PropertyMessageInfo[] {
-                new PropertyMessageInfo("m0.msg",0,HELLO_GR)
+                new PropertyMessageInfo("m1.msg",1,HELLO_GR+" {0} {0}")
             },info.getMessageInfo());
     }
 
