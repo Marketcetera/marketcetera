@@ -37,7 +37,8 @@ public class TI18NMessage4PTest
     public void basic()
     {
         unboundTests
-            (new I18NMessage4P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+            (4,
+             new I18NMessage4P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
              new I18NMessage4P(TestMessages.LOGGER,TEST_MSG_ID));
     }
 

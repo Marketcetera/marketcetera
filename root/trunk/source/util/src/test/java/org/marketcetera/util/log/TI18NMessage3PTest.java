@@ -37,7 +37,8 @@ public class TI18NMessage3PTest
     public void basic()
     {
         unboundTests
-            (new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+            (3,
+             new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
              new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID));
     }
 

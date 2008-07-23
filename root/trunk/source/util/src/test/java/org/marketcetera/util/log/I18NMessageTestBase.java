@@ -56,9 +56,13 @@ public class I18NMessageTestBase
 
 
     protected static void unboundTests
-        (I18NMessage withEntry,
+        (int paramCount,
+         I18NMessage withEntry,
          I18NMessage withoutEntry)
     {
+        assertEquals(paramCount,withEntry.getParamCount());
+        assertEquals(paramCount,withoutEntry.getParamCount());
+
         assertEquals(TestMessages.LOGGER,withoutEntry.getLoggerProxy());
         assertEquals(TestMessages.PROVIDER,withoutEntry.getMessageProvider());
         assertEquals(TEST_MSG_ID,withoutEntry.getMessageId());
