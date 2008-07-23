@@ -5,7 +5,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
-import static org.junit.Assert.*;
 import static org.marketcetera.util.test.CollectionAssert.*;
 
 /**
