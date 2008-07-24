@@ -16,7 +16,7 @@ import java.util.HashSet;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class GroupTest extends NDEntityTestBase<Group,SummaryGroup> {
+public class GroupTest extends CorePersistNDTestBase<Group,SummaryGroup> {
 
 /* ************************Implement necessary operations************* */
     protected Group fetchByName(String name) throws Exception {

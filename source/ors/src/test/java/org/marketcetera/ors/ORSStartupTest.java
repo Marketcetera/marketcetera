@@ -2,10 +2,11 @@ package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigFileLoadingException;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.persist.PersistTestBase;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -62,4 +63,14 @@ public class ORSStartupTest extends TestCase {
                 FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().getVersion());
     }
 
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        //Initialize the schema and create the admin user
+        //Close the spring context so that ORS can startup
+        PersistTestBase.springSetup(new String[]{
+                "ors_initdb_create_admin_vendor.xml", "ors_db.xml"},
+                new FileSystemXmlApplicationContext(
+                        OrderRoutingSystem.CFG_BASE_FILE_NAME)).close();
+    }
 }

@@ -63,17 +63,6 @@
 	<constructor-arg value="test-target"/>
   </bean>
 
-    <bean id="sessionSettings" class="quickfix.spring.SessionSettings">
-        <property name="defaults">
-            <map>
-                <entry key="JdbcDriver" value="com.mysql.jdbc.Driver"/>
-                <entry key="JdbcURL" value="jdbc:mysql://localhost/test"/>
-                <entry key="JdbcUser" value="test"/>
-                <entry key="JdbcPassword" value="test"/>
-            </map>
-        </property>
-    </bean>
-
     <bean id="incomingTopicHandler" class="org.marketcetera.ors.TopicListener" scope="prototype">
     </bean>
 

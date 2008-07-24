@@ -231,7 +231,9 @@ public abstract class EntityBase implements SummaryEntityBase {
     protected SaveResult deleteLocal(EntityManager em,
                                      PersistContext context)
             throws PersistenceException {
-        em.remove(em.merge(this));
+        if (isPersistent()) {
+            em.remove(em.getReference(this.getClass(),this.getId()));
+        }
         //Return a save result to reset the entity's state
         //to unsaved.
         return new SaveResult(UNINITIALIZED, UNINITIALIZED, null);

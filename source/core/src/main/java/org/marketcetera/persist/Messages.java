@@ -10,7 +10,7 @@ import org.marketcetera.util.log.*;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-interface Messages {
+public interface Messages {
     /**
      * The message provider
      */

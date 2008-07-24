@@ -71,12 +71,20 @@ public class VendorUtils {
      */
     static void setVendor(JPAVendor v) throws PersistSetupException {
         if(vendor != null) {
-            throw new PersistSetupException(new I18NBoundMessage2P(
+            throw new PersistSetupException(initStackTrace,new I18NBoundMessage2P(
                     JPA_VENDOR_ALREADY_INITIALIZED,
                     v.getClass().getName(),
                     vendor.getClass().getName()));
         }
         vendor = v;
+        initStackTrace = new Exception("Original Initialization");
+
     }
     private static JPAVendor vendor;
+    /**
+     * This field is there to aid debugging when multiple initializations
+     * of the singleton are discovered
+     */
+    private static Exception initStackTrace;
+
 }

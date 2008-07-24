@@ -35,6 +35,11 @@
       <groupId>${public.package}</groupId>
       <artifactId>util</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${public.package}</groupId>
+      <artifactId>util-test</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
@@ -43,6 +48,11 @@
       <scope>compile</scope>
     </dependency>
 
+      <dependency>
+        <groupId>commons-cli</groupId>
+        <artifactId>commons-cli</artifactId>
+      </dependency>
+      
     <!-- Runtime. -->
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -64,6 +74,21 @@
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
     </dependency>
+      <dependency>
+          <groupId>org.hibernate</groupId>
+          <artifactId>hibernate-entitymanager</artifactId>
+          <scope>test</scope>
+      </dependency>
+    <dependency>
+        <groupId>mysql</groupId>
+        <artifactId>mysql-connector-java</artifactId>
+        <scope>test</scope>
+    </dependency>
+      <dependency>
+          <groupId>c3p0</groupId>
+          <artifactId>c3p0</artifactId>
+          <scope>test</scope>
+      </dependency>
 
     <!-- Testing. -->
     <dependency>
@@ -72,14 +97,48 @@
       <type>test-jar</type>
     </dependency>
 
-    <!-- Testing: needs junit 3. -->
+    <!-- Testing: -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>[3.8.1]</version>
     </dependency>
   </dependencies>
-
+  <build>
+      <plugins>
+          <!-- plugin configuration to generate schema sql -->
+          <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>hibernate3-maven-plugin</artifactId>
+              <executions>
+                  <execution>
+                      <!-- Choose a phase in which the persistence.xml file has been copied over -->
+                      <phase>process-resources</phase>
+                      <goals>
+                          <goal>hbm2ddl</goal>
+                      </goals>
+                  </execution>
+              </executions>
+              <configuration>
+                  <components>
+                      <component>
+                          <name>hbm2ddl</name>
+                          <implementation>annotationconfiguration</implementation>
+                      </component>
+                  </components>
+                  <componentProperties>
+                      <implementation>jpaconfiguration</implementation>
+                      <persistenceunit>ors</persistenceunit>
+                      <outputfilename>schema.sql</outputfilename>
+                      <jdk5>true</jdk5>
+                      <drop>true</drop>
+                      <create>true</create>
+                      <export>false</export>
+                      <format>true</format>
+                  </componentProperties>
+              </configuration>
+          </plugin>
+      </plugins>
+  </build>
   <profiles>
 
     <!-- Command-line execution. -->
@@ -92,6 +151,22 @@
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
               <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>cli</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.ors.security.ORSAdminCLI</mainClass>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

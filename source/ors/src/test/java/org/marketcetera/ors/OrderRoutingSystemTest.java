@@ -2,8 +2,6 @@ package org.marketcetera.ors;
 
 import junit.framework.Test;
 import org.marketcetera.core.*;
-import org.marketcetera.ors.OrderRoutingSystem;
-import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
@@ -34,7 +32,7 @@ import java.math.BigDecimal;
 @ClassVersion("$Id$")
 public class OrderRoutingSystemTest extends FIXVersionedTestCase
 {
-    private static ClassPathXmlApplicationContext appContext;
+    private static ClassPathXmlApplicationContext appContext = null;
     private static JmsTemplate jmsQueueSender;
     private static NullQuickFIXSender qfSender;
 
@@ -51,25 +49,33 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
 
 
 	protected void setUp() throws Exception {
+        springSetup();
         super.setUp();
-        try {
-        	appContext = new ClassPathXmlApplicationContext
-                (new String[]{"message-modifiers.xml", "order-limits.xml",
-                              "ors-shared.xml", "it-ors.xml"},
-                new FileSystemXmlApplicationContext
-                    (ApplicationBase.CONF_DIR+"ors_base.xml"));
-			jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
-            qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
-            // simulate logon
-            QuickFIXApplication qfApp = (QuickFIXApplication) appContext.getBean("qfApplication");
-            qfApp.onLogon(null);
-        } catch (Exception e) {
-            LoggerAdapter.error("Unable to initialize ORS", e, OrderRoutingSystemTest.class.getName());
-            fail("Unable to init ORS: "+e.getMessage());
-        }
-	}
+    }
 
-	/** This is more of an integration test
+    private static void springSetup() {
+        //Initialize only once for the entire unit test
+        if (appContext == null) {
+            try {
+                appContext = new ClassPathXmlApplicationContext
+                    (new String[]{"message-modifiers.xml", "order-limits.xml",
+                            "ors-shared.xml", "it-ors.xml",
+                            "ors_orm_vendor.xml", "ors_orm.xml", "ors_db.xml"},
+                    new FileSystemXmlApplicationContext
+                        (ApplicationBase.CONF_DIR+"ors_base.xml"));
+                jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
+                qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
+                // simulate logon
+                QuickFIXApplication qfApp = (QuickFIXApplication) appContext.getBean("qfApplication");
+                qfApp.onLogon(null);
+            } catch (Exception e) {
+                LoggerAdapter.error("Unable to initialize ORS", e, OrderRoutingSystemTest.class.getName());
+                fail("Unable to init ORS: "+e.getMessage());
+            }
+        }
+    }
+
+    /** This is more of an integration test
      * Star the entire ORS, and then create an additional JMS topic queueSender (bound to
      * output on the queue and read/write on the JMS topic).
      *

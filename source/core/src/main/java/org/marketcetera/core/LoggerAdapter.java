@@ -34,15 +34,36 @@ public class LoggerAdapter extends Logger
         super(name);
     }
 
-    public static LoggerAdapter initializeLogger(String name)
+    /**
+     * Initializes the logger. The logger configuration file used
+     * is the file named {@link #LOGGER_CONF_FILE} within the directory
+     * {@link org.marketcetera.core.ApplicationBase#CONF_DIR}
+     *
+     * @param name the logger name
+     *
+     * @return the initialized instance
+     */
+    public static LoggerAdapter initializeLogger(String name) {
+        return initializeLogger(name,LOGGER_CONF_FILE);
+    }
+
+    /**
+     * Initializes the logger.
+     *
+     * @param name the logger name
+     * @param logConfig the logger config file, the path should be
+     * relative to the {@link ApplicationBase#CONF_DIR}
+     *
+     * @return the logger adapter instance
+     */
+    public static LoggerAdapter initializeLogger(String name, String logConfig)
     {
         if(sLogger != null) { return sLogger; }
 
         sLogger = new LoggerAdapter(name);
         PropertyConfigurator.configureAndWatch
-            (ApplicationBase.CONF_DIR+LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
+            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
         sLogger.setLevel(Level.ERROR);
-        System.out.println(MessageKey.LOGGER_INIT.getLocalizedMessage(name));
         return sLogger;
     }
 
