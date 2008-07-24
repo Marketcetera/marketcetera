@@ -67,7 +67,7 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Runtime dependencies -->
+    <!-- Runtime. -->
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
@@ -118,15 +118,15 @@
               <triggers>auto,full,incremental,</triggers>
               <arguments>
                 <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Jar To Core Plugin dir.launch</LaunchConfigHandle>
-	      </arguments>
-	    </buildCommand>
-	    <buildCommand>
+              </arguments>
+            </buildCommand>
+            <buildCommand>
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-	      <triggers>auto,full,incremental,</triggers>
+              <triggers>auto,full,incremental,</triggers>
               <arguments>
-	      <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Tests Jar To Core Tests Plugin dir.launch</LaunchConfigHandle>	 
-	      </arguments>
-	    </buildCommand>      
+                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Tests Jar To Core Tests Plugin dir.launch</LaunchConfigHandle>
+              </arguments>
+            </buildCommand>      
           </additionalBuildcommands>
         </configuration>
       </plugin>
@@ -166,48 +166,47 @@
     </plugins>
   </build>
 
-  <!-- Copy generated jar into photon plugin area. -->
   <profiles>
+
+    <!-- Copy generated jars into photon plugin area. -->
     <profile>
-	<id>eclipse-folders</id>
-	<build>
-	  <plugins>
-	    <plugin>
-	      <groupId>org.apache.maven.plugins</groupId>
-	      <artifactId>maven-antrun-plugin</artifactId>
-              <executions>
-	        <execution>
-          	   <id>Copy Core Jar</id>
-                   <phase>package</phase>
-                   <configuration>
-                     <tasks>
-                       <property name="targetDir" value="../photon/plugins/org.marketcetera.core/" />
-                       <copy file="target/core-${project.version}.jar" todir="${targetDir}" />
-                     </tasks>
-                   </configuration>
-                   <goals>
-                      <goal>run</goal>
-                   </goals>
-	        </execution>
-                <execution>
-                   <id>Copy Core Test Jar</id>
-		   <phase>compile</phase>
-		   <configuration>
-		     <tasks>
-		       <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
-		       <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
-		     </tasks>
-		   </configuration>
-		   <goals>
-		     <goal>run</goal>
-		   </goals>
-		</execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </build>  
-     </profile>
+      <id>eclipse-folders</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>Copy Core Jar</id>
+                <phase>package</phase>
+                <configuration>
+                  <tasks>
+                    <property name="targetDir" value="../photon/plugins/org.marketcetera.core/" />
+                    <copy file="target/core-${project.version}.jar" todir="${targetDir}" />
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>Copy Core Test Jar</id>
+                <phase>compile</phase>
+                <configuration>
+                  <tasks>
+                    <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
+                    <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
+                  </tasks>
+                </configuration>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>  
+    </profile>
   </profiles>
-
-
 </project>
