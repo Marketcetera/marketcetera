@@ -118,8 +118,15 @@
               <triggers>auto,full,incremental,</triggers>
               <arguments>
                 <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Jar To Core Plugin dir.launch</LaunchConfigHandle>
-			  </arguments>
-            </buildCommand>
+	      </arguments>
+	    </buildCommand>
+	    <buildCommand>
+              <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+	      <triggers>auto,full,incremental,</triggers>
+              <arguments>
+	      <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Tests Jar To Core Tests Plugin dir.launch</LaunchConfigHandle>	 
+	      </arguments>
+	    </buildCommand>      
           </additionalBuildcommands>
         </configuration>
       </plugin>
@@ -169,7 +176,8 @@
 	      <groupId>org.apache.maven.plugins</groupId>
 	      <artifactId>maven-antrun-plugin</artifactId>
               <executions>
-                 <execution>
+	        <execution>
+          	   <id>Copy Core Jar</id>
                    <phase>package</phase>
                    <configuration>
                      <tasks>
@@ -180,12 +188,26 @@
                    <goals>
                       <goal>run</goal>
                    </goals>
-                 </execution>
+	        </execution>
+                <execution>
+                   <id>Copy Core Test Jar</id>
+		   <phase>compile</phase>
+		   <configuration>
+		     <tasks>
+		       <property name="targetDirTests" value="../photon/plugins/org.marketcetera.core.tests/" />
+		       <copy file="target/core-${project.version}-tests.jar" todir="${targetDirTests}" />
+		     </tasks>
+		   </configuration>
+		   <goals>
+		     <goal>run</goal>
+		   </goals>
+		</execution>
               </executions>
             </plugin>
           </plugins>
         </build>  
      </profile>
   </profiles>
+
 
 </project>
