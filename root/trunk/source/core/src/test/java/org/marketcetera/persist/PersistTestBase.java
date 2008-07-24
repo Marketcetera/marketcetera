@@ -5,6 +5,8 @@ import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.ApplicationContext;
 
 import javax.persistence.TemporalType;
 import java.security.SecureRandom;
@@ -33,13 +35,39 @@ public class PersistTestBase {
      * @param configFiles the spring configuration file names
      *
      * @throws Exception if there was an error
+     * @return the initialized spring context
      */
-    protected static void springSetup(String[] configFiles) throws Exception {
+    public static AbstractApplicationContext springSetup(
+            String[] configFiles) throws Exception {
+        return springSetup(configFiles,null);
+    }
+    /**
+     * Sets up the spring configuration for the given spring configuration
+     * files
+     *
+     * @param configFiles the spring configuration file names
+     *
+     * @param parent the parent spring configuration, if one is available.
+     *  Can be null.
+     * @throws Exception if there was an error
+     * @return the initialized spring context
+     */
+    public static AbstractApplicationContext springSetup(
+            String[] configFiles,
+            ApplicationContext parent) throws Exception {
         try {
             generator = SecureRandom.getInstance("SHA1PRNG");
             logSetup();
             //runs multiple tests in the same vm (which it currently does)
-            new ClassPathXmlApplicationContext(configFiles);
+            ClassPathXmlApplicationContext context;
+            if (parent == null) {
+                context = new ClassPathXmlApplicationContext(configFiles);
+            } else {
+                context = new ClassPathXmlApplicationContext(
+                        configFiles, parent);
+            }
+            context.registerShutdownHook();
+            return context;
         } catch (Exception e) {
             SLF4JLoggerProxy.error(PersistTestBase.class, "FailedSetup:", e);
             throw e;
@@ -59,7 +87,7 @@ public class PersistTestBase {
      *
      * @return a random string.
      */
-    protected static String randomString() {
+    public static String randomString() {
         return Long.toString(Math.abs(generator.nextLong()),
                 Character.MAX_RADIX);
     }

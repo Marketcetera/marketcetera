@@ -2,7 +2,6 @@ package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -23,10 +22,6 @@ import java.util.LinkedList;
 public abstract class EntityTestBase<E extends EntityBase,
         S extends SummaryEntityBase>
         extends PersistTestBase {
-    @BeforeClass
-    public static void springSetup() throws Exception {
-            springSetup(new String[]{"persist.xml"});
-    }
 
     @Before
     public void cleanDatabase() throws Exception {

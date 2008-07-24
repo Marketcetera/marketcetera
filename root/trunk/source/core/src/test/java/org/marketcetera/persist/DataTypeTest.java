@@ -26,7 +26,7 @@ import java.io.File;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class DataTypeTest extends NDEntityTestBase<DataTypes,SummaryDataType> {
+public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataType> {
     @Test
     public void clob() throws Exception {
         //Create an entity and then read / write the clob

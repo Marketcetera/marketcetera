@@ -15,7 +15,7 @@ import java.util.*;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
-public class UserTest extends NDEntityTestBase<User, SummaryUser> {
+public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
 
     /* ************************Tests specific to User entity************* */
 

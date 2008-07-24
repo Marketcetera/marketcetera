@@ -47,7 +47,6 @@ public enum MessageKey implements LocalizedMessage {
     ERROR_MSG_NOT_EXEC_REPORT("core.error.msg_must_be_exec_report"),
 
     LOGGER_MISSING_CAT("core.logger.missing_cat"),
-    LOGGER_INIT("core.logger.init"),
 
     ERROR_DBFACTORY_HTTP_PARSER_INIT("core.error.dbfactory_http_parser_init"),
     ERROR_DBFACTORY_MISSING_PARSER("core.error.dbfactory_missing_parser"),
@@ -57,8 +56,7 @@ public enum MessageKey implements LocalizedMessage {
 
     ERR0R_JMS_MESSAGE_CONVERSION("core.jms.message_conversion"),
 
-    ERROR_DB_ID_FACTORY_INIT("core.db_id_factory.init.error"), 
-    ERROR_DB_ID_FACTORY_DB_CONN_ERROR("core.db_id_factory.db_conn.error"),
+    ERROR_DB_ID_FACTORY_INIT("core.db_id_factory.init.error"),
     APP_SHUTDOWN("core.init.app_shutdown"),
     APP_START("core.init.app_start"),
     APP_EXIT("core.init.app_exit"),

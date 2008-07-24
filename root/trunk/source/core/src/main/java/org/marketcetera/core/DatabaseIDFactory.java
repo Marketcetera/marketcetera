@@ -1,6 +1,7 @@
 package org.marketcetera.core;
 
 
+import javax.sql.DataSource;
 import java.sql.*;
 
 @ClassVersion("$Id$")
@@ -10,82 +11,85 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
     public static final String COL_NAME = "nextAllowedID";
     public static final int NUM_IDS_GRABBED = 1000;
 
-    private String dbURL;
-    private String dbDriver;
     private String dbTable;
     private String dbColumn;
-    private String dbLogin;
-    private String dbPassword;
     private int mCacheQuantity;
-    private Connection dbConnection;
+    private DataSource dataSource;
 
-    public DatabaseIDFactory(String dburl, String driver, String login, String password) {
-        this(dburl, driver, login, password, TABLE_NAME, COL_NAME, NUM_IDS_GRABBED);
+    /**
+     * Initializes the ID factory with default table, column and ID quantity.
+     * @param ds the data source to connect to the database.
+     */
+    public DatabaseIDFactory(DataSource ds) {
+        this(ds,TABLE_NAME, COL_NAME, NUM_IDS_GRABBED);
     }
 
-    public DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
+    /**
+     * Creates an instance
+     * @param ds The data source to connect to the database.
+     * @param table the ID repository table name
+     * @param column the ID repository table column name
+     * @param quantity the quantity of IDs to fetch
+     */
+    public DatabaseIDFactory(DataSource ds, String table,
                              String column, int quantity) {
-        this(dburl, driver, login, password, table, column, quantity, "");
-    }
-
-    public DatabaseIDFactory(String dburl, String driver, String login, String password, String table,
-                             String column, int quantity, String prefix) {
-        super(prefix);
-        mCacheQuantity = quantity;
-        dbColumn = column;
-        dbDriver = driver;
+        super("");
+        this.dataSource = ds;
         dbTable = table;
-        dbURL = dburl;
-
-        dbLogin = login;
-        dbPassword = password;
+        dbColumn = column;
+        mCacheQuantity = quantity;
     }
 
     public final void init() throws ClassNotFoundException, NoMoreIDsException {
         try {
-            Class.forName(dbDriver);
-            if(dbConnection ==null) {
-                dbConnection= DriverManager.getConnection(dbURL, dbLogin, dbPassword);
-                dbConnection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
-            }
-        } catch(Exception ex) {
-            if(LoggerAdapter.isInfoEnabled(this)) {
-                LoggerAdapter.info(MessageKey.ERROR_DB_ID_FACTORY_INIT.getLocalizedMessage(ex.getMessage()), this);
-            }
-            throw new NoMoreIDsException(ex);
-        } finally {
             grabIDs();
+        } catch (NoMoreIDsException e) {
+            if(LoggerAdapter.isInfoEnabled(this)) {
+                LoggerAdapter.info(MessageKey.ERROR_DB_ID_FACTORY_INIT.
+                        getLocalizedMessage(e.getMessage()), this);
+            }
+            throw e;
         }
     }
 
-
-    /** Helper function intended to be overwritten by subclasses.
+    /**
+     * Helper function intended to be overwritten by subclasses.
      * Thsi is where the real requiest for IDs happens
      * It is wrapped by a try/catch block higher up, so that we can
      * fall back onto an inMemory id factory if the request fails.
      */
     protected void performIDRequest() throws Exception {
-        if(dbConnection == null) {
-            throw new NoMoreIDsException(MessageKey.ERROR_DB_ID_FACTORY_DB_CONN_ERROR.getLocalizedMessage());
+        Connection dbConnection = null;
+
+        try {
+            try {
+                dbConnection = dataSource.getConnection();
+                Statement stmt = dbConnection.createStatement(
+                        ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+                ResultSet set = null;
+                set = stmt.executeQuery("SELECT id, " + dbColumn + " FROM " + dbTable);
+                if (!set.next()) {
+                    set.moveToInsertRow();
+                    set.insertRow();
+                    set.updateInt(dbColumn, NUM_IDS_GRABBED);
+                    set.moveToCurrentRow();
+                    set.next();
+                }
+                int nextID = set.getInt(dbColumn);
+                int upTo = nextID + mCacheQuantity;
+                set.updateInt(dbColumn, upTo);
+                set.updateRow();
+                stmt.close();
+                setMaxAllowedID(upTo);
+                setNextID(nextID);
+            } finally {
+                if(dbConnection != null) {
+                    dbConnection.close();
+                }
+            }
+        } catch (SQLException e) {
+            throw new NoMoreIDsException(e);
         }
-        
-        Statement stmt = dbConnection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
-        ResultSet set = null;
-        set = stmt.executeQuery("SELECT id, " + dbColumn + " FROM " + dbTable);
-        if (!set.next()) {
-            set.moveToInsertRow();
-            set.insertRow();
-            set.updateInt(dbColumn, NUM_IDS_GRABBED);
-            set.moveToCurrentRow();
-            set.next();
-        }
-        int nextID = set.getInt(dbColumn);
-        int upTo = nextID + mCacheQuantity;
-        set.updateInt(dbColumn, upTo);
-        set.updateRow();
-        stmt.close();
-        setMaxAllowedID(upTo);
-        setNextID(nextID);
     }
 
 }

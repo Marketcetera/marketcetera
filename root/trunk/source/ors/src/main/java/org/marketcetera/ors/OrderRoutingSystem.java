@@ -36,14 +36,15 @@ import java.util.List;
 @ClassVersion("$Id$")
 public class OrderRoutingSystem extends ApplicationBase {
 
-    private static final String CFG_BASE_FILE_NAME=
+    public static final String CFG_BASE_FILE_NAME=
         "file:"+CONF_DIR+"ors_base.xml";
 
     private static final String LOGGER_NAME = OrderRoutingSystem.class.getName();
     public static final MessageBundleInfo ORS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("ors", "ors_messages");
     public static final String[] APP_CONTEXT_CONFIG_FILES =
-    {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml",
-     "ors.xml", "ors-shared.xml"};
+            {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml",
+                    "ors.xml", "ors-shared.xml", "ors_db.xml",
+                    "ors_orm_vendor.xml", "ors_orm.xml"};
 
     private static StandardAuthentication authentication;
     private volatile static OrderRoutingSystem instance = null;

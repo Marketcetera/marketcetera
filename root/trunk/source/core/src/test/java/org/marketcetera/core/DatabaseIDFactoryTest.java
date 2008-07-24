@@ -4,10 +4,13 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 
 import java.net.InetAddress;
-import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.io.File;
+
+import org.marketcetera.persist.PersistTestBase;
+
+import javax.sql.DataSource;
 
 /**
  * Tests the database ID factory to make sure that if the DB is not there
@@ -18,28 +21,35 @@ import java.io.File;
 
 @ClassVersion("$Id$")
 public class DatabaseIDFactoryTest extends TestCase {
-    public static String SQL_CONNECTION_URL = "jdbc:hsqldb:mem:junit";
-    public static String SQL_DRIVER = "org.hsqldb.jdbcDriver";
-//    public static String SQL_DRIVER = "com.mysql.jdbc.Driver";
-//    public static String SQL_CONNECTION_URL = "jdbc:mysql://localhost/test";
-    public static String SQL_USER = "sa";
-    public static String SQL_PWD = "";
-//    public static String SQL_USER = "test";
-//    public static String SQL_PWD = "test";
+    private static DataSource mDataSource;
 
     public DatabaseIDFactoryTest(String inName) {
         super(inName);
     }
 
-    public static Test suite() {
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        if(mDataSource == null) {
+            mDataSource = (DataSource) PersistTestBase.springSetup(
+                    new String[]{"persist.xml"}).getBean("mysqlpool",
+                    DataSource.class);
+        }
+    }
+
+    public static Test suite() throws Exception {
         new File("junit").delete();
         new File("junit").deleteOnExit();
         return new MarketceteraTestSuite(DatabaseIDFactoryTest.class);
     }
 
-    /** Verify that when a DB is inaccessible we still get an in-memory set of ids */
+    /**
+     * Verify that when a DB is inaccessible we still get an in-memory set of ids
+     *
+     * @throws Exception if there were errors
+     */
     public void testFailThroughInMemory() throws Exception {
-        DatabaseIDFactory factory = new DatabaseIDFactory(SQL_CONNECTION_URL, SQL_DRIVER, SQL_USER, SQL_PWD, "notable", "nocol", 13);
+        DatabaseIDFactory factory = new DatabaseIDFactory(mDataSource, "notable", "nocol", 13);
         boolean dbInaccessble = false;
         try {
             factory.init();
@@ -62,29 +72,40 @@ public class DatabaseIDFactoryTest extends TestCase {
 
 
 
-    /** need to have a valid mySQL db in order to run this code */
-    public void disabled_testDatabaseIDs() throws Exception {
-        DatabaseIDFactory factory = new DatabaseIDFactory(SQL_CONNECTION_URL, SQL_DRIVER, SQL_USER, SQL_PWD,
-                                                          DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME, 13);
+    /**
+     * needs to have a valid mySQL db in order to run this code
+     * @throws Exception if there were exceptions
+     */
+    public void testDatabaseIDs() throws Exception {
+        DatabaseIDFactory factory = new DatabaseIDFactory(mDataSource,
+                DatabaseIDFactory.TABLE_NAME, DatabaseIDFactory.COL_NAME, 13);
 
         // create the table
-        Class.forName(SQL_DRIVER);
-        Connection dbConnection = DriverManager.getConnection(SQL_CONNECTION_URL, SQL_USER, SQL_PWD);
-        Statement stmt = dbConnection.createStatement();
-        stmt.execute("drop table if exists " + DatabaseIDFactory.TABLE_NAME);
-        stmt.execute("create table "+DatabaseIDFactory.TABLE_NAME +"(id int, "+DatabaseIDFactory.COL_NAME + " int not null default 0)");
+        Connection dbConnection = mDataSource.getConnection();
+        try {
+            Statement stmt = dbConnection.createStatement();
+            stmt.execute("drop table if exists " + DatabaseIDFactory.TABLE_NAME);
+            stmt.execute("create table " + DatabaseIDFactory.TABLE_NAME +
+                    "(id int default null auto_increment primary key, " +
+                    DatabaseIDFactory.COL_NAME + " int not null default 0)");
 
-        factory.init();
-        String next = factory.getNext();
-        assertNotNull(next);
-        assertFalse("looks like we got an inMemoryIDFactory id: "+next, next.contains(InetAddress.getLocalHost().toString()));
-        String previous = next;
-        for(int i=0;i < DatabaseIDFactory.NUM_IDS_GRABBED*2; i++){
-            String cur = factory.getNext();
-            assertNotNull(cur);
-            assertNotSame("getting same ids in a row", cur, previous);
-            assertTrue((new Integer(cur) > new Integer(previous)));
-            previous = cur;
+            factory.init();
+            String next = factory.getNext();
+            assertNotNull(next);
+            assertFalse("looks like we got an inMemoryIDFactory id: " + next,
+                    next.contains(InetAddress.getLocalHost().toString()));
+            String previous = next;
+            for(int i=0;i < DatabaseIDFactory.NUM_IDS_GRABBED*2; i++){
+                String cur = factory.getNext();
+                assertNotNull(cur);
+                assertNotSame("getting same ids in a row", cur, previous);
+                assertTrue((new Integer(cur) > new Integer(previous)));
+                previous = cur;
+            }
+        } finally {
+            if(dbConnection != null) {
+                dbConnection.close();
+            }
         }
     }
 }

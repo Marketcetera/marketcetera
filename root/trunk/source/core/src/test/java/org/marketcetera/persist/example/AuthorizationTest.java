@@ -13,7 +13,7 @@ import java.util.List;
  */
 @ClassVersion("$Id$")
 public class AuthorizationTest extends
-        NDEntityTestBase<Authorization,Authorization> {
+        CorePersistNDTestBase<Authorization,Authorization> {
 
 /* ************************Implement necessary operations************* */
     protected Authorization fetchByName(String name) throws Exception {

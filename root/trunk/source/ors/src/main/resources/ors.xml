@@ -8,7 +8,7 @@
     <!--
     || ActiveMQ Broker
     -->
-    <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean" depends-on="ers">
         <property name="config" value="classpath:broker.xml"/>
     </bean>
 
@@ -73,18 +73,9 @@
 
     <bean id="fixDictionaryPath" factory-bean="fixVersionEnum" factory-method="getDataDictionaryURL"/>
 
-    <!-- JDBC Setup for ID table -->
-    <bean name="JdbcDriver" class="java.lang.String"><constructor-arg value="com.mysql.jdbc.Driver"/></bean>
-    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera"/></bean>
-    <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
-    <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="marketcetera"/></bean>
-
     <!-- Create an ID factory that reads next IDs from database -->
     <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory">
-        <constructor-arg ref="JdbcURL"/>
-        <constructor-arg ref="JdbcDriver"/>
-        <constructor-arg ref="JdbcUser"/>
-        <constructor-arg ref="JdbcPassword"/>
+        <constructor-arg ref="mysqlpool"/>
     </bean>
 
     <!-- Location (host/port) of the FIX reciever we are connecting to -->

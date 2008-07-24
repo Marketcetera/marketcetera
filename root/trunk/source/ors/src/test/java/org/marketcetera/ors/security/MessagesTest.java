@@ -1,24 +1,21 @@
-package org.marketcetera.persist;
+package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.l10n.MessageComparator;
+import org.marketcetera.util.except.I18NException;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Locale;
+import static org.junit.Assert.*;
 
 /* $License$ */
 /**
- * Tests that all persist messages are mapped correctly
+ * Tests all the messages.
  *
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")
 public class MessagesTest {
     @Test
-    public void messagesMatch() throws Exception {
+    public void messagesMatch() throws I18NException {
         MessageComparator comparator=new MessageComparator(Messages.class);
         assertTrue(comparator.getDifferences(),comparator.isMatch());
     }
