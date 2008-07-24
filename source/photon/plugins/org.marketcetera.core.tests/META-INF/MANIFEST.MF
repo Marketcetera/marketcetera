@@ -1,17 +1,20 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Name: Core Tests Plug-in
+Bundle-Name: Tests Plug-in
 Bundle-SymbolicName: org.marketcetera.core.tests
 Bundle-Version: 0.5.0
+Bundle-ClassPath: core-0.5.0-tests.jar
 Bundle-Vendor: Marketcetera, Inc.
-Require-Bundle: org.marketcetera.core,
- org.junit
-Export-Package: org.marketcetera.core,
+Export-Package: ., 
+ org.marketcetera.core,
  org.marketcetera.core.publisher,
  org.marketcetera.core.resourcepool,
+ org.marketcetera.event,
  org.marketcetera.marketdata,
  org.marketcetera.messagehistory,
  org.marketcetera.options,
+ org.marketcetera.persist,
+ org.marketcetera.persist.example,
  org.marketcetera.quickfix,
  org.marketcetera.quickfix.cficode,
  org.marketcetera.quickfix.customfields,
