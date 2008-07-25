@@ -59,6 +59,8 @@ my(%patternsCustom)=(
 	  => ('bin'),
 	'public/source/photon/plugins/org.marketcetera.core'
 	  => ('core-0.5.0.jar'),
+	'public/source/photon/plugins/org.marketcetera.core.tests'
+	  => ('core-0.5.0-tests.jar'),
 	'public/source/photon/plugins/org.marketcetera.bogusfeed'
 	  => ('bin'),
 );
@@ -66,7 +68,6 @@ my(%patternsCustom)=(
 my(@externals)=(
 	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/1.8',
 	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/site_ruby',
-	'public/source/photon/plugins/org.marketcetera.core.tests/src/test',
 	'public/source/tradebase/vendor/plugins/debug_view_helper',
 );
 
