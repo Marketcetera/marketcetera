@@ -68,6 +68,26 @@
     </dependency>
   </dependencies>
 
+ <build>
+  <plugins>
+    <!-- Add custom build tool to generated Eclipse project. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <additionalBuildcommands>
+            <buildCommand>
+              <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+              <triggers>auto,full,incremental,</triggers>
+              <arguments>
+                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/copyUtilPlugin.launch</LaunchConfigHandle>
+              </arguments>
+            </buildCommand>
+          </additionalBuildcommands>
+        </configuration>
+      </plugin>
+   </plugins>
+  </build>
+
   <profiles>
 
     <!-- Command-line execution: test. -->
@@ -123,6 +143,33 @@
           </plugin>
         </plugins>
       </build>
+    </profile>
+    <!-- Copy jar file to Util pluging -->
+    <profile>
+        <id>eclipse-folders</id>
+        <build>
+          <plugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+                 <execution>
+                   <id>copy.util.jar</id>
+                   <phase>package</phase>
+                   <configuration>
+                     <tasks>
+                       <property name="targetDir" value="../photon/plugins/org.marketcetera.util/" />
+                       <copy file="target/util-${project.version}.jar" todir="${targetDir}" />
+                     </tasks>
+                   </configuration>
+                   <goals>
+                      <goal>run</goal>
+                   </goals>
+                 </execution>
+              </executions>
+            </plugin>
+          </plugins>
+        </build>
     </profile>
   </profiles>
 </project>
