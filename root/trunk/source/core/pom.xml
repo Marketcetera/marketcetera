@@ -117,14 +117,14 @@
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
               <triggers>auto,full,incremental,</triggers>
               <arguments>
-                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Jar To Core Plugin dir.launch</LaunchConfigHandle>
+                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/copyToPlugin.launch</LaunchConfigHandle>
               </arguments>
             </buildCommand>
             <buildCommand>
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
               <triggers>auto,full,incremental,</triggers>
               <arguments>
-                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/Copy Core Tests Jar To Core Tests Plugin dir.launch</LaunchConfigHandle>
+                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/copyTestsToPlugin.launch</LaunchConfigHandle>
               </arguments>
             </buildCommand>      
           </additionalBuildcommands>
@@ -178,7 +178,7 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <id>Copy Core Jar</id>
+                <id>copy.core.jar</id>
                 <phase>package</phase>
                 <configuration>
                   <tasks>
@@ -191,7 +191,7 @@
                 </goals>
               </execution>
               <execution>
-                <id>Copy Core Test Jar</id>
+                <id>copy.core.test.jar</id>
                 <phase>compile</phase>
                 <configuration>
                   <tasks>
