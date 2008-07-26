@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Slf4j Plug-in
+Bundle-SymbolicName: org.slf4j
+Bundle-Version: 1.5
+Bundle-ClassPath: lib/slf4j-api-1.5.0.jar,
+ lib/slf4j-log4j12-1.5.0.jar
+Require-Bundle: org.apache.log4j
+Bundle-Vendor: Marketcetera, Inc.
+Export-Package: org.slf4j,
+ org.slf4j.helpers,
+ org.slf4j.impl,
+ org.slf4j.spi

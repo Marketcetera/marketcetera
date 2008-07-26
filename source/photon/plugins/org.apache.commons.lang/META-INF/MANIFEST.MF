@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Lang Plug-in
+Bundle-SymbolicName: org.apache.commons.lang
+Bundle-Version: 2.4
+Bundle-ClassPath: lib/commons-lang-2.4.jar,
+ .
+Bundle-Vendor: Marketcetera, Inc.
+Export-Package: org.apache.commons.lang
