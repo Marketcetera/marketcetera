@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Log4J Plug-in
 Bundle-SymbolicName: org.apache.log4j
-Bundle-Version: 1.2.9
-Bundle-ClassPath: lib/log4j-1.2.9.jar
+Bundle-Version: 1.2.14
+Bundle-ClassPath: lib/log4j-1.2.14.jar
 Eclipse-LazyStart: false
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin

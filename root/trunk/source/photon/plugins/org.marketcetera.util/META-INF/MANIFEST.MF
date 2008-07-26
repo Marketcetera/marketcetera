@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Util Plug-in
+Bundle-SymbolicName: org.marketcetera.util
+Bundle-Version: 0.5.0
+Bundle-ClassPath: util-0.5.0.jar
+Bundle-Vendor: Marketcetera, Inc.
+Require-Bundle: org.slf4j,
+ org.apache.commons.lang,
+ org.marketcetera.core,
+ org.apache.commons.cli,
+ org.apache.commons.io
+Bundle-Vendor: Marketcetera, Inc.
+Export-Package: .,
+ org.marketcetera.util.auth,
+ org.marketcetera.util.except,
+ org.marketcetera.util.exec,
+ org.marketcetera.util.file,
+ org.marketcetera.util.l10n,
+ org.marketcetera.util.log,
+ org.marketcetera.util.misc,
+ org.marketcetera.util.spring,
+ org.marketcetera.util.unicode
