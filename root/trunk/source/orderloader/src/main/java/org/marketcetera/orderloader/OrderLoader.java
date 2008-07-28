@@ -1,26 +1,50 @@
 package org.marketcetera.orderloader;
 
-import org.marketcetera.util.auth.StandardAuthentication;
-import org.marketcetera.util.spring.SpringUtils;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
-
-import org.marketcetera.core.*;
-import org.skife.csv.CSVReader;
-import org.skife.csv.SimpleReader;
-import org.springframework.jms.core.JmsTemplate;
-import org.apache.activemq.Service;
-import quickfix.Field;
-import quickfix.Message;
-import quickfix.StringField;
-import quickfix.field.*;
-
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URL;
-import java.util.*;
+import java.text.NumberFormat;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
+
 import javax.jms.JMSException;
+
+import org.apache.activemq.Service;
+import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.HttpDatabaseIDFactory;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.MessageBundleInfo;
+import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.spring.SpringUtils;
+import org.skife.csv.CSVReader;
+import org.skife.csv.SimpleReader;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.jms.core.JmsTemplate;
+
+import quickfix.Field;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.ClOrdID;
+import quickfix.field.HandlInst;
+import quickfix.field.MsgType;
+import quickfix.field.OrdType;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
+import quickfix.field.Side;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
+
+/* $License$ */
 
 /**
  *  Simple class to read a CSV file containing orders and load them into the
@@ -35,24 +59,26 @@ import javax.jms.JMSException;
  * 2. Quantity (positive integer)
  * @author gmiller
  * @author toli
+ * @since 0.5.0
  * $Id$
  */
-@ClassVersion("$Id$")
-public class OrderLoader extends ApplicationBase
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class OrderLoader 
+    extends ApplicationBase
+    implements Messages
 {
-    private static final String JMS_SENDER_NAME = "outgoingJmsTemplate";
-    private static final String ID_FACTORY_URL_NAME = "idFactoryURL";
-    private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory";
+    private static final String JMS_SENDER_NAME = "outgoingJmsTemplate"; //$NON-NLS-1$
+    private static final String ID_FACTORY_URL_NAME = "idFactoryURL"; //$NON-NLS-1$
+    private static final String POOLED_CONNECTION_FACTORY_NAME = "pooledConnectionFactory"; //$NON-NLS-1$
 
     private static final String CFG_BASE_FILE_NAME=
-        "file:"+CONF_DIR+"orderloader_base.xml";
+        "file:"+CONF_DIR+"orderloader_base.xml"; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static StandardAuthentication authentication;
 
-    protected static String MKT_PRICE = "MKT";
-    protected static String TIME_LIMIT_DAY = "DAY";
-    public static final String CFG_FILE_NAME = "orderloader.xml";
-    public static final MessageBundleInfo OL_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("orderloader", "orderloader_messages");
+    protected static String MKT_PRICE = "MKT"; //$NON-NLS-1$
+    protected static String TIME_LIMIT_DAY = "DAY"; //$NON-NLS-1$
+    public static final String CFG_FILE_NAME = "orderloader.xml"; //$NON-NLS-1$
 
     private IDFactory idFactory;
     private JmsTemplate jmsQueueSender;
@@ -61,7 +87,7 @@ public class OrderLoader extends ApplicationBase
     protected int numBlankLines;
     protected int numComments;
     protected Vector<String> failedOrders;
-    public static final String COMMENT_MARKER = "#";
+    public static final String COMMENT_MARKER = "#"; //$NON-NLS-1$
 
     public OrderLoader
         (String username,
@@ -98,9 +124,9 @@ public class OrderLoader extends ApplicationBase
     }
 
     protected void sendMessage(Message message) throws JMSException {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Sending message: "+message, this);
-        }
+        SLF4JLoggerProxy.debug(this,
+                               "Sending message: {}", //$NON-NLS-1$
+                               message);
         jmsQueueSender.convertAndSend(message);
     }
 
@@ -108,17 +134,17 @@ public class OrderLoader extends ApplicationBase
      */
     protected static void usage()
     {
-        System.err.println("Usage: java "+OrderLoader.class.getName()+
-                           " <CSV input file>");
-        System.err.println("Example file format should be: Symbol,Side,OrderQty,Price,TimeInForce,Account");
-        System.err.println("Authentication options:");
+        System.err.println(ERROR_USAGE.getText(OrderLoader.class.getName()));
+        System.err.println(ERROR_EXAMPLE.getText());
+        System.err.println(ERROR_AUTHENTICATION.getText());
         System.err.println();
         authentication.printUsage(System.err);
         System.exit(1);
     }
 
-    protected List<MessageBundleInfo> getLocalMessageBundles() {
-        return new LinkedList<MessageBundleInfo>(Arrays.asList(OL_MESSAGE_BUNDLE_INFO));
+    protected List<MessageBundleInfo> getLocalMessageBundles() 
+    {
+        return new LinkedList<MessageBundleInfo>();
     }
 
     /**
@@ -136,11 +162,11 @@ public class OrderLoader extends ApplicationBase
 
         args=authentication.getOtherArgs();
         if (args.length<1) {
-            System.err.println("Missing input file");
+            System.err.println(ERROR_MISSING_FILE.getText());
             usage();
         }
         if (args.length>1) {
-            System.err.println("Too many arguments");
+            System.err.println(ERROR_TOO_MANY_ARGUMENTS.getText());
             usage();
         }
         String file=args[0];
@@ -154,8 +180,7 @@ public class OrderLoader extends ApplicationBase
         loader.getAppCtx().close();
     }
 
-
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public void parseAndSendOrders(InputStream inputStream)
         throws Exception
     {
@@ -163,40 +188,44 @@ public class OrderLoader extends ApplicationBase
 
         List<String[]> allRows = reader.parse(inputStream);
         if(allRows.size() < 2) {
-            System.out.println("Need more orders than just the header");
+            System.err.println(ERROR_NO_ORDERS.getText());
             System.exit(1);
         }
-        Vector<Field> headerRow = getFieldOrder(allRows.get(0));
         jmsQueueSender = (JmsTemplate) getAppCtx().getBean(JMS_SENDER_NAME);
-
-
-        String[] headerFields = allRows.get(0);
-        for (int i=1;i<allRows.size(); i++) {
-            String[] oneRow = allRows.get(i);
-            sendOneOrder(headerRow, headerFields, oneRow);
+        Vector<Field<?>> headerRow = null;
+        String[] headerFields = null;
+        for(String[] row : allRows) {
+            if(headerRow == null) {
+                headerRow = getFieldOrder(row);
+                headerFields = row;
+            } else {
+                sendOneOrder(headerRow, 
+                             headerFields, 
+                             row);
+            }
         }
     }
 
     /** Prints the summary report of he send orders */
     private void printReport()
     {
-        System.out.println(">>>OrderLoading report<<<<");
-        System.out.println(">>> OrderLoader sent " +numProcessedOrders + " orders successfully");
-        System.out.println(">>> There were " +numBlankLines + " blank lines");
-        if(failedOrders.size() > 0) {
-            System.out.println(">>> "+failedOrders.size() +" orders failed to parse:");
+        System.out.println(REPORT_SUMMARY.getText());
+        System.out.println(REPORT_PROCESSED_LINES.getText(numProcessedOrders));
+        System.out.println(REPORT_BLANK_LINES.getText(numBlankLines));
+        if(!failedOrders.isEmpty()) {
+            System.err.println(FAILED_MESSAGES.getText(failedOrders.size()));
             for(String row : failedOrders ) {
-                System.out.println("failed row: "+row);
+                System.err.println(row);
             }
         }
     }
 
-    protected void sendOneOrder(Vector<Field> inHeaderRow, String[] inHeaderNames, String[] inOrderRow)
+    protected void sendOneOrder(Vector<Field<?>> inHeaderRow, String[] inHeaderNames, String[] inOrderRow)
         throws NoMoreIDsException
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("processing row "+Arrays.toString(inOrderRow), this);
-        }
+        SLF4JLoggerProxy.debug(this,
+                               "processing row {}", //$NON-NLS-1$
+                               Arrays.toString(inOrderRow));
         Message message = msgFactory.newBasicOrder();
         // set defaults first b/c they may be overridden for MKT orders
         addDefaults(message);
@@ -205,15 +234,15 @@ public class OrderLoader extends ApplicationBase
                 if(inOrderRow.length == 0) {
                     numBlankLines++;
                     return;
-                }else {
-                    throw new OrderParsingException(OrderLoaderMessageKey.PARSING_WRONG_NUM_FIELDS.getLocalizedMessage());
+                } else {
+                    throw new OrderParsingException(PARSING_WRONG_NUM_FIELDS.getText());
                 }
             } else if(inOrderRow[0].startsWith(COMMENT_MARKER)) {
                 numComments++;
             } else {
                 for(int i=0;i<inHeaderRow.size();i++)
                 {
-                    Field theField = inHeaderRow.get(i);
+                    Field<?> theField = inHeaderRow.get(i);
                     String value = parseMessageValue(theField, inHeaderNames[i], inOrderRow[i], message);
                     if(value!=null) {
                         int fieldID = theField.getField();
@@ -224,8 +253,11 @@ public class OrderLoader extends ApplicationBase
                         } else if(fixDD.getDictionary().isTrailerField(fieldID)) {
                             message.getTrailer().setField(new StringField(fieldID, value));
                         } else {
-                            // Send the fieldID as string so it doesn't get localized to 2,345 for example
-                            throw new MarketceteraException(OrderLoaderMessageKey.PARSING_FIELD_NOT_IN_DICT.getLocalizedMessage(""+fieldID, value));
+                            // Format the fieldID so it doesn't get localized to 2,345 for example
+                            NumberFormat formatter = NumberFormat.getIntegerInstance();
+                            formatter.setGroupingUsed(false);
+                            throw new MarketceteraException(PARSING_FIELD_NOT_IN_DICT.getText(formatter.format(fieldID), 
+                                                                                                                                value));
                         }
                     }
                 }
@@ -236,10 +268,14 @@ public class OrderLoader extends ApplicationBase
                 numProcessedOrders++;
             }
         } catch (Exception e) {
-            LoggerAdapter.error(OrderLoaderMessageKey.PARSING_ORDER_GEN_ERROR.getLocalizedMessage(
-                    Arrays.toString(inOrderRow),e.getMessage()), this);
-            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(e.getMessage(), e, this); }
-            failedOrders.add(Arrays.toString(inOrderRow) + ": " + e.getMessage());
+            PARSING_ORDER_GEN_ERROR.error(this,
+                                          e,
+                                          Arrays.toString(inOrderRow),
+                                          e.getMessage());
+            SLF4JLoggerProxy.debug(this,
+                                   e.getMessage(),
+                                   e);
+            failedOrders.add(new StringBuilder().append(Arrays.toString(inOrderRow)).append(": ").append(e.getMessage()).toString()); //$NON-NLS-1$
         }
     }
 
@@ -250,17 +286,19 @@ public class OrderLoader extends ApplicationBase
      * @param inValue  string value
      * @return Translated data
      */
-    protected String parseMessageValue(Field inField, String inFieldName, String inValue,
+    protected String parseMessageValue(Field<?> inField, 
+                                       String inFieldName, 
+                                       String inValue,
                                        Message inMessage)
         throws OrderParsingException
     {
         if(inField instanceof CustomField) {
-            return ((CustomField) inField).parseMessageValue(inValue).toString();
+            return ((CustomField)inField).parseMessageValue(inValue).toString();
         }
 
         switch(inField.getField()) {
             case Side.FIELD:
-                return getSide(inValue)+"";
+                return getSide(inValue)+""; //$NON-NLS-1$
             case Price.FIELD:
                 // price must be positive but can be MKT
                 if(MKT_PRICE.equals(inValue)) {
@@ -271,10 +309,10 @@ public class OrderLoader extends ApplicationBase
                     try {
                         price = new BigDecimal(inValue);
                     } catch(NumberFormatException ex) {
-                        throw new OrderParsingException(OrderLoaderMessageKey.PARSING_PRICE_VALID_NUM.getLocalizedMessage(inValue), ex);
+                        throw new OrderParsingException(PARSING_PRICE_VALID_NUM.getText(inValue), ex);
                     }
                     if(price.compareTo(BigDecimal.ZERO) <= 0) {
-                        throw new OrderParsingException(OrderLoaderMessageKey.PARSING_PRICE_POSITIVE.getLocalizedMessage(price));
+                        throw new OrderParsingException(PARSING_PRICE_POSITIVE.getText(price));
                     }
                     // just return the original string
                     return inValue;
@@ -285,10 +323,10 @@ public class OrderLoader extends ApplicationBase
                 try {
                     qty = Integer.parseInt(inValue);
                 } catch(NumberFormatException ex) {
-                    throw new OrderParsingException(OrderLoaderMessageKey.PARSING_QTY_INT.getLocalizedMessage(inValue), ex);
+                    throw new OrderParsingException(PARSING_QTY_INT.getText(inValue), ex);
                 }
                 if(qty <=0) {
-                    throw new OrderParsingException(OrderLoaderMessageKey.PARSING_QTY_POS_INT.getLocalizedMessage(inValue));
+                    throw new OrderParsingException(PARSING_QTY_POS_INT.getText(inValue));
                 }
                 // just return the original string
                 return inValue;
@@ -309,29 +347,38 @@ public class OrderLoader extends ApplicationBase
          if(inValue != null) {
              inValue = inValue.toUpperCase();
          }
-         if("".equals(inValue)) {
+         if("".equals(inValue)) { //$NON-NLS-1$
              return Side.UNDISCLOSED;
          }
-         if("B".equals(inValue)) {
+         if("B".equals(inValue)) { //$NON-NLS-1$
              return Side.BUY;
          }
-         if("S".equals(inValue)) {
+         if("S".equals(inValue)) { //$NON-NLS-1$
              return Side.SELL;
          }
-         if("SS".equals(inValue)) {
+         if("SS".equals(inValue)) { //$NON-NLS-1$
              return Side.SELL_SHORT;
          }
-         if("SSE".equals(inValue)) {
+         if("SSE".equals(inValue)) { //$NON-NLS-1$
              return Side.SELL_SHORT_EXEMPT;
          }
          return Side.UNDISCLOSED;
      }
-
-    // parses a row of input to return an array of fields
-    protected Vector<Field> getFieldOrder(String[] inFirstRow)
+    /**
+     * Parses a row of input to return an array of fields.
+     *
+     * @param inFirstRow a <code>String[]</code> value containing the values to interpret as fields
+     * @return a <code>Vector&lt;Field&lt;&gt;&gt;</code> value or null if the passed values should not be interpreted as fields
+     * @throws OrderParsingException if an error occurs while parsing the passed values
+     */
+    protected Vector<Field<?>> getFieldOrder(String[] inFirstRow)
         throws OrderParsingException
     {
-        Vector<Field> result = new Vector<Field>(inFirstRow.length);
+        if(inFirstRow.length > 0 &&
+           inFirstRow[0].startsWith(COMMENT_MARKER)) {
+            return null;
+        }
+        Vector<Field<?>> result = new Vector<Field<?>>(inFirstRow.length);
         for(String field : inFirstRow) {
             result.add(getQuickFixFieldFromName(field));
         }
@@ -350,12 +397,12 @@ public class OrderLoader extends ApplicationBase
      * @return quickfix object of that type
      * @throws OrderParsingException
      */
-    protected Field getQuickFixFieldFromName(String fieldName)
+    protected Field<?> getQuickFixFieldFromName(String fieldName)
         throws OrderParsingException
     {
-        Field theField = null;
+        Field<?> theField = null;
         try {
-            theField = (Field) Class.forName("quickfix.field."+fieldName).newInstance();
+            theField = (Field<?>) Class.forName("quickfix.field."+fieldName).newInstance(); //$NON-NLS-1$
         } catch(ClassNotFoundException ex) {
             // check to see if this is non-predetermined value (just an int header)
             return CustomField.getCustomField(fieldName);
