@@ -3,8 +3,8 @@ package org.marketcetera.orderloader;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.ClassVersion;
 
 import java.math.BigDecimal;
 

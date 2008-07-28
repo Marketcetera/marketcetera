@@ -21,7 +21,9 @@ import java.util.Vector;
  * @version $Id$
  */
 @ClassVersion("$Id$")
-public class OrderLoaderTest extends TestCase
+public class OrderLoaderTest 
+    extends TestCase
+    implements Messages
 {
     private MyOrderLoader mLoader;
 
@@ -37,7 +39,7 @@ public class OrderLoaderTest extends TestCase
         suite.addTest(new OrderLoaderTest("testWithCustomField"));
         return suite;
 */
-        return new MarketceteraTestSuite(OrderLoaderTest.class, OrderLoader.OL_MESSAGE_BUNDLE_INFO);
+        return new MarketceteraTestSuite(OrderLoaderTest.class);
     }
 
     @Override
@@ -88,13 +90,15 @@ public class OrderLoaderTest extends TestCase
         assertEquals(OrdType.MARKET, msg.getChar(OrdType.FIELD));
         assertEquals("42", mLoader.parseMessageValue(new Price(), "Price", "42", msg));
         assertEquals("42.42", mLoader.parseMessageValue(new Price(), "Price", "42.42", msg));
-        (new ExpectedTestFailure(OrderParsingException.class, "must be positive") {
+        (new ExpectedTestFailure(OrderParsingException.class, 
+                                 PARSING_PRICE_POSITIVE.getText("-42")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new Price(), "price", "-42", msg);
             }
         }).run();
-        (new ExpectedTestFailure(OrderParsingException.class, "must be a valid number") {
+        (new ExpectedTestFailure(OrderParsingException.class, 
+                                 PARSING_PRICE_VALID_NUM.getText("toli")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new Price(), "price", "toli", msg);
@@ -106,19 +110,22 @@ public class OrderLoaderTest extends TestCase
     {
         final Message msg =new Message();
         assertEquals("42", mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42", msg));
-        (new ExpectedTestFailure(OrderParsingException.class, "must be a positive") {
+        (new ExpectedTestFailure(OrderParsingException.class, 
+                                 PARSING_QTY_POS_INT.getText("-42")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new OrderQty(), "OrderQty", "-42", msg);
             }
         }).run();
-        (new ExpectedTestFailure(OrderParsingException.class, "must be an integer") {
+        (new ExpectedTestFailure(OrderParsingException.class, 
+                                 PARSING_QTY_INT.getText("toli")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new OrderQty(), "OrderQty", "toli", msg);
             }
         }).run();
-        (new ExpectedTestFailure(OrderParsingException.class, "must be an integer") {
+        (new ExpectedTestFailure(OrderParsingException.class, 
+                                 PARSING_QTY_INT.getText("42.2")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42.2", msg);
@@ -168,9 +175,9 @@ public class OrderLoaderTest extends TestCase
         }).run();
     }
 
-    private void doVerifyFieldOrder(Field[] inFields, String[] inHeaders) throws Exception
+    private void doVerifyFieldOrder(Field<?>[] inFields, String[] inHeaders) throws Exception
     {
-        assertEquals(new Vector<Field>(Arrays.asList(inFields)), mLoader.getFieldOrder(inHeaders));
+        assertEquals(new Vector<Field<?>>(Arrays.asList(inFields)), mLoader.getFieldOrder(inHeaders));
     }
 
     /** use a pre-specified giant order and make sure the right messages are sent
@@ -213,6 +220,7 @@ public class OrderLoaderTest extends TestCase
     public void testCommentedLins() throws Exception
     {
         String order =
+            "#Opening comment\n" + 
             "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
             "#IBM,B,100,12.1,DAY,123-ASDF-234\n"+
             "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
@@ -256,8 +264,12 @@ public class OrderLoaderTest extends TestCase
     public void testValidMessage() throws Exception
     {
         MyOrderLoader myLoader =  new MyOrderLoader(false);
-        Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
-                new OrderQty(), new Price(), new TimeInForce(), new Account()));
+        Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(),
+                                                                                             new Side(),
+                                                                                             new OrderQty(),
+                                                                                             new Price(),
+                                                                                             new TimeInForce(), 
+                                                                                             new Account() }));
         String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"};
         myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","DAY","123-ASDF-234"});
 
@@ -271,11 +283,66 @@ public class OrderLoaderTest extends TestCase
 
     }
 
+    public void testNonAscii()
+        throws Exception
+    {
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+                                                                                                   new Side(),
+                                                                                                   new OrderQty(), 
+                                                                                                   new Price(), 
+                                                                                                   new HandlInst(), 
+                                                                                                   new Account() }));
+        final String[] headerNames = { "Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account" };
+//        String symbol = I18n.generateNativeString();
+        String symbol = "some string";
+        mLoader.sendOneOrder(headerFields, 
+                             headerNames, 
+                             new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"});
+        assertNotNull("message didn't go through", 
+                      mLoader.mMessage);
+        assertEquals(symbol, 
+                     mLoader.mMessage.getString(Symbol.FIELD));
+        assertEquals(Side.SELL_SHORT, 
+                     mLoader.mMessage.getChar(Side.FIELD));
+        assertEquals("100", 
+                     mLoader.mMessage.getString(OrderQty.FIELD));
+        assertEquals("12.22", 
+                     mLoader.mMessage.getString(Price.FIELD));
+        assertEquals("3", 
+                     mLoader.mMessage.getString(HandlInst.FIELD));
+        assertEquals("123-ASDF-234", 
+                     mLoader.mMessage.getString(Account.FIELD));
+
+//        symbol = I18n.generateUnicodeString();
+        symbol = "some other string";
+        mLoader.sendOneOrder(headerFields, 
+                             headerNames, 
+                             new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"});
+        assertNotNull("message didn't go through", 
+                      mLoader.mMessage);
+        assertEquals(symbol, 
+                     mLoader.mMessage.getString(Symbol.FIELD));
+        assertEquals(Side.SELL_SHORT, 
+                     mLoader.mMessage.getChar(Side.FIELD));
+        assertEquals("100", 
+                     mLoader.mMessage.getString(OrderQty.FIELD));
+        assertEquals("12.22", 
+                     mLoader.mMessage.getString(Price.FIELD));
+        assertEquals("3", 
+                     mLoader.mMessage.getString(HandlInst.FIELD));
+        assertEquals("123-ASDF-234", 
+                     mLoader.mMessage.getString(Account.FIELD));
+    }
+
     /** Verify that HandlInst, if set, overwrites the default one in the NOS message factory */
     public void testHandlInstField() throws Exception
     {
-        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
-                new OrderQty(), new Price(), new HandlInst(), new Account()));
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+                                                                                                   new Side(),
+                                                                                                   new OrderQty(), 
+                                                                                                   new Price(), 
+                                                                                                   new HandlInst(), 
+                                                                                                   new Account() }));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account"};
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","3","123-ASDF-234"});
 
@@ -292,8 +359,13 @@ public class OrderLoaderTest extends TestCase
 
     public void testWithCustomField() throws Exception
     {
-        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
-                new OrderQty(), new Price(), new CustomField(9999, null), new Account()));
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+                                                                                                   new Side(),
+                                                                                                   new OrderQty(), 
+                                                                                                   new Price(), 
+                                                                                                   new CustomField(9999, 
+                                                                                                                   null), 
+                                                                                                                   new Account() }));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
         assertNull("message with malformed custom field went through", mLoader.mMessage);
@@ -344,8 +416,15 @@ public class OrderLoaderTest extends TestCase
 
     /** Test using both header and trailer and message custom fields */
     public void testWithMixedCustomFields() throws Exception {
-        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
-                new OrderQty(), new Price(), new CustomField(9999, null), new SenderSubID(), new SignatureLength(), new Signature()));
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+                                                                                                   new Side(),
+                                                                                                   new OrderQty(), 
+                                                                                                   new Price(), 
+                                                                                                   new CustomField(9999, 
+                                                                                                                   null), 
+                                                                                                   new SenderSubID(), 
+                                                                                                   new SignatureLength(), 
+                                                                                                   new Signature() }));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "SenderSubID", "SignatureLength", "Signature"};
 
         // manually construct message: {55=IBM, Side=SS, OrderQty=100, Price=12.22, 9999=custom, SenderSubID=sub1, 93=3, 89=sig}
@@ -363,15 +442,19 @@ public class OrderLoaderTest extends TestCase
 
     /** Try sending a message with key not in dictionary */
     public void testFieldNotInDictionary() throws Exception {
-        final Vector<Field> headerFields =  new Vector<Field>(Arrays.asList(new Symbol(), new Side(),
-                new OrderQty(), new Price(), new CustomField(7654, null)));
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+                                                                                                   new Side(),
+                                                                                                   new OrderQty(), 
+                                                                                                   new Price(), 
+                                                                                                   new CustomField(7654, 
+                                                                                                                   null) } ));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "NotInDict"};
 
         // manually construct message: {55=IBM, Side=SS, OrderQty=100, Price=12.22, 9999=custom, SenderSubID=sub1, 93=3, 89=sig}
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234"});
         assertEquals(1, mLoader.getFailedOrders().size());
-        assertTrue(mLoader.failedOrders.get(0) + " does not end with "+OrderLoaderMessageKey.PARSING_FIELD_NOT_IN_DICT.getLocalizedMessage(7654, 1234),
-                mLoader.failedOrders.get(0).endsWith(OrderLoaderMessageKey.PARSING_FIELD_NOT_IN_DICT.getLocalizedMessage("7654", "1234")));
+        assertTrue(mLoader.failedOrders.get(0) + " does not end with "+PARSING_FIELD_NOT_IN_DICT.getText(7654, 1234),
+                mLoader.failedOrders.get(0).endsWith(PARSING_FIELD_NOT_IN_DICT.getText("7654", "1234")));
     }
 
     private class MyOrderLoader extends OrderLoader {
