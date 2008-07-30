@@ -13,8 +13,8 @@ import java.util.Map;
  *
  */
 enum CancelReplaceTypeImage {
-    QUANTITY("Q"),
-    PRICE("P");
+    QUANTITY("Q"), //$NON-NLS-1$
+    PRICE("P"); //$NON-NLS-1$
 
 	static final Map<String, CancelReplaceTypeImage> nameMap = new HashMap<String, CancelReplaceTypeImage>();
 	private static final String[] images;

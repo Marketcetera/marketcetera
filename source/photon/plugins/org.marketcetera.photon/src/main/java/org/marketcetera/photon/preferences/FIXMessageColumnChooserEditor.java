@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Widget;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.FIXFieldLocalizer;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -52,15 +53,18 @@ import ca.odell.glazedlists.BasicEventList;
  * @author anshul@marketcetera.com
  *
  */
-@ClassVersion("$Id$")
-public class FIXMessageColumnChooserEditor extends FieldEditor {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class FIXMessageColumnChooserEditor
+    extends FieldEditor
+    implements Messages
+{
 	/**
 	 * Name to use for a fix field that for whatever reason doesn't have
 	 * human field name.
 	 */
-	private static final String UNKNOWN_FIX_FIELD_NAME = "Unknown";
+	private static final String UNKNOWN_FIX_FIELD_NAME = "Unknown"; //$NON-NLS-1$
 
-	protected static final String CUSTOM_FIELD_PREFIX = "Custom Field";
+	protected static final String CUSTOM_FIELD_PREFIX = "Custom Field"; //$NON-NLS-1$
 		
 	private FIXMessageColumnPreferenceParser parser;
 	
@@ -318,7 +322,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 			sb = new StringBuilder(UNKNOWN_FIX_FIELD_NAME);
 		}
 		
-		return  sb.append("(").append(i).append(")").toString();
+		return  sb.append("(").append(i).append(")").toString(); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	private void addCustomFieldToFieldEntryMap(String fieldName, int fieldID) {
@@ -329,7 +333,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 	
 	private String getCustomFieldName(int fieldID) {
 		return new StringBuffer(CUSTOM_FIELD_PREFIX)
-		.append(" (").append(fieldID).append(")")
+		.append(" (").append(fieldID).append(")") //$NON-NLS-1$ //$NON-NLS-2$
 		.toString(); 		
 
 	}
@@ -416,7 +420,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 			BasicEventList<String> allPossibleEntries,
 			BasicEventList<String> currentFilteredEntries) {
 		if(filterText == null) { 
-			filterText = "";
+			filterText = ""; //$NON-NLS-1$
 		}
 		for (String possibleEntry : allPossibleEntries) {
 			if (isFilterMatch(filterText, possibleEntry)) {
@@ -442,7 +446,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	protected void doStore() {
 		Set<String> loadedSubPageIDs = idToPageMap.keySet();
 		for (String subPageKey : loadedSubPageIDs) {
@@ -594,7 +598,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 	private IndexedTableViewer createTableViewer(Table aTable) {
 		IndexedTableViewer tableViewer = new IndexedTableViewer(aTable);
 		tableViewer.setUseHashlookup(true);
-		tableViewer.setColumnProperties(new String[] { "Field" });
+		tableViewer.setColumnProperties(new String[] { FIELD_LABEL.getText() } );
 
 		CellEditor[] editors = new CellEditor[1];
 		editors[0] = new TextCellEditor(aTable);
@@ -706,7 +710,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
             TableItem[] selection = chosenFieldsTable.getSelection();
 
             if (selection.length != 1) {
-    			PhotonPlugin.getMainConsoleLogger().warn("Multi-select has not been implemented for Up/Down button yet.");
+    			PhotonPlugin.getMainConsoleLogger().warn(MULTI_SELECT_NOT_ENABLED.getText());
             	return;
             }
             String toReplace = (String) selection[0].getData();            	
@@ -768,7 +772,7 @@ public class FIXMessageColumnChooserEditor extends FieldEditor {
 		addPressedWithInput(input);
 	}
     
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	private void addAllPressed() {		
 		BasicEventList<String> input = getAllItemsAsInputList(availableFieldsTable);
 		addPressedWithInput(input);

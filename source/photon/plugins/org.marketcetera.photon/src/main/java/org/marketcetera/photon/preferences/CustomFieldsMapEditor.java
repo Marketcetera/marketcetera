@@ -9,19 +9,23 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.ui.MapEditor;
 
 import ca.odell.glazedlists.EventList;
 
 
-@ClassVersion("$Id$")
-public class CustomFieldsMapEditor extends MapEditor {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class CustomFieldsMapEditor
+    extends MapEditor
+    implements Messages
+{
 	private Pattern allowedKeyPattern; 
 	
 	public CustomFieldsMapEditor(String custom_fields_preference, String label, Composite theFieldEditorParent) {
 		super(custom_fields_preference, label, theFieldEditorParent);
 		
-		allowedKeyPattern = Pattern.compile("[0-9]+");
+		allowedKeyPattern = Pattern.compile("[0-9]+"); //$NON-NLS-1$
 	}
 
 	
@@ -42,10 +46,10 @@ public class CustomFieldsMapEditor extends MapEditor {
 	
 	@Override
     protected Entry<String, String> getNewInputObject() {
-    	String keyPrompt = "Key";
-    	String valuePrompt = "Value";
-    	String title = "New custom field";
-		MapDialog dialog = new MapDialog(getShell(), title , keyPrompt, valuePrompt);
+		MapDialog dialog = new MapDialog(getShell(),
+		                                 NEW_CUSTOM_FIELD_LABEL.getText(),
+		                                 KEY_LABEL.getText(),
+		                                 VALUE_LABEL.getText());
         if (dialog.open() == Window.OK) {
 			Entry<String, String> entry = dialog.getEntry();
 			if (entry != null) {
@@ -53,8 +57,8 @@ public class CustomFieldsMapEditor extends MapEditor {
 				Matcher matcher = allowedKeyPattern.matcher(key);
 				if (!matcher.matches()) {
 					MessageDialog.openInformation(getShell(),
-							"Invalid custom field key",
-							"Custom field keys may only contain digits. This key is invalid:\n" + key );
+					                              INVALID_CUSTOM_FIELD_KEY.getText(),
+					                              CUSTOM_FIELD_INVALID_DIGIT.getText(key));
 					entry = null;
 				}
 			}

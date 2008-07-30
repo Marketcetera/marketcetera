@@ -6,6 +6,7 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.validation.SetValidator;
 
@@ -20,11 +21,11 @@ import quickfix.field.OrdType;
  * @author gmiller
  *
  */
-public class PriceConverterBuilder extends EnumStringConverterBuilder<Character> implements IConverterBuilder {
-	
-
+public class PriceConverterBuilder
+    extends EnumStringConverterBuilder<Character>
+    implements IConverterBuilder, Messages
+{
 	protected DataDictionary dictionary;
-	protected IStatus errorStatus = new Status(IStatus.ERROR,PhotonPlugin.ID, IStatus.OK, "Invalid value", null);
 
 	public PriceConverterBuilder(DataDictionary dictionary) {
 		super(Character.class);
@@ -41,6 +42,11 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 	public IValidator newModelAfterGetValidator() {
 		return new IValidator(){
 			public IStatus validate(Object obj) {
+			    IStatus errorStatus = new Status(IStatus.ERROR,
+			                                     PhotonPlugin.ID,
+			                                     IStatus.OK,
+			                                     INVALID_VALUE.getText(),
+			                                     null);
 				if (obj == null){
 					return Status.OK_STATUS;
 				} else {
@@ -72,7 +78,9 @@ public class PriceConverterBuilder extends EnumStringConverterBuilder<Character>
 	 * @return the validator
 	 */
 	public IValidator newTargetAfterGetValidator() {
-		return new SetValidator<String>(map.values(), PhotonPlugin.ID, "Not a valid value") {
+		return new SetValidator<String>(map.values(),
+		                                PhotonPlugin.ID,
+		                                INVALID_VALUE.getText()) {
 			@Override
 			public IStatus validate(Object obj) {
 				if (obj == null){

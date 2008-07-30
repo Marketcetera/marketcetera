@@ -27,9 +27,9 @@ import org.eclipse.swt.widgets.Control;
  */
 public class ErrorDecorationObservable extends AbstractObservableValue {
 
-	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY";
+	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY"; //$NON-NLS-1$
 
-	public static final String CONTROL_DEFAULT_COLOR = "CONTROL_DEFAULT_COLOR";
+	public static final String CONTROL_DEFAULT_COLOR = "CONTROL_DEFAULT_COLOR"; //$NON-NLS-1$
 
 	private final Control whichControl;
 

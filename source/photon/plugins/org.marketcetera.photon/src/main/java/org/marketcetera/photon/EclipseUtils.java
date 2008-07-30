@@ -26,11 +26,11 @@ public class EclipseUtils {
 
 	static {
 		String swtPlatform = SWT.getPlatform();
-		if ("win32".equals(swtPlatform)) {
+		if ("win32".equals(swtPlatform)) { //$NON-NLS-1$
 			IS_WINDOWS = true;
-		} else if ("carbon".equals(swtPlatform)) {
+		} else if ("carbon".equals(swtPlatform)) { //$NON-NLS-1$
 			IS_MAC=true;
-		} else if ("gtk".equals(swtPlatform)){
+		} else if ("gtk".equals(swtPlatform)){ //$NON-NLS-1$
 			IS_GTK=true;
 		}
 	}
@@ -59,7 +59,7 @@ public class EclipseUtils {
 	}
 	
 	public static IPath getPluginPath(Plugin plugin){
-		URL pluginBaseURL = plugin.getBundle().getEntry("/");
+		URL pluginBaseURL = plugin.getBundle().getEntry("/"); //$NON-NLS-1$
 		URL fileURL = null;
 		try {
 			fileURL = FileLocator.toFileURL(pluginBaseURL);

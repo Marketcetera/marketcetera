@@ -4,11 +4,9 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.Callable;
 
-import org.apache.commons.i18n.MessageManager;
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.runtime.IStatus;
@@ -16,7 +14,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.internal.ErrorViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
@@ -26,15 +23,10 @@ import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
-import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
-import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.ServiceRegistration;
-import org.springframework.jms.core.JmsOperations;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -81,11 +73,12 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		super(name);
 	}
 
+    @SuppressWarnings("restriction")
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		IViewPart theTestView = getTestView();
-		if (theTestView instanceof ErrorViewPart){
+		if (theTestView instanceof org.eclipse.ui.internal.ErrorViewPart){
 			fail("Test view was not created");
 		}
 		
@@ -223,7 +216,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 	
 	public void testUpdateOptionControls() throws FeedException {
 		try {
-			MessageManager.getText("marketdatafeed.market_data_feed_data_ignored", "msg", new Object[] {"ASDF"}, Locale.getDefault());
 			IOptionOrderTicket ticket = ((OptionOrderTicketView)getTestView()).getOptionOrderTicket();
 	
 			OptionOrderTicketModel optionOrderTicketModel = controller.getOrderTicketModel();
@@ -352,7 +344,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		controller.listenMarketData(optionRoot);
 
 		TableViewer marketDataViewer = ((IOptionOrderTicket)ticketView.getOrderTicket()).getOptionMarketDataTableViewer();
-		List marketDataList = (List)marketDataViewer.getInput();
+		List<?> marketDataList = (List<?>)marketDataViewer.getInput();
 		int noEntries = marketDataList.size();
 		assertEquals(1, noEntries);
 		final OptionMessageHolder holder = (OptionMessageHolder)marketDataList.get(0);
@@ -703,26 +695,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
         responseMessage.setField(resultCode);
         return responseMessage;
     }
-
-    private void setUpJMSFeedService(JmsOperations jmsOperations) {
-		JMSFeedService jmsFeedService = null;
-
-		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		ServiceReference jmsFeedServiceReference = bundleContext.getServiceReference(JMSFeedService.class.getName());
-		if (jmsFeedServiceReference == null) {
-			jmsFeedService = new JMSFeedService();
-			ServiceRegistration registration = bundleContext.registerService(
-						JMSFeedService.class.getName(),
-						jmsFeedService,
-						null);
-			jmsFeedService.setServiceRegistration(registration);
-		}
-		else {
-			jmsFeedService = (JMSFeedService) bundleContext.getService(jmsFeedServiceReference);
-		}
-
-		jmsFeedService.setJmsOperations(jmsOperations);
-	}
 }
 
 

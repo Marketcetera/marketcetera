@@ -54,7 +54,7 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 	public void init(IWorkbenchWindow workbenchWindow) {
 		super.init(workbenchWindow);
 
-		ImageDescriptor overlayDescriptor = PhotonPlugin.getImageDescriptor("icons/overlay/"+idChar+"-template.gif");
+		ImageDescriptor overlayDescriptor = PhotonPlugin.getImageDescriptor("icons/overlay/"+idChar+"-template.gif"); //$NON-NLS-1$ //$NON-NLS-2$
 
 		for (FeedStatus aStatus : FeedStatus.values()) {
 				ImageDescriptor descriptor;
@@ -185,7 +185,7 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 		updateStatus(feedStatus);
 	}
 	
-	private static final String EMPTY_WIDGET_NAME = " ";	
+	private static final String EMPTY_WIDGET_NAME = " ";	 //$NON-NLS-1$
 	/**
 	 * Updates the image associated with this service based on the given status.
 	 * 
@@ -208,10 +208,10 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 					// the status has a string associated with it, use that to describe the status of the image in the UI
 					String statusString = (aStatus == null ? FeedStatus.UNKNOWN.name() : aStatus.name());
 					// use the feedID or a place holder to label the status
-					String nameString = (feedID == null ? EMPTY_WIDGET_NAME : String.format(" \"%s\" ", 
+					String nameString = (feedID == null ? EMPTY_WIDGET_NAME : String.format(" \"%s\" ",  //$NON-NLS-1$
 					                                                                        feedID));
 					// put it all together
-					imageLabel.setToolTipText(String.format("%s%s%s",
+					imageLabel.setToolTipText(String.format("%s%s%s", //$NON-NLS-1$
 					                                        name,
 					                                        nameString,
 					                                        statusString));
@@ -247,14 +247,14 @@ public class StatusImageTrimWidget extends AbstractWorkbenchTrimWidget implement
 
 
 	public void setInitializationData(IConfigurationElement config, String propertyName, Object data) throws CoreException {
-		if ("class".equals(propertyName) && data != null && data instanceof Map){
+		if ("class".equals(propertyName) && data != null && data instanceof Map){ //$NON-NLS-1$
 			Map<String, String> dataMap = (Map<String, String>) data;
 			for (String aKey : dataMap.keySet()) {
-				if ("service".equals(aKey)){
+				if ("service".equals(aKey)){ //$NON-NLS-1$
 					setServiceName(dataMap.get(aKey));
-				} else if ("idChar".equals(aKey)){
+				} else if ("idChar".equals(aKey)){ //$NON-NLS-1$
 					idChar = dataMap.get(aKey).toLowerCase().charAt(0);
-				} else if ("name".equals(aKey)){
+				} else if ("name".equals(aKey)){ //$NON-NLS-1$
 					name = dataMap.get(aKey);
 				}
 			}

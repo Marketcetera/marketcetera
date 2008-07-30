@@ -12,12 +12,15 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.IMSymbolListener;
 
-public class SelectOptionMarketDataCommandAction extends Action implements
-		ISelectionListener, IWorkbenchAction {
-	public final static String ID = "org.marketcetera.photon.SelectOptionMarketDataCommandAction";
+public class SelectOptionMarketDataCommandAction
+    extends Action
+    implements ISelectionListener, IWorkbenchAction, Messages
+{
+	public final static String ID = "org.marketcetera.photon.SelectOptionMarketDataCommandAction"; //$NON-NLS-1$
 
 	private IWorkbenchWindow window;
 
@@ -25,8 +28,8 @@ public class SelectOptionMarketDataCommandAction extends Action implements
 		this.window = window;
 		setId(ID);
 		setActionDefinitionId(ID);
-		setText("Select &option market data.");
-		setToolTipText("Quickly select option market data view");
+		setText(OPTION_MARKET_DATA_COMMAND_ACTION.getText());
+		setToolTipText(OPTION_MARKET_DATA_COMMAND_ACTION_DESCRIPTION.getText());
 		setImageDescriptor(PhotonPlugin
 				.getImageDescriptor(IImageKeys.LIGHTNING));
 	}
@@ -39,8 +42,8 @@ public class SelectOptionMarketDataCommandAction extends Action implements
 
 	public void run() {
 		SelectSymbolDialog symbolDialog = new SelectSymbolDialog(window,
-				"Jump To Option Market Data",
-				"Enter the underlying symbol of an option market data view:");
+		                                                         OPTION_MARKET_DATA_SYMBOL_ACTION.getText(),
+		                                                         OPTION_MARKET_DATA_SYMBOL_ACTION_DESCRIPTION.getText());
 		if (symbolDialog.open() == Window.OK) {
 			String targetSymbol = symbolDialog.getTargetSymbol();
 			activateSymbolListenerViewPart(targetSymbol);

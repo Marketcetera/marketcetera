@@ -8,7 +8,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 
 public class CopyMessagesAction extends Action {
-	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
+	private static final String LINE_SEPARATOR = System.getProperty("line.separator"); //$NON-NLS-1$
 	private final Table table;
 	private final Clipboard clipboard;
 

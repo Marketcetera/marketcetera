@@ -4,13 +4,17 @@ import java.util.Date;
 
 import org.eclipse.core.databinding.conversion.Converter;
 import org.marketcetera.core.ThreadLocalSimpleDateFormat;
+import org.marketcetera.photon.Messages;
 
-public class DateToStringCustomConverter extends Converter {
-	public static final String MONTH_FORMAT = "MMM";
+public class DateToStringCustomConverter
+    extends Converter
+    implements Messages
+{
+	public static final String MONTH_FORMAT = "MMM"; //$NON-NLS-1$
 
-	public static final String SHORT_YEAR_FORMAT = "yy";
+	public static final String SHORT_YEAR_FORMAT = "yy"; //$NON-NLS-1$
 
-	public static final String LONG_YEAR_FORMAT = "yyyy";
+	public static final String LONG_YEAR_FORMAT = "yyyy"; //$NON-NLS-1$
 
 	private ThreadLocalSimpleDateFormat localFormat;
 
@@ -42,8 +46,8 @@ public class DateToStringCustomConverter extends Converter {
 			return null;
 		}
 		if (!(fromObject instanceof Date)) {
-			throw new IllegalArgumentException("The value: " + fromObject
-					+ " is not a valid date.");
+			throw new IllegalArgumentException(INVALID_SPECIFIED_DATE.getText(fromObject,
+			                                                                  localFormat));
 		}
 		Date fromDate = (Date) fromObject;
 		String toDateString = null;

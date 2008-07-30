@@ -7,7 +7,7 @@ import java.util.Map;
 import quickfix.field.Side;
 
 public enum SideImage implements ILexerFIXImage {
-	BUY("B", Side.BUY), SELL("S", Side.SELL), SELL_SHORT("SS", Side.SELL_SHORT);
+	BUY("B", Side.BUY), SELL("S", Side.SELL), SELL_SHORT("SS", Side.SELL_SHORT); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	static final Map<String, SideImage> nameMap = new HashMap<String, SideImage>();
 	static final Map<Character, SideImage> fixValueMap = new HashMap<Character, SideImage>();
 	private static final String[] images;
@@ -51,7 +51,7 @@ public enum SideImage implements ILexerFIXImage {
 	}
 	
 	public String getFIXStringValue() {
-		return ""+fixValue;
+		return ""+fixValue; //$NON-NLS-1$
 	}
 
 }

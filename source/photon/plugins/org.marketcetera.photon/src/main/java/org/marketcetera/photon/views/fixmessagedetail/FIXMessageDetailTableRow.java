@@ -27,7 +27,7 @@ class FIXMessageDetailTableRow implements Comparable<Object> {
 	}
 
 	private void changeNullsToEmptyString() {
-		final String emptyString = "";
+		final String emptyString = ""; //$NON-NLS-1$
 		if (field == null) {
 			field = emptyString;
 		}
@@ -63,13 +63,13 @@ class FIXMessageDetailTableRow implements Comparable<Object> {
 	private String getFormattedStringRowEnding() {
 		String osStr = Platform.getOS();
 		if (osStr != null && osStr.equals(Platform.OS_WIN32)) {
-			return "\r\n";
+			return "\r\n"; //$NON-NLS-1$
 		}
-		return "\n";
+		return "\n"; //$NON-NLS-1$
 	}
 
 	public String toFormattedString() {
-		final String columnDelimiter = "\t";
+		final String columnDelimiter = "\t"; //$NON-NLS-1$
 		final String rowEnding = getFormattedStringRowEnding();
 		StringBuilder builder = new StringBuilder();
 		builder.append(field);

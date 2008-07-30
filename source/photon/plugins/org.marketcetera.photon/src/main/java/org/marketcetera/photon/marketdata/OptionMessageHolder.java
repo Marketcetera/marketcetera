@@ -7,6 +7,7 @@ import java.util.regex.Matcher;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.FieldMap;
@@ -30,7 +31,10 @@ import quickfix.field.Symbol;
  * @author gmiller
  *
  */
-public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> implements Comparable<OptionMessageHolder> {
+public class OptionMessageHolder
+    extends EnumMap<OptionInfoComponent, FieldMap>
+    implements Comparable<OptionMessageHolder>, Messages
+{
 
 	/**
 	 * 
@@ -135,7 +139,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		case PutOrCall.CALL:
 			return get(OptionInfoComponent.CALL_MARKET_DATA);
 		default:
-			throw new IllegalArgumentException(""+putOrCall);
+			throw new IllegalArgumentException(INVALID_PUT_OR_CALL.getText(putOrCall));
 		}
 	}
 
@@ -153,9 +157,8 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 			this.put(OptionInfoComponent.CALL_MARKET_DATA, marketData);
 			break;
 		default:
-			throw new IllegalArgumentException(""+putOrCall);
+            throw new IllegalArgumentException(INVALID_PUT_OR_CALL.getText(putOrCall));
 		}
-		
 	}
 	
 	/**
@@ -184,7 +187,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 			}
 			break;
 		default:
-			throw new IllegalArgumentException(String.format("%d", putOrCall));
+            throw new IllegalArgumentException(INVALID_PUT_OR_CALL.getText(putOrCall));
 		}
 	}
 	
@@ -276,7 +279,7 @@ public class OptionMessageHolder extends EnumMap<OptionInfoComponent, FieldMap> 
 		case PutOrCall.CALL:
 			return callSymbol;
 		default:
-			throw new IllegalArgumentException(String.format("%d", putOrCall));
+            throw new IllegalArgumentException(INVALID_PUT_OR_CALL.getText(putOrCall));
 		}
 	}
 

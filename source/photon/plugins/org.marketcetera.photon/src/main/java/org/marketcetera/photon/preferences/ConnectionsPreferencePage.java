@@ -12,15 +12,18 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.quickfix.ConnectionConstants;
 
-@ClassVersion("$Id$")
-public class ConnectionsPreferencePage extends FieldEditorPreferencePage implements
-                                                                IWorkbenchPreferencePage {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ConnectionsPreferencePage
+    extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage, Messages
+{
 
-	public static final String ID = "org.marketcetera.photon.preferences.connections";
+	public static final String ID = "org.marketcetera.photon.preferences.connections"; //$NON-NLS-1$
 
 	
 	private UrlFieldEditor jmsServerUrlEditor;
@@ -53,11 +56,10 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
     	if (fixVersionStr != null && fixVersionStr.length() > 0)
     	{
     		Label descriptionLabel = new Label(getFieldEditorParent(), SWT.NONE);
-    		descriptionLabel.setText("FIX Version");
+    		descriptionLabel.setText(FIX_VERSION_LABEL.getText());
     		Label versionLabel = new Label(getFieldEditorParent(), SWT.NONE);
     		versionLabel.setText(fixVersionStr);
-    		versionLabel.setToolTipText("The FIX version can be changed in photon-config.ini. " 
-    				+ "You must restart Photon for changes to photon-config.ini to take effect.");
+    		versionLabel.setToolTipText(FIX_VERSION_TOOLTIP.getText());
     	}
     }
     
@@ -74,36 +76,34 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
     protected void createFieldEditors() {
         createFIXVersionLabels();
         
-        jmsServerUrlEditor = new UrlFieldEditor(
-                ConnectionConstants.JMS_URL_KEY, "JMS Server URL",
-                getFieldEditorParent()
-                );
+        jmsServerUrlEditor = new UrlFieldEditor(ConnectionConstants.JMS_URL_KEY,
+                                                JMS_SERVER_URL_LABEL.getText(),
+                                                getFieldEditorParent());
 		addField(jmsServerUrlEditor);
-		StringFieldEditor stringEditor = new StringFieldEditor(
-                ConnectionConstants.JMS_INCOMING_TOPIC_KEY, "Incoming topic name",
-                getFieldEditorParent()
-                );
+		StringFieldEditor stringEditor = new StringFieldEditor(ConnectionConstants.JMS_INCOMING_TOPIC_KEY,
+		                                                       INCOMING_TOPIC_LABEL.getText(),
+		                                                       getFieldEditorParent());
         addField(stringEditor);
-        stringEditor = new StringFieldEditor(
-                ConnectionConstants.JMS_OUTGOING_QUEUE_KEY, "Outgoing queue name",
-                getFieldEditorParent()
-                );
+        stringEditor = new StringFieldEditor(ConnectionConstants.JMS_OUTGOING_QUEUE_KEY,
+                                             OUTGOING_QUEUE_LABEL.getText(),
+                                             getFieldEditorParent());
         addField(stringEditor);
 
-        webAppHostEditor = new UrlFieldEditor(
-                ConnectionConstants.WEB_APP_HOST_KEY, "Web App Host",
-                getFieldEditorParent()
-                );
+        webAppHostEditor = new UrlFieldEditor(ConnectionConstants.WEB_APP_HOST_KEY,
+                                              WEB_APP_HOST_LABEL.getText(),
+                                              getFieldEditorParent());
 		addField(webAppHostEditor);
 				
-        webAppPortEditor = new IntegerFieldEditor(
-                ConnectionConstants.WEB_APP_PORT_KEY, "Web App Port",
-                getFieldEditorParent()
-                );
+        webAppPortEditor = new IntegerFieldEditor(ConnectionConstants.WEB_APP_PORT_KEY,
+                                                  WEB_APP_PORT_LABEL.getText(),
+                                                  getFieldEditorParent());
 		addField(webAppPortEditor);
 		
 		String[][] namesValues = ReconnectMarketDataFeedJob.getFeedNames();
-		quoteFeedNameEditor = new ComboFieldEditor(ConnectionConstants.MARKETDATA_STARTUP_KEY, "Market Data Feed", namesValues, getFieldEditorParent());
+		quoteFeedNameEditor = new ComboFieldEditor(ConnectionConstants.MARKETDATA_STARTUP_KEY,
+		                                           MARKET_DATA_FEED_LABEL.getText(),
+		                                           namesValues,
+		                                           getFieldEditorParent());
 		addField(quoteFeedNameEditor);
 		
 //        StringFieldEditor stringEditor = new StringFieldEditor(
@@ -122,10 +122,9 @@ public class ConnectionsPreferencePage extends FieldEditorPreferencePage impleme
 //                );
 //        addField(stringEditor);
 		
-        orderIDPrefixEditor = new StringFieldEditor(
-                ConnectionConstants.ORDER_ID_PREFIX_KEY, "Order ID Prefix\n(Requires restart)",
-                getFieldEditorParent()
-                );
+        orderIDPrefixEditor = new StringFieldEditor(ConnectionConstants.ORDER_ID_PREFIX_KEY,
+                                                    ORDER_ID_PREFIX_LABEL.getText(),
+                                                    getFieldEditorParent());
 		addField(orderIDPrefixEditor);
 		
     }

@@ -61,10 +61,10 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	private final IObservableList strikePriceList;
 	private final WritableList optionMarketDataList = new WritableList();
 	
-	private final WritableValue currentOptionSymbol = new WritableValue("", String.class);
-	private final WritableValue observableSymbol = new WritableValue("", String.class);
+	private final WritableValue currentOptionSymbol = new WritableValue("", String.class); //$NON-NLS-1$
+	private final WritableValue observableSymbol = new WritableValue("", String.class); //$NON-NLS-1$
 	
-	private final WritableValue underlyingSymbol = new WritableValue("", String.class);
+	private final WritableValue underlyingSymbol = new WritableValue("", String.class); //$NON-NLS-1$
 	private final WritableValue underlyingTickIndicator = new WritableValue(false, Boolean.class);
 	private final WritableValue underlyingLastPrice = new WritableValue(null, BigDecimal.class);
 	private final WritableValue underlyingLastPriceChange = new WritableValue(null, BigDecimal.class);
@@ -119,7 +119,7 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 				},
 				new FunctionList.Function<Integer, String>() {
 					public String evaluate(Integer sourceValue) {
-						return ""+sourceValue;
+						return ""+sourceValue; //$NON-NLS-1$
 					}
 				});
 		strikePriceList = newSelectorList(
@@ -317,8 +317,8 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	@Override
 	public void clearOrderMessage() {
 		super.clearOrderMessage();
-		this.currentOptionSymbol.setValue("");
-		this.observableSymbol.setValue("");
+		this.currentOptionSymbol.setValue(""); //$NON-NLS-1$
+		this.observableSymbol.setValue(""); //$NON-NLS-1$
 		updateOptionInfo();
 	}
 	
@@ -516,7 +516,7 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	 * Clear all the fields for underlying market data.
 	 */
 	public void clearUnderlyingMarketData() {
-		underlyingSymbol.setValue("");
+		underlyingSymbol.setValue(""); //$NON-NLS-1$
 		underlyingTickIndicator.setValue(null);
 		underlyingLastPrice.setValue(null);
 		underlyingLastPriceChange.setValue(null);

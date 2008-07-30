@@ -12,7 +12,7 @@ import org.osgi.framework.BundleContext;
 public class MarketceteraFeedPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.marketcetera.marketdata";
+	public static final String PLUGIN_ID = "org.marketcetera.marketdata"; //$NON-NLS-1$
 
 	// The shared instance
 	private static MarketceteraFeedPlugin plugin;
@@ -57,7 +57,7 @@ public class MarketceteraFeedPlugin extends AbstractUIPlugin {
 		return bundleContext.getDataFile(filename);
 	}
 	public File getStoreDirectory(){
-		return bundleContext.getDataFile("");
+		return bundleContext.getDataFile(""); //$NON-NLS-1$
 	}
 
 	@Override

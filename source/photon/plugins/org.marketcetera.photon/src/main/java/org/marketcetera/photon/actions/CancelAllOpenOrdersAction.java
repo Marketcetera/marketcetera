@@ -2,16 +2,20 @@ package org.marketcetera.photon.actions;
 
 import org.eclipse.jface.action.Action;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class CancelAllOpenOrdersAction extends Action {
+public class CancelAllOpenOrdersAction 
+    extends Action
+    implements Messages
+{
 
-	private static final String ID = "org.marketcetera.photon.actions.CancelAllOpenOrdersAction";
+	private static final String ID = "org.marketcetera.photon.actions.CancelAllOpenOrdersAction"; //$NON-NLS-1$
 
 	public CancelAllOpenOrdersAction() {
 		setId(ID);
-		setText("&Cancel all open orders");
-		setToolTipText("Cancel all open orders");
+		setText(CANCEL_ALL_OPEN_ORDERS_ACTION.getText());
+		setToolTipText(CANCEL_ALL_OPEN_ORDERS_ACTION_DESCRIPTION.getText());
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.CANCEL_ALL_OPEN_ORDERS));
 	}
 

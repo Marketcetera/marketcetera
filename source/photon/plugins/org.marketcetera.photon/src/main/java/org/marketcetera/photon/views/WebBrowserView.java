@@ -24,11 +24,17 @@ import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.RCPUtils;
 
-@ClassVersion("$Id$")
-public class WebBrowserView extends ViewPart implements StatusTextListener, LocationListener {
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class WebBrowserView
+    extends ViewPart
+    implements StatusTextListener, LocationListener, Messages
+{
 
 	public static final String ID = "org.marketcetera.photon.views.WebBrowserView"; //$NON-NLS-1$
 
@@ -94,7 +100,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 		browser = new Browser(top, SWT.NONE);
 		browser.setLayoutData(browserGridData);
 		statusLabel = new Label(top, SWT.NONE);
-		statusLabel.setText("Ready");
+		statusLabel.setText(READY_LABEL.getText());
 		statusLabel.setLayoutData(statusLabelGridData);
         
 		browser.addStatusTextListener(this);
@@ -125,7 +131,7 @@ public class WebBrowserView extends ViewPart implements StatusTextListener, Loca
 		try {
 			browser.setUrl(newLocation);
 		} catch (Exception ex) {
-			String message = "Error navigating to URL: "+ex.getMessage();
+			String message = CANNOT_CONNECT_TO_URL.getText(newLocation);
 			statusLabel.setText(RCPUtils.escapeAmpersands(message));
 		}
 	}

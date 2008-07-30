@@ -12,9 +12,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -52,28 +54,34 @@ import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 import ca.odell.glazedlists.util.concurrent.Lock;
 
+/* $License$ */
+
 /**
  * @author caroline.leung@softwaregoodness.com
  * @author michael.lossos@softwaregoodness.com
  */
-public class OptionMessagesComposite extends Composite {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class OptionMessagesComposite
+    extends Composite
+    implements Messages
+{
 
 	public enum OptionDataColumns implements IFieldIdentifier {
-		ZEROWIDTH(""), 
-		CVOL("cVol", OptionInfoComponent.CALL_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME), 
-		CBIDSZ("cBidSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		CBID("cBid", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		CASK("cAsk", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		CASKSZ("cAskSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		CSYM("cSym", OptionInfoComponent.CALL_EXTRA_INFO, Symbol.FIELD, null, null, null),
-		STRIKE("Strike", OptionInfoComponent.STRIKE_INFO, StrikePrice.FIELD, null, null, null),
-		EXP("Exp", OptionInfoComponent.STRIKE_INFO, MaturityMonthYear.FIELD, null, null, null),
-		PSYM("pSym", OptionInfoComponent.PUT_EXTRA_INFO, Symbol.FIELD, null, null, null),
-		PBIDSZ("pBidSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		PBID("pBid", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		PASK("pAsk", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		PASKSZ("pAskSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		PVOL("pVol", OptionInfoComponent.PUT_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME);
+		ZEROWIDTH(""),  //$NON-NLS-1$
+		CVOL("cVol", OptionInfoComponent.CALL_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME),  //$NON-NLS-1$
+		CBIDSZ("cBidSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),  //$NON-NLS-1$
+		CBID("cBid", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), //$NON-NLS-1$
+		CASK("cAsk", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		CASKSZ("cAskSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		CSYM("cSym", OptionInfoComponent.CALL_EXTRA_INFO, Symbol.FIELD, null, null, null), //$NON-NLS-1$
+		STRIKE("Strike", OptionInfoComponent.STRIKE_INFO, StrikePrice.FIELD, null, null, null), //$NON-NLS-1$
+		EXP("Exp", OptionInfoComponent.STRIKE_INFO, MaturityMonthYear.FIELD, null, null, null), //$NON-NLS-1$
+		PSYM("pSym", OptionInfoComponent.PUT_EXTRA_INFO, Symbol.FIELD, null, null, null), //$NON-NLS-1$
+		PBIDSZ("pBidSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),  //$NON-NLS-1$
+		PBID("pBid", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), //$NON-NLS-1$
+		PASK("pAsk", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		PASKSZ("pAskSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		PVOL("pVol", OptionInfoComponent.PUT_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME); //$NON-NLS-1$
 
 
 		private String name;
@@ -204,7 +212,7 @@ public class OptionMessagesComposite extends Composite {
 		}
     }
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	private void createTable(Composite parent) {
         messageTable = createMessageTable(parent);
 		messagesViewer = createTableViewer(messageTable);
@@ -229,7 +237,7 @@ public class OptionMessagesComposite extends Composite {
 	}
 	
 	private void disableErrorLabelText() {
-		errorLabel.setText("");
+		errorLabel.setText(""); //$NON-NLS-1$
 		errorLabel.pack();
 		errorLabel.setEnabled(false);
 	}
@@ -246,7 +254,7 @@ public class OptionMessagesComposite extends Composite {
 		zeroFirstColumn.setWidth(0);
 		zeroFirstColumn.setResizable(false);
 		zeroFirstColumn.setMoveable(false);
-		zeroFirstColumn.setText("");
+		zeroFirstColumn.setText(""); //$NON-NLS-1$
 		zeroFirstColumn.setImage(null);
 		for (int i = 1; i < table.getColumnCount(); i++) {
 			table.getColumn(i).setWidth(getTableColumnWidth(i));
@@ -449,7 +457,7 @@ public class OptionMessagesComposite extends Composite {
 	public void handleDerivativeSecuritiyList(Message derivativeSecurityList, MarketDataFeedTracker marketDataTracker){
 		clearDataMaps();
 		
-		MarketDataFeedService feed = marketDataTracker.getMarketDataFeedService();
+		MarketDataFeedService<?> feed = marketDataTracker.getMarketDataFeedService();
 		try {
 			int numDerivs = 0;
 			if (derivativeSecurityList.isSetField(NoRelatedSym.FIELD)){
@@ -490,15 +498,17 @@ public class OptionMessagesComposite extends Composite {
 					optionSymbolToSeriesMap.put(optionSymbol, holder);
 				} catch (ParseException e) {
 					MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
-					PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
-					enableErrorLabelText("Error getting option contracts data for " + underlying.getBaseSymbol());
+					PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO.getText(),
+					                                                      e);
+					enableErrorLabelText(CANNOT_GET_OPTION_CONTRACT_INFO.getText(underlying.getBaseSymbol()));
 				}
 			}
 			disableErrorLabelText();
 			getMessagesViewer().refresh();
 		} catch (FieldNotFound e) {
-			PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
-			enableErrorLabelText("Exception parsing option info - " + e);
+			PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO.getText(),
+			                                                      e);
+			enableErrorLabelText(CANNOT_PARSE_OPTION_INFO.getText());
 		}
 	}
 
@@ -523,10 +533,10 @@ public class OptionMessagesComposite extends Composite {
 				
 				getMessagesViewer().update(line, null);
 			} else {
-				PhotonPlugin.getDefault().getMarketDataLogger().debug("Unknown symbol: "+symbol);
+				PhotonPlugin.getDefault().getMarketDataLogger().debug("Unknown symbol: "+symbol); //$NON-NLS-1$
 			}
 		} catch (FieldNotFound e) {
-			PhotonPlugin.getDefault().getMarketDataLogger().debug("Symbol missing from option quote.");
+			PhotonPlugin.getDefault().getMarketDataLogger().debug("Symbol missing from option quote."); //$NON-NLS-1$
 		}
 	}
 

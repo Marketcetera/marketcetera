@@ -18,7 +18,7 @@ import quickfix.field.UnderlyingSymbol;
 
 public class MarketDataUtils {
 
-	static final String UTC_TIME_ZONE = "UTC";
+	static final String UTC_TIME_ZONE = "UTC"; //$NON-NLS-1$
 	
 	static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
@@ -51,7 +51,7 @@ public class MarketDataUtils {
 		Group relatedSymGroup = messageFactory.createGroup(
 				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
 		relatedSymGroup.setField(new Symbol(symbol.toString()));
-		if (securityType != null && !"".equals(securityType)){
+		if (securityType != null && !"".equals(securityType)){ //$NON-NLS-1$
 			relatedSymGroup.setField(new SecurityType(securityType));
 		}
 		message.addGroup(relatedSymGroup);
@@ -68,7 +68,7 @@ public class MarketDataUtils {
 				MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
 		Group underlyingGroup = messageFactory.createGroup(
 				MsgType.MARKET_DATA_REQUEST, NoUnderlyings.FIELD);
-		relatedSymGroup.setString(Symbol.FIELD, "[N/A]");
+		relatedSymGroup.setString(Symbol.FIELD, "[N/A]"); //$NON-NLS-1$
 		relatedSymGroup.setField(new SecurityType(SecurityType.OPTION));
 
 		underlyingGroup.setString(UnderlyingSymbol.FIELD, underlying.toString());

@@ -3,14 +3,21 @@ package org.marketcetera.photon.ui.validation;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class StringRequiredValidator implements IValidator {
+public class StringRequiredValidator
+    implements IValidator, Messages
+{
 
 	private IStatus errorStatus;
 
 	public StringRequiredValidator(){
-		errorStatus = new Status(Status.ERROR, PhotonPlugin.ID, Status.OK, "Value required", null);
+		errorStatus = new Status(Status.ERROR,
+		                         PhotonPlugin.ID,
+		                         Status.OK,
+		                         VALUE_REQUIRED.getText(),
+		                         null);
 	}
 	
 	public IStatus validate(Object value) {
@@ -25,7 +32,7 @@ public class StringRequiredValidator implements IValidator {
 				return Status.OK_STATUS;
 			}
 		} else {
-			throw new IllegalArgumentException("Argument must be String");
+			throw new IllegalArgumentException(ARGUMENT_MUST_BE_STRING.getText());
 		}
 	}
 

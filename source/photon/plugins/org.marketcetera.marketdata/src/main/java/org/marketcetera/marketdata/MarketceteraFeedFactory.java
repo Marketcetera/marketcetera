@@ -14,7 +14,7 @@ public class MarketceteraFeedFactory
 	}
 	public String getProviderName() 
 	{
-		return "Marketcetera";
+		return "Marketcetera"; //$NON-NLS-1$
 	}
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()

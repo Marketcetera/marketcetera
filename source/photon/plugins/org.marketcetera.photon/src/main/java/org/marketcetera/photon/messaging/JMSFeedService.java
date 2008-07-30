@@ -7,11 +7,15 @@ import javax.jms.JMSException;
 import org.apache.xbean.spring.context.ClassPathXmlApplicationContext;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.FeedComponentAdapterBase;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.osgi.framework.ServiceRegistration;
 import org.springframework.jms.core.JmsOperations;
 
-public class JMSFeedService extends FeedComponentAdapterBase implements ExceptionListener {
+public class JMSFeedService
+    extends FeedComponentAdapterBase
+    implements ExceptionListener, Messages
+{
 
 	JmsOperations jmsOperations;
 	ClassPathXmlApplicationContext applicationContext;
@@ -27,7 +31,7 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 	}
 
 	public String getID() {
-		return "JMS";
+		return "JMS"; //$NON-NLS-1$
 	}
 
 
@@ -37,7 +41,8 @@ public class JMSFeedService extends FeedComponentAdapterBase implements Exceptio
 	public void onException(Exception ex)
 	{
 		exceptionOccurred = true;
-		PhotonPlugin.getMainConsoleLogger().error("Message server exception", ex);
+		PhotonPlugin.getMainConsoleLogger().error(JMS_EXCEPTION.getText(),
+		                                          ex);
 		fireFeedComponentChanged();
 	}
 

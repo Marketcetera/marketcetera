@@ -7,10 +7,10 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.PhotonPlugin;
 
 public class FIXMessageColumnPreferenceParser {
-	private static final String KeyPrefix = "org.marketcetera.photon.preferences.fixcolumnfields";
-	private static final String KeyDelimiter = "_";
+	private static final String KeyPrefix = "org.marketcetera.photon.preferences.fixcolumnfields"; //$NON-NLS-1$
+	private static final String KeyDelimiter = "_"; //$NON-NLS-1$
 
-	private static final String FieldDelimiter = ",";
+	private static final String FieldDelimiter = ","; //$NON-NLS-1$
 
 	public FIXMessageColumnPreferenceParser() {
 	}
@@ -57,8 +57,9 @@ public class FIXMessageColumnPreferenceParser {
 				int field = Integer.parseInt(part);
 				fields.add(field);
 			} catch (Exception anyException) {
-				PhotonPlugin.getMainConsoleLogger().debug(
-						getClass() + " Failed to parse field value: " + part); // $NON-NLS-1$
+				PhotonPlugin.getMainConsoleLogger().debug(String.format("%s Failed to parse field value: %s", //$NON-NLS-1$
+				                                                        getClass(),
+				                                                        part));
 			}
 		}
 		return fields;

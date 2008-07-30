@@ -12,6 +12,7 @@ import org.eclipse.core.runtime.Assert;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.ThreadLocalSimpleDateFormat;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
@@ -28,16 +29,18 @@ import quickfix.field.SecurityListRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
-public class OptionMarketDataUtils {
+public class OptionMarketDataUtils
+    implements Messages
+{
 	private static FIXMessageFactory messageFactory = FIXVersion.FIX44
 			.getMessageFactory();
 
 	/* SimpleDateFormats are not thread safe... */
-	public static final ThreadLocalSimpleDateFormat MONTH_YEAR_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyyyMM");
-	public static final ThreadLocalSimpleDateFormat DAY_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("dd");
-	public static final ThreadLocalSimpleDateFormat DATE_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyyyMMdd");
-	public static final ThreadLocalSimpleDateFormat SHORT_MONTH_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("MMM");
-	public static final ThreadLocalSimpleDateFormat OPTION_EXPIRATION_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyMMM");
+	public static final ThreadLocalSimpleDateFormat MONTH_YEAR_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyyyMM"); //$NON-NLS-1$
+	public static final ThreadLocalSimpleDateFormat DAY_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("dd"); //$NON-NLS-1$
+	public static final ThreadLocalSimpleDateFormat DATE_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyyyMMdd"); //$NON-NLS-1$
+	public static final ThreadLocalSimpleDateFormat SHORT_MONTH_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("MMM"); //$NON-NLS-1$
+	public static final ThreadLocalSimpleDateFormat OPTION_EXPIRATION_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("yyMMM"); //$NON-NLS-1$
 
 	{
 		MONTH_YEAR_FORMAT_LOCAL.setTimeZone(TimeZone.getTimeZone(MarketDataUtils.UTC_TIME_ZONE));
@@ -49,7 +52,7 @@ public class OptionMarketDataUtils {
 	/**
 	 * The pattern used to determine if a symbol represents an option.
 	 */
-	public static final Pattern OPTION_SYMBOL_PATTERN = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
+	public static final Pattern OPTION_SYMBOL_PATTERN = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$
 
 
 
@@ -167,9 +170,7 @@ public class OptionMarketDataUtils {
 		} else if (cfiCode.getType() == OptionCFICode.TYPE_CALL) {
 			putOrCall = PutOrCall.CALL;
 		} else {
-			throw new IllegalArgumentException(
-					"Option data is neither a put nor a call. CFICode="
-							+ cfiCode.getType());
+			throw new IllegalArgumentException(INVALID_PUT_OR_CALL.getText(cfiCode.getType()));
 		}
 		return putOrCall;
 	}
@@ -187,7 +188,7 @@ public class OptionMarketDataUtils {
 		case PutOrCall.CALL:
 			return PutOrCall.PUT;
 		default:
-			throw new IllegalArgumentException(""+thisOptionType);
+            throw new IllegalArgumentException(INVALID_PUT_OR_CALL.getText(thisOptionType));
 		}
 	}
 	

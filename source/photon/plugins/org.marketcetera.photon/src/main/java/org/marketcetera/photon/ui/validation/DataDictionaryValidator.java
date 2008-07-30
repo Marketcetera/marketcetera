@@ -3,6 +3,7 @@ package org.marketcetera.photon.ui.validation;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 
 import quickfix.DataDictionary;
@@ -16,7 +17,9 @@ import quickfix.field.TimeInForce;
  * @author gmiller
  *
  */
-public class DataDictionaryValidator implements IValidator {
+public class DataDictionaryValidator
+    implements IValidator, Messages
+{
 
 	DataDictionary dictionary;
 	private IStatus errorStatus;
@@ -36,8 +39,11 @@ public class DataDictionaryValidator implements IValidator {
 		this.dictionary = dictionary;
 		this.fieldNumber = fieldNumber;
 		errorStatus = new Status(IStatus.ERROR, pluginID, IStatus.OK, errorMessage, null);
-		tifWarningStatus = new Status(IStatus.WARNING, pluginID, IStatus.OK, "May not be valid for current FIX version", null);
-
+		tifWarningStatus = new Status(IStatus.WARNING,
+		                              pluginID,
+		                              IStatus.OK,
+		                              MAY_NOT_BE_VALID_FOR_FIX_VERSION.getText(),
+		                              null); //$NON-NLS-1$
 	}
 
 

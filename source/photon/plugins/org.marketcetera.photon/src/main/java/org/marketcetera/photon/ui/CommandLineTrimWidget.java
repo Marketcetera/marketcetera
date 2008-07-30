@@ -30,7 +30,10 @@ import quickfix.Message;
  * 
  * @author andrei@lissovski.org
  */
-public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
+public class CommandLineTrimWidget
+    extends AbstractWorkbenchTrimWidget
+    implements Messages
+{
 
 	private Composite composite = null;
 	private Text textArea;
@@ -44,7 +47,7 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 
 	private CommandParser commandParser;
 	public final static int DEFAULT_CHAR_WIDTH = 25;
-	public static final String ID = "org.marketcetera.photon.ui.commandLineTrimWidget";
+	public static final String ID = "org.marketcetera.photon.ui.commandLineTrimWidget"; //$NON-NLS-1$
 
 	
 	public CommandLineTrimWidget() {
@@ -81,7 +84,7 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 		composite.setData(this);
 		
 		Label command = new Label(composite, SWT.NONE);
-		command.setText(Messages.CommandStatusLineContribution_CommandLabel);
+		command.setText(Messages.CommandStatusLineContribution_CommandLabel.getText());
 		textArea = new Text(composite, SWT.BORDER);
 
 		IFocusService focusService = (IFocusService) getWorkbenchWindow().getService(IFocusService.class);
@@ -122,10 +125,10 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 			try {
 				IPhotonCommand command = null;
 				if ('\r' == e.character) {
-					theText.setText("");
+					theText.setText(""); //$NON-NLS-1$
 					command = commandParser.parseCommand(theInputString);
 				} else if (e.keyCode == 't' && ((e.stateMask & SWT.CONTROL) != 0)) {
-					theText.setText("");
+					theText.setText(""); //$NON-NLS-1$
 					command = commandParser.parseCommand(theInputString);
 					Message message = ((MessageCommand)command).getMessage();
 					if (FIXMessageUtil.isOrderSingle(message)){
@@ -136,7 +139,8 @@ public class CommandLineTrimWidget extends AbstractWorkbenchTrimWidget {
 					command.execute();
 				}
 			} catch (ParserException e1) {
-				PhotonPlugin.getMainConsoleLogger().error(theInputString+": "+e1.getMessage() );
+				PhotonPlugin.getMainConsoleLogger().error(PARSE_EXCEPTION.getText(theInputString),
+				                                          e1);
 			}
 		}
 	}

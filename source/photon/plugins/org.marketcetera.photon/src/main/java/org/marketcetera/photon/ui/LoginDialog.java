@@ -45,6 +45,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.branding.IProductConstants;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.actions.ConnectionDetails;
 import org.osgi.service.prefs.BackingStoreException;
@@ -54,9 +55,14 @@ import org.osgi.service.prefs.Preferences;
  * Login dialog, which prompts for the user's account info, and has Login and
  * Cancel buttons.
  */
-public class LoginDialog extends Dialog {
+public class LoginDialog
+    extends Dialog
+    implements Messages
+{
 
-	private Combo userIdText;
+    private static final String ORS_URL = "href=\"http://www.marketcetera.com/0.5.0/docs/authentication\""; //$NON-NLS-1$
+
+    private Combo userIdText;
 
 	private Text passwordText;
 
@@ -66,11 +72,8 @@ public class LoginDialog extends Dialog {
 
 	private Image[] images;
 
-	private static final String PASSWORD = "password";
-
-	private static final String SAVED = "saved-connections";
-
-	private static final String LAST_USER = "prefs_last_connection";
+	private static final String SAVED = "saved-connections"; //$NON-NLS-1$
+	private static final String LAST_USER = "prefs_last_connection"; //$NON-NLS-1$
 	
 	private Shell mShell;
 
@@ -82,7 +85,7 @@ public class LoginDialog extends Dialog {
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
         mShell = newShell;
-		newShell.setText("ORS Login");
+		newShell.setText(ORS_LOGIN_LABEL.getText());
 		// load the image from the product definition
 		IProduct product = Platform.getProduct();
 		if (product != null) {
@@ -128,12 +131,12 @@ public class LoginDialog extends Dialog {
 		composite.setLayout(layout);
 
 		Label accountLabel = new Label(composite, SWT.NONE);
-		accountLabel.setText("Account details:");
+		accountLabel.setText(ACCOUNT_DETAILS_LABEL.getText());
 		accountLabel.setLayoutData(new GridData(GridData.BEGINNING,
 				GridData.CENTER, false, false, 2, 1));
 
 		Label userIdLabel = new Label(composite, SWT.NONE);
-		userIdLabel.setText("&User ID:");
+		userIdLabel.setText(MENU_USER_ID_LABEL.getText());
 		userIdLabel.setLayoutData(new GridData(GridData.END, GridData.CENTER,
 				false, false));
 
@@ -153,7 +156,7 @@ public class LoginDialog extends Dialog {
 		});
 
 		Label passwordLabel = new Label(composite, SWT.NONE);
-		passwordLabel.setText("&Password:");
+		passwordLabel.setText(MENU_PASSWORD_LABEL.getText());
 		passwordLabel.setLayoutData(new GridData(GridData.END, GridData.CENTER,
 				false, false));
 
@@ -161,13 +164,13 @@ public class LoginDialog extends Dialog {
 		passwordText.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
 				true, false));
 
-		String lastUser = "enduser";
+		String lastUser = "enduser"; //$NON-NLS-1$
 		if (connectionDetails != null)
 			lastUser = connectionDetails.getUserId();
 		initializeUsers(lastUser);
 		Link link = new Link(mShell, 
 		                     SWT.BORDER);
-		link.setText("Get <a href=\"http://www.marketcetera.com/0.5.0/docs/authentication\">help</a> with ORS log-in configuration.");
+		link.setText(ORS_LOGIN_HELP_URL.getText(ORS_URL));
 		link.addListener(SWT.Selection, 
 		                 new Listener() {
             public void handleEvent(Event event) 
@@ -184,19 +187,19 @@ public class LoginDialog extends Dialog {
 	{
 		Button removeCurrentUser = createButton(parent,
 		                                        IDialogConstants.CLIENT_ID,
-		                                        "&Clear",
+		                                        MENU_CLEAR_LABEL.getText(),
 		                                        false);
 		removeCurrentUser.addSelectionListener(new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
 				savedDetails.remove(userIdText.getText());
-				initializeUsers("");
+				initializeUsers(""); //$NON-NLS-1$
 			}
 		});
 		createButton(parent,
 		             IDialogConstants.OK_ID,
-		             "&Login",
+		             MENU_LOGIN_LABEL.getText(),
 		             true);
 		createButton(parent,
 		             IDialogConstants.CANCEL_ID,
@@ -206,7 +209,7 @@ public class LoginDialog extends Dialog {
 
 	protected void initializeUsers(String defaultUser) {
 		userIdText.removeAll();
-		passwordText.setText("");
+		passwordText.setText(""); //$NON-NLS-1$
 		for (Iterator<String> it = savedDetails.keySet().iterator(); it.hasNext();)
 			userIdText.add(it.next());
 		int index = Math.max(userIdText.indexOf(defaultUser), 0);
@@ -214,9 +217,10 @@ public class LoginDialog extends Dialog {
 	}
 
 	protected void okPressed() {
-		if (connectionDetails.getUserId().equals("")) {
-			MessageDialog.openError(getShell(), "Invalid User ID",
-					"User ID field must not be blank.");
+		if (connectionDetails.getUserId().equals("")) { //$NON-NLS-1$
+			MessageDialog.openError(getShell(),
+			                        INVALID_USER_ID.getText(),
+			                        USER_ID_MUST_NOT_BE_BLANK.getText());
 			return;
 		}
 		super.okPressed();
@@ -242,7 +246,8 @@ public class LoginDialog extends Dialog {
 			String name = it.next();
 			ConnectionDetails d = (ConnectionDetails) savedDetails.get(name);
 			Preferences connection = connections.node(name);
-			connection.put(PASSWORD, d.getPassword());
+			connection.put(PASSWORD_LABEL.getText(),
+			               d.getPassword());
 		}
 		try {
 			preferences.flush();
@@ -261,10 +266,13 @@ public class LoginDialog extends Dialog {
 			for (int i = 0; i < userNames.length; i++) {
 				String userName = userNames[i];
 				Preferences node = connections.node(userName);
-				savedDetails.put(userName, new ConnectionDetails(userName, node.get(PASSWORD, "")));
+				savedDetails.put(userName,
+				                 new ConnectionDetails(userName,
+				                                       node.get(PASSWORD_LABEL.getText(),
+				                                                ""))); //$NON-NLS-1$
 			}
 			connectionDetails = (ConnectionDetails) savedDetails
-					.get(preferences.get(LAST_USER, ""));
+					.get(preferences.get(LAST_USER, "")); //$NON-NLS-1$
 		} catch (BackingStoreException e) {
 			e.printStackTrace();
 		}

@@ -1,12 +1,30 @@
-/**
- * 
- */
 package org.marketcetera.photon.views.fixmessagedetail;
 
-public enum FIXMessageDetailColumnType {
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
+
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public enum FIXMessageDetailColumnType
+    implements Messages
+{
 	// There is a hidden first column at index zero.
-	Field(1, "Field", 20), Tag(2, "Tag", 10), Value(3, "Value", 42), ValueName(
-			4, "Value Name", 20), Required(5, "Required", 12);
+	Field(1,
+	      FIELD_LABEL.getText(),
+	      20),
+	Tag(2,
+	    TAG_LABEL.getText(),
+	    10),
+	Value(3,
+	      VALUE_LABEL.getText(),
+	      42),
+    ValueName(4,
+              VALUE_NAME_LABEL.getText(),
+              20),
+    Required(5,
+             REQUIRED_LABEL.getText(),
+             12);
 
 	private String name;
 

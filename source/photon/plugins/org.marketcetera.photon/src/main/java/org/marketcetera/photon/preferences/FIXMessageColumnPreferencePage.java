@@ -29,6 +29,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.EclipseUtils;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
@@ -41,14 +42,16 @@ import org.marketcetera.quickfix.FIXMessageUtil;
  * @author caroline.leung@softwaregoodness.com
  *
  */
-public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
-		implements IWorkbenchPreferencePage {
+public class FIXMessageColumnPreferencePage
+    extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage, Messages
+{
 
-	public static final String COLUMN_FILTER_TEXT = "column.filter.text";
+	public static final String COLUMN_FILTER_TEXT = "column.filter.text"; //$NON-NLS-1$
 
-	public static final String FIX_MESSAGE_DETAIL_PREFERENCE = "fix.message.detail";
+	public static final String FIX_MESSAGE_DETAIL_PREFERENCE = "fix.message.detail"; //$NON-NLS-1$
 
-	public static final String ID = "org.marketcetera.photon.preferences.FIXMessageColumnPreferencePage";
+	public static final String ID = "org.marketcetera.photon.preferences.FIXMessageColumnPreferencePage"; //$NON-NLS-1$
 	private static final int INVALID_FIELD_ID = -1;
 
 	private Combo subPageCombo;
@@ -72,9 +75,8 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
 	}
 
-	public void init(IWorkbench workbench) {
-		// TODO Auto-generated method stub
-
+	public void init(IWorkbench workbench)
+	{
 	}
 
 	@Override
@@ -85,7 +87,9 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		String subPageID = FIXMessageColumnPrefsSubPageType.getIDFromName(subPageCombo.getText());
 		
 		fixMsgFieldsChooser = new FIXMessageColumnChooserEditor(FIX_MESSAGE_DETAIL_PREFERENCE,
-				"FIX Message Detail Preference", getFieldEditorParent(), subPageID);
+				                                                FIX_MESSAGE_DETAIL_PREFERENCE_LABEL.getText(),
+				                                                getFieldEditorParent(),
+				                                                subPageID);
 		addField(fixMsgFieldsChooser);
 		
 		createCustomFixFieldIDText(getFieldEditorParent());
@@ -96,7 +100,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		parent.setLayout(new FormLayout());
 
 		Label viewFixMsgTypeLabel = new Label(parent, SWT.NONE);
-		viewFixMsgTypeLabel.setText("View: ");
+		viewFixMsgTypeLabel.setText(VIEW_LABEL.getText());
 
 		FormData labelFormData = new FormData();
 		labelFormData.left = new FormAttachment(0);
@@ -120,7 +124,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		parent.setLayout(new FormLayout());
 
 		Label availableColumnsLabel = new Label(parent, SWT.NONE);
-		availableColumnsLabel.setText("Available Columns");
+		availableColumnsLabel.setText(AVAILABLE_COLUMNS_LABEL.getText());
 
 		FormData labelFormData = new FormData();
 		labelFormData.left = new FormAttachment(0);
@@ -128,7 +132,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		availableColumnsLabel.setLayoutData(labelFormData);
 
 		Label columnFilterLabel = new Label(parent, SWT.NONE);
-		columnFilterLabel.setText("Column Filter: ");
+		columnFilterLabel.setText(COLUMN_FILTER_LABEL.getText());
 
 		FormData columnFilterLabelFormData = new FormData();
 		columnFilterLabelFormData.left = new FormAttachment(0);
@@ -142,7 +146,9 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		filterFormData.left = new FormAttachment(columnFilterLabel);
 		filterFormData.top = new FormAttachment(availableColumnsLabel, 10);
 		filterFormData.width = EclipseUtils.getTextAreaSize(columnFilterText,
-				"account type account type", 0, 1.0).x;
+		                                                    ACCOUNT_TYPE_LABEL.getText(),
+		                                                    0,
+		                                                    1.0).x;
 		columnFilterText.setLayoutData(filterFormData);
 		
 		{
@@ -151,7 +157,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 			data.left = new FormAttachment(columnFilterText, 5);
 			data.top = new FormAttachment(availableColumnsLabel, 8); 
 			clearFilterButton.setLayoutData(data);
-			clearFilterButton.setText("Clear");
+			clearFilterButton.setText(CLEAR_LABEL.getText());
 			clearFilterButton.pack();
 			clearFilterButton.setEnabled(false);	
 		}
@@ -163,7 +169,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		clearFilterButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseDown(MouseEvent event) {
-				columnFilterText.setText("");
+				columnFilterText.setText(""); //$NON-NLS-1$
 				fixMsgFieldsChooser.resetFilter();
 			}
 		});		
@@ -178,7 +184,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		parent.setLayout(new FormLayout());
 
 		Label customFixFieldIDLabel = new Label(parent, SWT.NONE);
-		customFixFieldIDLabel.setText("Custom FIX field ID");
+		customFixFieldIDLabel.setText(CUSTOM_FIX_FIELD_ID_LABEL.getText());
 
 		FormData labelFormData = new FormData();
 		labelFormData.left = new FormAttachment(0);
@@ -191,12 +197,12 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 		fieldIDFormData.top = new FormAttachment(customFixFieldIDLabel, 2);
 		fieldIDFormData.bottom = new FormAttachment(100);
 		fieldIDFormData.width = EclipseUtils.getTextAreaSize(
-				customFixFieldIDText, "1000000", 0, 1.0).x;
+				customFixFieldIDText, "1000000", 0, 1.0).x; //$NON-NLS-1$
 		customFixFieldIDText.setLayoutData(fieldIDFormData);
 		customFixFieldIDText.addModifyListener(getModifyListener());
 
 		customFixFieldInputButton = new Button(parent, SWT.PUSH);
-		customFixFieldInputButton.setText("Add Custom");
+		customFixFieldInputButton.setText("Add Custom"); //$NON-NLS-1$
 
 		FormData buttonFormData = new FormData();
 		buttonFormData.left = new FormAttachment(
@@ -252,7 +258,7 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 	
 	private boolean hasText(Text textBox) {
 		String text = textBox.getText();
-		boolean hasText = (text != null) && (!text.trim().equals("")); 	
+		boolean hasText = (text != null) && (!text.trim().equals("")); 	 //$NON-NLS-1$
 		return hasText;
 	}
 
@@ -282,20 +288,21 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 			try {
 				fieldID = Integer.parseInt(idAsText);
 			} catch (NumberFormatException e) {
-				PhotonPlugin.getMainConsoleLogger().warn("Custom field ID (" + idAsText + ") is not a valid integer");
+				PhotonPlugin.getMainConsoleLogger().warn(CUSTOM_FIELD_ID_INVALID.getText(idAsText));
 				return;
 			}
 			if (fieldID < 0) {
-				PhotonPlugin.getMainConsoleLogger().warn("Custom field ID (" + idAsText + ") cannot be negative.");				
+				PhotonPlugin.getMainConsoleLogger().warn(CUSTOM_FIELD_ID_NEGATIVE.getText(idAsText));
 			} else if (FIXMessageUtil.isValidField(fieldID)) {
 				String fixField = PhotonPlugin.getDefault().getFIXDataDictionary().getHumanFieldName(fieldID);
-				PhotonPlugin.getMainConsoleLogger().warn("Custom field ID (" + idAsText + ") conflicts with FIX field : " + fixField);				
+				PhotonPlugin.getMainConsoleLogger().warn(CUSTOM_FIELD_CONFLICT.getText(idAsText,
+				                                                                       fixField));
 				return;
 			} else {
 				fixMsgFieldsChooser.addCustomFieldToAvailableFieldsList(fieldID);
 			}
 		}
-		customFixFieldIDText.setText("");
+		customFixFieldIDText.setText(""); //$NON-NLS-1$
 	}
 	@Override
 	public boolean performOk() {
@@ -322,10 +329,14 @@ public class FIXMessageColumnPreferencePage extends FieldEditorPreferencePage
 	
 	public enum FIXMessageColumnPrefsSubPageType
 	{
-		AVERAGE_PRICE("Average Price", AveragePriceView.ID),
-		FILLS("Fills", FillsView.ID),
-		FIX_MESSAGES("FIX Messages", FIXMessagesView.ID),
-		OPEN_ORDERS("Open Orders", OpenOrdersView.ID);
+		AVERAGE_PRICE(AVERAGE_PRICE_LABEL.getText(),
+		              AveragePriceView.ID),
+		FILLS(FILLS_LABEL.getText(),
+		      FillsView.ID),
+		FIX_MESSAGES(FIX_MESSAGES_LABEL.getText(),
+		             FIXMessagesView.ID),
+		OPEN_ORDERS(OPEN_ORDERS_LABEL.getText(),
+		            OpenOrdersView.ID);
 		
 		private String name;
 		private String id;

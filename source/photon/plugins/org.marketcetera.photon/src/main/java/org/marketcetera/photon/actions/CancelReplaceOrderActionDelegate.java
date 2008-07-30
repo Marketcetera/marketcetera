@@ -9,6 +9,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.IOrderTicketController;
@@ -31,9 +32,12 @@ import quickfix.field.OrderID;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
-public class CancelReplaceOrderActionDelegate extends ActionDelegate {
-	public final static String ID = "org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate";
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class CancelReplaceOrderActionDelegate
+    extends ActionDelegate
+    implements Messages
+{
+	public final static String ID = "org.marketcetera.photon.actions.CancelReplaceOrderActionDelegate"; //$NON-NLS-1$
 
 	private IStructuredSelection selection;
 
@@ -141,11 +145,10 @@ public class CancelReplaceOrderActionDelegate extends ActionDelegate {
 					controller.setOrderMessage(cancelReplaceMessage);
 				}
 			} catch (NoMoreIDsException e) {
-				PhotonPlugin.getMainConsoleLogger().error(
-						"Ran out of order ID's");
+				PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText());
 			} catch (FieldNotFound e) {
-				PhotonPlugin.getMainConsoleLogger().error(
-						"Could not send order: " + e.getMessage());
+                PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText(),
+                                                          e);
 			}
 		}
 	}

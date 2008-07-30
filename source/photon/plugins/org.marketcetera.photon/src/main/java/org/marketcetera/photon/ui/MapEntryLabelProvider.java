@@ -14,14 +14,14 @@ public class MapEntryLabelProvider extends LabelProvider implements ITableLabelP
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		String result = "";
+		String result = ""; //$NON-NLS-1$
 		Map.Entry<String, String> entry = (Map.Entry<String, String>) element;
 		switch (columnIndex) {
 			case 0 :
-				result = ""+entry.getKey();
+				result = ""+entry.getKey(); //$NON-NLS-1$
 				break;
 			case 1 :
-				result = ""+entry.getValue();
+				result = ""+entry.getValue(); //$NON-NLS-1$
 				break;
 			default :
 				break; 	

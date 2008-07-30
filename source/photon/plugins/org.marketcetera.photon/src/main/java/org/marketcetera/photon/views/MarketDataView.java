@@ -30,6 +30,7 @@ import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -75,11 +76,14 @@ import ca.odell.glazedlists.matchers.Matcher;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
-public class MarketDataView extends MessagesView implements IMSymbolListener, IFeedComponentListener, ISubscriber {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class MarketDataView
+    extends MessagesView
+    implements IMSymbolListener, IFeedComponentListener, ISubscriber, Messages
+{
 
 
-	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; 
+	public static final String ID = "org.marketcetera.photon.views.MarketDataView";  //$NON-NLS-1$
 
 	private static final int ZERO_WIDTH_COLUMN_INDEX = 0;
 	private static final int SYMBOL_COLUMN_INDEX = 1;
@@ -93,7 +97,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	
 	public enum MarketDataColumns implements IFieldIdentifier
 	{
-		ZEROWIDTH(""), 
+		ZEROWIDTH(""),  //$NON-NLS-1$
 		SYMBOL(Symbol.class), 
 		LASTPX(LastPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
 		LASTQTY(LastQty.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
@@ -124,7 +128,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 		MarketDataColumns(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
-				Field fieldField = clazz.getField("FIELD");
+				Field fieldField = clazz.getField("FIELD"); //$NON-NLS-1$
 				fieldID = (Integer) fieldField.get(null);
 			} catch (Throwable t){
 				assert(false);
@@ -222,7 +226,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 		zeroFirstColumn.setWidth(0);
 		zeroFirstColumn.setResizable(false);
 		zeroFirstColumn.setMoveable(false);
-		zeroFirstColumn.setText("");
+		zeroFirstColumn.setText(""); //$NON-NLS-1$
 		zeroFirstColumn.setImage(null);
 		for (int i = 1; i < table.getColumnCount(); i++) {
 			table.getColumn(i).setWidth(getTableColumnWidth(table, i));
@@ -283,7 +287,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 
 	@Override
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		symbolEntryText = new TextContributionItem("");
+		symbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
 		if(marketDataTracker.getMarketDataFeedService() == null) {
 			symbolEntryText.setEnabled(false);
 		} else {
@@ -377,14 +381,14 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 			try {
 				return ((MessageHolder)element).getMessage().getString(Symbol.FIELD);
 			} catch (FieldNotFound e) {
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 		}
 
 		public void modify(Object element, String property, Object value) {
 			MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getMarketDataFeedService();
 			if (service == null){
-				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+				PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
 				return;
 			}
 			MSymbol newSymbol = service.symbolFromString(value.toString());
@@ -434,15 +438,15 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 			}
 			switch(index){
 			case BID_SIZE_INDEX:
-				return "BidSz";
+				return "BidSz"; //$NON-NLS-1$
 			case BID_INDEX:
-				return "Bid";
+				return "Bid"; //$NON-NLS-1$
 			case ASK_INDEX:
-				return "Ask";
+				return "Ask"; //$NON-NLS-1$
 			case ASK_SIZE_INDEX:
-				return "AskSz";
+				return "AskSz"; //$NON-NLS-1$
 			default:
-				return "";
+				return ""; //$NON-NLS-1$
 			}
 		}
 
@@ -465,7 +469,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	public void addSymbol(MSymbol symbol) {
 
 		if (hasSymbol(symbol)) {
-			PhotonPlugin.getMainConsoleLogger().warn("Duplicate symbol added to view: " +symbol);
+			PhotonPlugin.getMainConsoleLogger().warn(DUPLICATE_SYMBOL.getText(symbol));
 		} else {
 			EventList<MessageHolder> list = getInput();
 
@@ -498,7 +502,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	public void removeItem(MessageHolder holder){
 		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
 		if (service == null){
-			PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+			PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
 			return;
 		}
 		try {
@@ -531,12 +535,11 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 	{
 	    IMarketDataFeedToken<?> token = tokenMap.remove(symbol);
 	    if(token != null) {
-	        PhotonPlugin.getMainConsoleLogger().debug(String.format("Unsubscribing to updates for %s",
+	        PhotonPlugin.getMainConsoleLogger().debug(String.format("Unsubscribing to updates for %s", //$NON-NLS-1$
 	                                                                symbol));
 	        token.cancel();
 	    } else {
-            PhotonPlugin.getMainConsoleLogger().warn(String.format("Cannot unsubscribe to %s - no record of subscription",
-                                                                    symbol));
+            PhotonPlugin.getMainConsoleLogger().warn(CANNOT_UNSUBSCRIBE_NO_RECORD.getText(symbol));
 	    }
 	}
 
@@ -545,7 +548,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
 		try {
 			if (service == null) {
-				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+				PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
 			} else {
 				Message newSubscribeBBO = MarketDataUtils.newSubscribeBBO(symbol);
 				// this odd try/catch accounts for the equally odd behavior of the id factory.
@@ -565,7 +568,7 @@ public class MarketDataView extends MessagesView implements IMSymbolListener, IF
 			}
 		} catch (MarketceteraException e) {
 		    e.printStackTrace();
-			PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+symbol);
+			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 		}
 	}
 

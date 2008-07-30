@@ -19,11 +19,11 @@ import org.marketcetera.core.ThreadLocalSimpleDateFormat;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ClockTrimWidget extends AbstractWorkbenchTrimWidget {
     private Label clockValue;
-    private static final ThreadLocalSimpleDateFormat DATE_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("MMM d HH:mm:ss z");
-    private static final Timer timer = new Timer("ClockUpdateTimer");
+    private static final ThreadLocalSimpleDateFormat DATE_FORMAT_LOCAL = new ThreadLocalSimpleDateFormat("MMM d HH:mm:ss z"); //$NON-NLS-1$
+    private static final Timer timer = new Timer("ClockUpdateTimer"); //$NON-NLS-1$
 	private TimerTask task;
     
     public ClockTrimWidget() {

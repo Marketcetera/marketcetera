@@ -15,13 +15,13 @@ import java.util.Map;
  * 
  */
 public enum CommandImage implements ILexerImage {
-	ORDER("O"),
-	CANCEL_ALL("CA"),
-    CANCEL("C"),
-    CANCEL_REPLACE("CXR"),
-    SET("SET"),
-    UNSET("UNSET"),
-	RESEND_REQUEST("RR");
+	ORDER("O"), //$NON-NLS-1$
+	CANCEL_ALL("CA"), //$NON-NLS-1$
+    CANCEL("C"), //$NON-NLS-1$
+    CANCEL_REPLACE("CXR"), //$NON-NLS-1$
+    SET("SET"), //$NON-NLS-1$
+    UNSET("UNSET"), //$NON-NLS-1$
+	RESEND_REQUEST("RR"); //$NON-NLS-1$
 	private static final Map<String, CommandImage> nameMap = new HashMap<String, CommandImage>();
 	private static final String[] images;
 

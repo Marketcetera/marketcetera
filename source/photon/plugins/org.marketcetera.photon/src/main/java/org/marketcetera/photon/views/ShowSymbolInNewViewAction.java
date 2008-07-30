@@ -7,14 +7,22 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-public class ShowSymbolInNewViewAction extends Action {
-	private static final String ID = "org.marketcetera.photon.actions.ShowSymbolInNewViewAction";
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ShowSymbolInNewViewAction
+    extends Action
+    implements Messages
+{
+	private static final String ID = "org.marketcetera.photon.actions.ShowSymbolInNewViewAction"; //$NON-NLS-1$
 
 	private IWorkbenchWindow targetWindow;
 
@@ -24,18 +32,15 @@ public class ShowSymbolInNewViewAction extends Action {
 
 	public ShowSymbolInNewViewAction(IWorkbenchWindow targetWindow,
 			String targetViewPrimayID, TextContributionItem text) {
-		super("Show Symbol in &New View", AS_PUSH_BUTTON);
+		super(SHOW_SYMBOL_NEW_VIEW_LABEL.getText(),
+		      AS_PUSH_BUTTON);
 		setId(ID);
-		setToolTipText("Show Symbol in New View");
+		setToolTipText(SHOW_SYMBOL_NEW_VIEW_TOOLTIPS.getText());
 		setImageDescriptor(PhotonPlugin
 				.getImageDescriptor(IImageKeys.SHOW_SYMBOL_NEW_WINDOW));
 
 		if (targetWindow == null) {
-			PhotonPlugin
-					.getMainConsoleLogger()
-					.error(
-							getClass().getName()
-									+ " created with a null target window. Opening new views will fail."); // $NON-NLS-1$
+			PhotonPlugin.getMainConsoleLogger().error(NULL_VIEW.getText(getClass().getName()));
 		}
 		this.targetWindow = targetWindow;
 		this.targetViewPrimayID = targetViewPrimayID;
@@ -68,8 +73,7 @@ public class ShowSymbolInNewViewAction extends Action {
 			try {
 				IWorkbenchPage targetPage = targetWindow.getActivePage();
 				if (targetPage == null) {
-					throw new MarketceteraException(
-							"The target page for the new view is null."); // $NON-NLS-1$
+					throw new MarketceteraException(NULL_TARGET.getText());
 				}
 				IViewPart viewPart = targetPage.showView(targetViewPrimayID,
 						secondaryId, IWorkbenchPage.VIEW_CREATE);
@@ -77,22 +81,16 @@ public class ShowSymbolInNewViewAction extends Action {
 					IMSymbolListener listener = (IMSymbolListener) viewPart;
 					listener.onAssertSymbol(new MSymbol(text.getText()));
 				} else {
-					throw new MarketceteraException(
-							"The view with ID " // $NON-NLS-1$
-									+ targetViewPrimayID
-									+ " does not accept symbols. (It does not implement: " // $NON-NLS-1$
-									+ IMSymbolListener.class.getName()
-									+ ". It was: " // $NON-NLS-1$
-									+ (viewPart != null ? viewPart.getClass()
-											.getName() : null));
+					throw new MarketceteraException(VIEW_DOES_NOT_ACCEPT_SYMBOLS.getText(targetViewPrimayID,
+					                                                                     IMSymbolListener.class.getName(),
+					                                                                     (viewPart == null ? 0 : 1),
+					                                                                     (viewPart == null ? null : viewPart.getClass().getName())));
 				}
 			} catch (Exception anyException) {
-				PhotonPlugin.getMainConsoleLogger().error(
-						"Failed to open new view with ID: " // $NON-NLS-1$
-								+ targetViewPrimayID, anyException); // $NON-NLS-1$
+				PhotonPlugin.getMainConsoleLogger().error(FAILED_TO_OPEN_VIEW.getText(targetViewPrimayID),
+				                                          anyException);
 			}
 		}
-		text.setText("");
+		text.setText(""); //$NON-NLS-1$
 	}
-
 }

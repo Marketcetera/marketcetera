@@ -20,15 +20,15 @@ import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
  */
 public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
-	private static final String LEFT_FOLDER = "leftFolder";
+	private static final String LEFT_FOLDER = "leftFolder"; //$NON-NLS-1$
 
-	private static final String BOTTOM_FOLDER = "bottomFolder";
+	private static final String BOTTOM_FOLDER = "bottomFolder"; //$NON-NLS-1$
 
-	private static final String RIGHT_FOLDER = "rightFolder";
+	private static final String RIGHT_FOLDER = "rightFolder"; //$NON-NLS-1$
 
-	private static final String TOP_FOLDER = "topFolder";
+	private static final String TOP_FOLDER = "topFolder"; //$NON-NLS-1$
 
-	public static final String ID = "org.marketcetera.photon.OptionPerspective";
+	public static final String ID = "org.marketcetera.photon.OptionPerspective"; //$NON-NLS-1$
 
 	private IFolderLayout rightFolder;
 
@@ -57,7 +57,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);
-		bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW + ":*");
+		bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW + ":*"); //$NON-NLS-1$
 		bottomFolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 		bottomFolder.addView(AveragePriceView.ID);
 		bottomFolder.addView(FillsView.ID);
@@ -65,7 +65,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.5f,
 				editorArea);
-		leftFolder.addPlaceholder(OptionMarketDataView.ID + ":*");
+		leftFolder.addPlaceholder(OptionMarketDataView.ID + ":*"); //$NON-NLS-1$
 		leftFolder.addView(OptionMarketDataView.ID);
 		leftFolder.addPlaceholder(FIXMessageDetailView.ID);
 
@@ -75,7 +75,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		topFolder = layout.createFolder(TOP_FOLDER, IPageLayout.TOP,
 				0.4f, RIGHT_FOLDER);
-		topFolder.addPlaceholder(OptionOrderTicketView.ID + ":*");
+		topFolder.addPlaceholder(OptionOrderTicketView.ID + ":*"); //$NON-NLS-1$
 		topFolder.addView(OptionOrderTicketView.ID);
 	}
 

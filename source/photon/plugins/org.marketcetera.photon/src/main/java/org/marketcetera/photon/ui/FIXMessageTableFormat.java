@@ -42,11 +42,11 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 
 	// todo: This constant is duplicated from EnumTableFormat.
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat(
-			"HH:mm:ss");
+			"HH:mm:ss"); //$NON-NLS-1$
 
 	// todo: This constant is duplicated from EnumTableFormat.
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-			"yyyy-MM-dd");
+			"yyyy-MM-dd"); //$NON-NLS-1$
 
 	private static final Class<?>[] NUMERIC_TYPES = { Number.class, Date.class,
 			Calendar.class };
@@ -130,7 +130,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		}
 		TableColumn tableColumn = new TableColumn(underlyingTable, alignment);
 		String columnName = getFIXFieldColumnName(fieldNum, fixDictionary);
-		String localizedName = "";
+		String localizedName = ""; //$NON-NLS-1$
 		if (columnName != null) {
 			localizedName = FIXFieldLocalizer.getLocalizedFIXFieldName(columnName);
 		}
@@ -259,7 +259,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		}
 		long elapsedMillis = (end - begin) / 1000000L;
 		PhotonPlugin.getMainConsoleLogger().debug(
-				"Rendered table: " + elapsedMillis + "ms");
+				"Rendered table: " + elapsedMillis + "ms"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	public int getColumnCount() {
@@ -278,7 +278,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 			// Ignore
 		}
 		if (fieldName == null || fieldName.trim().length() == 0) {
-			fieldName = "(" + fixFieldNum + ")";
+			fieldName = "(" + fixFieldNum + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		return fieldName;
 	}
@@ -297,9 +297,9 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 		return columnValue;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	public String getColumnText(Object element, int columnIndex) {
-		String columnText = "";
+		String columnText = ""; //$NON-NLS-1$
 		if (element != null
 				&& underlyingClass.isAssignableFrom(element.getClass())) {
 			T elementAsT = (T) element;
@@ -335,7 +335,7 @@ public class FIXMessageTableFormat<T> implements TableFormat<T>,
 			}
 		}
 		if (textValue == null) {
-			textValue = "";
+			textValue = ""; //$NON-NLS-1$
 		}
 		return textValue;
 	}

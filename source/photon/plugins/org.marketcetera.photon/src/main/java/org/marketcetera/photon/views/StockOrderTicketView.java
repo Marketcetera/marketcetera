@@ -9,8 +9,10 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.Level2ContentProvider;
@@ -22,6 +24,8 @@ import quickfix.field.MDEntryTime;
 import quickfix.field.MDEntryType;
 import quickfix.field.MDMkt;
 
+/* $License$ */
+
 /**
  * This class implements the view that provides the end user
  * the ability to type in--and graphically interact with--stock orders.
@@ -32,13 +36,12 @@ import quickfix.field.MDMkt;
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
-public class StockOrderTicketView extends OrderTicketView {
-
-	private static final String NEW_EQUITY_ORDER = "New Equity Order";
-
-	private static final String REPLACE_EQUITY_ORDER = "Replace Equity Order";
-
-	public static String ID = "org.marketcetera.photon.views.StockOrderTicketView";
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class StockOrderTicketView
+    extends OrderTicketView
+    implements Messages
+{
+	public static String ID = "org.marketcetera.photon.views.StockOrderTicketView"; //$NON-NLS-1$
 	
 
 	public StockOrderTicketView() 
@@ -60,7 +63,7 @@ public class StockOrderTicketView extends OrderTicketView {
 
 	@Override
 	protected String getXSWTResourceName() {
-		return "/stock_order_ticket.xswt";
+		return "/stock_order_ticket.xswt"; //$NON-NLS-1$
 	}
 
 
@@ -152,11 +155,11 @@ public class StockOrderTicketView extends OrderTicketView {
 
 	@Override
 	protected String getReplaceOrderString() {
-		return REPLACE_EQUITY_ORDER;
+		return REPLACE_EQUITY_LABEL.getText();
 	}
 
 	protected String getNewOrderString() {
-		return NEW_EQUITY_ORDER;
+		return NEW_EQUITY_LABEL.getText();
 	}
 
 
@@ -190,7 +193,7 @@ public class StockOrderTicketView extends OrderTicketView {
 		BookColumns(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
-				Field fieldField = clazz.getField("FIELD");
+				Field fieldField = clazz.getField("FIELD"); //$NON-NLS-1$
 				fieldID = (Integer) fieldField.get(null);
 			} catch (Throwable t){
 				assert(false);

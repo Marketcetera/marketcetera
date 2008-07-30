@@ -12,7 +12,7 @@ import quickfix.field.PutOrCall;
  */
 public enum PutOrCallImage implements ILexerFIXImage {
 
-	PUT("P", PutOrCall.PUT), CALL("C", PutOrCall.CALL);
+	PUT("P", PutOrCall.PUT), CALL("C", PutOrCall.CALL); //$NON-NLS-1$ //$NON-NLS-2$
 	static final Map<String, PutOrCallImage> nameMap = new HashMap<String, PutOrCallImage>();
 	private static final String[] images;
 
@@ -47,7 +47,7 @@ public enum PutOrCallImage implements ILexerFIXImage {
 		return (char) fixValue;
 	}
 	public String getFIXStringValue() {
-		return ""+fixValue;
+		return ""+fixValue; //$NON-NLS-1$
 	}
 
 }

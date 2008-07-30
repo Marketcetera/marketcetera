@@ -6,6 +6,7 @@ import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.update.ui.UpdateJob;
 import org.eclipse.update.ui.UpdateManagerUI;
+import org.marketcetera.photon.Messages;
 
 
 /**
@@ -13,7 +14,10 @@ import org.eclipse.update.ui.UpdateManagerUI;
  *
  * @author alissovski
  */
-public class CheckForUpdatesAction extends Action implements IAction {
+public class CheckForUpdatesAction
+    extends Action
+    implements IAction, Messages
+{
 
        public static final String ID = "org.marketcetera.photon.actions.CheckForUpdatesAction";  //$NON-NLS-1$
 
@@ -24,7 +28,8 @@ public class CheckForUpdatesAction extends Action implements IAction {
                this.window = window;
 
                setId(ID);
-               setText("Check for updates...");
+               setText(CHECK_FOR_UPDATES_ACTION.getText());
+               setToolTipText(CHECK_FOR_UPDATES_ACTION_DESCRIPTION.getText());
        }
 
        /* (non-Javadoc)
@@ -37,7 +42,9 @@ public class CheckForUpdatesAction extends Action implements IAction {
                                        public void run() {
                                                final boolean automatic = false;
                                                final boolean download = false;
-                                               UpdateJob job = new UpdateJob("Checking for updates", automatic, download);
+                                               UpdateJob job = new UpdateJob(CHECK_FOR_UPDATES_JOB_ACTION.getText(),
+                                                                             automatic,
+                                                                             download);
 
                                                UpdateManagerUI.openInstaller(window.getShell(), job);
                                        }

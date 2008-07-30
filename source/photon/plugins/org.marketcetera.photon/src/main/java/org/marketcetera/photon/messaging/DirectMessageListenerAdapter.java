@@ -9,7 +9,8 @@ import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Session;
 
-import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.photon.Messages;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.jms.listener.SessionAwareMessageListener;
 import org.springframework.jms.listener.adapter.MessageListenerAdapter;
 import org.springframework.jms.support.JmsUtils;
@@ -43,9 +44,9 @@ import org.springframework.util.Assert;
  *
  *
  */
-public abstract class DirectMessageListenerAdapter implements SessionAwareMessageListener {
-
-
+public abstract class DirectMessageListenerAdapter
+    implements SessionAwareMessageListener, Messages
+{
 	private Object defaultResponseDestination;
 
 	private DestinationResolver destinationResolver = new DynamicDestinationResolver();
@@ -117,7 +118,7 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 	 * @see org.springframework.jms.support.destination.JndiDestinationResolver
 	 */
 	public void setDestinationResolver(DestinationResolver destinationResolver) {
-		Assert.notNull(destinationResolver, "DestinationResolver must not be null");
+		Assert.notNull(destinationResolver, "DestinationResolver must not be null"); //$NON-NLS-1$
 		this.destinationResolver = destinationResolver;
 	}
 
@@ -167,8 +168,8 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 			handleResult(result, message, session);
 		}
 		else {
-			if (LoggerAdapter.isDebugEnabled(this))
-				LoggerAdapter.debug("No result object given - no result to handle", this);
+		    SLF4JLoggerProxy.debug(this,
+		                           "No result object given - no result to handle"); //$NON-NLS-1$
 		}
 	}
 
@@ -194,7 +195,8 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 	 * @see #onMessage(javax.jms.Message)
 	 */
 	protected void handleListenerException(Throwable ex) {
-		LoggerAdapter.error("Listener execution failed", ex, this);
+	    LISTENER_EXECUTION_FAILED.error(this,
+	                                    ex);
 	}
 
 	/**
@@ -227,9 +229,10 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 	 */
 	protected void handleResult(Object result, Message request, Session session) throws JMSException {
 		if (session != null) {
-			if (LoggerAdapter.isDebugEnabled(this)) {
-				LoggerAdapter.debug("Listener method returned result [" + result +
-						"] - generating response message for it", this);
+			if (SLF4JLoggerProxy.isDebugEnabled(this)) {
+				SLF4JLoggerProxy.debug(this,
+				                       "Listener method returned result [{}] - generating response message for it", //$NON-NLS-1$
+				                       result);
 			}
 			Message response = buildMessage(session, result);
 			postProcessResponse(request, response);
@@ -237,9 +240,10 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 			sendResponse(session, destination,  response);
 		}
 		else {
-			if (LoggerAdapter.isDebugEnabled(this)) {
-				LoggerAdapter.debug("Listener method returned result [" + result +
-						"]: not generating response message for it because of no JMS Session given",this);
+			if (SLF4JLoggerProxy.isDebugEnabled(this)) {
+				SLF4JLoggerProxy.debug(this,
+				                       "Listener method returned result [{}]: not generating response message for it because of no JMS Session given", //$NON-NLS-1$
+				                       result);
 			}
 		}
 	}
@@ -259,8 +263,7 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 		}
 		else {
 			if (!(result instanceof Message)) {
-				throw new MessageConversionException(
-						"No MessageConverter specified - cannot handle message [" + result + "]");
+				throw new MessageConversionException(NO_MESSAGE_CONVERTER.getText(result));
 			}
 			return (Message) result;
 		}
@@ -303,8 +306,7 @@ public abstract class DirectMessageListenerAdapter implements SessionAwareMessag
 		if (replyTo == null) {
 			replyTo = resolveDefaultResponseDestination(session);
 			if (replyTo == null) {
-				throw new InvalidDestinationException("Cannot determine response destination: " +
-						"Request message does not contain reply-to destination, and no default response destination set.");
+				throw new InvalidDestinationException(CANNOT_DETERMINE_RESPONSE_DESTINATION.getText());
 			}
 		}
 		return replyTo;

@@ -31,15 +31,18 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Widget;
 import org.marketcetera.core.MMapEntry;
+import org.marketcetera.photon.Messages;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.gui.AdvancedTableFormat;
 import ca.odell.glazedlists.gui.WritableTableFormat;
 
 
-public abstract class MapEditor extends FieldEditor /*implements IElementChangeListener<MMapEntry<String, String>> */{
-
-
+public abstract class MapEditor
+    extends FieldEditor
+    implements Messages
+    /*implements IElementChangeListener<MMapEntry<String, String>> */
+{
 	/**
      * The list widget; <code>null</code> if none
      * (before creation or after disposal).
@@ -81,16 +84,6 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 
     EventList<Map.Entry<String, String>> entries;
     
-	// Set the table column property names
-	private final String KEY_COLUMN 		= "key";
-	private final String VALUE_COLUMN 		= "value";
-
-	// Set column names
-	private String[] columnNames = new String[] { 
-			KEY_COLUMN, 
-			VALUE_COLUMN
-			};
-
     /**
      * Creates a new list field editor 
      */
@@ -278,7 +271,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
     /* (non-Javadoc)
      * Method declared on FieldEditor.
      */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	protected void doStore() {
     	EventList<Map.Entry<String, String>> items = (EventList<Map.Entry<String, String>>) tableViewer.getInput();
         String s = createMap(items);
@@ -348,12 +341,12 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
     		// 2nd column with task Description
     		TableColumn column;
 			column = new TableColumn(table, SWT.LEFT);
-    		column.setText("Key");
-    		column.setWidth(100);
+    		column.setText(KEY_LABEL.getText());
+    		column.setWidth(100); // TODO i18n
 
     		column = new TableColumn(table, SWT.LEFT);
-    		column.setText("Value");
-    		column.setWidth(100);
+    		column.setText(VALUE_LABEL.getText());
+    		column.setWidth(100); // TODO i18n
         } else {
             checkParent(table, parent);
         }
@@ -367,7 +360,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 
 		tableViewer = new IndexedTableViewer(table);
 		tableViewer.setUseHashlookup(true);
-		
+		String[] columnNames = new String[] { KEY_LABEL.getText(), VALUE_LABEL.getText() };
 		tableViewer.setColumnProperties(columnNames);
 
 		// Create the cell editors
@@ -397,7 +390,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 				return null;
 			}
 
-			@SuppressWarnings("unchecked")
+			@SuppressWarnings("unchecked") //$NON-NLS-1$
 			public String getColumnText(Object element, int columnIndex) {
 				return (element instanceof Map.Entry) ? 
 						columnIndex == 1 ? ((Map.Entry<String,String>)element).getKey() : ((Map.Entry<String,String>)element).getValue()
@@ -522,7 +515,7 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
      * @param up <code>true</code> if the item should move up,
      *  and <code>false</code> if it should move down
      */
-    @SuppressWarnings("unchecked") //selections are untyped
+    @SuppressWarnings("unchecked") //selections are untyped //$NON-NLS-1$
 	private void swap(boolean up) {
         setPresentsDefaultValue(false);
         int index = table.getSelectionIndex();
@@ -568,7 +561,8 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 			return true;
 		}
 
-		public Object setColumnValue(Object baseObject, Object editedValue,
+		@SuppressWarnings("unchecked") //$NON-NLS-1$
+        public Object setColumnValue(Object baseObject, Object editedValue,
 				int column) {
 			switch (column) {
 			case KEY_COLUMN:
@@ -590,15 +584,16 @@ public abstract class MapEditor extends FieldEditor /*implements IElementChangeL
 		public String getColumnName(int column) {
 			switch(column){
 			case KEY_COLUMN:
-				return "Key";
+				return KEY_LABEL.getText();
 			case VALUE_COLUMN:
-				return "Value";
+				return VALUE_LABEL.getText();
 			default:
 				return null;
 			}
 		}
 
-		public Object getColumnValue(Object obj, int column) {
+		@SuppressWarnings("unchecked") //$NON-NLS-1$
+        public Object getColumnValue(Object obj, int column) {
 			switch(column){
 			case KEY_COLUMN:
 				return ((Map.Entry<String, String>)obj).getKey();

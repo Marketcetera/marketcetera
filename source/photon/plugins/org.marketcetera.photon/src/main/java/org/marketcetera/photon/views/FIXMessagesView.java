@@ -28,7 +28,7 @@ import ca.odell.glazedlists.matchers.Matcher;
 public class FIXMessagesView extends AbstractFIXMessagesView implements
 		IHeartbeatsToggle {
 
-	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView";
+	public static final String ID = "org.marketcetera.photon.views.FIXMessagesView"; //$NON-NLS-1$
 
 	private static final Matcher<? super MessageHolder> HEARTBEAT_MATCHER = new FIXMatcher<String>(
 			MsgType.FIELD, MsgType.HEARTBEAT, false); // filters out heartbeat
@@ -37,7 +37,7 @@ public class FIXMessagesView extends AbstractFIXMessagesView implements
 
 	private ShowHeartbeatsAction showHeartbeatsAction;
 
-	private static final String SHOW_HEARTBEATS_SAVED_STATE_KEY = "SHOW_HEARTBEATS";
+	private static final String SHOW_HEARTBEATS_SAVED_STATE_KEY = "SHOW_HEARTBEATS"; //$NON-NLS-1$
 
 	@Override
 	protected String getViewID() {
@@ -96,7 +96,7 @@ public class FIXMessagesView extends AbstractFIXMessagesView implements
 	public void setFocus() {
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	protected FilterList<MessageHolder> getFilterList() {
 		return (FilterList<MessageHolder>) getInput();
 	}

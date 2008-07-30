@@ -13,6 +13,7 @@ import org.eclipse.ui.dialogs.ElementTreeSelectionDialog;
 import org.eclipse.ui.dialogs.ISelectionStatusValidator;
 import org.eclipse.ui.model.WorkbenchContentProvider;
 import org.eclipse.ui.model.WorkbenchLabelProvider;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 
@@ -22,14 +23,17 @@ import org.marketcetera.photon.PhotonPlugin;
  * 
  * @author andrei@lissovski.org
  */
-public class RubyScriptSelectionDialog extends ElementTreeSelectionDialog {
+public class RubyScriptSelectionDialog
+    extends ElementTreeSelectionDialog
+    implements Messages
+{
 
-	public static final String FILE_SEPARATOR = System.getProperty("file.separator");
+	public static final String FILE_SEPARATOR = System.getProperty("file.separator"); //$NON-NLS-1$
 
 	public RubyScriptSelectionDialog(Shell parent) {
 		super(parent, new WorkbenchLabelProvider(), new WorkbenchContentProvider());
-		setTitle("Ruby script selection");
-		setMessage("Choose a Ruby script to be registered for the event");
+		setTitle(RUBY_SCRIPT_SELECTION_LABEL.getText());
+		setMessage(RUBY_SCRIPT_SELECTION_DESCRIPTION.getText());
 		setInput(ResourcesPlugin.getWorkspace().getRoot());
 		addFilter(new TreeElementFilter());
 		setValidator(new SelectionValidator());

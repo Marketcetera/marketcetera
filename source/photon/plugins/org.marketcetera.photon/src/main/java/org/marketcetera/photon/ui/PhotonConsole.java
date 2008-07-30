@@ -16,7 +16,7 @@ import org.marketcetera.core.ClassVersion;
  * @author gmiller
  * 
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class PhotonConsole extends MessageConsole {
 
 	private MessageConsoleStream errorMessageStream;

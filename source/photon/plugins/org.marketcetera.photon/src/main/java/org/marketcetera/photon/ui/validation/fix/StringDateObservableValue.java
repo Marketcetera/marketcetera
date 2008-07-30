@@ -37,8 +37,8 @@ public class StringDateObservableValue extends FIXObservableValue {
 		this.targetCalendarField = calendarField;
 		// todo: Quickfix expects a UTC time zone but this uses the local time
 		// zone. See http://www.quickfixj.org/jira/browse/QFJ-104
-		ymdFormatter = new SimpleDateFormat("yyyyMMdd");
-		ymFormatter = new SimpleDateFormat("yyyyMM");
+		ymdFormatter = new SimpleDateFormat("yyyyMMdd"); //$NON-NLS-1$
+		ymFormatter = new SimpleDateFormat("yyyyMM"); //$NON-NLS-1$
 	}
 
 	@Override

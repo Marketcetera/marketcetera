@@ -8,6 +8,7 @@ import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -26,9 +27,12 @@ import quickfix.field.ClOrdID;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
-public class CancelOrderActionDelegate extends ActionDelegate {
-	public final static String ID = "org.marketcetera.photon.actions.CancelOrderActionDelegate";
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class CancelOrderActionDelegate 
+    extends ActionDelegate
+    implements Messages
+{
+	public final static String ID = "org.marketcetera.photon.actions.CancelOrderActionDelegate"; //$NON-NLS-1$
 
 	private IStructuredSelection selection;
 
@@ -107,9 +111,11 @@ public class CancelOrderActionDelegate extends ActionDelegate {
 			try {
 				this.manager.cancelOneOrderByClOrdID(qfMessage.getString(ClOrdID.FIELD));
 			} catch (NoMoreIDsException e) {
-				PhotonPlugin.getMainConsoleLogger().error("Ran out of order ID's");
+				PhotonPlugin.getMainConsoleLogger().error(CANNOT_CANCEL.getText(),
+				                                          e);
 			} catch (FieldNotFound e) {
-				PhotonPlugin.getMainConsoleLogger().error("Could not send order because message contains no ClOrdID");
+				PhotonPlugin.getMainConsoleLogger().error(MISSING_CLORDID.getText(),
+				                                          e);
 			}
 		}
 	}

@@ -4,6 +4,7 @@ import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 /**
@@ -13,12 +14,12 @@ import org.marketcetera.photon.PhotonPlugin;
  * @author gmiller
  *
  */
-public class ObservableListValidator implements IValidator {
+public class ObservableListValidator
+    implements IValidator, Messages
+{
 
 	private final IObservableList list;
 	private Status noMatchStatus;
-	private final Status MISSING_VALUE_STATUS = new Status(Status.ERROR, PhotonPlugin.ID, Status.OK, "Value required", null);
-
 
 	/**
 	 * Construct a new validator that can validate the value passed to {@link #validate(Object)}
@@ -86,7 +87,11 @@ public class ObservableListValidator implements IValidator {
 			if (arg0 instanceof String) {
 				String theString = (String) arg0;
 				if (theString.trim().length() ==0){
-					return MISSING_VALUE_STATUS;
+					return new Status(Status.ERROR,
+					                  PhotonPlugin.ID,
+					                  Status.OK,
+					                  VALUE_REQUIRED.getText(),
+					                  null);
 				}
 			}
 			return noMatchStatus;

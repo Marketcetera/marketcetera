@@ -94,6 +94,6 @@ public abstract class AbstractFIXMessagesView extends MessagesViewBase<MessageHo
 	
 	protected void createContextMenu(Table table) {
 		ContextMenuFactory contextMenuFactory = new ContextMenuFactory();
-		contextMenuFactory.createContextMenu("fixMessageContextMenu", table, getSite());
+		contextMenuFactory.createContextMenu("fixMessageContextMenu", table, getSite()); //$NON-NLS-1$
 	}
 }

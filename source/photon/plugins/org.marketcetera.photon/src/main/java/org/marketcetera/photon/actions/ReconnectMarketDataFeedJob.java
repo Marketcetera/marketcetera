@@ -24,6 +24,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.marketdata.IMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IMarketDataFeedFactory;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.IMarketDataConstants;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -42,8 +43,11 @@ import org.osgi.framework.ServiceRegistration;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
-public class ReconnectMarketDataFeedJob extends Job {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ReconnectMarketDataFeedJob 
+    extends Job
+    implements Messages
+{
 
 	private static AtomicBoolean reconnectInProgress = new AtomicBoolean(false);
 	private BundleContext bundleContext;
@@ -58,7 +62,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	}
 
-	@SuppressWarnings("unchecked") // cast on Class.forName()
+	@SuppressWarnings("unchecked") // cast on Class.forName() //$NON-NLS-1$
 	@Override
 	protected IStatus run(IProgressMonitor monitor) 
 	{
@@ -71,7 +75,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 		try {
 			disconnect(marketDataFeedTracker);
 		} catch (Throwable th) {
-			logger.warn("Could not disconnect from quote feed");
+			logger.warn(CANNOT_DISCONNECT_FROM_QUOTE_FEED.getText());
 		}
 		try {
 			IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
@@ -81,7 +85,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	    	Set<String> startupFeeds = getStartupFeeds();
 
 	    	if (logger.isDebugEnabled()) { 
-	    	    logger.debug(String.format("Marketdata: examining %d extensions",
+	    	    logger.debug(String.format("Marketdata: examining %d extensions", //$NON-NLS-1$
 	    	                               extensions.length)); 
 	    	}
 	    	if (extensions != null && 
@@ -89,7 +93,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	    		for(IExtension anExtension : extensions) {
 	    			String pluginName = anExtension.getContributor().getName();
 					if (startupFeeds.contains(pluginName)) {
-				    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: using "+pluginName); }
+				    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: using "+pluginName); } //$NON-NLS-1$
 		    			IConfigurationElement[] configurationElements = anExtension.getConfigurationElements();
 			    		IConfigurationElement feedElement = configurationElements[0];
 			    		// construct the market data feed factory corresponding to this extension
@@ -101,12 +105,12 @@ public class ReconnectMarketDataFeedJob extends Job {
 			    		try {
 			    		    feedConstructor = feedClass.getConstructor( new Class[0] );
 			    		} catch (NoSuchMethodException e) {
-			    		    logger.error(String.format("There must exist a default constructor which takes no arguments for feed factory class %s",
-			    		                               feedFactoryClassName));
+			    		    logger.error(MISSING_DEFAULT_CONSTRUCTOR.getText(feedFactoryClassName),
+			    		                 e);
 			    		    throw e;
 			    		}
                         IMarketDataFeedFactory feedFactory = feedConstructor.newInstance(new Object[0]);
-			    		logger.debug(String.format("Feedfactory %s created",
+			    		logger.debug(String.format("Feedfactory %s created", //$NON-NLS-1$
 			    		                           feedFactory));
 			    		// now construct the credentials object for this feed
                         String credentialsFactoryClassName = feedElement.getAttribute(IMarketDataConstants.CREDENTIALS_FACTORY_CLASS_ATTRIBUTE);
@@ -116,33 +120,33 @@ public class ReconnectMarketDataFeedJob extends Job {
 			    		// retrieve the scoped preferences 
 			    		ScopedPreferenceStore preferences = new ScopedPreferenceStore(new InstanceScope(),
 			    		                                                              pluginName);
-			    		logger.debug(String.format("Retrieved preferences %s for plugin: %s",
+			    		logger.debug(String.format("Retrieved preferences %s for plugin: %s", //$NON-NLS-1$
 			    		                           preferences,
 			    		                           pluginName));
 			    		// execute a static getter to create the credentials object
 			    		Method credentialsGetter;
                         try {
-                            credentialsGetter = credentialsClass.getMethod("getInstance", 
+                            credentialsGetter = credentialsClass.getMethod("getInstance",  //$NON-NLS-1$
                                                                            new Class[] { ScopedPreferenceStore.class } );
                         } catch (NoSuchMethodException e) {
-                            logger.error(String.format("There must exist a static method named \"getInstance(ScopedPreferenceStore)\" for credentials class %s",
-                                                       credentialsFactoryClassName));
+                            logger.error(MISSING_STATIC_METHOD.getText(credentialsFactoryClassName),
+                                         e);
                             throw e;
                         }
                         IMarketDataFeedCredentials credentials = (IMarketDataFeedCredentials)credentialsGetter.invoke(credentialsClass,
                                                                                            preferences);
-			    		logger.debug(String.format("Credentials %s created",
+			    		logger.debug(String.format("Credentials %s created", //$NON-NLS-1$
 			    		                           credentials));
 			    		// create the feed object itself
 			    		IMarketDataFeed targetQuoteFeed = feedFactory.getMarketDataFeed(credentials);
-			    		logger.debug(String.format("Market feed %s created",
+			    		logger.debug(String.format("Market feed %s created", //$NON-NLS-1$
 			    		                           targetQuoteFeed));
 		    			MarketDataFeedService marketDataFeedService = new MarketDataFeedService(targetQuoteFeed);
 		    			marketDataFeedService.afterPropertiesSet();
 			    		// Quote feed must be started before registration so
 						// that resubscription works properly. See bug #213.
 			    		targetQuoteFeed.start();
-			    		logger.debug(String.format("Market feed %s started",
+			    		logger.debug(String.format("Market feed %s started", //$NON-NLS-1$
 			    		                           targetQuoteFeed));
 						ServiceRegistration registration = bundleContext.registerService(MarketDataFeedService.class.getName(), 
 						                                                                 marketDataFeedService, 
@@ -153,19 +157,20 @@ public class ReconnectMarketDataFeedJob extends Job {
 		    			succeeded = true;
 		    			break;
 	    			} else {
-				    	 logger.warn("Marketdata: not using "+pluginName+" because it is not listed in 'org.marketcetera.photon/marketdata.startup'");
+				    	 logger.warn(DATAFEED_SKIPPED.getText(pluginName));
 	    			}
 				}
 			}
 	
-	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: done examining "+extensions.length+" extensions"); }
+	    	if (logger.isDebugEnabled()) { logger.debug("Marketdata: done examining "+extensions.length+" extensions"); } //$NON-NLS-1$ //$NON-NLS-2$
 		} catch (Throwable t) {
-			logger.error(new StringBuilder("Exception connecting to market data feed: ").append(t));
+			logger.error(CANNOT_CONNECT_TO_MARKETDATA_FEED.getText(),
+			             t);
 			return Status.CANCEL_STATUS;
 		} finally {
 			reconnectInProgress.set(false);
 			if (!succeeded){
-				logger.error("Error connecting to market data feed");
+				logger.error(CANNOT_CONNECT_TO_MARKETDATA_FEED.getText());
 				return Status.CANCEL_STATUS;
 			}
 		}
@@ -175,8 +180,8 @@ public class ReconnectMarketDataFeedJob extends Job {
 
 	private Set<String> getStartupFeeds() {
 		String startupString = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.MARKETDATA_STARTUP_KEY);
-		startupString.split("[\\s,]+");
-		return new HashSet<String>(Arrays.asList(startupString.split("[\\s,]+")));
+		startupString.split("[\\s,]+"); //$NON-NLS-1$
+		return new HashSet<String>(Arrays.asList(startupString.split("[\\s,]+"))); //$NON-NLS-1$
 	}
 
 	public static void disconnect(MarketDataFeedTracker marketDataFeedTracker) {
@@ -203,7 +208,7 @@ public class ReconnectMarketDataFeedJob extends Job {
 	}
 	
 	// TODO: refactor this and run()
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	public static String [][] getFeedNames() {
 		IExtensionRegistry extensionRegistry = Platform.getExtensionRegistry();
     	IExtensionPoint extensionPoint =

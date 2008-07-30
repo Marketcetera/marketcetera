@@ -21,9 +21,9 @@ import org.marketcetera.photon.ui.PhotonConsole;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class PhotonConsoleAppender extends AppenderSkeleton {
-	private static final String LAYOUT_PATTERN = "%d{ABSOLUTE} %5p - %m";
+	private static final String LAYOUT_PATTERN = "%d{ABSOLUTE} %5p - %m"; //$NON-NLS-1$
 //	private static final String DEBUG_LAYOUT_PATTERN = "%d{ABSOLUTE} %5p %c{2}:%L - %m";
 	private PhotonConsole console;
 	private Display display;
@@ -93,7 +93,7 @@ public class PhotonConsoleAppender extends AppenderSkeleton {
 		}
     	display.asyncExec(new Runnable() {
             public void run() {
-            	String loggableMessage = "";
+            	String loggableMessage = ""; //$NON-NLS-1$
             	Layout theLayout = getLayout();
 				if (theLayout != null){
             		loggableMessage = theLayout.format(loggingEvent);

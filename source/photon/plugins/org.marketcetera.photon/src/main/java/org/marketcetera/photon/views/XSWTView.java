@@ -47,7 +47,7 @@ public abstract class XSWTView<T> extends ViewPart {
 		super.dispose();
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	@Override
 	public void createPartControl(Composite parent) {
 		try {

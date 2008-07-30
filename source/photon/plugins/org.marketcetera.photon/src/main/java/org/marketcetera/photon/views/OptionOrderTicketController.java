@@ -18,6 +18,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataUtils;
@@ -53,9 +54,11 @@ import quickfix.fix44.DerivativeSecurityList;
  * @version $Id$
  *
  */
-@ClassVersion ("$Id$")
+@ClassVersion ("$Id$") //$NON-NLS-1$
 public class OptionOrderTicketController 
-	 extends OrderTicketController<OptionOrderTicketModel> {
+	extends OrderTicketController<OptionOrderTicketModel>
+    implements Messages
+{
 
 	/**
 	 * Maps option roots and underlyings to a complete set of OptionContractData
@@ -113,7 +116,7 @@ public class OptionOrderTicketController
                         }
                     }
                 } catch (FieldNotFound e) {
-                    PhotonPlugin.getDefault().getMarketDataLogger().debug("Field missing from option quote", e);
+                    PhotonPlugin.getDefault().getMarketDataLogger().debug("Field missing from option quote", e); //$NON-NLS-1$
                 }
             }	        
 	    };
@@ -202,10 +205,10 @@ public class OptionOrderTicketController
 
 		String optionRootOrUnderlying;
 		if (OptionMarketDataUtils.isOptionSymbol(symbolString)){
-			logger.debug("Is option symbol");
+			logger.debug("Is option symbol"); //$NON-NLS-1$
 			optionRootOrUnderlying = OptionMarketDataUtils.getOptionRootSymbol(symbolString);
 		} else {
-			logger.debug("Treating as underlying...");
+			logger.debug("Treating as underlying..."); //$NON-NLS-1$
 			optionRootOrUnderlying = symbolString;
 		}
 		
@@ -249,7 +252,7 @@ public class OptionOrderTicketController
 
 
 	public void requestOptionRootInfo(String optionRoot) throws FeedException {
-		PhotonPlugin.getMainConsoleLogger().debug("Requesting option root info for :"+optionRoot);
+		PhotonPlugin.getMainConsoleLogger().debug("Requesting option root info for :"+optionRoot); //$NON-NLS-1$
 
 		MarketDataFeedService<?> service = getMarketDataTracker().getMarketDataFeedService();
 
@@ -292,9 +295,9 @@ public class OptionOrderTicketController
 			underlyingSymbol = derivativeSecurityList.getString(UnderlyingSymbol.FIELD);
 			
 			if (mainConsoleLogger.isDebugEnabled()){
-				String reqID = "";
+				String reqID = ""; //$NON-NLS-1$
 				try { reqID = derivativeSecurityList.getString(SecurityReqID.FIELD); } catch (FieldNotFound fnf) {}
-				mainConsoleLogger.debug("Received derivative list for "+underlyingSymbol+" ("+reqID+")");
+				mainConsoleLogger.debug("Received derivative list for "+underlyingSymbol+" ("+reqID+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 	        Pair<Set<String>, List<OptionContractData>> optionRootsAndContracts;
 	        
@@ -313,12 +316,13 @@ public class OptionOrderTicketController
 				}
 				getOrderTicketModel().addOptionContractData(contractData);
 	        } catch (Exception anyException) {
-	            PhotonPlugin.getMainConsoleLogger().warn("Error getting market data - skipping", anyException);
+	            PhotonPlugin.getMainConsoleLogger().warn(SKIPPING_MARKET_DATA.getText(),
+	                                                     anyException);
 	            return;
 	        }
 		}
 		catch(FieldNotFound anyException) {
-			mainConsoleLogger.debug("Failed to find underlying symbol in DerivativeSecurityList: " + derivativeSecurityList, anyException);
+			mainConsoleLogger.debug("Failed to find underlying symbol in DerivativeSecurityList: " + derivativeSecurityList, anyException); //$NON-NLS-1$
 		}
     }
 
@@ -339,7 +343,7 @@ public class OptionOrderTicketController
 		Set<String> optionRootList = new HashSet<String>();
 
 		if(derivativeSecurityListMessage != null) {
-			String messageUnderlyingSymbolStr = "";
+			String messageUnderlyingSymbolStr = ""; //$NON-NLS-1$
 			if (FIXMessageUtil.isDerivativeSecurityList(derivativeSecurityListMessage)) {
 				try {
 					messageUnderlyingSymbolStr = derivativeSecurityListMessage
@@ -349,16 +353,12 @@ public class OptionOrderTicketController
 					getOptionContractDataFromMessage(messageUnderlyingSymbol,
 							derivativeSecurityListMessage, optionContractDataList, optionRootList);
 				} catch (Exception anyException) {
-					throw new MarketceteraException(
-							"Failed to get option contracts data for underlying symbol \""
-									+ messageUnderlyingSymbolStr + "\" - "
-									+ "\nProblematic message is : [" + derivativeSecurityListMessage
-									+ "]", anyException);
+					throw new MarketceteraException(CANNOT_GET_OPTION_CONTRACT_INFO_SPECIFIED.getText(messageUnderlyingSymbolStr,
+					                                                                                  derivativeSecurityListMessage),
+					                                anyException);
 				}
 			} else {
-				throw new MarketceteraFIXException(
-						"FIX message was not a DerivativeSecurityList ("
-								+ MsgType.DERIVATIVE_SECURITY_LIST + ").");
+				throw new MarketceteraFIXException(MESSAGE_NOT_DERIVATIVE_SECURITY_LIST.getText());
 			}
 		}
 		return new Pair<Set<String>, List<OptionContractData>>(optionRootList, optionContractDataList);
@@ -452,11 +452,13 @@ public class OptionOrderTicketController
 					holder.setExtraInfo(putOrCall, info);
 				} catch (ParseException e) {
 					MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
-					PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info: "+underlying, e);
+					PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO_SPECIFIED.getText(underlying),
+					                                                      e);
 				}
 			}
 		} catch (FieldNotFound e) {
-			PhotonPlugin.getDefault().getMarketDataLogger().error("Exception parsing option info", e);
+			PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO.getText(),
+			                                                      e);
 		}
 	}
 

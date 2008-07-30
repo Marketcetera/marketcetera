@@ -6,6 +6,7 @@ import java.util.Map;
 import org.eclipse.core.databinding.conversion.Converter;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.validation.IValidator;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.validation.SetValidator;
 import org.marketcetera.photon.ui.validation.StringSetValidator;
@@ -24,7 +25,9 @@ import org.marketcetera.photon.ui.validation.StringSetValidator;
  *
  * @param <FROM_T>
  */
-public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
+public class EnumStringConverterBuilder<FROM_T>
+    implements IConverterBuilder, Messages
+{
 
 	protected final Map<FROM_T,String> map = new HashMap<FROM_T,String>();
 	private final Object fromType;
@@ -59,14 +62,18 @@ public class EnumStringConverterBuilder<FROM_T> implements IConverterBuilder {
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newTargetAfterGetValidator()
 	 */
 	public IValidator newTargetAfterGetValidator(){
-		return new StringSetValidator(map.values(), PhotonPlugin.ID, "Not a valid value");
+		return new StringSetValidator(map.values(),
+		                              PhotonPlugin.ID,
+		                              INVALID_VALUE.getText());
 	}
 	
 	/* (non-Javadoc)
 	 * @see org.marketcetera.photon.ui.validation.fix.IConverterBuilder#newModelAfterGetValidator()
 	 */
 	public IValidator newModelAfterGetValidator(){
-		return new SetValidator<FROM_T>(map.keySet(), PhotonPlugin.ID, "Not a valid value");
+		return new SetValidator<FROM_T>(map.keySet(),
+		        PhotonPlugin.ID,
+		        INVALID_VALUE.getText());
 	}
 	
 	protected class ForwardConverter extends Converter

@@ -12,7 +12,6 @@ package org.marketcetera.photon.preferences;
 
 import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.util.Assert;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -26,6 +25,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
 
 /**
  * A field editor for a string type preference.
@@ -35,8 +35,11 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
-public class PasswordStringFieldEditor extends FieldEditor {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class PasswordStringFieldEditor
+    extends FieldEditor
+    implements Messages
+{
 
     /**
      * Validation strategy constant (value <code>0</code>) indicating that
@@ -359,7 +362,7 @@ public class PasswordStringFieldEditor extends FieldEditor {
                 });
                 break;
             default:
-                Assert.isTrue(false, "Unknown validate strategy");//$NON-NLS-1$
+                throw new IllegalArgumentException(UNKNOWN_VALIDATION_STRATEGY.getText());
             }
             textField.addDisposeListener(new DisposeListener() {
                 public void widgetDisposed(DisposeEvent event) {
@@ -473,8 +476,6 @@ public class PasswordStringFieldEditor extends FieldEditor {
      *  perform validation only after the text has been typed in
      */
     public void setValidateStrategy(int value) {
-        Assert.isTrue(value == VALIDATE_ON_FOCUS_LOST
-                || value == VALIDATE_ON_KEY_STROKE);
         validateStrategy = value;
     }
 

@@ -4,8 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.core.databinding.conversion.Converter;
+import org.marketcetera.photon.Messages;
 
-public class StringToDateCustomConverter extends Converter {
+public class StringToDateCustomConverter
+    extends Converter
+    implements Messages
+{
 	private String [] dateFormatStrings;
 
 	private boolean forceUppercase;
@@ -40,7 +44,7 @@ public class StringToDateCustomConverter extends Converter {
 			boolean forceUppercase, boolean emptyStringBecomesNullDate, String ... inDateFormatStrings) {
 		super(String.class, java.util.Date.class);
 		this.dateFormatStrings = inDateFormatStrings;
-		this.humanReadableFormatStrings = "";
+		this.humanReadableFormatStrings = ""; //$NON-NLS-1$
 		this.formatters = new SimpleDateFormat[dateFormatStrings.length];
 		int numFormatStrings = inDateFormatStrings.length;
 		for (int i = 0; i < numFormatStrings; i++) {
@@ -48,7 +52,7 @@ public class StringToDateCustomConverter extends Converter {
 			this.formatters[i] = new SimpleDateFormat(aFormatString);
 			humanReadableFormatStrings += aFormatString;
 			if (i < numFormatStrings - 1){
-				humanReadableFormatStrings += ", ";
+				humanReadableFormatStrings += ", "; //$NON-NLS-1$
 			}
 		}
 		this.forceUppercase = forceUppercase;
@@ -60,8 +64,7 @@ public class StringToDateCustomConverter extends Converter {
 			return null;
 		}
 		if (!(fromObject instanceof String)) {
-			throw new IllegalArgumentException("The value: " + fromObject
-					+ " is not valid.");
+			throw new IllegalArgumentException(INVALID_SPECIFIED_VALUE.getText(fromObject));
 		}
 		String fromDateString = (String) fromObject;
 		fromDateString = fromDateString.trim();
@@ -84,8 +87,8 @@ public class StringToDateCustomConverter extends Converter {
 			}
 		} 
 		if (toDate == null){
-			throw new IllegalArgumentException("The value: " + fromDateString
-					+ " is not a valid date of the form: " + humanReadableFormatStrings);
+			throw new IllegalArgumentException(INVALID_SPECIFIED_DATE.getText(fromDateString,
+			                                                                  humanReadableFormatStrings));
 		}
 		return toDate;
 	}

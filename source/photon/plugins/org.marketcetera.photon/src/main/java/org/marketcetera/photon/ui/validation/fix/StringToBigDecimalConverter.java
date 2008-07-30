@@ -5,8 +5,12 @@ import java.text.NumberFormat;
 import java.text.ParsePosition;
 
 import org.eclipse.core.databinding.conversion.Converter;
+import org.marketcetera.photon.Messages;
 
-public class StringToBigDecimalConverter extends Converter {
+public class StringToBigDecimalConverter
+    extends Converter
+    implements Messages
+{
 
 	private final NumberFormat numberFormat;
 
@@ -22,8 +26,7 @@ public class StringToBigDecimalConverter extends Converter {
 
 	public Object convert(Object fromObject) {
 		if (!(fromObject instanceof String)) {
-			throw new IllegalArgumentException(
-					"The value " + fromObject + " is not valid."); //$NON-NLS-1$
+			throw new IllegalArgumentException(INVALID_SPECIFIED_VALUE.getText(fromObject));
 		}
 		String source = (String) fromObject;
 		if (source.trim().length() == 0) {

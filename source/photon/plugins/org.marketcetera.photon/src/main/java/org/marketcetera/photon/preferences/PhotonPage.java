@@ -7,16 +7,19 @@ import org.eclipse.jface.preference.RadioGroupFieldEditor;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class PhotonPage extends FieldEditorPreferencePage implements
-		IWorkbenchPreferencePage {
+public class PhotonPage
+    extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage, Messages
+{
 
-	public static final String LOG_LEVEL_KEY = "photon.log.level";
-	public static final String LOG_LEVEL_VALUE_ERROR = "error";
-	public static final String LOG_LEVEL_VALUE_WARN = "warn";
-	public static final String LOG_LEVEL_VALUE_INFO = "info";
-	public static final String LOG_LEVEL_VALUE_DEBUG = "debug";
+	public static final String LOG_LEVEL_KEY = "photon.log.level"; //$NON-NLS-1$
+	public static final String LOG_LEVEL_VALUE_ERROR = "error"; //$NON-NLS-1$
+	public static final String LOG_LEVEL_VALUE_WARN = "warn"; //$NON-NLS-1$
+	public static final String LOG_LEVEL_VALUE_INFO = "info"; //$NON-NLS-1$
+	public static final String LOG_LEVEL_VALUE_DEBUG = "debug"; //$NON-NLS-1$
 
 	public PhotonPage() {
 		super(GRID);
@@ -25,19 +28,24 @@ public class PhotonPage extends FieldEditorPreferencePage implements
 
 	@Override
 	protected void createFieldEditors() {
-		RadioGroupFieldEditor editor = new RadioGroupFieldEditor(
-				LOG_LEVEL_KEY, "Console Log Level", 1,
-				new String[][] {
-						{ "Error (Fewest messages)", LOG_LEVEL_VALUE_ERROR },
-						{ "Warn", LOG_LEVEL_VALUE_WARN },
-						{ "Info", LOG_LEVEL_VALUE_INFO },
-						{ "Debug (Most messages)", LOG_LEVEL_VALUE_DEBUG }}, getFieldEditorParent(), true);
+		RadioGroupFieldEditor editor = new RadioGroupFieldEditor(LOG_LEVEL_KEY,
+		                                                         LOG_LEVEL_LABEL.getText(),
+		                                                         1,
+		                                                         new String[][] { { LOG_LEVEL_ERROR_LABEL.getText(),
+		                                                                            LOG_LEVEL_VALUE_ERROR },
+		                                                                          { LOG_LEVEL_WARN_LABEL.getText(),
+		                                                                            LOG_LEVEL_VALUE_WARN },
+		                                                                          { LOG_LEVEL_INFO_LABEL.getText(),
+		                                                                            LOG_LEVEL_VALUE_INFO },
+		                                                                          { LOG_LEVEL_DEBUG_LABEL.getText(),
+		                                                                            LOG_LEVEL_VALUE_DEBUG }},
+		                                                         getFieldEditorParent(),
+		                                                         true);
 		addField(editor);
 	}
 
-	public void init(IWorkbench workbench) {
-		// TODO Auto-generated method stub
-
+	public void init(IWorkbench workbench)
+	{
 	}
 
 	@Override

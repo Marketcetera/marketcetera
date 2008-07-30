@@ -26,7 +26,7 @@ class FIXMessageDetailLabelProvider implements TableFormat<FIXMessageDetailTable
 		zeroFirstColumn.setWidth(0);
 		zeroFirstColumn.setResizable(false);
 		zeroFirstColumn.setMoveable(false);
-		zeroFirstColumn.setText("");
+		zeroFirstColumn.setText(""); //$NON-NLS-1$
 		zeroFirstColumn.setImage(null);
 	}
 

@@ -20,7 +20,7 @@ import ca.odell.glazedlists.event.ListEventListener;
  * @author gmiller
  *
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unchecked") //$NON-NLS-1$
 public class ObservableEventList extends WritableList {
 
 

@@ -36,8 +36,10 @@ import quickfix.field.Symbol;
  * 
  * @author gmiller
  */
-@ClassVersion("$Id$")
-public class PhotonController {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class PhotonController
+    implements Messages
+{
 
 	private Logger internalMainLogger = PhotonPlugin.getMainConsoleLogger();
 
@@ -81,13 +83,11 @@ public class PhotonController {
 			}
 		} catch (FieldNotFound fnfEx) {
 			MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
-			internalMainLogger.error(
-					"Error decoding incoming message "+mfix.getMessage(), mfix);
-			mfix.printStackTrace();
+			internalMainLogger.error(CANNOT_DECODE_INCOMING_SPECIFIED_MESSAGE.getText(mfix.getMessage()),
+			                         mfix);
 		} catch (Throwable ex) {
-			internalMainLogger.error(
-					"Error decoding incoming message "+ex.getMessage(), ex);
-			ex.printStackTrace();
+            internalMainLogger.error(CANNOT_DECODE_INCOMING_MESSAGE.getText(),
+                                     ex);
 		}
 	}
 	
@@ -107,17 +107,15 @@ public class PhotonController {
 			} else if (FIXMessageUtil.isResendRequest(aMessage)) {
 				requestResend(aMessage);
 			} else {
-				internalMainLogger.warn("Photon controller received message of unknown type: "+aMessage.toString());
+				internalMainLogger.warn(UNKNOWN_INTERNAL_MESSAGE_TYPE.getText(aMessage.toString()));
 			}
 		} catch (FieldNotFound fnfEx) {
 			MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
-			internalMainLogger.error(
-					"Error decoding outgoing message "+mfix.getMessage(), mfix);
-			mfix.printStackTrace();
+			internalMainLogger.error(CANNOT_DECODE_OUTGOING_SPECIFIED_MESSAGE.getText(mfix.getMessage()),
+			                         mfix);
 		} catch (Throwable ex) {
-			internalMainLogger.error(
-					"Error decoding outgoing message "+ex.getMessage(), ex);
-			ex.printStackTrace();
+            internalMainLogger.error(CANNOT_DECODE_OUTGOING_MESSAGE.getText(),
+                                     ex);
 		}
 	}
 
@@ -126,9 +124,9 @@ public class PhotonController {
 		char ordStatus = aMessage.getChar(OrdStatus.FIELD);
 
 		if (ordStatus == OrdStatus.REJECTED) {
-			String rejectReason = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
+			String rejectReason = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown"); //$NON-NLS-1$
 			
-			String orderID = "";
+			String orderID = ""; //$NON-NLS-1$
 			try {
 				orderID = aMessage.getString(ClOrdID.FIELD);
 			} catch (Exception ex){
@@ -138,9 +136,10 @@ public class PhotonController {
 					// do nothing
 				}
 			}
-
-			String rejectMsg = "Order rejected " + orderID + " "
-					+ aMessage.getString(Symbol.FIELD) + ": "+ rejectReason;
+			
+			String rejectMsg = REJECT_MESSAGE.getText(orderID,
+			                                          aMessage.getString(Symbol.FIELD),
+			                                          rejectReason);
 			internalMainLogger.error(rejectMsg);
 		}
 	}
@@ -153,22 +152,27 @@ public class PhotonController {
 		} catch (FieldNotFound fnf){
 			//do nothing
 		}
-		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
-		String origClOrdID = "Unknown";
+		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,
+		                                                  "Unknown"); //$NON-NLS-1$
+		String origClOrdID = "Unknown"; //$NON-NLS-1$
 		if (aMessage.isSetField(OrigClOrdID.FIELD)){
 			origClOrdID = aMessage.getString(OrigClOrdID.FIELD);
 		}
-		String errorMsg = "Cancel rejected for order " + origClOrdID + ": "
-				+ (text == null ? "" : text)
-				+ (reason == null ? "" : " (" + reason + ")");
+		String errorMsg = CANCEL_REJECT_MESSAGE.getText(origClOrdID,
+		                                                (text == null ? 0 : 1),
+		                                                text,
+		                                                (reason == null ? 0 : 1),
+		                                                reason);
 		internalMainLogger.error(errorMsg);
 	}
 	
 	protected void handleReject(Message aMessage) throws FieldNotFound {
-		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,"Unknown");
-		String errorMsg = "Received reject message: " + (text == null ? "" : text);
+		String text = FIXMessageUtil.getTextOrEncodedText(aMessage,
+		                                                  "Unknown"); //$NON-NLS-1$
+		String errorMsg = HANDLE_REJECT_MESSAGE.getText((text == null ? 0 : 1),
+		                                                text);
 		internalMainLogger.error(errorMsg);
-		internalMainLogger.debug("Reject FIX reply: " + aMessage);
+		internalMainLogger.debug("Reject FIX reply: " + aMessage); //$NON-NLS-1$
 	}
 
 	protected void handleNewOrder(final Message aMessage) {
@@ -182,7 +186,8 @@ public class PhotonController {
 			fixMessageHistory.addOutgoingMessage(aMessage);
 			convertAndSend(aMessage);
 		} catch (NoMoreIDsException e) {
-			internalMainLogger.error("Could not send message, no order IDs", e);
+			internalMainLogger.error(CANNOT_SEND_MESSAGE_NO_ID.getText(),
+			                         e);
 		}
 	}
 
@@ -210,13 +215,13 @@ public class PhotonController {
 		if (latestMessage == null){
 			latestMessage = fixMessageHistory.getLatestMessage(clOrdID);
 			if (latestMessage == null){
-				internalMainLogger.error("Could not send cancel request for order ID "+clOrdID);
+				internalMainLogger.error(CANNOT_SEND_CANCEL.getText(clOrdID));
 				return;
 			}
 		}
 		try { 
 			if(internalMainLogger.isDebugEnabled()) {
-				internalMainLogger.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD)); 
+				internalMainLogger.debug("Exec id for cancel execution report:"+latestMessage.getString(ExecID.FIELD));  //$NON-NLS-1$
 			} 
 		} catch (FieldNotFound ignored) {	}
 		try {
@@ -231,7 +236,9 @@ public class PhotonController {
 			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			convertAndSend(cancelMessage);
 		} catch (FieldNotFound fnf){
-			internalMainLogger.error("Could not send cancel for message "+latestMessage.toString(), fnf);
+            internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdID,
+                                                                           latestMessage.toString()),
+                                                                           fnf);
 		}
 	}
 
@@ -247,18 +254,21 @@ public class PhotonController {
 		final Vector<String> clOrdIdsToCancel = new Vector<String>();
 		fixMessageHistory.visitOpenOrdersExecutionReports(new MessageVisitor() {
             public void visitOpenOrderExecutionReports(Message message) {
+                String clOrdId = "unknown"; //$NON-NLS-1$
                 try {
-            		String clOrdId = (String) message.getString(ClOrdID.FIELD);
+            		clOrdId = (String)message.getString(ClOrdID.FIELD);
             		clOrdIdsToCancel.add(clOrdId);
                 } catch (FieldNotFound fnf){
-                	internalMainLogger.error("Could not send cancel for message "+message.toString(), fnf);
+                    internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdId,
+                                                                                   message.toString()),
+                                                                                   fnf);
                 }
             }
         });
 		for (String clOrdId: clOrdIdsToCancel) {
     		try {
-				cancelOneOrderByClOrdID(clOrdId, "PANIC");
-	            if(internalMainLogger.isDebugEnabled()) { internalMainLogger.debug("cancelling order for "+clOrdId);} 
+				cancelOneOrderByClOrdID(clOrdId, "PANIC"); //$NON-NLS-1$
+	            if(internalMainLogger.isDebugEnabled()) { internalMainLogger.debug("cancelling order for "+clOrdId);}  //$NON-NLS-1$
             } catch (NoMoreIDsException ignored) {
                 // ignore
 			}
@@ -273,12 +283,11 @@ public class PhotonController {
 		try {
 			CharField sideField = fixMessage.getField(new Side());
 			if (sideField == null || sideField.getValue() == 0) {
-				throw new MarketceteraFIXException("Missing side field. Was: "
-						+ sideField);
+				throw new MarketceteraFIXException(MISSING_SIDE.getText(fixMessage));
 			}
 		} catch (Exception anyException) {
-			internalMainLogger.debug("Missing Side field in message: "
-					+ fixMessage);
+			internalMainLogger.debug(MISSING_SIDE.getText(fixMessage),
+			                         anyException);
 		}
 	}
 	
@@ -288,7 +297,7 @@ public class PhotonController {
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
 			try {
 				if(internalMainLogger.isDebugEnabled()) {
-					internalMainLogger.debug("Sending: " + fixMessage);
+					internalMainLogger.debug("Sending: " + fixMessage); //$NON-NLS-1$
 					checkSideField(fixMessage);
 				}
 				jmsOperations.convertAndSend(fixMessage);
@@ -296,7 +305,7 @@ public class PhotonController {
 				service.onException(ex);
 			}
 		} else {
-			internalMainLogger.error("Could not send message, not connected");
+			internalMainLogger.error(CANNOT_SEND_NOT_CONNECTED.getText());
 		}
 	}
 	

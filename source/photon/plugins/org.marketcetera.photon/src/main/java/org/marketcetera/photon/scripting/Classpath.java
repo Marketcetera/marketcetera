@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 
 public class Classpath implements List<IPath> {
-	private static final String PATH_SEPARATOR = System.getProperty("path.separator");
+	private static final String PATH_SEPARATOR = System.getProperty("path.separator"); //$NON-NLS-1$
 
 	List<IPath> innerList = new ArrayList<IPath>();
 

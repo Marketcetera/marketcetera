@@ -1,16 +1,19 @@
 package org.marketcetera.photon.messaging;
 
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.photon.scripting.ScriptRegistry;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Message;
 
-public class ScriptingControllerListenerAdapter extends DirectMessageListenerAdapter  {
+public class ScriptingControllerListenerAdapter
+    extends DirectMessageListenerAdapter
+{
 	private ScriptRegistry scriptRegistry;
 
 	public ScriptingControllerListenerAdapter()
 	{
-		if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("constructor", this);} 
+		SLF4JLoggerProxy.debug(this,
+		                       "constructor");  //$NON-NLS-1$
 	}
 	
 	@Override

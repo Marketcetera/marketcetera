@@ -5,6 +5,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 /**
@@ -14,18 +15,21 @@ import org.marketcetera.photon.PhotonPlugin;
  * @author gmiller
  * @see ReconnectJMSJob#schedule()
  */
-@ClassVersion("$Id$")
-public class ReconnectJMSAction extends Action implements IWorkbenchAction {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ReconnectJMSAction
+    extends Action 
+    implements IWorkbenchAction, Messages
+{
 
-	public static final String ID = "org.marketcetera.photon.actions.ReconnectJMSAction";
+	public static final String ID = "org.marketcetera.photon.actions.ReconnectJMSAction"; //$NON-NLS-1$
 	/**
 	 * Create the default instance of ReconnectJMSAction, setting the ID, text,
 	 * tool-tip text, and image to the defaults.
 	 */
 	public ReconnectJMSAction(IWorkbenchWindow window){
 		setId(ID);
-		setText("&Reconnect Message Connection");
-		setToolTipText("Reconnect to the message server");
+		setText(RECONNECT_JMS_ACTION.getText());
+		setToolTipText(RECONNECT_JMS_ACTION_DESCRIPTION.getText());
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_JMS_HISTORY));
 	}
 	/**
@@ -43,7 +47,7 @@ public class ReconnectJMSAction extends Action implements IWorkbenchAction {
 	 * 
 	 */
 	public void run() {
-		ReconnectJMSJob job = new ReconnectJMSJob("Reconnect message server");
+		ReconnectJMSJob job = new ReconnectJMSJob(RECONNECT_JMS_JOB_ACTION.getText());
 		job.schedule();
 	}
 

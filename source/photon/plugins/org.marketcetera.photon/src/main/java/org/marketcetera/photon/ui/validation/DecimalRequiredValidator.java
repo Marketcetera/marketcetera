@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 /**
@@ -14,7 +15,10 @@ import org.marketcetera.photon.PhotonPlugin;
  * @author gmiller
  *
  */
-public class DecimalRequiredValidator extends StringRequiredValidator {
+public class DecimalRequiredValidator
+    extends StringRequiredValidator
+    implements Messages
+{
 
 	
 	private IStatus errorStatus;
@@ -23,7 +27,11 @@ public class DecimalRequiredValidator extends StringRequiredValidator {
 	 * Create a new validator.
 	 */
 	public DecimalRequiredValidator(){
-		errorStatus = new Status(Status.ERROR, PhotonPlugin.ID, Status.OK, "Decimal number required", null);
+		errorStatus = new Status(Status.ERROR,
+		                         PhotonPlugin.ID,
+		                         Status.OK,
+		                         DECIMAL_REQUIRED.getText(),
+		                         null);
 	}
 
 	/**
@@ -45,7 +53,7 @@ public class DecimalRequiredValidator extends StringRequiredValidator {
 			}
 			return Status.OK_STATUS;
 		} else {
-			throw new IllegalArgumentException("Argument must be String");
+			throw new IllegalArgumentException(ARGUMENT_MUST_BE_STRING.getText());
 		}
 	}
 

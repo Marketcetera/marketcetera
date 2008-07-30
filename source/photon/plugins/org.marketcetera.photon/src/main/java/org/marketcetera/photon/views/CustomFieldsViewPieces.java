@@ -11,18 +11,24 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
 
+/* $License$ */
+
 /**
  * A UI section for custom fields.
  */
-public class CustomFieldsViewPieces {
-
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class CustomFieldsViewPieces
+    implements Messages
+{
 	private Composite defaultParent;
 
 	private FormToolkit formToolkit;
@@ -57,7 +63,7 @@ public class CustomFieldsViewPieces {
 		gridData3.horizontalAlignment = GridData.FILL;
 		customFieldsExpandableComposite = getFormToolkit().createSection(
 				defaultParent, Section.TITLE_BAR | Section.TWISTIE);
-		customFieldsExpandableComposite.setText("Custom Fields");
+		customFieldsExpandableComposite.setText(CUSTOM_FIELDS_LABEL.getText());
 		customFieldsExpandableComposite.setExpanded(false);
 		customFieldsExpandableComposite.setLayoutData(gridData3);
 
@@ -90,13 +96,13 @@ public class CustomFieldsViewPieces {
 		customFieldsTable.setHeaderVisible(true);
 
 		TableColumn enabledColumn = new TableColumn(customFieldsTable, SWT.LEFT);
-		enabledColumn.setText("Enabled");
+		enabledColumn.setText(ENABLED_LABEL.getText());
 		enabledColumn.pack();
 		TableColumn keyColumn = new TableColumn(customFieldsTable, SWT.LEFT);
-		keyColumn.setText("Key");
+		keyColumn.setText(KEY_LABEL.getText());
 		keyColumn.pack();
 		TableColumn valueColumn = new TableColumn(customFieldsTable, SWT.LEFT);
-		valueColumn.setText("Value");
+		valueColumn.setText(VALUE_LABEL.getText());
 		valueColumn.pack();
 
 		// tableViewer = new CheckboxTableViewer(
@@ -141,8 +147,7 @@ public class CustomFieldsViewPieces {
 								message);
 					}
 				} else {
-					throw new MarketceteraException("Could not find field "
-							+ key);
+					throw new MarketceteraException(CANNOT_FIND_CUSTOM_FIELD.getText(key));
 				}
 			}
 		}

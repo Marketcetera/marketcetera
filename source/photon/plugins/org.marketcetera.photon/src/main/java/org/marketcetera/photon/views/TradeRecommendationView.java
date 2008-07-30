@@ -24,17 +24,24 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.TradeRecommendation;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.SendOrderToOrderManagerCommand;
 import org.marketcetera.photon.parser.OrderFormatter;
 
 import quickfix.Message;
 
-public class TradeRecommendationView extends ViewPart implements KeyListener, IDoubleClickListener {
+/* $License$ */
 
-	public static final String ID = "org.marketcetera.photon.views.TradeRecommendationView";
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class TradeRecommendationView
+    extends ViewPart
+    implements KeyListener, IDoubleClickListener, Messages
+{
+	public static final String ID = "org.marketcetera.photon.views.TradeRecommendationView"; //$NON-NLS-1$
 	private Table targetTable;
 	private static WritableList modelList;
 	private TableViewer tableViewer;
@@ -71,17 +78,17 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 		tableViewer = new TableViewer(targetTable);
 		TableViewerColumn timeColumn = new TableViewerColumn(tableViewer,
 				SWT.NONE);
-		timeColumn.getColumn().setWidth(100);
-		timeColumn.getColumn().setText("Time");
+		timeColumn.getColumn().setWidth(100); // TODO i18n
+		timeColumn.getColumn().setText(TIME_LABEL.getText());
 		tableViewer.addDoubleClickListener(this);
 		
 		TableViewerColumn tradeColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-		tradeColumn.getColumn().setWidth(100);
-		tradeColumn.getColumn().setText("Trade");
+		tradeColumn.getColumn().setWidth(100); // TODO i18n
+		tradeColumn.getColumn().setText(TRADE_LABEL.getText());
 
 		TableViewerColumn scoreColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-		scoreColumn.getColumn().setWidth(100);
-		scoreColumn.getColumn().setText("Score");
+		scoreColumn.getColumn().setWidth(100); // TODO i18n
+		scoreColumn.getColumn().setText(SCORE_LABEL.getText());
 
 		// Create a standard content provider
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
@@ -90,7 +97,7 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 		// And a standard label provider that maps columns
 		IObservableMap[] attributeMaps = BeansObservables.observeMaps(
 				contentProvider.getKnownElements(),
-				TradeRecommendation.class, new String[] {"creationDate", "stringRepresentation", "score" });
+				TradeRecommendation.class, new String[] {"creationDate", "stringRepresentation", "score" }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		tableViewer.setLabelProvider(new MyObservableMapLabelProvider(attributeMaps));
 
 		// Now set the Viewer's input
@@ -121,12 +128,13 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 	
 	class DeleteItemsAction extends Action {
 
-		private static final String ID = "org.marketcetera.photon.views.TradeRecommendationView.DeleteItemsAction";
+		private static final String ID = "org.marketcetera.photon.views.TradeRecommendationView.DeleteItemsAction"; //$NON-NLS-1$
 
 		public DeleteItemsAction() {
-			super("&Delete selected item(s)", AS_PUSH_BUTTON);
+			super(DELETE_ITEMS_LABEL.getText(),
+			      AS_PUSH_BUTTON);
 			setId(ID);
-			setToolTipText("Delete selected item(s)");
+			setToolTipText(DELETE_ITEMS_TOOLTIPS.getText());
 			setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.DELETE_ITEM));
 			setChecked(false);
 		}
@@ -140,12 +148,13 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 
 	class DeleteAllItemsAction extends Action {
 
-		private static final String ID = "org.marketcetera.photon.views.TradeRecommendationView.DeleteAllItemsAction";
+		private static final String ID = "org.marketcetera.photon.views.TradeRecommendationView.DeleteAllItemsAction"; //$NON-NLS-1$
 
 		public DeleteAllItemsAction() {
-			super("Delete &all items", AS_PUSH_BUTTON);
+			super(DELETE_ALL_ITEMS_LABEL.getText(),
+			      AS_PUSH_BUTTON);
 			setId(ID);
-			setToolTipText("Delete all items");
+			setToolTipText(DELETE_ALL_ITEMS_TOOLTIPS.getText());
 			setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.DELETE_ALL));
 			setChecked(false);
 		}
@@ -158,12 +167,13 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 
 	class SendSelectedItemsAction extends Action {
 
-		private static final String ID = "org.marketcetera.photon.views.TradeRecommendationView.SendItemsAction";
+		private static final String ID = "org.marketcetera.photon.views.TradeRecommendationView.SendItemsAction"; //$NON-NLS-1$
 
 		public SendSelectedItemsAction() {
-			super("&Send selected item(s)", AS_PUSH_BUTTON);
+			super(SEND_ITEMS_LABEL.getText(),
+			      AS_PUSH_BUTTON);
 			setId(ID);
-			setToolTipText("Send selected item(s)");
+			setToolTipText(SEND_ITEMS_TOOLTIPS.getText());
 			setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.SEND_ITEM));
 			setChecked(false);
 		}
@@ -188,18 +198,18 @@ public class TradeRecommendationView extends ViewPart implements KeyListener, ID
 			try {
 				Object result = attributeMaps[columnIndex].get(element);
 				if (result == null){
-					return "";
+					return ""; //$NON-NLS-1$
 				} else if (columnIndex == 0){
-					SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat format = new SimpleDateFormat("HH:mm"); //$NON-NLS-1$
 					return format.format(result);
 				} else if (columnIndex == 1){
 					TradeRecommendation tradeRec = (TradeRecommendation)element;
 					return orderFormatter.format(tradeRec.getMessage());
 				} else {
-					return result.toString(); //$NON-NLS-1$
+					return result.toString();
 				}
 			} catch (ParseException e) {
-				return "Error formatting trade recommendation";
+				return CANNOT_FORMAT_TRADE_RECOMMENDATION.getText();
 			}
 		}
 	}

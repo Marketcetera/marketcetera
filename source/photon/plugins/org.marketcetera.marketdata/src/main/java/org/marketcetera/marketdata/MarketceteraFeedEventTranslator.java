@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -22,14 +23,21 @@ import quickfix.field.NoMDEntries;
 import quickfix.field.Symbol;
 import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
+/* $License$ */
+
 /**
- * 
- * @author colin
+ * Market data feed implementation that connects to Marketcetera's
+ * exchange simulator.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since 0.5.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
-    implements IEventTranslator
+    implements IEventTranslator, Messages
 {
-    private static final String UNKNOWN = "?";
+    private static final String UNKNOWN = "?"; //$NON-NLS-1$
     private static final MarketceteraFeedEventTranslator sInstance = new MarketceteraFeedEventTranslator();
     public static MarketceteraFeedEventTranslator getInstance()
     {
@@ -45,8 +53,7 @@ public class MarketceteraFeedEventTranslator
         throws MarketceteraException
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
-            throw new UnsupportedEventException(String.format("Unknown event type: %s",
-                                                              inData.getClass()));
+            throw new UnsupportedEventException(UNKNOWN_EVENT_TYPE.getText(inData.getClass().toString()));
         }
         MarketDataSnapshotFullRefresh refresh = (MarketDataSnapshotFullRefresh)inData;
         List<EventBase> events = new ArrayList<EventBase>();
@@ -57,7 +64,7 @@ public class MarketceteraFeedEventTranslator
                 refresh.getGroup(i, 
                                  group);
                 String symbol = refresh.getString(Symbol.FIELD);
-                // exchange is *somewhat* optional                
+                // exchange is *somewhat* optional
                 String exchange;
                 try {
                     exchange = group.getString(MDMkt.FIELD);
@@ -99,8 +106,7 @@ public class MarketceteraFeedEventTranslator
                         events.add(trade);
                         break;
                     default:
-                        throw new UnsupportedEventException(String.format("Unknown message entry type: %c",
-                                                                          type));
+                        throw new UnsupportedEventException(UNKNOWN_MESSAGE_ENTRY_TYPE.getText(type));
                 };
             }
         } catch (FieldNotFound e) {
@@ -114,7 +120,6 @@ public class MarketceteraFeedEventTranslator
     public Object translate(EventBase inEvent) 
         throws MarketceteraException
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
 }

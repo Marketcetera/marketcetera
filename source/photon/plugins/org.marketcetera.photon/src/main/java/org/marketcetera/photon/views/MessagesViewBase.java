@@ -21,7 +21,9 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.ui.MessageListTableFormat;
@@ -31,7 +33,13 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
 import ca.odell.glazedlists.gui.TableFormat;
 
-public abstract class MessagesViewBase<T> extends ViewPart {
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public abstract class MessagesViewBase<T>
+    extends ViewPart
+    implements Messages
+{
 
 	public static final String COLUMN_ORDER_KEY = "COLUMN_ORDER";  //$NON-NLS-1$
 	public static final String COLUMN_ORDER_DELIMITER = ",";  //$NON-NLS-1$
@@ -79,7 +87,8 @@ public abstract class MessagesViewBase<T> extends ViewPart {
 		}
     }
 
-	@Override
+	@SuppressWarnings("unchecked")  //$NON-NLS-1$
+    @Override
 	public void createPartControl(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridLayout layout = new GridLayout();
@@ -101,7 +110,9 @@ public abstract class MessagesViewBase<T> extends ViewPart {
         toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		initializeToolBar(toolBarManager);
 		
-		copyMessagesAction = new CopyMessagesAction(getClipboard(),messageTable, "Copy");
+		copyMessagesAction = new CopyMessagesAction(getClipboard(),
+		                                            messageTable,
+		                                            COPY_LABEL.getText());
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		ISharedImages platformImages = workbench.getSharedImages();
 		copyMessagesAction.setImageDescriptor(platformImages .getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
@@ -345,7 +356,7 @@ public abstract class MessagesViewBase<T> extends ViewPart {
             	getMessagesViewer().getTable().selectAll();
             }
         };
-        selectAllAction.setActionDefinitionId( "org.eclipse.ui.edit.selectAll" ); 
+        selectAllAction.setActionDefinitionId( "org.eclipse.ui.edit.selectAll" );  //$NON-NLS-1$
     }
 
 

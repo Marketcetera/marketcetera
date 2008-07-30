@@ -11,10 +11,10 @@ public class FIXMessageColumnChooserLabelProvider extends LabelProvider implemen
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		String result = "";
+		String result = ""; //$NON-NLS-1$
 		switch (columnIndex) {
 			case 0 :
-				result = "" + element;
+				result = "" + element; //$NON-NLS-1$
 				break;
 			default :
 				break; 	
