@@ -44,7 +44,7 @@ public class TI18NLoggerProxyTest
          String msgNull,
          String msgNoSub)
     {
-        I18NMessageProvider.setLocale(locale);
+        ActiveLocale.setProcessLocale(locale);
         setLevel(TEST_CATEGORY,Level.OFF);
 
         TestMessages.LOGGER.error

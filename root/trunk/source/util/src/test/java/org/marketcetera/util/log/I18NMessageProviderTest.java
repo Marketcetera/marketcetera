@@ -27,51 +27,18 @@ public class I18NMessageProviderTest
         TEST_CATEGORY;
 
 
-    private static final class TestThread
-        extends Thread
-    {
-        private Locale mLocale;
-
-        Locale getLocale()
-        {
-            return mLocale;
-        }
-
-        @Override
-        public void run()
-        {
-            I18NMessageProvider.setLocale(Locale.GERMAN);
-            mLocale=I18NMessageProvider.getLocale();
-        }
-    }
-
-
     @Before
     public void setupI18NMessageProviderTest()
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.ERROR);
     }
 
 
     @Test
-    public void localeSetPerThread()
-        throws Exception
-    {
-        assertEquals(Locale.US,I18NMessageProvider.getLocale());
-        I18NMessageProvider.setLocale(Locale.FRENCH);
-        assertEquals(Locale.FRENCH,I18NMessageProvider.getLocale());
-        TestThread t=new TestThread();
-        t.start();
-        t.join();
-        assertEquals(Locale.GERMAN,t.getLocale());
-        assertEquals(Locale.FRENCH,I18NMessageProvider.getLocale());
-    }
-
-    @Test
     public void idIsValid()
     {
-        assertEquals("log_test",TestMessages.PROVIDER.getProviderId());
+        assertEquals("util_log_test",TestMessages.PROVIDER.getProviderId());
     }
 
     @Test
@@ -133,7 +100,7 @@ public class I18NMessageProviderTest
             ("Hello null!",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_TITLE,(Object)null));
 
-        I18NMessageProvider.setLocale(Locale.FRENCH);
+        ActiveLocale.setProcessLocale(Locale.FRENCH);
         assertEquals
             ("Bonjour",TestMessages.PROVIDER.
              getText(TestMessages.HELLO_MSG));
@@ -172,23 +139,25 @@ public class I18NMessageProviderTest
     public void nonexistentMessage()
     {
         assertEquals
-            ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,
-             "Message not found: provider 'log_test'; id 'nonexistent_msg'; "+
+             "Message not found: provider 'util_log_test'; "+
+             "id 'nonexistent_msg'; "+
              "entry 'msg'; parameters ('a')",TEST_LOCATION);
 
-        I18NMessageProvider.setLocale(Locale.FRENCH);
+        ActiveLocale.setProcessLocale(Locale.FRENCH);
         assertEquals
-            ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
         assertSingleEvent
             (Level.ERROR,TEST_CATEGORY,
              "Message n'a pas \u00E9t\u00E9 trouv\u00E9e: fournisseur "+
-             "'log_test'; identit\u00E9 'nonexistent_msg'; entr\u00E9e 'msg'; "+
+             "'util_log_test'; "+
+             "identit\u00E9 'nonexistent_msg'; entr\u00E9e 'msg'; "+
              "param\u00E8tres ('a')",TEST_LOCATION);
     }
 
@@ -200,14 +169,14 @@ public class I18NMessageProviderTest
     public void nonexistentSystemMappingFile()
     {
         assertEquals
-            ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Message file missing: provider 'log_test'; "+
-             "base name 'log_test_message'",TEST_LOCATION);
+             "Message file missing: provider 'util_log_test'; "+
+             "base name 'util_log_test_message'",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Abnormal exception: stack trace",TEST_LOCATION);
@@ -223,7 +192,8 @@ public class I18NMessageProviderTest
              "Corrupted/unavailable message map",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Message missing: provider 'log_test'; id 'nonexistent_msg'; "+
+             "Message missing: provider 'util_log_test'; "+
+             "id 'nonexistent_msg'; "+
              "entry 'msg'; parameters ('a')",TEST_LOCATION);
         assertFalse(events.hasNext());
     }
@@ -237,7 +207,7 @@ public class I18NMessageProviderTest
     public void exceptionThrown()
     {
         assertEquals
-            ("provider 'log_test'; id 'nonexistent_msg'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'nonexistent_msg'; entry 'msg'; "+
              "parameters ('a')",
              TestMessages.PROVIDER.getText(TestMessages.NONEXISTENT,"a"));
 
@@ -250,7 +220,8 @@ public class I18NMessageProviderTest
              "Abnormal exception: stack trace",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Abnormal exception: provider 'log_test'; id 'nonexistent_msg'; "+
+             "Abnormal exception: provider 'util_log_test'; "+
+             "id 'nonexistent_msg'; "+
              "entry 'msg'; parameters ('a')",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
