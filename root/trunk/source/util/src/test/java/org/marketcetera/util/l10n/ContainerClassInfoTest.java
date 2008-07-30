@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
@@ -88,7 +89,7 @@ public class ContainerClassInfoTest
     public void nonstandardFields()
         throws Exception
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
         ContainerClassInfo info=new ContainerClassInfo(NonstandardFields.class);
         String category=info.getClass().getName();
         setLevel(category,Level.INFO);
