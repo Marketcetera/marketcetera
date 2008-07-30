@@ -6,6 +6,8 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessageProvider;
@@ -28,6 +30,12 @@ import org.marketcetera.util.misc.ClassVersion;
 public class PropertiesFileInfo
     implements MessageInfoProvider
 {
+
+    // CLASS DATA.
+
+    private static final Pattern PARAM_PATTERN=
+        Pattern.compile("\\{(\\d+)");
+
 
     // INSTANCE DATA.
 
@@ -92,16 +100,22 @@ public class PropertiesFileInfo
             new HashMap<String,PropertyMessageInfo>();
         for (String key:properties.stringPropertyNames()) {
             String messageText=properties.getProperty(key);
-            MessageFormat format;
             try {
-                format=new MessageFormat(messageText);
+                new MessageFormat(messageText,getLocale());
             } catch (IllegalArgumentException ex) {
                 throw new I18NException
                     (ex,new I18NBoundMessage1P(Messages.BAD_TEXT,messageText));
             }
+            Matcher matcher=PARAM_PATTERN.matcher(messageText);
+            int maxIndex=-1;
+            while (matcher.find()) {
+                int index=Integer.valueOf(matcher.group(1));
+                if (index>maxIndex) {
+                    maxIndex=index;
+                }
+            }
             messageInfo.put
-                (key,new PropertyMessageInfo
-                 (key,format.getFormatsByArgumentIndex().length,messageText));
+                (key,new PropertyMessageInfo(key,maxIndex+1,messageText));
         }
         mMessageInfo=messageInfo.values().toArray
             (PropertyMessageInfo.EMPTY_ARRAY);
