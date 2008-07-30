@@ -22,7 +22,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 public interface TestMessages
 {
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("l10n_test");
+        new I18NMessageProvider("util_l10n_test");
     static final I18NLoggerProxy LOGGER=
         new I18NLoggerProxy(PROVIDER);
 

@@ -66,7 +66,10 @@ public class PropertiesFileInfoTest
         assertEquals(locale,info.getLocale());
         assertArrayPermutation
             (new PropertyMessageInfo[] {
-                new PropertyMessageInfo("m1.msg",1,HELLO_GR+" {0} {0}")
+                new PropertyMessageInfo
+                ("m2.msg",2,HELLO_GR+" {1} {1} {1}"),
+                new PropertyMessageInfo
+                ("m3.msg",5,"{0}: {1,choice,0#|1#{2}}{3,choice,0#|1#({4})}")
             },info.getMessageInfo());
     }
 
@@ -94,7 +97,7 @@ public class PropertiesFileInfoTest
             I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
                 (ex.getDetail(),Messages.NONEXISTENT_RESOURCE,m.getMessage());
-            assertEquals("l10n_test_messages_fr.properties",m.getParam1());
+            assertEquals("util_l10n_test_messages_fr.properties",m.getParam1());
             return;
         }
         fail();
