@@ -179,4 +179,23 @@ class MyClass {
 }
 </pre>
 
+
+<h3>Active locale</h3>
+
+<p>Another aspect of i18n is proper handling of locales. In
+single-threaded client environment, a process-wide JVM locale is
+typically sufficent. But in multi-threaded server applications, where
+different threads may be servicing clients in different locales, a
+per-thread active locale is essential. Generalizing this concept
+further, the active locale can be <i>scoped</i> in the same manner
+that permissions checks are scoped, with a locale stack that mirrors
+the call stack.</p>
+
+<p>The {@link org.marketcetera.util.log.ActiveLocale} class manages
+the active locale in this scoped fashion. {@link
+org.marketcetera.util.log.I18NMessageProvider} uses that class to
+determine the right translation of a handle into a string (when an
+explicit locale is not supplied). Similarly, all code that needs to
+get/set the active locale should use that class.</p>
+
 </body>
