@@ -16,7 +16,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 public interface TestMessages
 {
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("except_test");
+        new I18NMessageProvider("util_except_test");
     static final I18NLoggerProxy LOGGER=
         new I18NLoggerProxy(PROVIDER);
 
