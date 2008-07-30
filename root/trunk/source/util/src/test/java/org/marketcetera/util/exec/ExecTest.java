@@ -11,8 +11,8 @@ import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.except.I18NInterruptedException;
 import org.marketcetera.util.file.CloseableRegistry;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage1P;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -232,7 +232,7 @@ public class ExecTest
     @Before
     public void setupExecTest()
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.TRACE);
     }
 
