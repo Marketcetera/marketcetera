@@ -2,7 +2,6 @@ package org.marketcetera.util.misc;
 
 import java.lang.reflect.Field;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Utilities for reflection.
@@ -29,7 +28,7 @@ public final class ReflectUtils
      */
 
     private static void getAllClasses
-        (Set<Class<?>> result,
+        (HashSet<Class<?>> result,
          Class<?> c)
     {
         if (c==null) {
@@ -54,7 +53,7 @@ public final class ReflectUtils
     public static Class<?>[] getAllClasses
         (Class<?> c)
     {
-        Set<Class<?>> result=new HashSet<Class<?>>();
+        HashSet<Class<?>> result=new HashSet<Class<?>>();
         getAllClasses(result,c);
         return result.toArray(new Class<?>[0]);
     }
@@ -71,7 +70,7 @@ public final class ReflectUtils
     public static Field[] getAllFields
         (Class<?> c)
     {
-        Set<Field> result=new HashSet<Field>();
+        HashSet<Field> result=new HashSet<Field>();
         for (Class<?> s:getAllClasses(c)) {
             for (Field f:s.getDeclaredFields()) {
                 result.add(f);
