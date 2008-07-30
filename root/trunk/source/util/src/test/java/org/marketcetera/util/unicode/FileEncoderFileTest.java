@@ -26,6 +26,7 @@ public class FileEncoderFileTest
     {
         return encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -42,6 +43,7 @@ public class FileEncoderFileTest
     {
         return encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -59,6 +61,7 @@ public class FileEncoderFileTest
     {
         return encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -81,6 +84,7 @@ public class FileEncoderFileTest
         String secondPart=string.substring(halfLength);
         encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -90,6 +94,7 @@ public class FileEncoderFileTest
             },null,null,firstPart);
         assertArrayEquals(bytes,encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -102,6 +107,7 @@ public class FileEncoderFileTest
         CopyBytesUtils.copy(ArrayUtils.EMPTY_BYTE_ARRAY,TEST_FILE);
         assertArrayEquals(bytes,encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -125,6 +131,7 @@ public class FileEncoderFileTest
         String secondPart=string.substring(halfLength);
         encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -134,6 +141,7 @@ public class FileEncoderFileTest
             },sc,sc,firstPart);
         assertArrayEquals(bytes,encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -146,6 +154,7 @@ public class FileEncoderFileTest
         CopyBytesUtils.copy(ArrayUtils.EMPTY_BYTE_ARRAY,TEST_FILE);
         assertArrayEquals(bytes,encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -170,6 +179,7 @@ public class FileEncoderFileTest
         String secondPart=string.substring(halfLength);
         encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -179,6 +189,7 @@ public class FileEncoderFileTest
             },sc,sc,firstPart);
         assertArrayEquals(bytes,encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {
@@ -191,6 +202,7 @@ public class FileEncoderFileTest
         CopyBytesUtils.copy(ArrayUtils.EMPTY_BYTE_ARRAY,TEST_FILE);
         assertArrayEquals(bytes,encode(new WriterCreator()
             {
+                @Override
                 public UnicodeFileWriter create()
                     throws Exception
                 {

@@ -25,6 +25,7 @@ public class FileEncoderDescriptorTest
         try {
             return encode(new WriterCreator()
                 {
+                    @Override
                     public UnicodeFileWriter create()
                         throws Exception
                     {
@@ -49,6 +50,7 @@ public class FileEncoderDescriptorTest
         try {
             return encode(new WriterCreator()
                 {
+                    @Override
                     public UnicodeFileWriter create()
                         throws Exception
                     {
@@ -74,6 +76,7 @@ public class FileEncoderDescriptorTest
         try {
             return encode(new WriterCreator()
                 {
+                    @Override
                     public UnicodeFileWriter create()
                         throws Exception
                     {

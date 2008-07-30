@@ -24,6 +24,7 @@ public class FileDecoderDescriptorTest
         try {
             return decode(new ReaderCreator()
                 {
+                    @Override
                     public UnicodeFileReader create()
                         throws Exception
                     {
@@ -48,6 +49,7 @@ public class FileDecoderDescriptorTest
         try {
             return decode(new ReaderCreator()
                 {
+                    @Override
                     public UnicodeFileReader create()
                         throws Exception
                     {
@@ -73,6 +75,7 @@ public class FileDecoderDescriptorTest
         try {
             return decode(new ReaderCreator()
                 {
+                    @Override
                     public UnicodeFileReader create()
                         throws Exception
                     {

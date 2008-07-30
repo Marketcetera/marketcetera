@@ -60,6 +60,7 @@ public class MemoryDecoderTest
     {
         return decode(new ReaderCreator()
             {
+                @Override
                 public UnicodeInputStreamReader create
                     (InputStream is)
                 {
@@ -76,6 +77,7 @@ public class MemoryDecoderTest
     {
         return decode(new ReaderCreator()
             {
+                @Override
                 public UnicodeInputStreamReader create
                     (InputStream is)
                 {
@@ -93,6 +95,7 @@ public class MemoryDecoderTest
     {
         return decode(new ReaderCreator()
             {
+                @Override
                 public UnicodeInputStreamReader create
                     (InputStream is)
                 {
