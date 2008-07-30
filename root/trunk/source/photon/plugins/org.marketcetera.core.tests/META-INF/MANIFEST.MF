@@ -22,3 +22,5 @@ Export-Package: .,
  org.marketcetera.quickfix.messagemodifiers,
  org.marketcetera.spring,
  org.marketcetera.symbology
+Require-Bundle: org.junit;visibility:=reexport,
+ org.marketcetera.core
