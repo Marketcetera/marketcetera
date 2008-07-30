@@ -4,7 +4,7 @@ import java.io.File;
 //import java.util.Locale;
 //import org.apache.log4j.Level;
 import org.junit.Test;
-//import org.marketcetera.util.log.I18NMessageProvider;
+//import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.misc.OperatingSystem;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -99,7 +99,7 @@ public class FileTypeTest
     @Test
     public void exceptionThrown()
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.WARN);
         assertEquals(UNKNOWN,get(TEST_PLAIN_FILE));
         assertSingleEvent
