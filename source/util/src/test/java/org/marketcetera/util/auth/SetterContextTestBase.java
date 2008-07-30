@@ -6,8 +6,8 @@ import java.util.Locale;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.marketcetera.util.file.CloseableRegistry;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.IterableUtils;
 import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
@@ -127,6 +127,6 @@ public class SetterContextTestBase
     @Before
     public void setupSetterContextTestBase()
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
     }
 }

@@ -9,7 +9,7 @@ import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.file.CloseableRegistry;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -54,7 +54,7 @@ public class StandardAuthenticationTest
     @Before
     public void setupSetterContextTestBase()
     {
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
     }
 
 
