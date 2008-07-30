@@ -3,7 +3,6 @@ package org.marketcetera.util.l10n;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Map;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.misc.SystemProperties;
@@ -46,8 +45,8 @@ public class MessageComparator
 
         // Analyze source and destination.
 
-        Map<String,MessageInfo> srcMessages=toMap(srcInfo);
-        Map<String,MessageInfo> dstMessages=toMap(dstInfo);
+        HashMap<String,MessageInfo> srcMessages=toHashMap(srcInfo);
+        HashMap<String,MessageInfo> dstMessages=toHashMap(dstInfo);
 
         // Compare.
 
@@ -173,10 +172,10 @@ public class MessageComparator
      * @return The map.
      */
 
-    private Map<String,MessageInfo> toMap
+    private HashMap<String,MessageInfo> toHashMap
         (MessageInfo[] infoArray)
     {
-        Map<String,MessageInfo> result=new HashMap<String,MessageInfo>();
+        HashMap<String,MessageInfo> result=new HashMap<String,MessageInfo>();
         for (MessageInfo info:infoArray) {
             result.put(info.getKey(),info);
         }
