@@ -9,7 +9,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -73,7 +73,7 @@ public class CloseableRegistryTest
     public void setupCloseableRegistryTest()
     {
         OrderedCloseable.resetStaticSequence();
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
         setLevel(TEST_CATEGORY,Level.WARN);
     }
 
