@@ -10,11 +10,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * An internationalized message provider, mapping instances of {@link
  * I18NMessage} onto text. The locale used for the translation is
- * either one supplied at the time of translation, or one specified on
- * a per-thread basis via {@link #setLocale(Locale)}. The per-thread
- * locale is initialized to the JVM's default locale if translation
- * occurs on a thread without {@link #setLocale(Locale)} called
- * beforehand.
+ * either one supplied at the time of translation, or the active
+ * locale per {@link ActiveLocale}.
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -56,15 +53,6 @@ public class I18NMessageProvider
     private static final String CORRUPTED_STORE=
         "Corrupted/unavailable message map";
 
-    private static ThreadLocal<Locale> sLocale=new ThreadLocal<Locale>()
-    {
-        @Override
-        protected Locale initialValue()
-        {
-            return Locale.getDefault();
-        }
-    };
-
 
     // INSTANCE DATA.
 
@@ -100,35 +88,6 @@ public class I18NMessageProvider
         MessageManager.addMessageProvider(getProviderId(),provider);
     }
 
-
-    // CLASS METHODS.
-
-    /**
-     * Returns the locale used for message translation by all
-     * instances of this class. This is a thread-specific setting.
-     *
-     * @return The locale.
-     */
-
-    public static Locale getLocale()
-    {
-        return sLocale.get();
-    }
-
-    /**
-     * Sets the locale used for message translation by all instances
-     * of this class to the given one. This is a thread-specific
-     * setting.
-     *
-     * @param locale The locale.
-     */
-
-    public static void setLocale
-        (Locale locale)
-    {
-        sLocale.set(locale);
-    }
-    
 
     // INSTANCE METHODS.
 
@@ -208,9 +167,9 @@ public class I18NMessageProvider
     }
 
     /**
-     * Returns the text of the given message in the locale associated
-     * with the running thread, using the receiver's map. The given
-     * parameters are used to instantiate parameterized messages.
+     * Returns the text of the given message in the active locale per
+     * {@link ActiveLocale}. The given parameters are used to
+     * instantiate parameterized messages.
      *
      * @param message The message.
      * @param params The message parameters.
@@ -224,6 +183,6 @@ public class I18NMessageProvider
         (I18NMessage message,
          Object... params)
     {
-        return getText(getLocale(),message,params);
+        return getText(ActiveLocale.getLocale(),message,params);
     }
 }
