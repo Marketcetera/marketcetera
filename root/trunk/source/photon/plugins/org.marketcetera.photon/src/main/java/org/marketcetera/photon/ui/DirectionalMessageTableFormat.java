@@ -5,6 +5,7 @@ import org.eclipse.swt.widgets.Table;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXDataDictionary;
 
@@ -13,7 +14,10 @@ import org.marketcetera.quickfix.FIXDataDictionary;
  * @author michael.lossos@softwaregoodness.com
  *
  */
-public class DirectionalMessageTableFormat<T> extends FIXMessageTableFormat<T> {
+public class DirectionalMessageTableFormat<T>
+    extends FIXMessageTableFormat<T>
+    implements Messages
+{
 
 	private static final int DirectionFieldNum = -2;
 	
@@ -36,9 +40,8 @@ public class DirectionalMessageTableFormat<T> extends FIXMessageTableFormat<T> {
 			arrowInImage.dispose();
 			arrowOutImage.dispose();
 		} catch (Exception anyException) {
-			PhotonPlugin.getMainConsoleLogger().warn(
-					"Failed to dispose of direction arrow images.",
-					anyException);
+			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_DISPOSE_OF_ARROWS.getText(),
+			                                         anyException);
 		}
 		super.dispose();
 	}
@@ -63,7 +66,7 @@ public class DirectionalMessageTableFormat<T> extends FIXMessageTableFormat<T> {
 	@Override
 	public String getFIXFieldColumnName(int fixFieldNum, FIXDataDictionary fixDataDictionary) {
 		if(fixFieldNum == DirectionFieldNum) {
-			return "D";
+			return "D"; //$NON-NLS-1$
 		}
 		return super.getFIXFieldColumnName(fixFieldNum, fixDataDictionary);
 	}

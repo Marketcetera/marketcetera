@@ -14,8 +14,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.forms.widgets.FormToolkit;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.UnderlyingSymbolInfo.UnderlyingSymbolDataFields;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
@@ -30,13 +32,18 @@ import quickfix.FieldType;
 import quickfix.Message;
 import quickfix.field.Symbol;
 
+/* $License$ */
+
 /**
  * Composite containing one or more underlying symbols info.
  * 
  * @author caroline.leung@softwaregoodness.com
  */
-public class UnderlyingSymbolInfoComposite extends Composite {
-	
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class UnderlyingSymbolInfoComposite
+    extends Composite
+    implements Messages
+{
 	private FormToolkit formToolkit;
 
 	private Composite underlyingSymbolsContainer;
@@ -48,10 +55,10 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 	private FIXValueExtractor extractor;
 
 	private static final DateFormat TIME_FORMAT = new SimpleDateFormat(
-			"HH:mm:ss");
+			"HH:mm:ss"); //$NON-NLS-1$
 
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat(
-			"yyyy-MM-dd");
+			"yyyy-MM-dd"); //$NON-NLS-1$
 	
 	public UnderlyingSymbolInfoComposite(Composite parent) {
 		super(parent, SWT.NONE);
@@ -144,9 +151,8 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 				try {
 					child.dispose();
 				} catch (Exception anyException) {
-					PhotonPlugin.getMainConsoleLogger().info(
-							"Failed to dispose market data widget.",
-							anyException);
+					PhotonPlugin.getMainConsoleLogger().info(FAILED_TO_DISPOSE_MARKET_DATA_WIDGET.getText(),
+					                                         anyException);
 				}
 			}
 		}
@@ -232,7 +238,7 @@ public class UnderlyingSymbolInfoComposite extends Composite {
 	// cl todo:clean up this - fieldID should be encapsulate better, refactor
 	// common methods from EnumTableFormat into common util class
 	private String convertExtractedValue(Object objValue, Integer fieldID) {
-		String value = "";
+		String value = ""; //$NON-NLS-1$
 		if (objValue != null && fieldID != null) {
 			FieldType fieldType = dictionary.getFieldTypeEnum(fieldID);
 			if (fieldType.equals(FieldType.UtcTimeOnly)

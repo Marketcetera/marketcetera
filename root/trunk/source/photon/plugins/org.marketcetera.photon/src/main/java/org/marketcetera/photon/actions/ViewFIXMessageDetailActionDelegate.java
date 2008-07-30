@@ -11,14 +11,18 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 import org.marketcetera.photon.views.fixmessagedetail.IFIXMessageDetail;
 
 import quickfix.Message;
 
-public class ViewFIXMessageDetailActionDelegate extends ActionDelegate {
-	public final static String ID = "org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate";
+public class ViewFIXMessageDetailActionDelegate 
+    extends ActionDelegate
+    implements Messages
+{
+	public final static String ID = "org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"; //$NON-NLS-1$
 
 	private ISelection currentSelection;
 
@@ -62,8 +66,7 @@ public class ViewFIXMessageDetailActionDelegate extends ActionDelegate {
 						.getActiveWorkbenchWindow();
 				IWorkbenchPage targetPage = activeWindow.getActivePage();
 				if (targetPage == null) {
-					throw new MarketceteraException(
-							"The target page for the new view is null."); // $NON-NLS-1$
+					throw new MarketceteraException(NULL_TARGET_PAGE.getText());
 				}
 				IViewPart viewPart = targetPage
 						.showView(FIXMessageDetailView.ID);
@@ -71,14 +74,11 @@ public class ViewFIXMessageDetailActionDelegate extends ActionDelegate {
 					IFIXMessageDetail messageDetailView = (IFIXMessageDetail) viewPart;
 					messageDetailView.showMessage(fixMessage);
 				} else {
-					throw new MarketceteraException(
-							"The view does not implement " // $NON-NLS-1$
-									+ IFIXMessageDetail.class);
+					throw new MarketceteraException(VIEW_DOES_NOT_IMPLEMENT.getText(IFIXMessageDetail.class));
 				}
 			} catch (Exception anyException) {
-				PhotonPlugin.getMainConsoleLogger().error(
-						"Failed to open new view with ID: " // $NON-NLS-1$
-								+ FIXMessageDetailView.ID, anyException); // $NON-NLS-1$
+				PhotonPlugin.getMainConsoleLogger().error(FAILED_TO_OPEN_VIEW.getText(FIXMessageDetailView.ID), 
+				                                          anyException);
 			}
 		}
 	}

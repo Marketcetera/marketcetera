@@ -9,10 +9,8 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.ui.IViewPart;
-import org.eclipse.ui.internal.ErrorViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -22,6 +20,7 @@ import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.framework.ServiceRegistration;
@@ -68,14 +67,14 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 	}
 
+    @SuppressWarnings("restriction")
     @Override
 	protected void setUp() throws Exception {
 		super.setUp();
 		IViewPart theTestView = getTestView();
-		if (theTestView instanceof ErrorViewPart){
+		if (theTestView instanceof org.eclipse.ui.internal.ErrorEditorPart){
 			fail("Test view was not created");
 		}
-		StockOrderTicketView ticket = (StockOrderTicketView) theTestView;
 		controller = PhotonPlugin.getDefault().getStockOrderTicketController();
     }
 
@@ -198,8 +197,8 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 
 		TableViewer bidViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2BidTableViewer();
 		TableViewer offerViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2OfferTableViewer();
-		final List bidInput = (List)bidViewer.getInput();
-		List offerInput = (List)offerViewer.getInput();
+		final List<?> bidInput = (List<?>)bidViewer.getInput();
+		List<?> offerInput = (List<?>)offerViewer.getInput();
         doDelay(new Callable<Boolean>() {
             public Boolean call() 
                 throws Exception
@@ -631,9 +630,11 @@ public class StockOrderTicketViewTest extends ViewTestBase {
     {
         IStockOrderTicket ticket = (IStockOrderTicket) ((StockOrderTicketView)getTestView()).getOrderTicket();
     	controller.clear();
-        LoggerAdapter.info("side is enabled/has focus:"+ticket.getSideCombo().isEnabled() + "/"+ticket.getSideCombo().isFocusControl(), this);
-    	assertTrue("side is not focused", ticket.getSideCombo().isFocusControl());
+        SLF4JLoggerProxy.info(this,
+                              "side is enabled/has focus: {}/{}",
+                              ticket.getSideCombo().isEnabled(),
+                              ticket.getSideCombo().isFocusControl());
+    	assertTrue("side is not focused",
+    	           ticket.getSideCombo().isFocusControl());
     }
 }
-
-

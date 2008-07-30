@@ -3,6 +3,7 @@ package org.marketcetera.photon.ui;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 import quickfix.Message;
@@ -10,7 +11,10 @@ import quickfix.field.MDEntryType;
 import quickfix.field.NoMDEntries;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
-public class Level2ContentProvider extends ObservableListContentProvider {
+public class Level2ContentProvider
+    extends ObservableListContentProvider
+    implements Messages
+{
 
 	private Message currentMessage;
 	private WritableList currentList;
@@ -37,7 +41,7 @@ public class Level2ContentProvider extends ObservableListContentProvider {
 					}
 				}
 			} catch (Throwable ex){
-				PhotonPlugin.getMainConsoleLogger().error("Exception parsing level 2 data", ex);
+				PhotonPlugin.getMainConsoleLogger().error(CANNOT_PARSE_LEVEL_TWO_DATA.getText());
 			}
 		}
 		super.inputChanged(viewer, currentList, writableList);

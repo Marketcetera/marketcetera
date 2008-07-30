@@ -17,7 +17,7 @@ import ca.odell.glazedlists.EventList;
  */
 public class FillsView extends AbstractFIXMessagesView {
 
-	public static final String ID = "org.marketcetera.photon.views.FillsView";
+	public static final String ID = "org.marketcetera.photon.views.FillsView"; //$NON-NLS-1$
 
 	@Override
 	protected String getViewID() {

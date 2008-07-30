@@ -4,11 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.marketcetera.photon.Messages;
+
 import quickfix.field.OrderCapacity;
 
-public enum OrderCapacityImage implements ILexerFIXImage  {
+public enum OrderCapacityImage
+    implements ILexerFIXImage, Messages
+{
 	// todo: This mapping needs to be revised. See http://trac.marketcetera.org/trac.fcgi/ticket/185
-    CUSTOMER("Customer", OrderCapacity.AGENCY), BROKERDEALER("Broker/Dealer", OrderCapacity.PRINCIPAL), MARKETMAKER("Market Maker", OrderCapacity.RISKLESS_PRINCIPAL);
+    CUSTOMER(CUSTOMER_LABEL.getText(),
+             OrderCapacity.AGENCY),
+    BROKERDEALER(BROKER_DEALER_LABEL.getText(),
+                 OrderCapacity.PRINCIPAL),
+    MARKETMAKER(MARKET_MAKER_LABEL.getText(),
+                OrderCapacity.RISKLESS_PRINCIPAL);
 //	CUSTOMER("Customer", CustomerOrFirm.CUSTOMER), BROKERDEALER("Broker/Dealer", CustomerOrFirm.FIRM), MARKETMAKER("Market Maker", CustomerOrFirm.FIRM);
 	static final Map<String, OrderCapacityImage> nameMap = new HashMap<String, OrderCapacityImage>();
 	private static final String[] images;
@@ -44,6 +53,6 @@ public enum OrderCapacityImage implements ILexerFIXImage  {
 		return fixValue;
 	}
 	public String getFIXStringValue() {
-		return ""+fixValue;
+		return ""+fixValue; //$NON-NLS-1$
 	}
 }

@@ -7,7 +7,7 @@ import org.marketcetera.messagehistory.MessageHolder;
 import ca.odell.glazedlists.matchers.AbstractMatcherEditor;
 import ca.odell.glazedlists.matchers.Matcher;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMatcherEditor<FIX_TYPE extends Comparable<FIX_TYPE>> extends
 		AbstractMatcherEditor<MessageHolder> implements Comparable<FIXMatcherEditor<FIX_TYPE>>{
 

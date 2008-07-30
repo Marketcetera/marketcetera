@@ -33,15 +33,15 @@ public class MapEditorUtil {
 		for (Map.Entry<String, String> anEntry : list) {
 			try {
 				buf.append(URLEncoder.encode(anEntry.getKey(), UTF_8));
-				buf.append("=");
+				buf.append("="); //$NON-NLS-1$
 				buf.append(URLEncoder.encode(anEntry.getValue(), UTF_8));
 			} catch (UnsupportedEncodingException e) {
 				buf.append(anEntry.getKey());
-				buf.append("=");
+				buf.append("="); //$NON-NLS-1$
 				buf.append(anEntry.getValue());
 			}
 			if (i < list.size() - 1){
-				buf.append("&");
+				buf.append("&"); //$NON-NLS-1$
 			}
 			i++;
 		}
@@ -49,12 +49,12 @@ public class MapEditorUtil {
 	}
 
 	public static EventList<Entry<String, String>> parseString(String stringList) {
-		String [] pieces = stringList.split("&");
+		String [] pieces = stringList.split("&"); //$NON-NLS-1$
 		EventList<Map.Entry<String, String>> outList = new BasicEventList<Map.Entry<String, String>>();
 		int i = 0;
 		for (String aPiece : pieces) {
-			if (aPiece.contains("=")){
-				String[] keyValueArray = aPiece.split("=");
+			if (aPiece.contains("=")){ //$NON-NLS-1$
+				String[] keyValueArray = aPiece.split("="); //$NON-NLS-1$
 				MMapEntry<String, String> outEntry;
 				try {
 					outEntry = new MMapEntry<String, String>(URLDecoder.decode(keyValueArray[0], UTF_8)

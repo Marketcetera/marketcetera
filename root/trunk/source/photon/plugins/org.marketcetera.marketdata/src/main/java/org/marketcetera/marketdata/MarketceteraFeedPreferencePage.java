@@ -10,7 +10,10 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.photon.preferences.UrlFieldEditor;
 import org.marketcetera.quickfix.ConnectionConstants;
 
-public class MarketceteraFeedPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage{
+public class MarketceteraFeedPreferencePage 
+    extends FieldEditorPreferencePage 
+    implements IWorkbenchPreferencePage, Messages
+{
 
 	private UrlFieldEditor feedUrlEditor;
 	private StringFieldEditor senderCompIDEditor;
@@ -25,21 +28,21 @@ public class MarketceteraFeedPreferencePage extends FieldEditorPreferencePage im
 	protected void createFieldEditors() {
         feedUrlEditor = new UrlFieldEditor(
         		ConnectionConstants.MARKETDATA_URL_SUFFIX,
-        		"Market data server URL",
+        		URL_LABEL.getText(),
                 getFieldEditorParent()
                 );
 		addField(feedUrlEditor);
 
         senderCompIDEditor = new StringFieldEditor(
         		MarketceteraFeed.SETTING_SENDER_COMP_ID,
-        		"SenderCompID",
+        		SENDER_COMP_LABEL.getText(),
                 getFieldEditorParent()
                 );
 		addField(senderCompIDEditor);
 
         targetCompIDEditor = new StringFieldEditor(
         		MarketceteraFeed.SETTING_TARGET_COMP_ID,
-        		"TargetCompID",
+        		TARGET_COMP_LABEL.getText(),
                 getFieldEditorParent()
                 );
 		addField(targetCompIDEditor);

@@ -35,8 +35,10 @@ import org.marketcetera.photon.actions.WebHelpAction;
  * @author gmiller
  * @author andrei@lissovski.org
  */
-@ClassVersion("$Id$")
-public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ApplicationActionBarAdvisor
+    extends ActionBarAdvisor
+{
 
 	private IWorkbenchAction saveAction;
 
@@ -185,10 +187,10 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	 *
 	 * @see org.eclipse.ui.application.ActionBarAdvisor#fillMenuBar(org.eclipse.jface.action.IMenuManager)
 	 */
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings("deprecation") //$NON-NLS-1$
 	protected void fillMenuBar(IMenuManager menuBar) {
 		// File menu
-		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName,
+		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName.getText(),
 				IWorkbenchActionConstants.M_FILE);
 		menu.add(reconnectJMSAction);
 		menu.add(reconnectQuoteFeedAction);
@@ -205,7 +207,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// Edit menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_EditMenuName,
+				Messages.ApplicationActionBarAdvisor_EditMenuName.getText(),
 				IWorkbenchActionConstants.M_EDIT);
 		menu.add(undoAction);
 		menu.add(redoAction);
@@ -223,7 +225,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// Script menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_ScriptMenuName,
+				Messages.ApplicationActionBarAdvisor_ScriptMenuName.getText(),
 				PhotonConstants.M_SCRIPT);
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));  //agl necessary since the RunScript action is contributed as an editorContribution (see plugin.xml) 
 		menuBar.add(menu);
@@ -233,18 +235,18 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// Window menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_WindowMenuName,
+				Messages.ApplicationActionBarAdvisor_WindowMenuName.getText(),
 				IWorkbenchActionConstants.M_WINDOW);
 		//menu.add(viewSecurityAction);
 		menu.add(new Separator());
 		MenuManager perspectiveMenu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_OpenPerspectiveMenuName,
-				Messages.ApplicationActionBarAdvisor_OpenPerspectiveMenuID);
+				Messages.ApplicationActionBarAdvisor_OpenPerspectiveMenuName.getText(),
+				Messages.ApplicationActionBarAdvisor_OpenPerspectiveMenuID.getText());
 		perspectiveList.update();
 		perspectiveMenu.add(perspectiveList);
 		menu.add(perspectiveMenu);
 		MenuManager viewMenu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_OpenViewMenuItemName,
+				Messages.ApplicationActionBarAdvisor_OpenViewMenuItemName.getText(),
 				IWorkbenchActionConstants.M_VIEW);
 		viewMenu.add(viewList);
 		menu.add(viewMenu);
@@ -255,7 +257,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 		menu.add(closeAllPerspectivesAction);
 		menu.add(new Separator());
 		MenuManager subMenu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_NavigationMenuName,
+				Messages.ApplicationActionBarAdvisor_NavigationMenuName.getText(),
 				IWorkbenchActionConstants.M_NAVIGATE);
 		subMenu.add(maximizeAction);
 		subMenu.add(minimizeAction);
@@ -275,7 +277,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 
 		// Help menu
 		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_HelpMenuName,
+				Messages.ApplicationActionBarAdvisor_HelpMenuName.getText(),
 				IWorkbenchActionConstants.M_HELP);
 
 		menu.add(webHelpAction);
@@ -298,7 +300,7 @@ public class ApplicationActionBarAdvisor extends ActionBarAdvisor {
 	@Override
 	protected void fillCoolBar(ICoolBarManager coolBar) {
 		IToolBarManager toolBar = new ToolBarManager(SWT.FLAT | SWT.TRAIL);
-		coolBar.add(new ToolBarContributionItem(toolBar, "standard"));
+		coolBar.add(new ToolBarContributionItem(toolBar,"standard")); //$NON-NLS-1$
 
 		//ActionContributionItem viewSecurityCI = new ActionContributionItem(viewSecurityAction);
 		//toolBar.add(viewSecurityCI);

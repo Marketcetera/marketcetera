@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.marketcetera.photon.actions;
 
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +15,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWTException;
 import org.eclipse.ui.progress.UIJob;
 import org.marketcetera.core.ApplicationBase;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
@@ -39,7 +37,10 @@ import org.springframework.jms.core.JmsOperations;
  * @author gmiller
  *
  */
-public class ReconnectJMSJob extends UIJob {
+public class ReconnectJMSJob
+    extends UIJob
+    implements Messages
+{
 
 	
 
@@ -62,7 +63,7 @@ public class ReconnectJMSJob extends UIJob {
 		throws InvocationTargetException,
 		InterruptedException {
 			try {
-				setJmsApplicationContext(new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerContext));
+				setJmsApplicationContext(new ClassPathXmlApplicationContext(new String[]{"jms.xml"}, brokerContext)); //$NON-NLS-1$
 			} catch (Throwable ex) {
 				setFailure(ex);
 			}				
@@ -116,10 +117,12 @@ public class ReconnectJMSJob extends UIJob {
 			Logger logger = PhotonPlugin.getDefault().getMainLogger();
 			
 			try {
-				monitor.beginTask("Disconnect message server", 2);
+				monitor.beginTask(DISCONNECT_MESSAGE_SERVER.getText(),
+				                  2);
 				disconnect(jmsFeedTracker);
 			} catch (Exception ex){
-				logger.info("Exception disconnecting from JMS", ex);
+				logger.error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
+				             ex);
 			}
 			
 			if (!disconnectOnly){
@@ -130,7 +133,8 @@ public class ReconnectJMSJob extends UIJob {
 				feedService.setServiceRegistration(registration);
 		
 				try {
-					monitor.beginTask("Connect message server", 4);
+					monitor.beginTask(RECONNECT_MESSAGE_SERVER.getText(),
+					                  4);
 
 					String url = PhotonPlugin.getDefault().getPreferenceStore().getString(ConnectionConstants.JMS_URL_KEY);
 					ClassPathXmlApplicationContext jmsApplicationContext=null;
@@ -142,7 +146,8 @@ public class ReconnectJMSJob extends UIJob {
 								return Status.CANCEL_STATUS;
 							}
 						} catch (SWTException ex) {
-							logger.error("Error connecting to ORS (cannot show login dialog)", ex);							
+							logger.error(CANNOT_SHOW_ORS_DIALOG.getText(),
+							             ex);
 							return Status.CANCEL_STATUS;
 						}
 						ConnectionDetails details=loginDialog.getConnectionDetails();
@@ -154,10 +159,12 @@ public class ReconnectJMSJob extends UIJob {
 						try {
 							progress.run(true, true,runnable);
 						} catch (InvocationTargetException ex){
-							logger.error("Error connecting to ORS (cannot show progress dialog)", ex);							
+							logger.error(CANNOT_SHOW_PROGRESS_DIALOG.getText(),
+							             ex);
 							return Status.CANCEL_STATUS;
 						} catch (InterruptedException ex){
-							logger.error("Error connecting to ORS (cannot show progress dialog)", ex);							
+                            logger.error(CANNOT_SHOW_PROGRESS_DIALOG.getText(),
+                                         ex);
 							return Status.CANCEL_STATUS;
 						} 
 						Throwable failure=runnable.getFailure();
@@ -166,21 +173,22 @@ public class ReconnectJMSJob extends UIJob {
 							break;
 						}
 						Thread.sleep(500+random.nextInt(1000));
-						logger.error("Error connecting to ORS (JMS connect failed)", failure);							
+						logger.error(JMS_CONNECTION_FAILED.getText(),
+						             failure);
 					}
 			
-					SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer");
+					SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("photonControllerContainer"); //$NON-NLS-1$
 					photonControllerContainer.setExceptionListener(feedService);
 					
-					PhotonControllerListenerAdapter photonControllerAdapter = (PhotonControllerListenerAdapter) jmsApplicationContext.getBean("photonControllerListener");
+					PhotonControllerListenerAdapter photonControllerAdapter = (PhotonControllerListenerAdapter) jmsApplicationContext.getBean("photonControllerListener"); //$NON-NLS-1$
 					photonControllerAdapter.setPhotonController(PhotonPlugin.getDefault().getPhotonController());
 
 					monitor.worked(1);
 					
-					SimpleMessageListenerContainer scriptingControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("scriptingControllerContainer");
+					SimpleMessageListenerContainer scriptingControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("scriptingControllerContainer"); //$NON-NLS-1$
 					scriptingControllerContainer.setExceptionListener(feedService);
 					
-					ScriptingControllerListenerAdapter scriptingControllerAdapter = (ScriptingControllerListenerAdapter) jmsApplicationContext.getBean("scriptingControllerListener");
+					ScriptingControllerListenerAdapter scriptingControllerAdapter = (ScriptingControllerListenerAdapter) jmsApplicationContext.getBean("scriptingControllerListener"); //$NON-NLS-1$
 					scriptingControllerAdapter.setScriptRegistry(PhotonPlugin.getDefault().getScriptRegistry());
 
 					monitor.worked(1);
@@ -189,21 +197,23 @@ public class ReconnectJMSJob extends UIJob {
 					feedService.setApplicationContext(jmsApplicationContext);
 					
 					JmsOperations outgoingJmsOperations;
-					outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate");
+					outgoingJmsOperations = (JmsOperations)jmsApplicationContext.getBean("outgoingJmsTemplate"); //$NON-NLS-1$
 		
 					feedService.setJmsOperations(outgoingJmsOperations);
 					feedService.afterPropertiesSet();
 					monitor.worked(1);
 		
 					succeeded = true;
-					logger.info("Message queue connected ("+url+")");
+					logger.info(MESSAGE_QUEUE_CONNECTED.getText(url));
 				} catch (BeanCreationException bce){
 					Throwable toLog = bce.getCause();
 					if (toLog instanceof UncategorizedJmsException)
 						toLog = toLog.getCause();
-					logger.error("Error connecting to message server", toLog);
+					logger.error(CANNOT_CONNECT_TO_MESSAGE_QUEUE.getText(),
+					             toLog);
 				} catch (Throwable t){
-					logger.error("Error connecting to message server", t);
+                    logger.error(CANNOT_CONNECT_TO_MESSAGE_QUEUE.getText(),
+                                 t);
 				} finally {
 					reconnectInProgress.set(false);
 					feedService.setExceptionOccurred(!succeeded);
@@ -240,7 +250,7 @@ public class ReconnectJMSJob extends UIJob {
          String password) {
 		StaticApplicationContext context;
 		context=new StaticApplicationContext();
-        inject(context,"brokerURL",url);
+        inject(context,"brokerURL",url); //$NON-NLS-1$
         inject(context,ApplicationBase.USERNAME_BEAN_NAME,username);
         inject(context,ApplicationBase.PASSWORD_BEAN_NAME,password);
 		context.refresh();
@@ -258,7 +268,7 @@ public class ReconnectJMSJob extends UIJob {
 			}
 	
 			try {
-				SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) feed.getApplicationContext().getBean("photonControllerContainer");
+				SimpleMessageListenerContainer photonControllerContainer = (SimpleMessageListenerContainer) feed.getApplicationContext().getBean("photonControllerContainer"); //$NON-NLS-1$
 				photonControllerContainer.setExceptionListener(null);
 			} catch (Exception e) {
 			}

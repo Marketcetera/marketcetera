@@ -14,9 +14,9 @@ import org.marketcetera.photon.views.MarketDataView;
 import quickfix.Message;
 import quickfix.field.Symbol;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DeleteItemActionDelegate implements IViewActionDelegate {
-	public final static String ID = "org.marketcetera.photon.actions.DeleteItemActionDelegate";
+	public final static String ID = "org.marketcetera.photon.actions.DeleteItemActionDelegate"; //$NON-NLS-1$
 
 	private IStructuredSelection selection;
 
@@ -68,7 +68,7 @@ public class DeleteItemActionDelegate implements IViewActionDelegate {
 		action.setEnabled(shouldEnable);
 	}
 
-	@SuppressWarnings("unchecked") // Iterator from selection is untyped
+	@SuppressWarnings("unchecked") // Iterator from selection is untyped //$NON-NLS-1$
 	public void run(IAction action) {
 		Iterator iter = selection.iterator();
 		while (iter.hasNext()) {

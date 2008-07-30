@@ -36,7 +36,7 @@ import quickfix.field.ClOrdID;
  */
 public class FIXObservableValue extends AbstractObservableValue {
 
-	private static final String QUICKFIX_FIELD_PACKAGE = ClOrdID.class.getPackage().getName()+".";
+	private static final String QUICKFIX_FIELD_PACKAGE = ClOrdID.class.getPackage().getName()+"."; //$NON-NLS-1$
 	protected final Message message;
 	protected final int fieldNumber;
 	protected final DataDictionary dataDictionary;

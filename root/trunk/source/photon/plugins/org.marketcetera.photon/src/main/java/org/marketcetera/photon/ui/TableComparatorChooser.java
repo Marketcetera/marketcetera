@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.marketcetera.photon.Messages;
 
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.SortedList;
@@ -36,7 +37,10 @@ import ca.odell.glazedlists.impl.gui.SortingState.SortingColumn;
  *
  * @author <a href="mailto:jesse@swank.ca">Jesse Wilson</a>
  */
-public final class TableComparatorChooser<T> extends AbstractTableComparatorChooser<T> {
+public final class TableComparatorChooser<T>
+    extends AbstractTableComparatorChooser<T>
+    implements Messages
+{
 
     private final SortingStrategy sortingStrategy;
 
@@ -101,7 +105,7 @@ public final class TableComparatorChooser<T> extends AbstractTableComparatorChoo
                 return;
             }
         }
-        throw new IllegalArgumentException("Cannot remove nonexistent listener " + sortListener);
+        throw new IllegalArgumentException(CANNOT_REMOVE_NONEXISTANT_LISTENER.getText(sortListener));
     }
 
     /**

@@ -60,7 +60,7 @@ public class BookComposite extends Composite implements IBookComposite
 		BookColumns(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
-				Field fieldField = clazz.getField("FIELD");
+				Field fieldField = clazz.getField("FIELD"); //$NON-NLS-1$
 				fieldID = (Integer) fieldField.get(null);
 			} catch (Throwable t){
 				assert(false);

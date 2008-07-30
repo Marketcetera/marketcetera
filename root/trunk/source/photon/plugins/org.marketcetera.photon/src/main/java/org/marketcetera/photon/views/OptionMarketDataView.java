@@ -21,12 +21,14 @@ import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -39,15 +41,20 @@ import org.marketcetera.quickfix.FIXMessageUtil;
 import quickfix.Message;
 import ca.odell.glazedlists.BasicEventList;
 
+/* $License$ */
+
 /**
  * Option market data view.
  * 
  * @author caroline.leung@softwaregoodness.com
  */
-public class OptionMarketDataView extends ViewPart implements
-		IMSymbolListener, ISubscriber{
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class OptionMarketDataView
+    extends ViewPart
+    implements IMSymbolListener, ISubscriber, Messages
+{
 
-	public static final String ID = "org.marketcetera.photon.views.OptionMarketDataView";
+	public static final String ID = "org.marketcetera.photon.views.OptionMarketDataView"; //$NON-NLS-1$
 
 	private UnderlyingSymbolInfoComposite underlyingSymbolInfoComposite;
 	
@@ -67,7 +74,7 @@ public class OptionMarketDataView extends ViewPart implements
 
 	private MarketDataFeedTracker marketDataTracker;
 
-	private final Set<IMarketDataFeedToken> tokens = new HashSet<IMarketDataFeedToken>();
+	private final Set<IMarketDataFeedToken<?>> tokens = new HashSet<IMarketDataFeedToken<?>>();
 
 	public OptionMarketDataView() {
 		marketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
@@ -105,7 +112,9 @@ public class OptionMarketDataView extends ViewPart implements
 		toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		initializeToolBar(toolBarManager);	
 		
-		copyMessagesAction = new CopyMessagesAction(getClipboard(), optionMessagesComposite.getMessageTable(), "Copy");
+		copyMessagesAction = new CopyMessagesAction(getClipboard(),
+		                                            optionMessagesComposite.getMessageTable(),
+		                                            COPY_LABEL.getText());
 		IWorkbench workbench = PlatformUI.getWorkbench();
 		ISharedImages platformImages = workbench.getSharedImages();
 		copyMessagesAction.setImageDescriptor(platformImages .getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
@@ -183,7 +192,7 @@ public class OptionMarketDataView extends ViewPart implements
 
 	// todo: This duplicates code from MarketDataView.
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		symbolEntryText = new TextContributionItem("");
+		symbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
 		if(marketDataTracker.getMarketDataFeedService() == null) {
 			symbolEntryText.setEnabled(false);
 		} else {
@@ -281,14 +290,13 @@ public class OptionMarketDataView extends ViewPart implements
 			requestOptionSecurityList(symbol);
 			requestOptionMarketData(symbol);
 		} catch (MarketceteraException e) {
-			PhotonPlugin.getMainConsoleLogger().error(
-					"Exception subscribing to market data for " + symbol);
+			PhotonPlugin.getMainConsoleLogger().error(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 		}
 	}
 
 	private void requestOptionMarketData(MSymbol root) throws MarketceteraException {
 		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
-		MarketDataFeedService marketDataFeed = marketDataTracker.getMarketDataFeedService();
+		MarketDataFeedService<?> marketDataFeed = marketDataTracker.getMarketDataFeedService();
 		if (marketDataFeed != null){
 			tokens.add(marketDataFeed.execute(subscribeMessage, new ISubscriber() {
 
@@ -305,27 +313,27 @@ public class OptionMarketDataView extends ViewPart implements
 	}
 
 	private void doSubscribe(MSymbol symbol) {
-		MarketDataFeedService service = (MarketDataFeedService) marketDataTracker.getService();
+		MarketDataFeedService<?> service = (MarketDataFeedService<?>)marketDataTracker.getService();
 		try {
 			if (service == null){
-				PhotonPlugin.getMainConsoleLogger().warn("Missing quote feed");
+				PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
 			} else {
 				service.execute(MarketDataUtils.newSubscribeBBO(symbol), this);
 			}
 		} catch (MarketceteraException e) {
-			PhotonPlugin.getMainConsoleLogger().warn("Error subscribing to quotes for "+symbol);
+			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 		}
 	}
 
 
 	private void requestOptionSecurityList(final MSymbol symbol) throws MarketceteraException {
-		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: " + symbol);
-		MarketDataFeedService service = marketDataTracker.getMarketDataFeedService();
+		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: " + symbol); //$NON-NLS-1$
+		MarketDataFeedService<?> service = marketDataTracker.getMarketDataFeedService();
 		//Returns a query for all option contracts for the underlying symbol 
 		//symbol = underlyingSymbol  (e.g. MSFT)
 		Message query = OptionMarketDataUtils.newRelatedOptionsQuery(symbol);
 
-		IMarketDataFeedToken token = service.execute(query, new ISubscriber(){
+		IMarketDataFeedToken<?> token = service.execute(query, new ISubscriber(){
 			public boolean isInteresting(Object arg0) {
 				return true;
 			}
@@ -339,7 +347,7 @@ public class OptionMarketDataView extends ViewPart implements
 	
 
 	private String getTitlePrefix() {
-		return "Options: ";
+		return OPTIONS_LABEL.getText();
 	}
 	
 	private void updateTitleFromSymbol(MSymbol symbol) {
@@ -354,7 +362,7 @@ public class OptionMarketDataView extends ViewPart implements
 	}
 
 	private void unsubscribeAllMarketData() {
-		Iterator<IMarketDataFeedToken> iter = tokens .iterator();
+		Iterator<IMarketDataFeedToken<?>> iter = tokens .iterator();
 		while (iter.hasNext()){
 			iter.next().unsubscribe(this);
 			iter.remove();

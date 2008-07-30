@@ -3,13 +3,17 @@ package org.marketcetera.marketdata;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.symbology.IEquityOptionSymbol;
 
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class MarketceteraOptionSymbol 
+    extends MSymbol 
+    implements IEquityOptionSymbol, Messages
+{
 
-public class MarketceteraOptionSymbol extends MSymbol implements IEquityOptionSymbol {
-
-	static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
+	static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$
 	private char expirationCode;
 	private char strikeCode;
 	private String root;
@@ -22,7 +26,7 @@ public class MarketceteraOptionSymbol extends MSymbol implements IEquityOptionSy
 			expirationCode = matcher.group(2).charAt(0);
 			strikeCode = matcher.group(3).charAt(0);
 		} else {
-			throw new IllegalArgumentException(symbolString+" is not a valid equity option symbol");
+			throw new IllegalArgumentException(INVALID_EQUITY_OPTION_SYMBOL.getText(symbolString));
 		}
 	}
 	
@@ -46,7 +50,7 @@ public class MarketceteraOptionSymbol extends MSymbol implements IEquityOptionSy
 
 	@Override
 	public String toString() {
-		return root+"+"+expirationCode+strikeCode;
+		return new StringBuilder().append(root).append("+").append(expirationCode).append(strikeCode).toString(); //$NON-NLS-1$ 
 	}
 
 	

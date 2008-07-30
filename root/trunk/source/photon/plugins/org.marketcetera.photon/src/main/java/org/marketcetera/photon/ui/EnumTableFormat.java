@@ -32,8 +32,8 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	private FIXValueExtractor valueExtractor;
 	
 	private static final String COLUMN_WIDTH_SAVED_KEY_NAME = "width.saved";  //$NON-NLS-1$
-	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
-	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+	private static final DateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss"); //$NON-NLS-1$
+	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
 
 	public EnumTableFormat(Table table, Enum<?>[] columns){
 		this(table, columns, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
@@ -115,14 +115,14 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 		return null;
 	}
 
-	@SuppressWarnings("unchecked") // cast of element to T
+	@SuppressWarnings("unchecked") // cast of element to T //$NON-NLS-1$
 	public String getColumnText(Object element, int columnIndex) {
 		Enum<?> columnEnum = columns[columnIndex];
 		Integer fieldID;
 		if (columnEnum instanceof IFieldIdentifier && 
 				(fieldID = ((IFieldIdentifier)columnEnum).getFieldID()) != null){
 			Object objValue = getColumnValue((T)element, columnIndex);
-			String value = "";
+			String value = ""; //$NON-NLS-1$
 			if (objValue != null){
 				FieldType fieldType = dataDictionary.getFieldTypeEnum(fieldID);
 				if (fieldType.equals(FieldType.UtcTimeOnly)

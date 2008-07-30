@@ -16,9 +16,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MMapEntry;
+import org.marketcetera.photon.Messages;
 
-@ClassVersion("$Id$")
-public class MapDialog extends Dialog {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class MapDialog
+    extends Dialog
+    implements Messages
+{
 
     private Text keyText;
 
@@ -101,14 +105,16 @@ public class MapDialog extends Dialog {
 
     protected void okPressed() {
 
-        if (key == null || key.equals("")) {
-            MessageDialog.openError(getShell(), "Invalid "+keyPrompt,
-                                    keyPrompt + " field must not be blank.");
+        if (key == null || key.equals("")) { //$NON-NLS-1$
+            MessageDialog.openError(getShell(),
+                                    INVALID_PROMPT.getText(keyPrompt),
+                                    MUST_NOT_BE_BLANK.getText(keyPrompt));
             return;
         }
-        if (value == null || value.equals("")) {
-            MessageDialog.openError(getShell(), "Invalid "+valuePrompt,
-            		valuePrompt + " field must not be blank.");
+        if (value == null || value.equals("")) { //$NON-NLS-1$
+            MessageDialog.openError(getShell(),
+                                    INVALID_PROMPT.getText(valuePrompt),
+                                    MUST_NOT_BE_BLANK.getText(valuePrompt));
             return;
         }
         super.okPressed();

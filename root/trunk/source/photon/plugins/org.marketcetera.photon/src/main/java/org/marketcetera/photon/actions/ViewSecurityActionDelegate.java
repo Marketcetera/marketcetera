@@ -30,9 +30,9 @@ import quickfix.field.Symbol;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ViewSecurityActionDelegate implements IObjectActionDelegate {
-	public final static String ID = "org.marketcetera.photon.actions.ViewSecurityActionDelegate";
+	public final static String ID = "org.marketcetera.photon.actions.ViewSecurityActionDelegate"; //$NON-NLS-1$
 
 	private IStructuredSelection selection;
 

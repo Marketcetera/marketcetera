@@ -31,8 +31,11 @@ import org.osgi.util.tracker.ServiceTracker;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
-public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ApplicationWorkbenchWindowAdvisor 
+    extends WorkbenchWindowAdvisor
+    implements Messages
+{
 
     @Override
 	public boolean preWindowShellClose() {
@@ -124,11 +127,10 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 		}
 
 
-		mainConsoleLogger.info(
-				"Application initializing: " + new Date());
+		mainConsoleLogger.info(ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
 
 		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
-		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry");
+		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry"); //$NON-NLS-1$
 		job.schedule();
 		startJMS();
 		startMarketDataFeed();
@@ -141,22 +143,21 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 	 * 
 	 */
 	private void initStatusLine() {
-		IStatusLineManager statusline = getWindowConfigurer()
-				.getActionBarConfigurer().getStatusLineManager();
-		statusline.setMessage("Online");
+		IStatusLineManager statusline = getWindowConfigurer().getActionBarConfigurer().getStatusLineManager();
+		statusline.setMessage(ApplicationWorkbenchWindowAdvisor_OnlineLabel.getText()); 
 	}
 
 	private void startIDFactory(){
 		try {
 			((HttpDatabaseIDFactory)PhotonPlugin.getDefault().getIDFactory()).grabIDs();
 		} catch (NoMoreIDsException e) {
-			PhotonPlugin.getMainConsoleLogger().warn("Error connecting to web app for ID base, reverting to built in IDFactory.");
+			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_GET_ID.getText());
 		}
 	}
 
 
 	private void startJMS() {
-		ReconnectJMSJob job = new ReconnectJMSJob("Reconnect message server");
+		ReconnectJMSJob job = new ReconnectJMSJob(RECONNECT_MESSAGE_SERVER.getText());
 		job.schedule();
 	}
 
@@ -169,14 +170,15 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 			ReconnectJMSJob.disconnect(jmsFeedTracker);
 		} catch (Throwable t){
-			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);
+			PhotonPlugin.getMainConsoleLogger().error(CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE.getText(),
+			                                          t);
 		}
 	}
 	
 
 	private void startMarketDataFeed() {
 		ReconnectMarketDataFeedJob job = null;
-		job = new ReconnectMarketDataFeedJob("Reconnect quote feed");
+		job = new ReconnectMarketDataFeedJob(RECONNECT_QUOTE_FEED.getText());
 		job.schedule();
 	}
 	
@@ -188,7 +190,8 @@ public class ApplicationWorkbenchWindowAdvisor extends WorkbenchWindowAdvisor {
 
 			ReconnectMarketDataFeedJob.disconnect(marketDataFeedTracker);
 		} catch (Throwable t){
-			PhotonPlugin.getMainConsoleLogger().error("Could not disconnect from message queue", t);
+			PhotonPlugin.getMainConsoleLogger().error(CANNOT_DISCONNECT_FROM_QUOTE_FEED.getText(),
+			                                          t);
 		}
 	}
 }

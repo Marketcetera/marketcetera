@@ -7,6 +7,7 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 
 /**
  * Determines whether all the observable values in the given list (which
@@ -16,8 +17,11 @@ import org.eclipse.core.runtime.Status;
  * @author gmiller
  *
  */
-public class RequiredInputAggregator extends ComputedValue {
-	public static final String REQUIRES_USER_INPUT_KEY = "REQUIRES_USER_INPUT";
+public class RequiredInputAggregator
+    extends ComputedValue
+    implements Messages
+{
+	public static final String REQUIRES_USER_INPUT_KEY = "REQUIRES_USER_INPUT"; //$NON-NLS-1$
 	final List<IObservableValue> observables;
 	
 	public RequiredInputAggregator(List<IObservableValue> observables) {
@@ -31,7 +35,7 @@ public class RequiredInputAggregator extends ComputedValue {
 		for (IObservableValue observableValue : observables) {
 			Object value;
 			if ((value = observableValue.getValue()) == null || value.toString().length() == 0){
-				returnStatus = ValidationStatus.error("Requires input");				
+				returnStatus = ValidationStatus.error(INPUT_REQUIRED.getText());
 			}
 		}
 		

@@ -9,9 +9,17 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-public class OptionDateHelper {
-	public static final DecimalFormat MATURITY_MONTH_NUMBER_FORMAT = new DecimalFormat("00");
-	public static final DecimalFormat MATURITY_YEAR_NUMBER_FORMAT = new DecimalFormat("0000");
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
+
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class OptionDateHelper
+    implements Messages
+{
+	public static final DecimalFormat MATURITY_MONTH_NUMBER_FORMAT = new DecimalFormat("00"); //$NON-NLS-1$
+	public static final DecimalFormat MATURITY_YEAR_NUMBER_FORMAT = new DecimalFormat("0000"); //$NON-NLS-1$
 
 	public List<String> createDefaultMonths() {
 		return Arrays.asList(SHORT_MONTH_STRINGS);
@@ -23,7 +31,7 @@ public class OptionDateHelper {
 		for (int currentYear = 8; currentYear <= maxYear; ++currentYear) {
 			StringBuilder year = new StringBuilder();
 			if (currentYear < 10) {
-				year.append("0");
+				year.append("0"); //$NON-NLS-1$
 			}
 			year.append(currentYear);
 			yearList.add(year.toString());
@@ -32,7 +40,7 @@ public class OptionDateHelper {
 	}
 
 
-	public static final DateFormat SHORT_MONTH_FORMAT = new SimpleDateFormat("MMM");
+	public static final DateFormat SHORT_MONTH_FORMAT = new SimpleDateFormat("MMM"); //$NON-NLS-1$
 	public static final String [] SHORT_MONTH_STRINGS;
 
 	static {
@@ -56,7 +64,7 @@ public class OptionDateHelper {
 				return i+1;
 			}
 		}
-		throw new IllegalArgumentException("monthName must be a valid month name");
+		throw new IllegalArgumentException(INVALID_MONTH_NAME.getText(shortMonthName));
 	}
 
 

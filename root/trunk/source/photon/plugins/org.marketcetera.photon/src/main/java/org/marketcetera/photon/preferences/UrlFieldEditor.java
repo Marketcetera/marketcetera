@@ -7,6 +7,7 @@ import org.eclipse.jface.preference.FieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
 
 /**
  * URL string field editor with syntactic validation of the URL. Uses the field label text 
@@ -14,8 +15,10 @@ import org.marketcetera.core.ClassVersion;
  *  
  * @author alissovski
  */
-@ClassVersion("$Id$")
-public class UrlFieldEditor extends StringFieldEditor
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class UrlFieldEditor
+    extends StringFieldEditor
+    implements Messages
 {
 	private boolean isValid = false;
 	
@@ -49,7 +52,7 @@ public class UrlFieldEditor extends StringFieldEditor
 	}
 	
 	private String getErrorText() {
-		return "The " + getLabelText() + " is not a valid URL.";
+		return INVALID_URL.getText(getLabelText());
 	}
 
 	/**
@@ -60,7 +63,7 @@ public class UrlFieldEditor extends StringFieldEditor
 	 * @return <code>true</code> if the string is a syntactically valid URL; <code>false</code> otherwise.
 	 */
 	private boolean checkUrlSyntax(String url) {
-		if (url == null || url.trim().equals(""))
+		if (url == null || url.trim().equals("")) //$NON-NLS-1$
 			return false;
 		
 		try {

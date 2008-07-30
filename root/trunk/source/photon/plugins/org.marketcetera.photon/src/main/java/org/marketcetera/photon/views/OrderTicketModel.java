@@ -6,8 +6,10 @@ import java.beans.PropertyChangeSupport;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
@@ -22,6 +24,8 @@ import quickfix.field.Symbol;
 import quickfix.field.TimeInForce;
 import quickfix.fix42.MarketDataSnapshotFullRefresh;
 
+/* $License$ */
+
 /**
  * The abstract superclass for model objects that represent order tickets.
  * This class has some support for event handling, implementing the 
@@ -32,7 +36,10 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  * @author gmiller
  *
  */
-public abstract class OrderTicketModel {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public abstract class OrderTicketModel
+    implements Messages
+{
 	public static class OrderTicketPublication
     	{
     	    public enum Type {
@@ -56,7 +63,7 @@ public abstract class OrderTicketModel {
     	    }
     	    public String toString()
     	    {
-    	        return String.format("OrderTicketModel %s publication: %s", 
+    	        return String.format("OrderTicketModel %s publication: %s",  //$NON-NLS-1$
     	                             type,
     	                             message);
     	    }
@@ -101,7 +108,7 @@ public abstract class OrderTicketModel {
 	public void setOrderMessage(Message newValue) {
 		Object oldValue = this.orderMessage;
 		this.orderMessage = newValue;
-		propertyChangeSupport.firePropertyChange("orderMessage", oldValue, newValue);
+		propertyChangeSupport.firePropertyChange("orderMessage", oldValue, newValue); //$NON-NLS-1$
 	}
 	
 	
@@ -239,8 +246,7 @@ public abstract class OrderTicketModel {
 								orderMessage);
 					}
 				} else {
-					throw new MarketceteraException("Could not find field "
-							+ key);
+					throw new MarketceteraException(CANNOT_FIND_CUSTOM_FIELD.getText(key));
 				}
 			}
 		}

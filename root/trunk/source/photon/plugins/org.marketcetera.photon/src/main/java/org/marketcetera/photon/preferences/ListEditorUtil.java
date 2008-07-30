@@ -34,7 +34,7 @@ public class ListEditorUtil {
 		if (stringList.length() == 0){
 			return new String[0];
 		}
-		String [] pieces = stringList.split("&");
+		String [] pieces = stringList.split("&"); //$NON-NLS-1$
 		String [] decodedPieces = new String[pieces.length];
 		int i = 0;
 		for (String string : pieces) {
@@ -68,7 +68,7 @@ public class ListEditorUtil {
 				buf.append(string);
 			}
 			if (i < items.length - 1) {
-				buf.append("&");
+				buf.append("&"); //$NON-NLS-1$
 			}
 			i++;
 		}

@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.preferences.ListEditorUtil;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
@@ -27,7 +28,9 @@ import org.springframework.beans.factory.InitializingBean;
 
 import ca.odell.glazedlists.BasicEventList;
 
-public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceChangeListener, InitializingBean {
+public class ScriptChangesAdapter
+    implements IPropertyChangeListener, IResourceChangeListener, InitializingBean, Messages
+{
 	private String initialRegistryValueString;
 	private BasicEventList<String> currentScripts = new BasicEventList<String>();
 	private ScriptRegistry registry;
@@ -69,9 +72,9 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 				registry.register(normalizedScriptName);
 				currentScripts.add(normalizedScriptName);
 			} catch (BSFException e) {
-				mainConsoleLogger.error("Error registering script "+scriptName);
+				mainConsoleLogger.error(SCRIPT_REGISTRY_ERROR.getText(scriptName));
 				ScriptLoggingUtil.error(mainConsoleLogger, e);
-				mainConsoleLogger.error("Unregistering script "+scriptName+" due to the previous error");
+				mainConsoleLogger.error(UNREGISTERING_SCRIPT.getText(scriptName));
 				
 				unregisterScriptOnError(scriptName);
 			}
@@ -93,8 +96,7 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 			preferenceStore.save();  // persist to disk
 		} catch (IOException e) {
 			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
-			mainConsoleLogger.error("Couldn't save script registration preferences while attempting to unregister script "
-					+scriptName);
+			mainConsoleLogger.error(CANNOT_SAVE_SCRIPT_REGISTRY_PREFERENCES.getText(scriptName));
 		}
 	}
 
@@ -135,7 +137,7 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
  									normalizedName
  									);
  						} catch (BSFException bsfe) {
- 							unregisterScriptOnError(normalizedName+".rb");
+ 							unregisterScriptOnError(normalizedName+".rb"); //$NON-NLS-1$
 							// why oh wy didn't they just allow a cause parameter
 							// to the CoreException constructor?
 							CoreException ex = new CausedCoreException(Status.CANCEL_STATUS, bsfe);
@@ -169,7 +171,8 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
 			event.getDelta().accept(resourceDeltaVisitor, IResourceDelta.CONTENT | IResourceDelta.REMOVED | IResourceDelta.ADDED | IResourceDelta.CHANGED);
 		} catch (CoreException e) {
 			Logger mainConsoleLogger = PhotonPlugin.getMainConsoleLogger();
-			mainConsoleLogger.error("Could not process resource change", e);
+			mainConsoleLogger.error(CANNOT_PROCESS_RESOURCE_CHANGE.getText(),
+			                        e);
 			Throwable cause = e.getCause();
 			if (cause instanceof BSFException) {
 				BSFException bsfe = (BSFException) cause;
@@ -183,11 +186,11 @@ public class ScriptChangesAdapter implements IPropertyChangeListener, IResourceC
  	}
 
 	protected String normalizeName(String string) {
-		if (string.endsWith(".rb")){
+		if (string.endsWith(".rb")){ //$NON-NLS-1$
 			int length = string.length();
 			int end = length - 3;
 			int start = 0;
-			if (string.startsWith("/")){
+			if (string.startsWith("/")){ //$NON-NLS-1$
 				start = 1;
 			}
 			return string.substring(start, end);

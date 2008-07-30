@@ -15,12 +15,12 @@ import quickfix.field.TimeInForce;
  *
  */
 public enum TimeInForceImage implements ILexerFIXImage{
-    DAY("DAY", TimeInForce.DAY), 
-    GTC("GTC", TimeInForce.GOOD_TILL_CANCEL), 
-    FOK("FOK", TimeInForce.FILL_OR_KILL), 
-    CLO("CLO", TimeInForce.AT_THE_CLOSE), 
-    OPG("OPG", TimeInForce.AT_THE_OPENING), 
-    IOC("IOC", TimeInForce.IMMEDIATE_OR_CANCEL); 
+    DAY("DAY", TimeInForce.DAY),  //$NON-NLS-1$
+    GTC("GTC", TimeInForce.GOOD_TILL_CANCEL),  //$NON-NLS-1$
+    FOK("FOK", TimeInForce.FILL_OR_KILL),  //$NON-NLS-1$
+    CLO("CLO", TimeInForce.AT_THE_CLOSE),  //$NON-NLS-1$
+    OPG("OPG", TimeInForce.AT_THE_OPENING),  //$NON-NLS-1$
+    IOC("IOC", TimeInForce.IMMEDIATE_OR_CANCEL);  //$NON-NLS-1$
 
 	static final Map<String, TimeInForceImage> nameMap = new HashMap<String, TimeInForceImage>();
     static final Map<Character, TimeInForceImage> fixValueMap = new HashMap<Character, TimeInForceImage>();
@@ -74,7 +74,7 @@ public enum TimeInForceImage implements ILexerFIXImage{
 	}
 
 	public String getFIXStringValue() {
-		return ""+fixValue;
+		return ""+fixValue; //$NON-NLS-1$
 	}
 
 }

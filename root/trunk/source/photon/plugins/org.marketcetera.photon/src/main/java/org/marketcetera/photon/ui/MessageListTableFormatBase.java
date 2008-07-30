@@ -8,12 +8,16 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.marketcetera.photon.Messages;
 
 import quickfix.DataDictionary;
 
 
 
-public class MessageListTableFormatBase<T> extends EnumTableFormat<T> {
+public class MessageListTableFormatBase<T>
+    extends EnumTableFormat<T>
+    implements Messages
+{
 
 	private final IWorkbenchPartSite site;
 	
@@ -34,7 +38,7 @@ public class MessageListTableFormatBase<T> extends EnumTableFormat<T> {
 
 	private void init(Table table) {
 		
-        createContextMenu("messagesContextMenu",table);
+        createContextMenu("messagesContextMenu",table); //$NON-NLS-1$
         hookColumnChooserMenu(table);
 	}
 
@@ -57,7 +61,7 @@ public class MessageListTableFormatBase<T> extends EnumTableFormat<T> {
 				}
 				
 				columnsCascadeItem = new MenuItem(menu, SWT.CASCADE);
-				columnsCascadeItem.setText("Choose columns");
+				columnsCascadeItem.setText(CHOOSE_COLUMNS_LABEL.getText());
 				Menu columnsCascadeMenu = new Menu(table.getShell(), SWT.DROP_DOWN);
 				columnsCascadeItem.setMenu(columnsCascadeMenu);
 				
@@ -86,7 +90,7 @@ public class MessageListTableFormatBase<T> extends EnumTableFormat<T> {
 				new MenuItem(columnsCascadeMenu, SWT.SEPARATOR);
 				
 				MenuItem moreColumnsItem = new MenuItem(columnsCascadeMenu, SWT.PUSH);
-				moreColumnsItem.setText("More columns...");
+				moreColumnsItem.setText(MORE_COLUMNS_LABEL.getText());
 				moreColumnsItem.setEnabled(false);
 			}
 		});

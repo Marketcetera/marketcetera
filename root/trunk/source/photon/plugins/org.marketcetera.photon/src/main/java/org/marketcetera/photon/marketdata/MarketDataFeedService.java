@@ -64,7 +64,7 @@ public class MarketDataFeedService<C extends IMarketDataFeedCredentials>
 	public final String getID() 
 	{
 		if (feed == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		else {
 			return feed.getID();

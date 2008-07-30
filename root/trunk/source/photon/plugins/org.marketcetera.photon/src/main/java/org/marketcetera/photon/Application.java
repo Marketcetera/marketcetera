@@ -26,7 +26,7 @@ import org.marketcetera.photon.preferences.PhotonPage;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class Application implements IApplication, IPropertyChangeListener {
 
 
@@ -36,26 +36,26 @@ public class Application implements IApplication, IPropertyChangeListener {
 	 * property. However, if that doesn't work, the system time at the time
 	 * this property is set, is set as the value of this property. 
 	 */
-	private static final String PROCESS_UNIQUE_PROPERTY = "org.marketcetera.photon.unique";
+	private static final String PROCESS_UNIQUE_PROPERTY = "org.marketcetera.photon.unique"; //$NON-NLS-1$
 	/**
 	 * log4j configuration file name.
 	 */
-	private static final String LOG4J_CONFIG = "photon-log4j.properties";
+	private static final String LOG4J_CONFIG = "photon-log4j.properties"; //$NON-NLS-1$
 	/**
 	 * java logging configuration file name.
 	 */
-	private static final String JAVA_LOGGING_CONFIG = "java.util.logging.properties";
+	private static final String JAVA_LOGGING_CONFIG = "java.util.logging.properties"; //$NON-NLS-1$
 
     /**
      * The system property name that contains photon installation
      * directory
      */
-	private static final String APP_DIR_PROP="org.marketcetera.appDir";
+	private static final String APP_DIR_PROP="org.marketcetera.appDir"; //$NON-NLS-1$
 	
 	/**
 	 * The configuration sub directory for the application
 	 */
-	private static final String CONF_DIR = "conf";
+	private static final String CONF_DIR = "conf"; //$NON-NLS-1$
 
 	/**
 	 * Delay for rereading log4j configuration.
@@ -65,7 +65,7 @@ public class Application implements IApplication, IPropertyChangeListener {
 
 	public void propertyChange(PropertyChangeEvent event) {
 		if (event.getProperty().equals(PhotonPage.LOG_LEVEL_KEY)){
-			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue());
+			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue()); //$NON-NLS-1$
 		}
 	}
 
@@ -102,7 +102,7 @@ public class Application implements IApplication, IPropertyChangeListener {
 		// Fetch the java process ID. Do note that this mechanism relies on
 		// a non-public interface of the jvm but its very useful to be able
 		// to use the pid.
-		String id = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9]", "");
+		String id = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9]", ""); //$NON-NLS-1$ //$NON-NLS-2$
 		if(id == null || id.trim().length() < 1) {
 			id = String.valueOf(System.currentTimeMillis());  
 		}

@@ -30,7 +30,7 @@ public class CustomField {
 	public void setEnabled(boolean isEnabled) {
 		boolean oldValue = this.isEnabled;
 		this.isEnabled = isEnabled;
-		propertyChangeSupport.firePropertyChange("enabled", oldValue, isEnabled);
+		propertyChangeSupport.firePropertyChange("enabled", oldValue, isEnabled); //$NON-NLS-1$
 	}
 	
 	public String getKeyString() {
@@ -42,7 +42,7 @@ public class CustomField {
 	}
 	
 	public static CustomField fromString(String aString){
-		String[] keyValueArray = aString.split("=");
+		String[] keyValueArray = aString.split("="); //$NON-NLS-1$
 		CustomField outField;
 		try {
 			outField = new CustomField(URLDecoder.decode(keyValueArray[0], UTF_8)
@@ -59,11 +59,11 @@ public class CustomField {
 		StringBuffer buf = new StringBuffer();
 		try {
 			buf.append(URLEncoder.encode(keyString, UTF_8));
-			buf.append("=");
+			buf.append("="); //$NON-NLS-1$
 			buf.append(URLEncoder.encode(valueString, UTF_8));
 		} catch (UnsupportedEncodingException e) {
 			buf.append(keyString);
-			buf.append("=");
+			buf.append("="); //$NON-NLS-1$
 			buf.append(valueString);
 		}
 		return buf.toString();

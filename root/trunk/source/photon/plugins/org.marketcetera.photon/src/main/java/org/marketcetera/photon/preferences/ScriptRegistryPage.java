@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 
@@ -16,10 +17,13 @@ import org.marketcetera.photon.PhotonPlugin;
  * @author gmiller
  * @author andrei@lissovski.org
  */
-public class ScriptRegistryPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class ScriptRegistryPage
+    extends FieldEditorPreferencePage
+    implements IWorkbenchPreferencePage, Messages
+{
 
 	//agl todo:refactor move this out as we're using it to retrieve the preference elsewhere
-	public static final String SCRIPT_REGISTRY_PREFERENCE = "script.registry";
+	public static final String SCRIPT_REGISTRY_PREFERENCE = "script.registry"; //$NON-NLS-1$
 
 	
 	public ScriptRegistryPage() {
@@ -27,15 +31,16 @@ public class ScriptRegistryPage extends FieldEditorPreferencePage implements IWo
         setPreferenceStore(PhotonPlugin.getDefault().getPreferenceStore());
 	}
 	
-    public void init(IWorkbench workbench) {
-        // TODO Auto-generated method stub
+    public void init(IWorkbench workbench)
+    {
     }
 
     @Override
 	protected void createFieldEditors() {
 		Composite fieldEditorParent = getFieldEditorParent();
-		ScriptRegistryListEditor mapEditor = 
-			new ScriptRegistryListEditor(SCRIPT_REGISTRY_PREFERENCE, "Registered scripts", fieldEditorParent);
+		ScriptRegistryListEditor mapEditor = new ScriptRegistryListEditor(SCRIPT_REGISTRY_PREFERENCE,
+		                                                                  SCRIPT_REGISTRY_LABEL.getText(),
+		                                                                  fieldEditorParent);
 		addField(mapEditor);
 	}
 

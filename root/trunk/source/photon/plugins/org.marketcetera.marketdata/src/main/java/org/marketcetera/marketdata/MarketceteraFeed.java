@@ -14,19 +14,18 @@ import java.util.WeakHashMap;
 import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Application;
 import quickfix.DoNotSend;
@@ -58,7 +57,6 @@ import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.TargetCompID;
 import quickfix.field.TestMessageIndicator;
-import quickfix.field.Text;
 import quickfix.fix44.MessageFactory;
 
 /* $License$ */
@@ -71,7 +69,7 @@ import quickfix.fix44.MessageFactory;
  * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                    MarketceteraFeedCredentials,
@@ -79,7 +77,7 @@ public class MarketceteraFeed
                                    MarketceteraFeedEventTranslator,
                                    Message,
                                    MarketceteraFeed> 
-    implements Application 
+    implements Application, Messages 
 {
 	public static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
 	public static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
@@ -92,22 +90,30 @@ public class MarketceteraFeed
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
 	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
-	private final Logger logger;
 	private final String url;
 
 	private FIXCorrelationFieldSubscription doQuery(Message query) {
 		try {
 			Integer marketDepth = null;
-			try { marketDepth = query.getInt(MarketDepth.FIELD); } catch (FieldNotFound fnf) { /* do nothing */ }
+			try {
+			    marketDepth = query.getInt(MarketDepth.FIELD); 
+			} catch (FieldNotFound fnf) {
+	            SLF4JLoggerProxy.debug(this,
+                                       "The query {} did not have a market depth field, but this is not a serious problem.", //$NON-NLS-1$
+                                       query);
+			}
 			String reqID = addReqID(query);
 			sendMessage(query);
 			return new FIXCorrelationFieldSubscription(reqID, 
 			                                           query.getHeader().getString(MsgType.FIELD), 
 			                                           marketDepth);
 		} catch (SessionNotFound e) {
-			logger.error("Session not found while trying to execute async query: "+query);
+		    SESSION_NOT_FOUND.error(this,
+		                            e);
 		} catch (FieldNotFound e) {
-			logger.error(e.toString()+" "+query);
+		    CANNOT_EXECUTE_QUERY.error(this,
+		                               e,
+		                               query);
 		}
 		return null;
 	}
@@ -120,8 +126,11 @@ public class MarketceteraFeed
 	        StringField reqIDField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
 	                                                                    msgType);
 	        reqID = inMessage.getField(reqIDField).getValue();
-	    } catch (FieldNotFound e) {}
-
+	    } catch (FieldNotFound e) {
+	        CANNOT_FIND_REQID.error(this,
+	                                e,
+	                                inMessage);
+	    }
 	    return reqID;
 	}
 	
@@ -133,12 +142,17 @@ public class MarketceteraFeed
 		try {
 			query.getField(reqIDField).toString();
 		} catch (FieldNotFound e1) {
+            CANNOT_FIND_REQID.error(this,
+                                    e1,
+                                    query);
 		}
 		if (reqIDField.getValue() == null || reqIDField.getValue().length()==0){
 			try {
 				reqID = idFactory.getNext();
 			} catch (NoMoreIDsException e) {
 				// should never happen
+			    CANNOT_ACQUIRE_ID.error(this,
+			                            e);
 				assert(false);
 			}
 			reqIDField.setValue(reqID);
@@ -176,15 +190,16 @@ public class MarketceteraFeed
 		synchronized(this) {
 			try {
 				if (!isRunning()) {
-					logger.info("Starting connection to: "+url);
+				    CONNECTION_STARTED.info(this, 
+				                            url);
 					MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
 					SessionSettings sessionSettings;
-					sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("/fixdatafeed.properties"));
+					sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("/fixdatafeed.properties")); //$NON-NLS-1$
 					sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
 					sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
 	
 					File workspaceDir = MarketceteraFeedPlugin.getDefault().getStoreDirectory();
-					File quoteFeedLogDir = new File(workspaceDir, "marketdata");
+					File quoteFeedLogDir = new File(workspaceDir, "marketdata"); //$NON-NLS-1$
 					if (!quoteFeedLogDir.exists())
 					{
 						quoteFeedLogDir.mkdir();
@@ -199,8 +214,8 @@ public class MarketceteraFeed
 					// this method intentionally does not call super.start() because the actual start mechanism happens in fromAdmin
 				}
 			} catch (Throwable t) {
-				logger.error("Exception trying to start Marketcetera feed",
-				             t);
+			    CANNOT_START_FEED.error(this,
+			                            t);
 				setFeedStatus(FeedStatus.ERROR);
 			}
 		}
@@ -210,7 +225,8 @@ public class MarketceteraFeed
 	{
 		synchronized(this) {
 			if (isRunning()) {
-				logger.info("Stopping connection to: "+url);
+			    CONNECTION_STOPPED.info(this,
+			                            url);
 				socketInitiator.stop(true);
 				setIsRunning(false);
 				super.stop();
@@ -234,15 +250,15 @@ public class MarketceteraFeed
 				feedType = FeedType.LIVE;
 			}
 			setFeedStatus(FeedStatus.AVAILABLE);
-			logger.info("Marketcetera feed received Logon");
+			SLF4JLoggerProxy.debug(this,
+			                       "Marketcetera feed received Logon"); //$NON-NLS-1$
 		} else if (MsgType.LOGOUT.equals(msgType)) {
-			String text = "";
-			try {
-				text = ": "+message.getString(Text.FIELD);
-			} catch (FieldNotFound fnf){ /* do nothing */ }
-			logger.info("Marketcetera feed received Logout"+text);
-		} else if (!MsgType.HEARTBEAT.equals(msgType)){
-			logger.info("Admin message for Marketcetera feed: "+message);
+            SLF4JLoggerProxy.debug(this,
+                                   "Marketcetera feed received Logout"); //$NON-NLS-1$
+		} else if (!MsgType.HEARTBEAT.equals(msgType)) {
+            SLF4JLoggerProxy.debug(this,
+                                   "Admin message for Marketcetera feed: {}", //$NON-NLS-1$
+                                   message);
 		}
 	}
 
@@ -256,7 +272,11 @@ public class MarketceteraFeed
 			StringField correlationField = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
 			                                                                  message.getHeader().getString(MsgType.FIELD));
 			reqID = message.getString(correlationField.getTag());
-		} catch (FieldNotFound fnf){
+		} catch (FieldNotFound fnf) {
+            SLF4JLoggerProxy.debug(this,
+                                   fnf,
+                                   "The message {} received from the application framework did not contain the field \"reqid\".  This is not a serious problem", //$NON-NLS-1$
+                                   message);
 		}
 		if (reqID != null && reqID.length() > 0) {
 			synchronized (pendingRequests) {
@@ -270,6 +290,8 @@ public class MarketceteraFeed
 							handled = true;
 						} catch (Exception e) {
 							// calling side probably timed out...
+						    EXCHANGE_ERROR.error(this,
+						                         e);
 						}
 						break;
 					}
@@ -282,8 +304,11 @@ public class MarketceteraFeed
 		}
 	}
 
-	public void onCreate(SessionID sessionID) {
-		logger.info("Marketcetera feed session created "+sessionID);
+	public void onCreate(SessionID sessionID) 
+	{
+        SLF4JLoggerProxy.debug(this,
+                               "Marketcetera feed session created {}", //$NON-NLS-1$
+                               sessionID);
 	}
 	public void onLogon(SessionID sessionID) {
 		setFeedStatus(FeedStatus.AVAILABLE);
@@ -303,8 +328,9 @@ public class MarketceteraFeed
         } catch (FieldNotFound e) {
             symbol = UNKNOWN_SYMBOL;
         }
-        logger.debug(String.format("MarketceteraFeed received response for handle %s",
-                                   symbol));
+        SLF4JLoggerProxy.debug(this,
+                               "MarketceteraFeed received response for handle {}", //$NON-NLS-1$
+                               symbol);
 	    dataReceived(symbol, 
 	                 refresh);
 	}
@@ -315,19 +341,17 @@ public class MarketceteraFeed
 	    super(FeedType.UNKNOWN,
 	          inProviderName,
 	          inCredentials);
-        PhotonPlugin plugin = PhotonPlugin.getDefault();
-        logger = plugin.getMainLogger();
         url = inCredentials.getURL();
         try {
             idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
-                                              String.format("-%s",
+                                              String.format("-%s", //$NON-NLS-1$
                                                             InetAddress.getLocalHost().toString()));
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException(e);
         }
         URI feedURI = new URI(url);
         if ((serverPort = feedURI.getPort()) < 0){
-            throw new MarketceteraException("Port must be defined on feed URL");
+            throw new MarketceteraException(URI_MISSING_PORT.getText());
         }
         server = feedURI.getHost();
         String senderCompID = inCredentials.getSenderCompID();
@@ -338,7 +362,7 @@ public class MarketceteraFeed
         String targetCompID = inCredentials.getTargetCompID();
         String scheme;
         if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ) {
-            throw new MarketceteraException("Only FIX.4.4 is supported");
+            throw new MarketceteraException(UNSUPPORTED_FIX_VERSION.getText());
         } else {
             sessionID = new SessionID(scheme, 
                                       senderCompID, 
@@ -348,7 +372,7 @@ public class MarketceteraFeed
 	/**
 	 * used in a message that does not contain a symbol
 	 */
-    private static final String UNKNOWN_SYMBOL = "unknown";
+    private static final String UNKNOWN_SYMBOL = "unknown"; //$NON-NLS-1$
 	/**
 	 * singleton instance of the marketcetera feed
 	 */
@@ -379,20 +403,23 @@ public class MarketceteraFeed
     @Override
     protected void doCancel(String inHandle)
     {
-        logger.debug(String.format("Marketcetera feed cancelling subscriptions for handle %s",
-                                   inHandle));
+        SLF4JLoggerProxy.debug(this,
+                               "Marketcetera feed cancelling subscriptions for handle {}", //$NON-NLS-1$
+                               inHandle);
         List<FIXCorrelationFieldSubscription> subscriptions = removeSubscriptions(inHandle);
-        logger.debug(String.format("Marketcetera feed found %d subscription(s) for handle %s",
-                                   subscriptions.size(),
-                                   inHandle));
+        SLF4JLoggerProxy.debug(this,
+                               "Marketcetera feed found {} subscription(s) for handle {}", //$NON-NLS-1$
+                               subscriptions.size(),
+                               inHandle);
         for(FIXCorrelationFieldSubscription subscription : subscriptions) {
-            Message message = messageFactory.create("", 
+            Message message = messageFactory.create("",  //$NON-NLS-1$
                                                     subscription.getSubscribeMsgType());
             StringField correlationID = FIXMessageUtil.getCorrelationField(FIXVersion.FIX44, 
                                                                            subscription.getSubscribeMsgType());
             correlationID.setValue(subscription.toString());
-            logger.debug(String.format("Marketcetera feed sending cancel request for %s",
-                                       correlationID));
+            SLF4JLoggerProxy.debug(this,
+                                   "Marketcetera feed sending cancel request for {}", //$NON-NLS-1$
+                                   correlationID);
             message.setField(correlationID);
             message.setField(new SubscriptionRequestType(SubscriptionRequestType.DISABLE_PREVIOUS_SNAPSHOT_PLUS_UPDATE_REQUEST));
             message.setField(new NoRelatedSym(0));
@@ -414,8 +441,7 @@ public class MarketceteraFeed
     protected List<String> doDerivativeSecurityListRequest(Message inData) 
         throws FeedException
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLogin(org.marketcetera.marketdata.IMarketDataFeedCredentials)
@@ -441,8 +467,9 @@ public class MarketceteraFeed
         throws FeedException
     {
         try {
-            logger.debug(String.format("MarketceteraFeed received market data request %s",
-                                       inData));
+            SLF4JLoggerProxy.debug(this,
+                                   "MarketceteraFeed received market data request {}", //$NON-NLS-1$
+                                   inData);
             List<String> handles = new ArrayList<String>();
             List<Group> groups = AbstractMessageTranslator.getGroups(inData);
             for(Group group : groups) {
@@ -451,8 +478,9 @@ public class MarketceteraFeed
             }
             addSubscription(doQuery(inData),
                             handles);
-            logger.debug(String.format("MarketceteraFeed posted query and received handle(s) %s",
-                                       Arrays.toString(handles.toArray())));
+            SLF4JLoggerProxy.debug(this,
+                                   "MarketceteraFeed posted query and received handle(s) {}", //$NON-NLS-1$
+                                   Arrays.toString(handles.toArray()));
             return handles;
         } catch (Throwable t) {
             throw new FeedException(t);
@@ -475,9 +503,10 @@ public class MarketceteraFeed
                     mSubscriptionsBySymbol.put(handle, 
                                                subs);
                 }
-                logger.debug(String.format("MarketceteraFeed associating subscription %s to symbol %s",
-                                           inSub.getCorrelationFieldValue(),
-                                           handle));
+                SLF4JLoggerProxy.debug(this,
+                                       "MarketceteraFeed associating subscription {} to symbol {}", //$NON-NLS-1$
+                                       inSub.getCorrelationFieldValue(),
+                                       handle);
                 subs.add(inSub);
             }
         }
@@ -513,8 +542,7 @@ public class MarketceteraFeed
     protected List<String> doSecurityListRequest(Message inData) 
         throws FeedException
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)

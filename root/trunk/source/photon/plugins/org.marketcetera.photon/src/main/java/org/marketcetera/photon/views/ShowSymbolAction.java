@@ -3,22 +3,31 @@ package org.marketcetera.photon.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-public class ShowSymbolAction extends Action {
-	private static final String ID = "org.marketcetera.photon.actions.ShowSymbolAction";
+/* $License$ */
+
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ShowSymbolAction
+    extends Action
+    implements Messages
+{
+	private static final String ID = "org.marketcetera.photon.actions.ShowSymbolAction"; //$NON-NLS-1$
 	IMSymbolListener listener;
 	TextContributionItem text;
 	/**
 	 * @param text
 	 */
 	public ShowSymbolAction(TextContributionItem text, IMSymbolListener listener) {
-		super("&Show Symbol",AS_PUSH_BUTTON);
+		super(SHOW_SYMBOL_LABEL.getText(),
+		      AS_PUSH_BUTTON);
 		setId(ID);
-		setToolTipText("Show Symbol");
+		setToolTipText(SHOW_SYMBOL_TOOLTIPS.getText());
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.SHOW_SYMBOL));
 
 		this.text = text;
@@ -47,7 +56,7 @@ public class ShowSymbolAction extends Action {
 		String theInputString = text.getText();
 		if (isValidInput(theInputString))
 			listener.onAssertSymbol(new MSymbol(text.getText()));
-		text.setText("");
+		text.setText(""); //$NON-NLS-1$
 	}
 	
 }

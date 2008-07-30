@@ -11,7 +11,7 @@ import org.marketcetera.core.ClassVersion;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class NullPerspectiveFactory implements IPerspectiveFactory {
 
 	/**

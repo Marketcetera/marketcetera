@@ -57,8 +57,8 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		registerIdeAdapters();
 		declareIdeWorkbenchImages();
 		
-		PhotonConsole photonConsole = new PhotonConsole(Messages.MainConsole_Name, PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME);
-		PhotonConsole dataFeedConsole = new PhotonConsole(Messages.MarketDataConsole_Name, PhotonPlugin.MARKETDATA_CONSOLE_LOGGER_NAME);
+		PhotonConsole photonConsole = new PhotonConsole(Messages.MainConsole_Name.getText(), PhotonPlugin.MAIN_CONSOLE_LOGGER_NAME);
+		PhotonConsole dataFeedConsole = new PhotonConsole(Messages.MarketDataConsole_Name.getText(), PhotonPlugin.MARKETDATA_CONSOLE_LOGGER_NAME);
 
 		// I think the last one in the array is the one that is shown
 		// by default at application startup.

@@ -4,10 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.marketcetera.photon.Messages;
+
 import quickfix.field.OpenClose;
 
-public enum OpenCloseImage implements ILexerFIXImage {
-	OPEN("Open", OpenClose.OPEN), CLOSE("Close", OpenClose.CLOSE);
+public enum OpenCloseImage
+    implements ILexerFIXImage, Messages
+{
+    OPEN(OPEN_LABEL.getText(),
+         OpenClose.OPEN),
+    CLOSE(CLOSE_LABEL.getText(),
+          OpenClose.CLOSE);
 	static final Map<String, OpenCloseImage> nameMap = new HashMap<String, OpenCloseImage>();
 	private static final String[] images;
 
@@ -42,6 +49,6 @@ public enum OpenCloseImage implements ILexerFIXImage {
 		return (int) fixValue;
 	}
 	public String getFIXStringValue() {
-		return ""+fixValue;
+		return ""+fixValue; //$NON-NLS-1$
 	}
 }

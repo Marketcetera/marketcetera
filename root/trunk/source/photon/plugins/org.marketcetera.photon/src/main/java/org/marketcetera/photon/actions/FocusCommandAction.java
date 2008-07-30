@@ -10,6 +10,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.CommandLineTrimWidget;
 
@@ -22,10 +23,12 @@ import org.marketcetera.photon.ui.CommandLineTrimWidget;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
-public class FocusCommandAction extends Action implements ISelectionListener,
-		IWorkbenchAction {
-	public final static String ID = "org.marketcetera.photon.FocusCommand";
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class FocusCommandAction 
+    extends Action 
+    implements ISelectionListener, IWorkbenchAction, Messages 
+{
+	public final static String ID = "org.marketcetera.photon.FocusCommand"; //$NON-NLS-1$
 	private IWorkbenchWindow window;
 
 	/**
@@ -38,8 +41,8 @@ public class FocusCommandAction extends Action implements ISelectionListener,
 		this.window = window;
 		setId(ID);
 		setActionDefinitionId(ID);
-		setText("Goto &command input area");
-		setToolTipText("Put the cursor in the command input area");
+		setText(FOCUS_COMMAND_ACTION.getText());
+		setToolTipText(FOCUS_COMMAND_ACTION_DESCRIPTION.getText());
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.LIGHTNING));
 	}
 

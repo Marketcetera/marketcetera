@@ -29,9 +29,6 @@ import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
-import org.eclipse.jface.internal.databinding.internal.swt.CComboObservableValue;
-import org.eclipse.jface.internal.databinding.internal.swt.ComboObservableValue;
-import org.eclipse.jface.internal.databinding.internal.swt.TextObservableValue;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.ICheckStateListener;
 import org.eclipse.jface.viewers.TableViewer;
@@ -59,6 +56,8 @@ import org.eclipse.ui.forms.events.ExpansionAdapter;
 import org.eclipse.ui.forms.events.ExpansionEvent;
 import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonController;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.parser.ILexerFIXImage;
@@ -96,6 +95,8 @@ import quickfix.field.Price;
 import quickfix.field.Side;
 import quickfix.field.TimeInForce;
 
+/* $License$ */
+
 /**
  * This is the abstract base class for all order ticket views.  It
  * is responsible for setting up the databindings for the "common" order
@@ -108,11 +109,15 @@ import quickfix.field.TimeInForce;
  * @author gmiller
  *
  */
-public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public abstract class OrderTicketView
+    extends XSWTView<IOrderTicket>
+    implements Messages
+{
 
-	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY";
+	private static final String CONTROL_DECORATOR_KEY = "CONTROL_DECORATOR_KEY"; //$NON-NLS-1$
 
-	public static final String CONTROL_DEFAULT_COLOR = "CONTROL_DEFAULT_COLOR";
+	public static final String CONTROL_DEFAULT_COLOR = "CONTROL_DEFAULT_COLOR"; //$NON-NLS-1$
 
 	protected final Image errorImage;
 
@@ -136,7 +141,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 	
 	protected final BindingHelper bindingHelper;
 
-	protected static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_";
+	protected static final String CUSTOM_FIELD_VIEW_SAVED_STATE_KEY_PREFIX = "CUSTOM_FIELD_CHECKED_STATE_OF_"; //$NON-NLS-1$
 
 	private IMemento memento;
 
@@ -303,7 +308,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 		// And a standard label provider that maps columns
 		IObservableMap[] attributeMaps = BeansObservables.observeMaps(contentProvider.getKnownElements(), 
 		                                                              CustomField.class,
-		                                                              new String[] { "keyString", "valueString" });
+		                                                              new String[] { "keyString", "valueString" }); //$NON-NLS-1$ //$NON-NLS-2$
 		customFieldsTableViewer.setLabelProvider(new ObservableMapLabelProvider(attributeMaps));
 
 		ticket.getForm().reflow(true);
@@ -397,7 +402,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 		Label errorIconLabel = getOrderTicket().getErrorIconLabel();
 		
 		if (errorMessage == null) {
-			errorMessageLabel.setText("");
+			errorMessageLabel.setText(""); //$NON-NLS-1$
 			errorIconLabel.setImage(null);
 		} else {
 			errorMessageLabel.setText(errorMessage);
@@ -435,7 +440,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 		aggregateValidationStatus = new AggregateValidationStatus(getDataBindingContext().getBindings(),
 				AggregateValidationStatus.MAX_SEVERITY);
 
-		IObservableValue orderMessageObservable = BeansObservables.observeValue(model, "orderMessage");
+		IObservableValue orderMessageObservable = BeansObservables.observeValue(model, "orderMessage"); //$NON-NLS-1$
 		bindFormTitle(model, orderMessageObservable);
 		bindCustomFields(model, 
 		                 getOrderTicket());
@@ -566,7 +571,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 								new UpdateValueStrategy());
 				bindMessageValue(
 								SWTObservables.observeEnabled(whichControl),
-								BeansObservables.observeValue(model, "orderMessage"),
+								BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 								null,
 								new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 				controlsRequiringInput.add(swtObservable);
@@ -617,7 +622,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 						new UpdateValueStrategy());
 				bindMessageValue(
 						SWTObservables.observeEnabled(whichControl),
-						BeansObservables.observeValue(model, "orderMessage"),
+						BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 						null,
 						new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 				controlsRequiringInput.add(swtObservable);
@@ -652,9 +657,10 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 				Control whichControl = getOrderTicket().getTifCombo();
 				IValidator afterGetValidator = new IgnoreFirstNullValidator(tifConverterBuilder
 						.newTargetAfterGetValidator());
-				IValidator afterConvertValidator = new IgnoreFirstNullValidator(new DataDictionaryValidator(
-						dictionary, TimeInForce.FIELD,
-						"Not a valid value for TimeInForce", PhotonPlugin.ID));
+				IValidator afterConvertValidator = new IgnoreFirstNullValidator(new DataDictionaryValidator(dictionary,
+				                                                                                            TimeInForce.FIELD,
+                                                                                                            INVALID_TIME_IN_FORCE.getText(),
+				                                                                                            PhotonPlugin.ID));
 				ISWTObservableValue swtObservable = SWTObservables.observeText(whichControl);
 				Binding binding = bindMessageValue( 
 						swtObservable,
@@ -668,7 +674,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 						new UpdateValueStrategy());
 				bindMessageValue(
 						SWTObservables.observeEnabled(whichControl),
-						BeansObservables.observeValue(model, "orderMessage"),
+						BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 						null,
 						new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 				controlsRequiringInput.add(swtObservable);
@@ -683,7 +689,8 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 			}
 
 		} catch (Throwable ex) {
-			PhotonPlugin.getMainConsoleLogger().error("Exception binding order message to ticket", ex);
+			PhotonPlugin.getMainConsoleLogger().error(CANNOT_BIND_TO_TICKET.getText(),
+			                                          ex);
 		}
 	}
 
@@ -755,15 +762,16 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 	 * for any Combo and Text controls, then calling {@link Binding#dispose()}.
 	 * 
 	 */
-	private void unbindMessage() {
+	@SuppressWarnings("restriction") //$NON-NLS-1$
+    private void unbindMessage() {
 		Object[] bindingArray = messageBindings.toArray();
 		List<IObservableValue> clearables = new LinkedList<IObservableValue>();
 		for (Object bindingObj : bindingArray) {
 			Binding binding = ((Binding) (bindingObj));
 			IObservable observable = binding.getTarget();
-			if (observable instanceof ComboObservableValue
-					|| observable instanceof CComboObservableValue
-					|| observable instanceof TextObservableValue) {
+			if (observable instanceof  org.eclipse.jface.internal.databinding.internal.swt.ComboObservableValue ||
+                observable instanceof org.eclipse.jface.internal.databinding.internal.swt.CComboObservableValue ||
+                observable instanceof org.eclipse.jface.internal.databinding.internal.swt.TextObservableValue) {
 				IObservableValue observableValue = (IObservableValue) observable;
 				clearables.add(observableValue);
 			}
@@ -893,7 +901,7 @@ public abstract class OrderTicketView extends XSWTView<IOrderTicket> {
 			plugin.getPhotonController().handleInternalMessage(orderMessage);
 			orderTicketModel.clearOrderMessage();
 		} catch (Exception e) {
-			String errorMessage = "Error sending order: " + e.getMessage();
+			String errorMessage = CANNOT_SEND_ORDER_SPECIFIED.getText(e.getMessage());
 			PhotonPlugin.getMainConsoleLogger().error(
 					errorMessage, e);
 			showErrorMessage(errorMessage, IStatus.ERROR);

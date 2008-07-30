@@ -13,7 +13,7 @@ import org.eclipse.ui.IEditorPart;
  */
 public class RunScriptActionDelegate implements IEditorActionDelegate {
 
-	public static final String ID = "org.marketcetera.photon.actions.RunScriptActionDelegate";
+	public static final String ID = "org.marketcetera.photon.actions.RunScriptActionDelegate"; //$NON-NLS-1$
 	
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IEditorActionDelegate#setActiveEditor(org.eclipse.jface.action.IAction, org.eclipse.ui.IEditorPart)
@@ -25,7 +25,7 @@ public class RunScriptActionDelegate implements IEditorActionDelegate {
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
 	public void run(IAction action) {
-		throw new RuntimeException("Not implemented");
+		throw new UnsupportedOperationException();
 	}
 
 	/* (non-Javadoc)

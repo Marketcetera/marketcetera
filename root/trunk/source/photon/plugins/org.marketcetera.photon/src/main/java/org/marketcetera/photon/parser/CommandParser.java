@@ -20,7 +20,6 @@ import jfun.parsec.UserException;
 import jfun.parsec._;
 import jfun.parsec.pattern.CharPredicates;
 import jfun.parsec.pattern.Patterns;
-import jfun.parsec.tokens.TokenType;
 import jfun.parsec.tokens.Tokenizers;
 import jfun.parsec.tokens.TypedToken;
 
@@ -28,6 +27,7 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.IPhotonCommand;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.commands.CancelCommand;
 import org.marketcetera.photon.commands.MessageCommand;
@@ -47,37 +47,39 @@ import quickfix.field.PutOrCall;
 import quickfix.field.SecurityType;
 import quickfix.field.StrikePrice;
 
-public class CommandParser {
+public class CommandParser
+    implements Messages
+{
 	
-	public static final Pattern optionExpirationPattern = Pattern.compile("([0-9]{2}|[0-9]{4})?([a-zA-Z]+)([0-9]+|[0-9]*\\.[0-9]+)(C|P)");
+	public static final Pattern optionExpirationPattern = Pattern.compile("([0-9]{2}|[0-9]{4})?([a-zA-Z]+)([0-9]+|[0-9]*\\.[0-9]+)(C|P)"); //$NON-NLS-1$
 	
 	//////////////////////////////////////////////////////////////
 	// Lexer infrastructure
-	final Parser<?> whitespaceScanner = Scanners.isWhitespaces("whitespaceScanner");
+	final Parser<?> whitespaceScanner = Scanners.isWhitespaces("whitespaceScanner"); //$NON-NLS-1$
 
 	final Parser<Tok> _commandPrefixTokenLexer = Lexers.getCaseInsensitive(new String[0], CommandImage.getImages()).getLexer();
-	final Parser<Tok[]> commandPrefixLexer =  Parsers.map("commandPrefixToArray", whitespaceScanner.optional().seq(_commandPrefixTokenLexer), new ToArrayMap());
+	final Parser<Tok[]> commandPrefixLexer =  Parsers.map("commandPrefixToArray", whitespaceScanner.optional().seq(_commandPrefixTokenLexer), new ToArrayMap()); //$NON-NLS-1$
 
-	final Parser<Tok> decimalLexer = Lexers.decimal("decimalLexer").followedBy(Parsers.sum(Parsers.eof(), whitespaceScanner));
-	final Parser<_> integerScanner = Scanners.isPattern(Patterns.seq(Patterns.optional(Patterns.isChar('-')), Patterns.many(1,CharPredicates.isDigit())), "expected integer");
-	final Parser<Tok> integerLexer = Lexers.lexer("integerLexer", Scanners.delimited(integerScanner, "integer"), Tokenizers.forInteger()).followedBy(Parsers.sum(Parsers.eof(), whitespaceScanner));
+	final Parser<Tok> decimalLexer = Lexers.decimal("decimalLexer").followedBy(Parsers.sum(Parsers.eof(), whitespaceScanner)); //$NON-NLS-1$
+	final Parser<_> integerScanner = Scanners.isPattern(Patterns.seq(Patterns.optional(Patterns.isChar('-')), Patterns.many(1,CharPredicates.isDigit())), "expected integer"); //$NON-NLS-1$
+	final Parser<Tok> integerLexer = Lexers.lexer("integerLexer", Scanners.delimited(integerScanner, "integer"), Tokenizers.forInteger()).followedBy(Parsers.sum(Parsers.eof(), whitespaceScanner)); //$NON-NLS-1$ //$NON-NLS-2$
 	// the atomize calls here essentially implement backtracking, that is if the parse fails, it will 
 	// back up to the original spot in the parse.  by plus'ing them together we get two tries at the 
 	// same spot in the parse.
-	final Parser<Tok> numberLexer = Parsers.plus(Parsers.atomize("1",integerLexer),Parsers.atomize("2",decimalLexer));
+	final Parser<Tok> numberLexer = Parsers.plus(Parsers.atomize("1",integerLexer),Parsers.atomize("2",decimalLexer)); //$NON-NLS-1$ //$NON-NLS-2$
 
-	final String WORD_CHARS = "[a-zA-z0-9/.;\\-+]";
-	final Parser<_> wordScanner = Scanners.isPattern("wordScanner", Patterns.regex(WORD_CHARS).many(1), "expected word");
-	final Parser<Tok> wordLexer = Lexers.lexer("wordLexer", wordScanner, Tokenizers.forWord());
-	final Pattern optionSymbolPattern = Pattern.compile("([a-zA-z]{1,3})\\+([a-zA-z])([a-zA-z])(\\."+WORD_CHARS+")?");
+	final String WORD_CHARS = "[a-zA-z0-9/.;\\-+]"; //$NON-NLS-1$
+	final Parser<_> wordScanner = Scanners.isPattern("wordScanner", Patterns.regex(WORD_CHARS).many(1), "expected word"); //$NON-NLS-1$ //$NON-NLS-2$
+	final Parser<Tok> wordLexer = Lexers.lexer("wordLexer", wordScanner, Tokenizers.forWord()); //$NON-NLS-1$
+	final Pattern optionSymbolPattern = Pattern.compile("([a-zA-z]{1,3})\\+([a-zA-z])([a-zA-z])(\\."+WORD_CHARS+")?"); //$NON-NLS-1$ //$NON-NLS-2$
 
 	final Parser<Tok> tokenLexer = Parsers.plus(numberLexer, wordLexer);
 
-	final Parser<Tok[]> mainLexeme = Lexers.lexeme("mainLexeme",
+	final Parser<Tok[]> mainLexeme = Lexers.lexeme("mainLexeme", //$NON-NLS-1$
 			whitespaceScanner.many(), tokenLexer).followedBy(Parsers.eof());
-	final Parser<Tok[]> wordLexeme = Lexers.lexeme("wordLexeme",
+	final Parser<Tok[]> wordLexeme = Lexers.lexeme("wordLexeme", //$NON-NLS-1$
 			whitespaceScanner.many(), wordLexer).followedBy(Parsers.eof());
-	final Parser<Tok[]> numberLexeme = Lexers.lexeme("numberLexeme", 
+	final Parser<Tok[]> numberLexeme = Lexers.lexeme("numberLexeme",  //$NON-NLS-1$
 			whitespaceScanner.many(), numberLexer).followedBy(Parsers.eof());
 	
 	OptionDateHelper optionDateHelper = new OptionDateHelper();
@@ -85,16 +87,17 @@ public class CommandParser {
 	//////////////////////////////////////////////////////////////
 	// Parsers
 	final Parser<Object> priceParser = Parsers.token(
-			"priceParser", new FromToken<Object>() {
+			"priceParser", new FromToken<Object>() { //$NON-NLS-1$
 				private static final long serialVersionUID = 625605776498362995L;
-				public Object fromToken(Tok tok) {
-					String stringImage = ((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase();
+                public Object fromToken(Tok tok) {
+					String stringImage = ((TypedToken<?>)tok.getToken()).getText().toUpperCase();
 					PriceImage pi =  PriceImage.fromName(stringImage);
 					if (pi == null){
 						try {
 							new BigDecimal(stringImage);
 						} catch (Exception ex){
-							throw new UserException(tok.getIndex(), "Expected price or "+PriceImage.MKT.getImage());
+							throw new UserException(tok.getIndex(),
+							                        EXPECTED_PRICE.getText(PriceImage.MKT.getImage()));
 						}
 						pi = PriceImage.LIMIT;
 						pi.setImage(stringImage);
@@ -104,14 +107,14 @@ public class CommandParser {
 			});
 
 	final Parser<FieldMap> optionExpirationParser = Parsers.token(
-			"optionExpirationParser", new FromToken<FieldMap>() {
+			"optionExpirationParser", new FromToken<FieldMap>() { //$NON-NLS-1$
 				private static final long serialVersionUID = 625605776498362995L;
-				public FieldMap fromToken(Tok tok) {
-					String stringImage = ((TypedToken<TokenType>)tok.getToken()).getText();
+                public FieldMap fromToken(Tok tok) {
+					String stringImage = ((TypedToken<?>)tok.getToken()).getText();
 					Matcher matcher = optionExpirationPattern.matcher(stringImage);
 					if (matcher.matches()){
 						String expirationYearString = matcher.group(1);
-						expirationYearString = (expirationYearString!=null && expirationYearString.length()==2) ? "20"+expirationYearString : expirationYearString;
+						expirationYearString = (expirationYearString!=null && expirationYearString.length()==2) ? "20"+expirationYearString : expirationYearString; //$NON-NLS-1$
 						String expirationMonthString = matcher.group(2);
 						String strikeString = matcher.group(3);
 						String callPutString = matcher.group(4);
@@ -137,34 +140,39 @@ public class CommandParser {
 			});
 
 	final Parser<SideImage> sideImageParser = Parsers.token(
-			"sideImageParser", new FromToken<SideImage>() {
-				public SideImage fromToken(Tok tok) {
-					return SideImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase());
+			"sideImageParser", new FromToken<SideImage>() { //$NON-NLS-1$
+                private static final long serialVersionUID = 1L;
+                public SideImage fromToken(Tok tok) {
+					return SideImage.fromName(((TypedToken<?>)tok.getToken()).getText().toUpperCase());
 				}
 			});
 
 	final Parser<TimeInForceImage> timeInForceParser = Parsers.token(
-			"sideImageParser", new FromToken<TimeInForceImage>() {
-				public TimeInForceImage fromToken(Tok tok) {
-					return TimeInForceImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase());
+			"sideImageParser", new FromToken<TimeInForceImage>() { //$NON-NLS-1$
+                private static final long serialVersionUID = 1L;
+                public TimeInForceImage fromToken(Tok tok) {
+					return TimeInForceImage.fromName(((TypedToken<?>)tok.getToken()).getText().toUpperCase());
 				}
 			});
 	
 	final Parser<CommandImage> commandImageParser = Parsers.token(
-			"commandImageParser", new FromToken<CommandImage>() {
-				public CommandImage fromToken(Tok tok) {
-					return CommandImage.fromName(((TypedToken<TokenType>)tok.getToken()).getText().toUpperCase());
+			"commandImageParser", new FromToken<CommandImage>() { //$NON-NLS-1$
+                private static final long serialVersionUID = 1L;
+                public CommandImage fromToken(Tok tok) {
+					return CommandImage.fromName(((TypedToken<?>)tok.getToken()).getText().toUpperCase());
 				}
 			});
 
 	final Parser<BigInteger> integerParser = Terms.integerParser(new FromString<BigInteger>(){
-		public BigInteger fromString(int arg0, int arg1, String arg2) {
+        private static final long serialVersionUID = 1L;
+        public BigInteger fromString(int arg0, int arg1, String arg2) {
 			return new BigInteger(arg2);
 		}
 	});
 	
 	final Parser<BigDecimal> orderQtyParser = Terms.decimalParser(new FromString<BigDecimal>(){
-		public BigDecimal fromString(int arg0, int arg1, String arg2) {
+        private static final long serialVersionUID = 1L;
+        public BigDecimal fromString(int arg0, int arg1, String arg2) {
 			if (orderQtyIsInt){
 				// throw an exception if it cannot be parsed as an int
 				new BigInteger(arg2);
@@ -174,31 +182,35 @@ public class CommandParser {
 	});
 	
 	final Parser<String> wordParser = Terms.wordParser(new FromString<String>(){
-		public String fromString(int arg0, int arg1, String arg2) {
+        private static final long serialVersionUID = 1L;
+        public String fromString(int arg0, int arg1, String arg2) {
 			return arg2;
 		}
 	});
 
-	final Parser<String> accountParser = Parsers.token("accountIDParser", new FromToken<String>(){
-		public String fromToken(Tok tok) {
-			return ((TypedToken)tok.getToken()).getText();
+	final Parser<String> accountParser = Parsers.token("accountIDParser", new FromToken<String>(){ //$NON-NLS-1$
+        private static final long serialVersionUID = 1L;
+        public String fromToken(Tok tok) {
+			return ((TypedToken<?>)tok.getToken()).getText();
 		}
 	});
 
 	final Parser<IPhotonCommand> resendRequestMapper = Parsers.map2(
 			integerParser, integerParser,
 			new Map2<BigInteger, BigInteger, IPhotonCommand>() {
-				public IPhotonCommand map(BigInteger arg0, BigInteger arg1) {
+                private static final long serialVersionUID = 1L;
+                public IPhotonCommand map(BigInteger arg0, BigInteger arg1) {
 					return new SendOrderToOrderManagerCommand(messageFactory.newResendRequest(arg0, arg1));
 				}
 			});
 	
 	final Parser<IPhotonCommand> orderCommandMapper = Parsers.mapn(
-			(Parser<Object>[])new Parser[]{sideImageParser, orderQtyParser, wordParser, 
-					Parsers.atomize("optionExpirationParserAtom", optionExpirationParser).optional(), 
+			(Parser<?>[])new Parser<?>[]{sideImageParser, orderQtyParser, wordParser, 
+					Parsers.atomize("optionExpirationParserAtom", optionExpirationParser).optional(),  //$NON-NLS-1$
 					priceParser, timeInForceParser.optional(), accountParser.optional()} ,
 		new Mapn<IPhotonCommand>(){
-		  public IPhotonCommand map(Object... vals) {
+            private static final long serialVersionUID = 1L;
+        public IPhotonCommand map(Object... vals) {
 					int i = 0;
 					SideImage sideImage = (SideImage) vals[i++];
 					BigDecimal quantity = (BigDecimal) vals[i++];
@@ -214,7 +226,7 @@ public class CommandParser {
 						if (vals.length >= i && vals[i] !=null)
 							accountID = (String) vals[i];
 					} else if (vals.length > i+1 && vals[i+1] != null){
-						throw new jfun.parsec.UserException("Missing time-in-force");
+						throw new jfun.parsec.UserException(MISSING_TIME_IN_FORCE.getText());
 					}
 					Message message=null;
 					try {
@@ -243,21 +255,22 @@ public class CommandParser {
 			}
 	);
 
-	final Parser<IPhotonCommand> cancelMapper = Parsers.map("cancelMapper",wordParser,
+	final Parser<IPhotonCommand> cancelMapper = Parsers.map("cancelMapper",wordParser, //$NON-NLS-1$
 			new Map<String,IPhotonCommand>(){
-			  public IPhotonCommand map(String word) {
+                private static final long serialVersionUID = 1L;
+            public IPhotonCommand map(String word) {
 				  return new CancelCommand(word);
 			  }
 	});
 
-	final Parser<IPhotonCommand> newOrderCommandParser = Parsers.parseTokens("mainParser",mainLexeme,
-			orderCommandMapper, "module");
+	final Parser<IPhotonCommand> newOrderCommandParser = Parsers.parseTokens("mainParser",mainLexeme, //$NON-NLS-1$
+			orderCommandMapper, "module"); //$NON-NLS-1$
 
-	final Parser<IPhotonCommand> cancelCommandParser = Parsers.parseTokens("mainParser",wordLexeme,
-			cancelMapper, "module");
+	final Parser<IPhotonCommand> cancelCommandParser = Parsers.parseTokens("mainParser",wordLexeme, //$NON-NLS-1$
+			cancelMapper, "module"); //$NON-NLS-1$
 	
-	final Parser<IPhotonCommand> resendRequestCommandParser = Parsers.parseTokens("mainParser",numberLexeme,
-			resendRequestMapper, "module");
+	final Parser<IPhotonCommand> resendRequestCommandParser = Parsers.parseTokens("mainParser",numberLexeme, //$NON-NLS-1$
+			resendRequestMapper, "module"); //$NON-NLS-1$
 
 	final Parser<IPhotonCommand> mainParser = Parsers.plus(
 			getCommandWithPrefix(CommandImage.ORDER,newOrderCommandParser),
@@ -267,8 +280,8 @@ public class CommandParser {
 
 	private <T> Parser<T> getCommandWithPrefix(CommandImage image, Parser<T> suffixParser){
 		String theImage = image.getImage();
-		return Parsers.atomize(theImage+"Atom", Parsers.parseTokens(theImage+"PrefixParser",commandPrefixLexer,
-				Parsers.token(new IsReserved(theImage)), "module1").seq(suffixParser));
+		return Parsers.atomize(theImage+"Atom", Parsers.parseTokens(theImage+"PrefixParser",commandPrefixLexer, //$NON-NLS-1$ //$NON-NLS-2$
+				Parsers.token(new IsReserved(theImage)), "module1").seq(suffixParser)); //$NON-NLS-1$
 	}
 
 	private IDFactory idFactory;
@@ -281,17 +294,17 @@ public class CommandParser {
 
 	public MessageCommand parseNewOrder(String theInputString) {
 		SendOrderToOrderManagerCommand result = (SendOrderToOrderManagerCommand)Parsers.runParser(theInputString, newOrderCommandParser,
-		"user input");
+		"user input"); //$NON-NLS-1$
 		return result;
 	}
 	
 	public IPhotonCommand parseCommand(String theInputString){
 		return Parsers.runParser(theInputString, mainParser,
-			"user input");
+			"user input"); //$NON-NLS-1$
 	}
 	
 	public Tok[] lex(String theInputString){
-		return Parsers.runParser(theInputString, mainLexeme, "lex only");
+		return Parsers.runParser(theInputString, mainLexeme, "lex only"); //$NON-NLS-1$
 	}
 	public void setIDFactory(IDFactory factory) {
 		this.idFactory = factory;
@@ -304,5 +317,4 @@ public class CommandParser {
 		this.dataDictionary = dd;
 		orderQtyIsInt = FieldType.Int == dataDictionary.getFieldTypeEnum(OrderQty.FIELD);
 	}
-
 }

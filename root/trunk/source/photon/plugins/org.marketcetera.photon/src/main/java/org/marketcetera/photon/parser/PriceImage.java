@@ -12,7 +12,7 @@ import java.util.Map;
  *
  */
 public enum PriceImage implements ILexerImage {
-    MKT("MKT"), LIMIT("0");
+    MKT("MKT"), LIMIT("0"); //$NON-NLS-1$ //$NON-NLS-2$
 	static final Map<String, PriceImage> nameMap = new HashMap<String, PriceImage>();
 	private static final String[] images;
 

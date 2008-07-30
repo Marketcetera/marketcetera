@@ -21,8 +21,10 @@ import org.marketcetera.messagehistory.MessageHolder;
 ////////////////////////////////////////////////////////
 // TODO: is any of the code in this class used anymore?
 ////////////////////////////////////////////////////////
-@ClassVersion("$Id$")
-public class PhotonAdapterFactory implements IAdapterFactory {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class PhotonAdapterFactory 
+    implements IAdapterFactory, Messages 
+{
 
 
 	protected IWorkbenchAdapter messageAdapter = new IWorkbenchAdapter() {
@@ -31,7 +33,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		}
 
 		public String getLabel(Object o) {
-			return "Message";
+			return MESSAGE_LABEL.getText();
 		}
 
 		public ImageDescriptor getImageDescriptor(Object object) {
@@ -59,7 +61,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 	 * @see org.eclipse.core.runtime.IAdapterFactory#getAdapter(java.lang.Object,
 	 *      java.lang.Class)
 	 */
-	@SuppressWarnings("unchecked") // overrides unparameterized method
+	@SuppressWarnings("unchecked") // overrides unparameterized method //$NON-NLS-1$
 	public Object getAdapter(Object adaptableObject, Class adapterType) {
 		if (adapterType == IWorkbenchAdapter.class
 				&& adaptableObject instanceof MessageHolder)
@@ -74,7 +76,7 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		return null;
 	}
 
-	@SuppressWarnings("unchecked")  // overrides unparameterized method
+	@SuppressWarnings("unchecked")  // overrides unparameterized method //$NON-NLS-1$
 	public Class[] getAdapterList() {
 		return new Class[] { IWorkbenchAdapter.class };
 	}
@@ -90,10 +92,10 @@ public class PhotonAdapterFactory implements IAdapterFactory {
 		public String getLabel(Object o) {
 			AccountID accountID = (AccountID) o;
 			String nick = accountID.getAccountNickname();
-			if (nick != null && !nick.equals("")) {
-				nick = " (" + nick + ")";
+			if (nick != null && !nick.equals("")) { //$NON-NLS-1$
+				nick = " (" + nick + ")"; //$NON-NLS-1$ //$NON-NLS-2$
 			} else {
-				nick = "";
+				nick = ""; //$NON-NLS-1$
 			}
 			return accountID.toString() + nick;
 		}

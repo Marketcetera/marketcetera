@@ -27,7 +27,6 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.PhotonPage;
@@ -56,10 +55,13 @@ import quickfix.Message;
 /**
  * The main plugin class to be used in the Photon application.
  */
-@ClassVersion("$Id$")
-public class PhotonPlugin extends AbstractUIPlugin {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class PhotonPlugin 
+    extends AbstractUIPlugin
+    implements Messages
+{
 
-	public static final String ID = "org.marketcetera.photon";
+	public static final String ID = "org.marketcetera.photon"; //$NON-NLS-1$
 
 	//The shared instance.
 	private static PhotonPlugin plugin;
@@ -78,13 +80,13 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 	private BundleContext bundleContext;
 	
-	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger";
+	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger"; //$NON-NLS-1$
 
-	public static final String MARKETDATA_CONSOLE_LOGGER_NAME = "marketdata.console.logger";
+	public static final String MARKETDATA_CONSOLE_LOGGER_NAME = "marketdata.console.logger"; //$NON-NLS-1$
 
-	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts";
+	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts"; //$NON-NLS-1$
 
-	private static final String RUBY_NATURE_ID = ".rubynature";
+	private static final String RUBY_NATURE_ID = ".rubynature"; //$NON-NLS-1$
 
 	private ScriptChangesAdapter scriptChangesAdapter;
 
@@ -124,17 +126,15 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		// This sets the internal broker to use on thread per "listener"?
 		// Needed because the version of JRuby we're using doesn't play well
 		// with mutliple threads
-        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true");
+        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
         BSFManager.registerScriptingEngine(ScriptRegistry.RUBY_LANG_STRING,
-				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" });
-		initResources();
+				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" }); //$NON-NLS-1$ //$NON-NLS-2$
 		initMessageFactory();
 		initIDFactory();
 		initFIXMessageHistory();
 		initScriptRegistry();
 		initPhotonController();
-
 	}
 
 	public void initOrderTickets(){
@@ -204,20 +204,14 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		return (ScopedPreferenceStore) super.getPreferenceStore();
 	}
 
-	private void initResources() throws FIXFieldConverterNotAvailable
-	{
-		MessageBundleManager.registerCoreMessageBundle();
-		MessageBundleManager.registerMessageBundle("photon", "photon_fix_messages");
-	}
-
 	private void initIDFactory() throws MalformedURLException, UnknownHostException
 	{
 		ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
 		URL url = new URL(
-				"http",
+				"http", //$NON-NLS-1$
 				preferenceStore.getString(ConnectionConstants.WEB_APP_HOST_KEY),
 				preferenceStore.getInt(ConnectionConstants.WEB_APP_PORT_KEY),
-				"/id_repository/get_next_batch"
+				"/id_repository/get_next_batch" //$NON-NLS-1$
 		);
 		idFactory = new HttpDatabaseIDFactory(url, preferenceStore.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY));
 
@@ -233,7 +227,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			// just use version 4.2
 		}
 		messageFactory = fixVersion.getMessageFactory();
-		FIXDataDictionaryManager.initialize(FIXVersion.FIX44, "FIX44.xml");
+		FIXDataDictionaryManager.initialize(FIXVersion.FIX44, "FIX44.xml"); //$NON-NLS-1$
 		FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryURL());
 	}
 
@@ -245,9 +239,11 @@ public class PhotonPlugin extends AbstractUIPlugin {
 			scriptChangesAdapter.afterPropertiesSet();
 		} catch (BSFException e) {
 			Throwable targetException = e.getTargetException();
-			getMainConsoleLogger().error("Exception starting script engine", targetException);
+			getMainConsoleLogger().error(CANNOT_START_SCRIPT_ENGINE.getText(),
+			                             targetException);
 		} catch (Exception e) {
-			getMainConsoleLogger().error("Exception starting script engine", e);
+			getMainConsoleLogger().error(CANNOT_START_SCRIPT_ENGINE.getText(),
+			                             e);
 		}
 		thePreferenceStore.addPropertyChangeListener(scriptChangesAdapter);
 		
@@ -313,7 +309,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 
 
 	public void ensureDefaultProject(IProgressMonitor monitor){
-		monitor.beginTask("Ensure default project", 2);
+		monitor.beginTask("Ensure default project", 2); //$NON-NLS-1$
 		
 
 		try {
@@ -336,14 +332,18 @@ public class PhotonPlugin extends AbstractUIPlugin {
 						RubyCore.addRubyNature(newProject, new SubProgressMonitor(monitor, 1));
 					} catch (Throwable t){
 						// RDT possibly not included...
+					    mainConsoleLogger.error(CANNOT_LOAD_RUBY.getText(),
+					                            t);
 					}
 				}
 			} catch (CoreException e) {
 				if (mainConsoleLogger.isDebugEnabled())
-					mainConsoleLogger.debug("Exception trying to determine nature of default project.", e);
+					mainConsoleLogger.debug("Exception trying to determine nature of default project.", //$NON-NLS-1$
+					                        e);
 			}
 		} catch (Throwable t){
-			mainConsoleLogger.error("Exception creating default scripting project", t);
+			mainConsoleLogger.error(CANNOT_START_DEFAULT_SCRIPT_PROJECT.getText(),
+			                        t);
 		}
 			
 		monitor.done();
@@ -359,7 +359,7 @@ public class PhotonPlugin extends AbstractUIPlugin {
 		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)){
 			mainConsoleLogger.setLevel(Level.DEBUG);
 		}
-		mainConsoleLogger.info("Changed log level to '"+levelValue+"'");
+		mainConsoleLogger.info(LOGGER_LEVEL_CHANGED.getText(levelValue));
 	}
 
 	public FIXMessageFactory getMessageFactory() {
@@ -437,5 +437,4 @@ public class PhotonPlugin extends AbstractUIPlugin {
 	public String getNextSecondaryID() {
 		return secondaryIDCreator.getNextSecondaryID();
 	}
-
 }

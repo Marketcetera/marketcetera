@@ -26,14 +26,14 @@ public class EventListContentProvider<T> implements IStructuredContentProvider, 
 		}
 	}
 
-	@SuppressWarnings("unchecked") //SWTThreadProxyEventList is not parameterized
+	@SuppressWarnings("unchecked") //SWTThreadProxyEventList is not parameterized //$NON-NLS-1$
 	public void dispose() {
 		if (swtList != null){
 			swtList.removeListEventListener(this);
 		}
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 		this.viewer = (IndexedTableViewer) viewer;
 		

@@ -23,6 +23,7 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.EclipseUtils;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.scripting.ScriptLoggingUtil;
@@ -38,9 +39,11 @@ import quickfix.Message;
  * @author andrei@lissovski.org
  * @author gmiller
  */
-public class ScriptRegistry implements InitializingBean {
+public class ScriptRegistry
+    implements InitializingBean, Messages
+{
 
-	public static final String RUBY_LANG_STRING = "ruby";
+	public static final String RUBY_LANG_STRING = "ruby"; //$NON-NLS-1$
 	protected BSFManager bsfManager;
 	protected BSFEngine engine;
 	private Classpath additionalClasspath =  new Classpath();
@@ -50,18 +53,18 @@ public class ScriptRegistry implements InitializingBean {
 	private Map<String, Strategy> registeredStrategies;
 	
 	static String [] JRUBY_PLUGIN_PATH = {
-		"lib/ruby/site_ruby/1.8",
-		"lib/ruby/site_ruby/1.8/java",
-		"lib/ruby/site_ruby", 
-		"lib/ruby/1.8", 
-		"lib/ruby/1.8/java",
-		"lib/active_support",
-		"lib/active_support/active_support",
-		"lib/active_support/active_support/vendor"
+		"lib/ruby/site_ruby/1.8", //$NON-NLS-1$
+		"lib/ruby/site_ruby/1.8/java", //$NON-NLS-1$
+		"lib/ruby/site_ruby",  //$NON-NLS-1$
+		"lib/ruby/1.8",  //$NON-NLS-1$
+		"lib/ruby/1.8/java", //$NON-NLS-1$
+		"lib/active_support", //$NON-NLS-1$
+		"lib/active_support/active_support", //$NON-NLS-1$
+		"lib/active_support/active_support/vendor" //$NON-NLS-1$
 	};
 	
 	static String [] JRUBY_WORKSPACE_PATH = {
-		""
+		"" //$NON-NLS-1$
 	};
 	private MarketDataFeedTracker marketDataFeedTracker;
 	
@@ -85,8 +88,7 @@ public class ScriptRegistry implements InitializingBean {
                     ((EventBase)inData).getFIXMessage() != null) {
                 return true;
             }
-            PhotonPlugin.getMainConsoleLogger().warn(String.format("Discarding %s because it is the wrong type or doesn't have a FIX message attached: scripts will not receive this data and they should",
-                                                                   inData));
+            PhotonPlugin.getMainConsoleLogger().warn(REGISTRY_DISCARDED_MESSAGE.getText(inData));
             return false;
         }
         @Override
@@ -105,10 +107,10 @@ public class ScriptRegistry implements InitializingBean {
      * 
      * @param inFeed a <code>IMarketDataFeed</code> value
 	 */	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
     public void connectToMarketDataFeed(IMarketDataFeed inFeed)
 	{
-        logger.debug(String.format("Registering feed %s with the Script Registry",
+        logger.debug(String.format("Registering feed %s with the Script Registry", //$NON-NLS-1$
                                    inFeed));
 	    inFeed.subscribeToAll(mFeedSubscriber);
 	}
@@ -122,34 +124,34 @@ public class ScriptRegistry implements InitializingBean {
 	 * 
      * @param inFeed a <code>IMarketDataFeed</code> value
 	 */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
 	public void disconnectFromMarketDataFeed(IMarketDataFeed inFeed)
 	{
-        logger.debug(String.format("Unregistering feed %s with the Script Registry",
+        logger.debug(String.format("Unregistering feed %s with the Script Registry", //$NON-NLS-1$
                                    inFeed));
         inFeed.unsubscribeFromAll(mFeedSubscriber);
 	}
 	
 	private void initBSFManager() throws BSFException {
 		currentClasspath = new Classpath();
-		currentClasspath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources"));
+		currentClasspath.add(EclipseUtils.getPluginPath(PhotonPlugin.getDefault()).append("src").append("main").append("resources")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		currentClasspath.add(ResourcesPlugin.getWorkspace().getRoot().getProject(PhotonPlugin.DEFAULT_PROJECT_NAME).getLocation());
 
 		
 		currentClasspath.addAll(additionalClasspath);
 		IPath jrubyPluginPath = EclipseUtils.getPluginPath(JRubyPlugin.getDefault());
-		PhotonPlugin.getMainConsoleLogger().debug("Using base path of JRuby plugin: "+jrubyPluginPath.toString());
+		PhotonPlugin.getMainConsoleLogger().debug("Using base path of JRuby plugin: "+jrubyPluginPath.toString()); //$NON-NLS-1$
 		updateClasspath(currentClasspath, jrubyPluginPath, JRUBY_PLUGIN_PATH);
 		updateClasspath(currentClasspath, EclipseUtils.getWorkspacePath(), JRUBY_WORKSPACE_PATH);
 		String classpathString = currentClasspath.toString();
 		bsfManager = new BSFManager();
 		bsfManager.setClassPath(classpathString);
 
-		engine = bsfManager.loadScriptingEngine("ruby");
+		engine = bsfManager.loadScriptingEngine("ruby"); //$NON-NLS-1$
 
-		engine.eval("<java>", 1, 1, "require 'active_support/core_ext'");
-		engine.eval("<java>", 1, 1, "require 'active_support/dependencies'");
-		engine.eval("<java>", 1, 1, "require 'photon'");
+		engine.eval("<java>", 1, 1, "require 'active_support/core_ext'"); //$NON-NLS-1$ //$NON-NLS-2$
+		engine.eval("<java>", 1, 1, "require 'active_support/dependencies'"); //$NON-NLS-1$ //$NON-NLS-2$
+		engine.eval("<java>", 1, 1, "require 'photon'"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 
@@ -190,7 +192,7 @@ public class ScriptRegistry implements InitializingBean {
 		try {
 			return future.get();
 		} catch (Exception e) {
-			logger.debug("Error getting a value out of a future.get", e);
+			logger.debug("Error getting a value out of a future.get", e); //$NON-NLS-1$
 			return false;
 		}
 	}
@@ -244,7 +246,8 @@ public class ScriptRegistry implements InitializingBean {
 				if (cause != null){
 					toLog = cause;
 				}
-				logger.error("Unable to register script", toLog);
+				logger.error(UNABLE_TO_REGISTER_SCRIPT.getText(fileName),
+				             toLog);
 			}
 		}
 	}
@@ -260,7 +263,7 @@ public class ScriptRegistry implements InitializingBean {
                                                     TimeUnit unit, Object clientData)
 	{
 		ScheduledFuture<?> future = getScheduler().schedule(createStrategyCallbackRunnable(strategy, clientData), delay, unit);
-		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); }
+		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); } //$NON-NLS-1$ //$NON-NLS-2$
 		return future;
 	}
 
@@ -268,7 +271,7 @@ public class ScriptRegistry implements InitializingBean {
 			final long period, TimeUnit unit, final Object clientData)
 	{
 		ScheduledFuture<?> future = getScheduler().scheduleAtFixedRate(createStrategyCallbackRunnable(strategy, clientData), delay, period, unit);
-		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); }
+		if(logger.isDebugEnabled()) { logger.debug("registering delay callback for "+ delay + " in "+unit); } //$NON-NLS-1$ //$NON-NLS-2$
 		return future;
 	}
 
@@ -276,18 +279,18 @@ public class ScriptRegistry implements InitializingBean {
 			final Object clientData) {
 		return new Runnable(){
 			public void run() {
-				if(logger.isDebugEnabled()) { logger.debug("starting stategy callback on ["+strategy.getName()+"]"); }
+				if(logger.isDebugEnabled()) { logger.debug("starting stategy callback on ["+strategy.getName()+"]"); } //$NON-NLS-1$ //$NON-NLS-2$
 				try {
                     if(doIsRegistered(strategy.getName())) {
                         strategy.timeout_callback(clientData);
                     } else {
-                    	if(logger.isDebugEnabled()) { logger.debug("strategy ["+strategy.getName()+"] is no longer registered"); }
+                    	if(logger.isDebugEnabled()) { logger.debug("strategy ["+strategy.getName()+"] is no longer registered"); } //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 } catch(RaiseException ex) {
-					logger.error("Error in timeout_callback function: "+ex.getException());
+					logger.error(CALLBACK_FUNCTION_ERROR.getText(ex.getException()));
 					ScriptLoggingUtil.error(logger, ex);
 				}
-				if(logger.isDebugEnabled()) { logger.debug("finished strategy callback on ["+strategy.getName()+"]"); }
+				if(logger.isDebugEnabled()) { logger.debug("finished strategy callback on ["+strategy.getName()+"]"); } //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		};
 	}
@@ -316,12 +319,12 @@ public class ScriptRegistry implements InitializingBean {
 		} catch (InterruptedException ignored) {
 			// no-op
 		} catch (ExecutionException ex) {
-			// TODO: internationalize this
 			Throwable cause = ex.getCause();
 			if (cause instanceof RaiseException) {
 				ScriptLoggingUtil.error(logger, (RaiseException) cause);
 			} else {
-				logger.warn("Unable to get a result of Ruby script change", cause);
+				logger.warn(CANNOT_GET_SCRIPT_CHANGE_RESULT.getText(),
+				            cause);
 			}
 		}
 	}
@@ -362,7 +365,7 @@ public class ScriptRegistry implements InitializingBean {
 	public Object evalScript(final String script) throws Exception{
 		Future<Object> result = scheduler.submit(new Callable<Object>() {
 			public Object call() throws Exception {
-				return bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, script);	}
+				return bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, script);	} //$NON-NLS-1$
 		});
 		return result.get();
 	}	
@@ -418,15 +421,15 @@ public class ScriptRegistry implements InitializingBean {
 
 	private BSFException doRegister(final String fileName) {
 		try {
-			String classInstanceEvalString = "Photon.new_instance('"+fileName+"')";
-			Object strategyObject = bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, classInstanceEvalString);
+			String classInstanceEvalString = "Photon.new_instance('"+fileName+"')"; //$NON-NLS-1$ //$NON-NLS-2$
+			Object strategyObject = bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, classInstanceEvalString); //$NON-NLS-1$
 			if (strategyObject instanceof Strategy){
 				registeredStrategies.put(fileName, (Strategy) strategyObject);
                 Strategy strategy = ((Strategy)strategyObject);
 				strategy.setName(fileName);
 				strategy.on_create();
             } else {
-				throw new IllegalArgumentException("File '"+fileName+"' does not contain a subclass of Strategy");
+                throw new IllegalArgumentException(NO_STRATEGY_SUBCLASS.getText(fileName));
 			}
 			return null;
 		} catch (BSFException e) {
@@ -440,14 +443,14 @@ public class ScriptRegistry implements InitializingBean {
 		try {
 			boolean reregister = doIsRegistered(fileName);
 			doUnregister(fileName);
-			String evalString = "Dependencies.loaded.reject! {|s| s.ends_with?('"+ fileName + "')}";
-			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
-			evalString = "require_dependency '" + fileName + "'";
-			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString);
+			String evalString = "Dependencies.loaded.reject! {|s| s.ends_with?('"+ fileName + "')}"; //$NON-NLS-1$ //$NON-NLS-2$
+			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString); //$NON-NLS-1$
+			evalString = "require_dependency '" + fileName + "'"; //$NON-NLS-1$ //$NON-NLS-2$
+			bsfManager.eval(RUBY_LANG_STRING, "<java>", 1, 1, evalString); //$NON-NLS-1$
 			if (reregister) {
 				BSFException e = doRegister(fileName);
 				if (e != null){
-					logger.error("Script unregistered due to exception, see previous errors");
+					logger.error(UNREGISTERING_SCRIPT.getText(fileName));
 				}
 			}
 			return null;

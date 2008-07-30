@@ -6,11 +6,13 @@ import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
@@ -20,6 +22,8 @@ import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.Message;
 import quickfix.field.MsgType;
+
+/* $License$ */
 
 /**
  * Abstract base class for controllers of order tickets.
@@ -38,8 +42,10 @@ import quickfix.field.MsgType;
  * @author gmiller
  *
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class OrderTicketController <T extends OrderTicketModel>
-	implements IOrderTicketController, IPropertyChangeListener {
+	implements IOrderTicketController, IPropertyChangeListener, Messages
+{
 
 	private final MarketDataFeedTracker marketDataTracker;
 
@@ -84,7 +90,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 					Object newSymbol = event.diff.getNewValue();
 					String symbolString = (String) newSymbol;
 					if (PhotonPlugin.getMainConsoleLogger().isDebugEnabled()){
-						PhotonPlugin.getMainConsoleLogger().debug("New symbol: "+symbolString);
+						PhotonPlugin.getMainConsoleLogger().debug("New symbol: "+symbolString); //$NON-NLS-1$
 					}
 					listenMarketData(symbolString);
 				} catch (Exception ex){
@@ -102,8 +108,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 			try {		
 				doUnlistenMarketData(service);
 			} catch (MarketceteraException e) {
-				PhotonPlugin.getMainConsoleLogger().warn(
-						"Error unsubscribing to quotes");
+				PhotonPlugin.getMainConsoleLogger().warn(CANNOT_UNSUBSCRIBE.getText());
 			}
 		}
 	}	
@@ -129,7 +134,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 */
 	public void listenMarketData(String symbol) {
 		unlistenMarketData();
-		if (symbol != null && !"".equals(symbol.trim())) {
+		if (symbol != null && !"".equals(symbol.trim())) { //$NON-NLS-1$
 			try {
 				MarketDataFeedService<?> service = getMarketDataTracker()
 						.getMarketDataFeedService();
@@ -138,9 +143,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 					doListenMarketData(service, new MSymbol(symbol));
 				}
 			} catch (MarketceteraException e) {
-				PhotonPlugin.getMainConsoleLogger().error(
-						"Exception requesting quotes for "
-								+ symbol);
+				PhotonPlugin.getMainConsoleLogger().error(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 			}
 		}
 	}
@@ -240,13 +243,14 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	{
 		WritableList customFieldsList = getOrderTicketModel().getCustomFieldsList();
 		customFieldsList.clear();
-		if (preferenceString.contains("=")){
-			String [] pieces = preferenceString.split("&");
+		if (preferenceString.contains("=")){ //$NON-NLS-1$
+			String [] pieces = preferenceString.split("&"); //$NON-NLS-1$
 			for (String piece : pieces) {
 				try {
 					customFieldsList.add(CustomField.fromString(piece));
 				} catch (Throwable ex){
-					PhotonPlugin.getMainConsoleLogger().warn("Exception reading custom field from database: "+piece, ex);
+					PhotonPlugin.getMainConsoleLogger().warn(CANNOT_READ_CUSTOM_FIELD.getText(piece),
+					                                         ex);
 				}
 			}
 		}

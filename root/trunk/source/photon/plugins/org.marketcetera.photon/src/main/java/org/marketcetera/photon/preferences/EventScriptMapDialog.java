@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.EclipseUtils;
+import org.marketcetera.photon.Messages;
 
 
 /**
@@ -25,13 +26,10 @@ import org.marketcetera.photon.EclipseUtils;
  * @author gmiller 
  * @author andrei@lissovski.org
  */
-public class EventScriptMapDialog extends Dialog {
-
-	private static final String TITLE = "Register script";
-    
-    private static final String SCRIPT_PROMPT = "Script";
-    private static final String BROWSE_PROMPT = "Browse...";
-    
+public class EventScriptMapDialog
+    extends Dialog
+    implements Messages
+{
     private Text scriptText;
     private Button browseButton;
 
@@ -44,7 +42,7 @@ public class EventScriptMapDialog extends Dialog {
 
     protected void configureShell(Shell newShell) {
         super.configureShell(newShell);
-        newShell.setText(TITLE);
+        newShell.setText(RUBY_TITLE_LABEL.getText());
     }
 
     protected Control createDialogArea(Composite parent) {
@@ -53,7 +51,7 @@ public class EventScriptMapDialog extends Dialog {
         composite.setLayout(layout);
 
         Label valueLabel = new Label(composite, SWT.NONE);
-        valueLabel.setText(SCRIPT_PROMPT);
+        valueLabel.setText(RUBY_SCRIPT_LABEL.getText());
         valueLabel.setLayoutData(new GridData(GridData.END, GridData.CENTER,
                                               false, false));
 
@@ -67,7 +65,7 @@ public class EventScriptMapDialog extends Dialog {
         scriptText.setEditable(false);
 
         browseButton = new Button(composite, SWT.PUSH);
-        browseButton.setText(BROWSE_PROMPT);
+        browseButton.setText(BROWSE_LABEL.getText());
         GridData browseButtonGridData = new GridData(GridData.FILL, GridData.FILL,
                 true, false);
         browseButtonGridData.grabExcessHorizontalSpace = false;

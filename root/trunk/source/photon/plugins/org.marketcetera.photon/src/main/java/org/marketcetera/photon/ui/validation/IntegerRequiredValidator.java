@@ -4,14 +4,22 @@ import java.math.BigInteger;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class IntegerRequiredValidator extends StringRequiredValidator {
+public class IntegerRequiredValidator
+    extends StringRequiredValidator
+    implements Messages
+{
 
 	private IStatus errorStatus;
 
 	public IntegerRequiredValidator(){
-		errorStatus = new Status(Status.ERROR, PhotonPlugin.ID, Status.OK, "Integer required", null);
+		errorStatus = new Status(Status.ERROR,
+		                         PhotonPlugin.ID,
+		                         Status.OK,
+		                         INTEGER_REQUIRED.getText(),
+		                         null);
 	}
 
 	@Override
@@ -27,7 +35,7 @@ public class IntegerRequiredValidator extends StringRequiredValidator {
 			}
 			return Status.OK_STATUS;
 		} else {
-			throw new IllegalArgumentException("Argument must be String");
+			throw new IllegalArgumentException(ARGUMENT_MUST_BE_STRING.getText());
 		}
 	}
 

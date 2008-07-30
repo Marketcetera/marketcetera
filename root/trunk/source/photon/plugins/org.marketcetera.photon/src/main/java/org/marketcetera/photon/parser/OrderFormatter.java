@@ -3,6 +3,7 @@ package org.marketcetera.photon.parser;
 import java.text.ParseException;
 
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.marketdata.OptionMarketDataUtils;
 import org.marketcetera.photon.ui.databinding.BindingHelper;
 import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
@@ -25,7 +26,7 @@ import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
 /**
- * This class can format QuickFIX orders int human readable strings,
+ * This class can format QuickFIX orders into human readable strings,
  * given a {@link DataDictionary}.
  * 
  * A stock order might format to "SS 100 IBM 10", and an option order
@@ -38,10 +39,9 @@ import quickfix.field.Symbol;
  * @author gmiller
  *
  */
-public class OrderFormatter {
-
-	private static final String BAD_ORDER_MESSAGE = "Unknown message type";
-	private static final String MISSING_FIELD = "Missing field";
+public class OrderFormatter
+    implements Messages
+{
 	private IConverter sideConverter;
 	private IConverter priceConverter;
 	private IConverter putOrCallConverter;
@@ -80,20 +80,20 @@ public class OrderFormatter {
 			{
 				char side = orderMessage.getChar(Side.FIELD);
 				sb.append(sideConverter.convert(side));
-				sb.append(" ");
+				sb.append(" "); //$NON-NLS-1$
 				String orderQty = orderMessage.getString(OrderQty.FIELD);
 				sb.append(orderQty);
-				sb.append(" ");
+				sb.append(" "); //$NON-NLS-1$
 				String symbol = orderMessage.getString(Symbol.FIELD);
 				sb.append(symbol);
-				sb.append(" ");
+				sb.append(" "); //$NON-NLS-1$
 				
 				String securityType = null;
 				String cfiCode = null;
 				if ((orderMessage.isSetField(SecurityType.FIELD) && SecurityType.OPTION.equals(securityType = orderMessage.getString(SecurityType.FIELD)))
 						|| (orderMessage.isSetField(CFICode.FIELD) && OptionCFICode.isOptionCFICode(cfiCode = orderMessage.getString(CFICode.FIELD)))){
 					
-					String putOrCallString = "";
+					String putOrCallString = ""; //$NON-NLS-1$
 					if (SecurityType.OPTION.equals(securityType)){
 						putOrCallString = (String)putOrCallConverter.convert(orderMessage.getInt(PutOrCall.FIELD));
 					} else {
@@ -110,7 +110,7 @@ public class OrderFormatter {
 					sb.append(expirationString);
 					sb.append(strikePrice);
 					sb.append(putOrCallString);
-					sb.append(" ");
+					sb.append(" "); //$NON-NLS-1$
 				}
 				
 				Object price = PriceObservableValue.extractValue(orderMessage);
@@ -118,10 +118,10 @@ public class OrderFormatter {
 				
 				return sb.toString();
 			} else {
-				return BAD_ORDER_MESSAGE;
+				return UNKNOWN_MESSAGE_TYPE.getText();
 			}
 		} catch (FieldNotFound ex){
-			return MISSING_FIELD;
+			return MISSING_FIELD.getText();
 		}
 	}
 }

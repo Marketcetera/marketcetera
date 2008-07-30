@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.photon.Messages;
 
 import quickfix.field.BidPx;
 import quickfix.field.BidSize;
@@ -35,8 +36,9 @@ import quickfix.field.SendingTime;
 import quickfix.field.Symbol;
 import quickfix.field.TotalVolumeTraded;
 
-public class UnderlyingSymbolInfo {
-		
+public class UnderlyingSymbolInfo
+    implements Messages
+{
 	public enum UnderlyingSymbolDataFields implements IFieldIdentifier
 	{
 		SYMBOL(Symbol.class), 
@@ -75,7 +77,7 @@ public class UnderlyingSymbolInfo {
 		UnderlyingSymbolDataFields(Class<?> clazz) {
 			name = clazz.getSimpleName();
 			try {
-				Field fieldField = clazz.getField("FIELD");
+				Field fieldField = clazz.getField("FIELD"); //$NON-NLS-1$
 				fieldID = (Integer) fieldField.get(null);
 			} catch (Throwable t){
 				assert(false);
@@ -175,7 +177,7 @@ public class UnderlyingSymbolInfo {
 		bidPriceLabel = getFormToolkit().createLabel(firstRow, null);
 		bidPriceLabel.setLayoutData(createFormData(lastPriceChangeLabel));
 		
-		Label bidAskPriceSeparatorLabel = getFormToolkit().createLabel(firstRow, "-");
+		Label bidAskPriceSeparatorLabel = getFormToolkit().createLabel(firstRow, "-"); //$NON-NLS-1$
 		bidAskPriceSeparatorLabel.setForeground(SYSTEM_COLOR_BLUE);
 		bidAskPriceSeparatorLabel.setLayoutData(createNarrowFormData(bidPriceLabel));
 
@@ -186,14 +188,14 @@ public class UnderlyingSymbolInfo {
 		bidSizeLabel = getFormToolkit().createLabel(firstRow, null);
 		bidSizeLabel.setLayoutData(createFormData(askPriceLabel));
 
-		Label bidAskSizeSeparatorLabel = getFormToolkit().createLabel(firstRow, "x");
+		Label bidAskSizeSeparatorLabel = getFormToolkit().createLabel(firstRow, "x"); //$NON-NLS-1$
 		bidAskSizeSeparatorLabel.setForeground(SYSTEM_COLOR_BLUE);
 		bidAskSizeSeparatorLabel.setLayoutData(createNarrowFormData(bidSizeLabel));
 
 		askSizeLabel = getFormToolkit().createLabel(firstRow, null);
 		askSizeLabel.setLayoutData(createNarrowFormData(bidAskSizeSeparatorLabel));
 
-		exDivDateAmountTextLabel = getFormToolkit().createLabel(firstRow, "Divs");
+		exDivDateAmountTextLabel = getFormToolkit().createLabel(firstRow, "Divs"); //$NON-NLS-1$
 		exDivDateAmountTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		exDivDateAmountTextLabel.setLayoutData(createFormData(askSizeLabel));
 		
@@ -210,7 +212,7 @@ public class UnderlyingSymbolInfo {
 		secondRow.setLayoutData(createHorizontallySpannedGridData());
 		secondRow.setLayout(new FormLayout());
 
-		Label timeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "AT ");
+		Label timeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "AT "); //$NON-NLS-1$
 		timeIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		timeIndicatorTextLabel.setLayoutData(createLeftMostControlFormData());
 
@@ -218,35 +220,35 @@ public class UnderlyingSymbolInfo {
 				secondRow, null);
 		lastUpdatedTimeLabel.setLayoutData(createNarrowFormData(timeIndicatorTextLabel));
 		
-		Label volumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Vol ");
+		Label volumeIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Vol "); //$NON-NLS-1$
 		volumeIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		volumeIndicatorTextLabel.setLayoutData(createFormData(lastUpdatedTimeLabel));
 
 		volumeLabel = getFormToolkit().createLabel(secondRow, null);
 		volumeLabel.setLayoutData(createNarrowFormData(volumeIndicatorTextLabel));
 		
-		Label openPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Op ");
+		Label openPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Op "); //$NON-NLS-1$
 		openPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		openPriceIndicatorTextLabel.setLayoutData(createFormData(volumeLabel));
 
 		openPriceLabel = getFormToolkit().createLabel(secondRow, null);
 		openPriceLabel.setLayoutData(createNarrowFormData(openPriceIndicatorTextLabel));
 
-		Label highPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Hi ");
+		Label highPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Hi "); //$NON-NLS-1$
 		highPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		highPriceIndicatorTextLabel.setLayoutData(createFormData(openPriceLabel));
 
 		highPriceLabel = getFormToolkit().createLabel(secondRow, null);
 		highPriceLabel.setLayoutData(createNarrowFormData(highPriceIndicatorTextLabel));
 
-		Label lowPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Lo ");
+		Label lowPriceIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Lo "); //$NON-NLS-1$
 		lowPriceIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		lowPriceIndicatorTextLabel.setLayoutData(createFormData(highPriceLabel));
 
 		lowPriceLabel = getFormToolkit().createLabel(secondRow, null);
 		lowPriceLabel.setLayoutData(createNarrowFormData(lowPriceIndicatorTextLabel));
 
-		Label tradeValueIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Trd ");
+		Label tradeValueIndicatorTextLabel = getFormToolkit().createLabel(secondRow, "Trd "); //$NON-NLS-1$
 		tradeValueIndicatorTextLabel.setForeground(SYSTEM_COLOR_BLUE);
 		tradeValueIndicatorTextLabel.setLayoutData(createFormData(lowPriceLabel));
 
@@ -362,7 +364,7 @@ public class UnderlyingSymbolInfo {
 		for (String str : dateAmountStrings)
 		{
 			dateAmountAsTooltip.append(str);			
-			dateAmountAsTooltip.append("\n");			
+			dateAmountAsTooltip.append("\n");			 //$NON-NLS-1$
 		}					
 		this.exDivDateAmountTextLabel.setToolTipText(dateAmountAsTooltip.toString());
 		this.exDivDateAmount.setToolTipText(dateAmountAsTooltip.toString());

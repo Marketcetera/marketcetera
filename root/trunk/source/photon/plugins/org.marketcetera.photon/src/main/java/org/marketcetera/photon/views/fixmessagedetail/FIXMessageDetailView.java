@@ -27,8 +27,10 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.EclipseUtils;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EventListContentProvider;
 import org.marketcetera.photon.ui.IndexedTableViewer;
@@ -46,9 +48,14 @@ import quickfix.field.MsgType;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.SortedList;
 
-public class FIXMessageDetailView extends ViewPart implements ISelectionListener, IFIXMessageDetail {
+/* $License$ */
 
-	public static final String ID = "org.marketcetera.photon.views.FIXMessageDetailView";
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class FIXMessageDetailView
+    extends ViewPart
+    implements ISelectionListener, IFIXMessageDetail, Messages
+{
+	public static final String ID = "org.marketcetera.photon.views.FIXMessageDetailView"; //$NON-NLS-1$
 
 	private final int MESSAGE_TEXT_WIDTH_HINT = 80;
 
@@ -174,19 +181,17 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 		messageDetailLabel = new Label(messageTextComposite, SWT.WRAP);
 		messageDetailLabel.setBackground(getDefaultOuterParent()
 				.getBackground());
-		messageDetailLabel.setText("Full message:");
+		messageDetailLabel.setText(FULL_MESSAGE_LABEL.getText());
 
 		Button copyRawMessageButton = new Button(messageTextComposite, SWT.FLAT);
-		copyRawMessageButton.setText("Copy Message");
-		copyRawMessageButton
-				.setToolTipText("Copy the raw FIX message below to the clipboard");
+		copyRawMessageButton.setText(COPY_MESSAGE_LABEL.getText());
+		copyRawMessageButton.setToolTipText(COPY_MESSAGE_TOOLTIPS.getText());
 
 		Button copyTableButton = new Button(messageTextComposite, SWT.FLAT);
-		copyTableButton.setText("Copy Table");
-		copyTableButton
-				.setToolTipText("Copy the formatted table above to the clipboard");
+		copyTableButton.setText(COPY_TABLE_LABEL.getText());
+		copyTableButton.setToolTipText(COPY_TABLE_TOOLTIPS.getText());
 
-		messageText = getFormToolkit().createText(messageTextComposite, "",
+		messageText = getFormToolkit().createText(messageTextComposite, "", //$NON-NLS-1$
 				SWT.V_SCROLL | SWT.READ_ONLY | SWT.WRAP | SWT.MULTI);
 		createLayoutDataForMessageDetailComposite(messageDetailLabel,
 				copyRawMessageButton, copyTableButton);
@@ -261,7 +266,7 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 	private String getTableAsFormattedString() {
 		TableItem[] tableItems = messageTable.getItems();
 		if (tableItems == null) {
-			return "";
+			return ""; //$NON-NLS-1$
 		}
 		StringBuilder tableAsString = new StringBuilder();
 		for (TableItem tableItem : tableItems) {
@@ -286,7 +291,7 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 
 	public void showMessage(Message fixMessage) {
 		PhotonPlugin.getMainConsoleLogger().debug(
-				getClass().getName() + ": " + fixMessage);
+				getClass().getName() + ": " + fixMessage); //$NON-NLS-1$
 
 		ArrayList<FIXMessageDetailTableRow> rows = createRowsFromMessage(fixMessage);
 
@@ -325,7 +330,7 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 		FIXDataDictionary fixDictionary = PhotonPlugin.getDefault()
 				.getFIXDataDictionary();
 		
-		String msgType = "";
+		String msgType = ""; //$NON-NLS-1$
 		try { msgType = fixMessage.getHeader().getString(MsgType.FIELD); } catch (Exception ex) { /* do nothing */ }
 
 		// Show all fields that are set on the message.
@@ -356,7 +361,7 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 			DataDictionary dict = fixDictionary.getDictionary();
 
 			String fieldValueActual = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, false).toString();
-			String fieldValueReadable = "";
+			String fieldValueReadable = ""; //$NON-NLS-1$
 			if (dict.hasFieldValue(fieldNumber)){
 				Object fieldValueFromMap = FIXValueExtractor.fieldValueFromMap(map, fieldNumber, dict, true);
 				fieldValueReadable  = (fieldValueFromMap == null) ? fieldValueActual : fieldValueFromMap.toString();
@@ -373,7 +378,7 @@ public class FIXMessageDetailView extends ViewPart implements ISelectionListener
 	}
 	
 	private String getFIXMessageDisplayString(Message fixMessage) {
-		String messageTextStr = "";
+		String messageTextStr = ""; //$NON-NLS-1$
 		if (fixMessage != null) {
 			String fixStr = fixMessage.toString();
 			if (fixStr != null) {

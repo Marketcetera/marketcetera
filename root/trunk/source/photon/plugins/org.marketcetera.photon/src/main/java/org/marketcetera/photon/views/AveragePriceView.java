@@ -14,7 +14,7 @@ import ca.odell.glazedlists.FilterList;
  */
 public class AveragePriceView extends AbstractFIXMessagesView {
 
-	public static final String ID = "org.marketcetera.photon.views.AveragePriceView";
+	public static final String ID = "org.marketcetera.photon.views.AveragePriceView"; //$NON-NLS-1$
 
 	
 	@Override
@@ -27,7 +27,7 @@ public class AveragePriceView extends AbstractFIXMessagesView {
 
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") //$NON-NLS-1$
 	protected FilterList<MessageHolder> getFilterList() {
 		return (FilterList<MessageHolder>) getInput();
 	}

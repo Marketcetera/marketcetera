@@ -4,9 +4,13 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
-public class StartScriptRegistryJob extends Job {
+public class StartScriptRegistryJob
+    extends Job
+    implements Messages
+{
 
 	public StartScriptRegistryJob(String name) {
 		super(name);
@@ -14,7 +18,8 @@ public class StartScriptRegistryJob extends Job {
 
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		monitor.beginTask("Start script registry", 2);
+		monitor.beginTask(START_SCRIPT_REGISTRY.getText(),
+		                  2);
 		try {
 			monitor.worked(1);
 			PhotonPlugin.getDefault().startScriptRegistry();

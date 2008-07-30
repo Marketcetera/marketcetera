@@ -5,6 +5,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 
 /**
@@ -14,18 +15,21 @@ import org.marketcetera.photon.PhotonPlugin;
  * @author gmiller
  * @see ReconnectMarketDataFeedJob#schedule()
  */
-@ClassVersion("$Id$")
-public class ReconnectMarketDataFeedAction extends Action implements IWorkbenchAction {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ReconnectMarketDataFeedAction 
+    extends Action 
+    implements IWorkbenchAction, Messages
+{
 
-	public static final String ID = "org.marketcetera.photon.actions.ReconnectJMSAction";
+	public static final String ID = "org.marketcetera.photon.actions.ReconnectJMSAction"; //$NON-NLS-1$
 	/**
 	 * Create the default instance of ReconnectJMSAction, setting the ID, text,
 	 * tool-tip text, and image to the defaults.
 	 */
 	public ReconnectMarketDataFeedAction(IWorkbenchWindow window){
 		setId(ID);
-		setText("Reconnect &Quote Feed");
-		setToolTipText("Reconnect to the quote feed");
+		setText(RECONNECT_MARKET_DATA_FEED_ACTION.getText());
+		setToolTipText(RECONNECT_MARKET_DATA_FEED_ACTION_DESCRIPTION.getText());
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED));
 	}
 	/**
@@ -42,9 +46,7 @@ public class ReconnectMarketDataFeedAction extends Action implements IWorkbenchA
 	 * 
 	 */
 	public void run() {
-		ReconnectMarketDataFeedJob job = new ReconnectMarketDataFeedJob("Reconnect quote feed");
+		ReconnectMarketDataFeedJob job = new ReconnectMarketDataFeedJob(RECONNECT_QUOTE_FEED.getText());
 		job.schedule();
 	}
-
-	
 }

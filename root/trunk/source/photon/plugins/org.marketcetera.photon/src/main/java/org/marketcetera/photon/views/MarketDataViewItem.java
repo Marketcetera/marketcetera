@@ -49,24 +49,24 @@ public class MarketDataViewItem {
 		BigDecimal oldPxValue = getBidPx();
 		BigDecimal oldSizeValue = getBidSize();
 		this.bidEvent = bidEvent;
-		propertyChangeSupport.firePropertyChange("bidPx", oldPxValue, getBidPx());
-		propertyChangeSupport.firePropertyChange("bidSize", oldSizeValue, getBidSize());
+		propertyChangeSupport.firePropertyChange("bidPx", oldPxValue, getBidPx()); //$NON-NLS-1$
+		propertyChangeSupport.firePropertyChange("bidSize", oldSizeValue, getBidSize()); //$NON-NLS-1$
 	}
 	
 	public void setAskEvent(AskEvent askEvent) {
 		BigDecimal oldPxValue = getOfferPx();
 		BigDecimal oldSizeValue = getOfferSize();
 		this.askEvent = askEvent;
-		propertyChangeSupport.firePropertyChange("offerPx", oldPxValue, getOfferPx());
-		propertyChangeSupport.firePropertyChange("offerSize", oldSizeValue, getOfferSize());
+		propertyChangeSupport.firePropertyChange("offerPx", oldPxValue, getOfferPx()); //$NON-NLS-1$
+		propertyChangeSupport.firePropertyChange("offerSize", oldSizeValue, getOfferSize()); //$NON-NLS-1$
 	}
 	
 	public void setTradeEvent(TradeEvent tradeEvent) {
 		BigDecimal oldPxValue = getLastPx();
 		BigDecimal oldSizeValue = getLastQty();
 		this.tradeEvent = tradeEvent;
-		propertyChangeSupport.firePropertyChange("bidPx", oldPxValue, getLastPx());
-		propertyChangeSupport.firePropertyChange("bidSize", oldSizeValue, getLastQty());
+		propertyChangeSupport.firePropertyChange("bidPx", oldPxValue, getLastPx()); //$NON-NLS-1$
+		propertyChangeSupport.firePropertyChange("bidSize", oldSizeValue, getLastQty()); //$NON-NLS-1$
 	}
 	
 	public void addPropertyChangeListener(String propertyName,

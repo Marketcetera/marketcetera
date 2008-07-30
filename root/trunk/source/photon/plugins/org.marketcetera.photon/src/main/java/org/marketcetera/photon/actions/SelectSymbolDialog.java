@@ -47,7 +47,7 @@ public class SelectSymbolDialog extends Dialog {
 		symbolText = new Text(composite, SWT.BORDER);
 		{
 			GridData gridData = new GridData(SWT.CENTER, SWT.FILL, true, true);
-			Point sizeHint = EclipseUtils.getTextAreaSize(symbolText, "METC",
+			Point sizeHint = EclipseUtils.getTextAreaSize(symbolText, "METC", //$NON-NLS-1$
 					8, 1.0);
 			gridData.widthHint = sizeHint.x;
 			gridData.heightHint = sizeHint.y;

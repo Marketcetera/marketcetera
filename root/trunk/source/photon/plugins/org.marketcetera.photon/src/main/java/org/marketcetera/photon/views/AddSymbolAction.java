@@ -5,20 +5,26 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
 
-public class AddSymbolAction extends Action {
-	private static final String ID = "org.marketcetera.photon.actions.AddSymbolAction";
+public class AddSymbolAction
+    extends Action
+    implements Messages
+{
+	private static final String ID = "org.marketcetera.photon.actions.AddSymbolAction"; //$NON-NLS-1$
 	IMSymbolListener listener;
 	TextContributionItem text;
 	/**
 	 * @param text
 	 */
-	public AddSymbolAction(TextContributionItem text, IMSymbolListener listener) {
-		super("&Set Symbol",AS_PUSH_BUTTON);
+	public AddSymbolAction(TextContributionItem text, IMSymbolListener listener)
+	{
+		super(SET_SYMBOL_LABEL.getText(),
+		      AS_PUSH_BUTTON);
 		setId(ID);
-		setToolTipText("Set Symbol");
+		setToolTipText(SET_SYMBOL_TOOTLTIPS.getText());
 		setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.ADD_SYMBOL));
 
 		this.text = text;
@@ -47,7 +53,7 @@ public class AddSymbolAction extends Action {
 		String theInputString = text.getText();
 		if (isValidInput(theInputString))
 			listener.onAssertSymbol(new MSymbol(text.getText()));
-		text.setText("");
+		text.setText(""); //$NON-NLS-1$
 	}
 	
 }

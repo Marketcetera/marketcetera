@@ -10,6 +10,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.browser.IWebBrowser;
 import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
+import org.marketcetera.photon.Messages;
 
 /**
  * WebHelpAction opens the Marketcetera help site in an external 
@@ -19,18 +20,21 @@ import org.eclipse.ui.browser.IWorkbenchBrowserSupport;
  * @author gmiller
  *
  */
-public class WebHelpAction extends Action implements IWorkbenchAction {
+public class WebHelpAction 
+    extends Action 
+    implements IWorkbenchAction, Messages
+{
 
-	public static final String ID = "org.marketcetera.photon.actions.HelpBrowserAction";
-	private static final String MAIN_HELP_URL = "http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/PhotonGuide";
+	public static final String ID = "org.marketcetera.photon.actions.HelpBrowserAction"; //$NON-NLS-1$
+	private static final String MAIN_HELP_URL = "http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/PhotonGuide"; //$NON-NLS-1$
 	/**
 	 * Create the default instance of HelpBrowserAction, setting the ID, text,
 	 * tool-tip text, and image to the defaults.
 	 */
 	public WebHelpAction(IWorkbenchWindow window){
 		setId(ID);
-		setText("&Help");
-		setToolTipText("Open help in a browser");
+		setText(WEB_HELP_ACTION.getText());
+		setToolTipText(WEB_HELP_ACTION_DESCRIPTION.getText());
 		//setImageDescriptor(PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_JMS_HISTORY));
 	}
 	/**
@@ -58,7 +62,7 @@ public class WebHelpAction extends Action implements IWorkbenchAction {
 				.getBrowserSupport();
 		IWebBrowser browser;
 		try {
-			browser = browserSupport.createBrowser("_blank");
+			browser = browserSupport.createBrowser("_blank"); //$NON-NLS-1$
 			browser.openURL(new URL(MAIN_HELP_URL));
 			
 		} catch (PartInitException e) {

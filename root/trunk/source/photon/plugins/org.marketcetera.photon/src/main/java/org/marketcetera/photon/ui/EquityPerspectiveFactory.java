@@ -19,18 +19,18 @@ import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
-	private static final String LEFT_FOLDER = "leftFolder";
+	private static final String LEFT_FOLDER = "leftFolder"; //$NON-NLS-1$
 
-	private static final String BOTTOM_FOLDER = "bottomFolder";
+	private static final String BOTTOM_FOLDER = "bottomFolder"; //$NON-NLS-1$
 
-	private static final String RIGHT_FOLDER = "rightFolder";
+	private static final String RIGHT_FOLDER = "rightFolder"; //$NON-NLS-1$
 
-	private static final String TOP_FOLDER = "topFolder";
+	private static final String TOP_FOLDER = "topFolder"; //$NON-NLS-1$
 
-	public static final String ID = "org.marketcetera.photon.EquityPerspective";
+	public static final String ID = "org.marketcetera.photon.EquityPerspective"; //$NON-NLS-1$
 
 
 	//IFolderLayout leftFolder;
@@ -60,7 +60,7 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 		
 		bottomFolder = layout.createFolder(BOTTOM_FOLDER, IPageLayout.BOTTOM,
 				0.7f, editorArea);
-		bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW + ":*");
+		bottomFolder.addPlaceholder(IConsoleConstants.ID_CONSOLE_VIEW + ":*"); //$NON-NLS-1$
 		bottomFolder.addView(IConsoleConstants.ID_CONSOLE_VIEW);
 		bottomFolder.addView(AveragePriceView.ID);
 		bottomFolder.addView(FillsView.ID);
@@ -68,7 +68,7 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.5f,
 				editorArea);
-		leftFolder.addPlaceholder(WebBrowserView.ID + ":*");	
+		leftFolder.addPlaceholder(WebBrowserView.ID + ":*");	 //$NON-NLS-1$
 		leftFolder.addView(WebBrowserView.ID);
 		leftFolder.addView(MarketDataView.ID);
 		leftFolder.addPlaceholder(FIXMessageDetailView.ID);
@@ -79,7 +79,7 @@ public class EquityPerspectiveFactory implements IPerspectiveFactory {
 
 		topFolder = layout.createFolder(TOP_FOLDER, IPageLayout.TOP,
 				0.4f, RIGHT_FOLDER);
-		topFolder.addPlaceholder(StockOrderTicketView.ID + ":*");
+		topFolder.addPlaceholder(StockOrderTicketView.ID + ":*"); //$NON-NLS-1$
 		topFolder.addView(StockOrderTicketView.ID);
 
 		

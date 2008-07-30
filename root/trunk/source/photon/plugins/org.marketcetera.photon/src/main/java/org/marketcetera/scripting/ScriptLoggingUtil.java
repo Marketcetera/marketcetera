@@ -23,7 +23,7 @@ public class ScriptLoggingUtil {
 	public static void error(Logger logger, RaiseException targetRaiseException) {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
-			logger.error(""+rubyException);
+			logger.error(""+rubyException); //$NON-NLS-1$
 			String backtraceString = getBacktraceString(rubyException);
 			logger.error(backtraceString);
 		} else {
@@ -53,7 +53,7 @@ public class ScriptLoggingUtil {
 	public static void warn(Logger logger, RaiseException targetRaiseException) {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
-			logger.warn(""+rubyException);
+			logger.warn(""+rubyException); //$NON-NLS-1$
 			String backtraceString = getBacktraceString(rubyException);
 			logger.debug(backtraceString);
 		} else {
@@ -74,7 +74,7 @@ public class ScriptLoggingUtil {
 	public static void info(Logger logger, RaiseException targetRaiseException) {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
-			logger.info(""+rubyException);
+			logger.info(""+rubyException); //$NON-NLS-1$
 			String backtraceString = getBacktraceString(rubyException);
 			logger.debug(backtraceString);
 		} else {
@@ -95,7 +95,7 @@ public class ScriptLoggingUtil {
 	public static void debug(Logger logger, RaiseException targetRaiseException) {
 		RubyException rubyException = targetRaiseException.getException();
 		if (rubyException != null){
-			logger.debug(""+rubyException);
+			logger.debug(""+rubyException); //$NON-NLS-1$
 			String backtraceString = getBacktraceString(rubyException);
 			logger.debug(backtraceString);
 		} else {

@@ -22,8 +22,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.PlatformUI;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.IFieldIdentifier;
 import org.marketcetera.photon.IImageKeys;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.OptionInfoComponent;
 import org.marketcetera.photon.parser.OpenCloseImage;
@@ -62,6 +64,8 @@ import quickfix.field.PutOrCall;
 import quickfix.field.StrikePrice;
 import quickfix.field.Symbol;
 
+/* $License$ */
+
 /**
  * This class implements the view that provides the end user
  * the ability to type in--and graphically interact with--stock option orders.
@@ -72,8 +76,11 @@ import quickfix.field.Symbol;
  * @author gmiller
  *
  */
-public class OptionOrderTicketView extends OrderTicketView {
-
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class OptionOrderTicketView
+    extends OrderTicketView
+    implements Messages
+{
 	private final EnumStringConverterBuilder<Character> orderCapacityConverterBuilder;
 
 	private final EnumStringConverterBuilder<Character> openCloseConverterBuilder;
@@ -84,11 +91,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 
 	private final Image downImage;
 
-	private static final String NEW_OPTION_ORDER = "New Option Order";
-
-	private static final String REPLACE_OPTION_ORDER = "Replace Option Order";
-	
-	public static String ID = "org.marketcetera.photon.views.OptionOrderTicketView";
+	public static String ID = "org.marketcetera.photon.views.OptionOrderTicketView"; //$NON-NLS-1$
 
 
 	/**
@@ -107,7 +110,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 	
 	@Override
 	protected String getXSWTResourceName() {
-		return "/option_order_ticket.xswt";
+		return "/option_order_ticket.xswt"; //$NON-NLS-1$
 	}
 
 
@@ -291,7 +294,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 					SWTObservables.observeText(optionTicket.getUnderlyingLastUpdatedTimeLabel()), 
 					model.getUnderlyingLastUpdated(),
 					new UpdateValueStrategy(UpdateValueStrategy.POLICY_NEVER),
-					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter("HH:mm"))
+					new UpdateValueStrategy().setConverter(new DateToStringCustomConverter("HH:mm")) //$NON-NLS-1$
 			);
 		}
 		{
@@ -347,13 +350,15 @@ public class OptionOrderTicketView extends OrderTicketView {
 	}
 
 	@Override
-	protected String getNewOrderString() {
-		return NEW_OPTION_ORDER;
+	protected String getNewOrderString()
+	{
+		return NEW_OPTION_LABEL.getText();
 	}
 
 	@Override
-	protected String getReplaceOrderString() {
-		return REPLACE_OPTION_ORDER;
+	protected String getReplaceOrderString()
+	{
+		return REPLACE_OPTION_LABEL.getText();
 	}
 	
 	/**
@@ -408,7 +413,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 		try {
 			symbolText.setText(message.getString(Symbol.FIELD));
 		} catch (FieldNotFound ex){
-			symbolText.setText("");
+			symbolText.setText(""); //$NON-NLS-1$
 		}
 		
 		bindMessageValue(
@@ -427,7 +432,10 @@ public class OptionOrderTicketView extends OrderTicketView {
 		// ExpireDate Month
 		{
 			Control whichControl = optionTicket.getExpireMonthCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getExpirationMonthList(), PhotonPlugin.ID, "Value not found", false));
+			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getExpirationMonthList(),
+			                                                                                              PhotonPlugin.ID,
+			                                                                                              VALUE_NOT_FOUND.getText(),
+			                                                                                              false));
 			IValidator modelBeforeSetValidator = new IgnoreFirstNullValidator(new StringRequiredValidator());
 			ISWTObservableValue swtObservable = SWTObservables.observeText(whichControl);
 			Binding binding = bindMessageValue( 
@@ -442,7 +450,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 					new UpdateValueStrategy());
 			bindMessageValue(
 					SWTObservables.observeEnabled(whichControl),
-					BeansObservables.observeValue(model, "orderMessage"),
+					BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 					null,
 					new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 			bindMessageValue(
@@ -456,7 +464,10 @@ public class OptionOrderTicketView extends OrderTicketView {
 		// ExpireDate Year
 		{
 			Control whichControl = optionTicket.getExpireYearCombo();
-			IValidator validator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getExpirationYearList(), PhotonPlugin.ID, "Value not found", false));
+			IValidator validator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getExpirationYearList(),
+			                                                                                PhotonPlugin.ID,
+			                                                                                VALUE_NOT_FOUND.getText(),
+			                                                                                false));
 			ISWTObservableValue swtObservable = SWTObservables.observeText(whichControl);
 			Binding binding = bindMessageValue(
 					swtObservable,
@@ -470,7 +481,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 					new UpdateValueStrategy());
 			bindMessageValue(
 					SWTObservables.observeEnabled(whichControl),
-					BeansObservables.observeValue(model, "orderMessage"),
+					BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 					null,
 					new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 			bindMessageValue(
@@ -485,7 +496,10 @@ public class OptionOrderTicketView extends OrderTicketView {
 		// StrikePrice
 		{
 			Control whichControl = optionTicket.getStrikePriceCombo();
-			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getStrikePriceList(), PhotonPlugin.ID, "Value not found", false));
+			IValidator targetAfterGetValidator = new IgnoreFirstNullValidator(new ObservableListValidator(model.getStrikePriceList(),
+			                                                                                              PhotonPlugin.ID,
+			                                                                                              VALUE_NOT_FOUND.getText(),
+			                                                                                              false));
 			
 			ISWTObservableValue swtObservable = SWTObservables.observeText(whichControl);
 			Binding binding = bindMessageValue(
@@ -501,7 +515,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 					new UpdateValueStrategy());
 			bindMessageValue(
 					SWTObservables.observeEnabled(whichControl),
-					BeansObservables.observeValue(model, "orderMessage"),
+					BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 					null,
 					new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 			bindMessageValue(
@@ -533,7 +547,7 @@ public class OptionOrderTicketView extends OrderTicketView {
 					new UpdateValueStrategy());
 			bindMessageValue(
 					SWTObservables.observeEnabled(whichControl),
-					BeansObservables.observeValue(model, "orderMessage"),
+					BeansObservables.observeValue(model, "orderMessage"), //$NON-NLS-1$
 					null,
 					new UpdateValueStrategy().setConverter(new IsNewOrderMessageConverter()));
 			bindMessageValue(
@@ -682,21 +696,21 @@ public class OptionOrderTicketView extends OrderTicketView {
 	}
 
 	public enum OptionDataColumns implements IFieldIdentifier {
-		ZEROWIDTH(""), 
-		CVOL("cVol", OptionInfoComponent.CALL_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME), 
-		CBIDSZ("cBidSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		CBID("cBid", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		CASK("cAsk", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		CASKSZ("cAskSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		CSYM("cSym", OptionInfoComponent.CALL_EXTRA_INFO, Symbol.FIELD, null, null, null),
-		STRIKE("Strike", OptionInfoComponent.STRIKE_INFO, StrikePrice.FIELD, null, null, null),
-		EXP("Exp", OptionInfoComponent.STRIKE_INFO, MaturityMonthYear.FIELD, null, null, null),
-		PSYM("pSym", OptionInfoComponent.PUT_EXTRA_INFO, Symbol.FIELD, null, null, null),
-		PBIDSZ("pBidSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		PBID("pBid", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		PASK("pAsk", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		PASKSZ("pAskSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER),
-		PVOL("pVol", OptionInfoComponent.PUT_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME);
+		ZEROWIDTH(""),  //$NON-NLS-1$
+		CVOL("cVol", OptionInfoComponent.CALL_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME),  //$NON-NLS-1$
+		CBIDSZ("cBidSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),  //$NON-NLS-1$
+		CBID("cBid", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), //$NON-NLS-1$
+		CASK("cAsk", OptionInfoComponent.CALL_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		CASKSZ("cAskSz", OptionInfoComponent.CALL_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		CSYM("cSym", OptionInfoComponent.CALL_EXTRA_INFO, Symbol.FIELD, null, null, null), //$NON-NLS-1$
+		STRIKE("Strike", OptionInfoComponent.STRIKE_INFO, StrikePrice.FIELD, null, null, null), //$NON-NLS-1$
+		EXP("Exp", OptionInfoComponent.STRIKE_INFO, MaturityMonthYear.FIELD, null, null, null), //$NON-NLS-1$
+		PSYM("pSym", OptionInfoComponent.PUT_EXTRA_INFO, Symbol.FIELD, null, null, null), //$NON-NLS-1$
+		PBIDSZ("pBidSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),  //$NON-NLS-1$
+		PBID("pBid", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), //$NON-NLS-1$
+		PASK("pAsk", OptionInfoComponent.PUT_MARKET_DATA, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		PASKSZ("pAskSz", OptionInfoComponent.PUT_MARKET_DATA, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), //$NON-NLS-1$
+		PVOL("pVol", OptionInfoComponent.PUT_EXTRA_INFO, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE_VOLUME); //$NON-NLS-1$
 
 
 		private String name;
