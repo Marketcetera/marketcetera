@@ -111,7 +111,7 @@
       <dependency>
         <groupId>commons-i18n</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>[20080514]</version>
+        <version>[20080730]</version>
       </dependency>
       <dependency>
         <groupId>commons-csv</groupId>
