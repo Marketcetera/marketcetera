@@ -7,8 +7,8 @@ import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.file.CloseableRegistry;
+import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -151,7 +151,7 @@ public class AuthenticationSystemTest
     public void setupAuthenticationSystemTest()
     {
         setLevel(TEST_CATEGORY,Level.ERROR);
-        I18NMessageProvider.setLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.US);
     }
 
 
