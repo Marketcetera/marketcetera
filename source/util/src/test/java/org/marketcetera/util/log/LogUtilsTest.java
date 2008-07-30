@@ -50,34 +50,34 @@ public class LogUtilsTest
              LogUtils.getSimpleMessage(provider,TestMessages.LOG_MSG,"a",null));
 
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ()",
              LogUtils.getSimpleMessage(TestMessages.LOG_MSG));
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ([null])",
              LogUtils.getSimpleMessage(TestMessages.LOG_MSG,(Object)null));
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ([null])",
              LogUtils.getSimpleMessage(TestMessages.LOG_MSG,(Object[])null));
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ('a',[null])",
              LogUtils.getSimpleMessage(TestMessages.LOG_MSG,"a",null));
 
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ([null])",
              LogUtils.getSimpleMessage
              (new I18NBoundMessage1P(TestMessages.LOG_MSG,(Object)null)));
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ([null])",
              LogUtils.getSimpleMessage
              (new I18NBoundMessage1P(TestMessages.LOG_MSG,(Object[])null)));
         assertEquals
-            ("provider 'log_test'; id 'log'; entry 'msg'; "+
+            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ('a')",
              LogUtils.getSimpleMessage
              (new I18NBoundMessage1P(TestMessages.LOG_MSG,"a")));
