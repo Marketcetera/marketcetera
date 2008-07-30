@@ -20,6 +20,7 @@ public class FileDecoderFileTest
     {
         return decode(new ReaderCreator()
             {
+                @Override
                 public UnicodeFileReader create()
                     throws Exception
                 {
@@ -36,6 +37,7 @@ public class FileDecoderFileTest
     {
         return decode(new ReaderCreator()
             {
+                @Override
                 public UnicodeFileReader create()
                     throws Exception
                 {
@@ -53,6 +55,7 @@ public class FileDecoderFileTest
     {
         return decode(new ReaderCreator()
             {
+                @Override
                 public UnicodeFileReader create()
                     throws Exception
                 {

@@ -60,6 +60,7 @@ public class MemoryEncoderTest
     {
         return encode(new WriterCreator()
             {
+                @Override
                 public UnicodeOutputStreamWriter create
                     (OutputStream os)
                 {
@@ -76,6 +77,7 @@ public class MemoryEncoderTest
     {
         return encode(new WriterCreator()
             {
+                @Override
                 public UnicodeOutputStreamWriter create
                     (OutputStream os)
                 {
@@ -93,6 +95,7 @@ public class MemoryEncoderTest
     {
         return encode(new WriterCreator()
             {
+                @Override
                 public UnicodeOutputStreamWriter create
                     (OutputStream os)
                     throws Exception
