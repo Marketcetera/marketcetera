@@ -9,7 +9,7 @@ import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.marketdata.MarketDataFeedTestSuite;
 
@@ -55,12 +55,12 @@ public class MessageTranslatorBaseTest
         super.setUp();
         mTranslator = new IMessageTranslator<Object>() {
             public Object translate(Message inMessage)
-                    throws MarketceteraException
+                    throws CoreException
             {
                 return null;
             }
             public Message asMessage(Object inData)
-                    throws MarketceteraException
+                    throws CoreException
             {
                 return null;
             }
@@ -95,8 +95,8 @@ public class MessageTranslatorBaseTest
                 AbstractMessageTranslator.getSymbol(null);
             }
         }.run();
-        MSymbol google = new MSymbol("GOOG");
-        MSymbol msoft = new MSymbol("MSFT");
+        MSymbol google = new MSymbol("GOOG"); //$NON-NLS-1$
+        MSymbol msoft = new MSymbol("MSFT"); //$NON-NLS-1$
         Message message = MarketDataFeedTestSuite.generateFIXMessage(Arrays.asList(new MSymbol[] { google, msoft }));
         List<Group> groups = AbstractMessageTranslator.getGroups(message);
         assertEquals(2,

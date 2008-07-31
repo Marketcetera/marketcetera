@@ -5,6 +5,7 @@ Bundle-SymbolicName: org.marketcetera.util
 Bundle-Version: 0.5.0
 Bundle-ClassPath: util-0.5.0.jar
 Bundle-Vendor: Marketcetera, Inc.
+Eclipse-RegisterBuddy: org.marketcetera.core
 Require-Bundle: org.slf4j,
  org.apache.commons.lang,
  org.marketcetera.core,

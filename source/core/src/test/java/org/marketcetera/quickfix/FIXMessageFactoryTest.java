@@ -23,17 +23,17 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
 	public static Test suite() {
 		return new FIXVersionTestSuite(FIXMessageFactoryTest.class, FIXVersion.values(), 
-                new HashSet<String>(Arrays.asList("testNewBusinessMessageReject")), FIXVersionTestSuite.FIX42_PLUS_VERSIONS);
+                new HashSet<String>(Arrays.asList("testNewBusinessMessageReject")), FIXVersionTestSuite.FIX42_PLUS_VERSIONS); //$NON-NLS-1$
 	}
 	
 	public void testNewLimitOrder() throws FieldNotFound {
-        String clOrderID = "1";
+        String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        MSymbol symbol = new MSymbol("MRKT");
+        MSymbol symbol = new MSymbol("MRKT"); //$NON-NLS-1$
         BigDecimal price = BigDecimal.ONE;
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
-        String account = "ASDF";
+        String account = "ASDF"; //$NON-NLS-1$
 
         Message limitOrder = this.msgFactory.newLimitOrder(clOrderID, side, quantity, symbol, price, timeInForce, account);
 
@@ -48,12 +48,12 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
     }
 
 	public void testNewMarketOrder() throws FieldNotFound {
-        String clOrderID = "1";
+        String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        MSymbol symbol = new MSymbol("MRKT");
+        MSymbol symbol = new MSymbol("MRKT"); //$NON-NLS-1$
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
-        String account = "ASDF";
+        String account = "ASDF"; //$NON-NLS-1$
 
         Message marketOrder = this.msgFactory.newMarketOrder(clOrderID, side, quantity, symbol, timeInForce, account);
 
@@ -81,15 +81,15 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
      */
     public void testNewOrderCancelReject_escapesSOH() throws Exception {
         Message basicOrder = msgFactory.newBasicOrder();
-		Message reject = msgFactory.newOrderCancelReject(new OrderID("35"), new ClOrdID("36"), new OrigClOrdID("37"),
+		Message reject = msgFactory.newOrderCancelReject(new OrderID("35"), new ClOrdID("36"), new OrigClOrdID("37"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 basicOrder.toString(), new CxlRejReason(CxlRejReason.UNKNOWN_ORDER));
-        assertTrue("reject doesn't contain |:" +reject.toString(), reject.toString().indexOf(FIXMessageFactory.SOH_REPLACE_CHAR) != -1);
+        assertTrue("reject doesn't contain |:" +reject.toString(), reject.toString().indexOf(FIXMessageFactory.SOH_REPLACE_CHAR) != -1); //$NON-NLS-1$
         assertNotNull(new Message(reject.toString()));
     }
 
     public void testNewOrderCancelReject() throws Exception {
         Message basicOrder = msgFactory.newBasicOrder();
-		Message reject = msgFactory.newOrderCancelReject(new OrderID("bob"), new ClOrdID("36"), new OrigClOrdID("37"),
+		Message reject = msgFactory.newOrderCancelReject(new OrderID("bob"), new ClOrdID("36"), new OrigClOrdID("37"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 basicOrder.toString(), new CxlRejReason(CxlRejReason.UNKNOWN_ORDER));
         assertTrue(reject.isSetField(CxlRejReason.FIELD));
         assertNotNull(new Message(reject.toString()));
@@ -109,22 +109,22 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
     	assertEquals(10, rr.getInt(BeginSeqNo.FIELD));
     	assertEquals(0, rr.getInt(EndSeqNo.FIELD));
-    	rr = msgFactory.newResendRequest(new BigInteger("24"), new BigInteger("38"));
+    	rr = msgFactory.newResendRequest(new BigInteger("24"), new BigInteger("38")); //$NON-NLS-1$ //$NON-NLS-2$
     	assertEquals(MsgType.RESEND_REQUEST, rr.getHeader().getString(MsgType.FIELD));
     	assertEquals(24, rr.getInt(BeginSeqNo.FIELD));
     	assertEquals(38, rr.getInt(EndSeqNo.FIELD));
     }
 
     public void testNewBusinessMessageReject() throws Exception {
-        Message msg = msgFactory.newBusinessMessageReject(MsgType.BID_REQUEST, BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, "bob");
+        Message msg = msgFactory.newBusinessMessageReject(MsgType.BID_REQUEST, BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, "bob"); //$NON-NLS-1$
         assertEquals(MsgType.BUSINESS_MESSAGE_REJECT, msg.getHeader().getString(MsgType.FIELD));
         assertEquals(BusinessRejectReason.UNSUPPORTED_MESSAGE_TYPE, msg.getInt(BusinessRejectReason.FIELD));
-        assertEquals("bob", msg.getString(Text.FIELD));
+        assertEquals("bob", msg.getString(Text.FIELD)); //$NON-NLS-1$
     }
 
     // Verify that LOC is preserved to the Cancel/Replace from buy order
     public void testNewCancelReplaceFromMessage_withLOC() throws Exception {
-        Message buy = FIXMessageUtilTest.createNOS("IBM", new BigDecimal("85.84"), new BigDecimal("100"), Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("IBM", new BigDecimal("85.84"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         // make it "On close" order - and the augmentor will translate it appropriately
         buy.setField(new TimeInForce(TimeInForce.AT_THE_CLOSE));
         buy = fixVersion.getMessageFactory().getMsgAugmentor().newOrderSingleAugment(buy);
@@ -133,7 +133,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
 
         Message replace = msgFactory.newCancelReplaceFromMessage(buy);
 
-        assertEquals("ord types different", oldOrdType, replace.getChar(OrdType.FIELD));
-        assertEquals("TIF different", oldTIF, replace.getChar(TimeInForce.FIELD));
+        assertEquals("ord types different", oldOrdType, replace.getChar(OrdType.FIELD)); //$NON-NLS-1$
+        assertEquals("TIF different", oldTIF, replace.getChar(TimeInForce.FIELD)); //$NON-NLS-1$
     }
 }

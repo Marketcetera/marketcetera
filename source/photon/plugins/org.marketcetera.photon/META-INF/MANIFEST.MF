@@ -39,7 +39,7 @@ Require-Bundle: org.apache.activemq;visibility:=reexport,
  org.eclipse.ui.net,
  org.eclipse.core.databinding.beans,
  com.swtworkbench.community.xswt,
- org.marketcetera.util
+ org.marketcetera.util;visibility:=reexport
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,

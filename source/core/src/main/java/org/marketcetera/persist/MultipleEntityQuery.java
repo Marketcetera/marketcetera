@@ -30,7 +30,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class MultipleEntityQuery
         extends QueryBase {
     /**
@@ -274,8 +274,8 @@ public abstract class MultipleEntityQuery
         //escape the escape char.
         filter = filter.replace(ESCAPE_STRING, ESCAPE_STRING + ESCAPE_STRING);
         //escape the filter chars
-        filter = filter.replace("_", ESCAPE_STRING + "_");
-        filter = filter.replace("%", ESCAPE_STRING + "%");
+        filter = filter.replace("_", ESCAPE_STRING + "_"); //$NON-NLS-1$ //$NON-NLS-2$
+        filter = filter.replace("%", ESCAPE_STRING + "%"); //$NON-NLS-1$ //$NON-NLS-2$
         //convert user patterns to JPQL
         filter = filter.replace(StringFilter.MATCH_ONE,'_');
         filter = filter.replace(StringFilter.MATCH_MANY,'%');
@@ -300,13 +300,13 @@ public abstract class MultipleEntityQuery
     /**
      * The escape char for like expressions.
      */
-    private static final String ESCAPE_STRING = "+";
+    private static final String ESCAPE_STRING = "+"; //$NON-NLS-1$
     /**
      * The suffix used for filter paramter names
      */
-    private static final String FILTER_SUFFIX = "Filter";
+    private static final String FILTER_SUFFIX = "Filter"; //$NON-NLS-1$
     /**
      * The entity alias used for all queries
      */
-    protected static final String ENTITY_ALIAS = "e";
+    protected static final String ENTITY_ALIAS = "e"; //$NON-NLS-1$
 }

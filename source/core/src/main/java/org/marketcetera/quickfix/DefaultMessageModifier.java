@@ -1,9 +1,9 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -21,12 +21,12 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DefaultMessageModifier implements MessageModifier {
-    private static final String ADMIN_MODIFIER_KEY = "ADMIN";
-    private static final String APP_MODIFIER_KEY = "APP";
-    private static final String GLOBAL_MODIFIER_KEY = "*";
-    private static final String PARSER_REGEX = "([0-9]+)(\\((\\*|[0-9a-z]|admin|app)\\))?";
+    private static final String ADMIN_MODIFIER_KEY = "ADMIN"; //$NON-NLS-1$
+    private static final String APP_MODIFIER_KEY = "APP"; //$NON-NLS-1$
+    private static final String GLOBAL_MODIFIER_KEY = "*"; //$NON-NLS-1$
+    private static final String PARSER_REGEX = "([0-9]+)(\\((\\*|[0-9a-z]|admin|app)\\))?"; //$NON-NLS-1$
     private static final Pattern DEFAULT_FIELDS_PATTERN = Pattern.compile(PARSER_REGEX, Pattern.CASE_INSENSITIVE);
 
     class MessageModifier {
@@ -88,19 +88,19 @@ public class DefaultMessageModifier implements MessageModifier {
         messageModifiers = new HashMap<String, MessageModifier>();
     }
 
-    public void setMsgFields(Map<String, String> fields) throws MarketceteraException {
+    public void setMsgFields(Map<String, String> fields) throws CoreException {
         setFieldsHelper(fields, MessageFieldType.MESSAGE);
     }
 
-    public void setHeaderFields(Map<String, String> fields) throws MarketceteraException {
+    public void setHeaderFields(Map<String, String> fields) throws CoreException {
         setFieldsHelper(fields, MessageFieldType.HEADER);
     }
 
-    public void setTrailerFields(Map<String, String> fields) throws MarketceteraException {
+    public void setTrailerFields(Map<String, String> fields) throws CoreException {
         setFieldsHelper(fields, MessageFieldType.TRAILER);
     }
 
-    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws CoreException {
         String msgType = null;
         boolean modified = false;
 
@@ -164,7 +164,7 @@ public class DefaultMessageModifier implements MessageModifier {
      * @param fields    Map of key-value pairs
      * @param fieldType       Which particular kind of field we are modifying: trailer/header/message
      */
-    protected void setFieldsHelper(Map<String, String> fields, DefaultMessageModifier.MessageFieldType fieldType) throws MarketceteraException {
+    protected void setFieldsHelper(Map<String, String> fields, DefaultMessageModifier.MessageFieldType fieldType) throws CoreException {
         Set<String> keys = fields.keySet();
         for (String oneKey : keys) {
             String value = fields.get(oneKey);
@@ -179,7 +179,7 @@ public class DefaultMessageModifier implements MessageModifier {
                 }
                 addDefaultField(fieldID, value, fieldType, predicate);
             } else {
-                throw new MarketceteraException(MessageKey.ORDER_MODIFIER_WRONG_FIELD_FORMAT.getLocalizedMessage(oneKey));
+                throw new CoreException(new I18NBoundMessage1P(Messages.ORDER_MODIFIER_WRONG_FIELD_FORMAT, oneKey));
             }
         }
     }

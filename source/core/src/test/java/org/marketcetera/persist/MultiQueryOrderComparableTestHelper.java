@@ -12,7 +12,7 @@ import java.util.Comparator;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class MultiQueryOrderComparableTestHelper<C extends EntityBase,
         S extends SummaryEntityBase,
         T extends Comparable<T>>

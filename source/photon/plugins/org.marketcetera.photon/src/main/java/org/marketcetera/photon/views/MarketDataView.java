@@ -20,7 +20,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedStatus;
@@ -566,7 +566,7 @@ public class MarketDataView
 				                             this));
 				getMessagesViewer().refresh();
 			}
-		} catch (MarketceteraException e) {
+		} catch (CoreException e) {
 		    e.printStackTrace();
 			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 		}

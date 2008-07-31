@@ -2,11 +2,11 @@ package org.marketcetera.ors.mbeans;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.ors.Messages;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.IQuickFIXSender;
-import org.marketcetera.ors.ORSMessageKey;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Message;
 import quickfix.SessionID;
@@ -20,7 +20,7 @@ import quickfix.field.*;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSAdmin implements ORSAdminMBean {
     protected IQuickFIXSender quickFIXSender;
     private FIXMessageFactory fixMessageFactory;
@@ -34,15 +34,13 @@ public class ORSAdmin implements ORSAdminMBean {
         try {
             this.idFactory.init();
         } catch (Exception ex) {
-            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error initializing the ID factory", ex, this); }
+            SLF4JLoggerProxy.debug(this, ex, "Error initializing the ID Factory"); //$NON-NLS-1$
             // ignore the exception - should get the in-memory id factory instead
         }
     }
 
     public void sendPasswordReset(String senderCompID, String targetCompID, String oldPassword, String newPassword) {
-        if (LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Trade session halted, resetting password", this);
-        }
+        SLF4JLoggerProxy.debug(this, "Trade session halted, resetting password"); //$NON-NLS-1$
         SessionID session = new SessionID(fixMessageFactory.getBeginString(), senderCompID,  targetCompID);
         Message msg = fixMessageFactory.createMessage(MsgType.USER_REQUEST);
         // in case of Currenex that uses FIX.4.2 right message won't be created to set the type manually
@@ -66,8 +64,8 @@ public class ORSAdmin implements ORSAdminMBean {
         try {
             return idFactory.getNext();
         } catch(NoMoreIDsException ex) {
-            LoggerAdapter.error(ORSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
-            return "ZZ-INTERNAL";
+            Messages.ERROR_GENERATING_EXEC_ID.error(this, ex.getMessage());
+            return "ZZ-INTERNAL"; //$NON-NLS-1$
         }
     }
 }

@@ -136,7 +136,7 @@ public class MarketDataFeedTestBase
             }
             Thread.sleep(100);
         }
-        fail("Condition not reached in 60s");
+        fail("Condition not reached in 60s"); //$NON-NLS-1$
     }
     /**
      * Waits until the given subscriber receives a publication.

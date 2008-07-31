@@ -10,8 +10,8 @@ import java.util.Set;
  * of the system.
  */
 @Entity
-@Table(name = "test_group",
-        uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
+@Table(name = "test_group", //$NON-NLS-1$
+        uniqueConstraints={@UniqueConstraint(columnNames={"name"})}) //$NON-NLS-1$
 public class Group extends NDEntityBase implements SummaryGroup {
     private static final long serialVersionUID = 3166790225173409322L;
 
@@ -21,7 +21,7 @@ public class Group extends NDEntityBase implements SummaryGroup {
      * @return The set of users of users that are a member of this group.
      */
     @ManyToMany(targetEntity = User.class)
-    @JoinTable(name = "test_group_user")
+    @JoinTable(name = "test_group_user") //$NON-NLS-1$
     public Set<SummaryUser> getUsers() {
         return users;
     }
@@ -41,7 +41,7 @@ public class Group extends NDEntityBase implements SummaryGroup {
      * @return the set of authorizations assigned to this group
      */
     @ManyToMany
-    @JoinTable(name = "test_group_auth")
+    @JoinTable(name = "test_group_auth") //$NON-NLS-1$
     public Set<Authorization> getAuthorizations() {
         return authorizations;
     }
@@ -78,16 +78,16 @@ public class Group extends NDEntityBase implements SummaryGroup {
     /**
      * The entity name as is used in various JPQL Queries
      */
-    static final String ENTITY_NAME = "Group";
+    static final String ENTITY_NAME = "Group"; //$NON-NLS-1$
 
     /**
      * The attribute name for user relations
      */
-    static final String ATTRIBUTE_USER = "users";
+    static final String ATTRIBUTE_USER = "users"; //$NON-NLS-1$
     /**
      * The attribute name for authorization relations
      */
-    static final String ATTRIBUTE_AUTH = "authorizations";
+    static final String ATTRIBUTE_AUTH = "authorizations"; //$NON-NLS-1$
 
     private Set<SummaryUser> users;
     private Set<Authorization> authorizations;

@@ -10,7 +10,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CustomFIXFieldConstants {
     public static final char  SUBSCRIPTION_REQUEST_TYPE_HISTORICAL = '3';
     public static final char  SUBSCRIPTION_REQUEST_TYPE_HISTORICAL_PLUS_UPDATES = '4';

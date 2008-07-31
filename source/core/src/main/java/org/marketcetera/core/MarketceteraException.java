@@ -4,7 +4,7 @@ package org.marketcetera.core;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraException extends Exception
 {
     private static final long serialVersionUID=1L;

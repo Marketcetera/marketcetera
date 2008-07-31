@@ -18,7 +18,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.EventLogFactory;
@@ -336,7 +336,7 @@ public class MarketceteraFeed
 	}
 	private MarketceteraFeed(String inProviderName,
 	                         MarketceteraFeedCredentials inCredentials) 
-	    throws URISyntaxException, MarketceteraException
+	    throws URISyntaxException, CoreException
 	{
 	    super(FeedType.UNKNOWN,
 	          inProviderName,
@@ -351,7 +351,7 @@ public class MarketceteraFeed
         }
         URI feedURI = new URI(url);
         if ((serverPort = feedURI.getPort()) < 0){
-            throw new MarketceteraException(URI_MISSING_PORT.getText());
+            throw new CoreException(URI_MISSING_PORT);
         }
         server = feedURI.getHost();
         String senderCompID = inCredentials.getSenderCompID();
@@ -362,7 +362,7 @@ public class MarketceteraFeed
         String targetCompID = inCredentials.getTargetCompID();
         String scheme;
         if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ) {
-            throw new MarketceteraException(UNSUPPORTED_FIX_VERSION.getText());
+            throw new CoreException(UNSUPPORTED_FIX_VERSION);
         } else {
             sessionID = new SessionID(scheme, 
                                       senderCompID, 
@@ -383,12 +383,12 @@ public class MarketceteraFeed
      * @param inProviderName a <code>String</code> value
      * @param inCredentials a <code>MarketceteraFeedCredentials</code> value
      * @return a <code>MarketceteraFeed</code> value
-     * @throws MarketceteraException 
+     * @throws CoreException 
      * @throws URISyntaxException 
      */
     public static MarketceteraFeed getInstance(String inProviderName,
                                                MarketceteraFeedCredentials inCredentials)
-        throws URISyntaxException, MarketceteraException
+        throws URISyntaxException, CoreException
     {
         if(sInstance != null) {
             return sInstance;

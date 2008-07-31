@@ -8,7 +8,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class SingleNDEntityQuery
         extends SingleEntityQuery {
     private static final long serialVersionUID = -1480564878674121720L;

@@ -17,7 +17,7 @@ import java.sql.Clob;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 abstract class JPAVendor {
 
     /**

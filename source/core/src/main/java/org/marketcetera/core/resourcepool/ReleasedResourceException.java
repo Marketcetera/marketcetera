@@ -1,6 +1,6 @@
 package org.marketcetera.core.resourcepool;
 
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * Indicates an exception thrown when a {@link Resource} was returned to a {@link ResourcePool} and subsequently released.
@@ -18,19 +18,9 @@ public class ReleasedResourceException
     /**
      * Create a new ReleasedResourceException instance.
      */
-    public ReleasedResourceException(String inMessage)
+    public ReleasedResourceException(I18NBoundMessage inMessage)
     {
         super(inMessage);
-    }
-
-    /**
-     * Create a new ReleasedResourceException instance.
-     */
-    public ReleasedResourceException(String inMsg,
-                                     Throwable inNested)
-    {
-        super(inMsg,
-              inNested);
     }
 
     /**
@@ -44,18 +34,10 @@ public class ReleasedResourceException
     /**
      * Create a new ReleasedResourceException instance.
      */
-    public ReleasedResourceException(MessageKey inKey)
+    public ReleasedResourceException(Throwable inNested,
+                                     I18NBoundMessage inMessage)
     {
-        super(inKey);
-    }
-
-    /**
-     * Create a new ReleasedResourceException instance.
-     */
-    public ReleasedResourceException(MessageKey inKey,
-                                     Throwable inNested)
-    {
-        super(inKey,
-              inNested);
+        super(inNested,
+              inMessage);
     }
 }

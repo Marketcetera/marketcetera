@@ -14,7 +14,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class TransactionRequiredException extends PersistenceException {
     private static final long serialVersionUID = 6215041377436947873L;
 

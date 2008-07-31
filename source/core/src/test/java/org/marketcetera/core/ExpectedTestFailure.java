@@ -17,7 +17,7 @@ import junit.framework.Assert;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class ExpectedTestFailure
 {
     private String mContains;
@@ -48,7 +48,7 @@ public abstract class ExpectedTestFailure
             validateError(error);
             return error;
         }
-        Assert.fail("Expected an error but no exception was thrown");
+        Assert.fail("Expected an error but no exception was thrown"); //$NON-NLS-1$
         return null;
     }
 
@@ -66,15 +66,15 @@ public abstract class ExpectedTestFailure
     {
         if ((mThrowable!=null) &&
             (!mThrowable.isAssignableFrom(inError.getClass()))) {
-            Assert.fail("Thrown throwable was of the wrong class: "+
-                        inError.getClass()+": "+inError);
+            Assert.fail("Thrown throwable was of the wrong class: "+ //$NON-NLS-1$
+                        inError.getClass()+": "+inError); //$NON-NLS-1$
         }
         if ((mContains!=null) &&
             (((inError.getMessage()==null) ||
              (inError.getMessage().indexOf(mContains)==-1))) &&
             (inError.toString().indexOf(mContains) == -1)) {
-            Assert.fail("Thrown throwable contained incorrect message: "+
-                        inError.getMessage()+": "+inError);
+            Assert.fail("Thrown throwable contained incorrect message: "+ //$NON-NLS-1$
+                        inError.getMessage()+": "+inError); //$NON-NLS-1$
         }
     }
 }

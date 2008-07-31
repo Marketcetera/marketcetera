@@ -2,7 +2,7 @@ package org.marketcetera.event;
 
 import java.util.List;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 
 /**
  * Translates to and from {@link EventBase} format.
@@ -22,10 +22,10 @@ public interface IEventTranslator
      * @return a <code>List&lt;EventBase&gt;</code> value
      * @throws UnsupportedEventException if the object cannot be translated to an object
      *   of type <code>EventBase</code>
-     * @throws MarketceteraException if another error occurs
+     * @throws CoreException if another error occurs
      */
     public List<EventBase> translate(Object inData)
-        throws MarketceteraException;
+        throws CoreException;
     
     /**
      * Translates from <code>EventBase</code> format to a format specified by the implementer.
@@ -41,8 +41,8 @@ public interface IEventTranslator
      *
      * @param inEvent an <code>EventBase</code> value
      * @return an <code>Object</code> value
-     * @throws MarketceteraException
+     * @throws CoreException
      */
     public Object translate(EventBase inEvent)
-        throws MarketceteraException;
+        throws CoreException;
 }

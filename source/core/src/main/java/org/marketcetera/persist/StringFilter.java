@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class StringFilter implements Serializable {
     private static final long serialVersionUID = 5764655491804375079L;
 
@@ -65,8 +65,8 @@ public class StringFilter implements Serializable {
     public static final char MATCH_MANY = '*';
 
     public String toString() {
-        return "StringFilter{" +
-                "value='" + value + '\'' +
+        return "StringFilter{" + //$NON-NLS-1$
+                "value='" + value + '\'' + //$NON-NLS-1$
                 '}';
     }
 
@@ -74,7 +74,7 @@ public class StringFilter implements Serializable {
      * Allow for letters, digits, space, ? & & chars
      */
     static final Pattern VALIDATOR =
-            Pattern.compile("^[\\p{L}\\p{Nd}\\?\\* ]+$");
+            Pattern.compile("^[\\p{L}\\p{Nd}\\?\\* ]+$"); //$NON-NLS-1$
 
     private final String value;
 }

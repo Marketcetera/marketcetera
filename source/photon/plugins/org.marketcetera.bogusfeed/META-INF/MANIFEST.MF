@@ -8,5 +8,6 @@ Bundle-Localization: plugin
 Eclipse-RegisterBuddy: org.marketcetera.photon
 Require-Bundle: org.quickfixj,
  net.java.dev.glazedlists,
- org.marketcetera.photon
+ org.marketcetera.photon,
+ org.marketcetera.util;visibility:=reexport
 Export-Package: org.marketcetera.bogusfeed

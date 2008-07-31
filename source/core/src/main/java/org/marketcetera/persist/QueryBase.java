@@ -47,7 +47,7 @@ import java.sql.Time;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class QueryBase implements Serializable {
     private static final long serialVersionUID = -6252792163564112540L;
 
@@ -249,7 +249,7 @@ public abstract class QueryBase implements Serializable {
         //Now that we have the query string ready, create
         //the query.
         String s = queryString.toString();
-        SLF4JLoggerProxy.debug(this,"Creating Query {}",s);
+        SLF4JLoggerProxy.debug(this,"Creating Query {}",s); //$NON-NLS-1$
         Query query = em.createQuery(s);
 
         //Set the query parameters.
@@ -320,7 +320,7 @@ public abstract class QueryBase implements Serializable {
         //Let subclasses set any parameters if they want
         preSetParameters(q);
         if(!queryParameters.isEmpty()) {
-            SLF4JLoggerProxy.debug(this,"Setting Query Parameters {}",
+            SLF4JLoggerProxy.debug(this,"Setting Query Parameters {}", //$NON-NLS-1$
                     queryParameters.toString());
             for (Map.Entry<String,Object> e: queryParameters.entrySet()) {
                 if(e.getValue() instanceof Date ||

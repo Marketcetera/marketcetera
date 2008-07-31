@@ -20,7 +20,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class PersistenceException extends I18NException {
     private static final long serialVersionUID = 6786276875783517667L;
 

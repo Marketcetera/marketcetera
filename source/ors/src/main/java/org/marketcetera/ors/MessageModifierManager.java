@@ -1,7 +1,7 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.MessageModifier;
 import org.marketcetera.quickfix.TransactionTimeInsertMessageModifier;
@@ -19,7 +19,7 @@ import java.util.List;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageModifierManager {
     private List<MessageModifier> messageModifiers;
     private FIXMessageFactory msgFactory;
@@ -34,7 +34,7 @@ public class MessageModifierManager {
     }
 
     /** Apply all the order modifiers to this message */
-    protected void modifyMessage(Message inMessage) throws MarketceteraException
+    protected void modifyMessage(Message inMessage) throws CoreException
     {
         for (MessageModifier oneModifier : messageModifiers) {
             oneModifier.modifyMessage(inMessage, msgFactory.getMsgAugmentor());

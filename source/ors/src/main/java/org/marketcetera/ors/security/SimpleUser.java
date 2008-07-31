@@ -25,13 +25,13 @@ import java.io.UnsupportedEncodingException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 @Entity
 @Table(
-        name = "ors_users",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})}
+        name = "ors_users", //$NON-NLS-1$
+        uniqueConstraints = {@UniqueConstraint(columnNames = {"name"})} //$NON-NLS-1$
 )
-@AttributeOverride(name = "name", column = @Column(nullable = false))
+@AttributeOverride(name = "name", column = @Column(nullable = false)) //$NON-NLS-1$
 public class SimpleUser extends NDEntityBase {
     private static final long serialVersionUID = -244334398553751199L;
 
@@ -221,7 +221,7 @@ public class SimpleUser extends NDEntityBase {
         try {
             MessageDigest dig = digest.get();
             for(char[] c:value) {
-                dig.update(new String(c).getBytes("UTF-16"));
+                dig.update(new String(c).getBytes("UTF-16")); //$NON-NLS-1$
             }
             return new BigInteger(dig.digest()).toString(Character.MAX_RADIX);
         } catch (UnsupportedEncodingException e) {
@@ -236,11 +236,11 @@ public class SimpleUser extends NDEntityBase {
             new ThreadLocal<MessageDigest>(){
         protected MessageDigest initialValue() {
             try {
-                return MessageDigest.getInstance("SHA1");
+                return MessageDigest.getInstance("SHA1"); //$NON-NLS-1$
             } catch (NoSuchAlgorithmException e) {
                 throw new IllegalArgumentException(e);
             }
         }
     };
-    static final String ENTITY_NAME = "SimpleUser";
+    static final String ENTITY_NAME = "SimpleUser"; //$NON-NLS-1$
 }

@@ -20,11 +20,11 @@ import org.apache.log4j.PropertyConfigurator;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class LoggerAdapter extends Logger
 {
     private static LoggerAdapter sLogger;
-    public static String LOGGER_CONF_FILE = "log4j.properties";
+    public static String LOGGER_CONF_FILE = "log4j.properties"; //$NON-NLS-1$
     public static final int LOGGER_WATCH_DELAY = 20*1000;
 
     private static final String WRAPPER_FQCN = LoggerAdapter.class.getName();
@@ -149,7 +149,7 @@ public class LoggerAdapter extends Logger
     private static Logger getMyLogger(Object inCategory)
     {
         if(inCategory == null) {
-            return getLogger("");
+            return getLogger(""); //$NON-NLS-1$
         } else if (inCategory instanceof String) {
             return getLogger((String)inCategory);
         } else if(inCategory instanceof Class) {

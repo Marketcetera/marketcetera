@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class QueryProcessor<R>
         implements Serializable {
     private static final long serialVersionUID = -4913206891375564352L;

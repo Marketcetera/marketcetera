@@ -5,9 +5,7 @@ import java.util.Iterator;
 import java.util.regex.Pattern;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
 
 import quickfix.DataDictionary;
@@ -50,12 +48,12 @@ import quickfix.field.UserRequestID;
  * @author gmiller
  *         $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageUtil {
 
     private static final String LOGGER_NAME = FIXMessageUtil.class.getName();
     private static final int MAX_FIX_FIELDS = 2000;     // What we think the ID of the last fix field is
-    public static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)");
+    public static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$
 
     /**
      * Creates a new instance of FIXMessageUtil
@@ -324,7 +322,7 @@ public class FIXMessageUtil {
             }
 
         } catch (FieldNotFound ex) {
-            LoggerAdapter.error(MessageKey.FIX_OUTGOING_NO_MSGTYPE.getLocalizedMessage(), ex, LOGGER_NAME);
+            Messages.FIX_OUTGOING_NO_MSGTYPE.error(LOGGER_NAME, ex);
         }
     }
     /**
@@ -390,7 +388,7 @@ public class FIXMessageUtil {
     	fillFieldsFromExistingMessage(outgoingMessage, existingMessage, true);
     }
 
-	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws MarketceteraException {
+	public static void insertFieldIfMissing(int fieldNumber, String value, FieldMap fieldMap) throws CoreException {
 		if (fieldMap.isSetField(fieldNumber)){
 			StringField testField = new StringField(fieldNumber);
 			try {
@@ -472,10 +470,10 @@ public class FIXMessageUtil {
 
 	public static void mergeMarketDataMessages(Message marketDataSnapshotFullRefresh, Message marketDataIncrementalRefresh, FIXMessageFactory factory){
 		if (!isMarketDataSnapshotFullRefresh(marketDataSnapshotFullRefresh)){
-			throw new IllegalArgumentException(MessageKey.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getLocalizedMessage());
+			throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getText());
 		}
 		if (!isMarketDataIncrementalRefresh(marketDataIncrementalRefresh)){
-			throw new IllegalArgumentException(MessageKey.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getLocalizedMessage());
+			throw new IllegalArgumentException(Messages.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getText());
 		}
 		
 		HashMap<Character, Group> consolidatingSet = new HashMap<Character, Group>();

@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AccessViolatorTest extends TestCase {
 
 
@@ -22,8 +22,8 @@ public class AccessViolatorTest extends TestCase {
     public void testReturnValues() throws Exception {
         AccessViolator violator = new AccessViolator(ViolatedClass.class);
         ViolatedClass violated = new ViolatedClass();
-        assertEquals(7, ((Integer)violator.getField("YOU_CANT_READ_ME", violated)).intValue());
-        assertTrue(((String)violator.invokeMethod("youCantCallMe", violated, "2+2 is 4")).endsWith("2+2 is 4"));
+        assertEquals(7, ((Integer)violator.getField("YOU_CANT_READ_ME", violated)).intValue()); //$NON-NLS-1$
+        assertTrue(((String)violator.invokeMethod("youCantCallMe", violated, "2+2 is 4")).endsWith("2+2 is 4")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public void testException() throws Exception {
@@ -31,7 +31,7 @@ public class AccessViolatorTest extends TestCase {
         final ViolatedClass violated = new ViolatedClass();
         new ExpectedTestFailure(Exception.class) {
             protected void execute() throws Throwable {
-                violator.invokeMethod("youCantGetMyException", violated);
+                violator.invokeMethod("youCantGetMyException", violated); //$NON-NLS-1$
             }
         }.run();
     }
@@ -39,11 +39,11 @@ public class AccessViolatorTest extends TestCase {
     public void testSetter() throws Exception {
         AccessViolator violator = new AccessViolator(ViolatedClass.class);
         ViolatedClass violated = new ViolatedClass();
-        assertEquals(ViolatedClass.HIDDEN_VALUE, violator.getField("hidden", violated));
+        assertEquals(ViolatedClass.HIDDEN_VALUE, violator.getField("hidden", violated)); //$NON-NLS-1$
 
         // now set it
-        violator.setField("hidden", violated, "violated");
-        assertEquals("violated", violator.getField("hidden", violated));
+        violator.setField("hidden", violated, "violated"); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("violated", violator.getField("hidden", violated)); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     public void testPrimitiveTypeGetter() throws Exception {
@@ -53,10 +53,10 @@ public class AccessViolatorTest extends TestCase {
         new ExpectedTestFailure(NoSuchMethodException.class){
 			@Override
 			protected void execute() throws Throwable {
-		        violator.invokeMethod("doSomethingWithTwoBooleans", violated, true, true);
+		        violator.invokeMethod("doSomethingWithTwoBooleans", violated, true, true); //$NON-NLS-1$
 			}
         }.run();
-        violator.invokeMethod("doSomethingWithTwoBooleans", violated, new Object[] {true, true}, new Class<?>[] {Boolean.TYPE, Boolean.TYPE});
+        violator.invokeMethod("doSomethingWithTwoBooleans", violated, new Object[] {true, true}, new Class<?>[] {Boolean.TYPE, Boolean.TYPE}); //$NON-NLS-1$
         
     }
 }

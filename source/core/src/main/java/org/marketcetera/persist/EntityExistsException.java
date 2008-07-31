@@ -9,7 +9,7 @@ import org.marketcetera.core.ClassVersion;
  * @see javax.persistence.EntityExistsException
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class EntityExistsException extends PersistenceException {
     private static final long serialVersionUID = 7851476156500095400L;
 

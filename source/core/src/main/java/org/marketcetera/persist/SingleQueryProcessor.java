@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SingleQueryProcessor<R extends SummaryEntityBase>
         extends QueryProcessor<R> {
     private static final long serialVersionUID = -6996278361193329163L;
@@ -27,7 +27,7 @@ public class SingleQueryProcessor<R extends SummaryEntityBase>
         super(detail);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public QueryResults<R> process(EntityManager em, Query q)
             throws PersistenceException {
         return new SingleResult<R>((R) q.getSingleResult());

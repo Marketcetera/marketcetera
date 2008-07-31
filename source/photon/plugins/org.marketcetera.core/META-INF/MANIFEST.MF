@@ -6,6 +6,7 @@ Bundle-Version: 0.5.0
 Bundle-ClassPath: core-0.5.0.jar
 Bundle-Vendor: Marketcetera, Inc.
 Eclipse-LazyStart: false
+Eclipse-BuddyPolicy: registered
 Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
 Bundle-Localization: plugin
 Export-Package: .,

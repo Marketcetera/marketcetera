@@ -25,7 +25,7 @@ import ca.odell.glazedlists.FunctionList.Function;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class LatestMessageFunction implements
   Function<List<MessageHolder>, MessageHolder>{
 

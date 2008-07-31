@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
@@ -28,6 +28,7 @@ import org.marketcetera.photon.marketdata.OptionMessageHolder;
 import org.marketcetera.photon.marketdata.OptionMessageHolder.OptionPairKey;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 
 import quickfix.FieldMap;
 import quickfix.FieldNotFound;
@@ -181,7 +182,7 @@ public class OptionOrderTicketController
 	 * Cancel all subscriptions (stock and options).
 	 */
 	@Override
-	protected void doUnlistenMarketData(MarketDataFeedService<?> service) throws MarketceteraException {
+	protected void doUnlistenMarketData(MarketDataFeedService<?> service) throws CoreException {
 		super.doUnlistenMarketData(service);
 		if (currentOptionToken != null){
 			currentOptionToken.cancel();
@@ -200,7 +201,7 @@ public class OptionOrderTicketController
 	 * Otherwise simply subscribe to updates for the market data.
 	 */
 	@Override
-	protected void doListenMarketData(MarketDataFeedService<?> service, MSymbol symbol) throws MarketceteraException {
+	protected void doListenMarketData(MarketDataFeedService<?> service, MSymbol symbol) throws CoreException {
 		String symbolString = symbol.toString();
 
 		String optionRootOrUnderlying;
@@ -337,7 +338,7 @@ public class OptionOrderTicketController
 	 */
 	private Pair<Set<String>, List<OptionContractData>> getOptionContractData(
 			Message derivativeSecurityListMessage) 
-			throws MarketceteraException {
+			throws CoreException {
 
 		List<OptionContractData> optionContractDataList = new ArrayList<OptionContractData>();
 		Set<String> optionRootList = new HashSet<String>();
@@ -353,12 +354,12 @@ public class OptionOrderTicketController
 					getOptionContractDataFromMessage(messageUnderlyingSymbol,
 							derivativeSecurityListMessage, optionContractDataList, optionRootList);
 				} catch (Exception anyException) {
-					throw new MarketceteraException(CANNOT_GET_OPTION_CONTRACT_INFO_SPECIFIED.getText(messageUnderlyingSymbolStr,
-					                                                                                  derivativeSecurityListMessage),
-					                                anyException);
+					throw new CoreException(new I18NBoundMessage2P(CANNOT_GET_OPTION_CONTRACT_INFO_SPECIFIED,
+					                                               messageUnderlyingSymbolStr,
+					                                               derivativeSecurityListMessage));
 				}
 			} else {
-				throw new MarketceteraFIXException(MESSAGE_NOT_DERIVATIVE_SECURITY_LIST.getText());
+				throw new MarketceteraFIXException(MESSAGE_NOT_DERIVATIVE_SECURITY_LIST);
 			}
 		}
 		return new Pair<Set<String>, List<OptionContractData>>(optionRootList, optionContractDataList);

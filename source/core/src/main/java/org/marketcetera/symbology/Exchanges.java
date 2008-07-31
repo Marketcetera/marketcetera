@@ -1,8 +1,6 @@
 package org.marketcetera.symbology;
 
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MessageKey;
 import org.skife.csv.CSVReader;
 import org.skife.csv.SimpleReader;
 
@@ -18,30 +16,30 @@ import java.util.*;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();
     private static EnumMap<SymbolScheme, ExchangeMap> schemeMap = new EnumMap<SymbolScheme, ExchangeMap>(SymbolScheme.class);
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM yyyy");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM yyyy"); //$NON-NLS-1$
 
     static {
         try {
             loadExchanges();
         } catch (Exception ex) {
-            LoggerAdapter.error(MessageKey.ERROR_EXCHANGES_INIT.getLocalizedMessage(), ex, Exchanges.class);
+            Messages.ERROR_EXCHANGES_INIT.error(Exchanges.class, ex);
         }
     }
 
-    private static final String XASE_MIC = "XASE";
-    private static final String XBOS_MIC = "XBOS";
-    private static final String XCIS_MIC = "XCIS";
-    private static final String XISX_MIC = "XISX";
-    private static final String XCHI_MIC = "XCHI";
-    private static final String XNYS_MIC = "XNYS";
-    private static final String XARC_MIC = "XARC";
-    private static final String XNAS_MIC = "XNAS";
-    private static final String XPHL_MIC = "XPHL";
+    private static final String XASE_MIC = "XASE"; //$NON-NLS-1$
+    private static final String XBOS_MIC = "XBOS"; //$NON-NLS-1$
+    private static final String XCIS_MIC = "XCIS"; //$NON-NLS-1$
+    private static final String XISX_MIC = "XISX"; //$NON-NLS-1$
+    private static final String XCHI_MIC = "XCHI"; //$NON-NLS-1$
+    private static final String XNYS_MIC = "XNYS"; //$NON-NLS-1$
+    private static final String XARC_MIC = "XARC"; //$NON-NLS-1$
+    private static final String XNAS_MIC = "XNAS"; //$NON-NLS-1$
+    private static final String XPHL_MIC = "XPHL"; //$NON-NLS-1$
 
     public static Exchange AMEX = micMap.get(XASE_MIC);
     public static Exchange BOSTON = micMap.get(XBOS_MIC);
@@ -63,14 +61,14 @@ public class Exchanges {
     private static final int WEBSITE_COLUMN = 6;
     private static final int DATE_ADDED_COLUMN = 7;
 
-    public static final String HYPERFEED_SCHEME = "HYPERFEED";
-    public static final String FIX_SCHEME = "FIX";
+    public static final String HYPERFEED_SCHEME = "HYPERFEED"; //$NON-NLS-1$
+    public static final String FIX_SCHEME = "FIX"; //$NON-NLS-1$
 
 
     private static void loadExchanges() throws IOException, ParseException {
         CSVReader reader = new SimpleReader();
 
-        URL url = Exchanges.class.getClassLoader().getResource("iso-10383.csv");
+        URL url = Exchanges.class.getClassLoader().getResource("iso-10383.csv"); //$NON-NLS-1$
         InputStream in = url.openStream();
 
         List items = reader.parse(in);
@@ -95,8 +93,8 @@ public class Exchanges {
                 micMap.put(anExchange.getMarketIdentifierCode(), anExchange);
             }
         }
-        PropertiesExchangeMap hfExchangeMap = new PropertiesExchangeMap("hyperfeed-exchanges.properties");
-        PropertiesExchangeMap basicExchangeMap = new PropertiesExchangeMap("basic-exchanges.properties");
+        PropertiesExchangeMap hfExchangeMap = new PropertiesExchangeMap("hyperfeed-exchanges.properties"); //$NON-NLS-1$
+        PropertiesExchangeMap basicExchangeMap = new PropertiesExchangeMap("basic-exchanges.properties"); //$NON-NLS-1$
         schemeMap.put(SymbolScheme.HYPERFEED, hfExchangeMap);
         schemeMap.put(SymbolScheme.BASIC, basicExchangeMap);
     }

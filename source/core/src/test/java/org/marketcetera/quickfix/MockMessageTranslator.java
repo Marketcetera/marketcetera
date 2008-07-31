@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 
 import quickfix.Message;
 
@@ -27,10 +27,10 @@ public class MockMessageTranslator
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(quickfix.Message)
      */
     public String translate(Message inMessage)
-            throws MarketceteraException
+            throws CoreException
     {
         if(getTranslateThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return inMessage.toString();
     }
@@ -39,7 +39,7 @@ public class MockMessageTranslator
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
      */
     public Message asMessage(String inData)
-            throws MarketceteraException
+            throws CoreException
     {
         return null;
     }

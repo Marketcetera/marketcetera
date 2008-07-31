@@ -37,7 +37,7 @@ public class MarketDataFeedTokenSpecTest
         return MarketDataFeedTestBase.suite(MarketDataFeedTokenSpecTest.class);
     }
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public void testGenerateTokenSpec()
         throws Exception
     {

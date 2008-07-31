@@ -3,7 +3,7 @@ package org.marketcetera.marketdata;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 
-@ClassVersion("$Id")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface IFeedComponent {
 
 	public enum FeedType {

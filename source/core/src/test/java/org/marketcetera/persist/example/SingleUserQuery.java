@@ -11,7 +11,7 @@ import org.marketcetera.persist.SingleFetchQuery;
  * 
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class SingleUserQuery extends
         SingleFetchQuery<SummaryUser,User> {
     private static final long serialVersionUID = -4241121936568861031L;

@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExpectedTestFailureTest extends TestCase
 {
     public ExpectedTestFailureTest(String inName)
@@ -34,15 +34,15 @@ public class ExpectedTestFailureTest extends TestCase
 
     public void testMatchSpecified()
     {
-        final RuntimeException rex = new RuntimeException("toli was here");
-        assertEquals(rex, (new ExpectedTestFailure(RuntimeException.class, "toli") {
+        final RuntimeException rex = new RuntimeException("toli was here"); //$NON-NLS-1$
+        assertEquals(rex, (new ExpectedTestFailure(RuntimeException.class, "toli") { //$NON-NLS-1$
                 protected void execute() throws Throwable
                 {
                     throw rex;
                 }
             }).run());
-        final IllegalArgumentException ex = new IllegalArgumentException("toli was here");
-        assertEquals(ex, (new ExpectedTestFailure(IllegalArgumentException.class, "was") {
+        final IllegalArgumentException ex = new IllegalArgumentException("toli was here"); //$NON-NLS-1$
+        assertEquals(ex, (new ExpectedTestFailure(IllegalArgumentException.class, "was") { //$NON-NLS-1$
                 protected void execute() throws Throwable
                 {
                     throw ex;
@@ -56,11 +56,11 @@ public class ExpectedTestFailureTest extends TestCase
     public void testExceptinoHasNoMessageButHasString() throws Exception {
         final Exception ex = new Exception() {
             public String toString() {
-                return "internal message 32";
+                return "internal message 32"; //$NON-NLS-1$
             }
         };
 
-        assertEquals(ex, new ExpectedTestFailure(Exception.class, "message 32") {
+        assertEquals(ex, new ExpectedTestFailure(Exception.class, "message 32") { //$NON-NLS-1$
             protected void execute() throws Throwable {
                 throw ex;
             }

@@ -10,7 +10,7 @@ import quickfix.Message;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class NoOpFIXMessageAugmentor implements FIXMessageAugmentor{
     public Message newOrderSingleAugment(Message inMessage) {
         return inMessage;

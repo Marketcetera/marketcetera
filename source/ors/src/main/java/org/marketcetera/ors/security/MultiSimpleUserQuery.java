@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiSimpleUserQuery extends MultiNDQuery {
     private static final long serialVersionUID = -4259099618197174176L;
 

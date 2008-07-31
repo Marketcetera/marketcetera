@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiQueryStringFilterTestHelper<E extends EntityBase,
         S extends SummaryEntityBase> extends
         MultiQueryFilterTestHelper<E, S> {
@@ -48,7 +48,7 @@ public class MultiQueryStringFilterTestHelper<E extends EntityBase,
         String str = (String) getField(s);
         String fValue = ((StringFilter) filter).getValue();
         fValue = fValue.replace(StringFilter.MATCH_ONE, '.');
-        fValue = fValue.replace("" + StringFilter.MATCH_MANY, ".*");
+        fValue = fValue.replace("" + StringFilter.MATCH_MANY, ".*"); //$NON-NLS-1$ //$NON-NLS-2$
         return Pattern.matches(fValue, str);
     }
 
@@ -61,33 +61,33 @@ public class MultiQueryStringFilterTestHelper<E extends EntityBase,
     }
 
     private static final String[] TEST_DATA = {
-            "aaa",
-            "bbbb",
-            "11111",
-            "abc",
-            "pbc",
-            "abcd",
-            "p1rs",
-            "axyed",
-            "a1c"
+            "aaa", //$NON-NLS-1$
+            "bbbb", //$NON-NLS-1$
+            "11111", //$NON-NLS-1$
+            "abc", //$NON-NLS-1$
+            "pbc", //$NON-NLS-1$
+            "abcd", //$NON-NLS-1$
+            "p1rs", //$NON-NLS-1$
+            "axyed", //$NON-NLS-1$
+            "a1c" //$NON-NLS-1$
     };
     private static final FilterPair[] TEST_FILTERS;
 
     static {
         try {
             TEST_FILTERS = new FilterPair[] {
-                    f("?", 0),
-                    f("*", TEST_DATA.length),
-                    f("a??", 3),
-                    f("a*", 5),
-                    f("??c", 3),
-                    f("*d", 2),
-                    f("*1*", 3),
-                    f("a?c", 2),
-                    f("a?c", 2),
-                    f("x*", 0),
-                    f("*y", 0),
-                    f("*etc*", 0)
+                    f("?", 0), //$NON-NLS-1$
+                    f("*", TEST_DATA.length), //$NON-NLS-1$
+                    f("a??", 3), //$NON-NLS-1$
+                    f("a*", 5), //$NON-NLS-1$
+                    f("??c", 3), //$NON-NLS-1$
+                    f("*d", 2), //$NON-NLS-1$
+                    f("*1*", 3), //$NON-NLS-1$
+                    f("a?c", 2), //$NON-NLS-1$
+                    f("a?c", 2), //$NON-NLS-1$
+                    f("x*", 0), //$NON-NLS-1$
+                    f("*y", 0), //$NON-NLS-1$
+                    f("*etc*", 0) //$NON-NLS-1$
             };
         } catch (ValidationException e) {
             throw new RuntimeException(e);

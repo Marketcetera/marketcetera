@@ -8,7 +8,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class SingleDataTypesQuery extends
         SingleFetchQuery<SummaryDataType,DataTypes> {
     private static final long serialVersionUID = 6901942525380122146L;
@@ -35,6 +35,6 @@ public final class SingleDataTypesQuery extends
         return FETCH_JOIN_ATTRIBUTE_NAMES;
     }
 
-    private static final String ENTITY_NAME = "DataTypes";
+    private static final String ENTITY_NAME = "DataTypes"; //$NON-NLS-1$
     static final String[] FETCH_JOIN_ATTRIBUTE_NAMES= new String[]{};
 }

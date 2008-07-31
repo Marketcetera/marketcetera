@@ -15,7 +15,7 @@ import java.sql.Blob;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class VendorUtils {
     private VendorUtils() {}
 
@@ -77,7 +77,7 @@ public class VendorUtils {
                     vendor.getClass().getName()));
         }
         vendor = v;
-        initStackTrace = new Exception("Original Initialization");
+        initStackTrace = new Exception("Original Initialization"); //$NON-NLS-1$
 
     }
     private static JPAVendor vendor;

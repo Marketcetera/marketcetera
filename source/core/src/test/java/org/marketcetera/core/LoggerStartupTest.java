@@ -5,11 +5,13 @@ import junit.framework.TestCase;
 
 import java.util.List;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 /**
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class LoggerStartupTest extends TestCase {
     public LoggerStartupTest(String inName) {
         super(inName);
@@ -26,8 +28,8 @@ public class LoggerStartupTest extends TestCase {
     public void testLogSomething() throws Exception {
         MyApp app = new MyApp();
 
-        LoggerAdapter.info("info message coming through", this);
-        LoggerAdapter.error("not a real error: testing error message coming through", this);
+        SLF4JLoggerProxy.info(this, "info message coming through"); //$NON-NLS-1$
+        SLF4JLoggerProxy.error(this, "not a real error: testing erro message coming through"); //$NON-NLS-1$
     }
 
     private class MyApp extends ApplicationBase

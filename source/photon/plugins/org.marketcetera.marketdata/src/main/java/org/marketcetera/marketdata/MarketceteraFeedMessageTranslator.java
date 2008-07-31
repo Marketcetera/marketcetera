@@ -3,7 +3,7 @@
  */
 package org.marketcetera.marketdata;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 
 import quickfix.Message;
@@ -27,7 +27,7 @@ public class MarketceteraFeedMessageTranslator
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(quickfix.Message)
      */
     public Message translate(Message inMessage) 
-        throws MarketceteraException
+        throws CoreException
     {
         return inMessage;
     }
@@ -36,7 +36,7 @@ public class MarketceteraFeedMessageTranslator
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
      */
     public Message asMessage(Message inData) 
-        throws MarketceteraException
+        throws CoreException
     {
         return inData;
     }

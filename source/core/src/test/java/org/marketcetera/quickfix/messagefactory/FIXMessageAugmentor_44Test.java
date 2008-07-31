@@ -10,7 +10,7 @@ import junit.framework.Test;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageAugmentor_44Test extends TestCase {
     public FIXMessageAugmentor_44Test(String inName) {
         super(inName);

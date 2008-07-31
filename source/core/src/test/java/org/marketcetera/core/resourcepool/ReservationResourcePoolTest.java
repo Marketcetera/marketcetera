@@ -8,12 +8,12 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
 import org.marketcetera.core.resourcepool.ReservationResourcePool.ReservationEntry;
 import org.marketcetera.core.resourcepool.MockReservationResourcePool.ReservationData;
 import org.marketcetera.core.resourcepool.MockResource.STATE;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 public class ReservationResourcePoolTest
         extends TestCase
@@ -39,8 +39,8 @@ public class ReservationResourcePoolTest
         super.setUp();
 
         mTestPool = new MockReservationResourcePool();
-        mData = new MockReservationResourcePool.ReservationData("my_user-" + System.nanoTime(),
-                                                                "my_password-" + System.nanoTime());
+        mData = new MockReservationResourcePool.ReservationData("my_user-" + System.nanoTime(), //$NON-NLS-1$
+                                                                "my_password-" + System.nanoTime()); //$NON-NLS-1$
     }
     
     public void testConstructor()
@@ -217,8 +217,8 @@ public class ReservationResourcePoolTest
         assertEquals(r1,
                      newR1);
         // request a specific resource that does not yet exist in the pool
-        ReservationData data2 = new ReservationData("some_user",
-                                                    "some_password");
+        ReservationData data2 = new ReservationData("some_user", //$NON-NLS-1$
+                                                    "some_password"); //$NON-NLS-1$
         assertFalse(mTestPool.reservationExistsFor(data2));
         MockResource r2 = mTestPool.getNextResource(data2);
         assertEquals(data2,
@@ -256,8 +256,8 @@ public class ReservationResourcePoolTest
                      mTestPool.getLastResourceCreated().getState());
         
         // repeat the same tests above, this time for a specific reservation
-        ReservationData data = new ReservationData("some_user",
-                                                   "some_password");
+        ReservationData data = new ReservationData("some_user", //$NON-NLS-1$
+                                                   "some_password"); //$NON-NLS-1$
         assertEquals(0,
                      mTestPool.getPoolSize());
         mTestPool.setCreateResourceReturnsNull(true);
@@ -289,7 +289,7 @@ public class ReservationResourcePoolTest
         throws Exception
     {
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()){
+                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()){
             protected void execute()
                     throws Throwable
             {
@@ -311,7 +311,7 @@ public class ReservationResourcePoolTest
         assertEquals(ResourcePool.STATUS.SHUT_DOWN,
                      mTestPool.getStatus());
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getLocalizedMessage()){
+                                Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getText()){
             protected void execute()
                     throws Throwable
             {
@@ -579,11 +579,7 @@ public class ReservationResourcePoolTest
             try {
                 setResource((MockResource)mTestPool.requestResource(getReservation()));
             } catch (Throwable t) {
-                if(LoggerAdapter.isDebugEnabled(this)) { 
-                    LoggerAdapter.debug("Requester thread caught exception",
-                                        t,
-                                        this); 
-                }
+                SLF4JLoggerProxy.debug(this, t, "Requester thread caught exception"); //$NON-NLS-1$
                 setException(t);
             }
             // we have the resource now

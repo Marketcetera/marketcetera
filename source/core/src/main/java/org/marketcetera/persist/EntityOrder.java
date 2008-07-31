@@ -12,7 +12,7 @@ import java.io.Serializable;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class EntityOrder implements Serializable {
     private static final long serialVersionUID = -27321569406013113L;
 

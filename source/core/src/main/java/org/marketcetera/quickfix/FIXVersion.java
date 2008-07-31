@@ -3,7 +3,6 @@ package org.marketcetera.quickfix;
 import java.util.HashMap;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MessageKey;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_40;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_41;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_42;
@@ -20,17 +19,17 @@ import quickfix.field.BeginString;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum FIXVersion {
-    FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, 4.0, "FIX40.xml",
+    FIX40(FIXDataDictionary.FIX_4_0_BEGIN_STRING, 4.0, "FIX40.xml", //$NON-NLS-1$
           new FIXMessageFactory(FIXDataDictionary.FIX_4_0_BEGIN_STRING, new quickfix.fix40.MessageFactory(), new FIXMessageAugmentor_40())),
-    FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING, 4.1, "FIX41.xml",
+    FIX41(FIXDataDictionary.FIX_4_1_BEGIN_STRING, 4.1, "FIX41.xml", //$NON-NLS-1$
             new FIXMessageFactory(FIXDataDictionary.FIX_4_1_BEGIN_STRING, new quickfix.fix41.MessageFactory(), new FIXMessageAugmentor_41())),
-    FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING, 4.2, "FIX42.xml",
+    FIX42(FIXDataDictionary.FIX_4_2_BEGIN_STRING, 4.2, "FIX42.xml", //$NON-NLS-1$
             new FIXMessageFactory(FIXDataDictionary.FIX_4_2_BEGIN_STRING, new quickfix.fix42.MessageFactory(), new FIXMessageAugmentor_42())),
-    FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, 4.3, "FIX43.xml",
+    FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, 4.3, "FIX43.xml", //$NON-NLS-1$
             new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new quickfix.fix43.MessageFactory(), new FIXMessageAugmentor_43())),
-    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44-marketcetera.xml",
+    FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44-marketcetera.xml", //$NON-NLS-1$
             new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
@@ -47,7 +46,7 @@ public enum FIXVersion {
     public static FIXVersion getFIXVersion(String version) {
         FIXVersion fixVersion = versionMap.get(version);
         if(fixVersion == null) {
-            throw new IllegalArgumentException(MessageKey.FIX_VERSION_UNSUPPORTED.getLocalizedMessage(version));
+            throw new IllegalArgumentException(Messages.FIX_VERSION_UNSUPPORTED.getText(version));
         }
         return fixVersion;
     }

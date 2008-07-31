@@ -1,5 +1,6 @@
 package org.marketcetera.core;
 
+import org.marketcetera.util.log.I18NBoundMessage0P;
 
 /**
  * Implementation of IDFactory that provides identifiers unique to this run of the
@@ -8,7 +9,7 @@ package org.marketcetera.core;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class InMemoryIDFactory implements IDFactory {
 
     long mNextID = 0;
@@ -19,7 +20,7 @@ public class InMemoryIDFactory implements IDFactory {
      * @param startAt the value at which to start the unique identifiers.
      */
     public InMemoryIDFactory(long startAt) {
-	this(startAt, "");
+	this(startAt, ""); //$NON-NLS-1$
     }
 
     /**
@@ -43,7 +44,7 @@ public class InMemoryIDFactory implements IDFactory {
             retVal = mNextID++;
         }
         if (retVal == Long.MAX_VALUE){
-        	throw new NoMoreIDsException(MessageKey.IN_MEMORY_ID_FACTORY_OVERRUN.getLocalizedMessage());
+        	throw new NoMoreIDsException(Messages.ERROR_IN_MEMORY_ID_FACTORY_OVERRUN);
         }
         return prefix+retVal;
     }

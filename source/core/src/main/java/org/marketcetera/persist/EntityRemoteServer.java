@@ -17,9 +17,9 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 // this class operates locally, none of its operations require serialization
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 class EntityRemoteServer extends EntityRemoteServices {
     /**
      * Saves the supplied entity
@@ -124,17 +124,17 @@ class EntityRemoteServer extends EntityRemoteServices {
             //transaction and do commit, rollback, exception translation
             try {
                 et.begin();
-                SLF4JLoggerProxy.debug(this,"Beginning Transaction {}",et);
+                SLF4JLoggerProxy.debug(this,"Beginning Transaction {}",et); //$NON-NLS-1$
                 try {
                     R value = t.execute(em, context);
                     et.commit();
-                    SLF4JLoggerProxy.debug(this,"Transaction {} committed",et);
+                    SLF4JLoggerProxy.debug(this,"Transaction {} committed",et); //$NON-NLS-1$
                     return value;
                 } finally {
                     try {
                         if(et.isActive()) {
                             et.rollback();
-                            SLF4JLoggerProxy.debug(this,"Transaction {} rolled back",et);
+                            SLF4JLoggerProxy.debug(this,"Transaction {} rolled back",et); //$NON-NLS-1$
                         }
                     } finally {
                         entityManager.set(null);
@@ -142,13 +142,13 @@ class EntityRemoteServer extends EntityRemoteServices {
                     }
                 }
             } catch (javax.persistence.PersistenceException e) {
-                SLF4JLoggerProxy.debug(this,"Got Persistence Exception",e);
+                SLF4JLoggerProxy.debug(this,"Got Persistence Exception",e); //$NON-NLS-1$
                 //Translate exceptions
                 translateAndThrow(e);
                 //Needed to compile, the method above, always throws exception
                 return null;
             } catch (RuntimeException e) {
-                SLF4JLoggerProxy.debug(this,"Got Runtime Exception",e);
+                SLF4JLoggerProxy.debug(this,"Got Runtime Exception",e); //$NON-NLS-1$
                 if(e.getCause() instanceof org.marketcetera.persist.PersistenceException) {
                     //Unwrap with nested known exception
                     throw (org.marketcetera.persist.PersistenceException)e.getCause();
@@ -225,7 +225,7 @@ class EntityRemoteServer extends EntityRemoteServices {
                     org.marketcetera.persist.TransactionRequiredException.
                             class.getDeclaredConstructor(
                             Throwable.class));
-            SLF4JLoggerProxy.debug(this,"Exception Table: {}",exceptionTable);
+            SLF4JLoggerProxy.debug(this,"Exception Table: {}",exceptionTable); //$NON-NLS-1$
         } catch (NoSuchMethodException e) {
             throw new PersistSetupException(e,EXCEPTION_TRANSLATE_ISSUE);
         }
@@ -242,7 +242,7 @@ class EntityRemoteServer extends EntityRemoteServices {
      */
     private EntityManager getEntityManager() throws org.marketcetera.persist.PersistenceException {
         if(entityManager.get() == null) {
-            SLF4JLoggerProxy.debug(this,"Creating a new Entity Manager");
+            SLF4JLoggerProxy.debug(this,"Creating a new Entity Manager"); //$NON-NLS-1$
             entityManager.set(entityManagerFactory.createEntityManager());
         }
         return entityManager.get();

@@ -9,7 +9,7 @@ import quickfix.*;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DummyQuickFIXApp implements Application {
     public DummyQuickFIXApp() {
     }

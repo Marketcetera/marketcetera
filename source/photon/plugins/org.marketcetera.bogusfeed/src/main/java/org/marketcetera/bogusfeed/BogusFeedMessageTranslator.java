@@ -3,7 +3,7 @@ package org.marketcetera.bogusfeed;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.IMessageTranslator;
 
@@ -19,7 +19,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedMessageTranslator
         extends AbstractMessageTranslator<BogusMessage>
 {
@@ -47,7 +47,7 @@ public class BogusFeedMessageTranslator
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(quickfix.Message)
      */
     public BogusMessage translate(Message inMessage)
-            throws MarketceteraException
+            throws CoreException
     {
         BogusMessage message = new BogusMessage(inMessage);
         List<Group> groups = getGroups(inMessage);
@@ -61,7 +61,7 @@ public class BogusFeedMessageTranslator
      * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
      */
     public Message asMessage(BogusMessage inData)
-            throws MarketceteraException
+            throws CoreException
     {
         return inData.getAsMessage();
     }

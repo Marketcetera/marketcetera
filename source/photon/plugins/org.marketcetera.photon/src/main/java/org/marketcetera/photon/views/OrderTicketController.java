@@ -8,7 +8,7 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
@@ -107,7 +107,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 		if (service != null) {
 			try {		
 				doUnlistenMarketData(service);
-			} catch (MarketceteraException e) {
+			} catch (CoreException e) {
 				PhotonPlugin.getMainConsoleLogger().warn(CANNOT_UNSUBSCRIBE.getText());
 			}
 		}
@@ -117,9 +117,9 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * throwing exceptions if necessary
 	 * 
 	 * @param service the service to unsubscribe from
-	 * @throws MarketceteraException if there is a problem unsubscribing
+	 * @throws CoreException if there is a problem unsubscribing
 	 */
-	protected void doUnlistenMarketData(MarketDataFeedService<?> service) throws MarketceteraException {
+	protected void doUnlistenMarketData(MarketDataFeedService<?> service) throws CoreException {
 		if (primaryMarketDataToken != null) {
 			primaryMarketDataToken.cancel();
 
@@ -142,7 +142,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 				if (service != null){
 					doListenMarketData(service, new MSymbol(symbol));
 				}
-			} catch (MarketceteraException e) {
+			} catch (CoreException e) {
 				PhotonPlugin.getMainConsoleLogger().error(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 			}
 		}
@@ -154,9 +154,9 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 	 * 
 	 * @param service the service from which to subscribe
 	 * @param symbol the symbol for which to describe
-	 * @throws MarketceteraException if there is a problem subscribing
+	 * @throws CoreException if there is a problem subscribing
 	 */
-	protected void doListenMarketData(MarketDataFeedService<?> service, MSymbol symbol) throws MarketceteraException {
+	protected void doListenMarketData(MarketDataFeedService<?> service, MSymbol symbol) throws CoreException {
 		Message subscriptionMessage = MarketDataUtils
 				.newSubscribeLevel2(symbol);
 		primaryMarketDataToken = service.execute(subscriptionMessage, new ISubscriber(){

@@ -33,7 +33,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSLoginModuleTest extends TestCaseBase {
     private static SimpleUser user;
     private static char[] password;
@@ -52,7 +52,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
         attemptLogin(null, password,
                 AccountNotFoundException.class,
                 EMPTY_USERNAME.getText());
-        attemptLogin("", password,
+        attemptLogin("", password, //$NON-NLS-1$
                 AccountNotFoundException.class,
                 EMPTY_USERNAME.getText());
         final String u = randomString();
@@ -70,7 +70,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
                 USER_LOGIN_ERROR_LOG.getText(user.getName()),
                 ORSLoginModule.class.getName());
 
-        attemptLogin(user.getName(), "".toCharArray(),
+        attemptLogin(user.getName(), "".toCharArray(), //$NON-NLS-1$
                 FailedLoginException.class,
                 USER_LOGIN_ERROR.getText());
         assertLastEvent(Level.WARN, ORSLoginModule.class.getName(),
@@ -125,7 +125,7 @@ public class ORSLoginModuleTest extends TestCaseBase {
      */
     @Test
     public void callbackIOFailure() throws Exception {
-        callbackException = new IOException("ioeoeoe");
+        callbackException = new IOException("ioeoeoe"); //$NON-NLS-1$
         LoginException ex = attemptLogin(user.getName(), password,
                 LoginException.class, callbackException.getMessage());
         assertNotNull(ex.getCause());
@@ -135,8 +135,8 @@ public class ORSLoginModuleTest extends TestCaseBase {
 
     @BeforeClass
     public static void setup() throws Exception {
-        PersistTestBase.springSetup(new String[]{"ors_orm.xml", "ors_db.xml",
-                "ors_initdb_vendor.xml"}, new FileSystemXmlApplicationContext(
+        PersistTestBase.springSetup(new String[]{"ors_orm.xml", "ors_db.xml", //$NON-NLS-1$ //$NON-NLS-2$
+                "ors_initdb_vendor.xml"}, new FileSystemXmlApplicationContext( //$NON-NLS-1$
                         OrderRoutingSystem.CFG_BASE_FILE_NAME));
         user = new SimpleUser();
         user.setName(randomString());
@@ -179,16 +179,16 @@ public class ORSLoginModuleTest extends TestCaseBase {
         loginContext = null;
         try {
             ch = new MockCallbackHandler(name, password);
-            loginContext = new LoginContext("ors_test",ch);
+            loginContext = new LoginContext("ors_test",ch); //$NON-NLS-1$
             loginContext.login();
-            assertNull("Expected failure:" + failure + failureMsg, failure);
+            assertNull("Expected failure:" + failure + failureMsg, failure); //$NON-NLS-1$
             //verify that the appropriate principals are set in the subject
             assertTrue(loginContext.getSubject().getPrincipals().toString(),
                     loginContext.getSubject().getPrincipals().contains(
                             new UserPrincipal(user.getName())));
         } catch (LoginException e) {
-            assertNotNull("Unexpected failure:" + e,failure);
-            assertTrue("Expected:" + failure + ":Actual:" +
+            assertNotNull("Unexpected failure:" + e,failure); //$NON-NLS-1$
+            assertTrue("Expected:" + failure + ":Actual:" + //$NON-NLS-1$ //$NON-NLS-2$
                     e.getClass().getName() + e.toString(),
                     failure.isInstance(e));
             if (failureMsg != null) {

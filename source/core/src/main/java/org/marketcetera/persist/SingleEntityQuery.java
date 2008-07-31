@@ -16,7 +16,7 @@ import static org.marketcetera.persist.JPQLConstants.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class SingleEntityQuery
         extends QueryBase {
     private static final long serialVersionUID = -1442796823345156735L;
@@ -101,5 +101,5 @@ public abstract class SingleEntityQuery
     /**
      * The entity alias used for all queries
      */
-    protected static final String ENTITY_ALIAS = "e";
+    protected static final String ENTITY_ALIAS = "e"; //$NON-NLS-1$
 }

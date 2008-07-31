@@ -2,7 +2,7 @@ package org.marketcetera.core;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OffsetClock implements Clock {
 
 	Clock mReferenceClock;

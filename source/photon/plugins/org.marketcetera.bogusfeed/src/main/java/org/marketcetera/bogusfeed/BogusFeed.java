@@ -67,11 +67,11 @@ public class BogusFeed
     /**
      * value used to add to or subtract from prices
      */
-    private static final BigDecimal PENNY = new BigDecimal("0.01");
+    private static final BigDecimal PENNY = new BigDecimal("0.01"); //$NON-NLS-1$
     /**
      * bogus market exchange code
      */
-    private static final String BGUS_MARKET = "BGUS";
+    private static final String BGUS_MARKET = "BGUS"; //$NON-NLS-1$
     /**
      * list of symbols for which values are tracked
      */
@@ -503,28 +503,28 @@ public class BogusFeed
     {
         SecurityRequestResult resultCode = new SecurityRequestResult(SecurityRequestResult.VALID_REQUEST);
         DerivativeSecurityList responseMessage = new DerivativeSecurityList();
-        responseMessage.setField(new SecurityReqID("bob"));
-        responseMessage.setField(new SecurityResponseID("123"));
+        responseMessage.setField(new SecurityReqID("bob")); //$NON-NLS-1$
+        responseMessage.setField(new SecurityResponseID("123")); //$NON-NLS-1$
 
         responseMessage.setField(new UnderlyingSymbol(symbol));
         for (int i = 0; i < callSuffixes.length; i++) {
-            MSymbol putSymbol = new MSymbol(symbol+"+"+putSuffixes[i]);
+            MSymbol putSymbol = new MSymbol(symbol+"+"+putSuffixes[i]); //$NON-NLS-1$
             // put first
             Group optionGroup = new DerivativeSecurityList.NoRelatedSym();
             optionGroup.setField(new Symbol(putSymbol.toString()));
             optionGroup.setField(new StrikePrice(strikePrices[i]));
-            optionGroup.setField(new CFICode("OPASPS"));
-            optionGroup.setField(new MaturityMonthYear("200801"));
-            optionGroup.setField(new MaturityDate("20080122"));
+            optionGroup.setField(new CFICode("OPASPS")); //$NON-NLS-1$
+            optionGroup.setField(new MaturityMonthYear("200801")); //$NON-NLS-1$
+            optionGroup.setField(new MaturityDate("20080122")); //$NON-NLS-1$
             responseMessage.addGroup(optionGroup);
 
-            MSymbol callSymbol = new MSymbol(symbol + "+" + callSuffixes[i]);
+            MSymbol callSymbol = new MSymbol(symbol + "+" + callSuffixes[i]); //$NON-NLS-1$
             // now call
             optionGroup.setField(new Symbol(callSymbol.toString()));
             optionGroup.setField(new StrikePrice(strikePrices[i]));
-            optionGroup.setField(new CFICode("OCASPS"));
-            optionGroup.setField(new MaturityMonthYear("200801"));
-            optionGroup.setField(new MaturityDate("20080122"));
+            optionGroup.setField(new CFICode("OCASPS")); //$NON-NLS-1$
+            optionGroup.setField(new MaturityMonthYear("200801")); //$NON-NLS-1$
+            optionGroup.setField(new MaturityDate("20080122")); //$NON-NLS-1$
             responseMessage.addGroup(optionGroup);
 
         }

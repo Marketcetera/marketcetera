@@ -5,13 +5,27 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
+import org.marketcetera.util.log.I18NBoundMessage0P;
+import org.marketcetera.util.log.I18NLoggerProxy;
+import org.marketcetera.util.log.I18NMessage0P;
+import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 public class ResourcePoolTest
         extends TestCase
 {
+    /*
+     * I18N messaging
+     */
+    static final I18NMessageProvider PROVIDER =
+        new I18NMessageProvider("core"); //$NON-NLS-1$
+    static final I18NLoggerProxy LOGGER = 
+        new I18NLoggerProxy(PROVIDER);
+    static final I18NMessage0P I18N_EXPECTED_EXCEPTION_MSG = 
+        new I18NMessage0P(LOGGER, "i18n_expected_exception_msg", "this exception is expected"); //$NON-NLS-1$ //$NON-NLS-2$
+
     private MockResourcePool mTestPool;
     
     public ResourcePoolTest(String inArg0)
@@ -95,7 +109,7 @@ public class ResourcePoolTest
         assertNull(mTestPool.getThrowDuringGetNextResource());
         doRequestTest();
 
-        mTestPool.setThrowDuringGetNextResource(new ResourcePoolException("this exception is expected"));
+        mTestPool.setThrowDuringGetNextResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
         new ExpectedTestFailure(ResourcePoolException.class) {
             protected void execute()
                     throws Throwable
@@ -104,7 +118,7 @@ public class ResourcePoolTest
             }            
         }.run();
 
-        mTestPool.setThrowDuringGetNextResource(new NullPointerException("this exception is expected"));
+        mTestPool.setThrowDuringGetNextResource(new NullPointerException("this exception is expected")); //$NON-NLS-1$
         new ExpectedTestFailure(ResourcePoolException.class) {
             protected void execute()
                     throws Throwable
@@ -115,7 +129,7 @@ public class ResourcePoolTest
         mTestPool.setThrowDuringGetNextResource(null);
         
         try {
-            MockResource.setAllocateException(new NullPointerException("This exception is expected"));
+            MockResource.setAllocateException(new NullPointerException("This exception is expected")); //$NON-NLS-1$
             doRequestTest();
         } finally {
             MockResource.setAllocateException(null);
@@ -125,7 +139,7 @@ public class ResourcePoolTest
         mTestPool.shutdown();
         assertTrue(mTestPool.rejectNewRequests());
         new ExpectedTestFailure(ResourcePoolShuttingDownException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getLocalizedMessage()) {
+                                Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getText()) {
             protected void execute()
                     throws Throwable
             {
@@ -159,10 +173,7 @@ public class ResourcePoolTest
                                 if(value6 == 2) {
                                     addFlag = new Boolean(true);
                                 }
-                                if(LoggerAdapter.isDebugEnabled(this)) {
-                                    LoggerAdapter.debug(value6 + " " + value1 + " " + value2 + " " + value3 + " " + value4 + " " + value5,
-                                                        this);
-                                }
+                                SLF4JLoggerProxy.debug(this, "{} {} {} {} {} {}", value6, value1, value2, value3, value4, value5); //$NON-NLS-1$
                                 doReturnTest(value1==1, 
                                              value2==1, 
                                              value3==1, 
@@ -185,7 +196,7 @@ public class ResourcePoolTest
         assertTrue(mTestPool.rejectNewRequests());
         
         new ExpectedTestFailure(ResourcePoolShuttingDownException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getLocalizedMessage()) {
+                                Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN.getText()) {
             protected void execute()
                 throws Throwable
             {
@@ -277,9 +288,9 @@ public class ResourcePoolTest
         doExecuteTest(new TestExecutable(), 
                       true);
         
-        mTestPool.setThrowDuringGetNextResource(new ResourcePoolException("This exception is expected"));
+        mTestPool.setThrowDuringGetNextResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()) {
+                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()) {
             protected void execute()
                 throws Throwable
             {
@@ -288,9 +299,9 @@ public class ResourcePoolTest
             }            
         }.run();
 
-        mTestPool.setThrowDuringGetNextResource(new NullPointerException("This exception is expected"));
+        mTestPool.setThrowDuringGetNextResource(new NullPointerException("This exception is expected")); //$NON-NLS-1$
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getLocalizedMessage()) {
+                                Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE.getText()) {
             protected void execute()
                 throws Throwable
             {
@@ -310,9 +321,9 @@ public class ResourcePoolTest
         }.run();
         
         final TestExecutable block = new TestExecutable();
-        block.setThrowable(new NullPointerException("This exception is expected"));
+        block.setThrowable(new NullPointerException("This exception is expected")); //$NON-NLS-1$
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR.getLocalizedMessage()) {
+                                Messages.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR.getText()) {
             protected void execute()
                 throws Throwable
             {
@@ -324,7 +335,7 @@ public class ResourcePoolTest
         doExecuteTest(new TestExecutable(),
                       false);
         
-        mTestPool.setThrowDuringReturnResource(new ResourcePoolException("This exception is expected"));
+        mTestPool.setThrowDuringReturnResource(new ResourcePoolException(new I18NBoundMessage0P(I18N_EXPECTED_EXCEPTION_MSG)));
         new ExpectedTestFailure(ResourcePoolException.class) {
             protected void execute()
                 throws Throwable
@@ -334,7 +345,7 @@ public class ResourcePoolTest
             }            
         }.run();
         
-        mTestPool.setThrowDuringReturnResource(new NullPointerException("This exception is expected"));
+        mTestPool.setThrowDuringReturnResource(new NullPointerException("This exception is expected")); //$NON-NLS-1$
         new ExpectedTestFailure(ResourcePoolException.class) {
             protected void execute()
                 throws Throwable

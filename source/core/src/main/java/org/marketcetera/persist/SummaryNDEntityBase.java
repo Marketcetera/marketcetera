@@ -9,7 +9,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface SummaryNDEntityBase extends SummaryEntityBase {
     /**
      * The name of this entity

@@ -13,6 +13,7 @@ import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MarketceteraFIXException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.osgi.util.tracker.ServiceTracker;
 import org.springframework.jms.core.JmsOperations;
 
@@ -283,7 +284,8 @@ public class PhotonController
 		try {
 			CharField sideField = fixMessage.getField(new Side());
 			if (sideField == null || sideField.getValue() == 0) {
-				throw new MarketceteraFIXException(MISSING_SIDE.getText(fixMessage));
+				throw new MarketceteraFIXException(new I18NBoundMessage1P(MISSING_SIDE,
+				                                                          fixMessage));
 			}
 		} catch (Exception anyException) {
 			internalMainLogger.debug(MISSING_SIDE.getText(fixMessage),

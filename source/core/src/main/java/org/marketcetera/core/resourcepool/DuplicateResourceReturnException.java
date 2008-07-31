@@ -1,6 +1,6 @@
 package org.marketcetera.core.resourcepool;
 
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * Thrown when a {@link Resource} is returned (@see {@link ResourcePool#returnResource(Resource)} twice. 
@@ -16,24 +16,6 @@ public class DuplicateResourceReturnException
     /**
      * Create a new DuplicateResourceReturnException instance.
      */
-    public DuplicateResourceReturnException(String inMessage)
-    {
-        super(inMessage);
-    }
-
-    /**
-     * Create a new DuplicateResourceReturnException instance.
-     */
-    public DuplicateResourceReturnException(String inMsg,
-                                            Throwable inNested)
-    {
-        super(inMsg,
-              inNested);
-    }
-
-    /**
-     * Create a new DuplicateResourceReturnException instance.
-     */
     public DuplicateResourceReturnException(Throwable inNested)
     {
         super(inNested);
@@ -42,18 +24,18 @@ public class DuplicateResourceReturnException
     /**
      * Create a new DuplicateResourceReturnException instance.
      */
-    public DuplicateResourceReturnException(MessageKey inKey)
+    public DuplicateResourceReturnException(I18NBoundMessage inMessage)
     {
-        super(inKey);
+        super(inMessage);
     }
 
     /**
      * Create a new DuplicateResourceReturnException instance.
      */
-    public DuplicateResourceReturnException(MessageKey inKey,
-                                            Throwable inNested)
+    public DuplicateResourceReturnException(Throwable inNested,
+                                            I18NBoundMessage inMessage)
     {
-        super(inKey,
-              inNested);
+        super(inNested,
+              inMessage);
     }
 }

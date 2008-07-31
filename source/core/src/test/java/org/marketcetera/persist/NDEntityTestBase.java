@@ -16,7 +16,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class NDEntityTestBase<E extends NDEntityBase,
         S extends SummaryNDEntityBase> extends
         EntityTestBase<E,S> {
@@ -28,7 +28,7 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
      */
     @Test(expected = NoResultException.class)
     public void singleByNameNotExists() throws Exception {
-        String s = "notexists";
+        String s = "notexists"; //$NON-NLS-1$
         assertFalse(fetchExistsByName(s));
         fetchByName(s);
         fail();
@@ -41,7 +41,7 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
      */
     @Test(expected = NoResultException.class)
     public void singleSummaryByNameNotExists() throws Exception {
-        fetchSummaryByName("notexists");
+        fetchSummaryByName("notexists"); //$NON-NLS-1$
         fail();
     }
 
@@ -111,7 +111,7 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
     private void nameValidationFailures(E e) {
         e.setName(null);
         assertSaveFailure(e, ValidationException.class,UNSPECIFIED_NAME_ATTRIBUTE);
-        e.setName("");
+        e.setName(""); //$NON-NLS-1$
         assertSaveFailure(e,ValidationException.class,UNSPECIFIED_NAME_ATTRIBUTE);
         StringBuilder sb = new StringBuilder();
         for(int i = 0; i < 256; i++) {
@@ -120,37 +120,37 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
         e.setName(sb.toString());
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage1P(NAME_ATTRIBUTE_TOO_LONG,sb.toString()));
-        String name = "a12_";
+        String name = "a12_"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
-        name = "a12%";
+        name = "a12%"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
-        name = "a12#";
+        name = "a12#"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
-        name = "a12$";
+        name = "a12$"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
-        name = "a12^";
+        name = "a12^"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
-        name = "a12?";
+        name = "a12?"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
                         NDEntityBase.namePattern.toString()));
-        name = "a12*";
+        name = "a12*"; //$NON-NLS-1$
         e.setName(name);
         assertSaveFailure(e,ValidationException.class,
                 new I18NBoundMessage2P(NAME_ATTRIBUTE_INVALID,name,
@@ -260,8 +260,8 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
     @Override
     protected List<MultiQueryFilterTestHelper<E, S>> getFilterTestHelpers() throws Exception {
         List<MultiQueryFilterTestHelper<E,S>> l = super.getFilterTestHelpers();
-        l.add(stringFilterHelper(NDEntityBase.ATTRIBUTE_NAME, "nameFilter"));
-        l.add(stringFilterHelper(NDEntityBase.ATTRIBUTE_DESCRIPTION, "descriptionFilter"));
+        l.add(stringFilterHelper(NDEntityBase.ATTRIBUTE_NAME, "nameFilter")); //$NON-NLS-1$
+        l.add(stringFilterHelper(NDEntityBase.ATTRIBUTE_DESCRIPTION, "descriptionFilter")); //$NON-NLS-1$
         return l;
     }
 }

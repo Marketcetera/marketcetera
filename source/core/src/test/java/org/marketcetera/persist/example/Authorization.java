@@ -24,10 +24,10 @@ import java.util.HashSet;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 @Entity
-@Table(name = "test_auth",
-        uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
+@Table(name = "test_auth", //$NON-NLS-1$
+        uniqueConstraints={@UniqueConstraint(columnNames={"name"})}) //$NON-NLS-1$
 public class Authorization extends NDEntityBase {
     private static final long serialVersionUID = 4651379333749106571L;
 
@@ -106,7 +106,7 @@ public class Authorization extends NDEntityBase {
      *
      * @return the groups that this authorization has been assigned to
      */
-    @ManyToMany(mappedBy = "authorizations", targetEntity = Group.class)
+    @ManyToMany(mappedBy = "authorizations", targetEntity = Group.class) //$NON-NLS-1$
     private Set<SummaryGroup> getGroups() {
         return groups;
     }
@@ -120,5 +120,5 @@ public class Authorization extends NDEntityBase {
     /**
      * The entity name as is used in various JPQL Queries
      */
-    static final String ENTITY_NAME = "Authorization";
+    static final String ENTITY_NAME = "Authorization"; //$NON-NLS-1$
 }

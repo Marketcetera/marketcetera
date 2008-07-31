@@ -1,8 +1,10 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 
@@ -13,14 +15,14 @@ import quickfix.Message;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
-public class MarketceteraFIXException extends MarketceteraException {
-    public MarketceteraFIXException(String message) {
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class MarketceteraFIXException extends CoreException {
+    public MarketceteraFIXException(I18NBoundMessage message) {
         super(message);
     }
 
-    public MarketceteraFIXException(String msg, Throwable nested) {
-        super(msg, nested);
+    public MarketceteraFIXException(Throwable nested, I18NBoundMessage msg) {
+        super(nested, msg);
     }
 
     public MarketceteraFIXException(Throwable nested) {
@@ -28,12 +30,12 @@ public class MarketceteraFIXException extends MarketceteraException {
     }
 
     public static MarketceteraFIXException createFieldNotFoundException(FieldNotFound fnf) {
-        return createFieldNotFoundException(fnf, null);
+        String fieldName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
+        return new MarketceteraFIXException(fnf, new I18NBoundMessage1P(Messages.FIX_FNF_NOMSG, fieldName));
     }
+
     public static MarketceteraFIXException createFieldNotFoundException(FieldNotFound fnf, Message message) {
         String fieldName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
-        String msg = MessageKey.FIX_FNF.getLocalizedMessage(fieldName);
-        String msgSuffix = (message == null) ? "" : ": "+message;
-        return new MarketceteraFIXException(msg+msgSuffix, fnf);
+        return new MarketceteraFIXException(fnf, new I18NBoundMessage2P(Messages.FIX_FNF_MSG, fieldName, message));
     }
 }

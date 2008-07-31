@@ -11,7 +11,7 @@ import quickfix.field.MsgType;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageAugmentor_42 extends FIXMessageAugmentor_41 {
     private  static String[] TT_APPLICABLE_MESSAGE_CODES = new String[] {
                 MsgType.ORDER_CANCEL_REJECT,

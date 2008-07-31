@@ -1,6 +1,7 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.spring.SpringUtils;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
@@ -10,6 +11,8 @@ import org.marketcetera.ors.mbeans.ORSAdmin;
 import org.quickfixj.jmx.JmxExporter;
 import org.springframework.context.ApplicationContext;
 import quickfix.SocketInitiator;
+
+import org.apache.log4j.PropertyConfigurator;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -33,18 +36,18 @@ import java.util.List;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderRoutingSystem extends ApplicationBase {
 
     public static final String CFG_BASE_FILE_NAME=
-        "file:"+CONF_DIR+"ors_base.xml";
+        "file:"+CONF_DIR+"ors_base.xml"; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static final String LOGGER_NAME = OrderRoutingSystem.class.getName();
-    public static final MessageBundleInfo ORS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("ors", "ors_messages");
+    public static final MessageBundleInfo ORS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("ors", "ors_messages"); //$NON-NLS-1$ //$NON-NLS-2$
     public static final String[] APP_CONTEXT_CONFIG_FILES =
-            {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml",
-                    "ors.xml", "ors-shared.xml", "ors_db.xml",
-                    "ors_orm_vendor.xml", "ors_orm.xml"};
+            {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "ors.xml", "ors-shared.xml", "ors_db.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    "ors_orm_vendor.xml", "ors_orm.xml"}; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static StandardAuthentication authentication;
     private volatile static OrderRoutingSystem instance = null;
@@ -55,11 +58,16 @@ public class OrderRoutingSystem extends ApplicationBase {
         return bundles;
     }
 
+    public static void initializeLogger(String logConfig)
+    {
+        PropertyConfigurator.configureAndWatch
+            (ApplicationBase.CONF_DIR+logConfig, LOGGER_WATCH_DELAY);
+    }
+
     private static void usage()
     {
-        System.err.println("Usage: java "+
-                           OrderRoutingSystem.class.getName());
-        System.err.println("Authentication options:");
+        System.err.println(Messages.APP_USAGE.getText(OrderRoutingSystem.class.getName()));
+        System.err.println(Messages.APP_AUTH_OPTIONS.getText());
         System.err.println();
         authentication.printUsage(System.err);
         System.exit(1);
@@ -68,13 +76,15 @@ public class OrderRoutingSystem extends ApplicationBase {
     public static void main(String [] args) throws ConfigFileLoadingException
     {
         try {
+            initializeLogger(LOGGER_CONF_FILE);
+
             authentication=new StandardAuthentication(CFG_BASE_FILE_NAME,args);
             if (!authentication.setValues()) {
                 usage();
             }
             args=authentication.getOtherArgs();
             if (args.length!=0) {
-                System.err.println("No arguments are allowed");
+                System.err.println(Messages.APP_NO_ARGS_ALLOWED.getText());
                 usage();
             }
             StaticApplicationContext parentContext=
@@ -91,26 +101,24 @@ public class OrderRoutingSystem extends ApplicationBase {
             instance = new OrderRoutingSystem();
             ApplicationContext appCtx = instance.createApplicationContext(APP_CONTEXT_CONFIG_FILES, parentContext, true);
 
-            if(LoggerAdapter.isInfoEnabled(LOGGER_NAME)) {
-                String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class);
-                String connectPort = (String) appCtx.getBean("socketConnectPortValue", String.class);
-                LoggerAdapter.info(ORSMessageKey.CONNECTING_TO.getLocalizedMessage(connectHost, connectPort), LOGGER_NAME);
-            }
+            String connectHost = (String) appCtx.getBean("socketConnectHostValue", String.class); //$NON-NLS-1$
+            String connectPort = (String) appCtx.getBean("socketConnectPortValue", String.class); //$NON-NLS-1$
+            Messages.CONNECTING_TO.info(LOGGER_NAME, connectHost, connectPort);
 
-            SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class);
+            SocketInitiator initiator = (SocketInitiator) appCtx.getBean("socketInitiator", SocketInitiator.class); //$NON-NLS-1$
             MBeanServer mbeanServer = ManagementFactory.getPlatformMBeanServer();
             JmxExporter exporter = new JmxExporter(mbeanServer);
             exporter.export(initiator);
-            ORSAdmin orsAdmin = (ORSAdmin) appCtx.getBean("orsAdmin", ORSAdmin.class);
-            mbeanServer.registerMBean(orsAdmin, new ObjectName("org.marketcetera.ors.mbean:type=ORSAdmin"));
+            ORSAdmin orsAdmin = (ORSAdmin) appCtx.getBean("orsAdmin", ORSAdmin.class); //$NON-NLS-1$
+            mbeanServer.registerMBean(orsAdmin, new ObjectName("org.marketcetera.ors.mbean:type=ORSAdmin")); //$NON-NLS-1$
 
             instance.startWaitingForever();
-            if(LoggerAdapter.isDebugEnabled(LOGGER_NAME)) { LoggerAdapter.debug("ORS main finishing", LOGGER_NAME); }
+            SLF4JLoggerProxy.debug(LOGGER_NAME, "ORS main finishing"); //$NON-NLS-1$
         } catch (Exception ex) {
-            LoggerAdapter.error("Stack trace", ex, LOGGER_NAME);
-            LoggerAdapter.error(MessageKey.ERROR.getLocalizedMessage(), ex, LOGGER_NAME);
+            Messages.ERROR_STACK_TRACE.error(LOGGER_NAME, ex);
+            Messages.ERROR_CONFIG.error(LOGGER_NAME, ex);
         } finally {
-            LoggerAdapter.info(MessageKey.APP_EXIT.getLocalizedMessage(), LOGGER_NAME);
+            Messages.APP_EXIT.info(LOGGER_NAME);
         }
     }
 

@@ -12,7 +12,7 @@ import java.io.File;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class HttpDatabaseIDFactoryTest extends TestCase {
     public HttpDatabaseIDFactoryTest(String inName) {
         super(inName);
@@ -23,52 +23,52 @@ public class HttpDatabaseIDFactoryTest extends TestCase {
     }
 
     public void testFactory_existingURL() throws Exception {
-        URL url= new File("src/test/resources/next_id_batch.xml").toURL();
+        URL url= new File("src/test/resources/next_id_batch.xml").toURL(); //$NON-NLS-1$
         HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url);
         factory.grabIDs();
-        assertEquals("1", factory.getNext());
+        assertEquals("1", factory.getNext()); //$NON-NLS-1$
         for(int i=2;i<100; i++)
         {
-            assertEquals("comparing for " +i, ""+i, factory.getNext());
+            assertEquals("comparing for " +i, ""+i, factory.getNext()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
     public void testFactory_existingURL_withPrefix() throws Exception {
-        URL url= new File("src/test/resources/next_id_batch.xml").toURL();
-        HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url, "prefix");
+        URL url= new File("src/test/resources/next_id_batch.xml").toURL(); //$NON-NLS-1$
+        HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url, "prefix"); //$NON-NLS-1$
         factory.grabIDs();
-        assertEquals("prefix1", factory.getNext());
+        assertEquals("prefix1", factory.getNext()); //$NON-NLS-1$
         for(int i=2;i<100; i++)
         {
-            assertEquals("comparing for " +i, "prefix"+i, factory.getNext());
+            assertEquals("comparing for " +i, "prefix"+i, factory.getNext()); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
     /** Verify that when a DB is inaccessible we still get an in-memory set of ids */
     public void testInvalidURL() throws Exception
     {
-        URL url = new URL("http://www.bogus.example.com/no/such/url");
+        URL url = new URL("http://www.bogus.example.com/no/such/url"); //$NON-NLS-1$
         final HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url);
         new ExpectedTestFailure(NoMoreIDsException.class) {
             protected void execute() throws Throwable {
                 factory.grabIDs();
             }
         }.run();
-        assertFalse("1".equals(factory.getNext()));
-        assertTrue("id is "+factory.getNext(), factory.getNext().contains(InetAddress.getLocalHost().toString()));
+        assertFalse("1".equals(factory.getNext())); //$NON-NLS-1$
+        assertTrue("id is "+factory.getNext(), factory.getNext().contains(InetAddress.getLocalHost().toString())); //$NON-NLS-1$
 
         // now verify subsequent are different
         String prev = factory.getNext();
         for(int i=0;i<20; i++)
         {
             String cur = factory.getNext();
-            assertFalse("previous id equals to next id", prev.equals(cur));
+            assertFalse("previous id equals to next id", prev.equals(cur)); //$NON-NLS-1$
             prev = cur;
         }
     }
 
     public void testUnconnectableURL() throws Exception {
-        URL url = new URL("http://localhost:3456/no/such/url");
+        URL url = new URL("http://localhost:3456/no/such/url"); //$NON-NLS-1$
         final HttpDatabaseIDFactory factory = new HttpDatabaseIDFactory(url);
         new ExpectedTestFailure(NoMoreIDsException.class) {
             protected void execute() throws Throwable {

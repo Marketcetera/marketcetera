@@ -31,7 +31,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DeleteEntityProcessor<E extends EntityBase> extends QueryProcessor<Integer> {
     private static final long serialVersionUID = -6527985544098500644L;
 
@@ -92,7 +92,7 @@ public class DeleteEntityProcessor<E extends EntityBase> extends QueryProcessor<
      * @return The class for the entity being processed
      * @throws PersistenceException if there was an error fetching the class.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     protected final Class<E> getEntityClass() throws PersistenceException {
         if(clazz == null) {
             try {

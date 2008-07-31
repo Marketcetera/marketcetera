@@ -18,7 +18,7 @@ import quickfix.SessionSettings;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SocketInitiator extends quickfix.SocketInitiator implements
 		InitializingBean, DisposableBean {
 

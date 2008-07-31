@@ -16,6 +16,6 @@ import java.io.Serializable;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface PersistContext extends Serializable {
 }

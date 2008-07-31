@@ -1,8 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MessageBundleManager;
-import org.marketcetera.core.LoggerAdapter;
+//import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -24,7 +23,7 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class PersistTestBase {
     private static SecureRandom generator;
 
@@ -56,7 +55,7 @@ public class PersistTestBase {
             String[] configFiles,
             ApplicationContext parent) throws Exception {
         try {
-            generator = SecureRandom.getInstance("SHA1PRNG");
+            generator = SecureRandom.getInstance("SHA1PRNG"); //$NON-NLS-1$
             logSetup();
             //runs multiple tests in the same vm (which it currently does)
             ClassPathXmlApplicationContext context;
@@ -69,7 +68,7 @@ public class PersistTestBase {
             context.registerShutdownHook();
             return context;
         } catch (Exception e) {
-            SLF4JLoggerProxy.error(PersistTestBase.class, "FailedSetup:", e);
+            SLF4JLoggerProxy.error(PersistTestBase.class, "FailedSetup:", e); //$NON-NLS-1$
             throw e;
         }
     }
@@ -78,8 +77,7 @@ public class PersistTestBase {
      * Sets up logging.
      */
     protected static void logSetup() {
-        MessageBundleManager.registerCoreMessageBundle();
-        LoggerAdapter.initializeLogger("unit-testing");
+        //MessageBundleManager.registerCoreMessageBundle();
     }
 
     /**
@@ -113,8 +111,8 @@ public class PersistTestBase {
             Collection<T> expected, Collection<T> actual) {
         if((expected == null || expected.isEmpty()) ^
                 (actual == null || actual.isEmpty())) {
-            org.junit.Assert.fail("expected<" + expected +
-                    "> actual<" + actual +">");
+            org.junit.Assert.fail("expected<" + expected + //$NON-NLS-1$
+                    "> actual<" + actual +">"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         if((expected == null || expected.isEmpty()) &&
                 (actual == null || actual.isEmpty())) {
@@ -129,8 +127,8 @@ public class PersistTestBase {
         for(T t:actual) {
             actIds.add(t.getId());
         }
-        org.junit.Assert.assertTrue("expected<" + expected + "> actual<" +
-                actual + ">",expIds.equals(actIds));
+        org.junit.Assert.assertTrue("expected<" + expected + "> actual<" + //$NON-NLS-1$ //$NON-NLS-2$
+                actual + ">",expIds.equals(actIds)); //$NON-NLS-1$
     }
 
     /**
@@ -177,7 +175,7 @@ public class PersistTestBase {
             return;
         }
         if(d1 == null || d2 == null) {
-            fail("expected<" + d1 + "> actual<" + d2 + ">");
+            fail("expected<" + d1 + "> actual<" + d2 + ">"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         Calendar c1 = Calendar.getInstance();
         Calendar c2 = Calendar.getInstance();

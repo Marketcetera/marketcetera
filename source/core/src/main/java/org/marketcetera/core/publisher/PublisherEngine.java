@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * Publication engine which supplies the Publish side of the Publish/Subscribe contract.
@@ -136,10 +136,7 @@ public final class PublisherEngine
      */
     private Future<Object> doPublish(Object inData)
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Publishing " + inData + " to subscribers", 
-                            this);
-        }
+        SLF4JLoggerProxy.debug(this, "Publishing {} to subscribers", inData); //$NON-NLS-1$
         initializeThreadPool(getMaxPoolSize());
         // hand the notification chore to a thread from the thread pool
         List<ISubscriber> subscribers;

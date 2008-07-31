@@ -18,7 +18,7 @@ import static org.marketcetera.persist.JPQLConstants.*;
  * 
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SimpleEntityOrder extends EntityOrder {
     private static final long serialVersionUID = 8772824511315751514L;
 

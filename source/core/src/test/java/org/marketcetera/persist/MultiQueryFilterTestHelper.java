@@ -12,7 +12,7 @@ import java.beans.PropertyDescriptor;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class MultiQueryFilterTestHelper<E extends EntityBase,
         S extends SummaryEntityBase> {
     /**
@@ -98,7 +98,7 @@ public abstract class MultiQueryFilterTestHelper<E extends EntityBase,
      */
     protected void setField(E e, int i) throws Exception {
         if(fieldDesc.getWriteMethod() == null) {
-            fail("Unwritable property:"+fieldDesc.getName());
+            fail("Unwritable property:"+fieldDesc.getName()); //$NON-NLS-1$
         }
         fieldDesc.getWriteMethod().invoke(e, generateValue(i));
     }
@@ -114,7 +114,7 @@ public abstract class MultiQueryFilterTestHelper<E extends EntityBase,
      */
     protected Object getField(S s) throws Exception {
         if(fieldDesc.getReadMethod() == null) {
-            fail("Unreadable property:"+fieldDesc.getName());
+            fail("Unreadable property:"+fieldDesc.getName()); //$NON-NLS-1$
         }
         return fieldDesc.getReadMethod().invoke(s);
     }
@@ -130,7 +130,7 @@ public abstract class MultiQueryFilterTestHelper<E extends EntityBase,
     protected void applyFilter(MultipleEntityQuery query,
                                Object filter) throws Exception {
         if(filterDesc.getWriteMethod() == null) {
-            fail("Unwritable filter:"+filterDesc.getName());
+            fail("Unwritable filter:"+filterDesc.getName()); //$NON-NLS-1$
         }
         filterDesc.getWriteMethod().invoke(query, filter);
     }

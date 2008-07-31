@@ -13,7 +13,7 @@ import java.util.*;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageUtilTest extends FIXVersionedTestCase {
 	/// this is to prevent errors on windows where orderIDs get same system.currentMillis
 	// b/c windows doesn't have fine-grained enough system clock
@@ -31,16 +31,16 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         return suite;
 /*/
         return new FIXVersionTestSuite(FIXMessageUtilTest.class, FIXVersionTestSuite.ALL_VERSIONS,
-                new HashSet<String>(Arrays.asList("testMarketDataRequst_ALL", "testMDR_oneSymbol", "testMDR_ManySymbols")),
+                new HashSet<String>(Arrays.asList("testMarketDataRequst_ALL", "testMDR_oneSymbol", "testMDR_ManySymbols")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 FIXVersionTestSuite.FIX42_PLUS_VERSIONS);
     }
 
     public void testNewLimitOrder() throws Exception {
-        String orderID = "asdf";
+        String orderID = "asdf"; //$NON-NLS-1$
         char side = Side.BUY;
-        String  quantity = "200";
-        String symbol = "IBM";
-        String priceString = "123.45";
+        String  quantity = "200"; //$NON-NLS-1$
+        String symbol = "IBM"; //$NON-NLS-1$
+        String priceString = "123.45"; //$NON-NLS-1$
         char timeInForce = TimeInForce.DAY;
         Message aMessage = msgFactory.newLimitOrder(orderID, side, new BigDecimal(quantity),
                                                  new MSymbol(symbol), new BigDecimal(priceString), timeInForce, null);
@@ -57,16 +57,16 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
     /** want to test the case where price is specified or NULL (market orders) */
     public void testNewExecutionReport() throws Exception {
-        String clOrderID = "asdf";
-        String orderID = "bob";
+        String clOrderID = "asdf"; //$NON-NLS-1$
+        String orderID = "bob"; //$NON-NLS-1$
         char side = Side.BUY;
-        BigDecimal quantity = new BigDecimal("200");
-        String symbol = "IBM";
-        BigDecimal price = new BigDecimal("123.45");
-        Message aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
+        BigDecimal quantity = new BigDecimal("200"); //$NON-NLS-1$
+        String symbol = "IBM"; //$NON-NLS-1$
+        BigDecimal price = new BigDecimal("123.45"); //$NON-NLS-1$
+        Message aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                 OrdStatus.NEW, side, quantity, price,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"),
-                "accountName");
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), //$NON-NLS-1$
+                "accountName"); //$NON-NLS-1$
 
         assertEquals(MsgType.EXECUTION_REPORT, aMessage.getHeader().getString(MsgType.FIELD));
         assertEquals(price, aMessage.getDecimal(Price.FIELD));
@@ -74,19 +74,19 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
         assertEquals(side, aMessage.getChar(Side.FIELD));
         assertEquals(quantity, aMessage.getDecimal(OrderQty.FIELD));
-        assertEquals("accountName", aMessage.getString(Account.FIELD));
+        assertEquals("accountName", aMessage.getString(Account.FIELD)); //$NON-NLS-1$
 
         // now send in a market order with null price
-        aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
+        aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                 OrdStatus.NEW, side, quantity, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), "accountName");
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), "accountName"); //$NON-NLS-1$ //$NON-NLS-2$
         assertFalse(aMessage.isSetField(Price.FIELD));
 
         // now send an order w/out account name
         try {
-            aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID",
+            aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                     OrdStatus.NEW, side, quantity, null,
-                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), null);
+                    BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), null); //$NON-NLS-1$
             aMessage.getString(Account.FIELD);
 
         } catch (FieldNotFound ex) {
@@ -108,7 +108,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                                           int putOrCall, BigDecimal price, BigDecimal qty,
                                           char side, FIXMessageFactory msgFactory)
     {
-        String optionContractSymbol = optionRoot + "+" + optionContractSpecifier;
+        String optionContractSymbol = optionRoot + "+" + optionContractSpecifier; //$NON-NLS-1$
         Message newSingle = createNOS(optionRoot, price, qty, side, msgFactory);
         newSingle.setField(new Symbol(optionContractSymbol));
         newSingle.setField(new MaturityMonthYear(maturityMonthYear));
@@ -131,17 +131,17 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = msgFactory.newBasicOrder();
-        newSingle.setField(new ClOrdID("123-"+(++nosSuffixCounter)+"-"+suffix));
+        newSingle.setField(new ClOrdID("123-"+(++nosSuffixCounter)+"-"+suffix)); //$NON-NLS-1$ //$NON-NLS-2$
         newSingle.setField(new Symbol(symbol));
         newSingle.setField(new Side(side));
         newSingle.setField(new TransactTime(new Date()));
         newSingle.setField(ordType);
         // technically, the OrderID is set by the exchange but for tests we'll set it too b/c OrderProgress expects it
-        newSingle.setField(new OrderID("456"+suffix));
+        newSingle.setField(new OrderID("456"+suffix)); //$NON-NLS-1$
         newSingle.setField(new OrderQty(qty));
         newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
-        newSingle.setField(new Account("testAccount"));
+        newSingle.setField(new Account("testAccount")); //$NON-NLS-1$
         return newSingle;
     }
 
@@ -151,32 +151,32 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
                                              BigDecimal avgPrice, char ordStatus, char execType, char execTransType,
                                              FIXMessageFactory msgFactory, FIXDataDictionary fixDD) throws Exception {
         try {
-            assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD));
-            assertEquals("side", side, inExecReport.getChar(Side.FIELD));
-            assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD));
+            assertEquals("quantity", qty, inExecReport.getString(OrderQty.FIELD)); //$NON-NLS-1$
+            assertEquals("side", side, inExecReport.getChar(Side.FIELD)); //$NON-NLS-1$
+            assertEquals("symbol", symbol, inExecReport.getString(Symbol.FIELD)); //$NON-NLS-1$
             if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-                assertEquals("leavesQty", leavesQty, inExecReport.getDecimal(LeavesQty.FIELD));
+                assertEquals("leavesQty", leavesQty, inExecReport.getDecimal(LeavesQty.FIELD)); //$NON-NLS-1$
             }
             if (lastQty != null) {
-            assertEquals("lastQty",lastQty, inExecReport.getDecimal(LastQty.FIELD));
+            assertEquals("lastQty",lastQty, inExecReport.getDecimal(LastQty.FIELD)); //$NON-NLS-1$
             }
             if (lastPrice != null) {
-                assertEquals("lastPrice", lastPrice, inExecReport.getDecimal(LastPx.FIELD));
+                assertEquals("lastPrice", lastPrice, inExecReport.getDecimal(LastPx.FIELD)); //$NON-NLS-1$
             }
-            assertEquals("cumQty", cumQty, inExecReport.getDecimal(CumQty.FIELD));
-            assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD));
+            assertEquals("cumQty", cumQty, inExecReport.getDecimal(CumQty.FIELD)); //$NON-NLS-1$
+            assertEquals("ordStatus", ordStatus, inExecReport.getChar(OrdStatus.FIELD)); //$NON-NLS-1$
             if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-                assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD));
+                assertEquals("execType", execType, inExecReport.getChar(ExecType.FIELD)); //$NON-NLS-1$
             }
             assertNotNull(inExecReport.getString(TransactTime.FIELD));
 
-            assertEquals("avgPrice", avgPrice, inExecReport.getDecimal(AvgPx.FIELD));
+            assertEquals("avgPrice", avgPrice, inExecReport.getDecimal(AvgPx.FIELD)); //$NON-NLS-1$
             if(version42orBelow(msgFactory)) {
-                assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD));
+                assertEquals("execTransType", execTransType, inExecReport.getChar(ExecTransType.FIELD)); //$NON-NLS-1$
             }
             fixDD.getDictionary().validate(inExecReport, true);
         } catch(FieldNotFound fnf) {
-            fail("Field "+fixDD.getHumanFieldName(fnf.field) + " not found in message: "+inExecReport);
+            fail("Field "+fixDD.getHumanFieldName(fnf.field) + " not found in message: "+inExecReport); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -191,9 +191,9 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
 
     public void testMarketDataRequst_ALL() throws Exception {
-        Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<MSymbol>(0));
-        assertEquals("sending 0 numSymbols doesn't work", 0, req.getInt(NoRelatedSym.FIELD));
-        assertEquals("toliID", req.getString(MDReqID.FIELD));
+        Message req = msgFactory.newMarketDataRequest("toliID", new ArrayList<MSymbol>(0)); //$NON-NLS-1$
+        assertEquals("sending 0 numSymbols doesn't work", 0, req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
+        assertEquals("toliID", req.getString(MDReqID.FIELD)); //$NON-NLS-1$
         assertEquals(SubscriptionRequestType.SNAPSHOT, req.getChar(SubscriptionRequestType.FIELD));
         assertEquals(2, req.getInt(NoMDEntryTypes.FIELD));
         Group entryTypeGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoMDEntryTypes.FIELD);
@@ -204,24 +204,24 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     }
 
     public void testMDR_oneSymbol() throws Exception {
-        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"));
-        Message req = msgFactory.newMarketDataRequest("toliID", list);
-        assertEquals("sending 1 numSymbols doesn't work", 1, req.getInt(NoRelatedSym.FIELD));
+        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI")); //$NON-NLS-1$
+        Message req = msgFactory.newMarketDataRequest("toliID", list); //$NON-NLS-1$
+        assertEquals("sending 1 numSymbols doesn't work", 1, req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
         for(int i=0;i<list.size(); i++) {
             Group symbolGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
             req.getGroup(i+1, symbolGroup);
-            assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD));
+            assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
     public void testMDR_ManySymbols() throws Exception {
-        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"), new MSymbol("GRAHAM"), new MSymbol("LENA"));
-        Message req = msgFactory.newMarketDataRequest("toliID", list);
-        assertEquals("sending 1 numSymbols doesn't work", list.size(), req.getInt(NoRelatedSym.FIELD));
+        List<MSymbol> list = Arrays.asList(new MSymbol("TOLI"), new MSymbol("GRAHAM"), new MSymbol("LENA")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        Message req = msgFactory.newMarketDataRequest("toliID", list); //$NON-NLS-1$
+        assertEquals("sending 1 numSymbols doesn't work", list.size(), req.getInt(NoRelatedSym.FIELD)); //$NON-NLS-1$
         for(int i=0;i<list.size(); i++) {
             Group symbolGroup =  msgFactory.createGroup(MsgType.MARKET_DATA_REQUEST, NoRelatedSym.FIELD);
             req.getGroup(i+1, symbolGroup);
-            assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD));
+            assertEquals("quote for symbol["+i+"] is wrong", list.get(i).getFullSymbol(), symbolGroup.getString(Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -230,55 +230,55 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
      * @throws Exception
      */
     public void testFillFieldsFromExistingMessage() throws Exception {
-        Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
+        Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         buy.removeField(Side.FIELD);
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            buy.setString(LeavesQty.FIELD, "33");
+            buy.setString(LeavesQty.FIELD, "33"); //$NON-NLS-1$
         }
         buy.setChar(ExecTransType.FIELD, ExecTransType.NEW);
         buy.setChar(OrdStatus.FIELD, OrdStatus.NEW);
-        buy.setString(ClOrdID.FIELD, "someClOrd");
-        buy.setString(ExecID.FIELD, "anExecID");
+        buy.setString(ClOrdID.FIELD, "someClOrd"); //$NON-NLS-1$
+        buy.setString(ExecID.FIELD, "anExecID"); //$NON-NLS-1$
 
         Message execReport = new Message();
         execReport.getHeader().setString(MsgType.FIELD, MsgType.EXECUTION_REPORT);
-        execReport.setString(Text.FIELD, "dummyMessage");
+        execReport.setString(Text.FIELD, "dummyMessage"); //$NON-NLS-1$
 
         FIXMessageUtil.fillFieldsFromExistingMessage(execReport, buy);
         assertFalse(execReport.isSetField(Side.FIELD));
         // no LeavesQty in fix40
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("33", execReport.getString(LeavesQty.FIELD));
+            assertEquals("33", execReport.getString(LeavesQty.FIELD)); //$NON-NLS-1$
         }
-        assertEquals("GAP", execReport.getString(Symbol.FIELD));
-        assertEquals("dummyMessage", execReport.getString(Text.FIELD));
+        assertEquals("GAP", execReport.getString(Symbol.FIELD)); //$NON-NLS-1$
+        assertEquals("dummyMessage", execReport.getString(Text.FIELD)); //$NON-NLS-1$
         if(version42orBelow(msgFactory)) {
             assertTrue(execReport.isSetField(ExecTransType.FIELD));
         }
         assertTrue(execReport.isSetField(OrdStatus.FIELD));
-        assertFalse("clOrdID is not required so should not be transferred", execReport.isSetField(ClOrdID.FIELD));
+        assertFalse("clOrdID is not required so should not be transferred", execReport.isSetField(ClOrdID.FIELD)); //$NON-NLS-1$
         assertTrue(execReport.isSetField(OrderID.FIELD));
         assertTrue(execReport.isSetField(ExecID.FIELD));
     }
 
     public void testFillFieldsFromExistingMessage_ExtraInvalidFields() throws Exception {
-        Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
+        Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         buy.removeField(Side.FIELD);
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            buy.setString(LeavesQty.FIELD, "33");
+            buy.setString(LeavesQty.FIELD, "33"); //$NON-NLS-1$
         }
         buy.setChar(ExecTransType.FIELD, ExecTransType.NEW);
         buy.setChar(OrdStatus.FIELD, OrdStatus.NEW);
-        buy.setString(ClOrdID.FIELD, "someClOrd");
-        buy.setString(ExecID.FIELD, "anExecID");
+        buy.setString(ClOrdID.FIELD, "someClOrd"); //$NON-NLS-1$
+        buy.setString(ExecID.FIELD, "anExecID"); //$NON-NLS-1$
         buy.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PUBLIC));
-        buy.setString(1900, "bogusField");
+        buy.setString(1900, "bogusField"); //$NON-NLS-1$
         buy.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
 
-        Message execReport = msgFactory.newExecutionReport("orderID", "clOrderID", "1234", OrdStatus.CANCELED, Side.BUY, 
-                new BigDecimal(2385), new BigDecimal("23.45"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
-                new MSymbol("GAP"), "account");
-        execReport.setString(Text.FIELD, "dummyMessage");
+        Message execReport = msgFactory.newExecutionReport("orderID", "clOrderID", "1234", OrdStatus.CANCELED, Side.BUY,  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                new BigDecimal(2385), new BigDecimal("23.45"), BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, //$NON-NLS-1$
+                new MSymbol("GAP"), "account"); //$NON-NLS-1$ //$NON-NLS-2$
+        execReport.setString(Text.FIELD, "dummyMessage"); //$NON-NLS-1$
 
         FIXMessageUtil.fillFieldsFromExistingMessage(execReport, buy, false);
         fixDD.getDictionary().validate(execReport, true);
@@ -288,44 +288,44 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 
     public void testGetTextOrEncodedText() throws InvalidMessage {
     	{
-            Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
-	        String unencodedMessage = "some unencoded message text";
+            Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	        String unencodedMessage = "some unencoded message text"; //$NON-NLS-1$
 	        buy.setField(new Text(unencodedMessage));
 	        Message copy = new Message(buy.toString());
-	        assertEquals(unencodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
+	        assertEquals(unencodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none")); //$NON-NLS-1$
     	}
     	{
-            Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory);
-	        String encodedMessage = "some encoded message text";
+            Message buy = createNOS("GAP", new BigDecimal("23.45"), new BigDecimal("2385"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	        String encodedMessage = "some encoded message text"; //$NON-NLS-1$
 	        buy.setField(new EncodedTextLen(encodedMessage.length()));
 	        buy.setField(new EncodedText(encodedMessage));
 	        Message copy = new Message(buy.toString());
-	        assertEquals(encodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none"));
+	        assertEquals(encodedMessage, FIXMessageUtil.getTextOrEncodedText(copy, "none")); //$NON-NLS-1$
     	}
     }
     
     public void testGetCorrelationField() throws Exception {
-		String requestString = "REQUEST";
+		String requestString = "REQUEST"; //$NON-NLS-1$
     	Field[] fields = MsgType.class.getDeclaredFields();
     	for (Field field : fields) {
 			String fieldName = field.getName();
 			if (field.getType().equals(String.class)
-					&& !fieldName.equals("TEST_REQUEST")	// omit session-level message
-					&& !fieldName.equals("RESEND_REQUEST")	// omit session-level message
-					&& !fieldName.equals("BID_REQUEST")		// omit 
-					&& !fieldName.startsWith("ORDER_")		// omit order-related messages
-					&& !fieldName.startsWith("CROSS_ORDER_")// omit order-related messages
-					&& !fieldName.endsWith("_ACK")			// omit "ack" messages
-					&& !fieldName.startsWith("LIST_")		// omit list-order-related messages
+					&& !fieldName.equals("TEST_REQUEST")	// omit session-level message //$NON-NLS-1$
+					&& !fieldName.equals("RESEND_REQUEST")	// omit session-level message //$NON-NLS-1$
+					&& !fieldName.equals("BID_REQUEST")		// omit  //$NON-NLS-1$
+					&& !fieldName.startsWith("ORDER_")		// omit order-related messages //$NON-NLS-1$
+					&& !fieldName.startsWith("CROSS_ORDER_")// omit order-related messages //$NON-NLS-1$
+					&& !fieldName.endsWith("_ACK")			// omit "ack" messages //$NON-NLS-1$
+					&& !fieldName.startsWith("LIST_")		// omit list-order-related messages //$NON-NLS-1$
 					&& (fieldName.startsWith(requestString) 
-					|| fieldName.endsWith("REQUEST")))
+					|| fieldName.endsWith("REQUEST"))) //$NON-NLS-1$
 			{
 				String msgTypeValue = (String) field.get(null);
 				DataDictionary dictionary = fixDD.getDictionary();
 				if (dictionary.isMsgType(msgTypeValue)){
 					StringField correlationField = FIXMessageUtil.getCorrelationField(fixVersion, msgTypeValue);
-					assertTrue("Couldn't find correlation for "+fieldName, correlationField!=null);
-					assertTrue(correlationField.getField()+" is not a valid value for "+fieldName+" in "+this.fixVersion,
+					assertTrue("Couldn't find correlation for "+fieldName, correlationField!=null); //$NON-NLS-1$
+					assertTrue(correlationField.getField()+" is not a valid value for "+fieldName+" in "+this.fixVersion, //$NON-NLS-1$ //$NON-NLS-2$
 							dictionary.isMsgField(msgTypeValue, correlationField.getField()));
 				}
 			}
@@ -339,26 +339,26 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
      */
     public void testTrailingZeroesAssumption() throws InvalidMessage, FieldNotFound
     {
-    	String noZeroes = "1.111";
-    	String twoZeroes = "1.100";
-    	String aLotOfZeroes = "1.1000000";
-    	String separator = "\u0001";
+    	String noZeroes = "1.111"; //$NON-NLS-1$
+    	String twoZeroes = "1.100"; //$NON-NLS-1$
+    	String aLotOfZeroes = "1.1000000"; //$NON-NLS-1$
+    	String separator = "\u0001"; //$NON-NLS-1$
 
     	Message execReport = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
-    	execReport.setField(new OrderID("1"));
-    	execReport.setField(new ExecID("2"));
+    	execReport.setField(new OrderID("1")); //$NON-NLS-1$
+    	execReport.setField(new ExecID("2")); //$NON-NLS-1$
     	execReport.setField(new ExecTransType(ExecTransType.NEW));
     	execReport.setField(new OrdStatus(OrdStatus.NEW));
-    	execReport.setField(new Symbol("A"));
+    	execReport.setField(new Symbol("A")); //$NON-NLS-1$
     	execReport.setField(new Side(Side.BUY));
 		execReport.setField(new OrderQty(new BigDecimal(noZeroes))); 
 		execReport.setField(new CumQty(new BigDecimal(twoZeroes))); 
 		execReport.setField(new AvgPx(new BigDecimal(aLotOfZeroes))); 
 
     	String execReportString = execReport.toString();
-    	assertTrue(execReportString.contains(separator+OrderQty.FIELD+"="+noZeroes+separator));
-    	assertTrue(execReportString.contains(separator+CumQty.FIELD+"="+twoZeroes+separator));
-    	assertTrue(execReportString.contains(separator+AvgPx.FIELD+"="+aLotOfZeroes+separator));
+    	assertTrue(execReportString.contains(separator+OrderQty.FIELD+"="+noZeroes+separator)); //$NON-NLS-1$
+    	assertTrue(execReportString.contains(separator+CumQty.FIELD+"="+twoZeroes+separator)); //$NON-NLS-1$
+    	assertTrue(execReportString.contains(separator+AvgPx.FIELD+"="+aLotOfZeroes+separator)); //$NON-NLS-1$
     	
     	Message reconstituted = new Message(execReportString);
     	assertEquals(noZeroes, reconstituted.getString(OrderQty.FIELD));
@@ -369,7 +369,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testMergeMarketDataMessages() throws Exception {
     	FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
     	Message marketDataSnapshotFullRefresh = messageFactory.createMessage(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH);
-    	marketDataSnapshotFullRefresh.setField(new Symbol("IBM"));
+    	marketDataSnapshotFullRefresh.setField(new Symbol("IBM")); //$NON-NLS-1$
     	Group group;
 		group = messageFactory.createGroup(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH, NoMDEntries.FIELD);
     	group.setField(new MDEntryType(MDEntryType.BID));
@@ -424,14 +424,14 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
     public void testExceptionsInMergeMarketDataMessages() throws Exception {
         final FIXMessageFactory messageFactory = FIXVersion.FIX44.getMessageFactory();
         final Message incremental = messageFactory.createMessage(MsgType.MARKET_DATA_INCREMENTAL_REFRESH);
-        final Message nos = createNOS("IFLI", new BigDecimal("23.3"), new BigDecimal("230"), Side.BUY, messageFactory);
-        new ExpectedTestFailure(IllegalArgumentException.class, MessageKey.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getLocalizedMessage()) {
+        final Message nos = createNOS("IFLI", new BigDecimal("23.3"), new BigDecimal("230"), Side.BUY, messageFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        new ExpectedTestFailure(IllegalArgumentException.class, Messages.FIX_MD_MERGE_INVALID_INCOMING_SNAPSHOT.getText()) {
             protected void execute() throws Throwable {
                 FIXMessageUtil.mergeMarketDataMessages(nos, incremental, messageFactory);
             }
         }.run();
 
-        new ExpectedTestFailure(IllegalArgumentException.class, MessageKey.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getLocalizedMessage()) {
+        new ExpectedTestFailure(IllegalArgumentException.class, Messages.FIX_MD_MERGE_INVALID_INCOMING_INCREMENTAL.getText()) {
             protected void execute() throws Throwable {
                 FIXMessageUtil.mergeMarketDataMessages(messageFactory.createMessage(MsgType.MARKET_DATA_SNAPSHOT_FULL_REFRESH),
                         nos, messageFactory);
@@ -458,35 +458,35 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
 		assertFalse(FIXMessageUtil.isCancellable(OrdStatus.REJECTED));
 		
 		
-		Message aMessage = msgFactory.newExecutionReport("ordid", "clordid",
-				"execid", OrdStatus.PENDING_REPLACE, Side.BUY, BigDecimal.TEN,
+		Message aMessage = msgFactory.newExecutionReport("ordid", "clordid", //$NON-NLS-1$ //$NON-NLS-2$
+				"execid", OrdStatus.PENDING_REPLACE, Side.BUY, BigDecimal.TEN, //$NON-NLS-1$
 				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN,
-				BigDecimal.TEN, new MSymbol("ABC"), null);
+				BigDecimal.TEN, new MSymbol("ABC"), null); //$NON-NLS-1$
 		assertTrue(FIXMessageUtil.isCancellable(aMessage));
-		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", new BigDecimal(10), Side.BUY, msgFactory)));
+		assertFalse(FIXMessageUtil.isCancellable(FIXMessageUtilTest.createMarketNOS("ABC", new BigDecimal(10), Side.BUY, msgFactory))); //$NON-NLS-1$
 
     }
 
     public void testIsEquityOptionOrder() throws Exception {
-        Message equity = FIXMessageUtilTest.createNOS("bob", new BigDecimal("23.11"), new BigDecimal("100"), Side.BUY, msgFactory);
+        Message equity = FIXMessageUtilTest.createNOS("bob", new BigDecimal("23.11"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         assertFalse(equity.getString(Symbol.FIELD), FIXMessageUtil.isEquityOptionOrder(equity));
-        equity.setField(new Symbol("FRED.A"));
-        assertFalse("equity with route doesn't work: FRED.A", FIXMessageUtil.isEquityOptionOrder(equity));
-        equity.setField(new Symbol("FRED.+"));
-        assertFalse("equity with route doesn't work: FRED.+", FIXMessageUtil.isEquityOptionOrder(equity));
+        equity.setField(new Symbol("FRED.A")); //$NON-NLS-1$
+        assertFalse("equity with route doesn't work: FRED.A", FIXMessageUtil.isEquityOptionOrder(equity)); //$NON-NLS-1$
+        equity.setField(new Symbol("FRED.+")); //$NON-NLS-1$
+        assertFalse("equity with route doesn't work: FRED.+", FIXMessageUtil.isEquityOptionOrder(equity)); //$NON-NLS-1$
 
-        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "GE", "200708", new BigDecimal("10.25"),
-                PutOrCall.CALL, new BigDecimal("33.23"), new BigDecimal("10"), Side.BUY, msgFactory);
-        assertTrue("option didn't work", FIXMessageUtil.isEquityOptionOrder(option));
-        assertTrue("didn't work on IBM+IB plain order",
-                FIXMessageUtil.isEquityOptionOrder(FIXMessageUtilTest.createNOS("IBM+IB", new BigDecimal("22.22"),
-                        new BigDecimal("100"), Side.BUY, msgFactory)));
-        equity.setField(new CFICode("OCASPS"));
-        assertTrue("option CFICode didn't work", FIXMessageUtil.isEquityOptionOrder(equity));
+        Message option = FIXMessageUtilTest.createOptionNOS("XYZ", "GE", "200708", new BigDecimal("10.25"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                PutOrCall.CALL, new BigDecimal("33.23"), new BigDecimal("10"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$
+        assertTrue("option didn't work", FIXMessageUtil.isEquityOptionOrder(option)); //$NON-NLS-1$
+        assertTrue("didn't work on IBM+IB plain order", //$NON-NLS-1$
+                FIXMessageUtil.isEquityOptionOrder(FIXMessageUtilTest.createNOS("IBM+IB", new BigDecimal("22.22"), //$NON-NLS-1$ //$NON-NLS-2$
+                        new BigDecimal("100"), Side.BUY, msgFactory))); //$NON-NLS-1$
+        equity.setField(new CFICode("OCASPS")); //$NON-NLS-1$
+        assertTrue("option CFICode didn't work", FIXMessageUtil.isEquityOptionOrder(equity)); //$NON-NLS-1$
     }
 
     public void testIsTradingSessionStatus() throws Exception {
-        Message nos = FIXMessageUtilTest.createNOS("bob", new BigDecimal("23.11"), new BigDecimal("100"), Side.BUY, msgFactory);
+        Message nos = FIXMessageUtilTest.createNOS("bob", new BigDecimal("23.11"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         assertFalse(FIXMessageUtil.isTradingSessionStatus(nos));
 
         Message msg = new Message();

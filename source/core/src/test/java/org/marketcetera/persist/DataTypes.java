@@ -23,32 +23,32 @@ import java.util.LinkedList;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 @Entity
-@Table(name = "test_datatypes", uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
+@Table(name = "test_datatypes", uniqueConstraints={@UniqueConstraint(columnNames={"name"})}) //$NON-NLS-1$ //$NON-NLS-2$
 @NamedNativeQueries(
         value={
-        @NamedNativeQuery(name="getVersion",
-            query="select version() as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getDbCharset",
-            query="select @@character_set_database as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getConnCharset",
-            query="select @@character_set_connection as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getClientCharset",
-            query="select @@character_set_client as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getLocale",
-            query="select @@lc_time_names as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getDbTimezone",
-            query="select @@system_time_zone as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getConnectionTimezone",
-            query="select @@session.time_zone as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getConnectionCollation",
-            query="select @@collation_connection as data",resultSetMapping = "stringValue"),
-        @NamedNativeQuery(name="getDbCollation",
-            query="select @@collation_database as data",resultSetMapping = "stringValue")
+        @NamedNativeQuery(name="getVersion", //$NON-NLS-1$
+            query="select version() as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getDbCharset", //$NON-NLS-1$
+            query="select @@character_set_database as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getConnCharset", //$NON-NLS-1$
+            query="select @@character_set_connection as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getClientCharset", //$NON-NLS-1$
+            query="select @@character_set_client as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getLocale", //$NON-NLS-1$
+            query="select @@lc_time_names as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getDbTimezone", //$NON-NLS-1$
+            query="select @@system_time_zone as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getConnectionTimezone", //$NON-NLS-1$
+            query="select @@session.time_zone as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getConnectionCollation", //$NON-NLS-1$
+            query="select @@collation_connection as data",resultSetMapping = "stringValue"), //$NON-NLS-1$ //$NON-NLS-2$
+        @NamedNativeQuery(name="getDbCollation", //$NON-NLS-1$
+            query="select @@collation_database as data",resultSetMapping = "stringValue") //$NON-NLS-1$ //$NON-NLS-2$
         }
 )
-@SqlResultSetMapping(name="stringValue",columns=@ColumnResult(name="data"))
+@SqlResultSetMapping(name="stringValue",columns=@ColumnResult(name="data")) //$NON-NLS-1$ //$NON-NLS-2$
 public class DataTypes extends NDEntityBase implements SummaryDataType {
     private static final long serialVersionUID = 5065543034578768245L;
 
@@ -66,7 +66,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      *
      */
     public String fetchDBVersion() throws PersistenceException {
-        return execStringQuery("getVersion");
+        return execStringQuery("getVersion"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying database's charset
@@ -76,7 +76,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchDBCharset() throws PersistenceException {
-        return execStringQuery("getDbCharset");
+        return execStringQuery("getDbCharset"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying connection charset
@@ -86,7 +86,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchConnCharset() throws PersistenceException {
-        return execStringQuery("getConnCharset");
+        return execStringQuery("getConnCharset"); //$NON-NLS-1$
     }
     /**
      * Fetches the client's charset
@@ -96,7 +96,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchClientCharset() throws PersistenceException {
-        return execStringQuery("getClientCharset");
+        return execStringQuery("getClientCharset"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying database's locale for unit-testing
@@ -106,7 +106,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchDBLocale() throws PersistenceException {
-        return execStringQuery("getLocale");
+        return execStringQuery("getLocale"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying database's system timezone for unit-testing
@@ -116,7 +116,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchDBTz() throws PersistenceException {
-        return execStringQuery("getDbTimezone");
+        return execStringQuery("getDbTimezone"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying database's connection timezone for unit-testing
@@ -126,7 +126,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchDBConnTz() throws PersistenceException {
-        return execStringQuery("getConnectionTimezone");
+        return execStringQuery("getConnectionTimezone"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying database's system collation for unit-testing
@@ -136,7 +136,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchDBCollation() throws PersistenceException {
-        return execStringQuery("getDbCollation");
+        return execStringQuery("getDbCollation"); //$NON-NLS-1$
     }
     /**
      * Fetches the underlying database's connection collation for unit-testing
@@ -146,7 +146,7 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
      * @throws PersistenceException if there was an error
      */
     public String fetchDBConnCollation() throws PersistenceException {
-        return execStringQuery("getConnectionCollation");
+        return execStringQuery("getConnectionCollation"); //$NON-NLS-1$
     }
 
     /**
@@ -520,5 +520,5 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
     /**
      * The entity name as is used in various JPQL Queries
      */
-    static final String ENTITY_NAME = "DataTypes";
+    static final String ENTITY_NAME = "DataTypes"; //$NON-NLS-1$
 }

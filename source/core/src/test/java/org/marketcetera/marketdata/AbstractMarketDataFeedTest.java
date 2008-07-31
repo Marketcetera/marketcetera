@@ -13,7 +13,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.EventBase;
@@ -36,7 +35,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
 {
@@ -57,7 +56,7 @@ public class AbstractMarketDataFeedTest
     public void testConstructor()
         throws Exception
     {
-        final String providerName = "TestProviderName";
+        final String providerName = "TestProviderName"; //$NON-NLS-1$
         final FeedType type = FeedType.UNKNOWN;
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
@@ -117,10 +116,10 @@ public class AbstractMarketDataFeedTest
         // empty list
         doMarketDataTest(symbols);
         // one symbol
-        symbols.add(new MSymbol("GOOG"));
+        symbols.add(new MSymbol("GOOG")); //$NON-NLS-1$
         doMarketDataTest(symbols);
         // more than one symbol
-        symbols.add(new MSymbol("MSFT"));
+        symbols.add(new MSymbol("MSFT")); //$NON-NLS-1$
         doMarketDataTest(symbols);
         // add a null
         symbols.add(null);
@@ -191,9 +190,9 @@ public class AbstractMarketDataFeedTest
         throws Exception
     {
         MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN);
-        Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT") } ),
+        Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT") } ), //$NON-NLS-1$ //$NON-NLS-2$
                                                                             true);
-        Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ),
+        Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ), //$NON-NLS-1$
                                                                             true);
         MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         MockSubscriber subscriber = new MockSubscriber();
@@ -379,7 +378,7 @@ public class AbstractMarketDataFeedTest
                                   this);
             }
         }.run();
-        feed.dataReceived("handle",
+        feed.dataReceived("handle", //$NON-NLS-1$
                           null);
     }
     /**
@@ -452,11 +451,11 @@ public class AbstractMarketDataFeedTest
         feed.start();
         feed.setShouldTimeout(true);
         final MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
-                                                                                                                      AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") } ), 
+                                                                                                                      AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") } ),  //$NON-NLS-1$
                                                                                                                                                                        true), 
                                                                                                                       new ArrayList<ISubscriber>());
         new ExpectedTestFailure(FeedException.class,
-                                MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                                Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
             protected void execute()
                     throws Throwable
             {
@@ -493,7 +492,7 @@ public class AbstractMarketDataFeedTest
         assertTrue(feed.getCreatedHandles().isEmpty());
         // #3
         MockSubscriber s1 = new MockSubscriber();
-        Message message0 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("test") }), 
+        Message message0 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("test") }),  //$NON-NLS-1$
                                                                             false);
         MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(new MockMarketDataFeedCredentials(),
                                                                                                                 message0,
@@ -545,9 +544,9 @@ public class AbstractMarketDataFeedTest
         assertEquals(2,
                      handleList2.size());
         // create two new messages to use
-        Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("COLIN") }), 
+        Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("COLIN") }),  //$NON-NLS-1$
                                                                             false);
-        Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("NOT-COLIN") }), 
+        Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("NOT-COLIN") }),  //$NON-NLS-1$
                                                                             false);
         assertFalse(message1.equals(message2));
         // reset the subscriber counters
@@ -779,7 +778,7 @@ public class AbstractMarketDataFeedTest
     {
         MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials();
         MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
-                                                         "MockMarketDataFeed",
+                                                         "MockMarketDataFeed", //$NON-NLS-1$
                                                          credentials,
                                                          25);
         feed.start();
@@ -1339,7 +1338,7 @@ public class AbstractMarketDataFeedTest
         throws Exception
     {
         final MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.UNKNOWN,
-                                                               "obnoxious-feed-name-with-dashes",
+                                                               "obnoxious-feed-name-with-dashes", //$NON-NLS-1$
                                                                null,
                                                                0);
         feed.start();
@@ -1374,7 +1373,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token = null;
         if(inGenerateTokenThrows) {
             new ExpectedTestFailure(FeedException.class,
-                                    MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                                    Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
                 protected void execute()
                     throws Throwable
                 {
@@ -1408,7 +1407,7 @@ public class AbstractMarketDataFeedTest
         resetSubscribers(subscribers);
         if(inGenerateTokenThrows) {
             new ExpectedTestFailure(FeedException.class,
-                                    MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                                    Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
                 protected void execute()
                     throws Throwable
                 {
@@ -1458,7 +1457,7 @@ public class AbstractMarketDataFeedTest
         } else {
             if(inGenerateTokenThrows) {
                 new ExpectedTestFailure(FeedException.class,
-                                        MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                                        Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
                     protected void execute()
                     throws Throwable
                     {
@@ -1511,7 +1510,7 @@ public class AbstractMarketDataFeedTest
         } else {
             if(inGenerateTokenThrows) {
                 new ExpectedTestFailure(FeedException.class,
-                                        MessageKey.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getLocalizedMessage()) {
+                                        Messages.ERROR_MARKET_DATA_FEED_EXECUTION_FAILED.getText()) {
                     protected void execute()
                     throws Throwable
                     {

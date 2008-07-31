@@ -1,14 +1,15 @@
 package org.marketcetera.core;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import javax.sql.DataSource;
 import java.sql.*;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DatabaseIDFactory extends DBBackedIDFactory {
 
-    public static final String TABLE_NAME = "id_repository";
-    public static final String COL_NAME = "nextAllowedID";
+    public static final String TABLE_NAME = "id_repository"; //$NON-NLS-1$
+    public static final String COL_NAME = "nextAllowedID"; //$NON-NLS-1$
     public static final int NUM_IDS_GRABBED = 1000;
 
     private String dbTable;
@@ -33,7 +34,7 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
      */
     public DatabaseIDFactory(DataSource ds, String table,
                              String column, int quantity) {
-        super("");
+        super(""); //$NON-NLS-1$
         this.dataSource = ds;
         dbTable = table;
         dbColumn = column;
@@ -44,10 +45,7 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
         try {
             grabIDs();
         } catch (NoMoreIDsException e) {
-            if(LoggerAdapter.isInfoEnabled(this)) {
-                LoggerAdapter.info(MessageKey.ERROR_DB_ID_FACTORY_INIT.
-                        getLocalizedMessage(e.getMessage()), this);
-            }
+            Messages.ERROR_DB_ID_FACTORY_INIT.info(this, e.getMessage());
             throw e;
         }
     }
@@ -67,7 +65,7 @@ public class DatabaseIDFactory extends DBBackedIDFactory {
                 Statement stmt = dbConnection.createStatement(
                         ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
                 ResultSet set = null;
-                set = stmt.executeQuery("SELECT id, " + dbColumn + " FROM " + dbTable);
+                set = stmt.executeQuery("SELECT id, " + dbColumn + " FROM " + dbTable); //$NON-NLS-1$ //$NON-NLS-2$
                 if (!set.next()) {
                     set.moveToInsertRow();
                     set.insertRow();

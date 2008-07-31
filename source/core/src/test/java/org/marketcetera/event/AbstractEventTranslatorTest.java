@@ -27,7 +27,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AbstractEventTranslatorTest
         extends MarketDataFeedTestBase
 {
@@ -56,7 +56,7 @@ public class AbstractEventTranslatorTest
             throws Exception
     {
         super.setUp();
-        mSymbol = "YHOO";
+        mSymbol = "YHOO"; //$NON-NLS-1$
         mSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
                                                           AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(mSymbol) }), 
                                                                                                            true), 
@@ -105,13 +105,13 @@ public class AbstractEventTranslatorTest
                        null,
                        null);
         // now, submit a bid to the feed that will update the snapshot
-        QuantityTuple bid = new QuantityTuple(new BigDecimal("123.456789"),
-                                              new BigDecimal("2345.678"));
+        QuantityTuple bid = new QuantityTuple(new BigDecimal("123.456789"), //$NON-NLS-1$
+                                              new BigDecimal("2345.678")); //$NON-NLS-1$
         BidEvent bidE = new BidEvent(System.currentTimeMillis(),
                                      System.currentTimeMillis(),
                                      null,
                                      mSymbol,
-                                     "my-exchange",
+                                     "my-exchange", //$NON-NLS-1$
                                      bid.getPrice(),
                                      bid.getSize());
         mFeed.submitData(token.getHandle(), 
@@ -122,13 +122,13 @@ public class AbstractEventTranslatorTest
                        null,
                        null);
         // add an ask
-        QuantityTuple ask = new QuantityTuple(new BigDecimal("10987654.321"),
-                                              new BigDecimal("23571113.171923"));
+        QuantityTuple ask = new QuantityTuple(new BigDecimal("10987654.321"), //$NON-NLS-1$
+                                              new BigDecimal("23571113.171923")); //$NON-NLS-1$
         AskEvent askE = new AskEvent(System.currentTimeMillis(),
                                      System.currentTimeMillis(),
                                      null,
                                      mSymbol,
-                                     "my-exchange",
+                                     "my-exchange", //$NON-NLS-1$
                                      ask.getPrice(),
                                      ask.getSize());
         mFeed.submitData(token.getHandle(), 
@@ -139,12 +139,12 @@ public class AbstractEventTranslatorTest
                        ask,
                        null);
         // add a trade
-        QuantityTuple trade = new QuantityTuple(new BigDecimal("1020304050.607080"),
-                                                new BigDecimal("100908070.605040"));
+        QuantityTuple trade = new QuantityTuple(new BigDecimal("1020304050.607080"), //$NON-NLS-1$
+                                                new BigDecimal("100908070.605040")); //$NON-NLS-1$
         TradeEvent tradeE = new TradeEvent(System.currentTimeMillis(),
                                            System.currentTimeMillis(),
                                            mSymbol,
-                                           "my-exchange",
+                                           "my-exchange", //$NON-NLS-1$
                                            trade.getPrice(),
                                            trade.getSize(),
                                            null);
@@ -156,13 +156,13 @@ public class AbstractEventTranslatorTest
                        ask,
                        trade);
         // replace the ask with a new ask
-        ask = new QuantityTuple(new BigDecimal("100200300400.500600"),
-                                new BigDecimal("12345678.91011121314"));
+        ask = new QuantityTuple(new BigDecimal("100200300400.500600"), //$NON-NLS-1$
+                                new BigDecimal("12345678.91011121314")); //$NON-NLS-1$
         askE = new AskEvent(System.currentTimeMillis(),
                             System.currentTimeMillis(),
                             null,
                             mSymbol,
-                            "my-exchange",
+                            "my-exchange", //$NON-NLS-1$
                             ask.getPrice(),
                             ask.getSize());
         mFeed.submitData(token.getHandle(), 
@@ -173,13 +173,13 @@ public class AbstractEventTranslatorTest
                        ask,
                        trade);
         // replace the bid with a new bid
-        bid = new QuantityTuple(new BigDecimal("7777.88888"),
-                                new BigDecimal("3333.4444444"));
+        bid = new QuantityTuple(new BigDecimal("7777.88888"), //$NON-NLS-1$
+                                new BigDecimal("3333.4444444")); //$NON-NLS-1$
         bidE = new BidEvent(System.currentTimeMillis(),
                             System.currentTimeMillis(),
                             null,
                             mSymbol,
-                            "my-exchange",
+                            "my-exchange", //$NON-NLS-1$
                             bid.getPrice(),
                             bid.getSize());
         mFeed.submitData(token.getHandle(), 
@@ -190,12 +190,12 @@ public class AbstractEventTranslatorTest
                        ask,
                        trade);
         // replace the trade with a new trade
-        trade = new QuantityTuple(new BigDecimal("5101520.253035340"),
-                                  new BigDecimal("90807060.50403020"));
+        trade = new QuantityTuple(new BigDecimal("5101520.253035340"), //$NON-NLS-1$
+                                  new BigDecimal("90807060.50403020")); //$NON-NLS-1$
         tradeE = new TradeEvent(System.currentTimeMillis(),
                                 System.currentTimeMillis(),
                                 mSymbol,
-                                "my-exchange",
+                                "my-exchange", //$NON-NLS-1$
                                 trade.getPrice(),
                                 trade.getSize(),
                                 null);
@@ -207,7 +207,7 @@ public class AbstractEventTranslatorTest
                        ask,
                        trade);
         // submit an ask for a different symbol, make sure it doesn't affect this one
-        String newSymbol = "colin-is-the-symbol";
+        String newSymbol = "colin-is-the-symbol"; //$NON-NLS-1$
         MockSubscriber t2 = new MockSubscriber();
         MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> newSpec = MarketDataFeedTokenSpec.generateTokenSpec(mSpec.getCredentials(),
                                                                                                                    AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(newSymbol) } ), 
@@ -216,13 +216,13 @@ public class AbstractEventTranslatorTest
         MockMarketDataFeedToken newToken = mFeed.execute(newSpec);
         assertFalse(newToken.getHandle().equals(token.getHandle()));
         waitForPublication(t2);
-        QuantityTuple newAsk = new QuantityTuple(new BigDecimal("7654321.01234567"),
-                                                 new BigDecimal("1123485923.1273495"));
+        QuantityTuple newAsk = new QuantityTuple(new BigDecimal("7654321.01234567"), //$NON-NLS-1$
+                                                 new BigDecimal("1123485923.1273495")); //$NON-NLS-1$
         askE = new AskEvent(System.currentTimeMillis(),
                             System.currentTimeMillis(),
                             null,
                             newSymbol,
-                            "my-exchange",
+                            "my-exchange", //$NON-NLS-1$
                             newAsk.getPrice(),
                             newAsk.getSize());
         mFeed.submitData(newToken.getHandle(), 
@@ -302,7 +302,7 @@ public class AbstractEventTranslatorTest
                 verifyGroup(group,
                             inTrade);
             } else {
-                fail("Unknown group type: " + groupType);
+                fail("Unknown group type: " + groupType); //$NON-NLS-1$
             }
         }
         // make sure that if we were expecting a group, we got one
@@ -350,7 +350,7 @@ public class AbstractEventTranslatorTest
                   System.currentTimeMillis(),
                   null,
                   inSymbol,
-                  "My-exchange");
+                  "My-exchange"); //$NON-NLS-1$
         }
         /* (non-Javadoc)
          * @see java.lang.Object#toString()
@@ -358,7 +358,7 @@ public class AbstractEventTranslatorTest
         @Override
         public String toString()
         {
-            return String.format("DoNothingEvent %d",
+            return String.format("DoNothingEvent %d", //$NON-NLS-1$
                                  hashCode());
         }
     }
@@ -452,7 +452,7 @@ public class AbstractEventTranslatorTest
         @Override
         public String toString()
         {
-            return new StringBuilder().append(getSize()).append(" ").append(getPrice()).toString();
+            return new StringBuilder().append(getSize()).append(" ").append(getPrice()).toString(); //$NON-NLS-1$
         }
     }
 }

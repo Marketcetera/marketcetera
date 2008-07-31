@@ -12,7 +12,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiDataTypesQuery extends MultiNDQuery {
     private static final long serialVersionUID = 4526506972105727770L;
 

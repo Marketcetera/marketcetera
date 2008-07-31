@@ -13,7 +13,7 @@ import org.marketcetera.marketdata.FeedException;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedCredentials
 	extends AbstractMarketDataFeedCredentials
 {
@@ -37,6 +37,6 @@ public class BogusFeedCredentials
 	protected BogusFeedCredentials()
 		throws FeedException 
 	{
-		super("http://bogusurl");
+		super("http://bogusurl"); //$NON-NLS-1$
 	}
 }

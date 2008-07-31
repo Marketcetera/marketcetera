@@ -3,7 +3,7 @@ package org.marketcetera.quickfix.cficode;
 public class EquityCFICode extends CFICode {
 
 	public EquityCFICode() {
-		super(CATEGORY_EQUITY+"XXXXX");
+		super(CATEGORY_EQUITY+"XXXXX"); //$NON-NLS-1$
 	}
 
 	public EquityCFICode(CharSequence codes) {

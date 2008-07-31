@@ -14,7 +14,7 @@ import java.util.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
 
     /* ************************Tests specific to User entity************* */
@@ -55,7 +55,7 @@ public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
         assertEntityEquals(u, fetchByID(u.getId()));
         assertFalse(u.isLocked());
         try {
-            u.authenticate("blah".toCharArray());
+            u.authenticate("blah".toCharArray()); //$NON-NLS-1$
             fail();
         } catch (IllegalArgumentException expected) {
         }
@@ -63,7 +63,7 @@ public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
         assertFalse(u.isLocked());
         assertEntityEquals(u, fetchByID(u.getId()));
         try {
-            u.authenticate("meh".toCharArray());
+            u.authenticate("meh".toCharArray()); //$NON-NLS-1$
             fail();
         } catch (IllegalArgumentException expected) {
         }
@@ -150,7 +150,7 @@ public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
         u.authenticate(password.toCharArray());
         //Now try changing the password with some invalid values.
         assertFalse(u.changePassword(randomString().toCharArray(),null));
-        assertFalse(u.changePassword(randomString().toCharArray(),"".toCharArray()));
+        assertFalse(u.changePassword(randomString().toCharArray(),"".toCharArray())); //$NON-NLS-1$
         assertFalse(u.changePassword(randomString().toCharArray(),randomString().toCharArray()));
         //Verify that none of this changes the object state
         assertEntityEquals(oldState, u);
@@ -286,17 +286,17 @@ public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
             getFilterTestHelpers() throws Exception {
         List<MultiQueryFilterTestHelper<User, SummaryUser>> l =
                 super.getFilterTestHelpers();
-        l.add(stringFilterHelper(User.ATTRIBUTE_EMAIL, "emailFilter"));
+        l.add(stringFilterHelper(User.ATTRIBUTE_EMAIL, "emailFilter")); //$NON-NLS-1$
         l.add(stringFilterHelper(User.ATTRIBUTE_EMPLOYEE_ID,
-                "employeeIDFilter"));
-        l.add(booleanFilterHelper(User.ATTRIBUTE_ENABLED, "enabledFilter"));
+                "employeeIDFilter")); //$NON-NLS-1$
+        l.add(booleanFilterHelper(User.ATTRIBUTE_ENABLED, "enabledFilter")); //$NON-NLS-1$
         return l;
     }
 
     @Override
     protected User createFilled() throws Exception {
         User u = super.createFilled();
-        u.setEmail(randomString() + "@" + randomString() + ".com");
+        u.setEmail(randomString() + "@" + randomString() + ".com"); //$NON-NLS-1$ //$NON-NLS-2$
         u.setEmployeeID(randomString());
         u.setEnabled(false);
         HashMap<String, String> m = new HashMap<String, String>();
@@ -353,7 +353,7 @@ public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
     @Override
     protected void changeAttributes(User user) {
         super.changeAttributes(user);
-        user.setEmail(randomString() + "@" + randomString() + ".com");
+        user.setEmail(randomString() + "@" + randomString() + ".com"); //$NON-NLS-1$ //$NON-NLS-2$
         user.setEmployeeID(randomString());
         HashMap<String, String> m = new HashMap<String, String>();
         m.put(randomString(), randomString());

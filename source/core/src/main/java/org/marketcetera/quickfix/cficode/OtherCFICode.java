@@ -4,7 +4,7 @@ public class OtherCFICode extends CFICode {
 
 	
 	public OtherCFICode() {
-		super(CATEGORY_OTHER+"XXXXX");
+		super(CATEGORY_OTHER+"XXXXX"); //$NON-NLS-1$
 	}
 
 	public OtherCFICode(CharSequence codes) {

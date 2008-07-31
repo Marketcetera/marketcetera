@@ -10,7 +10,7 @@ Eclipse-RegisterBuddy: org.marketcetera.photon
 Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.core,
  org.marketcetera.photon,
- org.marketcetera.util
+ org.marketcetera.util;visibility:=reexport
 Eclipse-LazyStart: true
 Export-Package: org.marketcetera.marketdata
 Bundle-ClassPath: src/main/resources/,

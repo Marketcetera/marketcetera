@@ -14,7 +14,7 @@ import java.sql.Timestamp;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface SummaryDataType extends SummaryNDEntityBase {
 
     int getNumInt();

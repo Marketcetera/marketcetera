@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 
 /* $License$ */
 
@@ -17,7 +17,7 @@ import org.marketcetera.core.MarketceteraException;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface IMarketDataFeedFactory<F extends IMarketDataFeed<? extends IMarketDataFeedToken<C>,C>,
                                         C extends IMarketDataFeedCredentials> 
 {
@@ -25,10 +25,10 @@ public interface IMarketDataFeedFactory<F extends IMarketDataFeed<? extends IMar
      * Returns a data feed object that can resolve queries.
      *
      * @return a <code>F</code> value
-     * @throws MarketceteraException if a feed object cannot be returned
+     * @throws CoreException if a feed object cannot be returned
      */
     public F getMarketDataFeed()
-        throws MarketceteraException;
+        throws CoreException;
     /**
      * Returns a data feed object that can resolve queries.
      * 
@@ -38,10 +38,10 @@ public interface IMarketDataFeedFactory<F extends IMarketDataFeed<? extends IMar
      *
      * @param inCredentials a <code>C</code> value
      * @return a <code>F</code> value
-     * @throws MarketceteraException if a feed object cannot be returned
+     * @throws CoreException if a feed object cannot be returned
      */
     public F getMarketDataFeed(C inCredentials)
-        throws MarketceteraException;
+        throws CoreException;
 	/**
      * Gets the data feed provider name. 
      *

@@ -11,7 +11,7 @@ import quickfix.*;
  * @author toli
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SocketAcceptor extends quickfix.SocketAcceptor implements InitializingBean, DisposableBean {
 
     public SocketAcceptor(Application application, MessageStoreFactory messageStoreFactory,

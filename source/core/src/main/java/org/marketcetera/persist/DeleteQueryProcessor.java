@@ -25,7 +25,7 @@ import javax.persistence.EntityManager;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DeleteQueryProcessor extends QueryProcessor<Integer>  {
     private static final long serialVersionUID = 8501063818393665951L;
 
@@ -98,7 +98,7 @@ public class DeleteQueryProcessor extends QueryProcessor<Integer>  {
     protected QueryResults<Integer> process(EntityManager em, Query q)
             throws PersistenceException {
         final int result = q.executeUpdate();
-        SLF4JLoggerProxy.debug(this,"Deleted {} rows",result);
+        SLF4JLoggerProxy.debug(this,"Deleted {} rows",result); //$NON-NLS-1$
         return new SingleResult<Integer>(result);
     }
     private final String queryPrefix;

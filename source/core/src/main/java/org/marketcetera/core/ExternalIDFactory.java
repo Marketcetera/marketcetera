@@ -4,11 +4,11 @@ package org.marketcetera.core;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class ExternalIDFactory implements IDFactory {
     private int mUpTo = 0;
     private int mNextID = 0;
-    private String prefix = "";
+    private String prefix = "";  //$NON-NLS-1$
 
     protected ExternalIDFactory(String prefix)
     {

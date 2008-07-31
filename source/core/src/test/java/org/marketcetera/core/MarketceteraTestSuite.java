@@ -4,11 +4,13 @@ import junit.framework.TestSuite;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXVersion;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 /**
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraTestSuite extends TestSuite {
     public MarketceteraTestSuite() {
         super();
@@ -38,11 +40,10 @@ public class MarketceteraTestSuite extends TestSuite {
             }
         }
         MessageBundleManager.registerCoreMessageBundle();
-        LoggerAdapter.initializeLogger("test");
         try {
             FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
         } catch (Exception ex) {
-            LoggerAdapter.error("Error initializing suite", ex, this);
+            SLF4JLoggerProxy.error(this, ex, "Error initializing suite"); //$NON-NLS-1$
             System.exit(1);
         }
     }

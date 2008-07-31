@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
 
 /**
  * Implementation of {@link ResourcePool} that allocates <code>Resource</code> objects
@@ -15,7 +15,7 @@ import org.marketcetera.core.MessageKey;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public abstract class FIFOResourcePool
         extends ResourcePool
@@ -77,8 +77,8 @@ public abstract class FIFOResourcePool
             }
             return allocateNextResource(inData);
         } catch (Throwable t) {
-            throw new ResourcePoolException(MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL,
-                                            t);
+            throw new ResourcePoolException(t,
+                                            Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL);
         }
     }
     

@@ -17,8 +17,8 @@ import java.math.BigInteger;
  * of the system.
  */
 @Entity
-@Table(name = "test_user",
-        uniqueConstraints={@UniqueConstraint(columnNames={"name"})})
+@Table(name = "test_user", //$NON-NLS-1$
+        uniqueConstraints={@UniqueConstraint(columnNames={"name"})}) //$NON-NLS-1$
 public class User extends NDEntityBase implements SummaryUser {
     /**
      * The maximum number of failed password attempts after
@@ -74,15 +74,15 @@ public class User extends NDEntityBase implements SummaryUser {
     public void authenticate(char[] password) throws PersistenceException {
         if(!isEnabled()) {
             failedPasswordAttempt();
-            throw new IllegalStateException("user is not enabled");
+            throw new IllegalStateException("user is not enabled"); //$NON-NLS-1$
         }
         if(isLocked()) {
             failedPasswordAttempt();
-            throw new IllegalStateException("user is locked");
+            throw new IllegalStateException("user is locked"); //$NON-NLS-1$
         }
         if(!validatePassword(password)) {
             failedPasswordAttempt();
-            throw new IllegalArgumentException("Invalid password");
+            throw new IllegalArgumentException("Invalid password"); //$NON-NLS-1$
         }
         if(getNumFailedPasswordAttempts() > 0) {
             setNumFailedPasswordAttempts(0);
@@ -241,7 +241,7 @@ public class User extends NDEntityBase implements SummaryUser {
      *
      * @return The set of groups that this user is a member of.
      */
-    @ManyToMany(mappedBy = "users", targetEntity = Group.class)
+    @ManyToMany(mappedBy = "users", targetEntity = Group.class) //$NON-NLS-1$
     public Set<SummaryGroup> getGroups() {
         return groups;
     }
@@ -332,13 +332,13 @@ public class User extends NDEntityBase implements SummaryUser {
     }
 
     public String toString() {
-        return super.toString() + "User{" +
-                "hashedPassword='" + hashedPassword + '\'' +
-                ", enabled=" + enabled +
-                ", locked=" + locked +
-                ", numFailedPasswordAttempts=" + numFailedPasswordAttempts +
-                ", email='" + email + '\'' +
-                ", employeeID='" + employeeID + '\'' +
+        return super.toString() + "User{" + //$NON-NLS-1$
+                "hashedPassword='" + hashedPassword + '\'' + //$NON-NLS-1$
+                ", enabled=" + enabled + //$NON-NLS-1$
+                ", locked=" + locked + //$NON-NLS-1$
+                ", numFailedPasswordAttempts=" + numFailedPasswordAttempts + //$NON-NLS-1$
+                ", email='" + email + '\'' + //$NON-NLS-1$
+                ", employeeID='" + employeeID + '\'' + //$NON-NLS-1$
                 '}';
     }
 
@@ -354,8 +354,8 @@ public class User extends NDEntityBase implements SummaryUser {
         this.hashedPassword = password;
     }
 
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
-    @MapKey(name = "name")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL) //$NON-NLS-1$
+    @MapKey(name = "name") //$NON-NLS-1$
     private Map<String, Setting> getSetting() {
         return setting;
     }
@@ -370,7 +370,7 @@ public class User extends NDEntityBase implements SummaryUser {
             throws PersistenceException {
         //remove all settings if already persistent
         if(isPersistent()) {
-            final String settingAlias = "s";
+            final String settingAlias = "s"; //$NON-NLS-1$
             final String parameterOwner = ATTRIBUTE_OWNER;
             StringBuilder sb = new StringBuilder(DELETE);
             sb.append(S).append(FROM).append(S).append(Setting.ENTITY_NAME).
@@ -389,7 +389,7 @@ public class User extends NDEntityBase implements SummaryUser {
     protected SaveResult deleteLocal(EntityManager em,
                                      PersistContext context)
             throws PersistenceException {
-        final String alias = "s";
+        final String alias = "s"; //$NON-NLS-1$
         final String parameter = Setting.ATTRIBUTE_OWNER;
         em.createQuery(DELETE + S + FROM + S + Setting.ENTITY_NAME + S + 
                 alias + S + WHERE + S + alias + DOT +
@@ -414,7 +414,7 @@ public class User extends NDEntityBase implements SummaryUser {
         try {
             MessageDigest dig = digest.get();
             for(char[] c:value) {
-                dig.update(new String(c).getBytes("UTF-16"));
+                dig.update(new String(c).getBytes("UTF-16")); //$NON-NLS-1$
             }
             return new BigInteger(dig.digest()).toString(Character.MAX_RADIX);
         } catch (UnsupportedEncodingException e) {
@@ -429,7 +429,7 @@ public class User extends NDEntityBase implements SummaryUser {
             new ThreadLocal<MessageDigest>(){
         protected MessageDigest initialValue() {
             try {
-                return MessageDigest.getInstance("SHA1");
+                return MessageDigest.getInstance("SHA1"); //$NON-NLS-1$
             } catch (NoSuchAlgorithmException e) {
                 throw new IllegalArgumentException(e);
             }
@@ -438,31 +438,31 @@ public class User extends NDEntityBase implements SummaryUser {
     /**
      * The attribute employee ID used in JPQL queries
      */
-    static final String ATTRIBUTE_EMPLOYEE_ID = "employeeID";
+    static final String ATTRIBUTE_EMPLOYEE_ID = "employeeID"; //$NON-NLS-1$
     /**
      * The attribute email used in JPQL queries
      */
-    static final String ATTRIBUTE_EMAIL = "email";
+    static final String ATTRIBUTE_EMAIL = "email"; //$NON-NLS-1$
     /**
      * The attribute enabled used in JPQL queries
      */
-    static final String ATTRIBUTE_ENABLED = "enabled";
+    static final String ATTRIBUTE_ENABLED = "enabled"; //$NON-NLS-1$
     /**
      * The attribute owner used in JPQL queries
      */
-    static final String ATTRIBUTE_OWNER = "owner";
+    static final String ATTRIBUTE_OWNER = "owner"; //$NON-NLS-1$
     /**
      * The attribute groups used in JPQL queries
      */
-    static final String ATTRIBUTE_GROUPS = "groups";
+    static final String ATTRIBUTE_GROUPS = "groups"; //$NON-NLS-1$
     /**
      * The attribute setting used in JPQL queries
      */
-    static final String ATTRIBUTE_SETTING = "setting";
+    static final String ATTRIBUTE_SETTING = "setting"; //$NON-NLS-1$
     /**
      * The entity name as is used in various JPQL Queries
      */
-    static final String ENTITY_NAME = "User";
+    static final String ENTITY_NAME = "User"; //$NON-NLS-1$
 
     private String hashedPassword = null;
     private boolean enabled = true;

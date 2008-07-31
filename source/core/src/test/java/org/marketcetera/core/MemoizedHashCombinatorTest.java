@@ -10,7 +10,7 @@ import java.util.HashSet;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MemoizedHashCombinatorTest extends TestCase {
     class TestCombinator extends MemoizedHashCombinator<String, Integer> {
         public TestCombinator(String s, Integer i){
@@ -28,9 +28,9 @@ public class MemoizedHashCombinatorTest extends TestCase {
 
     public void testEquals()
     {
-        TestCombinator tc1 = new TestCombinator("QWER", 123);
-        TestCombinator tc2 = new TestCombinator("QWER", 123);
-        TestCombinator tc3 = new TestCombinator("QWER", 128);
+        TestCombinator tc1 = new TestCombinator("QWER", 123); //$NON-NLS-1$
+        TestCombinator tc2 = new TestCombinator("QWER", 123); //$NON-NLS-1$
+        TestCombinator tc3 = new TestCombinator("QWER", 128); //$NON-NLS-1$
 
         assertEquals(tc1, tc2);
         assertEquals(tc2, tc1);
@@ -41,9 +41,9 @@ public class MemoizedHashCombinatorTest extends TestCase {
     }
     public void testHash()
     {
-        TestCombinator tc1 = new TestCombinator("QWER", 123);
-        TestCombinator tc2 = new TestCombinator("QWER", 123);
-        TestCombinator tc3 = new TestCombinator("QWER", 128);
+        TestCombinator tc1 = new TestCombinator("QWER", 123); //$NON-NLS-1$
+        TestCombinator tc2 = new TestCombinator("QWER", 123); //$NON-NLS-1$
+        TestCombinator tc3 = new TestCombinator("QWER", 128); //$NON-NLS-1$
 
         HashSet<TestCombinator> set = new HashSet<TestCombinator>();
         set.add(tc1);

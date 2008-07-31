@@ -23,12 +23,12 @@ public class MockReservationResourcePool
             return null;
         }
         if(getCreateResourceThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         ReservationData data = null;
         if(inData == null) {
-            data = new ReservationData("user_" + System.nanoTime(),
-                                       "password_" + System.nanoTime());
+            data = new ReservationData("user_" + System.nanoTime(), //$NON-NLS-1$
+                                       "password_" + System.nanoTime()); //$NON-NLS-1$
         } else {
             data = (ReservationData)inData;
         }
@@ -41,7 +41,7 @@ public class MockReservationResourcePool
     protected ReservationData renderReservationKey(Resource inResource)
     {
         if(getRenderThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(getRenderReturnsNull()) {
             return null;
@@ -56,7 +56,7 @@ public class MockReservationResourcePool
      */
     public String toString()
     {
-        return "MockReservationResourcePool(" + hashCode() + ")";
+        return "MockReservationResourcePool(" + hashCode() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     static class ReservationData
@@ -142,7 +142,7 @@ public class MockReservationResourcePool
         
         public String toString()
         {
-            return "ReservationData(" + hashCode() + ") " + getUser() + "/" + getPassword();
+            return "ReservationData(" + hashCode() + ") " + getUser() + "/" + getPassword(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
     
@@ -254,7 +254,7 @@ public class MockReservationResourcePool
     protected void addResourceToPool(Resource inResource)
     {
         if(getAddResourceThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         super.addResourceToPool(inResource);
     }
@@ -301,7 +301,7 @@ public class MockReservationResourcePool
         MockResource r = (MockResource)inReservationEntry.getResource();
         r.setContentionStamp(System.currentTimeMillis());
         if(getResourceContentionThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return (MockResource)super.resourceContention(inReservationEntry);
     }
@@ -329,7 +329,7 @@ public class MockReservationResourcePool
             throws ReleasedResourceException
     {
         if(getReleaseResourceThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         super.releaseResource(inResource);
     }

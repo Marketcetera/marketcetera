@@ -15,7 +15,7 @@ import java.util.HashSet;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class GroupTest extends CorePersistNDTestBase<Group,SummaryGroup> {
 
 /* ************************Implement necessary operations************* */

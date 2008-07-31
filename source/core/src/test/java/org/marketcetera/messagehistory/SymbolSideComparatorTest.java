@@ -76,7 +76,7 @@ public class SymbolSideComparatorTest extends TestCase {
 		
 		// check that empty string works too 
 		// now set field on m2 that's different
-		m2.setField(new StringField(field1.getField(), ""));
+		m2.setField(new StringField(field1.getField(), "")); //$NON-NLS-1$
 		
 		assertTrue(comparator.compare(mh1, mh2) > 0);
 		assertTrue(comparator.compare(mh2, mh1) < 0);
@@ -127,9 +127,9 @@ public class SymbolSideComparatorTest extends TestCase {
 
 	public void testSingleField()
 	{
-		fieldTesterHelper(new Symbol("toli"), new Symbol("bob"));
+		fieldTesterHelper(new Symbol("toli"), new Symbol("bob")); //$NON-NLS-1$ //$NON-NLS-2$
 		fieldTesterHelper(new Side(Side.SELL), new Side(Side.BUY));
-		fieldTesterHelper(new Account("toli"), new Account("bob"));
+		fieldTesterHelper(new Account("toli"), new Account("bob")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public void testOrdering()
@@ -137,18 +137,18 @@ public class SymbolSideComparatorTest extends TestCase {
 		MessageHolder [] messages = new MessageHolder[]{
 				new MessageHolder(createMessage()),
 				new MessageHolder(createMessage()),
-				new MessageHolder(createMessage(new Symbol("IBM"))),
-				new MessageHolder(createMessage(new Symbol("IBM"))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Account("12340"))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Account("12340"))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Account("12341"))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.BUY))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.BUY), new Account("12340"))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.SELL))),
-				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.SELL), new Account("12340"))),
-				new MessageHolder(createMessage(new Symbol("MSFT"))),
-				new MessageHolder(createMessage(new Symbol("MSFT"), new Account("12341"))),
-				new MessageHolder(createMessage(new Symbol("MSFT"), new Side(Side.BUY))),
+				new MessageHolder(createMessage(new Symbol("IBM"))), //$NON-NLS-1$
+				new MessageHolder(createMessage(new Symbol("IBM"))), //$NON-NLS-1$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Account("12340"))), //$NON-NLS-1$ //$NON-NLS-2$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Account("12340"))), //$NON-NLS-1$ //$NON-NLS-2$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Account("12341"))), //$NON-NLS-1$ //$NON-NLS-2$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.BUY))), //$NON-NLS-1$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.BUY), new Account("12340"))), //$NON-NLS-1$ //$NON-NLS-2$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.SELL))), //$NON-NLS-1$
+				new MessageHolder(createMessage(new Symbol("IBM"), new Side(Side.SELL), new Account("12340"))), //$NON-NLS-1$ //$NON-NLS-2$
+				new MessageHolder(createMessage(new Symbol("MSFT"))), //$NON-NLS-1$
+				new MessageHolder(createMessage(new Symbol("MSFT"), new Account("12341"))), //$NON-NLS-1$ //$NON-NLS-2$
+				new MessageHolder(createMessage(new Symbol("MSFT"), new Side(Side.BUY))), //$NON-NLS-1$
 		};
 		Random rand = new Random(24);
 		MessageHolder [] copyOfMessages = new MessageHolder[messages.length];
@@ -164,9 +164,9 @@ public class SymbolSideComparatorTest extends TestCase {
 	private void assertMessagesEqual(MessageHolder holder, MessageHolder holder2, int arrayIndex) {
 		Message m1 = holder.getMessage();
 		Message m2 = holder2.getMessage();
-		assertTrue("Index: "+"arrayIndex"+" comparing symbols"+m1+" "+m2, areFieldsEqual(m1, m2, Symbol.FIELD));
-		assertTrue("Index: "+"arrayIndex"+" comparing sides"+m1+" "+m2, areFieldsEqual(m1, m2, Side.FIELD));
-		assertTrue("Index: "+"arrayIndex"+" comparing accounts"+m1+" "+m2, areFieldsEqual(m1, m2, Account.FIELD));
+		assertTrue("Index: "+"arrayIndex"+" comparing symbols"+m1+" "+m2, areFieldsEqual(m1, m2, Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		assertTrue("Index: "+"arrayIndex"+" comparing sides"+m1+" "+m2, areFieldsEqual(m1, m2, Side.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		assertTrue("Index: "+"arrayIndex"+" comparing accounts"+m1+" "+m2, areFieldsEqual(m1, m2, Account.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 	}
 
 	private boolean areFieldsEqual(Message m1, Message m2, int field) {
@@ -208,8 +208,8 @@ public class SymbolSideComparatorTest extends TestCase {
 		assertTrue(comparator.compare(mh1, mh1) == 0);
 		assertTrue(comparator.compare(mh2, mh2) == 0);
 
-		m1.setField(new Symbol("asdf"));
-		m2.setField(new Symbol("qwer"));
+		m1.setField(new Symbol("asdf")); //$NON-NLS-1$
+		m2.setField(new Symbol("qwer")); //$NON-NLS-1$
 
 		assertTrue(comparator.compare(mh1, mh2) < 0);
 		assertTrue(comparator.compare(mh2, mh1) > 0);
@@ -247,7 +247,7 @@ public class SymbolSideComparatorTest extends TestCase {
 				getField(side);
 			} catch (FieldNotFound e) {
 			}
-			return "["+symbol+" "+side+" "+account+"]";
+			return "["+symbol+" "+side+" "+account+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		
 	}

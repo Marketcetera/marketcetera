@@ -3,9 +3,9 @@ package org.marketcetera.messagehistory;
 import ca.odell.glazedlists.*;
 import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.*;
@@ -21,7 +21,7 @@ import java.util.Map;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageHistory {
 
 	private EventList<MessageHolder> allMessages;
@@ -65,7 +65,7 @@ public class FIXMessageHistory {
 	}
 	
 	public void addIncomingMessage(quickfix.Message fixMessage) {
-		if(LoggerAdapter.isDebugEnabled(this) && fixMessage.getHeader().isSetField(SendingTime.FIELD)) {
+		if(SLF4JLoggerProxy.isDebugEnabled(this) && fixMessage.getHeader().isSetField(SendingTime.FIELD)) {
 			long sendingTime =0;
 			try {
 				sendingTime = fixMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD).getTime();
@@ -75,7 +75,7 @@ public class FIXMessageHistory {
 			long systemTime = System.currentTimeMillis();
 			double diff = (sendingTime-systemTime)/1000.0;
 			if(Math.abs(diff) > 1) {
-				LoggerAdapter.debug(Thread.currentThread().getName() + ": sendingTime v systemTime: "+diff, this);
+                            SLF4JLoggerProxy.debug(this, "{}: sendingTime v systemTime: {}", Thread.currentThread().getName(), diff); //$NON-NLS-1$
 			}
 		}
 		try {
@@ -118,7 +118,7 @@ public class FIXMessageHistory {
 					
 					allMessages.add(new IncomingMessageHolder(newExecutionReport, groupID));
 				} catch (FieldNotFound e) {
-					throw new RuntimeException("Should never happen in FIXMessageHistory.addIncomingMessage", e);
+					throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE.getText(), e);
 				}
 			}
 		} finally {
@@ -143,7 +143,7 @@ public class FIXMessageHistory {
 				}
 				orderIDToGroupMap.put(clOrdID, groupID);
 			} catch (FieldNotFound e) {
-				throw new RuntimeException("Should never happen in FIXMessageHistory.updateOrderIDMappings()");
+                            throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_UPDATEORDERIDMAPPINGS.getText());
 			}
 		}
 	}

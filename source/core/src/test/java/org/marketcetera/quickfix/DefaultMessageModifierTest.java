@@ -9,9 +9,8 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.MessageKey;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -23,12 +22,12 @@ import quickfix.field.MsgType;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DefaultMessageModifierTest extends TestCase {
-    private static final String HEADER_57_VAL = "asdf";
-    private static final String FIELD_21_VAL = "qwer";
-    private static final String TRAILER_28_VAL = "ppp";
-    private static final String FIELD_42_VAL = "123456789101112";
+    private static final String HEADER_57_VAL = "asdf"; //$NON-NLS-1$
+    private static final String FIELD_21_VAL = "qwer"; //$NON-NLS-1$
+    private static final String TRAILER_28_VAL = "ppp"; //$NON-NLS-1$
+    private static final String FIELD_42_VAL = "123456789101112"; //$NON-NLS-1$
 
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
@@ -41,7 +40,7 @@ public class DefaultMessageModifierTest extends TestCase {
     }
 
     public void testModifyOrder() throws Exception {
-        String testValue = "A value";
+        String testValue = "A value"; //$NON-NLS-1$
         DefaultMessageModifier modifier = new DefaultMessageModifier();
         modifier.addDefaultField(111, testValue, DefaultMessageModifier.MessageFieldType.MESSAGE);
 
@@ -62,21 +61,21 @@ public class DefaultMessageModifierTest extends TestCase {
     public void testIncorrectModiferListingFormat()
     {
         final DefaultMessageModifier mod = new DefaultMessageModifier();
-        new ExpectedTestFailure(MarketceteraException.class,
-                                MessageKey.ORDER_MODIFIER_WRONG_FIELD_FORMAT.getLocalizedMessage("27(app")) {
+        new ExpectedTestFailure(CoreException.class,
+                                Messages.ORDER_MODIFIER_WRONG_FIELD_FORMAT.getText("27(app")) { //$NON-NLS-1$
             protected void execute() throws Throwable {
-                mod.setMsgFields(createFieldsMap(new String[][]{{"27(app", "malformed"}}));
+                mod.setMsgFields(createFieldsMap(new String[][]{{"27(app", "malformed"}})); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }.run();
 
     }
     
     public void testModifyOrderValueExists() throws Exception {
-        String replacementValue = "Replacement value";
+        String replacementValue = "Replacement value"; //$NON-NLS-1$
         DefaultMessageModifier modifier = new DefaultMessageModifier();
         modifier.addDefaultField(111, replacementValue, DefaultMessageModifier.MessageFieldType.MESSAGE);
 
-        String originalValue = "Original value";
+        String originalValue = "Original value"; //$NON-NLS-1$
         Message aMessage = msgFactory.newBasicOrder();
         aMessage.setField(new StringField(111, originalValue));
 
@@ -86,11 +85,11 @@ public class DefaultMessageModifierTest extends TestCase {
 
     }
 
-    public void testModifyOrderWithPredicate() throws BackingStoreException, FieldNotFound, MarketceteraException {
+    public void testModifyOrderWithPredicate() throws BackingStoreException, FieldNotFound, CoreException {
         DefaultMessageModifier mod = new DefaultMessageModifier();
-        mod.setHeaderFields(createFieldsMap(new String[][]{{"57(*)", HEADER_57_VAL}}));
-        mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}}));
-        mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}}));
+        mod.setHeaderFields(createFieldsMap(new String[][]{{"57(*)", HEADER_57_VAL}})); //$NON-NLS-1$
+        mod.setMsgFields(createFieldsMap(new String[][]{{"21(d)", FIELD_21_VAL}, {"42(admin)", FIELD_42_VAL}})); //$NON-NLS-1$ //$NON-NLS-2$
+        mod.setTrailerFields(createFieldsMap(new String[][]{{"28(app)", TRAILER_28_VAL}})); //$NON-NLS-1$
 
         Message heartbeat = msgFactory.createMessage(MsgType.HEARTBEAT);
 
@@ -128,9 +127,9 @@ public class DefaultMessageModifierTest extends TestCase {
     public void testModifyOrderWithAllMessageTypeModifiers() throws Exception
     {
         DefaultMessageModifier mod = new DefaultMessageModifier();
-        mod.setHeaderFields(createFieldsMap(new String[][]{{"57", HEADER_57_VAL}}));
-        mod.setMsgFields(createFieldsMap(new String[][]{{"21", FIELD_21_VAL}}));
-        mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}}));
+        mod.setHeaderFields(createFieldsMap(new String[][]{{"57", HEADER_57_VAL}})); //$NON-NLS-1$
+        mod.setMsgFields(createFieldsMap(new String[][]{{"21", FIELD_21_VAL}})); //$NON-NLS-1$
+        mod.setTrailerFields(createFieldsMap(new String[][]{{"28", TRAILER_28_VAL}})); //$NON-NLS-1$
 
         Message msg = msgFactory.newBasicOrder();
         // taking this out explicitly to allow the order modifier to set it.

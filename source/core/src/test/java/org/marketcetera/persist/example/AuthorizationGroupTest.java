@@ -11,7 +11,7 @@ import java.util.Set;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AuthorizationGroupTest extends ManyToManyTestBase
         <Authorization, Authorization, SummaryGroup, Group> {
     protected Authorization createFilled() {

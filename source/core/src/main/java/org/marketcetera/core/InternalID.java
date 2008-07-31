@@ -13,7 +13,7 @@ package org.marketcetera.core;
  * wrapper around java.lang.String.
  * @author gmiller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class InternalID {
     final String mID;
     final Class mClass = this.getClass();
@@ -23,7 +23,7 @@ public class InternalID {
      * @param internalID The string representation of the id to back this object
      */
     public InternalID(String internalID) {
-        if (internalID == null) throw new IllegalArgumentException(MessageKey.ERROR_NULL_ID.getLocalizedMessage());
+        if (internalID == null) throw new IllegalArgumentException(Messages.ERROR_NULL_ID.getText());
         mID = internalID;
     }
     /**

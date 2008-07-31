@@ -10,9 +10,9 @@ public class GroupIDComparatorTest extends TestCase {
 
 	public void testGroupIDComparator() throws Exception {
 		GroupIDComparator comparator = new GroupIDComparator();
-		MessageHolder mha = new IncomingMessageHolder(null, "A");
-		MessageHolder mhc = new IncomingMessageHolder(null, "C");
-		MessageHolder mha2 = new IncomingMessageHolder(null, "A");
+		MessageHolder mha = new IncomingMessageHolder(null, "A"); //$NON-NLS-1$
+		MessageHolder mhc = new IncomingMessageHolder(null, "C"); //$NON-NLS-1$
+		MessageHolder mha2 = new IncomingMessageHolder(null, "A"); //$NON-NLS-1$
 		MessageHolder mhnull = new IncomingMessageHolder(null, null);
 		assertEquals(-2, comparator.compare(mha, mhc));
 		assertEquals(0, comparator.compare(mha, mha2));

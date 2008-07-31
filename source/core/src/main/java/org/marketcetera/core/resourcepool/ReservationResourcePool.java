@@ -5,8 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * An implementation of {@link ResourcePool} that allows callers to
@@ -74,10 +74,8 @@ public abstract class ReservationResourcePool
 
     protected void addResourceToPool(Resource inResource)
     {
-        if(LoggerAdapter.isDebugEnabled(this)) { 
-            LoggerAdapter.debug("Adding " + inResource + " to resource pool",
-                                this); 
-        }
+        SLF4JLoggerProxy.debug(this, "Adding {} to resource pool", inResource); //$NON-NLS-1$
+
         if(inResource == null) {
             throw new NullPointerException();
         }
@@ -90,26 +88,15 @@ public abstract class ReservationResourcePool
         // if it doesn't, that means we are processing an add - add a reservation to the book
         Object key = getReservationKey(inResource);
         if(key == null) {
-            if(LoggerAdapter.isDebugEnabled(this)) { 
-                LoggerAdapter.debug("Unable to determine reservation key for " + inResource + ", can't add it to the pool",
-                                    this); 
-            }
+            SLF4JLoggerProxy.debug(this, "Unable to determine reservation key for {}, can't add it to the pool", inResource); //$NON-NLS-1$
+
             throw new NullPointerException();
         }
-        if(LoggerAdapter.isDebugEnabled(this)) { 
-            LoggerAdapter.debug("Resource yields reservation key: " + key,
-                                this); 
-        }
+        SLF4JLoggerProxy.debug(this, "Resource yields reservation key: {}", key); //$NON-NLS-1$
         if(reservationExistsFor(key)) {
-            if(LoggerAdapter.isDebugEnabled(this)) { 
-                LoggerAdapter.debug("Reservation exists",
-                                    this); 
-            }
+            SLF4JLoggerProxy.debug(this, "Reservation exists"); //$NON-NLS-1$
         } else {
-            if(LoggerAdapter.isDebugEnabled(this)) { 
-                LoggerAdapter.debug("Reservation does not yet exist, adding it to the book",
-                                    this); 
-            }
+            SLF4JLoggerProxy.debug(this, "Reservation does not yet exist, adding it to the book"); //$NON-NLS-1$
             // this is a new add
             addToReservationBook(key,
                                  inResource);
@@ -187,24 +174,15 @@ public abstract class ReservationResourcePool
         try {
             key = renderReservationKey(inResource);
         } catch (Throwable t) {
-            if(LoggerAdapter.isDebugEnabled(this)) { 
-                LoggerAdapter.debug("Exception thrown while rendering reservation key from resource " + inResource,
-                                    t,
-                                    this); 
-            }
+            SLF4JLoggerProxy.debug(this, t, "Exception thrown while rendering reservation key from resource {}", inResource); //$NON-NLS-1$
+
         }
         if(key == null) {
-            if(LoggerAdapter.isDebugEnabled(this)) { 
-                LoggerAdapter.debug("Attempting inefficient manual traverse for key",
-                                    this); 
-            }
+            SLF4JLoggerProxy.debug(this, "Attempting inefficient manual traverse for key"); //$NON-NLS-1$
             key = manualSearchForResourceWrapper(inResource);
         }
 
-        if(LoggerAdapter.isDebugEnabled(this)) { 
-            LoggerAdapter.debug("Key render returns " + key + " for resource " + inResource,
-                                this); 
-        }
+        SLF4JLoggerProxy.debug(this, "Key render returns {} for resource {}", key, inResource); //$NON-NLS-1$
         return key;
     }
 
@@ -219,35 +197,24 @@ public abstract class ReservationResourcePool
      */
     private Object manualSearchForResourceWrapper(Resource inResource)
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Executing manual reservation traverse for resource " + inResource, 
-                                this);
-        }
+        SLF4JLoggerProxy.debug(this, "Executing manual reservation traverse for resource {}", inResource); //$NON-NLS-1$
+
         synchronized(mResourceReservations) {
             for(Object key : mResourceReservations.keySet()) {
                 if(mResourceReservations.get(key).equals(inResource)) {
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("Manual reservation traverse for resource " + inResource + " yielded key " + key, 
-                                            this);
-                    }
+                    SLF4JLoggerProxy.debug(this, "Manual reservation traverse for resource {} yielded key {}", inResource, key); //$NON-NLS-1$
                     return key;
                 }
             }
         }
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Manual reservation traverse for resource " + inResource + " LOGIN_FAILED, giving up", 
-                                this);
-        }
+        SLF4JLoggerProxy.debug(this, "Manual reservation traverse for resource {} LOGIN_FAILED, giving up", inResource); //$NON-NLS-1$
         return null;
     }
 
     protected Resource getNextResource(Object inData)
             throws ResourcePoolException
     {
-        if(LoggerAdapter.isDebugEnabled(this)) { 
-            LoggerAdapter.debug(this + " received request for resource with the following credentials: " + inData,
-                                this); 
-        }
+        SLF4JLoggerProxy.debug(this, "{} received request for resource with the following credentials: {}", this, inData); //$NON-NLS-1$
         // there are two kinds of resource requests we can process here:
         //  1) inData is null - this is a request for "any old resource"
         //  2) inData is non-null - this is a request for the specific resource implied by inData
@@ -256,30 +223,22 @@ public abstract class ReservationResourcePool
 
         try {
             if(inData == null) {
-                if(LoggerAdapter.isDebugEnabled(this)) { 
-                    LoggerAdapter.debug("Credentials are null, assigning next available resource",
-                                        this); 
-                }
+                SLF4JLoggerProxy.debug(this, "Credentials are null, assigning next available resource"); //$NON-NLS-1$
+
                 // this is a request for any resource
                 if(mResources.isEmpty()) {
-                    if(LoggerAdapter.isDebugEnabled(this)) { 
-                        LoggerAdapter.debug("No resources available, trying to create a new one to assign",
-                                            this); 
-                    }
+                    SLF4JLoggerProxy.debug(this, "No resources available, trying to create a new one to assign"); //$NON-NLS-1$
                     // if the pool is empty, there are no resources to get so we will have to add one
                     desiredResource = createResource(inData);
                     // make sure we got a valid resource back
                     if(desiredResource == null) {
-                        throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE);
+                        throw new ResourcePoolException(Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE);
                     }
                     // add the new resource to the system
                     addResourceToPool(desiredResource);
                 }
                 desiredResource = allocateResource();
-                if(LoggerAdapter.isDebugEnabled(this)) { 
-                    LoggerAdapter.debug("Returning resource: " + desiredResource,
-                                        this); 
-                }
+                SLF4JLoggerProxy.debug(this, "Returning resource: {}", desiredResource); //$NON-NLS-1$
                 return desiredResource;
             }
             // this is a request for a specific resource
@@ -287,30 +246,21 @@ public abstract class ReservationResourcePool
             // the resource may or may not exist at this point
             // look up the reservation implied by the passed object
             ReservationEntry reservationEntry = getReservationByKey(inData);
-            if(LoggerAdapter.isDebugEnabled(this)) { 
-                LoggerAdapter.debug("A specific resource has been requested, a search for a reservationEntry yielded: " + reservationEntry,
-                                    this); 
-            }
+            SLF4JLoggerProxy.debug(this, "A specific resource has been requested, a search for a reservationEntry yielded: {}", reservationEntry); //$NON-NLS-1$
             if(reservationEntry == null) {
-                if(LoggerAdapter.isDebugEnabled(this)) { 
-                    LoggerAdapter.debug("No reservationEntry exists for these credentials, creating a new resource to match",
-                                        this); 
-                }
+                SLF4JLoggerProxy.debug(this, "No reservationEntry exists for these credentials, creating a new resource to match"); //$NON-NLS-1$
                 // a specific resource has been requested, but a reservation entry for that resource does not
                 //  exist.  this implies that the resource does not exist.
                 // try to create a resource that matches the resource implied by the passed parameter.
                 desiredResource = createResource(inData);
                 // make sure we got a valid resource back
                 if(desiredResource == null) {
-                    throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE);
+                    throw new ResourcePoolException(Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE);
                 }
                 // the resource should match the given criteria, but that's up to the subclass to determine
                 addResourceToPool(desiredResource);
                 // jump back into this method now that the reservation should be able to be honored
-                if(LoggerAdapter.isDebugEnabled(this)) { 
-                    LoggerAdapter.debug("About to recurse to find the newly created resource...",
-                                        this); 
-                }
+                SLF4JLoggerProxy.debug(this, "About to recurse to find the newly created resource..."); //$NON-NLS-1$
                 return getNextResource(inData);
             }
             // a specific resource has been requested and a reservation entry for that resource exists
@@ -339,7 +289,8 @@ public abstract class ReservationResourcePool
             if(t instanceof ResourcePoolException) {
                 throw (ResourcePoolException)t;
             }
-            throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,                                            t);
+            throw new ResourcePoolException(t,
+                                            Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE);
         }        
     }
     
@@ -381,10 +332,7 @@ public abstract class ReservationResourcePool
                 // we should now wait until the resource comes back in (the only way out of the while
                 //  loop is if we get the resource, the parent request throws an exception, or we're
                 //  interrupted during the wait)
-                if(LoggerAdapter.isDebugEnabled(this)) { 
-                    LoggerAdapter.debug(this + " waiting for resource " + e.getResource() + "...",
-                                        this); 
-                }
+                SLF4JLoggerProxy.debug(this, "{} waiting for resource {}...", this, e.getResource()); //$NON-NLS-1$
                 try {
                     synchronized(this) {
                         wait();
@@ -393,7 +341,7 @@ public abstract class ReservationResourcePool
                     Object key = getReservationKey(e.getResource());
                     ReservationEntry entry = getReservationByKey(key);
                     if(entry.getCanceled()) {
-                        throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_RESERVATION_CANCELLED);
+                        throw new ResourcePoolException(Messages.ERROR_RESOURCE_POOL_RESERVATION_CANCELLED);
                     }
                 } catch (InterruptedException e1) {
                     throw new ResourcePoolException(e1);
@@ -491,14 +439,10 @@ public abstract class ReservationResourcePool
 
     void dumpReservationTable()
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            synchronized(mResourceReservations) {                
-                LoggerAdapter.debug((mResourceReservations.size() != 0 ? "ReservationEntry table contains:" : "ReservationEntry table is empty"),
-                                    this);
-                for(Object key : mResourceReservations.keySet()) {
-                    LoggerAdapter.debug(key + "(" + key.hashCode() + ") " + mResourceReservations.get(key),
-                                        this);
-                }
+        synchronized(mResourceReservations) {                
+            SLF4JLoggerProxy.debug(this, mResourceReservations.size() != 0 ? "ReservationEntry table contains:" : "ReservationEntry table is empty"); //$NON-NLS-1$ //$NON-NLS-2$
+            for(Object key : mResourceReservations.keySet()) {
+                SLF4JLoggerProxy.debug(this, "{}({}) {}", key, key.hashCode(), mResourceReservations.get(key)); //$NON-NLS-1$
             }
         }
     }
@@ -596,7 +540,7 @@ public abstract class ReservationResourcePool
         public String toString()
         {
             StringBuffer output = new StringBuffer();
-            output.append(getResource().toString()).append(" with ").append((mRequesters == null ? "0" : mRequesters.size())).append(" requesters");
+            output.append(getResource().toString()).append(" with ").append((mRequesters == null ? "0" : mRequesters.size())).append(" requesters"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return output.toString();
         }
 
@@ -609,17 +553,11 @@ public abstract class ReservationResourcePool
         private synchronized void cancelReservation(ReservationResourcePool inCanceller) 
             throws Throwable
         {
-            if(LoggerAdapter.isDebugEnabled(this)) {
-                LoggerAdapter.debug("cancelling all reservations for " + getResource(), 
-                                    this);
-            }
+            SLF4JLoggerProxy.debug(this, "cancelling all reservations for {}", getResource()); //$NON-NLS-1$
             setCanceled(true);
             if(mRequesters != null) {
                 for(ReservationResourcePool r : mRequesters) {
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("Notifying " + r + " of cancellation", 
-                                            this);
-                    }
+                    SLF4JLoggerProxy.debug(this, "Notifying {} of cancellation", r); //$NON-NLS-1$
                     synchronized(r) {
                         r.notify();
                     }

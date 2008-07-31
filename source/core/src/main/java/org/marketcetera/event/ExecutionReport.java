@@ -3,7 +3,6 @@ package org.marketcetera.event;
 import java.math.BigDecimal;
 
 import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.core.MessageKey;
 
 import quickfix.Message;
 import quickfix.field.*;
@@ -49,7 +48,7 @@ public class ExecutionReport extends EventBase {
 		super(messageId, timestamp, executionReport);
 		
 		if (!FIXMessageUtil.isExecutionReport(executionReport)){
-			throw new IllegalArgumentException(MessageKey.ERROR_MSG_NOT_EXEC_REPORT.getLocalizedMessage());
+			throw new IllegalArgumentException(Messages.ERROR_MSG_NOT_EXEC_REPORT.getText());
 		}
 
 		execID = safeGetString(ExecID.FIELD, executionReport);

@@ -42,7 +42,7 @@ public class MockSubscriber
     public boolean isInteresting(Object inData)
     {
         if(mInterestingThrows) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return mInteresting;
     }
@@ -50,7 +50,7 @@ public class MockSubscriber
     public void publishTo(Object inData)
     {
         if(mPublishThrows) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         mData = inData;
         mCounter = ++sCounter;

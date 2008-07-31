@@ -12,7 +12,7 @@ import java.util.Date;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface SummaryEntityBase extends Serializable {
     /**
      * The Entity ID. This ID uniquely represents an instance

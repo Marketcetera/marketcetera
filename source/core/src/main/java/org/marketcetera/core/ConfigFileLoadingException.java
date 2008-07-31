@@ -1,20 +1,27 @@
 package org.marketcetera.core;
 
+import org.marketcetera.util.log.I18NBoundMessage;
+
 /**
  * Thrown when applications can't read their respective config files
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
-public class ConfigFileLoadingException extends MarketceteraException
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ConfigFileLoadingException extends CoreException
 {
-    public ConfigFileLoadingException(String inFile)
+    public ConfigFileLoadingException(Throwable inNested)
     {
-        super(MessageKey.CONFIG_FILE_OPEN.getLocalizedMessage(inFile));
+        super(inNested);
     }
 
-    public ConfigFileLoadingException(String inFile, Throwable nested)
+    public ConfigFileLoadingException(I18NBoundMessage inMessage)
     {
-        super(MessageKey.CONFIG_FILE_OPEN.getLocalizedMessage(inFile), nested);
+        super(inMessage);
+    }
+
+    public ConfigFileLoadingException(Throwable inNested, I18NBoundMessage inMessage)
+    {
+        super(inNested, inMessage);
     }
 }

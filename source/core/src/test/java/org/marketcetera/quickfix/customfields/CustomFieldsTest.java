@@ -21,7 +21,7 @@ import java.util.GregorianCalendar;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CustomFieldsTest extends TestCase {
     public CustomFieldsTest(String inName) {
         super(inName);
@@ -33,7 +33,7 @@ public class CustomFieldsTest extends TestCase {
 
     public void testHistoricalMarketDataRequest() throws Exception {
         FIXMessageFactory msgFactory = FIXVersion.FIX44.getMessageFactory();
-        Message request = msgFactory.newMarketDataRequest("123", Arrays.asList(new MSymbol("IFLI")));
+        Message request = msgFactory.newMarketDataRequest("123", Arrays.asList(new MSymbol("IFLI"))); //$NON-NLS-1$ //$NON-NLS-2$
         request.setField(new SubscriptionRequestType(CustomFIXFieldConstants.SUBSCRIPTION_REQUEST_TYPE_HISTORICAL));
         request.setField(new DateFrom(new GregorianCalendar(2001, 4, 1).getTime()));
         request.setField(new DateTo(new Date()));

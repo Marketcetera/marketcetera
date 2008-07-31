@@ -14,7 +14,7 @@ import java.util.Arrays;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageAugmentor_41 extends FIXMessageAugmentor_40 {
 
     private static String[] TT_APPLICABLE_MESSAGE_CODES = new String[] {

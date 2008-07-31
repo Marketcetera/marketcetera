@@ -8,7 +8,7 @@ import java.lang.reflect.InvocationTargetException;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AccessViolator {
     Class violatedClass;
 

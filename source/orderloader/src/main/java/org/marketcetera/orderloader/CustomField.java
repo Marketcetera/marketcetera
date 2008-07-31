@@ -3,6 +3,7 @@ package org.marketcetera.orderloader;
 import java.math.BigDecimal;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.Field;
 
@@ -102,7 +103,7 @@ public class CustomField
             return new CustomField(fieldKey, 
                                    null);
         } catch(NumberFormatException nex) {
-            throw new OrderParsingException(inName);
+            throw new OrderParsingException(new I18NBoundMessage1P(Messages.ERROR_PARSING_NUMBER_FORMAT, inName));
         }
     }
 }

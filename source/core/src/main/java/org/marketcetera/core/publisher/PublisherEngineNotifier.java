@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
 
-import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * Executes a single publication.
@@ -47,10 +47,8 @@ final class PublisherEngineNotifier
     public Object call()
         throws Exception
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Publishing " + mData + " to " + (mSubscribers == null ? "0" : mSubscribers.size()) + " subscriber(s)", 
-                            this);
-        }
+        SLF4JLoggerProxy.debug(this, "Publishing {} to {} subscriber(s)", //$NON-NLS-1$
+                               mData, (mSubscribers == null ? "0" : mSubscribers.size())); //$NON-NLS-1$
         if(mSubscribers == null) {
             return null;
         }
@@ -60,11 +58,7 @@ final class PublisherEngineNotifier
                     s.publishTo(mData);
                 }
             } catch (Throwable t) {
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Subscriber " + s + " threw an exception during publication, skipping",
-                                        t,
-                                        this);
-                }
+                SLF4JLoggerProxy.debug(this, t, "Subscriber {} threw an exception during publication, skipping", s); //$NON-NLS-1$
             }
         }
         return null;

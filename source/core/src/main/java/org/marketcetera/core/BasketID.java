@@ -10,7 +10,7 @@ package org.marketcetera.core;
  * A simple subclass of InternalID that denotes an id for a basket of orders.
  * @author gmiller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class BasketID extends InternalID {
     /**
      * Create a new basket ID with the given identifier.

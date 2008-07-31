@@ -3,7 +3,6 @@ package org.marketcetera.ors;
 import junit.framework.Test;
 import org.marketcetera.core.*;
 import org.marketcetera.ors.MessageModifierManager;
-import org.marketcetera.ors.ORSMessageKey;
 import org.marketcetera.ors.OrderLimits;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.ors.OutgoingMessageHandler;
@@ -11,6 +10,8 @@ import org.marketcetera.ors.QuickFIXApplication;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.quickfix.DefaultMessageModifier.MessageFieldType;
 import org.marketcetera.spring.MockJmsTemplate;
+import org.marketcetera.util.log.I18NBoundMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -25,15 +26,15 @@ import java.util.HashSet;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 {
 	/* a bunch of random made-up header/trailer/field values */
-    public static final String HEADER_57_VAL = "CERT";
-    public static final String HEADER_12_VAL = "12.24";
-    public static final String TRAILER_2_VAL = "2-trailer";
-    public static final String FIELDS_37_VAL = "37-regField";
-    public static final String FIELDS_14_VAL = "37";
+    public static final String HEADER_57_VAL = "CERT"; //$NON-NLS-1$
+    public static final String HEADER_12_VAL = "12.24"; //$NON-NLS-1$
+    public static final String TRAILER_2_VAL = "2-trailer"; //$NON-NLS-1$
+    public static final String FIELDS_37_VAL = "37-regField"; //$NON-NLS-1$
+    public static final String FIELDS_14_VAL = "37"; //$NON-NLS-1$
 
     public OutgoingMessageHandlerTest(String inName, FIXVersion version) {
         super(inName, version);
@@ -49,7 +50,7 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 /*/
         return new FIXVersionTestSuite(OutgoingMessageHandlerTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
                 FIXVersionTestSuite.ALL_VERSIONS,
-                new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")),
+                new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")), //$NON-NLS-1$
                 new FIXVersion[]{FIXVersion.FIX40});
    }
 
@@ -57,31 +58,31 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
     {
     	OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         handler.setOrderRouteManager(new MessageRouteManager());
-    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, "bob");
+    	Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // add symbol sfx
         newOrder.setField(new SymbolSfx(SymbolSfx.WHEN_ISSUED));
         Message execReport = handler.executionReportFromNewOrder(newOrder);
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
-        execReport.setField(new OrderID("fake-order-id"));
+        execReport.setField(new OrderID("fake-order-id")); //$NON-NLS-1$
         verifyExecutionReport(execReport);
         // verify the acount id is present
-        assertEquals("bob", execReport.getString(Account.FIELD));
-        assertTrue("sendingTime not set", execReport.getHeader().isSetField(SendingTime.FIELD));
+        assertEquals("bob", execReport.getString(Account.FIELD)); //$NON-NLS-1$
+        assertTrue("sendingTime not set", execReport.getHeader().isSetField(SendingTime.FIELD)); //$NON-NLS-1$
         assertEquals(SymbolSfx.WHEN_ISSUED, execReport.getString(SymbolSfx.FIELD));
 
         // on a non-single order should get back null
-        assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob",
-                                                                  Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty")));
+        assertNull(handler.executionReportFromNewOrder(msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
+                                                                  Side.BUY, new BigDecimal(100), new MSymbol("IBM"), "counterparty"))); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Bug #416 - make sure sending time changes between messages */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
+    @SuppressWarnings({"ThrowableInstanceNeverThrown"}) //$NON-NLS-1$
     public void testSendingTimeChanges() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         handler.setOrderRouteManager(new MessageRouteManager());
-        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, "bob");
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message execReport = handler.executionReportFromNewOrder(newOrder);
         Message reject1 = handler.createRejectionMessage(new Exception(), newOrder);
         Thread.sleep(3000);
@@ -89,10 +90,10 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         Message reject2 = handler.createRejectionMessage(new Exception(), newOrder);
         String sendTime1 = execReport.getHeader().getString(SendingTime.FIELD);
         String sendTime2 = execReport2.getHeader().getString(SendingTime.FIELD);
-        assertFalse("sending times are equal: "+ sendTime1 + "/"+ sendTime2,
+        assertFalse("sending times are equal: "+ sendTime1 + "/"+ sendTime2, //$NON-NLS-1$ //$NON-NLS-2$
                 sendTime1.equals(sendTime2));
 
-        assertFalse("reject sending times are equal",
+        assertFalse("reject sending times are equal", //$NON-NLS-1$
                 reject1.getHeader().getString(SendingTime.FIELD).equals(reject2.getHeader().getString(SendingTime.FIELD)));
     }
 
@@ -101,14 +102,14 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
     {
     	OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         handler.setOrderRouteManager(new MessageRouteManager());
-        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, "bob");
+        Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // remove account ID
         newOrder.removeField(Account.FIELD);
 
         final Message execReport = handler.executionReportFromNewOrder(newOrder);
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
-        execReport.setField(new OrderID("fake-order-id"));
+        execReport.setField(new OrderID("fake-order-id")); //$NON-NLS-1$
         verifyExecutionReport(execReport);
         // verify the acount id is not present
         (new ExpectedTestFailure(FieldNotFound.class) {
@@ -124,13 +125,13 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         Message wrongMsg = msgFactory.newOrderCancelReject();
         wrongMsg.getHeader().setField(new MsgSeqNum(23));
         Message reject = handler.handleMessage(wrongMsg);
-        verifyBMRejection(reject, msgFactory, ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
-                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_CANCEL_REJECT));
+        verifyBMRejection(reject, msgFactory, new I18NBoundMessage1P(Messages.ERROR_UNSUPPORTED_ORDER_TYPE,
+                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_CANCEL_REJECT)));
     }
 
     private void verifyExecutionReport(Message inExecReport) throws Exception
     {
-        FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY, msgFactory, fixDD);
+        FIXMessageUtilTest.verifyExecutionReport(inExecReport, "100", "IBM", Side.BUY, msgFactory, fixDD); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Create a few default fields and verify they get placed
@@ -144,8 +145,8 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, "bob");
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message response = handler.handleMessage(msg);
 
         assertNotNull(response);
@@ -170,7 +171,7 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         modifiedMessage.getTrailer().removeField(2);
         fixDD.getDictionary().validate(modifiedMessage, true);
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
-        response.setField(new OrderID("fake-order-id"));
+        response.setField(new OrderID("fake-order-id")); //$NON-NLS-1$
         fixDD.getDictionary().validate(response, true);
     }
 
@@ -183,17 +184,17 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"),
-                                                      TimeInForce.DAY, "bob");
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         Message response = handler.handleMessage(msg);
         assertNotNull(quickFIXSender.getCapturedMessages().get(0));
-        assertEquals("no symbol suffix in sent msg", "USD", quickFIXSender.getCapturedMessages().get(0).getString(SymbolSfx.FIELD));
+        assertEquals("no symbol suffix in sent msg", "USD", quickFIXSender.getCapturedMessages().get(0).getString(SymbolSfx.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
 
         assertNotNull(response);
-        assertEquals("verify symbol has been separated", "EUR", response.getString(Symbol.FIELD));
+        assertEquals("verify symbol has been separated", "EUR", response.getString(Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
 
         // this is to test #362
-        assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD));
+        assertEquals("didn't pick up SymbolSfx", "USD", response.getString(SymbolSfx.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Send a forex order EUR/USD and make sure that the symbol comes through unchanged */
@@ -206,18 +207,18 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"),
-                                                      TimeInForce.DAY, "bob");
+        Message msg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("EUR/USD"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // change it to be forex
         msg.setField(new SecurityType(SecurityType.FOREIGN_EXCHANGE_CONTRACT));
         msg.setField(new OrdType(OrdType.FOREX_MARKET));
 
         Message response = handler.handleMessage(msg);
         assertNotNull(quickFIXSender.getCapturedMessages().get(0));
-        assertFalse("should not have symbol suffix in sent msg", quickFIXSender.getCapturedMessages().get(0).isSetField(SymbolSfx.FIELD));
+        assertFalse("should not have symbol suffix in sent msg", quickFIXSender.getCapturedMessages().get(0).isSetField(SymbolSfx.FIELD)); //$NON-NLS-1$
 
         assertNotNull(response);
-        assertEquals("verify symbol has not been separated", "EUR/USD", response.getString(Symbol.FIELD));
+        assertEquals("verify symbol has not been separated", "EUR/USD", response.getString(Symbol.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /** Send a generic event and a single-order event.
@@ -230,7 +231,7 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
      * cancel report
      * @throws Exception
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public void testHandleEvents() throws Exception
     {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
@@ -238,10 +239,10 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-		Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, "bob");
-        Message cancelOrder = msgFactory.newCancel("bob", "bob",
-                                                    Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty");
+		Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
+        Message cancelOrder = msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
+                                                    Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty"); //$NON-NLS-1$ //$NON-NLS-2$
 
         List<Message> orderList = Arrays.asList(newOrder, cancelOrder);
         List<Message> responses = new LinkedList<Message>();
@@ -250,22 +251,22 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 		}
         
         // verify that we have 2 orders on the mQF sink and 1 on the incomingJMS
-        assertEquals("not enough events on the QF output", 2, quickFIXSender.getCapturedMessages().size());
-        assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT,
+        assertEquals("not enough events on the QF output", 2, quickFIXSender.getCapturedMessages().size()); //$NON-NLS-1$
+        assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT, //$NON-NLS-1$
                      responses.get(0).getHeader().getString(MsgType.FIELD));
-        assertEquals("2nd event should be original buy order", newOrder,
+        assertEquals("2nd event should be original buy order", newOrder, //$NON-NLS-1$
                 quickFIXSender.getCapturedMessages().get(0));
-        assertEquals("3rd event should be cancel order", cancelOrder,
+        assertEquals("3rd event should be cancel order", cancelOrder, //$NON-NLS-1$
                 quickFIXSender.getCapturedMessages().get(1));
 
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
-        responses.get(0).setField(new OrderID("fake-order-id"));
+        responses.get(0).setField(new OrderID("fake-order-id")); //$NON-NLS-1$
         verifyExecutionReport(responses.get(0));
     }
 
     /** verify that sending a malformed buy order (ie missing Side) results in a reject exectuionReport */
     public void testHandleMalformedEvent() throws Exception {
-        Message buyOrder = FIXMessageUtilTest.createNOS("toli", new BigDecimal("12.34"), new BigDecimal("234"), Side.BUY, msgFactory);
+        Message buyOrder = FIXMessageUtilTest.createNOS("toli", new BigDecimal("12.34"), new BigDecimal("234"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         buyOrder.removeField(Side.FIELD);
 
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(fixVersion.getMessageFactory());
@@ -276,15 +277,15 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 		final Message result = handler.handleMessage(buyOrder);
 		assertNotNull(result);
 		assertEquals(0, quickFIXSender.getCapturedMessages().size());
-		assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT,
+		assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT, //$NON-NLS-1$
                      result.getHeader().getString(MsgType.FIELD));
-        assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
-        assertTrue("Error message should say field Side was missing", result.getString(Text.FIELD).contains("field Side"));
+        assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD)); //$NON-NLS-1$
+        assertTrue("Error message should say field Side was missing", result.getString(Text.FIELD).contains("field Side")); //$NON-NLS-1$ //$NON-NLS-2$
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD)); //$NON-NLS-1$
         }
         // validation will fail b/c we didn't send a side in to begin with
-        new ExpectedTestFailure(RuntimeException.class, "field="+Side.FIELD) {
+        new ExpectedTestFailure(RuntimeException.class, "field="+Side.FIELD) { //$NON-NLS-1$
             protected void execute() throws Throwable {
                 fixDD.getDictionary().validate(result, true);
             }
@@ -301,24 +302,24 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-        Message buyOrder = FIXMessageUtilTest.createNOS("toli", new BigDecimal("12.34"), new BigDecimal("234"), Side.BUY, msgFactory);
-        buyOrder.setString(Price.FIELD, "23.23.3");
+        Message buyOrder = FIXMessageUtilTest.createNOS("toli", new BigDecimal("12.34"), new BigDecimal("234"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        buyOrder.setString(Price.FIELD, "23.23.3"); //$NON-NLS-1$
 
         assertNotNull(buyOrder.getString(ClOrdID.FIELD));
         Message result = handler.handleMessage(buyOrder);
         assertNotNull(result);
-        assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT,
+        assertEquals("first output should be outgoing execReport", MsgType.EXECUTION_REPORT, //$NON-NLS-1$
         		result.getHeader().getString(MsgType.FIELD));
-        assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD));
+        assertEquals("should be a reject execReport", OrdStatus.REJECTED, result.getChar(OrdStatus.FIELD)); //$NON-NLS-1$
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD));
+            assertEquals("execType should be a reject", ExecType.REJECTED, result.getChar(ExecType.FIELD)); //$NON-NLS-1$
         }
-        assertNotNull("rejectExecReport doesn't have a ClOrdID set", result.getString(ClOrdID.FIELD));
-        assertNotNull("no useful rejection message", result.getString(Text.FIELD));
+        assertNotNull("rejectExecReport doesn't have a ClOrdID set", result.getString(ClOrdID.FIELD)); //$NON-NLS-1$
+        assertNotNull("no useful rejection message", result.getString(Text.FIELD)); //$NON-NLS-1$
     }
 
     /** brain-dead: make sure that incoming orders just get placed on the sink */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public void testHandleFIXMessages() throws Exception
     {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
@@ -326,17 +327,17 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         NullQuickFIXSender quickFIXSender = new NullQuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-		Message newOrder = msgFactory.newCancelReplaceShares("bob", "orig", new BigDecimal(100));
-		newOrder.setField(new Symbol("ASDF"));
-		Message cancelOrder = msgFactory.newCancel("bob", "bob",
-                                                    Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty");
+		Message newOrder = msgFactory.newCancelReplaceShares("bob", "orig", new BigDecimal(100)); //$NON-NLS-1$ //$NON-NLS-2$
+		newOrder.setField(new Symbol("ASDF")); //$NON-NLS-1$
+		Message cancelOrder = msgFactory.newCancel("bob", "bob", //$NON-NLS-1$ //$NON-NLS-2$
+                                                    Side.SELL, new BigDecimal(7), new MSymbol("TOLI"), "redParty"); //$NON-NLS-1$ //$NON-NLS-2$
         handler.handleMessage(newOrder);
         handler.handleMessage(cancelOrder);
 
-        assertEquals("not enough events on the OM quickfix sink", 2, quickFIXSender.getCapturedMessages().size());
-        assertEquals("1st event should be original buy order", newOrder,
+        assertEquals("not enough events on the OM quickfix sink", 2, quickFIXSender.getCapturedMessages().size()); //$NON-NLS-1$
+        assertEquals("1st event should be original buy order", newOrder, //$NON-NLS-1$
         		quickFIXSender.getCapturedMessages().get(0));
-        assertEquals("2nd event should be cancel order", cancelOrder,
+        assertEquals("2nd event should be cancel order", cancelOrder, //$NON-NLS-1$
         		quickFIXSender.getCapturedMessages().get(1));
         fixDD.getDictionary().validate(quickFIXSender.getCapturedMessages().get(1), true);
     }
@@ -344,17 +345,17 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
     public void testInvalidSessionID() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         handler.setOrderRouteManager(new MessageRouteManager());
-        SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target");
+        SessionID sessionID = new SessionID(msgFactory.getBeginString(), "no-sender", "no-target"); //$NON-NLS-1$ //$NON-NLS-2$
         handler.setDefaultSessionID(sessionID);
         QuickFIXSender quickFIXSender = new QuickFIXSender();
 		handler.setQuickFIXSender(quickFIXSender);
 
-	    Message newOrder = msgFactory.newMarketOrder("123", Side.BUY, new BigDecimal(100), new MSymbol("SUNW"),
-                TimeInForce.DAY, "dummyaccount");
+	    Message newOrder = msgFactory.newMarketOrder("123", Side.BUY, new BigDecimal(100), new MSymbol("SUNW"), //$NON-NLS-1$ //$NON-NLS-2$
+                TimeInForce.DAY, "dummyaccount"); //$NON-NLS-1$
 
         // verify we got an execReport that's a rejection with the sessionNotfound error message
         Message result = handler.handleMessage(newOrder);
-        verifyRejection(result, msgFactory, MessageKey.SESSION_NOT_FOUND, sessionID);
+        verifyRejection(result, msgFactory, new I18NBoundMessage1P(org.marketcetera.core.Messages.ERROR_FIX_SESSION_NOT_FOUND, sessionID));
     }
 
     /** Create props with a route manager entry, and make sure the FIX message is
@@ -371,8 +372,8 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 
     	
         // 1. create a "incoming JMS buy" order and verify that it doesn't have routing in it
-        final Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"),
-                                                      TimeInForce.DAY, "bob");
+        final Message newOrder = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), new MSymbol("IBM"), //$NON-NLS-1$ //$NON-NLS-2$
+                                                      TimeInForce.DAY, "bob"); //$NON-NLS-1$
         // verify there's no route info
         new ExpectedTestFailure(FieldNotFound.class) {
             protected void execute() throws Throwable {
@@ -391,9 +392,9 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         }}.run();
 
         // now send a FIX-related message through order manager and make sure routing does show up
-        orderRouterTesterHelper(handler, "BRK/A", null, "A");
-        orderRouterTesterHelper(handler, "IFLI.IM", "Milan", null);
-        orderRouterTesterHelper(handler, "BRK/A.N", "SIGMA", "A");
+        orderRouterTesterHelper(handler, "BRK/A", null, "A"); //$NON-NLS-1$ //$NON-NLS-2$
+        orderRouterTesterHelper(handler, "IFLI.IM", "Milan", null); //$NON-NLS-1$ //$NON-NLS-2$
+        orderRouterTesterHelper(handler, "BRK/A.N", "SIGMA", "A"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public void testIncomingNullMessage() throws Exception {
@@ -407,25 +408,25 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(FIXVersion.FIX40.getMessageFactory());
         Message msg = new quickfix.fix41.Message();
         Message reject = handler.handleMessage(msg);
-        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD));
-        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", reject.getString(OrdStatus.FIELD));
-        assertEquals("didn't get a right reason",
-                ORSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(FIXVersion.FIX40.toString(), FIXVersion.FIX41.toString()),
+        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, reject.getHeader().getString(MsgType.FIELD)); //$NON-NLS-1$
+        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", reject.getString(OrdStatus.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("didn't get a right reason", //$NON-NLS-1$
+                Messages.ERROR_MISMATCHED_FIX_VERSION.getText(FIXVersion.FIX40.toString(), FIXVersion.FIX41.toString()),
                 reject.getString(Text.FIELD));
 
         // now test it with no fix version at all
         reject = handler.handleMessage(new Message());
-        verifyRejection(reject, msgFactory, ORSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION);
+        verifyRejection(reject, msgFactory, new I18NBoundMessage0P(Messages.ERROR_MESSAGE_MALFORMED_NO_FIX_VERSION));
     }
 
     public void testOrderListNotSupported() throws Exception {
         OutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         Message orderList = msgFactory.createMessage(MsgType.ORDER_LIST);
-        orderList.setField(new Symbol("TOLI"));
+        orderList.setField(new Symbol("TOLI")); //$NON-NLS-1$
         orderList.getHeader().setField(new MsgSeqNum(23));
         Message reject = handler.handleMessage(orderList);
-        verifyBMRejection(reject, msgFactory, ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE,
-                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_LIST));
+        verifyBMRejection(reject, msgFactory, new I18NBoundMessage1P(Messages.ERROR_UNSUPPORTED_ORDER_TYPE,
+                fixDD.getHumanFieldValue(MsgType.FIELD, MsgType.ORDER_LIST)));
     }
 
 
@@ -434,22 +435,22 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         MyOutgoingMessageHandler handler = new MyOutgoingMessageHandler(msgFactory);
         NullQuickFIXSender sender = new NullQuickFIXSender();
         handler.setQuickFIXSender(sender);
-        Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
+        Message execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         assertEquals(1, sender.getCapturedMessages().size());
         assertTrue(FIXMessageUtil.isExecutionReport(execReport));
         assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
 
         // now set it to be logged out and verify a reject
         sender.getCapturedMessages().clear();
-        handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
-        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
+        handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target")); //$NON-NLS-1$ //$NON-NLS-2$
+        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         assertEquals(0, sender.getCapturedMessages().size());
-        verifyRejection(execReport, msgFactory, ORSMessageKey.ERROR_NO_DESTINATION_CONNECTION);
+        verifyRejection(execReport, msgFactory, new I18NBoundMessage0P(Messages.ERROR_NO_DESTINATION_CONNECTION));
 
         // verify goes through again after log on
         sender.getCapturedMessages().clear();
         handler.getQFApp().onLogon(null);
-        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory));
+        execReport = handler.handleMessage(FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         assertEquals(1, sender.getCapturedMessages().size());
         assertEquals(MsgType.EXECUTION_REPORT, execReport.getHeader().getString(MsgType.FIELD));
         assertEquals(OrdStatus.PENDING_NEW, execReport.getChar(OrdStatus.FIELD));
@@ -465,13 +466,13 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 
         // now set it to be logged out and verify a reject
         sender.getCapturedMessages().clear();
-        handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target"));
+        handler.getQFApp().onLogout(new SessionID(msgFactory.getBeginString(), "sender", "target")); //$NON-NLS-1$ //$NON-NLS-2$
         Message reject = handler.handleMessage(msgFactory.newCancelFromMessage(
-                FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory)));
+                FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.33"), new BigDecimal("100"), Side.BUY, msgFactory))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         assertEquals(0, sender.getCapturedMessages().size());
         assertEquals(MsgType.ORDER_CANCEL_REJECT, reject.getHeader().getString(MsgType.FIELD));
-        assertEquals("OrdStatus should not set", OrdStatus.REJECTED, reject.getChar(OrdStatus.FIELD));
-        assertEquals("didn't get a right reason", ORSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage(),
+        assertEquals("OrdStatus should not set", OrdStatus.REJECTED, reject.getChar(OrdStatus.FIELD)); //$NON-NLS-1$
+        assertEquals("didn't get a right reason", Messages.ERROR_NO_DESTINATION_CONNECTION.getText(), //$NON-NLS-1$
                 reject.getString(Text.FIELD));
     }
 
@@ -481,7 +482,7 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         MockJmsTemplate copyJmsTemplate = new MockJmsTemplate();
         handler.setIncomingCommandsCopier(copyJmsTemplate);
 
-        Message nos = FIXMessageUtilTest.createNOS("abc", new BigDecimal("10"), new BigDecimal("100"), Side.BUY, msgFactory);
+        Message nos = FIXMessageUtilTest.createNOS("abc", new BigDecimal("10"), new BigDecimal("100"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         handler.handleMessage(nos);
 
         assertEquals(1, copyJmsTemplate.getSentMessages().size());
@@ -498,8 +499,8 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
     private void orderRouterTesterHelper(OutgoingMessageHandler handler, String symbol,
                                          String expectedExchange, String shareClass)
             throws Exception {
-        final Message qfMsg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100),
-                new MSymbol(symbol),  TimeInForce.DAY, "bob");
+        final Message qfMsg = msgFactory.newMarketOrder("bob", Side.BUY, new BigDecimal(100), //$NON-NLS-1$
+                new MSymbol(symbol),  TimeInForce.DAY, "bob"); //$NON-NLS-1$
         NullQuickFIXSender nullQuickFIXSender = ((NullQuickFIXSender)handler.getQuickFIXSender());
 		nullQuickFIXSender.getCapturedMessages().clear();
         Message result = handler.handleMessage(qfMsg);
@@ -544,31 +545,46 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
     	return messageModifiers;
     }
 
-    private void verifyBMRejection(Message inMsg, FIXMessageFactory msgFactory, LocalizedMessage msgKey, Object ... args) throws Exception
+    private void verifyBMRejection(Message inMsg, FIXMessageFactory msgFactory, I18NBoundMessage1P msg) throws Exception
     {
         if(msgFactory.getBeginString().equals(FIXVersion.FIX40.toString()) ||
                 msgFactory.getBeginString().equals(FIXVersion.FIX41.toString())) {
-            assertEquals("didn't get a session-level reject", MsgType.REJECT, inMsg.getHeader().getString(MsgType.FIELD));
+            assertEquals("didn't get a session-level reject", MsgType.REJECT, inMsg.getHeader().getString(MsgType.FIELD)); //$NON-NLS-1$
         } else {
-            assertEquals("didn't get a business-message reject", MsgType.BUSINESS_MESSAGE_REJECT, inMsg.getHeader().getString(MsgType.FIELD));
+            assertEquals("didn't get a business-message reject", MsgType.BUSINESS_MESSAGE_REJECT, inMsg.getHeader().getString(MsgType.FIELD)); //$NON-NLS-1$
         }
-        assertEquals("didn't get a right reason",
-                msgKey.getLocalizedMessage(args),
+        assertEquals("didn't get a right reason", //$NON-NLS-1$
+                msg.getText(),
                 inMsg.getString(Text.FIELD));
     }
 
     public static void verifyRejection(Message inMsg, FIXMessageFactory msgFactory,
-                                       LocalizedMessage msgKey, Object... args) throws Exception
+                                       I18NBoundMessage0P msg) throws Exception
     {
-        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, inMsg.getHeader().getString(MsgType.FIELD));
-        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", inMsg.getString(OrdStatus.FIELD));
+        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, inMsg.getHeader().getString(MsgType.FIELD)); //$NON-NLS-1$
+        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", inMsg.getString(OrdStatus.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
         if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
-            assertEquals("execType should be a reject", ExecType.REJECTED, inMsg.getChar(ExecType.FIELD));
+            assertEquals("execType should be a reject", ExecType.REJECTED, inMsg.getChar(ExecType.FIELD)); //$NON-NLS-1$
         }
-        assertEquals("didn't get a right reason",
-                msgKey.getLocalizedMessage(args),
+        assertEquals("didn't get a right reason", //$NON-NLS-1$
+                msg.getText(),
                 inMsg.getString(Text.FIELD));
-        assertTrue("rejects should have sending time in them too", inMsg.getHeader().isSetField(SendingTime.FIELD));
+        assertTrue("rejects should have sending time in them too", inMsg.getHeader().isSetField(SendingTime.FIELD)); //$NON-NLS-1$
+
+    }
+
+    public static void verifyRejection(Message inMsg, FIXMessageFactory msgFactory,
+                                       I18NBoundMessage1P msg) throws Exception
+    {
+        assertEquals("didn't get an execution report", MsgType.EXECUTION_REPORT, inMsg.getHeader().getString(MsgType.FIELD)); //$NON-NLS-1$
+        assertEquals("didn't get a reject", OrdStatus.REJECTED+"", inMsg.getString(OrdStatus.FIELD)); //$NON-NLS-1$ //$NON-NLS-2$
+        if(!msgFactory.getBeginString().equals(FIXVersion.FIX40.toString())) {
+            assertEquals("execType should be a reject", ExecType.REJECTED, inMsg.getChar(ExecType.FIELD)); //$NON-NLS-1$
+        }
+        assertEquals("didn't get a right reason", //$NON-NLS-1$
+                msg.getText(),
+                inMsg.getString(Text.FIELD));
+        assertTrue("rejects should have sending time in them too", inMsg.getHeader().isSetField(SendingTime.FIELD)); //$NON-NLS-1$
 
     }
 
@@ -577,14 +593,14 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
         private static int factoryStart = (int) Math.round((Math.random() * 1000));
 
         public MyOutgoingMessageHandler(FIXMessageFactory inFactory)
-                throws ConfigError, FieldConvertError, MarketceteraException {
+                throws ConfigError, FieldConvertError, CoreException {
             super(inFactory, OrderLimitsTest.createBasicOrderLimits(),
                     new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory), new InMemoryIDFactory(factoryStart));
             // simulate logon
             qfApp.onLogon(null);
         }
         public MyOutgoingMessageHandler(FIXMessageFactory inFactory, OrderLimits limits)
-                throws ConfigError, FieldConvertError, MarketceteraException {
+                throws ConfigError, FieldConvertError, CoreException {
             super(inFactory, limits, new QuickFIXApplicationTest.MockQuickFIXApplication(inFactory),
                     new InMemoryIDFactory(factoryStart));
             // simulate logon

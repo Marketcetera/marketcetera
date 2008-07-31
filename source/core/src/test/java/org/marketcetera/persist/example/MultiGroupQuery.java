@@ -14,7 +14,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiGroupQuery extends MultiNDQuery {
     private static final long serialVersionUID = -7663471958224460264L;
 

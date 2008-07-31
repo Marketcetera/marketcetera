@@ -8,6 +8,8 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.io.File;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import org.marketcetera.persist.PersistTestBase;
 
 import javax.sql.DataSource;
@@ -19,7 +21,7 @@ import javax.sql.DataSource;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DatabaseIDFactoryTest extends TestCase {
     private static DataSource mDataSource;
 
@@ -32,14 +34,14 @@ public class DatabaseIDFactoryTest extends TestCase {
         super.setUp();
         if(mDataSource == null) {
             mDataSource = (DataSource) PersistTestBase.springSetup(
-                    new String[]{"persist.xml"}).getBean("mysqlpool",
+                    new String[]{"persist.xml"}).getBean("mysqlpool", //$NON-NLS-1$ //$NON-NLS-2$
                     DataSource.class);
         }
     }
 
     public static Test suite() throws Exception {
-        new File("junit").delete();
-        new File("junit").deleteOnExit();
+        new File("junit").delete(); //$NON-NLS-1$
+        new File("junit").deleteOnExit(); //$NON-NLS-1$
         return new MarketceteraTestSuite(DatabaseIDFactoryTest.class);
     }
 
@@ -49,23 +51,23 @@ public class DatabaseIDFactoryTest extends TestCase {
      * @throws Exception if there were errors
      */
     public void testFailThroughInMemory() throws Exception {
-        DatabaseIDFactory factory = new DatabaseIDFactory(mDataSource, "notable", "nocol", 13);
+        DatabaseIDFactory factory = new DatabaseIDFactory(mDataSource, "notable", "nocol", 13); //$NON-NLS-1$ //$NON-NLS-2$
         boolean dbInaccessble = false;
         try {
             factory.init();
         } catch(Exception ignored ) {
             dbInaccessble = true;
-            LoggerAdapter.debug("expected exception: " + ignored.getMessage(), this);
+            SLF4JLoggerProxy.debug(this, "expected exception: {}", ignored.getMessage()); //$NON-NLS-1$
         }
-        assertTrue("for some reason db access didn't error out", dbInaccessble);
+        assertTrue("for some reason db access didn't error out", dbInaccessble); //$NON-NLS-1$
         String next = factory.getNext();
         assertNotNull(next);
-        assertTrue("doesn't look like an inMemoryIDFactory id: "+next, next.contains(InetAddress.getLocalHost().toString()));
+        assertTrue("doesn't look like an inMemoryIDFactory id: "+next, next.contains(InetAddress.getLocalHost().toString())); //$NON-NLS-1$
         String previous = next;
         for(int i=0;i < 20; i++){
             String cur = factory.getNext();
             assertNotNull(cur);
-            assertNotSame("getting same ids in a row", cur, previous);
+            assertNotSame("getting same ids in a row", cur, previous); //$NON-NLS-1$
             previous = cur;
         }
     }
@@ -84,21 +86,21 @@ public class DatabaseIDFactoryTest extends TestCase {
         Connection dbConnection = mDataSource.getConnection();
         try {
             Statement stmt = dbConnection.createStatement();
-            stmt.execute("drop table if exists " + DatabaseIDFactory.TABLE_NAME);
-            stmt.execute("create table " + DatabaseIDFactory.TABLE_NAME +
-                    "(id int default null auto_increment primary key, " +
-                    DatabaseIDFactory.COL_NAME + " int not null default 0)");
+            stmt.execute("drop table if exists " + DatabaseIDFactory.TABLE_NAME); //$NON-NLS-1$
+            stmt.execute("create table " + DatabaseIDFactory.TABLE_NAME + //$NON-NLS-1$
+                    "(id int default null auto_increment primary key, " + //$NON-NLS-1$
+                    DatabaseIDFactory.COL_NAME + " int not null default 0)"); //$NON-NLS-1$
 
             factory.init();
             String next = factory.getNext();
             assertNotNull(next);
-            assertFalse("looks like we got an inMemoryIDFactory id: " + next,
+            assertFalse("looks like we got an inMemoryIDFactory id: " + next, //$NON-NLS-1$
                     next.contains(InetAddress.getLocalHost().toString()));
             String previous = next;
             for(int i=0;i < DatabaseIDFactory.NUM_IDS_GRABBED*2; i++){
                 String cur = factory.getNext();
                 assertNotNull(cur);
-                assertNotSame("getting same ids in a row", cur, previous);
+                assertNotSame("getting same ids in a row", cur, previous); //$NON-NLS-1$
                 assertTrue((new Integer(cur) > new Integer(previous)));
                 previous = cur;
             }

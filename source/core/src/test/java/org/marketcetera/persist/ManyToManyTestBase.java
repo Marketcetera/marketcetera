@@ -23,8 +23,8 @@ import java.util.Arrays;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
-@SuppressWarnings("unchecked")
+@ClassVersion("$Id$") //$NON-NLS-1$
+@SuppressWarnings("unchecked") //$NON-NLS-1$
 public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
         E extends SE,
         SO extends SummaryEntityBase,
@@ -32,7 +32,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
 
     @BeforeClass
     public static void springSetup() throws Exception {
-            springSetup(new String[]{"persist.xml"});
+            springSetup(new String[]{"persist.xml"}); //$NON-NLS-1$
     }
 
     /**
@@ -166,7 +166,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
             //verify that the contained entity cannot be deleted
             try {
                 delete(e);
-                fail("Delete should've failed");
+                fail("Delete should've failed"); //$NON-NLS-1$
             } catch(RollbackException expected) {
             }
             assertContainedEquals(e,fetch(e.getId()));
@@ -184,7 +184,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
             //verify that the contained entity cannot be via bulk delete
             try {
                 deleteAll();
-                fail("Delete should've failed");
+                fail("Delete should've failed"); //$NON-NLS-1$
             } catch(EntityExistsException expected) {
             }
             assertContainedEquals(e,fetch(e.getId()));
@@ -234,7 +234,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
     private void ownerDoesNotExist(O o1) throws Exception {
         try {
             fetchOwner(o1.getId());
-            fail("Should not exist");
+            fail("Should not exist"); //$NON-NLS-1$
         } catch(NoResultException expected) {
         }
     }
@@ -242,7 +242,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
     private void doesNotExist(E e1) throws Exception {
         try {
             fetch(e1.getId());
-            fail("Should not exist");
+            fail("Should not exist"); //$NON-NLS-1$
         } catch(NoResultException expected) {
         }
     }
@@ -305,7 +305,7 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
                 return v;
             }
         }
-        fail("id not found in"+s);
+        fail("id not found in"+s); //$NON-NLS-1$
         return null;
     }
 
