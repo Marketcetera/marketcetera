@@ -240,17 +240,17 @@ public class MarketDataView
 	private int getTableColumnWidth(Table table, int index) {
 		switch (index) {
 		case SYMBOL_COLUMN_INDEX:
-			return getColumnWidth(table, 10);			
+			return getColumnWidth(table, 10);	// TODO i18n		
 		case BID_SIZE_INDEX:
-			return getColumnWidth(table, 10);
+			return getColumnWidth(table, 10);    // TODO i18n
 		case BID_INDEX:
-			return getColumnWidth(table, 10);
+			return getColumnWidth(table, 10);    // TODO i18n
 		case ASK_INDEX:
-			return getColumnWidth(table, 10);
+			return getColumnWidth(table, 10);    // TODO i18n
 		case ASK_SIZE_INDEX:
-			return getColumnWidth(table, 10);
+			return getColumnWidth(table, 10);    // TODO i18n
 		default:
-			return getColumnWidth(table, 11);
+			return getColumnWidth(table, 11);    // TODO i18n
 		}
 	}
 
