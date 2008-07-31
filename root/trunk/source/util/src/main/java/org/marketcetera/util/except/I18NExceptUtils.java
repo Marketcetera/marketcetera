@@ -19,29 +19,6 @@ final class I18NExceptUtils
     // CLASS METHODS.
 
     /**
-     * Returns a string combining the two given strings. A null string
-     * is ignored; if both strings are null, null is returned.
-     *
-     * @param first The first string.
-     * @param second The second string.
-     *
-     * @return The combination.
-     */
-
-    private static String combine
-        (String first,
-         String second)
-    {
-        if ((first!=null) && (second!=null)) {
-            return first+" ("+second+")";
-        }
-        if (first!=null) {
-            return first;
-        }
-        return second;
-    }                                  
-
-    /**
      * Returns the localized message of the given internationalized
      * throwable, as implemented by {@link
      * Throwable#getLocalizedMessage()}.
@@ -86,7 +63,13 @@ final class I18NExceptUtils
                 causeMessage=cause.getMessage();
             }
         }
-        return combine(selfMessage,causeMessage);
+        if ((selfMessage!=null) && (causeMessage!=null)) {
+            return selfMessage+" ("+causeMessage+")";
+        }
+        if (selfMessage!=null) {
+            return selfMessage;
+        }
+        return causeMessage;
     }
 
     /**
@@ -115,7 +98,13 @@ final class I18NExceptUtils
                 causeMessage=cause.getLocalizedMessage();
             }
         }
-        return combine(selfMessage,causeMessage);
+        if ((selfMessage!=null) && (causeMessage!=null)) {
+            return Messages.COMBINE_MESSAGES.getText(selfMessage,causeMessage);
+        }
+        if (selfMessage!=null) {
+            return selfMessage;
+        }
+        return causeMessage;
     }
 
 
