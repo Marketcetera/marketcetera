@@ -35,6 +35,10 @@
       <groupId>${public.package}</groupId>
       <artifactId>util</artifactId>
     </dependency>
+    <dependency>
+      <groupId>commons-csv</groupId>
+      <artifactId>commons-csv</artifactId>
+    </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>

@@ -7,12 +7,16 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.unicode.UnicodeOutputStreamWriter;
+import org.marketcetera.util.unicode.SignatureCharset;
 import quickfix.Field;
 import quickfix.Message;
 import quickfix.field.*;
 
 import javax.jms.JMSException;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -90,14 +94,14 @@ public class OrderLoaderTest
         assertEquals(OrdType.MARKET, msg.getChar(OrdType.FIELD));
         assertEquals("42", mLoader.parseMessageValue(new Price(), "Price", "42", msg));
         assertEquals("42.42", mLoader.parseMessageValue(new Price(), "Price", "42.42", msg));
-        (new ExpectedTestFailure(OrderParsingException.class, 
+        (new ExpectedTestFailure(OrderParsingException.class,
                                  PARSING_PRICE_POSITIVE.getText("-42")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new Price(), "price", "-42", msg);
             }
         }).run();
-        (new ExpectedTestFailure(OrderParsingException.class, 
+        (new ExpectedTestFailure(OrderParsingException.class,
                                  PARSING_PRICE_VALID_NUM.getText("toli")) {
             protected void execute() throws Throwable
             {
@@ -110,21 +114,21 @@ public class OrderLoaderTest
     {
         final Message msg =new Message();
         assertEquals("42", mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42", msg));
-        (new ExpectedTestFailure(OrderParsingException.class, 
+        (new ExpectedTestFailure(OrderParsingException.class,
                                  PARSING_QTY_POS_INT.getText("-42")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new OrderQty(), "OrderQty", "-42", msg);
             }
         }).run();
-        (new ExpectedTestFailure(OrderParsingException.class, 
+        (new ExpectedTestFailure(OrderParsingException.class,
                                  PARSING_QTY_INT.getText("toli")) {
             protected void execute() throws Throwable
             {
                 mLoader.parseMessageValue(new OrderQty(), "OrderQty", "toli", msg);
             }
         }).run();
-        (new ExpectedTestFailure(OrderParsingException.class, 
+        (new ExpectedTestFailure(OrderParsingException.class,
                                  PARSING_QTY_INT.getText("42.2")) {
             protected void execute() throws Throwable
             {
@@ -180,36 +184,53 @@ public class OrderLoaderTest
         assertEquals(new Vector<Field<?>>(Arrays.asList(inFields)), mLoader.getFieldOrder(inHeaders));
     }
 
-    /** use a pre-specified giant order and make sure the right messages are sent
-     * Should produce:
-     * 2 blanks (skipped)
-     * 7 errors
+    /**
+     * Use a pre-specified giant order and make sure the right
+     * messages are sent.
+     *
+     * Tests {@link #ORDER_EXAMPLE} processing when its supplied
+     * in native encoding
+     *
+     * @throws Exception if there were errors
      */
-    public void testEndToEnd() throws Exception
+    public void testEndToEndNativeEncoding() throws Exception
     {
-        String order =
-            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
-            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+
-            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
-            "EFA,SSE,100,MKT,DAY,9182379812\n"+
-            "EFA,SSE,100,MKT,FILL_OR_KILL,9182379812\n"+
-            "---,SSE,100,MKT,DAY,9182379812\n"+
-            "EFA,---,100,MKT,DAY,9182379812\n"+
-            "EFA,SSE,---,MKT,DAY,9182379812\n"+
-            "\n"+
-            "EFA,SSE,100,---,DAY,9182379812\n"+
-            "EFA,SSE,100,MKT,---,9182379812\n"+
-            "EFA,SSE,100,MKT,---,---\n"+
-            "EFA,SSE,100,MKT,DAY,---\n"+
-            "EFA,SSE,100.1,MKT,DAY,9182379812\n"+
-            "IBM,SS,100,-12.22,DAY,123-ASDF-234\n"+
-            "IBM,SS,-100,12.22,DAY,123-ASDF-234\n"+
-            "//do nothing\n"+
-            "\n"+
-            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
-            "IBM,S,100,12.22,DAY,123-ASDF-234\n";
-        mLoader.parseAndSendOrders(new ByteArrayInputStream(order.getBytes()));
+        mLoader.parseAndSendOrders(new ByteArrayInputStream(
+                ORDER_EXAMPLE.getBytes()));
 
+        verifyOrderExampleProcessing();
+    }
+
+    /**
+     * Tests {@link #ORDER_EXAMPLE} processing when its supplied in
+     * UTF8 Encoding
+     *
+     * @throws Exception if there were errors
+     */
+    public void testEndToEndUTF8Encoding() throws Exception
+    {
+        mLoader.parseAndSendOrders(new ByteArrayInputStream(
+                SignatureCharset.UTF8_UTF8.encode(ORDER_EXAMPLE)));
+        verifyOrderExampleProcessing();
+    }
+
+    /**
+     * Tests {@link #ORDER_EXAMPLE} processing when its supplied in UTF32
+     * encoding
+     *
+     * @throws Exception if there were errors
+     */
+    public void testEndToEndUTF32Encoding() throws Exception
+    {
+        mLoader.parseAndSendOrders(new ByteArrayInputStream(
+                SignatureCharset.UTF32BE_UTF32BE.encode(ORDER_EXAMPLE)));
+        verifyOrderExampleProcessing();
+    }
+
+    /**
+     * Verifies results of processing of {@link #ORDER_EXAMPLE}
+     */
+    private void verifyOrderExampleProcessing() {
         assertEquals(2, mLoader.numBlankLines);
         assertEquals(9, mLoader.numProcessedOrders);
         assertEquals(9, mLoader.getNumProcessedOrders());
@@ -217,10 +238,10 @@ public class OrderLoaderTest
         assertEquals(8, mLoader.getFailedOrders().size());
     }
 
-    public void testCommentedLins() throws Exception
+    public void testCommentedLines() throws Exception
     {
         String order =
-            "#Opening comment\n" + 
+            "#Opening comment\n" +
             "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
             "#IBM,B,100,12.1,DAY,123-ASDF-234\n"+
             "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
@@ -268,7 +289,7 @@ public class OrderLoaderTest
                                                                                              new Side(),
                                                                                              new OrderQty(),
                                                                                              new Price(),
-                                                                                             new TimeInForce(), 
+                                                                                             new TimeInForce(),
                                                                                              new Account() }));
         String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"};
         myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","DAY","123-ASDF-234"});
@@ -286,62 +307,62 @@ public class OrderLoaderTest
     public void testNonAscii()
         throws Exception
     {
-        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(),
                                                                                                    new Side(),
-                                                                                                   new OrderQty(), 
-                                                                                                   new Price(), 
-                                                                                                   new HandlInst(), 
+                                                                                                   new OrderQty(),
+                                                                                                   new Price(),
+                                                                                                   new HandlInst(),
                                                                                                    new Account() }));
         final String[] headerNames = { "Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account" };
 //        String symbol = I18n.generateNativeString();
         String symbol = "some string";
-        mLoader.sendOneOrder(headerFields, 
-                             headerNames, 
+        mLoader.sendOneOrder(headerFields,
+                             headerNames,
                              new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"});
-        assertNotNull("message didn't go through", 
+        assertNotNull("message didn't go through",
                       mLoader.mMessage);
-        assertEquals(symbol, 
+        assertEquals(symbol,
                      mLoader.mMessage.getString(Symbol.FIELD));
-        assertEquals(Side.SELL_SHORT, 
+        assertEquals(Side.SELL_SHORT,
                      mLoader.mMessage.getChar(Side.FIELD));
-        assertEquals("100", 
+        assertEquals("100",
                      mLoader.mMessage.getString(OrderQty.FIELD));
-        assertEquals("12.22", 
+        assertEquals("12.22",
                      mLoader.mMessage.getString(Price.FIELD));
-        assertEquals("3", 
+        assertEquals("3",
                      mLoader.mMessage.getString(HandlInst.FIELD));
-        assertEquals("123-ASDF-234", 
+        assertEquals("123-ASDF-234",
                      mLoader.mMessage.getString(Account.FIELD));
 
 //        symbol = I18n.generateUnicodeString();
         symbol = "some other string";
-        mLoader.sendOneOrder(headerFields, 
-                             headerNames, 
+        mLoader.sendOneOrder(headerFields,
+                             headerNames,
                              new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"});
-        assertNotNull("message didn't go through", 
+        assertNotNull("message didn't go through",
                       mLoader.mMessage);
-        assertEquals(symbol, 
+        assertEquals(symbol,
                      mLoader.mMessage.getString(Symbol.FIELD));
-        assertEquals(Side.SELL_SHORT, 
+        assertEquals(Side.SELL_SHORT,
                      mLoader.mMessage.getChar(Side.FIELD));
-        assertEquals("100", 
+        assertEquals("100",
                      mLoader.mMessage.getString(OrderQty.FIELD));
-        assertEquals("12.22", 
+        assertEquals("12.22",
                      mLoader.mMessage.getString(Price.FIELD));
-        assertEquals("3", 
+        assertEquals("3",
                      mLoader.mMessage.getString(HandlInst.FIELD));
-        assertEquals("123-ASDF-234", 
+        assertEquals("123-ASDF-234",
                      mLoader.mMessage.getString(Account.FIELD));
     }
 
     /** Verify that HandlInst, if set, overwrites the default one in the NOS message factory */
     public void testHandlInstField() throws Exception
     {
-        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(),
                                                                                                    new Side(),
                                                                                                    new OrderQty(), 
-                                                                                                   new Price(), 
-                                                                                                   new HandlInst(), 
+                                                                                                   new Price(),
+                                                                                                   new HandlInst(),
                                                                                                    new Account() }));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account"};
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","3","123-ASDF-234"});
@@ -359,12 +380,12 @@ public class OrderLoaderTest
 
     public void testWithCustomField() throws Exception
     {
-        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(),
                                                                                                    new Side(),
-                                                                                                   new OrderQty(), 
-                                                                                                   new Price(), 
-                                                                                                   new CustomField(9999, 
-                                                                                                                   null), 
+                                                                                                   new OrderQty(),
+                                                                                                   new Price(),
+                                                                                                   new CustomField(9999,
+                                                                                                                   null),
                                                                                                                    new Account() }));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
         mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
@@ -416,14 +437,14 @@ public class OrderLoaderTest
 
     /** Test using both header and trailer and message custom fields */
     public void testWithMixedCustomFields() throws Exception {
-        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(),
                                                                                                    new Side(),
-                                                                                                   new OrderQty(), 
-                                                                                                   new Price(), 
-                                                                                                   new CustomField(9999, 
-                                                                                                                   null), 
-                                                                                                   new SenderSubID(), 
-                                                                                                   new SignatureLength(), 
+                                                                                                   new OrderQty(),
+                                                                                                   new Price(),
+                                                                                                   new CustomField(9999,
+                                                                                                                   null),
+                                                                                                   new SenderSubID(),
+                                                                                                   new SignatureLength(),
                                                                                                    new Signature() }));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "SenderSubID", "SignatureLength", "Signature"};
 
@@ -442,11 +463,11 @@ public class OrderLoaderTest
 
     /** Try sending a message with key not in dictionary */
     public void testFieldNotInDictionary() throws Exception {
-        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(), 
+        final Vector<Field<?>> headerFields =  new Vector<Field<?>>(Arrays.asList(new Field<?>[] { new Symbol(),
                                                                                                    new Side(),
-                                                                                                   new OrderQty(), 
-                                                                                                   new Price(), 
-                                                                                                   new CustomField(7654, 
+                                                                                                   new OrderQty(),
+                                                                                                   new Price(),
+                                                                                                   new CustomField(7654,
                                                                                                                    null) } ));
         final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "NotInDict"};
 
@@ -482,4 +503,29 @@ public class OrderLoaderTest
             return "orderloader-test.xml";
         }
     }
+
+    /**
+     * Example order for testing.
+     */
+    private static final String ORDER_EXAMPLE =
+            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
+            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+
+            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
+            "EFA,SSE,100,MKT,DAY,9182379812\n"+
+            "EFA,SSE,100,MKT,FILL_OR_KILL,9182379812\n"+
+            "---,SSE,100,MKT,DAY,9182379812\n"+
+            "EFA,---,100,MKT,DAY,9182379812\n"+
+            "EFA,SSE,---,MKT,DAY,9182379812\n"+
+            "\n"+
+            "EFA,SSE,100,---,DAY,9182379812\n"+
+            "EFA,SSE,100,MKT,---,9182379812\n"+
+            "EFA,SSE,100,MKT,---,---\n"+
+            "EFA,SSE,100,MKT,DAY,---\n"+
+            "EFA,SSE,100.1,MKT,DAY,9182379812\n"+
+            "IBM,SS,100,-12.22,DAY,123-ASDF-234\n"+
+            "IBM,SS,-100,12.22,DAY,123-ASDF-234\n"+
+            "//do nothing\n"+
+            "\n"+
+            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
+            "IBM,S,100,12.22,DAY,123-ASDF-234\n";
 }

@@ -13,6 +13,8 @@ import java.util.Vector;
 import javax.jms.JMSException;
 
 import org.apache.activemq.Service;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVStrategy;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
@@ -25,8 +27,8 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.spring.SpringUtils;
-import org.skife.csv.CSVReader;
-import org.skife.csv.SimpleReader;
+import org.marketcetera.util.unicode.UnicodeInputStreamReader;
+import org.marketcetera.util.unicode.DecodingStrategy;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
@@ -120,7 +122,7 @@ public class OrderLoader
         message.setField(new OrdType(OrdType.LIMIT));
         message.setField(new ClOrdID(idFactory.getNext()));
         message.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
-        message.setField(new TransactTime());
+        message.setField(new TransactTime()); //i18n_datetime
     }
 
     protected void sendMessage(Message message) throws JMSException {
@@ -184,17 +186,18 @@ public class OrderLoader
     public void parseAndSendOrders(InputStream inputStream)
         throws Exception
     {
-        CSVReader reader = new SimpleReader();
+        String[][] rows = new CSVParser(new UnicodeInputStreamReader(
+                inputStream, DecodingStrategy.SIG_REQ),
+                CSVStrategy.EXCEL_STRATEGY).getAllValues();
 
-        List<String[]> allRows = reader.parse(inputStream);
-        if(allRows.size() < 2) {
+        if(rows.length < 2) {
             System.err.println(ERROR_NO_ORDERS.getText());
             System.exit(1);
         }
         jmsQueueSender = (JmsTemplate) getAppCtx().getBean(JMS_SENDER_NAME);
         Vector<Field<?>> headerRow = null;
         String[] headerFields = null;
-        for(String[] row : allRows) {
+        for(String[] row : rows) {
             if(headerRow == null) {
                 headerRow = getFieldOrder(row);
                 headerFields = row;
@@ -231,7 +234,9 @@ public class OrderLoader
         addDefaults(message);
         try {
             if(inHeaderRow.size() != inOrderRow.length) {
-                if(inOrderRow.length == 0) {
+                //Blank lines might appear as a row with a single empty record
+                if(inOrderRow.length == 0 ||
+                        (inOrderRow.length == 1 && inOrderRow[0].trim().length() == 0)) {
                     numBlankLines++;
                     return;
                 } else {
@@ -293,7 +298,7 @@ public class OrderLoader
         throws OrderParsingException
     {
         if(inField instanceof CustomField) {
-            return ((CustomField)inField).parseMessageValue(inValue).toString();
+            return ((CustomField)inField).parseMessageValue(inValue).toString(); //i18n_number? BigDecimal.toString() might not give the right value
         }
 
         switch(inField.getField()) {
@@ -307,7 +312,7 @@ public class OrderLoader
                 } else {
                     BigDecimal price =  null;
                     try {
-                        price = new BigDecimal(inValue);
+                        price = new BigDecimal(inValue);//i18n_currency
                     } catch(NumberFormatException ex) {
                         throw new OrderParsingException(PARSING_PRICE_VALID_NUM.getText(inValue), ex);
                     }
@@ -321,7 +326,7 @@ public class OrderLoader
                 // quantity must be a positive integer
                 Integer qty= null;
                 try {
-                    qty = Integer.parseInt(inValue);
+                    qty = Integer.parseInt(inValue);//i18n_number
                 } catch(NumberFormatException ex) {
                     throw new OrderParsingException(PARSING_QTY_INT.getText(inValue), ex);
                 }

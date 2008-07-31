@@ -46,10 +46,10 @@ public class CustomField
     public Object parseMessageValue(String inValue)
     {
         try {
-            return Integer.valueOf(inValue);
+            return Integer.valueOf(inValue); //non-i18n
         } catch(NumberFormatException ex) {
             try {
-                return new BigDecimal(inValue);
+                return new BigDecimal(inValue); //non-i18n
             } catch(NumberFormatException ex2) {
                 return inValue;
             }
@@ -98,7 +98,7 @@ public class CustomField
         throws OrderParsingException
     {
         try {
-            int fieldKey = Integer.parseInt(inName);
+            int fieldKey = Integer.parseInt(inName); //non-i18n
             return new CustomField(fieldKey, 
                                    null);
         } catch(NumberFormatException nex) {
