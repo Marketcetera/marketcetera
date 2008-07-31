@@ -9,7 +9,7 @@ import quickfix.Message;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface MessageVisitor {
 
     /** Visits each Execution Report that we have gathered for all the

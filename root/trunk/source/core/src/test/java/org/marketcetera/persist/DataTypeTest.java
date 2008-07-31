@@ -25,7 +25,7 @@ import java.io.File;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataType> {
     @Test
     public void clob() throws Exception {
@@ -35,7 +35,7 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         assertSavedEntity(d);
         DataTypes saved = fetchByID(d.getId());
         //Verify initial value
-        File f = File.createTempFile("clob","persist");
+        File f = File.createTempFile("clob","persist"); //$NON-NLS-1$ //$NON-NLS-2$
         f.deleteOnExit();
         f.delete();
         assertFalse(f.exists());
@@ -53,7 +53,7 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         //Verify that the state changes are saved.
         assertEntityEquals(d,saved);
         //Read stuff back from the clob
-        File read = File.createTempFile("clob","persist");
+        File read = File.createTempFile("clob","persist"); //$NON-NLS-1$ //$NON-NLS-2$
         read.delete();
         read.deleteOnExit();
         assertFalse(read.exists());
@@ -80,7 +80,7 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         assertSavedEntity(d);
         DataTypes saved = fetchByID(d.getId());
         //Verify initial value
-        File f = File.createTempFile("blob","persist");
+        File f = File.createTempFile("blob","persist"); //$NON-NLS-1$ //$NON-NLS-2$
         f.deleteOnExit();
         f.delete();
         assertFalse(f.exists());
@@ -98,7 +98,7 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         //Verify that the state changes are saved.
         assertEntityEquals(d,saved);
         //Read stuff back from the blob
-        File read = File.createTempFile("blob","persist");
+        File read = File.createTempFile("blob","persist"); //$NON-NLS-1$ //$NON-NLS-2$
         read.delete();
         read.deleteOnExit();
         assertFalse(read.exists());
@@ -146,10 +146,10 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
             fail();
         } catch(NullPointerException expected) {
         }
-        stringFilterValidationFailure("");
-        stringFilterValidationFailure("_");
-        stringFilterValidationFailure("%");
-        stringFilterValidationFailure("abd\tdfe");
+        stringFilterValidationFailure(""); //$NON-NLS-1$
+        stringFilterValidationFailure("_"); //$NON-NLS-1$
+        stringFilterValidationFailure("%"); //$NON-NLS-1$
+        stringFilterValidationFailure("abd\tdfe"); //$NON-NLS-1$
     }
 
     private void stringFilterValidationFailure(String value) {
@@ -297,7 +297,7 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         r2.setName(r1.getName());
         try {
             DataTypes.saveMultiple(r1,r2);
-            fail("Transaction should've failed with constraint violation");
+            fail("Transaction should've failed with constraint violation"); //$NON-NLS-1$
         } catch (EntityExistsException expected) {
         }
         //verify that the entities are changed

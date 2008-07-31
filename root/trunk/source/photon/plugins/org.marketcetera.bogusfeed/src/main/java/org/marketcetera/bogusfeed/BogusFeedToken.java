@@ -31,7 +31,7 @@ public class BogusFeedToken
     
     public String toString()
     {
-        return String.format("BogusFeedToken(%s)",
+        return String.format("BogusFeedToken(%s)", //$NON-NLS-1$
                              getStatus());
     }
 }

@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageAugmentor_41Test extends TestCase {
     public FIXMessageAugmentor_41Test(String inName) {
         super(inName);
@@ -28,13 +28,13 @@ public class FIXMessageAugmentor_41Test extends TestCase {
     public void testExecutionReportAugment() throws Exception {
         FIXMessageAugmentor_41 augmentor = new FIXMessageAugmentor_41();
         Message msg = augmentor.executionReportAugment(createNOS(new BigDecimal(100), new BigDecimal(30)));
-        assertEquals("70", msg.getString(LeavesQty.FIELD));
+        assertEquals("70", msg.getString(LeavesQty.FIELD)); //$NON-NLS-1$
 
         msg = augmentor.executionReportAugment(createNOS(new BigDecimal(0), new BigDecimal(0)));
-        assertEquals("0", msg.getString(LeavesQty.FIELD));
+        assertEquals("0", msg.getString(LeavesQty.FIELD)); //$NON-NLS-1$
 
         msg = augmentor.executionReportAugment(createNOS(new BigDecimal(100), new BigDecimal(100)));
-        assertEquals("0", msg.getString(LeavesQty.FIELD));
+        assertEquals("0", msg.getString(LeavesQty.FIELD)); //$NON-NLS-1$
 
         // verify ExecType is set
         assertEquals(ExecType.NEW, msg.getChar(ExecType.FIELD));
@@ -43,11 +43,11 @@ public class FIXMessageAugmentor_41Test extends TestCase {
 
     public void testExecReportAugmentor_decimalQtyAndPrice() throws Exception {
         FIXMessageAugmentor_41 augmentor = new FIXMessageAugmentor_41();
-        Message msg = augmentor.executionReportAugment(createNOS(new BigDecimal("100.10"), new BigDecimal("30.50")));
-        assertEquals(new BigDecimal("69.60"), msg.getDecimal(LeavesQty.FIELD));
+        Message msg = augmentor.executionReportAugment(createNOS(new BigDecimal("100.10"), new BigDecimal("30.50"))); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals(new BigDecimal("69.60"), msg.getDecimal(LeavesQty.FIELD)); //$NON-NLS-1$
 
-        msg = augmentor.executionReportAugment(createNOS(new BigDecimal("300.3"), BigDecimal.ZERO));
-        assertEquals(new BigDecimal("300.3"), msg.getDecimal(LeavesQty.FIELD));
+        msg = augmentor.executionReportAugment(createNOS(new BigDecimal("300.3"), BigDecimal.ZERO)); //$NON-NLS-1$
+        assertEquals(new BigDecimal("300.3"), msg.getDecimal(LeavesQty.FIELD)); //$NON-NLS-1$
     }
 
     public void testExecutionReportAugmentor_leavesQty_setToZeroOnRejections() throws Exception {
@@ -56,7 +56,7 @@ public class FIXMessageAugmentor_41Test extends TestCase {
         nos.setField(new OrdStatus(OrdStatus.REJECTED));
 
         Message augmented = augmentor.executionReportAugment(nos);
-        assertEquals("leavesQty should be 0 on rejection", BigDecimal.ZERO, augmented.getDecimal(LeavesQty.FIELD));
+        assertEquals("leavesQty should be 0 on rejection", BigDecimal.ZERO, augmented.getDecimal(LeavesQty.FIELD)); //$NON-NLS-1$
 
     }
 

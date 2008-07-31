@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AbstractEventTranslator;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -13,6 +13,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.IEventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -33,19 +34,20 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedEventTranslator
         extends AbstractEventTranslator
+        implements Messages
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<EventBase> translate(Object inData)
-            throws MarketceteraException
+            throws CoreException
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
-            throw new UnsupportedEventException(String.format("Unknown event type: %s",
-                                                              inData.getClass()));
+            throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_EVENT_TYPE,
+                                                                       inData));
         }
         MarketDataSnapshotFullRefresh refresh = (MarketDataSnapshotFullRefresh)inData;
         List<EventBase> events = new ArrayList<EventBase>();
@@ -92,8 +94,8 @@ public class BogusFeedEventTranslator
                         events.add(trade);
                         break;
                     default:
-                        throw new UnsupportedEventException(String.format("Unknown message entry type: %c",
-                                                                          type));
+                        throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_ENTRY_TYPE,
+                                                                                   type));
                 };
             }
         } catch (FieldNotFound e) {
@@ -101,15 +103,13 @@ public class BogusFeedEventTranslator
         }
         return events;
     }
-
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
     public Object translate(EventBase inEvent)
-            throws MarketceteraException
+            throws CoreException
     {
-        // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException();
     }
     /**
      * static instance of <code>BogusFeedEventTranslator</code>

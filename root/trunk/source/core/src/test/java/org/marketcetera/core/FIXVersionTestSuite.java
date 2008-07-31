@@ -25,7 +25,7 @@ import java.util.HashMap;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXVersionTestSuite extends MarketceteraTestSuite {
     public static final FIXVersion[] ALL_VERSIONS =
             new FIXVersion[]{FIXVersion.FIX40, FIXVersion.FIX41, FIXVersion.FIX42, FIXVersion.FIX43, FIXVersion.FIX44};
@@ -96,7 +96,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         try {
             fixDDMgr = initializeFIXDataDictionaryManager(inVersions);
         } catch (FIXFieldConverterNotAvailable ex) {
-            Assert.fail("Unable to create all FIX data dictionaries: "+ex.getMessage());
+            Assert.fail("Unable to create all FIX data dictionaries: "+ex.getMessage()); //$NON-NLS-1$
         }
 
         for (String name : testNames) {
@@ -108,7 +108,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
                     addTestWithVersion(constructor, name, inVersions);
                 }
             } catch (Exception ex) {
-                Assert.fail("Creation of test suite LOGIN_FAILED: " + ex.getMessage());
+                Assert.fail("Creation of test suite LOGIN_FAILED: " + ex.getMessage()); //$NON-NLS-1$
             }
         }
     }
@@ -134,7 +134,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         Vector<String> testNames = new Vector<String>();
         Method[] methods= inClass.getDeclaredMethods();
         for (Method method : methods) {
-            if(method.getName().startsWith("test")) {
+            if(method.getName().startsWith("test")) { //$NON-NLS-1$
                 testNames.add(method.getName());
             }
         }

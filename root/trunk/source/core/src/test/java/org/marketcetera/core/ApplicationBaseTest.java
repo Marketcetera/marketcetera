@@ -12,7 +12,7 @@ import java.util.ArrayList;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ApplicationBaseTest extends TestCase {
     public ApplicationBaseTest(String inName) {
         super(inName);

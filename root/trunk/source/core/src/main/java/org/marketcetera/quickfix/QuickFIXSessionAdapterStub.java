@@ -13,7 +13,7 @@ import quickfix.*;
  * Simple no-op implementation of a Quickfix session adapter
  * @author gmiller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class QuickFIXSessionAdapterStub implements QuickFIXSessionAdapter
 {
 

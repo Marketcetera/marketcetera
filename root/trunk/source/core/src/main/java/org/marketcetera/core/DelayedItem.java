@@ -4,12 +4,14 @@ import java.util.Date;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 /**
  *
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DelayedItem<T> implements Delayed {
     private long mItemSendTime;
     private T mItem;
@@ -22,7 +24,7 @@ public class DelayedItem<T> implements Delayed {
      */
     public DelayedItem(long delayInMillis, T anItem, Clock clock) {
         if (anItem == null) {
-            throw new IllegalArgumentException(MessageKey.ERROR_NULL_DELAYED_ITEM.getLocalizedMessage());
+            throw new IllegalArgumentException(Messages.ERROR_NULL_DELAYED_ITEM.getText());
         }
         if (clock == null)
         {
@@ -34,9 +36,7 @@ public class DelayedItem<T> implements Delayed {
             mClock = clock;
         }
         mItemSendTime = mClock.getTime() + delayInMillis;
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Will send at "+new Date(mItemSendTime), this);
-        }
+        SLF4JLoggerProxy.debug(this, "Will send at {}", new Date(mItemSendTime));  //$NON-NLS-1$
         mItem = anItem;
     }
 
@@ -110,6 +110,6 @@ public class DelayedItem<T> implements Delayed {
      * @return A human readable string describing this object
      */
     public String toString() {
-        return MessageKey.DELAYED_ITEM_DESC.getLocalizedMessage(getDelay(TimeUnit.MILLISECONDS), mItem.toString());
+        return Messages.DELAYED_ITEM_DESC.getText(getDelay(TimeUnit.MILLISECONDS), mItem.toString());
     }
 }

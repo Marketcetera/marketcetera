@@ -31,7 +31,7 @@ import com.sun.security.auth.UserPrincipal;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSLoginModule implements LoginModule {
 
     public void initialize(Subject subject,
@@ -72,7 +72,7 @@ public class ORSLoginModule implements LoginModule {
             USER_LOGIN_ERROR_LOG.warn(this,e,username);
             throw new FailedLoginException(USER_LOGIN_ERROR.getText());
         }
-        SLF4JLoggerProxy.debug(this,"login done for user {}",username);
+        SLF4JLoggerProxy.debug(this,"login done for user {}",username); //$NON-NLS-1$
         return true;
     }
 
@@ -84,7 +84,7 @@ public class ORSLoginModule implements LoginModule {
     }
 
     public boolean abort() throws LoginException {
-        SLF4JLoggerProxy.debug(this,"Aborting login for user {}",username);
+        SLF4JLoggerProxy.debug(this,"Aborting login for user {}",username); //$NON-NLS-1$
         clear();
         return true;
     }

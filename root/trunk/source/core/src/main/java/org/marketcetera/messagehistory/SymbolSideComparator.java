@@ -11,7 +11,7 @@ import quickfix.field.Account;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SymbolSideComparator implements Comparator<MessageHolder>,
 		Serializable {
 

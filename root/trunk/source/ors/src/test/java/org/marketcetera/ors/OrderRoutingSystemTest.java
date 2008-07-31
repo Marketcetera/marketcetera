@@ -6,6 +6,7 @@ import org.marketcetera.quickfix.FIXMessageUtilTest;
 import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.quickfix.NullQuickFIXSender;
 import org.marketcetera.quickfix.MessageRouteManager;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.jms.core.JmsTemplate;
@@ -29,7 +30,7 @@ import java.math.BigDecimal;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderRoutingSystemTest extends FIXVersionedTestCase
 {
     private static ClassPathXmlApplicationContext appContext = null;
@@ -58,19 +59,19 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
         if (appContext == null) {
             try {
                 appContext = new ClassPathXmlApplicationContext
-                    (new String[]{"message-modifiers.xml", "order-limits.xml",
-                            "ors-shared.xml", "it-ors.xml",
-                            "ors_orm_vendor.xml", "ors_orm.xml", "ors_db.xml"},
+                    (new String[]{"message-modifiers.xml", "order-limits.xml", //$NON-NLS-1$ //$NON-NLS-2$
+                            "ors-shared.xml", "it-ors.xml", //$NON-NLS-1$ //$NON-NLS-2$
+                            "ors_orm_vendor.xml", "ors_orm.xml", "ors_db.xml"}, //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     new FileSystemXmlApplicationContext
-                        (ApplicationBase.CONF_DIR+"ors_base.xml"));
-                jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate");
-                qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender");
+                        (ApplicationBase.CONF_DIR+"ors_base.xml")); //$NON-NLS-1$
+                jmsQueueSender = (JmsTemplate) appContext.getBean("outgoingJmsTemplate"); //$NON-NLS-1$
+                qfSender = (NullQuickFIXSender) appContext.getBean("quickfixSender"); //$NON-NLS-1$
                 // simulate logon
-                QuickFIXApplication qfApp = (QuickFIXApplication) appContext.getBean("qfApplication");
+                QuickFIXApplication qfApp = (QuickFIXApplication) appContext.getBean("qfApplication"); //$NON-NLS-1$
                 qfApp.onLogon(null);
             } catch (Exception e) {
-                LoggerAdapter.error("Unable to initialize ORS", e, OrderRoutingSystemTest.class.getName());
-                fail("Unable to init ORS: "+e.getMessage());
+                SLF4JLoggerProxy.error(OrderRoutingSystemTest.class.getName(), e, "Unable to initialize ORS"); //$NON-NLS-1$
+                fail("Unable to init ORS: "+e.getMessage()); //$NON-NLS-1$
             }
         }
     }
@@ -89,7 +90,7 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
     	// now listen for the auto-generate execution report
         final Semaphore sema = new Semaphore(0);
         final ArrayBlockingQueue<Message> topicMsgs = new ArrayBlockingQueue<Message>(1);
-        MessageListenerAdapter recieveAdapter = (MessageListenerAdapter) appContext.getBean("replyListener");
+        MessageListenerAdapter recieveAdapter = (MessageListenerAdapter) appContext.getBean("replyListener"); //$NON-NLS-1$
         recieveAdapter.setDelegate(new TopicListener(topicMsgs));
         qfSender.setSemaphore(sema);
 
@@ -101,8 +102,8 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
 
     /** verify bug #361 - separateSuffix should be off by default */
     public void testSpringCreation() throws Exception {
-        ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("/message-modifiers.xml");
-        MessageRouteManager orm = (MessageRouteManager) appCtx.getBean("orderRouting", MessageRouteManager.class);
+        ClassPathXmlApplicationContext appCtx = new ClassPathXmlApplicationContext("/message-modifiers.xml"); //$NON-NLS-1$
+        MessageRouteManager orm = (MessageRouteManager) appCtx.getBean("orderRouting", MessageRouteManager.class); //$NON-NLS-1$
         assertFalse(orm.isSeparateSuffix());
     }
 
@@ -113,13 +114,10 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
     private void oneOrderRoundtripHelper(ArrayBlockingQueue<Message> topicMsgs,
                                          Semaphore sema, char inSide) throws Exception
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Before sending for "+ fixDD.getHumanFieldValue(Side.FIELD, ""+inSide) +
-            " sema is "+sema.getQueueLength(), this);
-        }
+        SLF4JLoggerProxy.debug(this, "Before sending for {} sema is {}", fixDD.getHumanFieldValue(Side.FIELD, ""+inSide), sema.getQueueLength()); //$NON-NLS-1$ //$NON-NLS-2$
 
         // generate and send a buy order on JMS queue
-        Message buyOrder = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("12.34"), new BigDecimal("32"), inSide, msgFactory);
+        Message buyOrder = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("12.34"), new BigDecimal("32"), inSide, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         qfSender.getCapturedMessages().clear();
         topicMsgs.clear();
         jmsQueueSender.convertAndSend(buyOrder);
@@ -128,15 +126,15 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
         sema.acquire();
 
         // verify we sent the FIX message through
-        assertEquals("too many outgoing fix messages registered", 1, qfSender.getCapturedMessages().size());
+        assertEquals("too many outgoing fix messages registered", 1, qfSender.getCapturedMessages().size()); //$NON-NLS-1$
         assertEquals(buyOrder.toString(), qfSender.getCapturedMessages().getFirst().toString());
 
         // verify we have 1 exec report
         Message execReport = topicMsgs.take();
         // put an orderID in since immediate execReport doesn't have one and we need one for validation
-        execReport.setField(new OrderID("fake-order-id"));
-        FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide, msgFactory, fixDD);
-        assertEquals("12.34", execReport.getString(Price.FIELD));
+        execReport.setField(new OrderID("fake-order-id")); //$NON-NLS-1$
+        FIXMessageUtilTest.verifyExecutionReport(execReport, "32", "TOLI", inSide, msgFactory, fixDD); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("12.34", execReport.getString(Price.FIELD)); //$NON-NLS-1$
     }
 
 }

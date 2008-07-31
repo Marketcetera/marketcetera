@@ -5,15 +5,15 @@ import java.util.HashMap;
 
 import quickfix.SessionID;
 import org.springframework.beans.factory.InitializingBean;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
 
 public class SessionDescriptor implements InitializingBean {
 
-	private static final String TARGET_COMP_ID_KEY = "TargetCompID";
+	private static final String TARGET_COMP_ID_KEY = "TargetCompID"; //$NON-NLS-1$
 
-	private static final String SENDER_COMP_ID_KEY = "SenderCompID";
+	private static final String SENDER_COMP_ID_KEY = "SenderCompID"; //$NON-NLS-1$
 
-	private static final String BEGIN_STRING_KEY = "BeginString";
+	private static final String BEGIN_STRING_KEY = "BeginString"; //$NON-NLS-1$
 
 	private SessionID cachedSessionID;
 	
@@ -78,7 +78,7 @@ public class SessionDescriptor implements InitializingBean {
 
     public void afterPropertiesSet() throws Exception {
         if((cachedSessionID != null) && ((beginString != null ) || (senderCompID != null) || (targetCompID != null))) {
-            throw new IllegalStateException(MessageKey.CONFIG_ERROR_REASON.getLocalizedMessage("Both sessionID and individual properties are set"));
+            throw new IllegalStateException(Messages.ERROR_CONFIG_SESSIONID_INDIVIDUAL_PROPS_SET.getText());
         }
         if(cachedSessionID == null) {
             cachedSessionID = new SessionID(beginString, senderCompID, targetCompID);

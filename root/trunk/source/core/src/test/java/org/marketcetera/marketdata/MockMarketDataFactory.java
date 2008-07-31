@@ -1,6 +1,6 @@
 package org.marketcetera.marketdata;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 
 /**
@@ -15,10 +15,10 @@ public class MockMarketDataFactory
 {
     private AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials> mInnerFactory =
             new AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>() {
-        private static final String PROVIDER = "TEST";
+        private static final String PROVIDER = "TEST"; //$NON-NLS-1$
 
         public MockMarketDataFeed getMarketDataFeed()
-            throws MarketceteraException
+            throws CoreException
         {
             return getMarketDataFeed(null);            
         }
@@ -29,7 +29,7 @@ public class MockMarketDataFactory
         }
 
         public MockMarketDataFeed getMarketDataFeed(MockMarketDataFeedCredentials inCredentials)
-                throws MarketceteraException
+                throws CoreException
         {
             return new MockMarketDataFeed(FeedType.SIMULATED,
                                           inCredentials);
@@ -37,7 +37,7 @@ public class MockMarketDataFactory
     };
 
     public MockMarketDataFeed getMarketDataFeed()
-        throws MarketceteraException
+        throws CoreException
     {
         return mInnerFactory.getMarketDataFeed();
     }
@@ -50,7 +50,7 @@ public class MockMarketDataFactory
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     public MockMarketDataFeed getMarketDataFeed(MockMarketDataFeedCredentials inCredentials)
-            throws MarketceteraException
+            throws CoreException
     {
         return mInnerFactory.getMarketDataFeed(inCredentials);
     }            

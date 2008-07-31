@@ -13,7 +13,7 @@ import java.util.Map;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FieldNameMap<T> {
 
     /** Creates a new instance of NameManager */
@@ -25,8 +25,8 @@ public class FieldNameMap<T> {
     Map<String, T> mBackwardMap = new HashMap<String, T>();
 
     protected String cleanFieldName(String aName) {
-        aName = aName.replace("_", " ");
-        String [] pieces = aName.split(" ");
+        aName = aName.replace("_", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        String [] pieces = aName.split(" "); //$NON-NLS-1$
         StringBuffer newString = new StringBuffer();
         boolean first = true;
         for (String aPiece : pieces) {
@@ -38,13 +38,13 @@ public class FieldNameMap<T> {
         return newString.toString();
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     private void addNames(int fieldID, Class fieldClass) {
         Field [] fields = fieldClass.getFields();
         for (Field aField : fields) {
             String fieldName = aField.getName();
 
-            if (! fieldName.equals("FIELD")) {
+            if (! fieldName.equals("FIELD")) { //$NON-NLS-1$
                 int modifiers = aField.getModifiers();
                 if (Modifier.isPublic(modifiers)) {
                     fieldName = cleanFieldName(fieldName);
@@ -66,7 +66,7 @@ public class FieldNameMap<T> {
 
     public synchronized String getName(T fieldValue) {
         String aName = mForwardMap.get(fieldValue);
-        return aName == null ? "Unknown" : aName;
+        return aName == null ? "Unknown" : aName; //$NON-NLS-1$
     }
 
     public synchronized T getValue(String fieldValueName) {

@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Group;
 import quickfix.Message;
@@ -33,7 +33,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractEventTranslator
         implements IEventTranslator
 {
@@ -112,11 +112,7 @@ public abstract class AbstractEventTranslator
                 // record the new event in the tuple
                 tuple.setEvent(inEvent);
             } else {
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug(String.format("Received an unknown event type: %s",
-                                                      inEvent),
-                                        this);
-                }
+                SLF4JLoggerProxy.debug(this, "Received an unknown event type: {}", inEvent); //$NON-NLS-1$
             }
         }
     }
@@ -127,7 +123,7 @@ public abstract class AbstractEventTranslator
      * @version $Id$
      * @since 0.5.0
      */
-    @ClassVersion("$Id$")
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static class EventTuple
     {
         /**

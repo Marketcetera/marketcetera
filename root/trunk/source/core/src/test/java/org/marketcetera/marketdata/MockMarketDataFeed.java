@@ -12,6 +12,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.quickfix.MockMessageTranslator;
+import org.marketcetera.util.log.I18NBoundMessage0P;
 
 /* $License$ */
 
@@ -22,7 +23,7 @@ import org.marketcetera.quickfix.MockMessageTranslator;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MockMarketDataFeed
     extends AbstractMarketDataFeed<MockMarketDataFeedToken,
         MockMarketDataFeedCredentials,
@@ -128,7 +129,7 @@ public class MockMarketDataFeed
             throws FeedException
     {
         if(getGenerateTokenThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return MockMarketDataFeedToken.getToken(inTokenSpec,
                                                 this);
@@ -140,7 +141,7 @@ public class MockMarketDataFeed
     protected boolean doLogin(MockMarketDataFeedCredentials inCredentials)
     {
         if(getLoginThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(getLoginFails()) {
             return false;
@@ -165,7 +166,7 @@ public class MockMarketDataFeed
             throws FeedException
     {
         if(getExecutionFails()) {
-            throw new FeedException("This exception is expected");
+            throw new FeedException(TestMessages.EXPECTED_EXCEPTION);
         }
         if(mDelay > 0) {
             try {
@@ -174,7 +175,7 @@ public class MockMarketDataFeed
                 throw new FeedException(e);
             }
         }
-        String handle = String.format("%d",
+        String handle = String.format("%d", //$NON-NLS-1$
                                       ++mCounter);
         if(!getExecuteReturnsNothing() &&
            !getExecuteReturnsNull()) {
@@ -196,7 +197,7 @@ public class MockMarketDataFeed
                                   Throwable inException)
     {
         if(getAfterExecuteThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         String handle = mQueue.poll();
         if(inToken != null) {
@@ -213,7 +214,7 @@ public class MockMarketDataFeed
     protected MockMessageTranslator getMessageTranslator()
     {
         if(getGetMessageTranslatorThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return new MockMessageTranslator();
     }
@@ -230,7 +231,7 @@ public class MockMarketDataFeed
             }
         }
         if(getIsLoggedInThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return getState().isLoggedIn();
     }
@@ -302,7 +303,7 @@ public class MockMarketDataFeed
         throws InterruptedException
     {
         if(getInitThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(isInitFails()) {
             super.doInitialize(inToken);
@@ -338,7 +339,7 @@ public class MockMarketDataFeed
     {        
         mCanceledHandles.add(inHandle);
         if(isCancelFails()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
     }
     
@@ -358,7 +359,7 @@ public class MockMarketDataFeed
     protected MockEventTranslator getEventTranslator()
     {
         if(getGetEventTranslatorThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return MockEventTranslator.getTestEventTranslator();
     }
@@ -405,14 +406,14 @@ public class MockMarketDataFeed
         throws InterruptedException
     {
         if(getBeforeExecuteThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(getBeforeExecuteReturnsFalse()) {
             return false;
         }
         if(inToken != null &&
            inToken.getShouldFail()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return super.beforeDoExecute(inToken);
     }

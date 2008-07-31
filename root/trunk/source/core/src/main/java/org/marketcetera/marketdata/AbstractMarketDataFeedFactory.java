@@ -11,7 +11,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractMarketDataFeedFactory<F extends IMarketDataFeed<? extends IMarketDataFeedToken<C>,C>,
                                                     C extends IMarketDataFeedCredentials>
         implements IMarketDataFeedFactory<F,C>

@@ -6,7 +6,7 @@ import org.marketcetera.core.ClassVersion;
 
 import quickfix.Message;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageHolder implements Comparable<MessageHolder> {
 	private Message message;
 	private long messageReference;

@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiQueryProcessor<R extends SummaryEntityBase>
         extends QueryProcessor<List<R>> {
     private static final long serialVersionUID = -2950510247621073215L;
@@ -28,12 +28,12 @@ public class MultiQueryProcessor<R extends SummaryEntityBase>
         super(detail);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public QueryResults<List<R>> process(EntityManager em,
                                    Query q)
             throws PersistenceException {
         final List result = q.getResultList();
-        SLF4JLoggerProxy.debug(this,"Fetched {} rows",result.size());
+        SLF4JLoggerProxy.debug(this,"Fetched {} rows",result.size());  //$NON-NLS-1$
         return new MultipleResults<R>(result);
     }
 }

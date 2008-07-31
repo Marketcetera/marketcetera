@@ -1,6 +1,7 @@
 package org.marketcetera.core.resourcepool;
 
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 
 class ReservationForAllocatedResourceException
@@ -11,7 +12,8 @@ class ReservationForAllocatedResourceException
 
     ReservationForAllocatedResourceException(Resource inResource)
     {
-        super(MessageKey.INFO_WAITING_FOR_RESOURCE.getLocalizedMessage(new Object[] { inResource.toString() } ));
+        super(new I18NBoundMessage1P(Messages.INFO_WAITING_FOR_RESOURCE,
+                                     inResource));
         setResource(inResource);
     }
 

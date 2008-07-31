@@ -8,7 +8,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface ORSAdminMBean {
 
     /** Sends a {@link quickfix.fix44.UserRequest} message containing the password reset message */

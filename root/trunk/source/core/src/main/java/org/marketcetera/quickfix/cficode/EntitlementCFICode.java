@@ -4,7 +4,7 @@ public class EntitlementCFICode extends CFICode {
 	
 
 	public EntitlementCFICode(CharSequence seq) {
-		super(CATEGORY_ENTITLEMENT+"XXXXX");
+		super(CATEGORY_ENTITLEMENT+"XXXXX"); //$NON-NLS-1$
 	}
 
 	@Override

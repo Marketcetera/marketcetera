@@ -15,7 +15,7 @@ import java.util.LinkedList;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiUserQuery extends MultiNDQuery {
     /**
      * Ordering that will order the results in ascending order by the
@@ -79,7 +79,7 @@ public class MultiUserQuery extends MultiNDQuery {
     public int delete() throws PersistenceException {
         //Run a query that first deletes the session objects
         //followed by a query that deletes the user objects.
-        final String alias = "s";
+        final String alias = "s"; //$NON-NLS-1$
         LinkedList<QueryProcessor<Integer>> l =
                 new LinkedList<QueryProcessor<Integer>>();
         l.add(new DeleteQueryProcessor(DELETE + S + FROM + S +

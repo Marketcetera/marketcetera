@@ -11,11 +11,11 @@ import java.io.Serializable;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 @Entity
-@Table(name = "test_user_settings",
+@Table(name = "test_user_settings", //$NON-NLS-1$
         uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"name","owner_id"})})
+        @UniqueConstraint(columnNames = {"name","owner_id"})}) //$NON-NLS-1$ //$NON-NLS-2$
 class Setting implements Serializable {
     private static final long serialVersionUID = 8105197426025853007L;
 
@@ -94,11 +94,11 @@ class Setting implements Serializable {
     /**
      * The attribute owner used in JPQL queries
      */
-    static final String ATTRIBUTE_OWNER = "owner";
+    static final String ATTRIBUTE_OWNER = "owner"; //$NON-NLS-1$
     /**
      * The entity name used in JPQL queries
      */
-    static final String ENTITY_NAME = "Setting";
+    static final String ENTITY_NAME = "Setting"; //$NON-NLS-1$
     private String name;
     private String value;
     private User owner;

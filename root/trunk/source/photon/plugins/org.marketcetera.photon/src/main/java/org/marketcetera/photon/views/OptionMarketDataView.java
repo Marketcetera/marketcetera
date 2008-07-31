@@ -23,7 +23,7 @@ import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedStatus;
@@ -289,12 +289,12 @@ public class OptionMarketDataView
 			doSubscribe(symbol);
 			requestOptionSecurityList(symbol);
 			requestOptionMarketData(symbol);
-		} catch (MarketceteraException e) {
+		} catch (CoreException e) {
 			PhotonPlugin.getMainConsoleLogger().error(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 		}
 	}
 
-	private void requestOptionMarketData(MSymbol root) throws MarketceteraException {
+	private void requestOptionMarketData(MSymbol root) throws CoreException {
 		Message subscribeMessage = MarketDataUtils.newSubscribeOptionUnderlying(root);
 		MarketDataFeedService<?> marketDataFeed = marketDataTracker.getMarketDataFeedService();
 		if (marketDataFeed != null){
@@ -320,13 +320,13 @@ public class OptionMarketDataView
 			} else {
 				service.execute(MarketDataUtils.newSubscribeBBO(symbol), this);
 			}
-		} catch (MarketceteraException e) {
+		} catch (CoreException e) {
 			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
 		}
 	}
 
 
-	private void requestOptionSecurityList(final MSymbol symbol) throws MarketceteraException {
+	private void requestOptionSecurityList(final MSymbol symbol) throws CoreException {
 		PhotonPlugin.getMainConsoleLogger().debug("Requesting options for underlying: " + symbol); //$NON-NLS-1$
 		MarketDataFeedService<?> service = marketDataTracker.getMarketDataFeedService();
 		//Returns a query for all option contracts for the underlying symbol 

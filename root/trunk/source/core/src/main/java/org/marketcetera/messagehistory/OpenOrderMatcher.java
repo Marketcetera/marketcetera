@@ -8,7 +8,7 @@ import quickfix.Message;
 import quickfix.field.OrdStatus;
 import ca.odell.glazedlists.matchers.Matcher;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OpenOrderMatcher implements Matcher<MessageHolder> {
 
 	public boolean matches(MessageHolder item) {

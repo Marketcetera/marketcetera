@@ -18,7 +18,7 @@ import org.marketcetera.core.ClassVersion;
  * @see javax.persistence.OptimisticLockException
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OptimisticLockException extends PersistenceException {
     private static final long serialVersionUID = 3938425027620460968L;
 

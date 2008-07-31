@@ -12,10 +12,11 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.DataDictionary;
 import quickfix.Message;
@@ -117,7 +118,7 @@ public class CustomFieldsViewPieces
 	}
 
 
-	public void addCustomFields(Message message) throws MarketceteraException {
+	public void addCustomFields(Message message) throws CoreException {
 		TableItem[] items = customFieldsTable.getItems();
 		DataDictionary dictionary = FIXDataDictionaryManager
 				.getCurrentFIXDataDictionary().getDictionary();
@@ -147,7 +148,8 @@ public class CustomFieldsViewPieces
 								message);
 					}
 				} else {
-					throw new MarketceteraException(CANNOT_FIND_CUSTOM_FIELD.getText(key));
+					throw new CoreException(new I18NBoundMessage1P(CANNOT_FIND_CUSTOM_FIELD,
+					                                               key));
 				}
 			}
 		}

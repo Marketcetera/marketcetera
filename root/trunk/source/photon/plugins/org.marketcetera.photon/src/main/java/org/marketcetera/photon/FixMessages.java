@@ -21,93 +21,93 @@ public interface FixMessages
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
 
     public static I18NMessage0P fix_field_Account = new I18NMessage0P(LOGGER,
-                                                                      "fix.field.Account");
+                                                                      "fix.field.Account"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_AvgPx = new I18NMessage0P(LOGGER,
-                                                                    "fix.field.AvgPx");
+                                                                    "fix.field.AvgPx"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_ClOrdID = new I18NMessage0P(LOGGER,
-                                                                      "fix.field.ClOrdID");
+                                                                      "fix.field.ClOrdID"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_CumQty = new I18NMessage0P(LOGGER,
-                                                                     "fix.field.CumQty");
+                                                                     "fix.field.CumQty"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_D = new I18NMessage0P(LOGGER,
-                                                                "fix.field.D");
+                                                                "fix.field.D"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_ExecID = new I18NMessage0P(LOGGER,
-                                                                     "fix.field.ExecID");
+                                                                     "fix.field.ExecID"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_LastMkt = new I18NMessage0P(LOGGER,
-                                                                      "fix.field.LastMkt");
+                                                                      "fix.field.LastMkt"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_LastPx = new I18NMessage0P(LOGGER,
-                                                                     "fix.field.LastPx");
+                                                                     "fix.field.LastPx"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_LastShares = new I18NMessage0P(LOGGER,
-                                                                         "fix.field.LastShares");
+                                                                         "fix.field.LastShares"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_LeavesQty = new I18NMessage0P(LOGGER,
-                                                                        "fix.field.LeavesQty");
+                                                                        "fix.field.LeavesQty"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_MdentryPx = new I18NMessage0P(LOGGER,
-                                                                        "fix.field.MdentryPx");
+                                                                        "fix.field.MdentryPx"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_MdentrySize = new I18NMessage0P(LOGGER,
-                                                                          "fix.field.MdentrySize");
+                                                                          "fix.field.MdentrySize"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_MdentryTime = new I18NMessage0P(LOGGER,
-                                                                          "fix.field.MdentryTime");
+                                                                          "fix.field.MdentryTime"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_MdMkt = new I18NMessage0P(LOGGER,
-                                                                    "fix.field.MdMkt");
+                                                                    "fix.field.MdMkt"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_MsgType = new I18NMessage0P(LOGGER,
-                                                                      "fix.field.MsgType");
+                                                                      "fix.field.MsgType"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_OrderID = new I18NMessage0P(LOGGER,
-                                                                      "fix.field.OrderID");
+                                                                      "fix.field.OrderID"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_OrderQty = new I18NMessage0P(LOGGER,
-                                                                       "fix.field.OrderQty");
+                                                                       "fix.field.OrderQty"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_OrdStatus = new I18NMessage0P(LOGGER,
-                                                                        "fix.field.OrdStatus");
+                                                                        "fix.field.OrdStatus"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_OrdType = new I18NMessage0P(LOGGER,
-                                                                      "fix.field.OrdType");
+                                                                      "fix.field.OrdType"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_OrigClOrdID = new I18NMessage0P(LOGGER,
-                                                                          "fix.field.OrigClOrdID");
+                                                                          "fix.field.OrigClOrdID"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_Price = new I18NMessage0P(LOGGER,
-                                                                    "fix.field.Price");
+                                                                    "fix.field.Price"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_RefseqNum = new I18NMessage0P(LOGGER,
-                                                                        "fix.field.RefseqNum");
+                                                                        "fix.field.RefseqNum"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_SendingTime = new I18NMessage0P(LOGGER,
-                                                                          "fix.field.SendingTime");
+                                                                          "fix.field.SendingTime"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_SessionRejectReason = new I18NMessage0P(LOGGER,
-                                                                                  "fix.field.SessionRejectReason");
+                                                                                  "fix.field.SessionRejectReason"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_Side = new I18NMessage0P(LOGGER,
-                                                                   "fix.field.Side");
+                                                                   "fix.field.Side"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_Symbol = new I18NMessage0P(LOGGER,
-                                                                     "fix.field.Symbol");
+                                                                     "fix.field.Symbol"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_TransactTime = new I18NMessage0P(LOGGER,
-                                                                           "fix.field.TransactTime");
+                                                                           "fix.field.TransactTime"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdStatus_PARTIALLY_FILLED = new I18NMessage0P(LOGGER,
-                                                                                               "fix.field.value.OrdStatus.PARTIALLY FILLED");
+                                                                                               "fix.field.value.OrdStatus.PARTIALLY FILLED"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdStatus_PENDING_CANCEL = new I18NMessage0P(LOGGER,
-                                                                                             "fix.field.value.OrdStatus.PENDING CANCEL");
+                                                                                             "fix.field.value.OrdStatus.PENDING CANCEL"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdStatus_PENDING_REPLACE = new I18NMessage0P(LOGGER,
-                                                                                              "fix.field.value.OrdStatus.PENDING REPLACE");
+                                                                                              "fix.field.value.OrdStatus.PENDING REPLACE"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdStatus_PENDING_NEW = new I18NMessage0P(LOGGER,
-                                                                                          "fix.field.value.OrdStatus.PENDING NEW");
+                                                                                          "fix.field.value.OrdStatus.PENDING NEW"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdType_LIMIT = new I18NMessage0P(LOGGER,
-                                                                                  "fix.field.value.OrdType.LIMIT");
+                                                                                  "fix.field.value.OrdType.LIMIT"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdType_MARKET = new I18NMessage0P(LOGGER,
-                                                                                   "fix.field.value.OrdType.MARKET");
+                                                                                   "fix.field.value.OrdType.MARKET"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdType_LIMIT_ON_CLOSE = new I18NMessage0P(LOGGER,
-                                                                                           "fix.field.value.OrdType.LIMIT ON CLOSE");
+                                                                                           "fix.field.value.OrdType.LIMIT ON CLOSE"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdType_MARKET_ON_CLOSE = new I18NMessage0P(LOGGER,
-                                                                                            "fix.field.value.OrdType.MARKET ON CLOSE");
+                                                                                            "fix.field.value.OrdType.MARKET ON CLOSE"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdType_FOREX_LIMIT = new I18NMessage0P(LOGGER,
-                                                                                        "fix.field.value.OrdType.FOREX_LIMIT");
+                                                                                        "fix.field.value.OrdType.FOREX_LIMIT"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_OrdType_FOREX_MARKET = new I18NMessage0P(LOGGER,
-                                                                                         "fix.field.value.OrdType.FOREX_MARKET");
+                                                                                         "fix.field.value.OrdType.FOREX_MARKET"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_TimeInForce_GOOD_TILL_CANCEL = new I18NMessage0P(LOGGER,
-                                                                                                 "fix.field.value.TimeInForce.GOOD TILL CANCEL");
+                                                                                                 "fix.field.value.TimeInForce.GOOD TILL CANCEL"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_TimeInForce_AT_THE_OPENING = new I18NMessage0P(LOGGER,
-                                                                                               "fix.field.value.TimeInForce.AT THE OPENING");
+                                                                                               "fix.field.value.TimeInForce.AT THE OPENING"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_TimeInForce_IMMEDIATE_OR_CANCEL = new I18NMessage0P(LOGGER,
-                                                                                                    "fix.field.value.TimeInForce.IMMEDIATE OR CANCEL");
+                                                                                                    "fix.field.value.TimeInForce.IMMEDIATE OR CANCEL"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_TimeInForce_FILL_OR_KILL = new I18NMessage0P(LOGGER,
-                                                                                             "fix.field.value.TimeInForce.FILL OR KILL");
+                                                                                             "fix.field.value.TimeInForce.FILL OR KILL"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_TimeInForce_AT_THE_CLOSE = new I18NMessage0P(LOGGER,
-                                                                                             "fix.field.value.TimeInForce.AT THE CLOSE");
+                                                                                             "fix.field.value.TimeInForce.AT THE CLOSE"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_Side_BUY = new I18NMessage0P(LOGGER,
-                                                                             "fix.field.value.Side.BUY");
+                                                                             "fix.field.value.Side.BUY"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_Side_SELL = new I18NMessage0P(LOGGER,
-                                                                              "fix.field.value.Side.SELL");
+                                                                              "fix.field.value.Side.SELL"); //$NON-NLS-1$
     public static I18NMessage0P fix_field_value_Side_SELL_SHORT = new I18NMessage0P(LOGGER,
-                                                                                    "fix.field.value.Side.SELL SHORT");
+                                                                                    "fix.field.value.Side.SELL SHORT"); //$NON-NLS-1$
 }

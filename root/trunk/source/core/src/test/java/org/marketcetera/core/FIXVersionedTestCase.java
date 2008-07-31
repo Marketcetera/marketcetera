@@ -13,7 +13,7 @@ import org.marketcetera.quickfix.FIXVersion;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class FIXVersionedTestCase extends TestCase {
     protected FIXMessageFactory msgFactory;
     protected FIXVersion fixVersion;
@@ -33,7 +33,7 @@ public abstract class FIXVersionedTestCase extends TestCase {
     }
 
     public String getName() {
-        return super.getName()+"_"+msgFactory.getBeginString();
+        return super.getName()+"_"+msgFactory.getBeginString(); //$NON-NLS-1$
     }
 
     // helper methods

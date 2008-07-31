@@ -1,5 +1,7 @@
 package org.marketcetera.core;
 
+import org.marketcetera.util.log.I18NBoundMessage0P;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -28,14 +30,14 @@ import org.xml.sax.SAXException;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class HttpDatabaseIDFactory extends DBBackedIDFactory {
 	private URL url;
 	private DocumentBuilder parser;
     private Reader inputReader = null;
 
     public HttpDatabaseIDFactory(URL url) {
-        this(url, "");
+        this(url, ""); //$NON-NLS-1$
     }
     public HttpDatabaseIDFactory(URL url, String prefix) {
         super(prefix);
@@ -43,7 +45,7 @@ public class HttpDatabaseIDFactory extends DBBackedIDFactory {
         try {
 			parser = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		} catch (ParserConfigurationException e) {
-			LoggerAdapter.error(MessageKey.ERROR_DBFACTORY_HTTP_PARSER_INIT.getLocalizedMessage(),e, this);
+			Messages.ERROR_DBFACTORY_HTTP_PARSER_INIT.error(this,e);
 		}
 	}
 
@@ -52,9 +54,9 @@ public class HttpDatabaseIDFactory extends DBBackedIDFactory {
 
         inputReader = getInputReader();
         Document document = parser.parse(new InputSource(inputReader));
-        Node nextIDNode = document.getElementsByTagName("next").item(0);
+        Node nextIDNode = document.getElementsByTagName("next").item(0); //$NON-NLS-1$
         int nextID = Integer.parseInt(nextIDNode.getTextContent());
-        Node numAllowedNode = document.getElementsByTagName("num").item(0);
+        Node numAllowedNode = document.getElementsByTagName("num").item(0); //$NON-NLS-1$
         int numAllowed = Integer.parseInt(numAllowedNode.getTextContent());
         setNextID(nextID);
         setMaxAllowedID(nextID + numAllowed);
@@ -73,7 +75,7 @@ public class HttpDatabaseIDFactory extends DBBackedIDFactory {
 
     protected void factoryValidityCheck() throws NoMoreIDsException {
         if (parser == null){
-            throw new NoMoreIDsException(MessageKey.ERROR_DBFACTORY_MISSING_PARSER.getLocalizedMessage());
+            throw new NoMoreIDsException(Messages.ERROR_DBFACTORY_MISSING_PARSER);
         }
     }
 

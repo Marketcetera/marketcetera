@@ -22,7 +22,7 @@ import java.util.List;
  * to the server-side and receive responses
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 abstract class EntityRemoteServices {
     /**
      * Sends a request to save the supplied entity.

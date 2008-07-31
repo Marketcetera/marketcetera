@@ -14,7 +14,7 @@ import javax.persistence.EntityManager;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CountQueryProcessor extends QueryProcessor<Long> {
     private static final long serialVersionUID = 8533947556425281342L;
 
@@ -39,7 +39,7 @@ public class CountQueryProcessor extends QueryProcessor<Long> {
     public QueryResults<Long> process(EntityManager em, Query q)
             throws PersistenceException {
         final Long result = (Long) q.getSingleResult();
-        SLF4JLoggerProxy.debug(this,"Fetched Count is {}",result);
+        SLF4JLoggerProxy.debug(this,"Fetched Count is {}",result); //$NON-NLS-1$
         return new SingleResult<Long>(result);
     }
 }

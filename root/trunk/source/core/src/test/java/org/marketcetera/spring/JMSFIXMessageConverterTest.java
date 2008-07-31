@@ -19,7 +19,7 @@ import java.math.BigDecimal;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class JMSFIXMessageConverterTest extends FIXVersionedTestCase {
     public JMSFIXMessageConverterTest(String inName, FIXVersion version) {
         super(inName, version);
@@ -30,22 +30,22 @@ public class JMSFIXMessageConverterTest extends FIXVersionedTestCase {
     }
 
     public void testTextMessage() throws Exception {
-        Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.34"), new BigDecimal("123"), Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.34"), new BigDecimal("123"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         ActiveMQTextMessage jmsMessage = new ActiveMQTextMessage();
         jmsMessage.setText(buy.toString());
 
         JMSFIXMessageConverter converter = new JMSFIXMessageConverter();
 
-        assertEquals("mesasage not translated correctly", buy.toString(), converter.fromMessage(jmsMessage).toString());
+        assertEquals("mesasage not translated correctly", buy.toString(), converter.fromMessage(jmsMessage).toString()); //$NON-NLS-1$
     }
 
     public void testBytesMessage() throws Exception {
-        Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.34"), new BigDecimal("123"), Side.BUY, msgFactory);
+        Message buy = FIXMessageUtilTest.createNOS("TOLI", new BigDecimal("23.34"), new BigDecimal("123"), Side.BUY, msgFactory); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         ActiveMQBytesMessage jmsMessage = new ActiveMQBytesMessage();
         jmsMessage.writeBytes(buy.toString().getBytes(JMSFIXMessageConverter.BYTES_MESSAGE_CHARSET));
         jmsMessage.reset();
 
         JMSFIXMessageConverter converter = new JMSFIXMessageConverter();
-        assertEquals("mesasage not translated correctly", buy.toString(), converter.fromMessage(jmsMessage).toString());
+        assertEquals("mesasage not translated correctly", buy.toString(), converter.fromMessage(jmsMessage).toString()); //$NON-NLS-1$
     }
 }

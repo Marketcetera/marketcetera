@@ -17,14 +17,15 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MarketceteraException;
 import org.marketcetera.core.MessageBundleInfo;
-import org.marketcetera.core.MessageKey;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.util.auth.StandardAuthentication;
+import org.marketcetera.util.log.I18NBoundMessage0P;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.spring.SpringUtils;
 import org.marketcetera.util.unicode.UnicodeInputStreamReader;
@@ -112,7 +113,7 @@ public class OrderLoader
             idFactory.getNext();
         } catch(NoMoreIDsException ex) {
             // don't print the entire stacktrace, just the message
-            LoggerAdapter.warn(MessageKey.ERROR_DBFACTORY_FAILED_INIT.getLocalizedMessage(idFactoryURL, ex.getMessage()), this);
+            org.marketcetera.core.Messages.ERROR_DBFACTORY_INIT.warn(this, idFactoryURL, ex.getMessage());
         }
     }
 
@@ -240,7 +241,7 @@ public class OrderLoader
                     numBlankLines++;
                     return;
                 } else {
-                    throw new OrderParsingException(PARSING_WRONG_NUM_FIELDS.getText());
+                    throw new OrderParsingException(PARSING_WRONG_NUM_FIELDS);
                 }
             } else if(inOrderRow[0].startsWith(COMMENT_MARKER)) {
                 numComments++;
@@ -261,8 +262,9 @@ public class OrderLoader
                             // Format the fieldID so it doesn't get localized to 2,345 for example
                             NumberFormat formatter = NumberFormat.getIntegerInstance();
                             formatter.setGroupingUsed(false);
-                            throw new MarketceteraException(PARSING_FIELD_NOT_IN_DICT.getText(formatter.format(fieldID), 
-                                                                                                                                value));
+                            throw new CoreException(new I18NBoundMessage2P(PARSING_FIELD_NOT_IN_DICT, 
+                                                                           formatter.format(fieldID), 
+                                                                           value));
                         }
                     }
                 }
@@ -276,11 +278,11 @@ public class OrderLoader
             PARSING_ORDER_GEN_ERROR.error(this,
                                           e,
                                           Arrays.toString(inOrderRow),
-                                          e.getMessage());
+                                          e.getLocalizedMessage());
             SLF4JLoggerProxy.debug(this,
-                                   e.getMessage(),
+                                   e.getLocalizedMessage(),
                                    e);
-            failedOrders.add(new StringBuilder().append(Arrays.toString(inOrderRow)).append(": ").append(e.getMessage()).toString()); //$NON-NLS-1$
+            failedOrders.add(new StringBuilder().append(Arrays.toString(inOrderRow)).append(": ").append(e.getLocalizedMessage()).toString()); //$NON-NLS-1$
         }
     }
 
@@ -314,10 +316,10 @@ public class OrderLoader
                     try {
                         price = new BigDecimal(inValue);//i18n_currency
                     } catch(NumberFormatException ex) {
-                        throw new OrderParsingException(PARSING_PRICE_VALID_NUM.getText(inValue), ex);
+                        throw new OrderParsingException(ex, new I18NBoundMessage1P(PARSING_PRICE_VALID_NUM, inValue));
                     }
                     if(price.compareTo(BigDecimal.ZERO) <= 0) {
-                        throw new OrderParsingException(PARSING_PRICE_POSITIVE.getText(price));
+                        throw new OrderParsingException(new I18NBoundMessage1P(PARSING_PRICE_POSITIVE, price));
                     }
                     // just return the original string
                     return inValue;
@@ -328,10 +330,10 @@ public class OrderLoader
                 try {
                     qty = Integer.parseInt(inValue);//i18n_number
                 } catch(NumberFormatException ex) {
-                    throw new OrderParsingException(PARSING_QTY_INT.getText(inValue), ex);
+                    throw new OrderParsingException(ex, new I18NBoundMessage1P(PARSING_QTY_INT, inValue));
                 }
                 if(qty <=0) {
-                    throw new OrderParsingException(PARSING_QTY_POS_INT.getText(inValue));
+                    throw new OrderParsingException(new I18NBoundMessage1P(PARSING_QTY_POS_INT, inValue));
                 }
                 // just return the original string
                 return inValue;
@@ -340,7 +342,7 @@ public class OrderLoader
                     java.lang.reflect.Field theField = TimeInForce.class.getField(inValue);
                     return theField.get(null).toString();
                 } catch (Exception ex) {
-                    throw new OrderParsingException(inFieldName, inValue, ex);
+                    throw new OrderParsingException(ex, inFieldName, inValue);
                 }
             default:
                 return inValue;
@@ -413,7 +415,7 @@ public class OrderLoader
             return CustomField.getCustomField(fieldName);
             //throw new OrderParsingException(fieldName, ex);
         }catch(Exception ex) {
-            throw new OrderParsingException(fieldName, ex);
+            throw new OrderParsingException(ex, new I18NBoundMessage1P(Messages.ERROR_PARSING_UNKNOWN, fieldName));
         }
         return theField;
     }

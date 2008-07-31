@@ -8,7 +8,7 @@ import org.marketcetera.symbology.SymbolScheme;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MSymbol {
     private String baseSymbol;
     private String fullSymbol;
@@ -24,10 +24,10 @@ public class MSymbol {
     public MSymbol(String fullSymbol, SymbolScheme scheme) {
         this.fullSymbol = fullSymbol;
         if (fullSymbol == null || scheme == null){
-            throw new IllegalArgumentException(MessageKey.ERROR_NULL_MSYMBOL.getLocalizedMessage());
+            throw new IllegalArgumentException(Messages.ERROR_NULL_MSYMBOL.getText());
         }
         if (scheme == SymbolScheme.BASIC){
-            String [] symbolSplit = fullSymbol.split("\\.");
+            String [] symbolSplit = fullSymbol.split("\\."); //$NON-NLS-1$
             this.baseSymbol = symbolSplit[0];
             this.exchangeString = symbolSplit.length > 1 ? symbolSplit[symbolSplit.length - 1] : null;
         } else {
@@ -44,7 +44,7 @@ public class MSymbol {
 
     protected String toStringHelper(){
         if (getScheme() != SymbolScheme.BASIC){
-            return (getFullSymbol() +"("+getScheme() +")");
+            return (getFullSymbol() +"("+getScheme() +")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return (getFullSymbol());
     }

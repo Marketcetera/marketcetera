@@ -9,7 +9,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SingleResult<R> extends QueryResults<R> {
     private static final long serialVersionUID = -6361499557273250428L;
 

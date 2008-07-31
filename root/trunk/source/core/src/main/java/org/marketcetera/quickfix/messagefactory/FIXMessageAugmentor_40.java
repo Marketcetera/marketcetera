@@ -15,7 +15,7 @@ import java.util.Set;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
 
     // list of messages that need transactTime

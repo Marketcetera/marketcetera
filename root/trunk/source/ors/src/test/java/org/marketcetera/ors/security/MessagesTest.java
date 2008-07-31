@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessagesTest {
     @Test
     public void messagesMatch() throws I18NException {

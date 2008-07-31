@@ -15,7 +15,7 @@ import quickfix.field.OrderID;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class LatestExecutionReportsFunction extends LatestMessageFunction {
 
 	/** 

@@ -13,7 +13,7 @@ import java.io.Serializable;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class QueryResults<R> implements Serializable {
     private static final long serialVersionUID = 342561755118459113L;
 

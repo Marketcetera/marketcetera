@@ -104,7 +104,7 @@ public abstract class MessageTranslatorTestBase<T>
         throws Exception
     {
         // construct a BBO market data request
-        Message bbo = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ), 
+        Message bbo = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ),  //$NON-NLS-1$
                                                                        false);
         assertTrue(FIXMessageUtil.isMarketDataRequest(bbo));
         assertTrue(FIXMessageUtil.isLevelOne(bbo));
@@ -123,7 +123,7 @@ public abstract class MessageTranslatorTestBase<T>
         throws Exception
     {
         // construct a BBO market data request
-        Message full = AbstractMarketDataFeed.levelTwoMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ), 
+        Message full = AbstractMarketDataFeed.levelTwoMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ),  //$NON-NLS-1$
                                                                         false);
         assertTrue(FIXMessageUtil.isMarketDataRequest(full));
         assertTrue(FIXMessageUtil.isLevelTwo(full));

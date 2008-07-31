@@ -212,9 +212,9 @@ public class QuoteEvent
     public String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append("Quote for ").append(getSymbol()).append(": ").append(getBidPrice()).append("-").append(getAskPrice());
-        output.append(" ").append(getBidSize()).append("x").append(getAskSize()).append(" ");
-        output.append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(getTimestampAsDate());
+        output.append("Quote for ").append(getSymbol()).append(": ").append(getBidPrice()).append("-").append(getAskPrice()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append(" ").append(getBidSize()).append("x").append(getAskSize()).append(" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(getTimestampAsDate()); //$NON-NLS-1$ //$NON-NLS-2$
         return output.toString();
     }
 }

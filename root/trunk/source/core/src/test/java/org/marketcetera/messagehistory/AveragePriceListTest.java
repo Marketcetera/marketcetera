@@ -36,7 +36,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		EventList<MessageHolder> source = new BasicEventList<MessageHolder>();
 		AveragePriceList averagePriceList = new AveragePriceList(this.msgFactory, source);
 		Message message = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
-		message.setField(new Symbol("IBM"));
+		message.setField(new Symbol("IBM")); //$NON-NLS-1$
 		message.setField(new Side(Side.BUY));
 		message.setField(new CumQty(10.0));
 		message.setField(new AvgPx(11.0));
@@ -52,7 +52,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		assertEquals(11.0, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
 
 		Message message2 = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
-		message2.setField(new Symbol("IBM"));
+		message2.setField(new Symbol("IBM")); //$NON-NLS-1$
 		message2.setField(new Side(Side.BUY));
 		message2.setField(new CumQty(110.0));
 		message2.setField(new AvgPx(111.0));
@@ -68,7 +68,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		assertEquals(102.66666, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
 		
 		Message message3 = msgFactory.createMessage(MsgType.ORDER_SINGLE);
-		message3.setField(new Symbol("IBM"));
+		message3.setField(new Symbol("IBM")); //$NON-NLS-1$
 		message3.setField(new Side(Side.BUY));
 		message3.setField(new OrderQty(1000));
 		source.add(new IncomingMessageHolder(message3));
@@ -86,7 +86,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		EventList<MessageHolder> source = new BasicEventList<MessageHolder>();
 		AveragePriceList averagePriceList = new AveragePriceList(this.msgFactory, source);
 		Message message = msgFactory.createMessage(MsgType.ORDER_SINGLE);
-		message.setField(new Symbol("IBM"));
+		message.setField(new Symbol("IBM")); //$NON-NLS-1$
 		message.setField(new Side(Side.BUY));
 		message.setField(new OrderQty(1000));
 		source.add(new IncomingMessageHolder(message));
@@ -102,7 +102,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		final EventList<MessageHolder> source = new BasicEventList<MessageHolder>();
 		AveragePriceList averagePriceList = new AveragePriceList(this.msgFactory, source);
 		Message message = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
-		message.setField(new Symbol("IBM"));
+		message.setField(new Symbol("IBM")); //$NON-NLS-1$
 		message.setField(new Side(Side.BUY));
 		message.setField(new CumQty(10.0));
 		message.setField(new AvgPx(11.0));
@@ -126,7 +126,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		final EventList<MessageHolder> source = new BasicEventList<MessageHolder>();
 		AveragePriceList averagePriceList = new AveragePriceList(this.msgFactory, source);
 		final Message message = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
-		message.setField(new Symbol("IBM"));
+		message.setField(new Symbol("IBM")); //$NON-NLS-1$
 		message.setField(new Side(Side.BUY));
 		message.setField(new CumQty(10.0));
 		message.setField(new AvgPx(11.0));

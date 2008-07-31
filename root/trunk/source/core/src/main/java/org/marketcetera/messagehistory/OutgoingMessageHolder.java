@@ -4,7 +4,7 @@ import org.marketcetera.core.ClassVersion;
 
 import quickfix.Message;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OutgoingMessageHolder extends MessageHolder {
 	public OutgoingMessageHolder(Message message) {
 		super(message);

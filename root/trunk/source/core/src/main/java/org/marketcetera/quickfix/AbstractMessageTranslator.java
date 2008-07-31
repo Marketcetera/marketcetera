@@ -3,11 +3,9 @@ package org.marketcetera.quickfix;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
-
+import org.marketcetera.core.CoreException;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
@@ -47,10 +45,10 @@ public abstract class AbstractMessageTranslator<T>
      *
      * @param inGroup a <code>Group</code> value
      * @return a <code>MSymbol</code> value containing the symbol
-     * @throws MarketceteraException if the symbol could not be extracted
+     * @throws CoreException if the symbol could not be extracted
      */
     public static MSymbol getSymbol(Group inGroup) 
-        throws MarketceteraException
+        throws CoreException
     {
         String securityType;
         try {
@@ -71,8 +69,8 @@ public abstract class AbstractMessageTranslator<T>
                 symbol = new MSymbol(inGroup.getString(Symbol.FIELD));
             }
         } catch (FieldNotFound e) {
-            throw new MarketceteraException(MessageKey.ERROR_MARKET_DATA_FEED_CANNOT_FIND_SYMBOL,
-                                            e);
+            throw new CoreException(e, 
+                                    org.marketcetera.marketdata.Messages.ERROR_MARKET_DATA_FEED_CANNOT_FIND_SYMBOL);
         }
         return symbol;
     }
@@ -82,10 +80,10 @@ public abstract class AbstractMessageTranslator<T>
      *
      * @param inMessage a <code>Message</code> value
      * @return a <code>List&lt;Group&gt;</code> value
-     * @throws MarketceteraException 
+     * @throws CoreException 
      */
     public static List<Group> getGroups(Message inMessage) 
-        throws MarketceteraException
+        throws CoreException
     {
         int totalSymbols = AbstractMessageTranslator.determineTotalSymbols(inMessage);
         List<Group> groups = new ArrayList<Group>();
@@ -100,12 +98,7 @@ public abstract class AbstractMessageTranslator<T>
                 // securityType now holds a description of the symbol (fix tag 167)
                 groups.add(relatedSymGroup);
             } catch (Throwable e) {
-                if(LoggerAdapter.isDebugEnabled(AbstractMessageTranslator.class)) {
-                    LoggerAdapter.debug(String.format("Group number %d could not be translated, skipping",
-                                                      symbolCounter),
-                                        e,
-                                        AbstractMessageTranslator.class);
-                }
+                SLF4JLoggerProxy.debug(AbstractMessageTranslator.class, e, Messages.GROUP_NUMBER_COULD_NOT_TRANSLATE.getText(symbolCounter));
             }
         }            
         
@@ -123,11 +116,7 @@ public abstract class AbstractMessageTranslator<T>
         try {
             return inMessage.getChar(SubscriptionRequestType.FIELD);
         } catch (FieldNotFound e) {
-            if(LoggerAdapter.isWarnEnabled(AbstractMessageTranslator.class)) {
-                LoggerAdapter.warn(MessageKey.WARNING_MARKET_DATA_FEED_CANNOT_DETERMINE_SUBSCRIPTION.getLocalizedMessage(),
-                                   e,
-                                   AbstractMessageTranslator.class);
-            }
+            org.marketcetera.marketdata.Messages.WARNING_MARKET_DATA_FEED_CANNOT_DETERMINE_SUBSCRIPTION.warn(AbstractMessageTranslator.class, e);
             return SubscriptionRequestType.SNAPSHOT;
         }
     }
@@ -137,15 +126,15 @@ public abstract class AbstractMessageTranslator<T>
      *
      * @param inMessage a <code>Message</code> value
      * @return an <code>int</code> value
-     * @throws MarketceteraException if the number of symbols could not be determined
+     * @throws CoreException if the number of symbols could not be determined
      */
     public static int determineTotalSymbols(Message inMessage) 
-        throws MarketceteraException 
+        throws CoreException 
     {
         try {
             return inMessage.getInt(NoRelatedSym.FIELD);
         } catch (FieldNotFound e) {
-            throw new MarketceteraException(e);
+            throw new CoreException(e);
         }
     }
 }

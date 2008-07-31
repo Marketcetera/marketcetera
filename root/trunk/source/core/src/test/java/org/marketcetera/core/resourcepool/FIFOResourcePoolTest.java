@@ -9,7 +9,7 @@ import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
 
 /**
  * Tests {@link FIFOResourcePool}. 
@@ -169,7 +169,7 @@ public class FIFOResourcePoolTest
         // test exception handling
         mTestPool.setThrowDuringCreateResource(true);
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+                                Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getText()) {
             protected void execute()
                     throws Throwable
             {
@@ -180,7 +180,7 @@ public class FIFOResourcePoolTest
         
         mTestPool.setThrowDuringAddResource(true);
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+                                Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getText()) {
             protected void execute()
                     throws Throwable
             {
@@ -193,7 +193,7 @@ public class FIFOResourcePoolTest
                      mTestPool.getPoolSize());
         mTestPool.setThrowDuringAllocateResource(true);
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+                                Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getText()) {
             protected void execute()
                     throws Throwable
             {
@@ -209,7 +209,7 @@ public class FIFOResourcePoolTest
                      mTestPool.getPoolSize());
         mTestPool.setEmptyPoolBeforeAllocation(true);
         new ExpectedTestFailure(ResourcePoolException.class,
-                                MessageKey.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getLocalizedMessage()) {
+                                Messages.ERROR_CANNOT_CREATE_RESOURCE_FOR_POOL.getText()) {
             protected void execute()
                     throws Throwable
             {
@@ -246,7 +246,7 @@ public class FIFOResourcePoolTest
 
         mTestPool.verifyResourceReturn(mResource2);
         new ExpectedTestFailure(DuplicateResourceReturnException.class,
-                                MessageKey.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED.getLocalizedMessage()) {
+                                Messages.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED.getText()) {
             protected void execute()
                     throws Throwable
             {

@@ -4,6 +4,7 @@ import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -18,35 +19,37 @@ import java.util.concurrent.Semaphore;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class ApplicationBase implements Clock {
 
-    public static final String APP_DIR_PROP="org.marketcetera.appDir";
+    public static String LOGGER_CONF_FILE = "log4j.properties"; //$NON-NLS-1$
+    public static final int LOGGER_WATCH_DELAY = 20*1000;
+
+    public static final String APP_DIR_PROP="org.marketcetera.appDir"; //$NON-NLS-1$
     public static final String APP_DIR;
     public static final String CONF_DIR;
 
     static {
         String appDir=System.getProperty(APP_DIR_PROP);
         if (appDir==null) {
-            appDir="src"+File.separator+"test"+File.separator+"sample_data";
+            appDir="src"+File.separator+"test"+File.separator+"sample_data"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         if (!appDir.endsWith(File.separator)) {
             appDir+=File.separator;
         }
         APP_DIR=appDir;
-        CONF_DIR=APP_DIR+"conf"+File.separator;
+        CONF_DIR=APP_DIR+"conf"+File.separator; //$NON-NLS-1$
     }
 
-    public static final String USERNAME_BEAN_NAME="runtimeUsername";
-    public static final String PASSWORD_BEAN_NAME="runtimePassword";
+    public static final String USERNAME_BEAN_NAME="runtimeUsername"; //$NON-NLS-1$
+    public static final String PASSWORD_BEAN_NAME="runtimePassword"; //$NON-NLS-1$
 
-    protected static LoggerAdapter sLogger;
     private ClassPathXmlApplicationContext appCtx;
     protected FIXMessageFactory msgFactory;
     protected FIXVersion fixVersion;
     protected FIXDataDictionary fixDD;
     private boolean waitingForever = false;
-    private static final String FIX_VERSION_NAME = "fixVersionEnum";
+    private static final String FIX_VERSION_NAME = "fixVersionEnum"; //$NON-NLS-1$
 
     public ApplicationBase()
     {
@@ -57,7 +60,6 @@ public abstract class ApplicationBase implements Clock {
                 MessageBundleManager.registerMessageBundle(messageBundleInfo);
             }
         }
-        sLogger = LoggerAdapter.initializeLogger("mktctrRoot");
     }
 
     private static final class MyApplicationContext
@@ -78,9 +80,7 @@ public abstract class ApplicationBase implements Clock {
 
         protected void onClose()
         {
-            if(LoggerAdapter.isDebugEnabled(this)) {
-                LoggerAdapter.debug("in shutdown hook", this);
-            }
+            SLF4JLoggerProxy.debug(this, "in shutdown hook"); //$NON-NLS-1$
             super.onClose();
         }
     };
@@ -89,7 +89,7 @@ public abstract class ApplicationBase implements Clock {
         (String[] ctxFileNames,
          ApplicationContext parent,
          boolean registerShutdownHook)
-        throws MarketceteraException
+        throws CoreException
     {
         if (parent==null) {
             appCtx=new MyApplicationContext(ctxFileNames);
@@ -109,7 +109,7 @@ public abstract class ApplicationBase implements Clock {
     public ConfigurableApplicationContext createApplicationContext
         (String[] ctxFileNames,
          boolean registerShutdownHook)
-        throws MarketceteraException
+        throws CoreException
     {
         return createApplicationContext(ctxFileNames,null,registerShutdownHook);
     }
@@ -122,10 +122,10 @@ public abstract class ApplicationBase implements Clock {
     {
         waitingForever = true;
         try {
-            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Starting to wait forever", this); }
+            SLF4JLoggerProxy.debug(this, "Starting to wait forever"); //$NON-NLS-1$
             new Semaphore(0).acquire();
         } catch (InterruptedException e) {
-            LoggerAdapter.debug("Exception in sema wait", e, this);
+            SLF4JLoggerProxy.debug(this, e, "Exception in sema wait"); //$NON-NLS-1$
         } finally {
             waitingForever = false;
         }

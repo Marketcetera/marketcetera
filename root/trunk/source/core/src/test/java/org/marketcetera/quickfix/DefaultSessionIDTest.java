@@ -13,7 +13,7 @@ import org.marketcetera.core.ClassVersion;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DefaultSessionIDTest extends TestCase {
     public DefaultSessionIDTest(String inName) {
         super(inName);
@@ -25,10 +25,10 @@ public class DefaultSessionIDTest extends TestCase {
 
     public void testDefaultSessionIDTest() throws Exception {
         Class aClass = quickfix.SessionSettings.class;
-        Field theField = aClass.getDeclaredField("DEFAULT_SESSION_ID");
+        Field theField = aClass.getDeclaredField("DEFAULT_SESSION_ID"); //$NON-NLS-1$
         theField.setAccessible(true);
         Object defaultSessionID = theField.get(null);
         assertEquals(SessionID.class, defaultSessionID.getClass());
-        assertEquals("DEFAULT:->", defaultSessionID.toString());
+        assertEquals("DEFAULT:->", defaultSessionID.toString()); //$NON-NLS-1$
     }
 }

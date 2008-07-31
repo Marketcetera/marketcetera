@@ -1,7 +1,7 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * An unsupported QuickFix message was received. 
@@ -10,7 +10,7 @@ import org.marketcetera.core.MessageKey;
  * @version $Id$
  */
 public class UnsupportedMessageException
-        extends MarketceteraException
+        extends I18NException
 {
     private static final long serialVersionUID = -5489749428430923539L;
 
@@ -19,7 +19,7 @@ public class UnsupportedMessageException
      *
      * @param inMessage
      */
-    public UnsupportedMessageException(String inMessage)
+    public UnsupportedMessageException(I18NBoundMessage inMessage)
     {
         super(inMessage);
     }
@@ -37,36 +37,13 @@ public class UnsupportedMessageException
     /**
      * Create a new UnsupportedMessageException instance.
      *
-     * @param inKey
-     */
-    public UnsupportedMessageException(MessageKey inKey)
-    {
-        super(inKey);
-    }
-
-    /**
-     * Create a new UnsupportedMessageException instance.
-     *
      * @param inMsg
      * @param inNested
      */
-    public UnsupportedMessageException(String inMsg,
-                                       Throwable inNested)
+    public UnsupportedMessageException(Throwable inNested,
+                                       I18NBoundMessage inMessage)
     {
-        super(inMsg,
-              inNested);
-    }
-
-    /**
-     * Create a new UnsupportedMessageException instance.
-     *
-     * @param inKey
-     * @param inNested
-     */
-    public UnsupportedMessageException(MessageKey inKey,
-                                       Throwable inNested)
-    {
-        super(inKey,
-              inNested);
+        super(inNested,
+              inMessage);
     }
 }

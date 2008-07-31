@@ -7,12 +7,13 @@ import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.AbstractObservableValue;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -149,9 +150,9 @@ public abstract class OrderTicketModel
 	 * as the TransactTime should be as close to the sending time of the message
 	 * as possible.
 	 * 
-	 * @throws MarketceteraException
+	 * @throws CoreException
 	 */
-	public void completeMessage() throws MarketceteraException {
+	public void completeMessage() throws CoreException {
 		addCustomFields();
 		messageFactory.addTransactionTimeIfNeeded(orderMessage);
 	}
@@ -214,10 +215,10 @@ public abstract class OrderTicketModel
 	 * place based on the data dictionary in this model.  By default, fields
 	 * will be placed in the body of the FIX message.
 	 * 
-	 * @throws MarketceteraException
+	 * @throws CoreException
 	 */
 	private void addCustomFields() 
-	    throws MarketceteraException 
+	    throws CoreException 
 	{
 		for (Object customFieldObject : customFieldsList) {
 			CustomField customField = (CustomField) customFieldObject;
@@ -246,7 +247,8 @@ public abstract class OrderTicketModel
 								orderMessage);
 					}
 				} else {
-					throw new MarketceteraException(CANNOT_FIND_CUSTOM_FIELD.getText(key));
+					throw new CoreException(new I18NBoundMessage1P(CANNOT_FIND_CUSTOM_FIELD,
+					                                               key));
 				}
 			}
 		}

@@ -10,7 +10,7 @@ import java.io.File;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class Util
 {
     /** Tries to load the named file from a classpath
@@ -22,11 +22,11 @@ public class Util
      */
     public static URL loadFileFromClasspath(String inFileName, Object inObj)
     {
-        if((inFileName == null) || ("".equals(inFileName)))  return null;
+        if((inFileName == null) || ("".equals(inFileName)))  return null; //$NON-NLS-1$
 
         URL resource = inObj.getClass().getResource(inFileName);
-        if((resource == null) && !inFileName.startsWith("/")) {
-            resource = inObj.getClass().getResource("/"+inFileName);
+        if((resource == null) && !inFileName.startsWith("/")) { //$NON-NLS-1$
+            resource = inObj.getClass().getResource("/"+inFileName); //$NON-NLS-1$
         }
         return resource;
     }

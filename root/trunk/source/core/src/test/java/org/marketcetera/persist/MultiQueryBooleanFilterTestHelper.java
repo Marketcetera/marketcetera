@@ -9,7 +9,7 @@ import static org.junit.Assert.assertEquals;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiQueryBooleanFilterTestHelper<E extends EntityBase,
         S extends SummaryEntityBase> extends
         MultiQueryFilterTestHelper<E, S> {

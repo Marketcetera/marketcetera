@@ -1,6 +1,7 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.LoggerAdapter;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.SessionID;
@@ -61,15 +62,15 @@ public class NullQuickFIXSender implements IQuickFIXSender {
         capturedMessages.add(message);
         if(sema != null) {
             sema.release();
-            if(LoggerAdapter.isDebugEnabled(this)) {
+            if (SLF4JLoggerProxy.isDebugEnabled(this)) {
                 String humanSide = null;
                 try {
                     humanSide = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(Side.FIELD,
-                        ""+message.getChar(Side.FIELD));
+                                                                                                          ""+message.getChar(Side.FIELD)); //$NON-NLS-1$
                 } catch (FieldNotFound fieldNotFound) {
                     //ignore
                 }
-                LoggerAdapter.debug("qfSender released sema "+sema.getQueueLength() + " for side "+humanSide, this);
+                SLF4JLoggerProxy.debug(this, "qfSender released sema {} for side {}", sema.getQueueLength(), humanSide); //$NON-NLS-1$
             }
         }
         return false;

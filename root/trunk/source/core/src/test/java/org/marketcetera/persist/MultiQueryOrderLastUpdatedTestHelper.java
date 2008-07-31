@@ -10,7 +10,7 @@ import java.util.Date;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 class MultiQueryOrderLastUpdatedTestHelper<C extends EntityBase,
         S extends SummaryEntityBase> extends
         MultiQueryOrderComparableTestHelper<C, S, Date> {

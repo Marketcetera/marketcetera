@@ -21,7 +21,7 @@ import java.util.Date;
  * </ul>
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MappedSuperclass
 public abstract class EntityBase implements SummaryEntityBase {
     private static final long serialVersionUID = -7445081112376896281L;
@@ -85,7 +85,7 @@ public abstract class EntityBase implements SummaryEntityBase {
      * invocation on the server-side.
      */
     protected void applyRemote(SaveResult saveResult) {
-        SLF4JLoggerProxy.debug(this,"Applying SaveResult {}", saveResult);
+        SLF4JLoggerProxy.debug(this,"Applying SaveResult {}", saveResult); //$NON-NLS-1$
         setId(saveResult.getId());
         setUpdateCount(saveResult.getUpdateCount());
         setLastUpdated(saveResult.getTimestamp());
@@ -136,10 +136,10 @@ public abstract class EntityBase implements SummaryEntityBase {
         preSaveLocal(em,context);
         if(persistent) {
             entity = em.merge(this);
-            SLF4JLoggerProxy.debug(this, "Merged {}", entity);
+            SLF4JLoggerProxy.debug(this, "Merged {}", entity); //$NON-NLS-1$
         } else {
             em.persist(entity);
-            SLF4JLoggerProxy.debug(this, "Persisted {}", entity);
+            SLF4JLoggerProxy.debug(this, "Persisted {}", entity); //$NON-NLS-1$
         }
         //Let subclasses run additional operations
         postSaveLocal(em,entity,context);
@@ -337,11 +337,11 @@ public abstract class EntityBase implements SummaryEntityBase {
     }
 
     public String toString() {
-        return "EntityBase{" +
-                "id=" + id +
-                ", updateCount=" + updateCount +
-                ", lastUpdated=" + lastUpdated +
-                ", identity=" + System.identityHashCode(this) +
+        return "EntityBase{" + //$NON-NLS-1$
+                "id=" + id + //$NON-NLS-1$
+                ", updateCount=" + updateCount + //$NON-NLS-1$
+                ", lastUpdated=" + lastUpdated + //$NON-NLS-1$
+                ", identity=" + System.identityHashCode(this) + //$NON-NLS-1$
                 '}';
     }
 
@@ -349,11 +349,11 @@ public abstract class EntityBase implements SummaryEntityBase {
      * The last updated attribute name, used to refer to lastUpdated
      * attribute in various JPQL queries
      */
-    protected static final String ATTRIBUTE_LAST_UPDATED = "lastUpdated";
+    protected static final String ATTRIBUTE_LAST_UPDATED = "lastUpdated"; //$NON-NLS-1$
     /**
      * The ID attribute name, used to refer to ID in various JPQL queries
      */
-    protected static final String ATTRIBUTE_ID = "id";
+    protected static final String ATTRIBUTE_ID = "id"; //$NON-NLS-1$
     private long id = UNINITIALIZED;
     private int updateCount = UNINITIALIZED;
     private Date lastUpdated;

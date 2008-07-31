@@ -1,7 +1,7 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -15,13 +15,13 @@ import java.util.Date;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class TransactionTimeInsertMessageModifier implements MessageModifier
 {
     public TransactionTimeInsertMessageModifier() {
     }
 
-    public boolean modifyMessage(Message order, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message order, FIXMessageAugmentor augmentor) throws CoreException {
         /** Only put the field in if it's not present */
         try {
             // test for presence

@@ -8,7 +8,7 @@ import java.util.Date;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class Exchange
 {
     String country;

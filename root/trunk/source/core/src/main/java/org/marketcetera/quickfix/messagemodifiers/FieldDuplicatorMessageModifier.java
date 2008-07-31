@@ -1,7 +1,7 @@
 package org.marketcetera.quickfix.messagemodifiers;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.MessageModifier;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldNotFound;
@@ -35,7 +35,7 @@ import quickfix.StringField;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FieldDuplicatorMessageModifier implements MessageModifier {
     private int destField;
     private int sourceField;
@@ -45,7 +45,7 @@ public class FieldDuplicatorMessageModifier implements MessageModifier {
         this.destField = destField;
     }
 
-    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws CoreException {
         try {
             if(message.isSetField(sourceField)) {
                 String value = message.getString(sourceField);
@@ -54,7 +54,7 @@ public class FieldDuplicatorMessageModifier implements MessageModifier {
             }
             return false;
         } catch (FieldNotFound fieldNotFound) {
-            throw new MarketceteraException(fieldNotFound);
+            throw new CoreException(fieldNotFound);
         }
     }
 }

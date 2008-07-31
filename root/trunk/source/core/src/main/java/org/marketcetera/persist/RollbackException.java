@@ -10,7 +10,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class RollbackException extends PersistenceException {
     private static final long serialVersionUID = -2550706630770810289L;
 

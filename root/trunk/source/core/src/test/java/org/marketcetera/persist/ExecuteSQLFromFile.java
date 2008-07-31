@@ -20,7 +20,7 @@ import java.io.IOException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExecuteSQLFromFile {
     /**
      * Runs the set of SQL files on the specified data source.
@@ -44,7 +44,7 @@ public class ExecuteSQLFromFile {
     }
 
     private void processURL(Statement statement, URL url) throws IOException, SQLException {
-        SLF4JLoggerProxy.debug(this, "Processing SQL File: "+url);
+        SLF4JLoggerProxy.debug(this, "Processing SQL File: "+url); //$NON-NLS-1$
         //Read the file
         Reader reader = new UnicodeInputStreamReader(url.openStream());
         StringBuilder sb;
@@ -60,16 +60,16 @@ public class ExecuteSQLFromFile {
         }
         final String content = sb.toString();
         //Parse SQL statements out from it
-        String [] sqls = content.split(";");
+        String [] sqls = content.split(";"); //$NON-NLS-1$
         for (String sql: sqls) {
             if (sql.trim().length() > 0) {
-                SLF4JLoggerProxy.debug(this, "Executing SQL: "+sql);
+                SLF4JLoggerProxy.debug(this, "Executing SQL: "+sql); //$NON-NLS-1$
                 boolean isResultSet = statement.execute(sql);
                 int updateCount;
                 do {
                     if (!isResultSet) {
                         updateCount = statement.getUpdateCount();
-                        SLF4JLoggerProxy.debug(this, "Last SQL had an update count: "+updateCount);
+                        SLF4JLoggerProxy.debug(this, "Last SQL had an update count: "+updateCount); //$NON-NLS-1$
                         if(updateCount < 0) {
                             break;
                         }

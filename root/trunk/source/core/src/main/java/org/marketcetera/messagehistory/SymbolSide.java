@@ -15,7 +15,7 @@ import org.marketcetera.core.MemoizedHashCombinator;
  * @author gmiller
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SymbolSide extends MemoizedHashCombinator<MSymbol, String> {
 	/**
 	 * Create a new SymbolSide with the specified {@link MSymbol} and

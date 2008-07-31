@@ -10,12 +10,13 @@ import static org.junit.Assert.assertTrue;
 import java.util.Locale;
 
 /* $License$ */
+
 /**
  * Tests that all persist messages are mapped correctly
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessagesTest {
     @Test
     public void messagesMatch() throws Exception {

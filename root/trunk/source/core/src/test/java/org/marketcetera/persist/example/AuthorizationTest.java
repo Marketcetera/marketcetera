@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AuthorizationTest extends
         CorePersistNDTestBase<Authorization,Authorization> {
 

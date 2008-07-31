@@ -13,7 +13,7 @@ import org.marketcetera.core.ClassVersion;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MockMarketDataFeedToken
     extends AbstractMarketDataFeedToken<MockMarketDataFeed, MockMarketDataFeedCredentials>
 {

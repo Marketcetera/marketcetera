@@ -89,8 +89,8 @@ abstract class BidAskEvent
     public String toString()
     {
         StringBuffer output = new StringBuffer();
-        output.append(getType()).append(" for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize());
-        output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(getTimestampAsDate());
+        output.append(getType()).append(" for ").append(getSymbol()).append(": ").append(getPrice()).append(" ").append(getSize()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        output.append(" ").append(getSymbol()).append(" ").append(getExchange()).append(" at ").append(getTimestampAsDate()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
 }

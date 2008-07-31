@@ -48,7 +48,7 @@ public class AbstractMarketDataFeedCredentialsTest
         MockMarketDataFeedCredentials credentials = new MockMarketDataFeedCredentials(null);
         assertEquals(null,
                      credentials.getURL());
-        String url = "http://url-" + System.nanoTime();
+        String url = "http://url-" + System.nanoTime(); //$NON-NLS-1$
         credentials = new MockMarketDataFeedCredentials(url);
         assertEquals(url,
                      credentials.getURL());
@@ -69,10 +69,10 @@ public class AbstractMarketDataFeedCredentialsTest
     public void testEquals()
         throws Exception
     {
-        MockMarketDataFeedCredentials c1 = new MockMarketDataFeedCredentials("url1");
-        MockMarketDataFeedCredentials c2 = new MockMarketDataFeedCredentials("url2");
-        MockMarketDataFeedCredentials c3 = new MockMarketDataFeedCredentials("url1");
-        MockMarketDataFeedCredentials c4 = new MockMarketDataFeedCredentials("url1");
+        MockMarketDataFeedCredentials c1 = new MockMarketDataFeedCredentials("url1"); //$NON-NLS-1$
+        MockMarketDataFeedCredentials c2 = new MockMarketDataFeedCredentials("url2"); //$NON-NLS-1$
+        MockMarketDataFeedCredentials c3 = new MockMarketDataFeedCredentials("url1"); //$NON-NLS-1$
+        MockMarketDataFeedCredentials c4 = new MockMarketDataFeedCredentials("url1"); //$NON-NLS-1$
         MockMarketDataFeedCredentials c5 = new MockMarketDataFeedCredentials(null);
         
         assertFalse(c1.equals(null));

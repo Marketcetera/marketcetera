@@ -11,7 +11,7 @@ import java.util.Date;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class DateTo extends UtcTimeStampField {
     public static final int FIELD = 9884;
 

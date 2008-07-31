@@ -14,7 +14,7 @@ package org.marketcetera.core;
  * or to group associated accounts like long/short accounts.
  * @author gmiller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class AccountID extends InternalID {
     private final String mAccountNickname;
     /**
@@ -25,7 +25,7 @@ public final class AccountID extends InternalID {
     public AccountID(String accountID, String accountNickname) {
         super(accountID);
         if (accountNickname == null)
-            mAccountNickname = "";
+            mAccountNickname = "";  //$NON-NLS-1$
         else
             mAccountNickname = accountNickname;
     }
@@ -35,7 +35,7 @@ public final class AccountID extends InternalID {
      */
     public AccountID(String accountID) {
         super(accountID);
-        mAccountNickname = "";
+        mAccountNickname = "";  //$NON-NLS-1$
     }
 
     /**

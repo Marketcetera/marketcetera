@@ -1,7 +1,7 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.Message;
 
@@ -12,7 +12,7 @@ import quickfix.Message;
  * An example can be a modifier that always adds a {@link quickfix.field.SecurityID} field
  * containing the value of the {@link quickfix.field.Symbol} field.
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface MessageModifier {
 
     /**
@@ -22,7 +22,7 @@ public interface MessageModifier {
      * @param message the message to be modified
      * @param augmentor FIX-version specific augmentor to apply to this message
      * @return true if the modifier has modified the message, false otherwise
-     * @throws MarketceteraException
+     * @throws CoreException
      */
-    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws MarketceteraException;
+    public boolean modifyMessage(Message message, FIXMessageAugmentor augmentor) throws CoreException;
 }

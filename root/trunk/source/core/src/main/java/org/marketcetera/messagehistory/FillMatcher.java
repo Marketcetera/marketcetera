@@ -13,7 +13,7 @@ import quickfix.field.LastShares;
 import quickfix.field.OrdStatus;
 import ca.odell.glazedlists.matchers.Matcher;
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class FillMatcher implements Matcher<MessageHolder> {
 	public boolean matches(MessageHolder holder) {
 		if (holder instanceof IncomingMessageHolder) {

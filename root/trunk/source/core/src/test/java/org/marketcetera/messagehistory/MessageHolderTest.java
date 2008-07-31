@@ -19,21 +19,21 @@ public class MessageHolderTest extends TestCase
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	public void testIncomingMessageHolder()
 	{
-		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd");
+		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		IncomingMessageHolder holder = new IncomingMessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}
 
 	public void testOutgoingMessageHolder()
 	{
-		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd");
+		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		OutgoingMessageHolder holder = new OutgoingMessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}
 
 	public void testMessageHolder()
 	{
-		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd");
+		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		MessageHolder holder = new MessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}

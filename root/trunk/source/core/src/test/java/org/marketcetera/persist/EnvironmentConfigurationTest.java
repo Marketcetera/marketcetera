@@ -28,28 +28,28 @@ import java.io.InputStream;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class EnvironmentConfigurationTest extends PersistTestBase {
     @Test
     public void hibernate() throws Exception {
         //Fetch the hibernate version number from the jar's manifest
-        Enumeration<URL> res = ClassLoader.getSystemResources("META-INF/MANIFEST.MF");
+        Enumeration<URL> res = ClassLoader.getSystemResources("META-INF/MANIFEST.MF"); //$NON-NLS-1$
         boolean foundCore = false;
         boolean foundEntityMgr = false;
         while(res.hasMoreElements()) {
             URL url = res.nextElement();
             SLF4JLoggerProxy.debug(this,url.toString());
-            if(url.getPath().indexOf("/hibernate/hibernate/") >= 0) {
-                verifyPropertyValue(url,"Hibernate-Version","3.2.6.ga");
+            if(url.getPath().indexOf("/hibernate/hibernate/") >= 0) { //$NON-NLS-1$
+                verifyPropertyValue(url,"Hibernate-Version","3.2.6.ga"); //$NON-NLS-1$ //$NON-NLS-2$
                 foundCore = true;
             }
-            if(url.getPath().indexOf("/hibernate-entitymanager/") >= 0) {
-                verifyPropertyValue(url,"Implementation-Version","3.3.2.GA");
+            if(url.getPath().indexOf("/hibernate-entitymanager/") >= 0) { //$NON-NLS-1$
+                verifyPropertyValue(url,"Implementation-Version","3.3.2.GA"); //$NON-NLS-1$ //$NON-NLS-2$
                 foundEntityMgr = true;
             }
         }
-        assertTrue("Hibernate core library not found",foundCore);
-        assertTrue("Hibernate entity manager library not found", foundEntityMgr);
+        assertTrue("Hibernate core library not found",foundCore); //$NON-NLS-1$
+        assertTrue("Hibernate entity manager library not found", foundEntityMgr); //$NON-NLS-1$
     }
 
     /**
@@ -63,21 +63,21 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
         DataTypes dt = new DataTypes();
         final String version = dt.fetchDBVersion();
         SLF4JLoggerProxy.debug(this,version);
-        assertTrue("Unexpected MySQL version: "+version,
-                version.indexOf("5.0.51") >= 0);
-        assertEquals("Unexpected database charset","utf8",dt.fetchDBCharset());
-        assertEquals("Unexpected connection charset","utf8",dt.fetchConnCharset());
-        assertEquals("Unexpected client charset","utf8",dt.fetchClientCharset());
-        assertEquals("Unexpected database collation","utf8_general_ci",
+        assertTrue("Unexpected MySQL version: "+version, //$NON-NLS-1$
+                version.indexOf("5.0.5") >= 0); //$NON-NLS-1$
+        assertEquals("Unexpected database charset","utf8",dt.fetchDBCharset()); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("Unexpected connection charset","utf8",dt.fetchConnCharset()); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("Unexpected client charset","utf8",dt.fetchClientCharset()); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("Unexpected database collation","utf8_general_ci", //$NON-NLS-1$ //$NON-NLS-2$
                 dt.fetchDBCollation());
-        assertEquals("Unexpected connection collation","utf8_general_ci",
+        assertEquals("Unexpected connection collation","utf8_general_ci", //$NON-NLS-1$ //$NON-NLS-2$
                 dt.fetchDBConnCollation());
-        assertEquals("Unexpected connection timezone","+00:00",dt.fetchDBConnTz());
-        assertEquals("Unexpected locale","en_US",dt.fetchDBLocale());
+        assertEquals("Unexpected connection timezone","+00:00",dt.fetchDBConnTz()); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("Unexpected locale","en_US",dt.fetchDBLocale()); //$NON-NLS-1$ //$NON-NLS-2$
     }
     @BeforeClass
     public static void setup() throws Exception {
-        springSetup(new String[]{"persist.xml"});
+        springSetup(new String[]{"persist.xml"}); //$NON-NLS-1$
     }
 
     /**
@@ -97,7 +97,7 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
         InputStream inStream = url.openStream();
         try {
             p.load(inStream);
-            assertEquals("Incorrect library version number in library " + url,
+            assertEquals("Incorrect library version number in library " + url, //$NON-NLS-1$
                     propertyValue,
                     p.getProperty(propertyName));
         } finally {

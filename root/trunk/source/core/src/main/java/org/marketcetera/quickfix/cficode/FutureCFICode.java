@@ -3,7 +3,7 @@ package org.marketcetera.quickfix.cficode;
 public class FutureCFICode extends CFICode {
 	
 	public FutureCFICode() {
-		super(CATEGORY_FUTURE+"XXXXX");
+		super(CATEGORY_FUTURE+"XXXXX"); //$NON-NLS-1$
 	}
 
 	public FutureCFICode(CharSequence codes) {

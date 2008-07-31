@@ -9,7 +9,7 @@ import org.marketcetera.core.ClassVersion;
  * @see javax.persistence.EntityNotFoundException
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class EntityNotFoundException extends PersistenceException {
     private static final long serialVersionUID = -3310994307054230400L;
 

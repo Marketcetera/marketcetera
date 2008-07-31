@@ -15,7 +15,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiAuthorizationQuery extends MultiNDQuery {
     private static final long serialVersionUID = -1359475970939490204L;
 

@@ -7,7 +7,7 @@ import junit.framework.TestCase;
  *
  * @author gmiller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class AccountIDTest extends TestCase {
 
     public AccountIDTest(String testName) {
@@ -22,10 +22,10 @@ public class AccountIDTest extends TestCase {
      * Test of {@link AccountID#getAccountNickname} method
      */
     public void testEquals() {
-        AccountID id1 = new AccountID("asdf");
-        AccountID id2 = new AccountID("asdf", "somenick");
-        AccountID id3 = new AccountID("qwer");
-        String stringID = "asdf";
+        AccountID id1 = new AccountID("asdf"); //$NON-NLS-1$
+        AccountID id2 = new AccountID("asdf", "somenick"); //$NON-NLS-1$ //$NON-NLS-2$
+        AccountID id3 = new AccountID("qwer"); //$NON-NLS-1$
+        String stringID = "asdf"; //$NON-NLS-1$
 
         assertTrue(id1.equals(id2));
         assertTrue(id2.equals(id1));

@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 
 import quickfix.Message;
 
@@ -18,18 +18,18 @@ public interface IMessageTranslator<T>
      * @param inMessage a <code>Message</code> value
      * @return a <code>T</code> value
      * @throws IllegalArgumentException if the message type is not handled by the translater
-     * @throws MarketceteraException if an error occurs during otherwise valid message translation 
+     * @throws CoreException if an error occurs during otherwise valid message translation 
      */
     public T translate(Message inMessage)
-        throws MarketceteraException;
+        throws CoreException;
     
     /**
      * Translate from an external data type to <code>FIX</code> format.
      *
      * @param inData an <code>T</code> value
      * @return a <code>Message</code> value
-     * @throws MarketceteraException if the message cannot be translated
+     * @throws CoreException if the message cannot be translated
      */
     public Message asMessage(T inData)
-        throws MarketceteraException;
+        throws CoreException;
 }

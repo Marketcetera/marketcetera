@@ -70,7 +70,7 @@ public class MarketDataFeedTestSuite
     public static Message generateFIXMessage() 
         throws FeedException
     {
-        List<MSymbol> symbols = Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT"), new MSymbol("YGZ9") });
+        List<MSymbol> symbols = Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT"), new MSymbol("YGZ9") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return generateFIXMessage(symbols);
     }    
 

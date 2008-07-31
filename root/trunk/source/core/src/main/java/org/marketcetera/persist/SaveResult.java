@@ -29,7 +29,7 @@ import java.util.Date;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SaveResult implements Serializable {
     private static final long serialVersionUID = 2308399196969481872L;
 
@@ -74,10 +74,10 @@ public class SaveResult implements Serializable {
     }
 
     public String toString() {
-        return "SaveResult{" +
-                "id=" + id +
-                ", updateCount=" + updateCount +
-                ", timestamp=" + timestamp +
+        return "SaveResult{" +  //$NON-NLS-1$
+                "id=" + id +  //$NON-NLS-1$
+                ", updateCount=" + updateCount +  //$NON-NLS-1$
+                ", timestamp=" + timestamp +  //$NON-NLS-1$
                 '}';
     }
 

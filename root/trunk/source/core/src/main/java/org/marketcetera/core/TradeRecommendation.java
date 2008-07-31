@@ -35,7 +35,7 @@ public class TradeRecommendation extends OutgoingMessageHolder {
 	
 	@Override
 	public String toString() {
-		return "Trade: " + getMessage();
+		return "Trade: " + getMessage(); //$NON-NLS-1$
 	}
 	
 	private PropertyChangeSupport changeSupport = new PropertyChangeSupport(this);

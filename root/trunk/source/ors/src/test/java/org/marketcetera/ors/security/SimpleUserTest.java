@@ -25,7 +25,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     /**
      * Validates the update behavior of name and password
@@ -114,7 +114,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
     private char[] doValidateChangePassTests(SimpleUser u) throws ValidationException {
         //an empty password value is invalid no matter what
         assertPasswordValidateFailure(u, null, EMPTY_PASSWORD);
-        assertPasswordValidateFailure(u, "".toCharArray(), EMPTY_PASSWORD);
+        assertPasswordValidateFailure(u, "".toCharArray(), EMPTY_PASSWORD); //$NON-NLS-1$
         u.setName(randomString());
         final String pass = randomString();
         //cannot validate or change password when its not set.
@@ -132,7 +132,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         //now try changing the password supplying an empty new password
         assertChangePasswordFailure(u, pass.toCharArray(), null,
                 EMPTY_PASSWORD);
-        assertChangePasswordFailure(u, pass.toCharArray(), "".toCharArray(),
+        assertChangePasswordFailure(u, pass.toCharArray(), "".toCharArray(), //$NON-NLS-1$
                 EMPTY_PASSWORD);
         //verify that change password succeeds with proper old/new passwords
         final char[] newPass = randomString().toCharArray();
@@ -147,7 +147,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
                                                       I18NMessage msg) {
         try {
             u.validatePassword(password);
-            fail("Password validation should fail");
+            fail("Password validation should fail"); //$NON-NLS-1$
         } catch (ValidationException e) {
             assertEquals(msg,e.getI18NBoundMessage());
         }
@@ -158,7 +158,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
                                                     I18NMessage msg) {
         try {
             u.changePassword(oldPassword, newPassword);
-            fail("Password validation should fail");
+            fail("Password validation should fail"); //$NON-NLS-1$
         } catch (ValidationException e) {
             assertEquals(msg,e.getI18NBoundMessage());
         }
@@ -169,7 +169,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
             throws Exception {
         try {
             u.validate();
-            fail("Validation should fail");
+            fail("Validation should fail"); //$NON-NLS-1$
         } catch(ValidationException ex) {
             assertEquals(expectedMsg,
                     ex.getI18NBoundMessage().getMessage());
@@ -178,7 +178,7 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         }
         try {
             u.save();
-            fail("Save should fail");
+            fail("Save should fail"); //$NON-NLS-1$
         } catch(ValidationException ex) {
             assertEquals(expectedMsg,
                     ex.getI18NBoundMessage().getMessage());
@@ -257,8 +257,8 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
 
     @BeforeClass
     public static void setup() throws Exception {
-        springSetup(new String[]{"ors_initdb_vendor.xml", "ors_orm.xml",
-                "ors_db.xml"}, new FileSystemXmlApplicationContext(
+        springSetup(new String[]{"ors_initdb_vendor.xml", "ors_orm.xml", //$NON-NLS-1$ //$NON-NLS-2$
+                "ors_db.xml"}, new FileSystemXmlApplicationContext( //$NON-NLS-1$
                         OrderRoutingSystem.CFG_BASE_FILE_NAME));
     }
 }

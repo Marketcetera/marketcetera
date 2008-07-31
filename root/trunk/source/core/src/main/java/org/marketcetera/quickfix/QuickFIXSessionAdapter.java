@@ -10,7 +10,7 @@ import quickfix.*;
  * @author gmiller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface QuickFIXSessionAdapter
 {
 

@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 
 import quickfix.Message;
 
@@ -17,7 +17,7 @@ import quickfix.Message;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MockEventTranslator
         extends AbstractEventTranslator
 {
@@ -38,10 +38,10 @@ public class MockEventTranslator
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<EventBase> translate(Object inData)
-            throws MarketceteraException
+            throws CoreException
     {
         if(getTranslateToEventsThrows()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(getTranslateToEventsReturnsNull()) {
             return null;
@@ -66,7 +66,7 @@ public class MockEventTranslator
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
     public String translate(EventBase inEvent)
-            throws MarketceteraException
+            throws CoreException
     {
         return inEvent.toString();
     }

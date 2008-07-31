@@ -12,7 +12,7 @@ import org.marketcetera.core.ClassVersion;
  * @see javax.persistence.NonUniqueResultException
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class NonUniqueResultException extends PersistenceException {
     private static final long serialVersionUID = 5796642055913880108L;
 

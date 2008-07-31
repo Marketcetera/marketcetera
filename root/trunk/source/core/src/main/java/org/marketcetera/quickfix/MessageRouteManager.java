@@ -1,8 +1,7 @@
 package org.marketcetera.quickfix;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -15,13 +14,13 @@ import java.util.Map;
  * $Id$
  * @author gmiller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageRouteManager implements MessageModifier {
 
 
-    public static final String FIELD_57_METHOD = "field:57";
-    public static final String FIELD_100_METHOD = "field:100";
-    public static final String FIELD_128_METHOD = "field:128";
+    public static final String FIELD_57_METHOD = "field:57"; //$NON-NLS-1$
+    public static final String FIELD_100_METHOD = "field:100"; //$NON-NLS-1$
+    public static final String FIELD_128_METHOD = "field:128"; //$NON-NLS-1$
 
     private Map<String, String> mRoutes;
     private String routeMethod;
@@ -41,7 +40,7 @@ public class MessageRouteManager implements MessageModifier {
 
     public void addOneRoute(String key, String route)
     {
-        if(route != null && !"".equals(route)) {
+        if(route != null && !"".equals(route)) { //$NON-NLS-1$
             mRoutes.put(key, route);
         }
     }
@@ -52,7 +51,7 @@ public class MessageRouteManager implements MessageModifier {
         routeMethod = inMethod;
         if (routeMethod != null &&
             (!(FIELD_57_METHOD.equals(routeMethod) || FIELD_100_METHOD.equals(routeMethod) || FIELD_128_METHOD.equals(routeMethod)))) {
-                throw new IllegalArgumentException(MessageKey.ERROR_UNRECOGNIZED_ROUTE.getLocalizedMessage(routeMethod));
+                throw new IllegalArgumentException(Messages.ERROR_UNRECOGNIZED_ROUTE.getText(routeMethod));
         }
     }
 
@@ -67,7 +66,7 @@ public class MessageRouteManager implements MessageModifier {
 
     protected Map<String,String> getRoutesMap() { return mRoutes; }
 
-    public boolean modifyMessage(Message anOrder, FIXMessageAugmentor augmentor) throws MarketceteraException {
+    public boolean modifyMessage(Message anOrder, FIXMessageAugmentor augmentor) throws CoreException {
         try {
             boolean isModified = false;
 
@@ -124,7 +123,7 @@ public class MessageRouteManager implements MessageModifier {
         } catch(FieldNotFound fnfEx) {
             throw MarketceteraFIXException.createFieldNotFoundException(fnfEx, anOrder);
         } catch (Exception ex) {
-            throw new MarketceteraException(ex);
+            throw new CoreException(ex);
         }
     }
 }

@@ -18,7 +18,7 @@ import quickfix.field.Password;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSAdminTest extends FIXVersionedTestCase {
     public ORSAdminTest(String inName, FIXVersion version) {
         super(inName, version);
@@ -31,11 +31,11 @@ public class ORSAdminTest extends FIXVersionedTestCase {
     public void testSendPasswordReset() throws Exception {
         NullQuickFIXSender qfSender = new NullQuickFIXSender();
         ORSAdmin admin = new ORSAdmin(qfSender, msgFactory, new InMemoryIDFactory(100));
-        admin.sendPasswordReset("sender", "target", "old", "new");
+        admin.sendPasswordReset("sender", "target", "old", "new"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         assertEquals(1, qfSender.getCapturedMessages().size());
         Message msg = qfSender.getCapturedMessages().get(0);
         assertEquals(MsgType.USER_REQUEST, msg.getHeader().getString(MsgType.FIELD));
-        assertEquals("old", msg.getString(Password.FIELD));
-        assertEquals("new", msg.getString(NewPassword.FIELD));
+        assertEquals("old", msg.getString(Password.FIELD)); //$NON-NLS-1$
+        assertEquals("new", msg.getString(NewPassword.FIELD)); //$NON-NLS-1$
     }
 }

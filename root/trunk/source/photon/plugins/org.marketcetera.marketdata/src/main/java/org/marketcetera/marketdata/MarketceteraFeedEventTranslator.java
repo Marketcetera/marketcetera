@@ -5,13 +5,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.IEventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.FieldNotFound;
 import quickfix.Group;
@@ -50,10 +51,11 @@ public class MarketceteraFeedEventTranslator
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
     public List<EventBase> translate(Object inData) 
-        throws MarketceteraException
+        throws CoreException
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
-            throw new UnsupportedEventException(UNKNOWN_EVENT_TYPE.getText(inData.getClass().toString()));
+            throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_EVENT_TYPE,
+                                                                       inData));
         }
         MarketDataSnapshotFullRefresh refresh = (MarketDataSnapshotFullRefresh)inData;
         List<EventBase> events = new ArrayList<EventBase>();
@@ -106,7 +108,8 @@ public class MarketceteraFeedEventTranslator
                         events.add(trade);
                         break;
                     default:
-                        throw new UnsupportedEventException(UNKNOWN_MESSAGE_ENTRY_TYPE.getText(type));
+                        throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_MESSAGE_ENTRY_TYPE,
+                                                                                   type));
                 };
             }
         } catch (FieldNotFound e) {
@@ -118,7 +121,7 @@ public class MarketceteraFeedEventTranslator
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
     public Object translate(EventBase inEvent) 
-        throws MarketceteraException
+        throws CoreException
     {
         throw new UnsupportedOperationException();
     }

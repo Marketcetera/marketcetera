@@ -2,8 +2,8 @@ package org.marketcetera.core.resourcepool;
 
 import java.util.Iterator;
 
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.Messages;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /**
  * Maintains a pool of resources.
@@ -78,14 +78,14 @@ public abstract class ResourcePool
         try {
             resource = requestResource(inData);
         } catch (Throwable t) {
-            throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE,
-                                            t);
+            throw new ResourcePoolException(t,
+                                            Messages.ERROR_RESOURCE_POOL_COULD_NOT_ALLOCATE_NEW_RESOURCE);
         }
         try {
             return inBlock.execute(resource);
         } catch (Throwable t) {
-            throw new ResourcePoolException(MessageKey.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR,
-                                            t);
+            throw new ResourcePoolException(t,
+                                            Messages.ERROR_RESOURCE_POOL_EXECUTABLE_BLOCK_ERROR);
         } finally {
             try {
                 returnResource(resource);
@@ -117,19 +117,13 @@ public abstract class ResourcePool
      */
     public void shutdown()
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Resource pool " + this + " shutdown request",
-                                this);
-        }
+        SLF4JLoggerProxy.debug(this, "Resource pool {} shutdown request", this); //$NON-NLS-1$
         // acquire a lock on the pool before proceeding
         synchronized(getPoolLock()) {
             // first, check to see if the pool is in a state such that we
             //  should reject the request to shut down
             if(rejectNewRequests()) {
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Resource pool " + this + " is already shutting down or has shut down",
-                                        this);
-                }
+                SLF4JLoggerProxy.debug(this, "Resource pool {} is already shutting down or has shut down", this); //$NON-NLS-1$
                 return;
             }
             // the pool is ready to be shut down
@@ -142,11 +136,7 @@ public abstract class ResourcePool
                 try {
                     resource.stop();
                 } catch (Throwable t) {
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("Resource error during shutdown: " + resource,
-                                            t,
-                                            this);
-                    }
+                    SLF4JLoggerProxy.debug(this, t, "Resource error during shutdown: {}", resource); //$NON-NLS-1$
                 }
             }
             // TODO - need to tell all resources in the wild to shut down, too
@@ -174,15 +164,12 @@ public abstract class ResourcePool
     protected Resource requestResource(Object inData)
         throws ResourcePoolException
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Requesting resource from " + this + " with supplementary info: " + inData,
-                                this);
-        }
+        SLF4JLoggerProxy.debug(this, "Requesting resource from {} with supplementary info: {}", this, inData); //$NON-NLS-1$
         try {
             // check to see if, for some reason, the pool should reject this request
             // TODO the exception is too specific, there could be other reasons why the pool might shut down
             if(rejectNewRequests()) {
-                throw new ResourcePoolShuttingDownException(MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN);
+                throw new ResourcePoolShuttingDownException(Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN);
             }
             // lock up the resource pool for the attempt to retrieve a resource
             synchronized(getPoolLock()) {
@@ -190,11 +177,7 @@ public abstract class ResourcePool
                 try {
                     resource.allocated();
                 } catch (Throwable t) {
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("Resource " + resource + " threw an exception when allocated, continuing",
-                                            t,
-                                            this);
-                    }
+                    SLF4JLoggerProxy.debug(this, t, "Resource {} threw an exception {} when allocated, continuing", resource); //$NON-NLS-1$
                 }
                 return resource;
             }
@@ -222,14 +205,12 @@ public abstract class ResourcePool
     protected void returnResource(Resource inResource)
         throws ResourcePoolException
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            LoggerAdapter.debug("Resource " + inResource + " being returned to ResourcePool", 
-                                this);
-        }
+        SLF4JLoggerProxy.debug(this, "Resource {} being returned to ResourcePool", inResource); //$NON-NLS-1$
+
         // check to see if the pool is shutting down - if so, don't allow any more
         //  resources to be returned
         if(rejectNewRequests()) {
-            throw new ResourcePoolShuttingDownException(MessageKey.ERROR_RESOURCE_POOL_SHUTTING_DOWN);
+            throw new ResourcePoolShuttingDownException(Messages.ERROR_RESOURCE_POOL_SHUTTING_DOWN);
         }
         
         synchronized(getPoolLock()) {            
@@ -241,39 +222,24 @@ public abstract class ResourcePool
             try {
                 shouldRelease = !inResource.isFunctional();
             } catch (Throwable t) {
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Resource " + inResource + " LOGIN_FAILED when trying to report its state, releasing", 
-                                        t, 
-                                        this);
-                }
+                SLF4JLoggerProxy.debug(this, t, "Resource {} LOGIN_FAILED when trying to report its state, releasing", inResource); //$NON-NLS-1$
                 shouldRelease = true;
             }
             // before returning the resource to the pool, make sure the subclass doesn't mind
             try {
                 verifyResourceReturn(inResource);
             } catch (Throwable t) {
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("The resource pool decided not to allow resource " + inResource + " back in the pool, releasing",
-                                        t,
-                                        this);
-                }
+                SLF4JLoggerProxy.debug(this, t, "The resource pool decided not to allow resource {} back in the pool, releasing", inResource); //$NON-NLS-1$
                 shouldRelease = true;
             }
             // determined if the resource is functional or not, release if necessary
             if(shouldRelease) {
-                if(LoggerAdapter.isDebugEnabled(this)) {
-                    LoggerAdapter.debug("Resource " + inResource + " is non-functional, releasing", 
-                                        this);
-                }
+                SLF4JLoggerProxy.debug(this, "Resource {} is non-functional, releasing", inResource); //$NON-NLS-1$
                 try {
                     releaseResource(inResource);
                     return;
                 } catch (ResourcePoolException e) {
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("Resource " + inResource + " threw an exception while releasing, continuing",
-                                            e,
-                                            this);
-                    }
+                    SLF4JLoggerProxy.debug(this, e, "Resource {} threw an exception while releasing, continuing", inResource); //$NON-NLS-1$
                     return;
                 }
             }
@@ -288,29 +254,20 @@ public abstract class ResourcePool
                 // scenario #2 - the the resource was *not* successfully added back to the pool, should be marked as "released"
                 try {
                     if(poolContains(inResource)) {
-                        if(LoggerAdapter.isDebugEnabled(this)) {
-                            LoggerAdapter.debug("There was a problem adding " + inResource + 
-                                                " back to the pool, but the resource is back in the pool, continuing",
-                                                t,
-                                                this);
-                        }
+                        SLF4JLoggerProxy.debug(this, t, 
+                                               "There was a problem adding {} back to the pool, but the resource is back in the pool, continuing", //$NON-NLS-1$
+                                               inResource);
                         inResource.returned();
                     } else {
-                        if(LoggerAdapter.isDebugEnabled(this)) {
-                            LoggerAdapter.debug("There was a problem adding " + inResource + 
-                                                " back to the pool, and the resource is not back in the pool, releasing the resource and continuing",
-                                                t,
-                                                this);
-                        }
+                        SLF4JLoggerProxy.debug(this, t, 
+                                               "There was a problem adding {} back to the pool, and the resource is not back in the pool, releasing the resource and continuing", //$NON-NLS-1$
+                                               inResource);
                         inResource.released();
                     }
                 } catch (Throwable t1) {
-                    if(LoggerAdapter.isDebugEnabled(this)) {
-                        LoggerAdapter.debug("There was a problem returning or releasing " + inResource + 
-                                            ", continuing",
-                                            t1,
-                                            this);
-                    }
+                    SLF4JLoggerProxy.debug(this, t1, 
+                                           "There was a problem returning or releasing {}, continuing", //$NON-NLS-1$
+                                           inResource);
                 }
             }
         }
@@ -356,10 +313,7 @@ public abstract class ResourcePool
     protected void setStatus(STATUS status)
     {
         synchronized(mStatus) {
-            if(LoggerAdapter.isDebugEnabled(this)) {
-                LoggerAdapter.debug("Resource pool " + this + " status changing to " + status,
-                                    this);
-            }
+            SLF4JLoggerProxy.debug(this, "Resource pool {} status changing to {}", this, status); //$NON-NLS-1$
             
             mStatus = status;
         }
@@ -446,15 +400,12 @@ public abstract class ResourcePool
 
     void dumpResourcePool()
     {
-        if(LoggerAdapter.isDebugEnabled(this)) {
-            synchronized(getPoolLock()) {
-                Iterator iterator = getPoolIterator();
-                LoggerAdapter.debug((iterator.hasNext() ? "Resource pool contains:" : "Resource pool is empty"),
-                                    this);
-                while(iterator.hasNext()) {
-                    LoggerAdapter.debug(iterator.next().toString(),
-                                        this);
-                }
+        synchronized(getPoolLock()) {
+            Iterator<Resource> iterator = getPoolIterator();
+            SLF4JLoggerProxy.debug(this, iterator.hasNext() ? "Resource pool contains:" : "Resource pool is empty"); //$NON-NLS-1$ //$NON-NLS-2$
+
+            while(iterator.hasNext()) {
+                SLF4JLoggerProxy.debug(this, iterator.next().toString());
             }
         }
     }
@@ -488,7 +439,7 @@ public abstract class ResourcePool
         }
         try {
             if(poolContains(inResource)) {
-                throw new DuplicateResourceReturnException(MessageKey.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED);
+                throw new DuplicateResourceReturnException(Messages.ERROR_RESOURCE_POOL_RESOURCE_ALREADY_RETURNED);
             }
         } catch (ResourcePoolException e) {
             throw e;

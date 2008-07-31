@@ -12,7 +12,7 @@ import java.util.Comparator;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class MultiQueryOrderTestHelper<C extends EntityBase,
         S extends SummaryEntityBase> {
     /**
@@ -47,7 +47,7 @@ public abstract class MultiQueryOrderTestHelper<C extends EntityBase,
      */
     protected void setOrderField(C c, int idx) throws Exception {
         if(pDesc.getWriteMethod() == null) {
-            fail("Unwritable property:"+pDesc.getName());
+            fail("Unwritable property:"+pDesc.getName()); //$NON-NLS-1$
         }
         pDesc.getWriteMethod().invoke(c, generateFieldValue(idx));
     }
@@ -67,10 +67,10 @@ public abstract class MultiQueryOrderTestHelper<C extends EntityBase,
      *
      * @throws Exception if there's an error
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     protected int compareOrderField(S summary1, S summary2) throws Exception {
         if(pDesc.getReadMethod() == null) {
-            fail("Unreadable property:"+pDesc.getReadMethod());
+            fail("Unreadable property:"+pDesc.getReadMethod()); //$NON-NLS-1$
         }
         return getComparator().compare(pDesc.getReadMethod().invoke(summary1),
                 pDesc.getReadMethod().invoke(summary2));

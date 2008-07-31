@@ -8,7 +8,7 @@ import java.util.Iterator;
 import org.eclipse.core.databinding.observable.list.IObservableList;
 import org.eclipse.core.databinding.observable.list.WritableList;
 import org.eclipse.core.databinding.observable.value.WritableValue;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.Pair;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.OptionContractData;
@@ -378,7 +378,7 @@ public class OptionOrderTicketModel extends OrderTicketModel {
 	 * Complete this message, by updating the option symbol.
 	 */
 	@Override
-	public void completeMessage() throws MarketceteraException {
+	public void completeMessage() throws CoreException {
 		super.completeMessage();
 		if (currentOptionSymbol.getValue() != null){
 			orderMessage.setField(new Symbol((String) currentOptionSymbol.getValue()));

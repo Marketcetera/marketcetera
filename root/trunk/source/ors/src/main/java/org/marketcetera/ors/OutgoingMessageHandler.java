@@ -2,6 +2,10 @@ package org.marketcetera.ors;
 
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.JmsException;
 import quickfix.*;
@@ -21,7 +25,7 @@ import java.util.LinkedList;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OutgoingMessageHandler {
 
     private MessageModifierManager messageModifierMgr;
@@ -38,7 +42,7 @@ public class OutgoingMessageHandler {
     
     public OutgoingMessageHandler(FIXMessageFactory inFactory, OrderLimits inLimits,
                                   QuickFIXApplication inQFApp, IDFactory inIdFactory)
-            throws ConfigError, FieldConvertError, MarketceteraException {
+            throws ConfigError, FieldConvertError, CoreException {
         setOrderRouteManager(new MessageRouteManager());
         msgFactory = inFactory;
         orderLimits = inLimits;
@@ -48,7 +52,7 @@ public class OutgoingMessageHandler {
         try {
             idFactory.init();
         } catch (Exception ex) {
-            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error initializing the ID factory", ex, this); }
+            SLF4JLoggerProxy.debug(this, ex, "Error initializing the ID factory"); //$NON-NLS-1$
             // ignore the exception - should get the in-memory id factory instead
         }
     }
@@ -68,12 +72,11 @@ public class OutgoingMessageHandler {
      * Runs the incoming orders through message modifiers, and forwards them on to a FIX destination.
      * @param message Incoming message
      * @return ExecutionReport for this message
-     * @throws MarketceteraException
+     * @throws CoreException
      */
-    @SuppressWarnings({"ThrowableInstanceNeverThrown"})
-    public Message handleMessage(Message message) throws MarketceteraException {
+    public Message handleMessage(Message message) throws CoreException {
         if(message == null) {
-            LoggerAdapter.error(ORSMessageKey.ERROR_INCOMING_MSG_NULL.getLocalizedMessage(), this);
+            Messages.ERROR_INCOMING_MSG_NULL.error(this);
             return null;
         }
 
@@ -87,8 +90,8 @@ public class OutgoingMessageHandler {
         }
         
         if(!qfApp.isLoggedOn()) {
-            Message notLoggedOnReject = createRejectionMessage(new MarketceteraException(ORSMessageKey.ERROR_NO_DESTINATION_CONNECTION.getLocalizedMessage()),
-                    message);
+            Message notLoggedOnReject = createRejectionMessage(new CoreException(Messages.ERROR_NO_DESTINATION_CONNECTION),
+                                                               message);
             // explicitly remove the OrdStatus b/c we don't know what it is - we aren't logged on
             notLoggedOnReject.setField(new OrdStatus(OrdStatus.REJECTED));
             return notLoggedOnReject;
@@ -98,12 +101,12 @@ public class OutgoingMessageHandler {
         try {
             String version = message.getHeader().getField(new BeginString()).getValue();
             if(!msgFactory.getBeginString().equals(version)) {
-                return createRejectionMessage(new MarketceteraException(ORSMessageKey.ERROR_MISMATCHED_FIX_VERSION.getLocalizedMessage(
-                                                    msgFactory.getBeginString(), version)), message);
+                return createRejectionMessage(new CoreException(new I18NBoundMessage2P(Messages.ERROR_MISMATCHED_FIX_VERSION, msgFactory.getBeginString(), version)),
+                                              message);
             }
         } catch (FieldNotFound fieldNotFound) {
-            return createRejectionMessage(new MarketceteraException(ORSMessageKey.ERROR_MALFORMED_MESSAGE_NO_FIX_VERSION.getLocalizedMessage()),
-                    message);
+            return createRejectionMessage(new CoreException(Messages.ERROR_MESSAGE_MALFORMED_NO_FIX_VERSION),
+                                          message);
         }
 
         Message returnExecReport = null;
@@ -122,25 +125,25 @@ public class OutgoingMessageHandler {
                 returnExecReport = executionReportFromNewOrder(message);
             }
             sendMessage(message);
-            if(returnExecReport != null && LoggerAdapter.isDebugEnabled(this)) {
-                LoggerAdapter.debug("Sending immediate execReport:  "+returnExecReport, this);
+            if(returnExecReport != null) {
+                SLF4JLoggerProxy.debug(this, "Sending immediate execReport: {}", returnExecReport); //$NON-NLS-1$
             }
         } catch (FieldNotFound fnfEx) {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
             returnExecReport = createRejectionMessage(mfix, message);
         } catch(SessionNotFound snf) {
-            MarketceteraException ex = new MarketceteraException(MessageKey.SESSION_NOT_FOUND.getLocalizedMessage(defaultSessionID), snf);
+            CoreException ex = new CoreException(snf, new I18NBoundMessage1P(org.marketcetera.core.Messages.ERROR_FIX_SESSION_NOT_FOUND, defaultSessionID));
             returnExecReport = createRejectionMessage(ex, message);
         } catch(UnsupportedMessageType umt) {
             try {
                 String msgType = message.getHeader().getString(MsgType.FIELD);
                 returnExecReport = createBusinessMessageReject(msgType,
-                        ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage(
+                        Messages.ERROR_UNSUPPORTED_ORDER_TYPE.getText(
                         FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType)));
             } catch (FieldNotFound fieldNotFound) {
-                returnExecReport = createBusinessMessageReject("UNKNOWN", ORSMessageKey.ERROR_UNSUPPORTED_ORDER_TYPE.getLocalizedMessage("UNKNOWN"));
+                returnExecReport = createBusinessMessageReject("UNKNOWN", Messages.ERROR_UNSUPPORTED_ORDER_TYPE.getText("UNKNOWN")); //$NON-NLS-1$ //$NON-NLS-2$
             }
-        } catch (MarketceteraException e) {
+        } catch (CoreException e) {
         	returnExecReport = createRejectionMessage(e, message);
         } catch(Exception ex) {
         	returnExecReport = createRejectionMessage(ex, message);
@@ -209,9 +212,9 @@ public class OutgoingMessageHandler {
         FIXMessageUtil.fillFieldsFromExistingMessage(rejection,  existingOrder);
         
         
-        String msg = (causeEx.getMessage() == null) ? causeEx.toString() : causeEx.getMessage();
-        LoggerAdapter.error(ORSMessageKey.MESSAGE_EXCEPTION.getLocalizedMessage(msg, existingOrder), this);
-        if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Reason for above rejection: "+msg, causeEx, this); }
+        String msg = (causeEx.getLocalizedMessage() == null) ? causeEx.toString() : causeEx.getLocalizedMessage();
+        Messages.ERROR_MESSAGE_EXCEPTION.error(this, msg, existingOrder);
+        SLF4JLoggerProxy.debug(this, causeEx, "Reason for above rejection: {}", msg); //$NON-NLS-1$
         rejection.setString(Text.FIELD, msg);
         // manually set the ClOrdID since it's not required in the dictionary but is for electronic orders
         try {
@@ -223,7 +226,7 @@ public class OutgoingMessageHandler {
             msgFactory.getMsgAugmentor().executionReportAugment(rejection);
         } catch (FieldNotFound fieldNotFound) {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fieldNotFound);
-            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug(mfix.getLocalizedMessage(), fieldNotFound, this); }
+            SLF4JLoggerProxy.debug(this, mfix, "Could not find field"); //$NON-NLS-1$
             // ignore the exception since we are already sending a reject
         }
         rejection.getHeader().setField(new SendingTime(new Date()));
@@ -307,8 +310,8 @@ public class OutgoingMessageHandler {
         try {
             return new ExecID(idFactory.getNext());
         } catch(NoMoreIDsException ex) {
-            LoggerAdapter.error(ORSMessageKey.ERROR_GENERATING_EXEC_ID.getLocalizedMessage(ex.getMessage()), this);
-            return new ExecID("ZZ-INTERNAL");
+            Messages.ERROR_GENERATING_EXEC_ID.error(this, ex.getMessage());
+            return new ExecID("ZZ-INTERNAL"); //$NON-NLS-1$
         }
     }
 

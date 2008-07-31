@@ -1,7 +1,7 @@
 package org.marketcetera.event;
 
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * An event was received from a data feed but could not be translated.
@@ -10,7 +10,7 @@ import org.marketcetera.core.MessageKey;
  * @version $Id$
  */
 public class UnsupportedEventException
-        extends MarketceteraException
+        extends CoreException
 {
 
     private static final long serialVersionUID = -5589876622054757393L;
@@ -20,7 +20,7 @@ public class UnsupportedEventException
      *
      * @param inMessage
      */
-    public UnsupportedEventException(String inMessage)
+    public UnsupportedEventException(I18NBoundMessage inMessage)
     {
         super(inMessage);
     }
@@ -38,36 +38,13 @@ public class UnsupportedEventException
     /**
      * Create a new UnsupportedEventException instance.
      *
-     * @param inKey
-     */
-    public UnsupportedEventException(MessageKey inKey)
-    {
-        super(inKey);
-    }
-
-    /**
-     * Create a new UnsupportedEventException instance.
-     *
-     * @param inMsg
      * @param inNested
+     * @param inMessage
      */
-    public UnsupportedEventException(String inMsg,
-                                     Throwable inNested)
+    public UnsupportedEventException(Throwable inNested,
+                                     I18NBoundMessage inMessage)
     {
-        super(inMsg,
-              inNested);
-    }
-
-    /**
-     * Create a new UnsupportedEventException instance.
-     *
-     * @param inKey
-     * @param inNested
-     */
-    public UnsupportedEventException(MessageKey inKey,
-                                     Throwable inNested)
-    {
-        super(inKey,
-              inNested);
+        super(inNested,
+              inMessage);
     }
 }

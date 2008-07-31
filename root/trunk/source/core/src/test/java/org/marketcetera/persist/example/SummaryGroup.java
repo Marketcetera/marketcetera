@@ -9,6 +9,6 @@ import org.marketcetera.persist.SummaryNDEntityBase;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface SummaryGroup extends SummaryNDEntityBase {
 }

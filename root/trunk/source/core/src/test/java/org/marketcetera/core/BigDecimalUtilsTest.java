@@ -10,7 +10,7 @@ import java.math.RoundingMode;
 /**
  * @author Graham Miller
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BigDecimalUtilsTest extends TestCase {
 
     /*
@@ -74,25 +74,25 @@ public class BigDecimalUtilsTest extends TestCase {
         // Round is used to set the total number of significant digits.  So even though we
         // use RoundingMode.HALF_UP on 10.5, its rounding to 1 significant digit, so it
         // rounds to 10.
-        assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").round(new MathContext(1, RoundingMode.HALF_UP)).toPlainString());
+        assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").round(new MathContext(1, RoundingMode.HALF_UP)).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
 
         // Set scale sets the scale (the number of digits to the right of the
         // decimal place (this is often what we mean by "round").
-        assertEquals(new BigDecimal("11").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_UP).toPlainString());
-        assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_DOWN).toPlainString());
+        assertEquals(new BigDecimal("11").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_UP).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals(new BigDecimal("10").toPlainString(), new BigDecimal("10.5").setScale(0, RoundingMode.HALF_DOWN).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
 
-        assertEquals("10.3000", new BigDecimal("10.3000").toPlainString());
-        assertEquals("10.3000", new BigDecimal("10.3000").toString());
+        assertEquals("10.3000", new BigDecimal("10.3000").toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals("10.3000", new BigDecimal("10.3000").toString()); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public void testTrim() throws Exception {
-		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.5")).toPlainString());
-		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1.0")).toPlainString());
-		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1")).toPlainString());
-		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.50")).toPlainString());
-		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("0")).toPlainString());
-		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("-0")).toPlainString());
-		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("0.0")).toPlainString());
+		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.5")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1.0")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("1", BigDecimalUtils.trim(new BigDecimal("1")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("1.5", BigDecimalUtils.trim(new BigDecimal("1.50")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("0")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("-0")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+		assertEquals("0", BigDecimalUtils.trim(new BigDecimal("0.0")).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
 
     }
     
@@ -102,15 +102,15 @@ public class BigDecimalUtilsTest extends TestCase {
      *
      */
     public void testToPlainStringAssumptions() {
-    	assertEquals("23.45", new BigDecimal("23.45").toPlainString());
-    	assertEquals("23.40", new BigDecimal("23.40").toPlainString());
-    	assertEquals("23.450", new BigDecimal("23.45").setScale(3).toPlainString());
-    	assertEquals("23.400", new BigDecimal("23.40").setScale(3).toPlainString());
-    	assertEquals("23.4", new BigDecimal("23.40").setScale(1).toPlainString());
+    	assertEquals("23.45", new BigDecimal("23.45").toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+    	assertEquals("23.40", new BigDecimal("23.40").toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+    	assertEquals("23.450", new BigDecimal("23.45").setScale(3).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+    	assertEquals("23.400", new BigDecimal("23.40").setScale(3).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
+    	assertEquals("23.4", new BigDecimal("23.40").setScale(1).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
     	new ExpectedTestFailure(ArithmeticException.class){
 			@Override
 			protected void execute() throws Throwable {
-		    	assertEquals("23.5", new BigDecimal("23.46").setScale(1).toPlainString());
+		    	assertEquals("23.5", new BigDecimal("23.46").setScale(1).toPlainString()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
     	}.run();
     	

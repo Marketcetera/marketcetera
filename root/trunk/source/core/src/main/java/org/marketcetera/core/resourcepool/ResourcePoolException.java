@@ -1,23 +1,16 @@
 package org.marketcetera.core.resourcepool;
 
-import org.marketcetera.core.MarketceteraException;
-import org.marketcetera.core.MessageKey;
+import org.marketcetera.util.except.I18NException;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 public class ResourcePoolException
-    extends MarketceteraException
+    extends I18NException
 {
     private static final long serialVersionUID = 2700304790645953795L;
 
-    public ResourcePoolException(String message)
+    public ResourcePoolException(I18NBoundMessage message)
     {
         super(message);
-    }
-
-    public ResourcePoolException(String msg, 
-                                 Throwable nested)
-    {
-        super(msg, 
-              nested);
     }
 
     public ResourcePoolException(Throwable nested)
@@ -25,15 +18,10 @@ public class ResourcePoolException
         super(nested);
     }
 
-    public ResourcePoolException(MessageKey inKey)
+    public ResourcePoolException(Throwable nested,
+                                 I18NBoundMessage message)
     {
-        super(inKey);
-    }
-
-    public ResourcePoolException(MessageKey inKey, 
-                                 Throwable nested)
-    {
-        super(inKey, 
-              nested);
+        super(nested,
+              message);
     }
 }

@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 import java.net.URISyntaxException;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 
 public class MarketceteraFeedFactory 
@@ -20,7 +20,7 @@ public class MarketceteraFeedFactory
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()
      */
     public MarketceteraFeed getMarketDataFeed() 
-        throws MarketceteraException
+        throws CoreException
     {
         return getMarketDataFeed(null);
     }
@@ -28,7 +28,7 @@ public class MarketceteraFeedFactory
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     public MarketceteraFeed getMarketDataFeed(MarketceteraFeedCredentials inCredentials) 
-        throws MarketceteraException
+        throws CoreException
     {
         try {
             return MarketceteraFeed.getInstance(getProviderName(),

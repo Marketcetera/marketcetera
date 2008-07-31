@@ -12,7 +12,7 @@ import java.util.Set;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class UserGroupTest extends ManyToManyTestBase<SummaryUser,User,
         SummaryGroup,Group> {
     /* *Override necessary methods* */

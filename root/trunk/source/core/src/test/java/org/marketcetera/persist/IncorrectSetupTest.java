@@ -14,13 +14,13 @@ import org.junit.BeforeClass;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class IncorrectSetupTest extends PersistTestBase {
     @Test
     public void remoteServicesNotConfigured() throws Exception {
         try {
             EntityRemoteServices.getInstance();
-            fail("instance should not be initialized");
+            fail("instance should not be initialized"); //$NON-NLS-1$
         } catch(PersistSetupException expected) {
             assertEquals(ERS_NOT_INITIALIZED,expected.getI18NBoundMessage());
         }
@@ -29,14 +29,14 @@ public class IncorrectSetupTest extends PersistTestBase {
     public void jpaVendorNotConfigured() throws Exception {
         try {
             VendorUtils.initBlob();
-            fail("instance should not be initialized");
+            fail("instance should not be initialized"); //$NON-NLS-1$
         } catch(PersistSetupException expected) {
             assertEquals(JPA_VENDOR_NOT_INITIALIZED,
                     expected.getI18NBoundMessage());
         }
         try {
             VendorUtils.initClob();
-            fail("instance should not be initialized");
+            fail("instance should not be initialized"); //$NON-NLS-1$
         } catch(PersistSetupException expected) {
             assertEquals(JPA_VENDOR_NOT_INITIALIZED,
                     expected.getI18NBoundMessage());

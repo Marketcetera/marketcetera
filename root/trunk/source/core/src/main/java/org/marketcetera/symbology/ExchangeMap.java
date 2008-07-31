@@ -9,7 +9,7 @@ import java.util.HashMap;
  * @author Graham Miller
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ExchangeMap {
     private SymbolScheme scheme;
     private Map<String, Exchange> schemeToStandardTranslation;

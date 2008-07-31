@@ -12,7 +12,7 @@ import org.marketcetera.core.publisher.IPublisher;
  * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
         extends IPublisher
 {

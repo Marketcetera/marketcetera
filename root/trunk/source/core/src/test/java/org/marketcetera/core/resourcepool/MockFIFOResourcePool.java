@@ -20,7 +20,7 @@ class MockFIFOResourcePool
             throws ResourcePoolException
     {
         if(getThrowDuringCreateResource()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return new MockResource();
     }
@@ -31,7 +31,7 @@ class MockFIFOResourcePool
     protected void addResourceToPool(Resource inResource)
     {
         if(getThrowDuringAddResource()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         super.addResourceToPool(inResource);
     }    
@@ -49,7 +49,7 @@ class MockFIFOResourcePool
             }
         }
         if(getThrowDuringAllocateResource()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return super.allocateNextResource(inData);
     }
@@ -136,7 +136,7 @@ class MockFIFOResourcePool
     protected boolean poolContains(Resource inResource)
     {
         if(getThrowDuringPoolContains()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return super.poolContains(inResource);
     }

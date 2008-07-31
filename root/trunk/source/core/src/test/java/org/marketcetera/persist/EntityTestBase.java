@@ -18,7 +18,7 @@ import java.util.LinkedList;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class EntityTestBase<E extends EntityBase,
         S extends SummaryEntityBase>
         extends PersistTestBase {
@@ -97,13 +97,13 @@ public abstract class EntityTestBase<E extends EntityBase,
         //Verify that it doesn't exist
         try {
             fetchByID(fetched.getId());
-            fail("Entity should've been deleted:"+copy);
+            fail("Entity should've been deleted:"+copy); //$NON-NLS-1$
         }catch(NoResultException expected) {
         }
         //Verify summary view as well
         try {
             fetchSummaryByID(fetched.getId());
-            fail("Entity should've been deleted:"+copy);
+            fail("Entity should've been deleted:"+copy); //$NON-NLS-1$
         }catch(NoResultException expected) {
         }
         //find out what happens if we try to save it
@@ -184,7 +184,7 @@ public abstract class EntityTestBase<E extends EntityBase,
         //should fail as its a dirty instance
         try {
             save(fetched);
-            fail("This test should've failed");
+            fail("This test should've failed"); //$NON-NLS-1$
         } catch (OptimisticLockException expected) {
         }
         save(e);
@@ -702,7 +702,7 @@ public abstract class EntityTestBase<E extends EntityBase,
                                    I18NBoundMessage message) {
         try {
             save(e);
-            fail("Save is expected to fail");
+            fail("Save is expected to fail"); //$NON-NLS-1$
         } catch(Exception ex) {
             assertTrue(ex.toString(), clazz.isInstance(ex));
             PersistenceException pe = (PersistenceException) ex;

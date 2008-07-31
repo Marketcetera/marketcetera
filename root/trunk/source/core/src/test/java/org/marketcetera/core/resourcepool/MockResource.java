@@ -30,8 +30,8 @@ public class MockResource
      */
     public MockResource()
     {
-        this("user_" + System.nanoTime(),
-             "password_" + System.nanoTime());
+        this("user_" + System.nanoTime(), //$NON-NLS-1$
+             "password_" + System.nanoTime()); //$NON-NLS-1$
     }
     
     public MockResource(String inUser,
@@ -76,7 +76,7 @@ public class MockResource
     public boolean isFunctional()
     {
         if(getIsFunctionalException()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         return !getState().equals(STATE.DAMAGED);
     }
@@ -86,7 +86,7 @@ public class MockResource
     {
         setState(STATE.RELEASED);
         if(getReleaseException()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
     }
 
@@ -228,7 +228,7 @@ public class MockResource
     
     public String toString()
     {
-        return "r" + getID();
+        return "r" + getID(); //$NON-NLS-1$
     }
 
     /**
@@ -307,7 +307,7 @@ public class MockResource
     {
         setState(STATE.SHUTDOWN);
         if(getThrowDuringStop()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
     }
 

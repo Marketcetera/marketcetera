@@ -5,7 +5,7 @@ package org.marketcetera.core;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class PanicError extends Error
 {
     public PanicError(String message)

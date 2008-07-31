@@ -13,7 +13,7 @@ import java.text.Collator;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultiQueryOrderStringTestHelper<C extends EntityBase,
         S extends SummaryEntityBase> extends
         MultiQueryOrderTestHelper<C, S> {
@@ -46,7 +46,7 @@ public class MultiQueryOrderStringTestHelper<C extends EntityBase,
 
     protected Object generateFieldValue(int idx) {
         if (idx > getNumInstances()) {
-            throw new IllegalArgumentException(idx + ">" + getNumInstances());
+            throw new IllegalArgumentException(idx + ">" + getNumInstances()); //$NON-NLS-1$
         }
         return STRINGS[idx / STRINGS.length] +
                 STRINGS[idx % STRINGS.length] +
@@ -54,6 +54,6 @@ public class MultiQueryOrderStringTestHelper<C extends EntityBase,
     }
 
     private static final String[] STRINGS = {
-            "2", "A", "B", "1", "\u00E1", "\u00C4",  "b", "\u00E4", "a"
+            "2", "A", "B", "1", "\u00E1", "\u00C4",  "b", "\u00E4", "a" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
     };
 }

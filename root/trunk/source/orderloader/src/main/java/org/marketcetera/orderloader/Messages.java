@@ -13,10 +13,10 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * Message constants for {@link OrderLoader}.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: $")//$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("orderloader"); //$NON-NLS-1$
@@ -58,4 +58,8 @@ public interface Messages
                                                                    "failed_messages"); //$NON-NLS-1$
     static final I18NMessage2P ERROR_PARSING_MESSAGE = new I18NMessage2P(LOGGER,
                                                                          "error_parsing_message"); //$NON-NLS-1$
+    static final I18NMessage1P ERROR_PARSING_UNKNOWN = new I18NMessage1P(LOGGER,
+                                                                         "error_parsing_unknown"); //$NON-NLS-1$
+    static final I18NMessage1P ERROR_PARSING_NUMBER_FORMAT = new I18NMessage1P(LOGGER,
+                                                                               "error_parsing_number_format"); //$NON-NLS-1$
 }

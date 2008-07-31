@@ -9,7 +9,7 @@ package org.marketcetera.core;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageBundleInfo {
 
     private String providerID;

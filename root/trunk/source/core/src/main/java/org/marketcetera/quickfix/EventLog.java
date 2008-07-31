@@ -13,7 +13,7 @@ import quickfix.field.converter.UtcTimestampConverter;
 
 public class EventLog implements quickfix.Log {
 
-    private static final byte[] TIME_STAMP_DELIMETER = ": ".getBytes();
+    private static final byte[] TIME_STAMP_DELIMETER = ": ".getBytes(); //$NON-NLS-1$
 
     private SessionID sessionID;
     private String eventFileName;
@@ -25,16 +25,16 @@ public class EventLog implements quickfix.Log {
     private boolean includeTimestampForMessages;
     
     EventLog(String path, SessionID sessionID) throws FileNotFoundException {
-        String sessionName = sessionID.getBeginString() + "-" + sessionID.getSenderCompID() + "-"
+        String sessionName = sessionID.getBeginString() + "-" + sessionID.getSenderCompID() + "-" //$NON-NLS-1$ //$NON-NLS-2$
                 + sessionID.getTargetCompID();
         this.sessionID = sessionID;
         
         if (sessionID.getSessionQualifier() != null && sessionID.getSessionQualifier().length() > 0) {
-            sessionName += "-" + sessionID.getSessionQualifier();
+            sessionName += "-" + sessionID.getSessionQualifier(); //$NON-NLS-1$
         }
 
-        String prefix = fileAppendPath(path, sessionName + ".");
-        eventFileName = prefix + "event.log";
+        String prefix = fileAppendPath(path, sessionName + "."); //$NON-NLS-1$
+        eventFileName = prefix + "event.log"; //$NON-NLS-1$
 
         File directory = new File(eventFileName).getParentFile();
         if (!directory.exists()) {
@@ -58,7 +58,7 @@ public class EventLog implements quickfix.Log {
                 events.getFD().sync();
             }
         } catch (IOException e) {
-            LogUtil.logThrowable(sessionID, "error writing event to log", e);
+            LogUtil.logThrowable(sessionID, Messages.ERROR_WRITING_EVENT_TO_LOG.getText(), e);
         }
     }
 
@@ -89,7 +89,7 @@ public class EventLog implements quickfix.Log {
             close();
             openLogStreams(false);
         } catch (IOException e) {
-            System.err.println("Could not clear log: "+getClass().getName());
+            System.err.println(Messages.ERROR_COULD_NOT_CLEAR_LOG.getText(getClass().getName()));
         }
     }
     
@@ -103,7 +103,7 @@ public class EventLog implements quickfix.Log {
 
     public static String fileAppendPath(String pathPrefix, String pathSuffix) {
         return pathPrefix
-                + (pathPrefix.endsWith(File.separator) ? "" : File.separator)
+                + (pathPrefix.endsWith(File.separator) ? "" : File.separator) //$NON-NLS-1$
                 + pathSuffix;
     }
 

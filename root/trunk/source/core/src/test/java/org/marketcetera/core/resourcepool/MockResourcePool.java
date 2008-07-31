@@ -45,7 +45,7 @@ public class MockResourcePool
                 mResources.addLast((MockResource)inResource);
             } 
             if(flag != null) {
-                throw new NullPointerException("This exception is expected");
+                throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
             }
         } else {
             mResources.addLast((MockResource)inResource);
@@ -72,7 +72,7 @@ public class MockResourcePool
             if(t instanceof ResourcePoolException) {
                 throw (ResourcePoolException)t;
             } 
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(mResources.isEmpty()) {
             // try to add a resource
@@ -105,7 +105,7 @@ public class MockResourcePool
             throws ResourcePoolException
     {
         if(getThrowDuringVerify()) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
     }
 
@@ -220,7 +220,7 @@ public class MockResourcePool
             if(t instanceof ResourcePoolException) {
                 throw (ResourcePoolException)t;
             } else {
-                throw new NullPointerException("This exception is expected");
+                throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
             }
         }
         super.returnResource(inResource);

@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MultipleResults<R extends SummaryEntityBase>
         extends QueryResults<List<R>> {
     private static final long serialVersionUID = 3072234715355535996L;

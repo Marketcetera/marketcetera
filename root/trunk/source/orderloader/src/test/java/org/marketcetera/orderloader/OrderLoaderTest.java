@@ -24,7 +24,7 @@ import java.util.Vector;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderLoaderTest 
     extends TestCase
     implements Messages
@@ -52,60 +52,60 @@ public class OrderLoaderTest
         super.setUp();
         mLoader = new MyOrderLoader(false);
         // includes the custom 9999 field as INT
-        FIXDataDictionaryManager.initialize(FIXVersion.FIX42, "FIX42-orderloader-test.xml");
+        FIXDataDictionaryManager.initialize(FIXVersion.FIX42, "FIX42-orderloader-test.xml"); //$NON-NLS-1$
     }
 
     public void testGetSide()
     {
         assertEquals(Side.UNDISCLOSED, mLoader.getSide(null));
-        assertEquals(Side.UNDISCLOSED, mLoader.getSide(""));
-        assertEquals(Side.UNDISCLOSED, mLoader.getSide("asdf"));
-        assertEquals(Side.BUY, mLoader.getSide("b"));
-        assertEquals(Side.BUY, mLoader.getSide("B"));
-        assertEquals(Side.SELL, mLoader.getSide("S"));
-        assertEquals(Side.SELL, mLoader.getSide("s"));
-        assertEquals(Side.SELL_SHORT, mLoader.getSide("SS"));
-        assertEquals(Side.SELL_SHORT, mLoader.getSide("ss"));
-        assertEquals(Side.SELL_SHORT_EXEMPT, mLoader.getSide("SSE"));
-        assertEquals(Side.SELL_SHORT_EXEMPT, mLoader.getSide("sse"));
+        assertEquals(Side.UNDISCLOSED, mLoader.getSide("")); //$NON-NLS-1$
+        assertEquals(Side.UNDISCLOSED, mLoader.getSide("asdf")); //$NON-NLS-1$
+        assertEquals(Side.BUY, mLoader.getSide("b")); //$NON-NLS-1$
+        assertEquals(Side.BUY, mLoader.getSide("B")); //$NON-NLS-1$
+        assertEquals(Side.SELL, mLoader.getSide("S")); //$NON-NLS-1$
+        assertEquals(Side.SELL, mLoader.getSide("s")); //$NON-NLS-1$
+        assertEquals(Side.SELL_SHORT, mLoader.getSide("SS")); //$NON-NLS-1$
+        assertEquals(Side.SELL_SHORT, mLoader.getSide("ss")); //$NON-NLS-1$
+        assertEquals(Side.SELL_SHORT_EXEMPT, mLoader.getSide("SSE")); //$NON-NLS-1$
+        assertEquals(Side.SELL_SHORT_EXEMPT, mLoader.getSide("sse")); //$NON-NLS-1$
     }
 
     public void testAddDefaults() throws Exception
     {
         Message msg = new Message();
         mLoader.addDefaults(msg);
-        assertEquals("msgType", MsgType.ORDER_SINGLE, msg.getHeader().getString(MsgType.FIELD));
-        assertEquals("orderType", OrdType.LIMIT, msg.getChar(OrdType.FIELD));
-        assertEquals("handlInst", HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, msg.getChar(HandlInst.FIELD));
+        assertEquals("msgType", MsgType.ORDER_SINGLE, msg.getHeader().getString(MsgType.FIELD)); //$NON-NLS-1$
+        assertEquals("orderType", OrdType.LIMIT, msg.getChar(OrdType.FIELD)); //$NON-NLS-1$
+        assertEquals("handlInst", HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE, msg.getChar(HandlInst.FIELD)); //$NON-NLS-1$
     }
 
     public void testBasicFieldParsing() throws Exception
     {
         final Message msg =new Message();
-        assertEquals(""+Side.UNDISCLOSED, mLoader.parseMessageValue(new Side(), "side", "z", msg));
-        assertEquals(""+Side.BUY, mLoader.parseMessageValue(new Side(), "side", "B", msg));
-        assertEquals(""+Side.SELL, mLoader.parseMessageValue(new Side(), "side", "S", msg));
+        assertEquals(""+Side.UNDISCLOSED, mLoader.parseMessageValue(new Side(), "side", "z", msg)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        assertEquals(""+Side.BUY, mLoader.parseMessageValue(new Side(), "side", "B", msg)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        assertEquals(""+Side.SELL, mLoader.parseMessageValue(new Side(), "side", "S", msg)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public void testPriceParsing() throws Exception
     {
         final Message msg =new Message();
-        assertEquals(null, mLoader.parseMessageValue(new Price(), "Price", "MKT", msg));
+        assertEquals(null, mLoader.parseMessageValue(new Price(), "Price", "MKT", msg)); //$NON-NLS-1$ //$NON-NLS-2$
         assertEquals(OrdType.MARKET, msg.getChar(OrdType.FIELD));
-        assertEquals("42", mLoader.parseMessageValue(new Price(), "Price", "42", msg));
-        assertEquals("42.42", mLoader.parseMessageValue(new Price(), "Price", "42.42", msg));
+        assertEquals("42", mLoader.parseMessageValue(new Price(), "Price", "42", msg)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        assertEquals("42.42", mLoader.parseMessageValue(new Price(), "Price", "42.42", msg)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         (new ExpectedTestFailure(OrderParsingException.class,
-                                 PARSING_PRICE_POSITIVE.getText("-42")) {
+                                 PARSING_PRICE_POSITIVE.getText("-42")) { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                mLoader.parseMessageValue(new Price(), "price", "-42", msg);
+                mLoader.parseMessageValue(new Price(), "price", "-42", msg); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }).run();
         (new ExpectedTestFailure(OrderParsingException.class,
-                                 PARSING_PRICE_VALID_NUM.getText("toli")) {
+                                 PARSING_PRICE_VALID_NUM.getText("toli")) { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                mLoader.parseMessageValue(new Price(), "price", "toli", msg);
+                mLoader.parseMessageValue(new Price(), "price", "toli", msg); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }).run();
     }
@@ -113,39 +113,39 @@ public class OrderLoaderTest
     public void testQuantityParsing() throws Exception
     {
         final Message msg =new Message();
-        assertEquals("42", mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42", msg));
+        assertEquals("42", mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42", msg)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         (new ExpectedTestFailure(OrderParsingException.class,
-                                 PARSING_QTY_POS_INT.getText("-42")) {
+                                 PARSING_QTY_POS_INT.getText("-42")) { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                mLoader.parseMessageValue(new OrderQty(), "OrderQty", "-42", msg);
+                mLoader.parseMessageValue(new OrderQty(), "OrderQty", "-42", msg); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }).run();
         (new ExpectedTestFailure(OrderParsingException.class,
-                                 PARSING_QTY_INT.getText("toli")) {
+                                 PARSING_QTY_INT.getText("toli")) { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                mLoader.parseMessageValue(new OrderQty(), "OrderQty", "toli", msg);
+                mLoader.parseMessageValue(new OrderQty(), "OrderQty", "toli", msg); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }).run();
         (new ExpectedTestFailure(OrderParsingException.class,
-                                 PARSING_QTY_INT.getText("42.2")) {
+                                 PARSING_QTY_INT.getText("42.2")) { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42.2", msg);
+                mLoader.parseMessageValue(new OrderQty(), "OrderQty", "42.2", msg); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }).run();
     }
 
     public void testGetQuickfixFieldFromName() throws OrderParsingException
     {
-        assertEquals(new Side(), mLoader.getQuickFixFieldFromName("Side"));
-        assertEquals(new OrderQty(), mLoader.getQuickFixFieldFromName("OrderQty"));
-        assertEquals(new CustomField(1234, null), mLoader.getQuickFixFieldFromName("1234"));
-        (new ExpectedTestFailure(OrderParsingException.class, "ToliField") {
+        assertEquals(new Side(), mLoader.getQuickFixFieldFromName("Side")); //$NON-NLS-1$
+        assertEquals(new OrderQty(), mLoader.getQuickFixFieldFromName("OrderQty")); //$NON-NLS-1$
+        assertEquals(new CustomField(1234, null), mLoader.getQuickFixFieldFromName("1234")); //$NON-NLS-1$
+        (new ExpectedTestFailure(OrderParsingException.class, "ToliField") { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                mLoader.getQuickFixFieldFromName("ToliField");
+                mLoader.getQuickFixFieldFromName("ToliField"); //$NON-NLS-1$
             }
         }).run();
     }
@@ -154,26 +154,26 @@ public class OrderLoaderTest
     public void testGetFieldOrder() throws Exception
     {
         doVerifyFieldOrder(new Field[] {new Symbol(), new Side(), new OrderQty(), new Price(), new TimeInForce(), new Account()},
-                           new String[] {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"});
+                           new String[] {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
         // reorder the fields
         doVerifyFieldOrder(new Field[] {new OrderQty(), new Price(), new TimeInForce(), new Symbol(), new Side(), new Account()},
-                           new String[] {"OrderQty", "Price", "TimeInForce", "Symbol", "Side", "Account"});
+                           new String[] {"OrderQty", "Price", "TimeInForce", "Symbol", "Side", "Account"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
         // custom field
         doVerifyFieldOrder(new Field[] {new OrderQty(), new Price(), new TimeInForce(), new Symbol(), new Side(), new CustomField(1234, null)},
-                           new String[] {"OrderQty", "Price", "TimeInForce", "Symbol", "Side", "1234"});
+                           new String[] {"OrderQty", "Price", "TimeInForce", "Symbol", "Side", "1234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
         // custom field in the middle
         doVerifyFieldOrder(new Field[] {new OrderQty(), new CustomField(1234, null), new Symbol(), new Side()},
-                           new String[] {"OrderQty", "1234", "Symbol", "Side"});
+                           new String[] {"OrderQty", "1234", "Symbol", "Side"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         // unknown field
-        (new ExpectedTestFailure(OrderParsingException.class, "ToliField") {
+        (new ExpectedTestFailure(OrderParsingException.class, "ToliField") { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
                 doVerifyFieldOrder(new Field[] {new Symbol(), new Side(), new OrderQty(), new Price(), new TimeInForce(), new Account()},
-                                   new String[] {"Symbol", "Side", "ToliField", "Price", "TimeInForce", "Account"});
+                                   new String[] {"Symbol", "Side", "ToliField", "Price", "TimeInForce", "Account"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
             }
         }).run();
@@ -241,12 +241,12 @@ public class OrderLoaderTest
     public void testCommentedLines() throws Exception
     {
         String order =
-            "#Opening comment\n" +
-            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
-            "#IBM,B,100,12.1,DAY,123-ASDF-234\n"+
-            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
-            "EFA,SSE,100,MKT,DAY,9182379812\n"+
-            "#EFA,SSE,100,MKT,FILL_OR_KILL,9182379812\n";
+            "#Opening comment\n" + //$NON-NLS-1$
+            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+ //$NON-NLS-1$
+            "#IBM,B,100,12.1,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,MKT,DAY,9182379812\n"+ //$NON-NLS-1$
+            "#EFA,SSE,100,MKT,FILL_OR_KILL,9182379812\n"; //$NON-NLS-1$
         mLoader.parseAndSendOrders(new ByteArrayInputStream(order.getBytes()));
 
         assertEquals(0, mLoader.numBlankLines);
@@ -257,9 +257,9 @@ public class OrderLoaderTest
     public void testWrongNumberOfFields() throws Exception
     {
         String order =
-            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
-            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+
-            "IBM,SS,100,123-ASDF-234\n";
+            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+ //$NON-NLS-1$
+            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,SS,100,123-ASDF-234\n"; //$NON-NLS-1$
         mLoader.parseAndSendOrders(new ByteArrayInputStream(order.getBytes()));
 
         assertEquals(0, mLoader.numBlankLines);
@@ -271,10 +271,10 @@ public class OrderLoaderTest
     public void testEndToEndCustom() throws Exception
     {
         String order =
-            "Symbol,Side,OrderQty,Price,58,Account\n"+
-            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+
-            "IBM,S,100,12.22,12,123-ASDF-234\n"+
-            "IBM,S,100,12.22,12.45,123-ASDF-234\n";
+            "Symbol,Side,OrderQty,Price,58,Account\n"+ //$NON-NLS-1$
+            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,S,100,12.22,12,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,S,100,12.22,12.45,123-ASDF-234\n"; //$NON-NLS-1$
         mLoader.parseAndSendOrders(new ByteArrayInputStream(order.getBytes()));
 
         assertEquals(0, mLoader.numBlankLines);
@@ -291,16 +291,16 @@ public class OrderLoaderTest
                                                                                              new Price(),
                                                                                              new TimeInForce(),
                                                                                              new Account() }));
-        String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"};
-        myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","DAY","123-ASDF-234"});
+        String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "TimeInForce", "Account"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        myLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","DAY","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
         // manually construct message: {55=IBM, 40=2, 38=100, 21=3, 11=666, 1=123-ASDF-234, 54=5, 59=0, 44=12.22}
-        assertEquals("IBM",myLoader.mMessage.getString(Symbol.FIELD));
-        assertEquals(Side.SELL_SHORT,myLoader.mMessage.getChar(Side.FIELD));
-        assertEquals("100",myLoader.mMessage.getString(OrderQty.FIELD));
-        assertEquals("12.22",myLoader.mMessage.getString(Price.FIELD));
+        assertEquals("IBM",myLoader.mMessage.getString(Symbol.FIELD)); //$NON-NLS-1$
+        assertEquals(Side.SELL_SHORT,myLoader.mMessage.getChar(Side.FIELD)); //$NON-NLS-1$
+        assertEquals("100",myLoader.mMessage.getString(OrderQty.FIELD)); //$NON-NLS-1$
+        assertEquals("12.22",myLoader.mMessage.getString(Price.FIELD)); //$NON-NLS-1$
         assertEquals(TimeInForce.DAY,myLoader.mMessage.getChar(TimeInForce.FIELD));
-        assertEquals("123-ASDF-234",myLoader.mMessage.getString(Account.FIELD));
+        assertEquals("123-ASDF-234",myLoader.mMessage.getString(Account.FIELD)); //$NON-NLS-1$
 
     }
 
@@ -313,45 +313,45 @@ public class OrderLoaderTest
                                                                                                    new Price(),
                                                                                                    new HandlInst(),
                                                                                                    new Account() }));
-        final String[] headerNames = { "Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account" };
+        final String[] headerNames = { "Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 //        String symbol = I18n.generateNativeString();
-        String symbol = "some string";
+        String symbol = "some string"; //$NON-NLS-1$
         mLoader.sendOneOrder(headerFields,
                              headerNames,
-                             new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"});
-        assertNotNull("message didn't go through",
+                             new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        assertNotNull("message didn't go through", //$NON-NLS-1$
                       mLoader.mMessage);
         assertEquals(symbol,
                      mLoader.mMessage.getString(Symbol.FIELD));
         assertEquals(Side.SELL_SHORT,
                      mLoader.mMessage.getChar(Side.FIELD));
-        assertEquals("100",
+        assertEquals("100", //$NON-NLS-1$
                      mLoader.mMessage.getString(OrderQty.FIELD));
-        assertEquals("12.22",
+        assertEquals("12.22", //$NON-NLS-1$
                      mLoader.mMessage.getString(Price.FIELD));
-        assertEquals("3",
+        assertEquals("3", //$NON-NLS-1$
                      mLoader.mMessage.getString(HandlInst.FIELD));
-        assertEquals("123-ASDF-234",
+        assertEquals("123-ASDF-234", //$NON-NLS-1$
                      mLoader.mMessage.getString(Account.FIELD));
 
 //        symbol = I18n.generateUnicodeString();
-        symbol = "some other string";
+        symbol = "some other string"; //$NON-NLS-1$
         mLoader.sendOneOrder(headerFields,
                              headerNames,
-                             new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"});
-        assertNotNull("message didn't go through",
+                             new String[] { symbol,"SS","100","12.22","3","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+        assertNotNull("message didn't go through", //$NON-NLS-1$
                       mLoader.mMessage);
         assertEquals(symbol,
                      mLoader.mMessage.getString(Symbol.FIELD));
         assertEquals(Side.SELL_SHORT,
                      mLoader.mMessage.getChar(Side.FIELD));
-        assertEquals("100",
+        assertEquals("100", //$NON-NLS-1$
                      mLoader.mMessage.getString(OrderQty.FIELD));
-        assertEquals("12.22",
+        assertEquals("12.22", //$NON-NLS-1$
                      mLoader.mMessage.getString(Price.FIELD));
-        assertEquals("3",
+        assertEquals("3", //$NON-NLS-1$
                      mLoader.mMessage.getString(HandlInst.FIELD));
-        assertEquals("123-ASDF-234",
+        assertEquals("123-ASDF-234", //$NON-NLS-1$
                      mLoader.mMessage.getString(Account.FIELD));
     }
 
@@ -364,18 +364,18 @@ public class OrderLoaderTest
                                                                                                    new Price(),
                                                                                                    new HandlInst(),
                                                                                                    new Account() }));
-        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account"};
-        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","3","123-ASDF-234"});
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "HandlInst", "Account"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","3","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
-        assertFalse("default handlInst is same as what we set so this test is pointless",
-                FIXVersion.FIX42.getMessageFactory().newBasicOrder().getString(HandlInst.FIELD).equals("3"));
-        assertNotNull("message didn't go through", mLoader.mMessage);
-        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertFalse("default handlInst is same as what we set so this test is pointless", //$NON-NLS-1$
+                FIXVersion.FIX42.getMessageFactory().newBasicOrder().getString(HandlInst.FIELD).equals("3")); //$NON-NLS-1$
+        assertNotNull("message didn't go through", mLoader.mMessage); //$NON-NLS-1$
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) ); //$NON-NLS-1$
         assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
-        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
-        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
-        assertEquals("3", mLoader.mMessage.getString(HandlInst.FIELD) );
-        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) ); //$NON-NLS-1$
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) ); //$NON-NLS-1$
+        assertEquals("3", mLoader.mMessage.getString(HandlInst.FIELD) ); //$NON-NLS-1$
+        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) ); //$NON-NLS-1$
     }
 
     public void testWithCustomField() throws Exception
@@ -387,31 +387,31 @@ public class OrderLoaderTest
                                                                                                    new CustomField(9999,
                                                                                                                    null),
                                                                                                                    new Account() }));
-        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"};
-        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"});
-        assertNull("message with malformed custom field went through", mLoader.mMessage);
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "Account"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","customValue","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        assertNull("message with malformed custom field went through", mLoader.mMessage); //$NON-NLS-1$
         assertEquals(1, mLoader.getFailedOrders().size());
 
         // manually construct message: {55=IBM, 40=2, 38=100, 21=3, 11=666, 1=123-ASDF-234, 54=5, 59=0, 44=12.22}
-        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","123","123-ASDF-234"});
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","123","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 
-        assertNotNull("message didn't go through", mLoader.mMessage);
-        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertNotNull("message didn't go through", mLoader.mMessage); //$NON-NLS-1$
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) ); //$NON-NLS-1$
         assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
-        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
-        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
-        assertEquals("123", mLoader.mMessage.getString(9999) );
-        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) ); //$NON-NLS-1$
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) ); //$NON-NLS-1$
+        assertEquals("123", mLoader.mMessage.getString(9999) ); //$NON-NLS-1$
+        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) ); //$NON-NLS-1$
 
         // integer, id+1
         // manually construct message: {55=IBM, 40=2, 38=100, 21=3, 11=666, 1=123-ASDF-234, 54=5, 59=0, 44=12.22}
-        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","12345","123-ASDF-234"});
-        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","12345","123-ASDF-234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) ); //$NON-NLS-1$
         assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
-        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
-        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
-        assertEquals("12345", mLoader.mMessage.getString(9999) );
-        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) );
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) ); //$NON-NLS-1$
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) ); //$NON-NLS-1$
+        assertEquals("12345", mLoader.mMessage.getString(9999) ); //$NON-NLS-1$
+        assertEquals("123-ASDF-234", mLoader.mMessage.getString(Account.FIELD) ); //$NON-NLS-1$
 
 
         // strategy directive: custom fields are 5900,9623,5084,5083
@@ -446,19 +446,19 @@ public class OrderLoaderTest
                                                                                                    new SenderSubID(),
                                                                                                    new SignatureLength(),
                                                                                                    new Signature() }));
-        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "SenderSubID", "SignatureLength", "Signature"};
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "9999", "SenderSubID", "SignatureLength", "Signature"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
 
         // manually construct message: {55=IBM, Side=SS, OrderQty=100, Price=12.22, 9999=custom, SenderSubID=sub1, 93=3, 89=sig}
-        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234","sub1", "sig".length()+"", "sig"});
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234","sub1", "sig".length()+"", "sig"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$
         assertEquals(0, mLoader.getFailedOrders().size());
-        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) );
+        assertEquals("IBM", mLoader.mMessage.getString(Symbol.FIELD) ); //$NON-NLS-1$
         assertEquals(Side.SELL_SHORT, mLoader.mMessage.getChar(Side.FIELD) );
-        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) );
-        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) );
-        assertEquals("1234", mLoader.mMessage.getString(9999));
-        assertEquals("sub1", mLoader.mMessage.getHeader().getString(SenderSubID.FIELD));
+        assertEquals("100", mLoader.mMessage.getString(OrderQty.FIELD) ); //$NON-NLS-1$
+        assertEquals("12.22", mLoader.mMessage.getString(Price.FIELD) ); //$NON-NLS-1$
+        assertEquals("1234", mLoader.mMessage.getString(9999)); //$NON-NLS-1$
+        assertEquals("sub1", mLoader.mMessage.getHeader().getString(SenderSubID.FIELD)); //$NON-NLS-1$
         assertEquals(3, mLoader.mMessage.getTrailer().getInt(SignatureLength.FIELD));
-        assertEquals("sig", mLoader.mMessage.getTrailer().getString(Signature.FIELD));
+        assertEquals("sig", mLoader.mMessage.getTrailer().getString(Signature.FIELD)); //$NON-NLS-1$
     }
 
     /** Try sending a message with key not in dictionary */
@@ -469,13 +469,13 @@ public class OrderLoaderTest
                                                                                                    new Price(),
                                                                                                    new CustomField(7654,
                                                                                                                    null) } ));
-        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "NotInDict"};
+        final String[] headerNames = {"Symbol", "Side", "OrderQty", "Price", "NotInDict"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
         // manually construct message: {55=IBM, Side=SS, OrderQty=100, Price=12.22, 9999=custom, SenderSubID=sub1, 93=3, 89=sig}
-        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234"});
+        mLoader.sendOneOrder(headerFields, headerNames, new String[] {"IBM","SS","100","12.22","1234"}); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         assertEquals(1, mLoader.getFailedOrders().size());
-        assertTrue(mLoader.failedOrders.get(0) + " does not end with "+PARSING_FIELD_NOT_IN_DICT.getText(7654, 1234),
-                mLoader.failedOrders.get(0).endsWith(PARSING_FIELD_NOT_IN_DICT.getText("7654", "1234")));
+        assertTrue(mLoader.failedOrders.get(0) + " does not end with "+PARSING_FIELD_NOT_IN_DICT.getText(7654, 1234), //$NON-NLS-1$
+                mLoader.failedOrders.get(0).endsWith(PARSING_FIELD_NOT_IN_DICT.getText("7654", "1234"))); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private class MyOrderLoader extends OrderLoader {
@@ -484,7 +484,7 @@ public class OrderLoaderTest
 
         public MyOrderLoader(boolean fSendPassThrough) throws Exception
         {
-            super("enduser","enduser_password");
+            super("enduser","enduser_password"); //$NON-NLS-1$ //$NON-NLS-2$
             mSendPassThrough = fSendPassThrough;
         }
 
@@ -500,7 +500,7 @@ public class OrderLoaderTest
 
 
         protected String getConfigName() {
-            return "orderloader-test.xml";
+            return "orderloader-test.xml"; //$NON-NLS-1$
         }
     }
 
@@ -508,24 +508,24 @@ public class OrderLoaderTest
      * Example order for testing.
      */
     private static final String ORDER_EXAMPLE =
-            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+
-            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+
-            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
-            "EFA,SSE,100,MKT,DAY,9182379812\n"+
-            "EFA,SSE,100,MKT,FILL_OR_KILL,9182379812\n"+
-            "---,SSE,100,MKT,DAY,9182379812\n"+
-            "EFA,---,100,MKT,DAY,9182379812\n"+
-            "EFA,SSE,---,MKT,DAY,9182379812\n"+
-            "\n"+
-            "EFA,SSE,100,---,DAY,9182379812\n"+
-            "EFA,SSE,100,MKT,---,9182379812\n"+
-            "EFA,SSE,100,MKT,---,---\n"+
-            "EFA,SSE,100,MKT,DAY,---\n"+
-            "EFA,SSE,100.1,MKT,DAY,9182379812\n"+
-            "IBM,SS,100,-12.22,DAY,123-ASDF-234\n"+
-            "IBM,SS,-100,12.22,DAY,123-ASDF-234\n"+
-            "//do nothing\n"+
-            "\n"+
-            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+
-            "IBM,S,100,12.22,DAY,123-ASDF-234\n";
+            "Symbol,Side,OrderQty,Price,TimeInForce,Account\n"+ //$NON-NLS-1$
+            "IBM,B,100,12.1,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,MKT,DAY,9182379812\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,MKT,FILL_OR_KILL,9182379812\n"+ //$NON-NLS-1$
+            "---,SSE,100,MKT,DAY,9182379812\n"+ //$NON-NLS-1$
+            "EFA,---,100,MKT,DAY,9182379812\n"+ //$NON-NLS-1$
+            "EFA,SSE,---,MKT,DAY,9182379812\n"+ //$NON-NLS-1$
+            "\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,---,DAY,9182379812\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,MKT,---,9182379812\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,MKT,---,---\n"+ //$NON-NLS-1$
+            "EFA,SSE,100,MKT,DAY,---\n"+ //$NON-NLS-1$
+            "EFA,SSE,100.1,MKT,DAY,9182379812\n"+ //$NON-NLS-1$
+            "IBM,SS,100,-12.22,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,SS,-100,12.22,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "//do nothing\n"+ //$NON-NLS-1$
+            "\n"+ //$NON-NLS-1$
+            "IBM,SS,100,12.22,DAY,123-ASDF-234\n"+ //$NON-NLS-1$
+            "IBM,S,100,12.22,DAY,123-ASDF-234\n"; //$NON-NLS-1$
 }

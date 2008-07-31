@@ -1,7 +1,8 @@
 package org.marketcetera.marketdata;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * Indicates an error throw during Market Data Feed operations.
@@ -10,22 +11,22 @@ import org.marketcetera.core.MarketceteraException;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FeedException 
-    extends MarketceteraException
+    extends CoreException
 {
     private static final long serialVersionUID = 1963381129325900265L;
 
-    public FeedException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public FeedException(Throwable nested, I18NBoundMessage message) {
+        super(nested, message);
     }
 
-    public FeedException(String arg0) {
-        super(arg0);
+    public FeedException(I18NBoundMessage message) {
+        super(message);
     }
 
-    public FeedException(Throwable arg0) {
-        super(arg0);
+    public FeedException(Throwable nested) {
+        super(nested);
     }
 
 }

@@ -22,7 +22,7 @@ import java.lang.reflect.InvocationTargetException;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 class HibernateVendor extends JPAVendor {
     private Method createBlob;
     private Method createClob;
@@ -31,8 +31,8 @@ class HibernateVendor extends JPAVendor {
         //Do reflection to not have compile time dependency on hibernate.
         try {
             Class<?> hibernateClass = Class.forName(HIBERNATE_CLASS);
-            createBlob = hibernateClass.getDeclaredMethod("createBlob",byte[].class);
-            createClob = hibernateClass.getDeclaredMethod("createClob",String.class);
+            createBlob = hibernateClass.getDeclaredMethod("createBlob",byte[].class); //$NON-NLS-1$
+            createClob = hibernateClass.getDeclaredMethod("createClob",String.class); //$NON-NLS-1$
         } catch (ClassNotFoundException e) {
             throw new PersistSetupException(e, HIBERNATE_INTEGRATION_ISSUE);
         } catch (NoSuchMethodException e) {
@@ -52,12 +52,12 @@ class HibernateVendor extends JPAVendor {
 
     public Clob initClob() throws PersistenceException {
         try {
-            return (Clob) createClob.invoke(null,"");
+            return (Clob) createClob.invoke(null,""); //$NON-NLS-1$
         } catch (IllegalAccessException e) {
             throw new PersistSetupException(e, HIBERNATE_INTEGRATION_ISSUE);
         } catch (InvocationTargetException e) {
             throw new PersistSetupException(e, HIBERNATE_INTEGRATION_ISSUE);
         }
     }
-    private static final String HIBERNATE_CLASS = "org.hibernate.Hibernate";
+    private static final String HIBERNATE_CLASS = "org.hibernate.Hibernate"; //$NON-NLS-1$
 }

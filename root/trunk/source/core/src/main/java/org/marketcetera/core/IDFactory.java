@@ -6,7 +6,7 @@ package org.marketcetera.core;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface IDFactory {
     /**
      * Gets the next unique identifier as a string.  Implementors of this method must

@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
  * orders to order the results by name or description.
  *
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 @MappedSuperclass
 public abstract class NDEntityBase extends EntityBase
         implements SummaryNDEntityBase {
@@ -72,9 +72,9 @@ public abstract class NDEntityBase extends EntityBase
     }
 
     public String toString() {
-        return super.toString() + "NDEntityBase{" +
-                "name='" + name + '\'' +
-                ", description='" + description + '\'' +
+        return super.toString() + "NDEntityBase{" + //$NON-NLS-1$
+                "name='" + name + '\'' + //$NON-NLS-1$ $NON-NLS-2$
+                ", description='" + description + '\'' + //$NON-NLS-1$
                 '}';
     }
 
@@ -102,16 +102,16 @@ public abstract class NDEntityBase extends EntityBase
     /**
      * The name attribute's name. This value is used in various JPQL queries. 
      */
-    protected static final String ATTRIBUTE_NAME = "name";
+    protected static final String ATTRIBUTE_NAME = "name"; //$NON-NLS-1$
     /**
      * The description attribute's name. This value is used in various JPQL queries. 
      */
-    protected static final String ATTRIBUTE_DESCRIPTION = "description";
+    protected static final String ATTRIBUTE_DESCRIPTION = "description"; //$NON-NLS-1$
     /**
      * The pattern for validating name attribute values
      */
     static final Pattern namePattern =
-            Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$");
+            Pattern.compile("^[\\p{L}\\p{N}- ]{1,255}$"); //$NON-NLS-1$
     private String name;
     private String description;
 }

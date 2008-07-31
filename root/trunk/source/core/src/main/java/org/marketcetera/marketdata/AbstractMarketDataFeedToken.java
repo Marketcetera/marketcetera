@@ -16,9 +16,9 @@ import org.marketcetera.core.publisher.PublisherEngine;
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings("unchecked") //$NON-NLS-1$
 public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFeed,
                                                   C extends IMarketDataFeedCredentials>
     implements IMarketDataFeedToken<C>
@@ -129,7 +129,7 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      */
     // this is to avoid having to add all the types to the class declaration to
     //  define the type of mFeed
-    @SuppressWarnings("unchecked")
+//    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public final void cancel()
     {
         if(getStatus().cancelable()) {

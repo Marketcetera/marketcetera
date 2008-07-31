@@ -12,7 +12,7 @@ import java.util.*;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MessageSystemTest extends TestCase {
     public MessageSystemTest(String inName) {
         super(inName);
@@ -24,37 +24,28 @@ public class MessageSystemTest extends TestCase {
 
     public void testLoadMessage() throws Exception {
         MyApp app = new MyApp();
-        String msg = app.getMessage("test1", new Object[0]);
-        assertEquals("This is test1", msg);
+        String msg = app.getMessage("test1", new Object[0]); //$NON-NLS-1$
+        assertEquals("This is test1", msg); //$NON-NLS-1$
 
-        assertEquals("Test2 has parameter abc followed by 123.", app.getMessage("test2", new String[] {"abc", "123"}));
+        assertEquals("Test2 has parameter abc followed by 123.", app.getMessage("test2", new String[] {"abc", "123"})); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
 
     public void testMultiPartKey() throws Exception {
         MyApp app = new MyApp();
-        assertEquals("multi.part.key", "This key has a lot of parts to it.", app.getMessage("key.with.dots", new Object[0]));
-    }
-
-    /** Iterate over all the message keys and make sure they can be instantiated and that they all exist in the messages file */
-    public void testInstantiateAll() throws Exception {
-        for(MessageKey key : MessageKey.values()) {
-            String localized = key.getLocalizedMessage();
-            assertNotNull(key.toString(), localized);
-            assertTrue(key.toString(), localized.length() > 0);
-        }
+        assertEquals("multi.part.key", "This key has a lot of parts to it.", app.getMessage("key.with.dots", new Object[0])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     private class MyApp extends ApplicationBase
     {
         protected List<MessageBundleInfo> getLocalMessageBundles() {
             LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
-            bundles.add(new MessageBundleInfo("test", "test_messages"));
+            bundles.add(new MessageBundleInfo("test", "test_messages")); //$NON-NLS-1$ //$NON-NLS-2$
             return bundles;
         }
 
         public String getMessage(String key, Object[] args)
         {
-            return MessageManager.getText(key, "error", args, Locale.getDefault());
+            return MessageManager.getText(key, "error", args, Locale.getDefault()); //$NON-NLS-1$
         }
 
         protected void registerMBean(boolean fExitOnFail) {

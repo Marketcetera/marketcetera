@@ -20,7 +20,7 @@ import java.util.List;
  * @author toli
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessageFactory {
 
     private MessageFactory msgFactory;

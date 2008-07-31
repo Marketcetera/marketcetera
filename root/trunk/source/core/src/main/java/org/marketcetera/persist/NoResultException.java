@@ -9,7 +9,7 @@ import org.marketcetera.core.ClassVersion;
  * @see javax.persistence.NoResultException
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class NoResultException extends PersistenceException {
     private static final long serialVersionUID = -9161488921585071409L;
 

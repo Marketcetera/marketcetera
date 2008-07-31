@@ -9,7 +9,7 @@ import java.net.UnknownHostException;
  * @version $Id$
  */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class DBBackedIDFactory extends ExternalIDFactory {
     protected InMemoryIDFactory inMemoryFactory;
 
@@ -35,7 +35,7 @@ public abstract class DBBackedIDFactory extends ExternalIDFactory {
 	    } finally {
 			if (!succeeded){
 				try {
-					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis(),InetAddress.getLocalHost().toString()+"-");
+					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis(),InetAddress.getLocalHost().toString()+"-"); //$NON-NLS-1$
 				} catch (UnknownHostException e) {
 					inMemoryFactory = new InMemoryIDFactory(System.currentTimeMillis());
 				}

@@ -14,7 +14,7 @@ import quickfix.field.TransactTime;
  * @author Toli Kuznets
  * @version $Id
  */
-@ClassVersion("Id")
+@ClassVersion("Id") //$NON-NLS-1$
 public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase {
     public TransactionTimeInsertOrderModifierTest(String inName, FIXVersion version) {
         super(inName, version);
@@ -58,6 +58,6 @@ public class TransactionTimeInsertOrderModifierTest extends FIXVersionedTestCase
 
         mod.modifyMessage(msg, msgFactory.getMsgAugmentor());
 
-        assertNotNull("TransactTime was not set", msg.getString(TransactTime.FIELD));
+        assertNotNull("TransactTime was not set", msg.getString(TransactTime.FIELD)); //$NON-NLS-1$
     }
 }

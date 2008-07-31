@@ -38,7 +38,7 @@ public class OptionCFICode extends CFICode {
 	public OptionCFICode(CharSequence sequence){
 		super(sequence);
 		if (CATEGORY_OPTION != sequence.charAt(0)){
-			throw new IllegalArgumentException("Char 0");
+			throw new IllegalArgumentException("Char 0"); //$NON-NLS-1$
 		}
 		setType(sequence.charAt(TYPE_POSITION));
 		setExercise(sequence.charAt(EXERCISE_POSITION));
@@ -170,7 +170,7 @@ public class OptionCFICode extends CFICode {
 
 	@Override
 	public String toString(){
-		return ""+CATEGORY_OPTION+getType()+getExercise()+getUnderlying()+getDelivery()+getStandard();
+		return ""+CATEGORY_OPTION+getType()+getExercise()+getUnderlying()+getDelivery()+getStandard(); //$NON-NLS-1$
 	}
 
 	@Override

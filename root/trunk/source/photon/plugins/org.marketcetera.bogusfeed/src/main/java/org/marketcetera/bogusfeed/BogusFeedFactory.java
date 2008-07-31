@@ -1,6 +1,6 @@
 package org.marketcetera.bogusfeed;
 
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.AbstractMarketDataFeedFactory;
 import org.marketcetera.marketdata.FeedException;
@@ -15,13 +15,13 @@ public class BogusFeedFactory
     }
 	public String getProviderName()
 	{
-		return "Marketcetera (Bogus)";
+		return "Marketcetera (Bogus)"; //$NON-NLS-1$
 	}
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()
      */
     public BogusFeed getMarketDataFeed()
-            throws MarketceteraException
+            throws CoreException
     {
         return getMarketDataFeed(null);
     }
@@ -29,7 +29,7 @@ public class BogusFeedFactory
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     public BogusFeed getMarketDataFeed(BogusFeedCredentials inCredentials)
-            throws MarketceteraException
+            throws CoreException
     {
         try {
             return BogusFeed.getInstance(getProviderName(),

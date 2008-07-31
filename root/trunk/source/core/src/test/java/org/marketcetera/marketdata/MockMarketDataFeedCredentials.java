@@ -15,7 +15,7 @@ public class MockMarketDataFeedCredentials
     public MockMarketDataFeedCredentials()
         throws FeedException
     {
-        this("http://url-" + System.nanoTime());        
+        this("http://url-" + System.nanoTime()); //$NON-NLS-1$
     }
     
     /**
@@ -39,7 +39,7 @@ public class MockMarketDataFeedCredentials
     {
         super.validateURL(inURL);
         if(sValidateThrowsThrowable) {
-            throw new NullPointerException("This exception is expected");
+            throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
     }
 }

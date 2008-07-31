@@ -1,9 +1,9 @@
 package org.marketcetera.ors;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.springframework.jms.core.JmsOperations;
 import quickfix.*;
 import quickfix.field.*;
@@ -14,7 +14,7 @@ import java.util.Date;
  * @author gmiller
  * $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class QuickFIXApplication implements Application {
 
     private JmsOperations jmsOperations;
@@ -35,16 +35,16 @@ public class QuickFIXApplication implements Application {
             try {
                 if(MsgType.REJECT.equals(message.getHeader().getString(MsgType.FIELD))) {
                     // bug #219
-                    if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("received reject: "+message.getString(Text.FIELD), this); }
+                    SLF4JLoggerProxy.debug(this, "received reject: {}", message.getString(Text.FIELD)); //$NON-NLS-1$
                 }
 
                 jmsOperations.convertAndSend(message);
             } catch (Exception ex) {
-                LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Failed Sending Message:"+message, ex, this); }
+                Messages.ERROR_SENDING_JMS_MESSAGE.error(this, ex, ex.toString());
+                SLF4JLoggerProxy.debug(this, ex, "Failed sending message: {}", message); //$NON-NLS-1$
             }
         }
-	}
+    }
 
 	public void fromApp(Message message, SessionID session) throws UnsupportedMessageType, FieldNotFound {
         /** This check is specifically for OpenFIX certification - we need to white list/black list all
@@ -61,13 +61,13 @@ public class QuickFIXApplication implements Application {
                     // Support OpenFIX certification - we reject all DeliverToCompID since we don't redilever
                     Message reject = fixMessageFactory.createSessionReject(message, SessionRejectReason.COMPID_PROBLEM);
                     reject.setString(Text.FIELD,
-                            ORSMessageKey.ERROR_DELIVER_TO_COMP_ID_NOT_HANDLED.getLocalizedMessage(message.getHeader().getString(DeliverToCompID.FIELD)));
+                            Messages.ERROR_NO_DELIVER_TO_COMPID_FIELD.getText(message.getHeader().getString(DeliverToCompID.FIELD)));
                     quickFIXSender.sendToTarget(reject);
                     return;
                 }
             } catch (Exception ex) {
-                LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), ex, this);
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Failed sending message: "+message, ex, this); }
+                Messages.ERROR_SENDING_JMS_MESSAGE.error(this, ex, ex.toString());
+                SLF4JLoggerProxy.debug(this, ex, "Failed sending message: {}", message); //$NON-NLS-1$
             }
         }
 
@@ -79,11 +79,8 @@ public class QuickFIXApplication implements Application {
         }
 
         if (FIXMessageUtil.isTradingSessionStatus(message)) {
-            if (LoggerAdapter.isDebugEnabled(this)) {
-                LoggerAdapter.debug(ORSMessageKey.TRADE_SESSION_STATUS.getLocalizedMessage(
-                        FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD,
-                                message.getString(TradSesStatus.FIELD))), this);
-            }
+            Messages.TRADE_SESSION_STATUS.debug(this, 
+                                                FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD, message.getString(TradSesStatus.FIELD)));
         }
     }
 
@@ -112,8 +109,8 @@ public class QuickFIXApplication implements Application {
             try {
                 jmsOperations.convertAndSend(logout);
             } catch (Exception ex) {
-                LoggerAdapter.error(ORSMessageKey.ERROR_SENDING_JMS_MESSAGE.getLocalizedMessage(ex.toString()), this);
-                if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("failed sending message: "+logout, ex, this); }
+                Messages.ERROR_SENDING_JMS_MESSAGE.error(this, ex, ex.toString());
+                SLF4JLoggerProxy.debug(this, ex, "Failed sending message: {}", logout); //$NON-NLS-1$
             }
         }
     }
@@ -134,15 +131,15 @@ public class QuickFIXApplication implements Application {
                     String origText = message.getString(Text.FIELD);
                     String msgType = (message.isSetField(MsgType.FIELD)) ? null : message.getString(RefMsgType.FIELD);
                     String msgTypeName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType);
-                    String combinedText = ORSMessageKey.ERROR_INCOMING_MSG_REJECTED.getLocalizedMessage(msgTypeName, origText);
+                    String combinedText = Messages.ERROR_INCOMING_MSG_REJECTED.getText(msgTypeName, origText);
                     message.setString(Text.FIELD, combinedText);
                 } catch (FieldNotFound fieldNotFound) {
                     // ignore - don't modify the message, send original error through
                 }
                 jmsOperations.convertAndSend(message);
             }
-        } catch (MarketceteraException ex) {
-            if(LoggerAdapter.isDebugEnabled(this)) { LoggerAdapter.debug("Error modifying message: "+message, ex, this); }
+        } catch (CoreException ex) {
+            SLF4JLoggerProxy.debug(this, ex, "Failed modifying message: {}", message); //$NON-NLS-1$
         }
     }
 

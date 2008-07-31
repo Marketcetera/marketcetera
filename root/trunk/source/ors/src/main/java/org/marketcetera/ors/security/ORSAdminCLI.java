@@ -1,7 +1,6 @@
 package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.LoggerAdapter;
 import org.marketcetera.core.MessageBundleManager;
 import static org.marketcetera.ors.security.Messages.*;
 import org.marketcetera.ors.OrderRoutingSystem;
@@ -32,7 +31,7 @@ import java.util.Arrays;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ORSAdminCLI {
     private AbstractApplicationContext context;
 
@@ -44,7 +43,7 @@ public class ORSAdminCLI {
      */
     public ORSAdminCLI(PrintStream out, PrintStream err) {
         MessageBundleManager.registerCoreMessageBundle();
-        LoggerAdapter.initializeLogger("cli", "log4j-cli.properties");
+        OrderRoutingSystem.initializeLogger("log4j-cli.properties"); //$NON-NLS-1$
         this.out = out;
         this.err = err;
         context = new ClassPathXmlApplicationContext(getConfigurations(),
@@ -96,7 +95,7 @@ public class ORSAdminCLI {
      * @return the list of spring configurations
      */
     protected String[] getConfigurations() {
-        return new String[]{"ors_orm_vendor.xml", "ors_orm.xml", "ors_db.xml"};
+        return new String[]{"ors_orm_vendor.xml", "ors_orm.xml", "ors_db.xml"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -358,11 +357,11 @@ public class ORSAdminCLI {
                 isRequired().create());
         opts.addOptionGroup(commands);
         //Add optional arguments
-        opts.addOption(OptionBuilder.withLongOpt("username").
+        opts.addOption(OptionBuilder.withLongOpt("username"). //$NON-NLS-1$
                 hasArg(true).withArgName(CLI_ARG_USER_NAME_VALUE.getText()).
                 withDescription(CLI_PARM_OP_USER.getText()).
                 isRequired(false).create(OPT_OPERATED_USER));
-        opts.addOption(OptionBuilder.withLongOpt("password").
+        opts.addOption(OptionBuilder.withLongOpt("password"). //$NON-NLS-1$
                 hasArg(true).withArgName(CLI_ARG_USER_PASSWORD_VALUE.getText()).
                 withDescription(CLI_PARM_OP_PASSWORD.getText()).
                 isRequired(false).create(OPT_OPERATED_PASSWORD));
@@ -386,30 +385,30 @@ public class ORSAdminCLI {
         final int leftPad = 4;
         final int descPad = 4;
         final String LS = SystemProperties.LINE_SEPARATOR;
-        final String l = "-u <" + CLI_ARG_LOGIN_VALUE.getText() + "> ";
-        final String p = "-p <" + CLI_ARG_LOGIN_PASSWORD_VALUE.getText() + "> ";
-        final String u = "-n <" + CLI_ARG_USER_NAME_VALUE.getText() + "> ";
-        final String up = "-w <" + CLI_ARG_USER_PASSWORD_VALUE.getText() + "> ";
-        final String prefix = CMD_NAME + " " + l + p ;
-        final String s = prefix + "--" + CMD_LIST_USERS +
-                LS + prefix + "--" + CMD_ADD_USER + " " + u + " " + up +
-                LS + prefix + "--" + CMD_DELETE_USER + " " + u +
-                LS + prefix + "--" + CMD_CHANGE_PASS + " " + up + " [" + u + "]" + LS;
+        final String l = "-u <" + CLI_ARG_LOGIN_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
+        final String p = "-p <" + CLI_ARG_LOGIN_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
+        final String u = "-n <" + CLI_ARG_USER_NAME_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
+        final String up = "-w <" + CLI_ARG_USER_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
+        final String prefix = CMD_NAME + " " + l + p ; //$NON-NLS-1$
+        final String s = prefix + "--" + CMD_LIST_USERS + //$NON-NLS-1$
+                LS + prefix + "--" + CMD_ADD_USER + " " + u + " " + up + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                LS + prefix + "--" + CMD_DELETE_USER + " " + u + //$NON-NLS-1$ //$NON-NLS-2$
+                LS + prefix + "--" + CMD_CHANGE_PASS + " " + up + " [" + u + "]" + LS; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         final PrintWriter writer = new PrintWriter(err);
         h.printHelp(writer, width, s, CLI_DESC_OPTIONS_HEADER.getText(),
-                options(), leftPad, descPad, "", false);
+                options(), leftPad, descPad, "", false); //$NON-NLS-1$
         writer.flush();
     }
     private PrintStream out;
     private PrintStream err;
-    private static final String CMD_LIST_USERS = "listUsers";
-    private static final String CMD_ADD_USER = "addUser";
-    private static final String CMD_DELETE_USER = "deleteUser";
-    private static final String CMD_CHANGE_PASS = "changePassword";
-    private static final String OPT_CURRENT_USER = "u";
-    private static final String OPT_CURRENT_PASSWORD = "p";
-    private static final String OPT_OPERATED_USER = "n";
-    private static final String OPT_OPERATED_PASSWORD = "w";
-    private static final String ADMIN_USER_NAME = "admin";
-    static final String CMD_NAME = "orsadmin";
+    private static final String CMD_LIST_USERS = "listUsers"; //$NON-NLS-1$
+    private static final String CMD_ADD_USER = "addUser"; //$NON-NLS-1$
+    private static final String CMD_DELETE_USER = "deleteUser"; //$NON-NLS-1$
+    private static final String CMD_CHANGE_PASS = "changePassword"; //$NON-NLS-1$
+    private static final String OPT_CURRENT_USER = "u"; //$NON-NLS-1$
+    private static final String OPT_CURRENT_PASSWORD = "p"; //$NON-NLS-1$
+    private static final String OPT_OPERATED_USER = "n"; //$NON-NLS-1$
+    private static final String OPT_OPERATED_PASSWORD = "w"; //$NON-NLS-1$
+    private static final String ADMIN_USER_NAME = "admin"; //$NON-NLS-1$
+    static final String CMD_NAME = "orsadmin"; //$NON-NLS-1$
 }

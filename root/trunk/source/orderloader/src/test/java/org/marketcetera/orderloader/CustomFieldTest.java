@@ -12,7 +12,7 @@ import java.math.BigDecimal;
  * @author Toli Kuznets
  * @version $Id$
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CustomFieldTest extends TestCase
 {
     public CustomFieldTest(String inName)
@@ -28,22 +28,22 @@ public class CustomFieldTest extends TestCase
     public void testParseCustomFieldValue()
     {
         CustomField cf = new CustomField(1, null);
-        assertEquals(42, cf.parseMessageValue("42"));
-        assertEquals(Integer.class, cf.parseMessageValue("42").getClass());
+        assertEquals(42, cf.parseMessageValue("42")); //$NON-NLS-1$
+        assertEquals(Integer.class, cf.parseMessageValue("42").getClass()); //$NON-NLS-1$
 
-        assertEquals(new BigDecimal("42.24"), cf.parseMessageValue("42.24"));
-        assertEquals(BigDecimal.class, cf.parseMessageValue("42.24").getClass());
+        assertEquals(new BigDecimal("42.24"), cf.parseMessageValue("42.24")); //$NON-NLS-1$ //$NON-NLS-2$
+        assertEquals(BigDecimal.class, cf.parseMessageValue("42.24").getClass()); //$NON-NLS-1$
 
-        assertEquals("toli kuznets", cf.parseMessageValue("toli kuznets"));
+        assertEquals("toli kuznets", cf.parseMessageValue("toli kuznets")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public void testGetCustomField() throws Exception
     {
-        assertEquals(new CustomField(123, null), CustomField.getCustomField("123"));
-        (new ExpectedTestFailure(OrderParsingException.class, "not123") {
+        assertEquals(new CustomField(123, null), CustomField.getCustomField("123")); //$NON-NLS-1$
+        (new ExpectedTestFailure(OrderParsingException.class, "not123") { //$NON-NLS-1$
             protected void execute() throws Throwable
             {
-                CustomField.getCustomField("not123");
+                CustomField.getCustomField("not123"); //$NON-NLS-1$
             }}).run();
     }
 }
