@@ -128,7 +128,7 @@ public final class RandomStrings
      * @return The code point.
      */
 
-    private static int genUCP
+    public static int genUCP
         (UCPFilter filter)
     {
         int[] ucps=UCPFilterInfo.getInfo(filter).getUCPs();
@@ -228,15 +228,15 @@ public final class RandomStrings
      * are all Unicode code points that meet the constraints of the
      * given filter.
      *
-     * @param len The length (in code points).
      * @param filter The filter.
+     * @param len The length (in code points).
      *
      * @return The string.
      */
 
-    private static String genStr
-        (int len,
-         UCPFilter filter)
+    public static String genStr
+        (UCPFilter filter,
+         int len)
     {
         int[] ucps=UCPFilterInfo.getInfo(filter).getUCPs();
         StringBuilder builder=new StringBuilder();
@@ -261,7 +261,7 @@ public final class RandomStrings
         (Charset cs,
          int len)
     {
-        return genStr(len,UCPFilter.forCharset(cs));
+        return genStr(UCPFilter.forCharset(cs),len);
     }
 
     /**
@@ -277,7 +277,7 @@ public final class RandomStrings
     public static String genStrDefCharset
         (int len)
     {
-        return genStr(len,UCPFilter.getDefaultCharset());
+        return genStr(UCPFilter.getDefaultCharset(),len);
     }
 
     /**
@@ -294,7 +294,7 @@ public final class RandomStrings
     public static String genStrFileSystem
         (int len)
     {
-        return genStr(len,UCPFilter.getFileSystemCharset());
+        return genStr(UCPFilter.getFileSystemCharset(),len);
     }
 
     /**
@@ -310,7 +310,7 @@ public final class RandomStrings
     public static String genStrValid
         (int len)
     {
-        return genStr(len,UCPFilter.VALID);
+        return genStr(UCPFilter.VALID,len);
     }
 
     /**
@@ -325,7 +325,7 @@ public final class RandomStrings
     public static String genStrDigit
         (int len)
     {
-        return genStr(len,UCPFilter.DIGIT);
+        return genStr(UCPFilter.DIGIT,len);
     }
 
     /**
@@ -340,7 +340,7 @@ public final class RandomStrings
     public static String genStrLetter
         (int len)
     {
-        return genStr(len,UCPFilter.LETTER);
+        return genStr(UCPFilter.LETTER,len);
     }
 
     /**
@@ -356,7 +356,7 @@ public final class RandomStrings
     public static String genStrAlNum
         (int len)
     {
-        return genStr(len,UCPFilter.ALNUM);
+        return genStr(UCPFilter.ALNUM,len);
     }
 
     /**

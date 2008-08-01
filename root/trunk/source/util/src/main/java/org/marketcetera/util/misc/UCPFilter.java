@@ -74,6 +74,20 @@ public abstract class UCPFilter
         };
 
     /**
+     * A filter for Unicode characters that can be represented by a
+     * single char.
+     */
+
+    public static final UCPFilter CHAR=new UCPFilter()
+        {
+            @Override
+            public boolean isAcceptable(int ucp)
+            {
+                return ((0<=ucp) && (ucp<=0xFFFF));
+            }
+        };
+
+    /**
      * A filter for Unicode code points that are digits.
      */
 

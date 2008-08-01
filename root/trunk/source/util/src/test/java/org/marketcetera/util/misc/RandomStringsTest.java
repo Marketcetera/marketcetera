@@ -29,12 +29,25 @@ public class RandomStringsTest
     private static final int STR_ITERATION_COUNT=
         100;
 
-    public static final UCPFilter UCP_FILTER_ALL=
-        new UCPFilter () {
+    private static final UCPFilter UCP_FILTER_CUSTOM=
+        new UCPFilter()
+        {
             @Override
-            public boolean isAcceptable(int ucp) {
+            public boolean isAcceptable(int ucp)
+            {
+                return ((ucp>=0x100) && (ucp<=0x102));
+            }
+        };
+    public static final UCPFilter UCP_FILTER_ALL=
+        new UCPFilter ()
+        {
+            @Override
+            public boolean isAcceptable(int ucp)
+            {
                 return ((ucp>=Character.MIN_CODE_POINT) &&
-                        (ucp<=Character.MAX_CODE_POINT)); }};
+                        (ucp<=Character.MAX_CODE_POINT));
+            }
+        };
     public static final UCPFilter UCP_FILTER_UTF8=
         UCPFilter.forCharset(UnicodeCharset.UTF8.getCharset());
     public static final UCPFilter UCP_FILTER_DC=
@@ -177,6 +190,12 @@ public class RandomStringsTest
             (new UCPGenerator() {
                 @Override
                 public int generate() {
+                    return RandomStrings.genUCP(UCP_FILTER_CUSTOM); }},
+                UCP_FILTER_CUSTOM);
+        testUCP
+            (new UCPGenerator() {
+                @Override
+                public int generate() {
                     return RandomStrings.genUCPCharset
                         (UnicodeCharset.UTF8.getCharset()); }},
                 UCP_FILTER_UTF8);
@@ -221,6 +240,15 @@ public class RandomStringsTest
     @Test
     public void genStrLen()
     {
+        assertEquals("",RandomStrings.genStr(UCP_FILTER_CUSTOM,0));
+        testStrLen
+            (new StrGenerator() {
+                @Override
+                public String generate() {
+                    return RandomStrings.genStr
+                        (UCP_FILTER_CUSTOM,STR_LEN); }},
+                UCP_FILTER_CUSTOM);
+
         assertEquals("",RandomStrings.genStrCharset
                      (UnicodeCharset.UTF8.getCharset(),0));
         testStrLen
