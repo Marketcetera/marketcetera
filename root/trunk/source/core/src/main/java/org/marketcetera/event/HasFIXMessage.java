@@ -12,10 +12,10 @@ import quickfix.Message;
  * <p>Implementers that contain multiple FIX messages must decide which represents its <em>default</em> message.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface HasFIXMessage
 {
     /**
