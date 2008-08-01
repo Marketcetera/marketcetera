@@ -15,6 +15,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
@@ -97,23 +98,25 @@ public class OptionOrderTicketController
                 String symbol;
                 OptionOrderTicketModel model = getOrderTicketModel();
                 try {
-                    symbol = message.getString(Symbol.FIELD);
-                    WritableList mdList = model.getOptionMarketDataList();
-                    for (int i = 0; i < mdList.size(); i++){
-                        OptionMessageHolder holder = (OptionMessageHolder) mdList.get(i);
-                        if (symbol.equals(holder.getSymbol(PutOrCall.PUT)) ||
-                                symbol.equals(holder.getSymbol(PutOrCall.CALL))){
-                            FieldMap marketDataForSymbol = holder.getMarketDataForSymbol(symbol);
-                            if (marketDataForSymbol != null && FIXMessageUtil.isMarketDataIncrementalRefresh(message)){
-                                FIXMessageUtil.mergeMarketDataMessages(message, 
-                                        (Message)marketDataForSymbol, messageFactory);
-                            } else {
-                                marketDataForSymbol = message;
+                    if(message != null) {
+                        symbol = message.getString(Symbol.FIELD);
+                        WritableList mdList = model.getOptionMarketDataList();
+                        for (int i = 0; i < mdList.size(); i++){
+                            OptionMessageHolder holder = (OptionMessageHolder) mdList.get(i);
+                            if (symbol.equals(holder.getSymbol(PutOrCall.PUT)) ||
+                                    symbol.equals(holder.getSymbol(PutOrCall.CALL))){
+                                FieldMap marketDataForSymbol = holder.getMarketDataForSymbol(symbol);
+                                if (marketDataForSymbol != null && FIXMessageUtil.isMarketDataIncrementalRefresh(message)){
+                                    FIXMessageUtil.mergeMarketDataMessages(message, 
+                                            (Message)marketDataForSymbol, messageFactory);
+                                } else {
+                                    marketDataForSymbol = message;
+                                }
+                                int putOrCall = holder.symbolOptionType(symbol);
+                                holder.setMarketData(putOrCall, marketDataForSymbol);
+                                // TODO: isn't there a better way to fire the changed event?
+                                mdList.set(i, holder);
                             }
-                            int putOrCall = holder.symbolOptionType(symbol);
-                            holder.setMarketData(putOrCall, marketDataForSymbol);
-                            // TODO: isn't there a better way to fire the changed event?
-                            mdList.set(i, holder);
                         }
                     }
                 } catch (FieldNotFound e) {
@@ -229,8 +232,8 @@ public class OptionOrderTicketController
 				}
 				public void publishTo(Object obj) {
 					Message message;
-					if (obj instanceof SymbolExchangeEvent){
-						message = ((SymbolExchangeEvent) obj).getFIXMessage();
+					if (obj instanceof HasFIXMessage){
+						message = ((HasFIXMessage)obj).getMessage();
 					} else {
 						message = (Message) obj;
 					}
@@ -266,7 +269,7 @@ public class OptionOrderTicketController
 			public void publishTo(Object obj) {
 				Message message;
 				if (obj instanceof SymbolExchangeEvent){
-					message = ((SymbolExchangeEvent) obj).getFIXMessage();
+					message = ((SymbolExchangeEvent) obj).getLatestTick();
 				} else {
 					message = (Message) obj;
 				}

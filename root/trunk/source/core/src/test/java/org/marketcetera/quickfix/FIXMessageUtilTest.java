@@ -202,6 +202,54 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         req.getGroup(2, entryTypeGroup);
         assertEquals(MDEntryType.OFFER, entryTypeGroup.getChar(MDEntryType.FIELD));
     }
+    
+    public void testSecurityListRequest()
+        throws Exception
+    {
+        FIXVersion thisVersion = FIXVersion.getFIXVersion(msgFactory.getBeginString());
+        if(thisVersion.equals(FIXVersion.FIX43) ||
+           thisVersion.equals(FIXVersion.FIX44)) {
+            Message request = msgFactory.newSecurityListRequest("reqID"); //$NON-NLS-1$
+            String messageType = request.getHeader().getString(MsgType.FIELD);
+            assertEquals(MsgType.SECURITY_LIST_REQUEST,
+                         messageType);
+            fixDD.getDictionary().validate(request,
+                                           true);
+        } else {
+            new ExpectedTestFailure(IllegalStateException.class) {
+                @Override
+                protected void execute()
+                        throws Throwable
+                {
+                    msgFactory.newSecurityListRequest("reqID"); //$NON-NLS-1$
+                }                
+            }.run();
+        }
+    }
+
+    public void testDerivativeSecurityListRequest()
+        throws Exception
+    {
+        FIXVersion thisVersion = FIXVersion.getFIXVersion(msgFactory.getBeginString());
+        if(thisVersion.equals(FIXVersion.FIX43) ||
+           thisVersion.equals(FIXVersion.FIX44)) {
+            Message request = msgFactory.newDerivativeSecurityListRequest("reqID"); //$NON-NLS-1$
+            String messageType = request.getHeader().getString(MsgType.FIELD);
+            assertEquals(MsgType.DERIVATIVE_SECURITY_LIST_REQUEST,
+                         messageType);
+            fixDD.getDictionary().validate(request,
+                                           true);
+        } else {
+            new ExpectedTestFailure(IllegalStateException.class) {
+                @Override
+                protected void execute()
+                        throws Throwable
+                {
+                    msgFactory.newDerivativeSecurityListRequest("reqID"); //$NON-NLS-1$
+                }                
+            }.run();
+        }
+    }
 
     public void testMDR_oneSymbol() throws Exception {
         List<MSymbol> list = Arrays.asList(new MSymbol("TOLI")); //$NON-NLS-1$

@@ -20,7 +20,7 @@ import org.eclipse.core.runtime.IPath;
 import org.jruby.bsf.JRubyPlugin;
 import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.marketdata.IMarketDataFeed;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.Messages;
@@ -32,12 +32,14 @@ import org.springframework.beans.factory.InitializingBean;
 
 import quickfix.Message;
 
+/* $License$ */
 
 /**
  * Script registry implementation.
  * 
  * @author andrei@lissovski.org
  * @author gmiller
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
 public class ScriptRegistry
     implements InitializingBean, Messages
@@ -84,8 +86,8 @@ public class ScriptRegistry
         @Override
         public boolean isInteresting(Object inData)
         {
-            if(inData instanceof EventBase &&
-                    ((EventBase)inData).getFIXMessage() != null) {
+            if(inData instanceof HasFIXMessage &&
+               ((HasFIXMessage)inData).getMessage() != null) {
                 return true;
             }
             PhotonPlugin.getMainConsoleLogger().warn(REGISTRY_DISCARDED_MESSAGE.getText(inData));
@@ -94,7 +96,12 @@ public class ScriptRegistry
         @Override
         public void publishTo(Object inData)
         {
-            onMarketDataEvent(((EventBase)inData).getFIXMessage());
+            if(inData instanceof HasFIXMessage) {
+                onMarketDataEvent(((HasFIXMessage)inData).getMessage());
+            }
+            // TODO also notify scripts for BBO and depth-of-book?
+            // TODO also notify scripts for ExecutionReports?
+            // TODO also notify scripts on any FIX message? - onFIXEvent
         }           
 	};
 	/**
@@ -107,8 +114,7 @@ public class ScriptRegistry
      * 
      * @param inFeed a <code>IMarketDataFeed</code> value
 	 */	
-	@SuppressWarnings("unchecked") //$NON-NLS-1$
-    public void connectToMarketDataFeed(IMarketDataFeed inFeed)
+    public void connectToMarketDataFeed(IMarketDataFeed<?,?> inFeed)
 	{
         logger.debug(String.format("Registering feed %s with the Script Registry", //$NON-NLS-1$
                                    inFeed));
@@ -124,8 +130,7 @@ public class ScriptRegistry
 	 * 
      * @param inFeed a <code>IMarketDataFeed</code> value
 	 */
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
-	public void disconnectFromMarketDataFeed(IMarketDataFeed inFeed)
+	public void disconnectFromMarketDataFeed(IMarketDataFeed<?,?> inFeed)
 	{
         logger.debug(String.format("Unregistering feed %s with the Script Registry", //$NON-NLS-1$
                                    inFeed));

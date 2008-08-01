@@ -2,10 +2,8 @@ package org.marketcetera.photon.views;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.Message;
@@ -56,13 +54,7 @@ public class StockOrderTicketModel
         synchronized(bids) {
             bids.add(inBid);
         }
-        try {
-            getPublisher().publishAndWait(publication);
-        } catch (InterruptedException e) {
-            PhotonPlugin.getMainConsoleLogger().error(e);
-        } catch (ExecutionException e) {
-            PhotonPlugin.getMainConsoleLogger().error(e);
-        }
+        getPublisher().publish(publication);
     }
     public void addOffer(MarketDataSnapshotFullRefresh.NoMDEntries inOffer)
     {
@@ -71,13 +63,7 @@ public class StockOrderTicketModel
         synchronized(offers) {
             offers.add(inOffer);
         }
-        try {
-            getPublisher().publishAndWait(publication);
-        } catch (InterruptedException e) {
-            PhotonPlugin.getMainConsoleLogger().error(e);
-        } catch (ExecutionException e) {
-            PhotonPlugin.getMainConsoleLogger().error(e);
-        }
+        getPublisher().publish(publication);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.photon.views.OrderTicketModel#createNewOrder()

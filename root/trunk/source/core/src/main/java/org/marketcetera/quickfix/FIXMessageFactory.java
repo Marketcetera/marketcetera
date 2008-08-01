@@ -1,15 +1,61 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
-import quickfix.*;
-import quickfix.field.*;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor;
+
+import quickfix.FieldNotFound;
+import quickfix.Group;
+import quickfix.Message;
+import quickfix.MessageFactory;
+import quickfix.SessionNotFound;
+import quickfix.StringField;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.BeginSeqNo;
+import quickfix.field.BusinessRejectReason;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.CxlRejReason;
+import quickfix.field.CxlRejResponseTo;
+import quickfix.field.EndSeqNo;
+import quickfix.field.ExecID;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.MDEntryType;
+import quickfix.field.MDReqID;
+import quickfix.field.MarketDepth;
+import quickfix.field.MsgSeqNum;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.OrdRejReason;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.Price;
+import quickfix.field.RefMsgType;
+import quickfix.field.RefSeqNum;
+import quickfix.field.SecurityListRequestType;
+import quickfix.field.SecurityReqID;
+import quickfix.field.SenderCompID;
+import quickfix.field.SendingTime;
+import quickfix.field.SessionRejectReason;
+import quickfix.field.Side;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.TargetCompID;
+import quickfix.field.Text;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 
 /**
  * Factory class that creates a particular beginString of the FIX message
@@ -128,6 +174,44 @@ public class FIXMessageFactory {
             }
         }
         return request;
+    }
+    /**
+     * Generates a <code>Security List Request</code> FIX message.
+     *
+     * @param inReqID a <code>String</code> value containing a unique request ID
+     * @return a <code>Message</code> value
+     */
+    public Message newSecurityListRequest(String inReqID)
+    {        
+        FIXVersion thisVersion = FIXVersion.getFIXVersion(beginString);
+        if(thisVersion.equals(FIXVersion.FIX43) ||
+           thisVersion.equals(FIXVersion.FIX44)) {
+            Message request = msgFactory.create(beginString, 
+                                                MsgType.SECURITY_LIST_REQUEST);
+            request.setField(new SecurityReqID(inReqID));
+            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));            
+            return request;
+        }
+        throw new IllegalStateException();
+    }
+    /**
+     * Generates a <code>Derivative Security List Request</code> FIX message.
+     *
+     * @param inReqID a <code>String</code> value containing a unique request ID
+     * @return a <code>Message</code> value
+     */
+    public Message newDerivativeSecurityListRequest(String inReqID)
+    {
+        FIXVersion thisVersion = FIXVersion.getFIXVersion(beginString);
+        if(thisVersion.equals(FIXVersion.FIX43) ||
+           thisVersion.equals(FIXVersion.FIX44)) {
+            Message request = msgFactory.create(beginString, 
+                                                MsgType.DERIVATIVE_SECURITY_LIST_REQUEST);
+            request.setField(new SecurityReqID(inReqID));
+            request.setField(new SecurityListRequestType(SecurityListRequestType.SYMBOL));            
+            return request;
+        }
+        throw new IllegalStateException();
     }
     public Message newLimitOrder(
             String clOrderID,

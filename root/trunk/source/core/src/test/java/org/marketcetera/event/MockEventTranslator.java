@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.event.AbstractEventTranslatorTest.MessageEvent;
 
 import quickfix.Message;
 
@@ -25,6 +26,7 @@ public class MockEventTranslator
     private static boolean sTranslateToEventsReturnsNull = false;
     private static boolean sTranslateToEventsReturnsZeroEvents = false;
     private static MockEventTranslator sInstance = new MockEventTranslator();
+    private static Message sMessageToReturn = null;
     /**
      * Gets a <code>TestEventTranslator</code> value.
      *
@@ -50,7 +52,9 @@ public class MockEventTranslator
             return new ArrayList<EventBase>();
         }
         Message message = null;
-        if(inData instanceof Message) {
+        if(sMessageToReturn != null) {
+            message = sMessageToReturn;
+        } else if(inData instanceof Message) {
             message = (Message)inData;
         }
         if(inData instanceof SymbolExchangeEvent) {
@@ -58,9 +62,7 @@ public class MockEventTranslator
             updateEventFixMessageSnapshot(see);
             return Arrays.asList(new EventBase[] { see });
         }
-        return Arrays.asList(new EventBase[] { new UnknownEvent(System.nanoTime(),
-                                                                System.currentTimeMillis(),
-                                                                message) });
+        return Arrays.asList(new EventBase[] { new MessageEvent(message) });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
@@ -93,5 +95,14 @@ public class MockEventTranslator
     public static void setTranslateToEventsReturnsNull(boolean inTranslateToEventsReturnsNull)
     {
         sTranslateToEventsReturnsNull = inTranslateToEventsReturnsNull;
+    }
+    /**
+     * Sets the messageToReturn value.
+     *
+     * @param a <code>MockEventTranslator</code> value
+     */
+    public static void setMessageToReturn(Message inMessageToReturn)
+    {
+        sMessageToReturn = inMessageToReturn;
     }
 }

@@ -3,6 +3,7 @@ package org.marketcetera.marketdata;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -66,5 +67,12 @@ public interface Messages
 
     static final I18NMessage1P MARKET_DATA_FEED_CANNOT_EXEC_REQUESTS = 
         new I18NMessage1P(LOGGER,"market_data_feed_cannot_exec_requests"); //$NON-NLS-1$
-
+    static final I18NMessage1P CANNOT_RETRIEVE_STORED_EVENT_INFORMATION = new I18NMessage1P(LOGGER,
+                                                                                            "cannot_retrieve_stored_event_information"); //$NON-NLS-1$
+    static final I18NMessage0P ORDER_BOOK_DEPTH_MUST_BE_POSITIVE = new I18NMessage0P(LOGGER,
+                                                                                     "order_book_depth_must_be_positive"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_CONVERT_EVENT_TO_ENTRY_TYPE = new I18NMessage1P(LOGGER,
+                                                                                      "cannot_convert_event_to_entry_type"); //$NON-NLS-1$
+    static final I18NMessage2P SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL = new I18NMessage2P(LOGGER,
+                                                                                           "symbol_does_not_match_order_book_symbol"); //$NON-NLS-1$
 }

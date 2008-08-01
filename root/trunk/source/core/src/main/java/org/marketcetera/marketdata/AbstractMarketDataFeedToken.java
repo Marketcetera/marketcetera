@@ -129,7 +129,6 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      */
     // this is to avoid having to add all the types to the class declaration to
     //  define the type of mFeed
-//    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public final void cancel()
     {
         if(getStatus().cancelable()) {

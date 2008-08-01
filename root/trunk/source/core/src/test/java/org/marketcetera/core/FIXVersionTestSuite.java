@@ -113,7 +113,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         }
     }
 
-    private FIXDataDictionaryManager initializeFIXDataDictionaryManager(FIXVersion[] inVersions)
+    public static FIXDataDictionaryManager initializeFIXDataDictionaryManager(FIXVersion[] inVersions)
             throws FIXFieldConverterNotAvailable
     {
         HashMap<FIXVersion, String> map = new HashMap<FIXVersion, String>();

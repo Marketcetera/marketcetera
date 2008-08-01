@@ -3,17 +3,21 @@ package org.marketcetera.bogusfeed;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 
 import quickfix.Message;
+
+/* $License$ */
 
 /**
  * Message format for {@link BogusFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusMessage
 {
     private final Message mMessage;

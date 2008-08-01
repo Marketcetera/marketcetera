@@ -12,9 +12,9 @@ import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.parser.TimeInForceImage;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
@@ -189,8 +189,7 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 		
-		MockMarketDataFeed feed = (MockMarketDataFeed) marketDataFeedTracker.getMarketDataFeedService().getMarketDataFeed();
-		feed.setMessageToSend(quoteMessageToSend);
+		MockEventTranslator.setMessageToReturn(quoteMessageToSend);
 
 		controller.listenMarketData(symbolStr);
 		controller.setOrderMessage(orderMessage);		

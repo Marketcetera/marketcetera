@@ -475,5 +475,13 @@ public interface Messages
     public static I18NMessage0P REQUIRED_LABEL = new I18NMessage0P(LOGGER,
                                                                    "required_label"); //$NON-NLS-1$
     public static I18NMessage0P LISTENER_EXECUTION_FAILED = new I18NMessage0P(LOGGER,
-                                                                              "listener_execution_failed"); //$NON-NLS-1$    
+                                                                              "listener_execution_failed"); //$NON-NLS-1$
+    public static I18NMessage0P BID_SZ_LABEL = new I18NMessage0P(LOGGER,
+                                                                 "bid_sz_label"); //$NON-NLS-1$
+    public static I18NMessage0P BID_LABEL = new I18NMessage0P(LOGGER,
+                                                              "bid_label"); //$NON-NLS-1$
+    public static I18NMessage0P ASK_LABEL = new I18NMessage0P(LOGGER,
+                                                              "ask_label"); //$NON-NLS-1$
+    public static I18NMessage0P ASK_SZ_LABEL = new I18NMessage0P(LOGGER,
+                                                                 "ask_sz_label"); //$NON-NLS-1$
 }

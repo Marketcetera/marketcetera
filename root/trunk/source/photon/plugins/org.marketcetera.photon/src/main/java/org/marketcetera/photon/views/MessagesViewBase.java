@@ -1,6 +1,7 @@
 package org.marketcetera.photon.views;
 
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
@@ -8,6 +9,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -17,6 +19,7 @@ import org.eclipse.ui.IMemento;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPartSite;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionFactory;
@@ -359,5 +362,47 @@ public abstract class MessagesViewBase<T>
         selectAllAction.setActionDefinitionId( "org.eclipse.ui.edit.selectAll" );  //$NON-NLS-1$
     }
 
+    /**
+     * Sets the view cursor to the system wait cursor while the given block executes.
+     * 
+     * <p>At the close of the given block, the cursor is guaranteed to be reset to the state it was in at the start of the block.
+     *
+     * @param inSite a <code>IWorkbenchPartSite</code> value
+     * @param inBlock a <code>Callable&lt;V&gt;</code> value containing the code to execute while the wait cursor is displayed
+     * @return a <code>V</code> value
+     * @throws Exception if an error occurs during the block execution
+     */
+    public static <V> V doWaitCursor(IWorkbenchPartSite inSite,
+                                     Callable<V> inBlock)
+        throws Exception
+    {
+        Cursor initialCursor = inSite.getShell().getCursor();
+        try {
+            inSite.getShell().setCursor(inSite.getShell().getDisplay().getSystemCursor(SWT.CURSOR_WAIT));
+            return inBlock.call();
+        } finally {
+            inSite.getShell().setCursor(initialCursor);
+        }
+    }
 
+    /**
+     * Sets the view cursor to the system wait cursor while the given block executes.
+     * 
+     * <p>At the close of the given block, the cursor is guaranteed to be reset to the state it was in at the start of the block.
+     *
+     * @param inSite a <code>IWorkbenchPartSite</code> value
+     * @param inBlock a <code>Runnable</code> value containing the code to execute while the wait cursor is displayed
+     * @throws Exception if an error occurs during the block execution
+     */
+    public static void doWaitCursor(IWorkbenchPartSite inSite,
+                                    Runnable inBlock)
+    {
+        Cursor initialCursor = inSite.getShell().getCursor();
+        try {
+            inSite.getShell().setCursor(inSite.getShell().getDisplay().getSystemCursor(SWT.CURSOR_WAIT));
+            inBlock.run();
+        } finally {
+            inSite.getShell().setCursor(initialCursor);
+        }
+    }
 }

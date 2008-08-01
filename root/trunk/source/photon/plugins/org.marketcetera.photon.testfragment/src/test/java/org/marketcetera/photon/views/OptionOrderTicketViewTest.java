@@ -18,11 +18,10 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.OptionMessageHolder;
-import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
 import org.marketcetera.photon.preferences.CustomOrderFieldPage;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtilTest;
@@ -67,7 +66,6 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 public class OptionOrderTicketViewTest extends ViewTestBase {
     private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 	private OptionOrderTicketController controller;
-	private MockMarketDataFeed mockFeed;
 	
 	public OptionOrderTicketViewTest(String name) {
 		super(name);
@@ -82,8 +80,6 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 			fail("Test view was not created");
 		}
 		
-		MarketDataFeedService<?> feedService = MockMarketDataFeed.registerMockMarketDataFeed();
-		mockFeed = MockMarketDataFeed.getMockMarketDataFeed(feedService);
 		
 		controller = PhotonPlugin.getDefault().getOptionOrderTicketController();
 	}
@@ -339,7 +335,7 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 //		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)subscription).getCorrelationFieldValue()));
 
-		mockFeed.setMessageToSend(quoteMessageToSend);
+		MockEventTranslator.setMessageToReturn(quoteMessageToSend);
 		
 		controller.listenMarketData(optionRoot);
 

@@ -22,7 +22,7 @@ import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.SymbolExchangeEvent;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IFeedComponent;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
@@ -350,6 +350,7 @@ public class MarketDataView
                             String quoteMessageSymbol = quote.getString(Symbol.FIELD);
                             if (holderMessageSymbol.equals(quoteMessageSymbol)) {
                                 IncomingMessageHolder newHolder = new IncomingMessageHolder(quote);
+                                newHolder.setToken(holder.getToken());
                                 list.set(i, 
                                          newHolder);
                                 getMessagesViewer().update(newHolder, 
@@ -410,6 +411,7 @@ public class MarketDataView
 				MSymbol mSymbol = service.symbolFromString(stringValue);
 				message.setField(new Symbol(stringValue));
 				doSubscribe(mSymbol);
+				messageHolder.setToken(doSubscribe(mSymbol));
 			}
 		}
 	}
@@ -438,13 +440,13 @@ public class MarketDataView
 			}
 			switch(index){
 			case BID_SIZE_INDEX:
-				return "BidSz"; //$NON-NLS-1$
+				return BID_SZ_LABEL.getText();
 			case BID_INDEX:
-				return "Bid"; //$NON-NLS-1$
+				return BID_LABEL.getText();
 			case ASK_INDEX:
-				return "Ask"; //$NON-NLS-1$
+				return ASK_LABEL.getText();
 			case ASK_SIZE_INDEX:
-				return "AskSz"; //$NON-NLS-1$
+				return ASK_SZ_LABEL.getText();
 			default:
 				return ""; //$NON-NLS-1$
 			}
@@ -475,9 +477,9 @@ public class MarketDataView
 
 			Message message = new Message();
 			message.setField(new Symbol(symbol.toString()));
-			list.add(new MessageHolder(message));
-
-			doSubscribe(symbol);
+			MessageHolder messageHolder = new MessageHolder(message);
+			list.add(messageHolder);
+			messageHolder.setToken(doSubscribe(symbol));
 		}
 	}
 	
@@ -531,44 +533,65 @@ public class MarketDataView
 		
 	}
 
-	private void doUnsubscribe(MSymbol symbol) 
+	private void doUnsubscribe(final MSymbol symbol) 
 	{
-	    IMarketDataFeedToken<?> token = tokenMap.remove(symbol);
-	    if(token != null) {
-	        PhotonPlugin.getMainConsoleLogger().debug(String.format("Unsubscribing to updates for %s", //$NON-NLS-1$
-	                                                                symbol));
-	        token.cancel();
-	    } else {
-            PhotonPlugin.getMainConsoleLogger().warn(CANNOT_UNSUBSCRIBE_NO_RECORD.getText(symbol));
-	    }
-	}
+	    doWaitCursor(getSite(),
+	                 new Runnable() {
+	        @Override
+	        public void run()
+	        {
+	            IMarketDataFeedToken<?> token = tokenMap.remove(symbol);
+	            if(token != null) {
+	                PhotonPlugin.getMainConsoleLogger().debug(String.format("Unsubscribing to updates for %s", //$NON-NLS-1$
+	                                                                        symbol));
+	                token.cancel();
+	            } else {
+                        PhotonPlugin.getMainConsoleLogger().warn(CANNOT_UNSUBSCRIBE_NO_RECORD.getText(symbol));
+	            }
+	        }
 
-	private void doSubscribe(MSymbol symbol) 
+	    });
+	}
+	
+	private IMarketDataFeedToken<?> doSubscribe(final MSymbol symbol) 
 	{
-		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
+	    final MarketDataView theView = this;
 		try {
-			if (service == null) {
-				PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
-			} else {
-				Message newSubscribeBBO = MarketDataUtils.newSubscribeBBO(symbol);
-				// this odd try/catch accounts for the equally odd behavior of the id factory.
-				//  it may throw an exception the first time around but will subsequently
-				//  be capable of returning ids.  weird.
-				String id;
-				try {
-				    id = PhotonPlugin.getDefault().getIDFactory().getNext();
-				} catch (Throwable t) {
-				    id = PhotonPlugin.getDefault().getIDFactory().getNext();
-				}
-				newSubscribeBBO.setField(new MDReqID(id));
-				tokenMap.put(symbol, 
-				             service.execute(newSubscribeBBO, 
-				                             this));
-				getMessagesViewer().refresh();
-			}
-		} catch (CoreException e) {
-		    e.printStackTrace();
-			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol));
+	        return doWaitCursor(getSite(),
+	                            new Callable<IMarketDataFeedToken<?>>() {
+	            @Override 
+	            public IMarketDataFeedToken<?> call()
+	                throws Exception
+	            {
+	                MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
+	                IMarketDataFeedToken<?> token = null;
+	                if (service == null) {
+ 			    PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
+	                } else {
+	                    Message newSubscribeBBO = MarketDataUtils.newSubscribeBBO(symbol);
+	                    // this odd try/catch accounts for the equally odd behavior of the id factory.
+	                    //  it may throw an exception the first time around but will subsequently
+	                    //  be capable of returning ids.  weird.
+	                    String id;
+	                    try {
+	                        id = PhotonPlugin.getDefault().getIDFactory().getNext();
+	                    } catch (Throwable t) {
+	                        id = PhotonPlugin.getDefault().getIDFactory().getNext();
+	                    }
+	                    newSubscribeBBO.setField(new MDReqID(id));
+	                    token = service.execute(newSubscribeBBO, 
+                                                theView);
+	                    tokenMap.put(symbol, 
+	                                 token);
+	                    getMessagesViewer().refresh();
+	                }
+	                return token;
+	            }
+	        });
+		} catch (Exception e) {
+			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol),
+                                                                 e);
+			return null;
 		}
 	}
 
@@ -582,16 +605,16 @@ public class MarketDataView
 
 	public boolean isInteresting(Object message) {
 		
-		return  message instanceof SymbolExchangeEvent
+		return message instanceof HasFIXMessage
 		|| (message instanceof Message && FIXMessageUtil.isMarketDataSnapshotFullRefresh((Message) message));
 	}
 
 	public void publishTo(Object aQuote) {
 		Message message;
-		if (aQuote instanceof SymbolExchangeEvent){
-			message = ((SymbolExchangeEvent) aQuote).getFIXMessage();
+		if (aQuote instanceof HasFIXMessage){
+			message = ((HasFIXMessage)aQuote).getMessage();
 		} else {
-			message = (Message) aQuote;
+			message = (Message)aQuote;
 		}
 		onQuote(message);
 	}

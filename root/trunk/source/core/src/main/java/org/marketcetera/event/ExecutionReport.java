@@ -2,13 +2,40 @@ package org.marketcetera.event;
 
 import java.math.BigDecimal;
 
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MessageKey;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;
-import quickfix.field.*;
+import quickfix.field.AvgPx;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LeavesQty;
+import quickfix.field.OrdStatus;
+import quickfix.field.Side;
+import quickfix.field.Symbol;
 
-public class ExecutionReport extends EventBase {
+/* $License$ */
 
+/**
+ * Represents a market Execution Report.
+ *
+ * @author gmiller
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since 0.5.0
+ */
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class ExecutionReport 
+    extends EventBase
+    implements HasFIXMessage
+{
 	private String execID;
 	private String clOrdID;
 	private Character execTransType;
@@ -22,6 +49,10 @@ public class ExecutionReport extends EventBase {
 	private BigDecimal cumQty;
 	private BigDecimal avgPx;
 	private String lastMkt;
+	/**
+	 * the underlying FIX message for the execution report
+	 */
+	private Message mExecutionReport;
 	
 	public ExecutionReport(long messageId, long timestamp,
 			String execID, String clOrdID, Character execTransType,
@@ -43,11 +74,26 @@ public class ExecutionReport extends EventBase {
 		this.lastPx = lastPx;
 		this.lastMkt = lastMkt;
 	}
-	
-	public ExecutionReport(long messageId, long timestamp, Message executionReport) throws IllegalArgumentException {
-		super(messageId, timestamp, executionReport);
-		
-		if (!FIXMessageUtil.isExecutionReport(executionReport)){
+	/**
+	 * Create a new ExecutionReport instance.
+	 *
+	 * @param messageId a <code>long</code> value
+	 * @param timestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code> in UTC
+	 * @param executionReport
+	 * @throws NullPointerException if the given FIX message is null
+	 * @throws IllegalArgumentException if the given FIX message is not an Execution Report
+	 */
+	public ExecutionReport(long messageId, 
+	                       long timestamp, 
+	                       Message executionReport) 
+	    throws IllegalArgumentException 
+	{
+		super(messageId, 
+		      timestamp);
+		if(executionReport == null) {
+		    throw new NullPointerException();
+		}
+		if(!FIXMessageUtil.isExecutionReport(executionReport)){
 			throw new IllegalArgumentException(Messages.ERROR_MSG_NOT_EXEC_REPORT.getText());
 		}
 
@@ -64,8 +110,8 @@ public class ExecutionReport extends EventBase {
 		lastShares = safeGetBigDecimal(LastShares.FIELD, executionReport);
 		lastPx = safeGetBigDecimal(LastPx.FIELD, executionReport);
 		lastMkt = safeGetString(LastMkt.FIELD, executionReport);
+		mExecutionReport = executionReport;
 	}
-    
 
 	private String safeGetString(int field, Message message) {
 		try {
@@ -131,4 +177,21 @@ public class ExecutionReport extends EventBase {
 	public String getClOrdID() {
 		return clOrdID;
 	}
+	/**
+	 * Returns the underlying FIX message for this execution report.
+	 *
+	 * @return a <code>Message</code> value
+	 */
+	public Message getExecutionReport()
+	{
+	    return mExecutionReport;
+	}
+    /* (non-Javadoc)
+     * @see org.marketcetera.event.HasFIXMessage#getMessage()
+     */
+    @Override
+    public Message getMessage()
+    {
+        return getExecutionReport();
+    }
 }

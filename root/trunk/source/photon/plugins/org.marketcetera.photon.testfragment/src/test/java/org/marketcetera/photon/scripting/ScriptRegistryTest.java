@@ -21,7 +21,7 @@ import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.event.EventBase;
+import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MockMarketDataFeed;
@@ -229,7 +229,7 @@ public class ScriptRegistryTest extends TestCase {
                      subscriber.getPublishCount());
         // make sure it was the message we expected
         assertEquals(message1,
-                     ((EventBase)subscriber.getData()).getFIXMessage());
+                     ((HasFIXMessage)subscriber.getData()).getMessage());
         // make sure the registry was not notified
         assertTrue(registry.getMessagesReceived().isEmpty());
         // reset the subscriber
@@ -262,7 +262,7 @@ public class ScriptRegistryTest extends TestCase {
                      subscriber.getPublishCount());
         // make sure it was the message we expected
         assertEquals(message2,
-                     ((EventBase)subscriber.getData()).getFIXMessage());
+                     ((HasFIXMessage)subscriber.getData()).getMessage());
         // make sure the registry *did* get this one
         assertEquals(1,
                      registry.getMessagesReceived().size());
@@ -291,7 +291,7 @@ public class ScriptRegistryTest extends TestCase {
                      subscriber.getPublishCount());
         // make sure it was the message we expected
         assertEquals(message3,
-                     ((EventBase)subscriber.getData()).getFIXMessage());
+                     ((HasFIXMessage)subscriber.getData()).getMessage());
         // make sure the registry was not notified
         assertTrue(registry.getMessagesReceived().isEmpty());
     }
