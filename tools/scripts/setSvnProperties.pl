@@ -186,6 +186,8 @@ sub walk ()
 		$mime='text/plain';
 	} elsif (/\.txt$/io) {
 		$mime='text/plain';
+	} elsif (/\.((sh)|(bat))$/io) {
+		$mime='text/x-shellscript';
 	} elsif (/\.xml$/io) {
 		$mime='text/xml';
 	} else {
