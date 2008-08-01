@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *
  * @author klim@marketcetera.com
  * @since $Release$
- * @version $Id: $
+ * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface TestMessages

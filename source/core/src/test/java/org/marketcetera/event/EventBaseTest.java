@@ -15,7 +15,7 @@ import org.junit.Test;
  * Tests {@link EventBase} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
 public class EventBaseTest
@@ -69,7 +69,7 @@ public class EventBaseTest
      * An event with no additional behavior.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since $Release$
      */
     public static class MockEvent

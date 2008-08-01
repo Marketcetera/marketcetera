@@ -53,7 +53,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * all be unique according to the event's natural ordering.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
@@ -590,7 +590,7 @@ public class OrderBook
      * Describes the type of FIX message to produce.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since $Release$
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
@@ -604,7 +604,7 @@ public class OrderBook
      * Stores the orders of one side of a book.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since $Release$
      */
     @ClassVersion("$Id$") //$NON-NLS-1$

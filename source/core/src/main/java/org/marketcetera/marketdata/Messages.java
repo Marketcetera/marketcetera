@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  * @version $Id$
  */
-@ClassVersion("$Id: $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     /**

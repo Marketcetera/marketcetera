@@ -8,7 +8,7 @@ import org.marketcetera.util.l10n.MessageComparator;
 
 /**
  * @author toli
- * @version $Id: OrderLoaderMessageKeyTest.java 9257 2008-05-29 11:35:48Z tlerios $
+ * @version $Id$
  */
 
 public class MessagesTest extends TestCase {

@@ -11,7 +11,7 @@ import org.marketcetera.util.l10n.MessageComparator;
  * Tests Photon messages.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
 public class MessagesTest

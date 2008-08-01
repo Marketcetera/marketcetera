@@ -8,9 +8,9 @@ import org.marketcetera.util.log.I18NBoundMessage;
 /**
  * @author klim@marketcetera.com
  * @since $Release$
- * @version $Id: $
+ * @version $Id$
  */
-@ClassVersion("$Id: $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CoreException
     extends I18NException
 {

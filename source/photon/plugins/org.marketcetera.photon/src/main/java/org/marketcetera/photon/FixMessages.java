@@ -11,10 +11,10 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * External message constants for FIX messages in Photon.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: FIXFieldLocalizer.java 7186 2008-05-01 21:36:09Z tlerios $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface FixMessages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("photon_fix"); //$NON-NLS-1$
