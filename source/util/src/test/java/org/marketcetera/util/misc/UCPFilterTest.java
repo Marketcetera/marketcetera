@@ -23,6 +23,10 @@ public class UCPFilterTest
         assertTrue(UCPFilter.VALID.isAcceptable(' '));
         assertFalse(UCPFilter.VALID.isAcceptable(0xD800));
 
+        assertTrue(UCPFilter.CHAR.isAcceptable(' '));
+        assertTrue(UCPFilter.CHAR.isAcceptable(0xFFFF));
+        assertFalse(UCPFilter.CHAR.isAcceptable(0x10000));
+
         assertTrue(UCPFilter.DIGIT.isAcceptable('1'));
         assertFalse(UCPFilter.DIGIT.isAcceptable('a'));
 
