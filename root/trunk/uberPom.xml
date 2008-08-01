@@ -224,21 +224,6 @@
 
   <profiles>
     <profile>
-      <id>simple.compile</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-              <source>1.${javase.version}</source>
-              <target>1.${javase.version}</target>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-    <profile>
       <id>safe.compile</id>
       <build>
         <plugins>
@@ -249,8 +234,19 @@
               <showDeprecation>true</showDeprecation>
               <showWarnings>true</showWarnings>
               <compilerArgument>-Xlint</compilerArgument>
-              <source>1.${javase.version}</source>
-              <target>1.${javase.version}</target>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>i18n.tests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <argLine>-Duser.language=${jvm.locale.language} -Duser.country=${jvm.locale.country} -Duser.variant=${jvm.locale.variant}</argLine>
             </configuration>
           </plugin>
         </plugins>
@@ -282,6 +278,16 @@
           <configuration>
             <disableXmlReport>true</disableXmlReport>
             <forkMode>always</forkMode>
+          </configuration>
+        </plugin>
+
+        <!-- mvn compile -->
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+            <source>1.${javase.version}</source>
+            <target>1.${javase.version}</target>
           </configuration>
         </plugin>
 

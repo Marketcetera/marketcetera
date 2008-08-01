@@ -16,7 +16,7 @@
 
   <profiles>
     <profile>
-      <id>User Settings</id>
+      <id>user.settings</id>
       <properties>
         <!-- Optional: local JRuby installation. -->
         <jruby.home>C:\jruby1.0.3</jruby.home>
@@ -24,14 +24,18 @@
         <jython.home>C:\jython2.2.1</jython.home>
         <!-- Optional: local Perl installation. -->
         <perl.path>C:\Perl\bin\perl.exe</perl.path>
+        <!-- Optional: custom locale. -->
+        <jvm.locale.language></jvm.locale.language>
+        <jvm.locale.country></jvm.locale.country>
+        <jvm.locale.variant></jvm.locale.variant>
       </properties>
     </profile>
   </profiles>
 
   <activeProfiles>
-    <!-- Default error-checking. -->
-    <!-- <activeProfile>simple.compile</activeProfile> -->
     <!-- Detailed error-checking. -->
     <activeProfile>safe.compile</activeProfile>
+    <!-- Internationalized tests. -->
+    <!-- <activeProfile>i18n.tests</activeProfile> -->
   </activeProfiles>
 </project>
