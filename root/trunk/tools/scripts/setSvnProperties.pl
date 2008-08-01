@@ -61,7 +61,11 @@ my(%patternsCustom)=(
 	  => ('core-0.5.0.jar'),
 	'public/source/photon/plugins/org.marketcetera.core.tests'
 	  => ('core-0.5.0-tests.jar'),
+	'public/source/photon/plugins/org.marketcetera.util'
+	  => ('util-0.5.0.jar'),
 	'public/source/photon/plugins/org.marketcetera.bogusfeed'
+	  => ('bin'),
+	'public/source/photon/plugins/org.slf4j'
 	  => ('bin'),
 );
 
