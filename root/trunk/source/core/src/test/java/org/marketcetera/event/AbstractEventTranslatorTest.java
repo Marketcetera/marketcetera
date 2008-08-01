@@ -267,7 +267,7 @@ public class AbstractEventTranslatorTest
         // wait for the subscriber to be notified
         waitForPublication(subscriber);
         // grab the (updated) FIX message from the subscriber and verify the contents
-        Message snapshot = ((SymbolExchangeEvent)subscriber.getData()).getLatestTick();
+        Message snapshot = ((HasFIXMessage)subscriber.getData()).getMessage();
         // the snapshot may have a bid, ask, or trade, or some combination of the three
         boolean hasBid = false;
         boolean hasAsk = false;
