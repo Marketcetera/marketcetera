@@ -20,11 +20,8 @@ import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.event.AbstractEventTranslatorTest.MessageEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
-import org.marketcetera.quickfix.AbstractMessageTranslator;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.MockMessageTranslator;
+import org.marketcetera.quickfix.*;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 import quickfix.Group;
 import quickfix.Message;
@@ -53,9 +50,15 @@ public class AbstractMarketDataFeedTest
     {
         super(inArg0);
     }
-    public static Test suite() 
+    public static Test suite()
     {
-       TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
+        try {
+            FIXVersionTestSuite.initializeFIXDataDictionaryManager(FIXVersionTestSuite.ALL_VERSIONS);
+        } catch (FIXFieldConverterNotAvailable ex) {
+            SLF4JLoggerProxy.error(AbstractMarketDataFeedTest.class, ex);
+            fail();
+        }
+        TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
         return suite;
     }
     /* (non-Javadoc)
@@ -66,7 +69,6 @@ public class AbstractMarketDataFeedTest
             throws Exception
     {
         super.setUp();
-        FIXVersionTestSuite.initializeFIXDataDictionaryManager(FIXVersionTestSuite.ALL_VERSIONS);
         mFixDD = FIXDataDictionaryManager.getFIXDataDictionary(AbstractMarketDataFeed.DEFAULT_MESSAGE_FACTORY);
         FIXDataDictionaryManager.initialize(AbstractMarketDataFeed.DEFAULT_MESSAGE_FACTORY,
                                             mFixDD);
