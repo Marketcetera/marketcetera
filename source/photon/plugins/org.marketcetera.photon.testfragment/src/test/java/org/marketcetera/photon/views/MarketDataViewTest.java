@@ -6,10 +6,10 @@ import java.util.concurrent.Callable;
 
 import org.eclipse.swt.widgets.Table;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
 import org.osgi.framework.BundleContext;
 
 import quickfix.Message;
@@ -46,8 +46,7 @@ public class MarketDataViewTest extends ViewTestBase {
 		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		fixMessage.setString(LastPx.FIELD,"123.4");
 		
-		MockMarketDataFeed mockMarketDataFeed = ((MockMarketDataFeed) marketDataFeedTracker.getMarketDataFeedService().getMarketDataFeed());
-		mockMarketDataFeed.setMessageToSend(fixMessage);
+		MockEventTranslator.setMessageToReturn(fixMessage);
 
 		MarketDataView view = (MarketDataView) getTestView();
 		view.addSymbol(new MSymbol("MRKT"));
@@ -97,8 +96,7 @@ public class MarketDataViewTest extends ViewTestBase {
 		addGroup(fixMessage, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		addGroup(fixMessage, MDEntryType.TRADE, new BigDecimal(priceWithZeroes), BigDecimal.TEN, new Date(), "BGUS");
 		
-		MockMarketDataFeed mockMarketDataFeed = ((MockMarketDataFeed) marketDataFeedTracker.getMarketDataFeedService().getMarketDataFeed());
-		mockMarketDataFeed.setMessageToSend(fixMessage);
+		MockEventTranslator.setMessageToReturn(fixMessage);
 		
 		final MarketDataView view = (MarketDataView)getTestView();
 		view.addSymbol(new MSymbol("MRKT"));

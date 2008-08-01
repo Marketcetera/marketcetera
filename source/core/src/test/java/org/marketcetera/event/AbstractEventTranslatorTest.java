@@ -9,8 +9,12 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MockMarketDataFeed;
 import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
-import org.marketcetera.marketdata.*;
+import org.marketcetera.marketdata.MockMarketDataFeedToken;
 
 import quickfix.Message;
 import quickfix.field.MDEntryPx;
@@ -96,8 +100,7 @@ public class AbstractEventTranslatorTest
                        null,
                        null);
         // test an EventBase subclass that is not a SymbolExchangeEvent
-        mTranslator.updateEventFixMessageSnapshot(new UnknownEvent(System.currentTimeMillis(),
-                                                      System.currentTimeMillis()));
+        mTranslator.updateEventFixMessageSnapshot(new MessageEvent());
         // still empty
         verifySnapshot(mSymbol,
                        token,
@@ -109,7 +112,6 @@ public class AbstractEventTranslatorTest
                                               new BigDecimal("2345.678")); //$NON-NLS-1$
         BidEvent bidE = new BidEvent(System.currentTimeMillis(),
                                      System.currentTimeMillis(),
-                                     null,
                                      mSymbol,
                                      "my-exchange", //$NON-NLS-1$
                                      bid.getPrice(),
@@ -126,7 +128,6 @@ public class AbstractEventTranslatorTest
                                               new BigDecimal("23571113.171923")); //$NON-NLS-1$
         AskEvent askE = new AskEvent(System.currentTimeMillis(),
                                      System.currentTimeMillis(),
-                                     null,
                                      mSymbol,
                                      "my-exchange", //$NON-NLS-1$
                                      ask.getPrice(),
@@ -146,8 +147,7 @@ public class AbstractEventTranslatorTest
                                            mSymbol,
                                            "my-exchange", //$NON-NLS-1$
                                            trade.getPrice(),
-                                           trade.getSize(),
-                                           null);
+                                           trade.getSize());
         mFeed.submitData(token.getHandle(), 
                          tradeE);
         verifySnapshot(mSymbol,
@@ -156,11 +156,10 @@ public class AbstractEventTranslatorTest
                        ask,
                        trade);
         // replace the ask with a new ask
-        ask = new QuantityTuple(new BigDecimal("100200300400.500600"), //$NON-NLS-1$
+        ask = new QuantityTuple(new BigDecimal("100.200300400500600"), //$NON-NLS-1$
                                 new BigDecimal("12345678.91011121314")); //$NON-NLS-1$
         askE = new AskEvent(System.currentTimeMillis(),
                             System.currentTimeMillis(),
-                            null,
                             mSymbol,
                             "my-exchange", //$NON-NLS-1$
                             ask.getPrice(),
@@ -177,7 +176,6 @@ public class AbstractEventTranslatorTest
                                 new BigDecimal("3333.4444444")); //$NON-NLS-1$
         bidE = new BidEvent(System.currentTimeMillis(),
                             System.currentTimeMillis(),
-                            null,
                             mSymbol,
                             "my-exchange", //$NON-NLS-1$
                             bid.getPrice(),
@@ -197,8 +195,7 @@ public class AbstractEventTranslatorTest
                                 mSymbol,
                                 "my-exchange", //$NON-NLS-1$
                                 trade.getPrice(),
-                                trade.getSize(),
-                                null);
+                                trade.getSize());
         mFeed.submitData(token.getHandle(), 
                          tradeE);
         verifySnapshot(mSymbol,
@@ -220,7 +217,6 @@ public class AbstractEventTranslatorTest
                                                  new BigDecimal("1123485923.1273495")); //$NON-NLS-1$
         askE = new AskEvent(System.currentTimeMillis(),
                             System.currentTimeMillis(),
-                            null,
                             newSymbol,
                             "my-exchange", //$NON-NLS-1$
                             newAsk.getPrice(),
@@ -271,7 +267,7 @@ public class AbstractEventTranslatorTest
         // wait for the subscriber to be notified
         waitForPublication(subscriber);
         // grab the (updated) FIX message from the subscriber and verify the contents
-        Message snapshot = ((SymbolExchangeEvent)subscriber.getData()).getFIXMessage();
+        Message snapshot = ((SymbolExchangeEvent)subscriber.getData()).getLatestTick();
         // the snapshot may have a bid, ask, or trade, or some combination of the three
         boolean hasBid = false;
         boolean hasAsk = false;
@@ -348,7 +344,6 @@ public class AbstractEventTranslatorTest
         {
             super(System.currentTimeMillis(),
                   System.currentTimeMillis(),
-                  null,
                   inSymbol,
                   "My-exchange"); //$NON-NLS-1$
         }
@@ -369,7 +364,7 @@ public class AbstractEventTranslatorTest
      * @version $Id$
      * @since 0.5.0
      */
-    private static class QuantityTuple
+    public static class QuantityTuple
     {
         /**
          * the price associated with the event
@@ -385,8 +380,8 @@ public class AbstractEventTranslatorTest
          * @param inPrice a <code>BigDecimal</code> value
          * @param inSize a <code>BigDecimal</code> value
          */
-        private QuantityTuple(BigDecimal inPrice,
-                              BigDecimal inSize)
+        public QuantityTuple(BigDecimal inPrice,
+                             BigDecimal inSize)
         {
             mPrice = inPrice;
             mSize = inSize;
@@ -396,7 +391,7 @@ public class AbstractEventTranslatorTest
          *
          * @return a <code>BigDecimal</code> value
          */
-        private BigDecimal getPrice()
+        public BigDecimal getPrice()
         {
             return mPrice;
         }
@@ -405,7 +400,7 @@ public class AbstractEventTranslatorTest
          *
          * @return a <code>BigDecimal</code> value
          */
-        private BigDecimal getSize()
+        public BigDecimal getSize()
         {
             return mSize;
         }
@@ -453,6 +448,26 @@ public class AbstractEventTranslatorTest
         public String toString()
         {
             return new StringBuilder().append(getSize()).append(" ").append(getPrice()).toString(); //$NON-NLS-1$
+        }
+    }
+    public static class MessageEvent
+        extends EventBase
+        implements HasFIXMessage
+    {
+        private final Message mMessage;
+        public MessageEvent()
+        {
+            this(null);
+        }        
+        public MessageEvent(Message inMessage)
+        {
+            super(System.nanoTime(),
+                  System.currentTimeMillis());
+            mMessage = inMessage;
+        }
+        public Message getMessage()
+        {
+            return mMessage;
         }
     }
 }

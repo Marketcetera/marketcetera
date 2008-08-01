@@ -12,7 +12,6 @@ import org.eclipse.ui.PlatformUI;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.photon.IFieldIdentifier;
-import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.EnumTableFormat;
 import org.marketcetera.photon.ui.Level2ContentProvider;
@@ -35,12 +34,15 @@ import quickfix.field.MDMkt;
  * 
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class StockOrderTicketView
-    extends OrderTicketView
-    implements Messages
-{
+public class StockOrderTicketView extends OrderTicketView {
+
+	private static final String NEW_EQUITY_ORDER = "New Equity Order"; //$NON-NLS-1$
+
+	private static final String REPLACE_EQUITY_ORDER = "Replace Equity Order"; //$NON-NLS-1$
+
 	public static String ID = "org.marketcetera.photon.views.StockOrderTicketView"; //$NON-NLS-1$
 	
 
@@ -87,11 +89,13 @@ public class StockOrderTicketView
 		TableViewer bidViewer = ticket.getLevel2BidTableViewer();
 		TableViewer offerViewer = ticket.getLevel2OfferTableViewer();
 		bidViewer.setLabelProvider(new EnumTableFormat<FieldMap>(bidViewer.getTable(), BookColumns.values()));
-		bidViewer.setContentProvider(new Level2ContentProvider(MDEntryType.BID));
+		bidViewer.setContentProvider(new Level2ContentProvider(MDEntryType.BID,
+		                                                       bids));
 		packColumns(bidViewer.getTable());
 
 		offerViewer.setLabelProvider(new EnumTableFormat<FieldMap>(offerViewer.getTable(), BookColumns.values()));
-		offerViewer.setContentProvider(new Level2ContentProvider(MDEntryType.OFFER));
+		offerViewer.setContentProvider(new Level2ContentProvider(MDEntryType.OFFER,
+		                                                         offers));
 		packColumns(offerViewer.getTable());
 	}
 
@@ -119,12 +123,14 @@ public class StockOrderTicketView
                     {
                         try {
                             StockOrderTicketModel.OrderTicketPublication publication = (StockOrderTicketModel.OrderTicketPublication)inData;
-                            if(publication.getType().equals(OrderTicketModel.OrderTicketPublication.Type.BID)) {
-                                bids.add(publication.getMessage());
-                                bids.setStale(true);
-                            } else {
-                                offers.add(publication.getMessage());
-                                offers.setStale(true);
+                            if(publication.getMessage() != null) {
+                                if(publication.getType().equals(OrderTicketModel.OrderTicketPublication.Type.BID)) {
+                                    bids.clear();
+                                    bids.add(publication.getMessage());
+                                } else {
+                                    offers.clear();
+                                    offers.add(publication.getMessage());
+                                }
                             }
                         } catch (Throwable t) {
                             t.printStackTrace();
@@ -155,11 +161,11 @@ public class StockOrderTicketView
 
 	@Override
 	protected String getReplaceOrderString() {
-		return REPLACE_EQUITY_LABEL.getText();
+		return REPLACE_EQUITY_ORDER;
 	}
 
 	protected String getNewOrderString() {
-		return NEW_EQUITY_LABEL.getText();
+		return NEW_EQUITY_ORDER;
 	}
 
 
@@ -221,5 +227,4 @@ public class StockOrderTicketView
 		}
 
 	};
-
 }

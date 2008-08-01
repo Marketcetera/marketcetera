@@ -1,6 +1,6 @@
 package org.marketcetera.quickfix;
 
-import org.marketcetera.util.except.I18NException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
@@ -10,7 +10,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
  * @version $Id$
  */
 public class UnsupportedMessageException
-        extends I18NException
+        extends CoreException
 {
     private static final long serialVersionUID = -5489749428430923539L;
 

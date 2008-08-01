@@ -11,15 +11,18 @@ import junit.framework.TestSuite;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.event.EventBase;
 import org.marketcetera.event.MockEventTranslator;
+import org.marketcetera.event.AbstractEventTranslatorTest.MessageEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
+import org.marketcetera.quickfix.FIXDataDictionary;
+import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.MockMessageTranslator;
 
@@ -39,6 +42,8 @@ import quickfix.Message;
 public class AbstractMarketDataFeedTest
     extends MarketDataFeedTestBase
 {
+    private FIXDataDictionary mFixDD;
+
     /**
      * Create a new <code>AbstractMarketDataFeedTest</code> instance.
      *
@@ -52,7 +57,20 @@ public class AbstractMarketDataFeedTest
     {
        TestSuite suite = (TestSuite)MarketDataFeedTestBase.suite(AbstractMarketDataFeedTest.class);
         return suite;
-    }        
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.MarketDataFeedTestBase#setUp()
+     */
+    @Override
+    protected void setUp()
+            throws Exception
+    {
+        super.setUp();
+        FIXVersionTestSuite.initializeFIXDataDictionaryManager(FIXVersionTestSuite.ALL_VERSIONS);
+        mFixDD = FIXDataDictionaryManager.getFIXDataDictionary(AbstractMarketDataFeed.DEFAULT_MESSAGE_FACTORY);
+        FIXDataDictionaryManager.initialize(AbstractMarketDataFeed.DEFAULT_MESSAGE_FACTORY,
+                                            mFixDD);
+    }
     public void testConstructor()
         throws Exception
     {
@@ -126,6 +144,26 @@ public class AbstractMarketDataFeedTest
         doMarketDataTest(symbols);
     }
     
+    public void testDerivativeSecurityListRequest()
+        throws Exception
+    {
+        Message request = AbstractMarketDataFeed.derivativeSecurityListRequest();
+        assertNotNull(request);
+        mFixDD.getDictionary().validate(request,
+                                        true);
+        assertTrue(FIXMessageUtil.isDerivativeSecurityListRequest(request));
+    }
+    
+    public void testSecurityListRequest()
+        throws Exception
+    {
+        Message request = AbstractMarketDataFeed.securityListRequest();
+        assertNotNull(request);
+        mFixDD.getDictionary().validate(request,
+                                        true);
+        assertTrue(FIXMessageUtil.isSecurityListRequest(request));
+    }
+
     public void testNoCredentialsSupplied()
         throws Exception
     {
@@ -500,7 +538,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token = feed.execute(spec);
         waitForPublication(s1);
         assertEquals(message0,
-                     ((EventBase)s1.getData()).getFIXMessage());
+                     ((MessageEvent)s1.getData()).getMessage());
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(Status.ACTIVE,
@@ -536,7 +574,7 @@ public class AbstractMarketDataFeedTest
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(message0,
-                     ((EventBase)s1.getPublications().get(0)).getFIXMessage());
+                     ((MessageEvent)s1.getData()).getMessage());
         assertEquals(Status.ACTIVE,
                      token.getStatus());
         // now check to make sure that the resubmitted query has a new handle
@@ -566,7 +604,7 @@ public class AbstractMarketDataFeedTest
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(message2,
-                     ((EventBase)s1.getPublications().get(0)).getFIXMessage());
+                     ((MessageEvent)s1.getPublications().get(0)).getMessage());
         // bonus testing - make a resubmission fail and verify that the token status is set correctly
         // there is already one active query represented by "spec" and "token" - add another one that
         //  we can set to fail when it is resubmitted
@@ -577,7 +615,7 @@ public class AbstractMarketDataFeedTest
         MockMarketDataFeedToken token2 = feed.execute(spec2);
         waitForPublication(s1);
         assertEquals(spec.getMessage(),
-                     ((EventBase)s1.getData()).getFIXMessage());
+                     ((MessageEvent)s1.getData()).getMessage());
         assertEquals(1,
                      s1.getPublishCount());
         assertEquals(Status.ACTIVE,
@@ -663,6 +701,10 @@ public class AbstractMarketDataFeedTest
                                                                                    inUpdate);
         Message levelTwoMessage = AbstractMarketDataFeed.levelTwoMarketDataRequest(inSymbols, 
                                                                                    inUpdate);
+        mFixDD.getDictionary().validate(levelOneMessage,
+                                        true);
+        mFixDD.getDictionary().validate(levelTwoMessage,
+                                        true);
         assertNotNull(levelOneMessage);
         assertNotNull(levelTwoMessage);
         // special case: if the symbol list contains nulls, those nulls will be ignored
@@ -771,6 +813,29 @@ public class AbstractMarketDataFeedTest
                               false);  
             }
         }
+        subscriber.reset();
+        Message fullDepthMessage = AbstractMarketDataFeed.levelTwoMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") }),  //$NON-NLS-1$
+                                                                                    true);
+        doExecuteTest(fullDepthMessage,
+                      subscriber,
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false, 
+                      false);  
     }
 
     public void testParallelExecution()

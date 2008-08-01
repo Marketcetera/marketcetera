@@ -25,6 +25,7 @@ public class ConnectionConstants
     public static final String MARKETDATA_USER_SUFFIX = "user";                          //$NON-NLS-1$
     public static final String MARKETDATA_PASSWORD_SUFFIX = "password";                  //$NON-NLS-1$
     public static final String MARKETDATA_URL_SUFFIX = "url";                            //$NON-NLS-1$
+    public static final String MARKETDATA_SERVICE_SUFFIX = "service"; //$NON-NLS-1$
     
     public static final String WEB_APP_HOST_KEY = "web.app.host";                        //$NON-NLS-1$
     public static final String WEB_APP_PORT_KEY = "web.app.port";                        //$NON-NLS-1$

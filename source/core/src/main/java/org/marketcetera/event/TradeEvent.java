@@ -1,7 +1,10 @@
 package org.marketcetera.event;
 
 import java.math.BigDecimal;
-import quickfix.Message;
+
+import org.marketcetera.core.ClassVersion;
+
+/* $License$ */
 
 /**
  * Represents a Trade for a given security at a specific time.
@@ -9,7 +12,9 @@ import quickfix.Message;
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
+ * @since 0.5.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class TradeEvent 
     extends SymbolExchangeEvent
 {
@@ -21,58 +26,6 @@ public class TradeEvent
      * the size of the trade
      */
 	private final BigDecimal size;
-
-    /**
-     * Create a new TradeEvent instance.
-     *
-     * @param messageID a <code>long</code> value uniquely identifying this event
-     * @param timestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
-     *   in GMT
-     * @param symbol a <code>String</code> value containing the symbol quoted in this event
-     * @param price a <code>BigDecimal</code> value containing the price 
-     * @param size a <code>BigDecimal</code> value containing the size
-     */
-	public TradeEvent(long messageID, 
-                      long timestamp, 
-                      String symbol,
-                      BigDecimal price,
-                      BigDecimal size)
-    {
-		this(messageID, 
-             timestamp, 
-             symbol, 
-             price, 
-             size, 
-             null);
-	}
-
-    /**
-     * Create a new TradeEvent instance.
-     *
-     * @param messageID a <code>long</code> value uniquely identifying this event
-     * @param timestamp a <code>long</code> value containing the number of milliseconds since <code>EPOCH</code>
-     *   in GMT
-     * @param symbol a <code>String</code> value containing the symbol quoted in this event
-     * @param price a <code>BigDecimal</code> value containing the price 
-     * @param size a <code>BigDecimal</code> value containing the size
-     * @param fixMessage a <code>Message</code> value containing the <code>FIX</code> message describing this event
-     */
-	public TradeEvent(long messageID, 
-                      long timestamp, 
-                      String symbol,
-                      BigDecimal price,
-                      BigDecimal size, 
-                      Message fixMessage) 
-    {
-        this(messageID, 
-                 timestamp, 
-                 symbol,
-                 null,
-                 price, 
-                 size, 
-                 fixMessage);
-	}
-
     /**
      * Create a new TradeEvent instance.
      *
@@ -83,25 +36,21 @@ public class TradeEvent
      * @param inExchange a <code>String</code> value containing the exchange on which the trade occurred 
      * @param price a <code>BigDecimal</code> value containing the price 
      * @param size a <code>BigDecimal</code> value containing the size
-     * @param fixMessage a <code>Message</code> value containing the <code>FIX</code> message describing this event
      */
     public TradeEvent(long messageID, 
                       long timestamp, 
                       String symbol,
                       String inExchange,
                       BigDecimal price,
-                      BigDecimal size, 
-                      Message fixMessage) 
+                      BigDecimal size) 
     {
         super(messageID, 
               timestamp, 
-              fixMessage,
               symbol,
               inExchange);
         this.price = price;
         this.size = size;
     }
-    
 	/**
      * Gets the price of the trade. 
      *
@@ -111,7 +60,6 @@ public class TradeEvent
     {
 		return price;
 	}
-
 	/**
      * Gets the size of the trade. 
      *
@@ -121,7 +69,6 @@ public class TradeEvent
     {
 		return size;
 	}
-
 	/**
      * Indicates if the event has a price. 
      *
@@ -131,7 +78,6 @@ public class TradeEvent
     {
 		return price != null;
 	}
-
     /**
      * Indicates if the event has a size. 
      *
@@ -141,7 +87,6 @@ public class TradeEvent
     {        
 		return size != null;
 	}
-
     public String toString()
     {
         StringBuffer output = new StringBuffer();

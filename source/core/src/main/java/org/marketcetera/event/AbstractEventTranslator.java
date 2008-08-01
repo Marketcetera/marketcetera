@@ -1,20 +1,17 @@
 package org.marketcetera.event;
 
+import static org.marketcetera.marketdata.Messages.CANNOT_RETRIEVE_STORED_EVENT_INFORMATION;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 
-import quickfix.Group;
+import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDMkt;
-import quickfix.field.NoMDEntries;
-import quickfix.field.Symbol;
-import quickfix.fix44.MarketDataSnapshotFullRefresh;
 
 /* $License$ */
 
@@ -38,11 +35,16 @@ public abstract class AbstractEventTranslator
         implements IEventTranslator
 {
     /**
+     * this is an arbitrary value chosen to limit the memory used
+     */
+    private static final int MAX_BOOK_DEPTH = 10;
+    /**
      * Updates the given <code>EventBase</code> value's FIX component.
      *
      * <p>The incoming event represents a single component of the Bid, Ask, Trade
      * 3-tuple.  The event will be updated with a FIX message that represents
-     * the most recent version of each component for the given symbol, if available.
+     * the most recent version of each component for the given symbol (Best Bid-and-Offer and
+     * Full Depth-of-Book) if available.
      *
      * @param inEvent an <code>EventBase</code> value
      * @throws NullPointerException if <code>inEvent</code> is null
@@ -55,34 +57,49 @@ public abstract class AbstractEventTranslator
         // first, update the snapshot record for this symbol
         updateSnapshot(inEvent);
         // get the updated snapshot
-        Message message = getSnapshot(inEvent);
-        if(message != null) {
-            inEvent.updateFixMessage(message);
+        try {
+            MessageTuple message = getSnapshot(inEvent);
+            if(message != null) {
+                if(inEvent instanceof BidAskEvent) {
+                    ((BidAskEvent)inEvent).updateBBO(message.getBBO());
+                    ((BidAskEvent)inEvent).updateFullBook(message.getFullBook());
+                }
+                if(inEvent instanceof SymbolExchangeEvent) {
+                    ((SymbolExchangeEvent)inEvent).updateLatestTick(message.getLatestTick());
+                }
+            }
+        } catch (FieldNotFound e) {
+            CANNOT_RETRIEVE_STORED_EVENT_INFORMATION.warn(this,
+                                                          inEvent);
         }
     }
     /**
      * tracks the most recent event aggregation by symbol 
      */
-    private final Map<String,EventTuple> mSnapshots = new HashMap<String,EventTuple>();
+    private final Map<String,OrderBook> mSnapshots = new HashMap<String,OrderBook>();
     /**
      * Returns the most comprehensive snapshot available for the symbol represented by the
      * given event.
      *
      * @param inEvent an <code>EventBase</code> value
-     * @return a <code>Message</code> value or null if <code>inEvent</code> does not contain any symbol information
+     * @return a <code>MessageTuple</code> value or null if <code>inEvent</code> does not contain any symbol information
+     * @throws FieldNotFound 
      */
-    private Message getSnapshot(EventBase inEvent)
+    private MessageTuple getSnapshot(EventBase inEvent) 
+        throws FieldNotFound
     {
         if(!(inEvent instanceof SymbolExchangeEvent)) {
             return null;
         }
         SymbolExchangeEvent event = (SymbolExchangeEvent)inEvent;
         synchronized(mSnapshots) {
-            EventTuple tuple = mSnapshots.get(event.getSymbol());
-            if(tuple == null) {
+            OrderBook book = mSnapshots.get(event.getSymbol());
+            if(book == null) {
                 throw new NullPointerException();
             }
-            return tuple.getSnapshot();
+            return new MessageTuple(book.getBestBidAndOffer(),
+                                    book.getDepthOfBook(),
+                                    book.getLatestTick());
         }
     }
     /**
@@ -92,7 +109,7 @@ public abstract class AbstractEventTranslator
      */
     private void updateSnapshot(EventBase inEvent)
     {
-        // mSnapshots stores a FIX message that is a full snapshot refresh for each symbol
+        // mSnapshots stores bid/ask/trade for each symbol
         // the passed Event represents one piece of the 3-tuple that is the information that
         //  is needed for the symbol.  update the stored FIX message with the piece of info
         //  the passed event represents
@@ -102,156 +119,84 @@ public abstract class AbstractEventTranslator
             if(inEvent instanceof SymbolExchangeEvent) {
                 String symbol = ((SymbolExchangeEvent)inEvent).getSymbol();
                 // look to see if we're already storing some info about this symbol
-                EventTuple tuple = mSnapshots.get(symbol);
-                if(tuple == null) {
+                OrderBook book = mSnapshots.get(symbol);
+                if(book == null) {
                     // nothing yet, this is the first event we're getting on this symbol - create a new entry
-                    tuple = new EventTuple(symbol);
+                    book = new OrderBook(new MSymbol(symbol),
+                                         MAX_BOOK_DEPTH);
                     mSnapshots.put(symbol, 
-                                   tuple);
+                                   book);
                 }
-                // record the new event in the tuple
-                tuple.setEvent(inEvent);
+                // record the new event in the order book
+                book.processEvent((SymbolExchangeEvent)inEvent);
             } else {
                 SLF4JLoggerProxy.debug(this, "Received an unknown event type: {}", inEvent); //$NON-NLS-1$
             }
         }
     }
     /**
-     * Encapsulates the parts of a market data snapshot for a symbol.
+     * Contains the best-book-and-offer, latest tick, and full-depth-of-book for a given symbol.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since 0.5.0
+     * @since $Release$
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
-    private static class EventTuple
+    private static class MessageTuple
     {
         /**
-         * symbol for which data is collected
+         * the best-bid-and-offer for a given symbol
          */
-        private final String mSymbol;
+        private final Message mBBO;
         /**
-         * the bid element of the snapshot
+         * the full depth-of-book for a given symbol
          */
-        private BidEvent mBidEvent = null;
+        private final Message mFullBook;
         /**
-         * the ask element of the snapshot
+         * the latest tick for a given symbol
          */
-        private AskEvent mAskEvent = null;
+        private final Message mLatestTick;
         /**
-         * the trade element of the snapshot
-         */
-        private TradeEvent mTradeEvent = null;
-        /**
-         * Create a new EventTuple instance.
+         * Create a new MessageTuple instance.
          *
-         * @param inSymbol a <code>String</code> value
+         * @param inBBO a <code>Message</code> value
+         * @param inFullBook a <code>Message</code> value
+         * @param inLatestTick a <code>Message</code> value
          */
-        private EventTuple(String inSymbol)
+        private MessageTuple(Message inBBO,
+                             Message inFullBook,
+                             Message inLatestTick)
         {
-            mSymbol = inSymbol;
+            mBBO = inBBO;
+            mFullBook = inFullBook;
+            mLatestTick = inLatestTick;
         }
         /**
-         * Takes the passed <code>EventBase</code> value and maps it
-         * to a component of a market data refresh snapshot.
+         * Get the Best-Bid-and-Offer value.
          *
-         * <p>If the passed <code>EventBase</code> value does not correspond
-         * to a component of a market data refresh snapshot, or is null, it will be ignored.
-         * 
-         * @param inEvent an <code>EventBase</code> value
+         * @return a <code>MessageTuple</code> value
          */
-        private void setEvent(EventBase inEvent)
+        private Message getBBO()
         {
-            if(inEvent == null) {
-                return;
-            }
-            if(inEvent instanceof BidEvent) {
-                mBidEvent = (BidEvent)inEvent;
-            }
-            if(inEvent instanceof AskEvent) {
-                mAskEvent = (AskEvent)inEvent;
-            }
-            if(inEvent instanceof TradeEvent) {
-                mTradeEvent = (TradeEvent)inEvent;
-            }
+            return mBBO;
         }
         /**
-         * Constructs a market data refresh snapshot based on information collected so far for
-         * the symbol associated with this object.
+         * Get the full book value.
          *
-         * @return a <code>Message</code> value
+         * @return a <code>MessageTuple</code> value
          */
-        private Message getSnapshot()
+        private Message getFullBook()
         {
-            // construct a new market data snapshot based on the collected information for the symbol this object
-            //  represents
-            // TODO this needs to be constructed in FIXMessageFactory to hide the specific version being used
-            Message snapshot = new MarketDataSnapshotFullRefresh();
-            snapshot.setField(new Symbol(mSymbol));
-            int groupCounter = 0;
-            // if present, set the OFFER section of the snapshot
-            if(mAskEvent != null) {
-                Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-                group.setField(new MDEntryType(MDEntryType.OFFER));
-                group.setField(new MDEntryPx(mAskEvent.getPrice()));
-                group.setField(new MDEntrySize(mAskEvent.getSize()));
-                group.setField(new MDMkt(mAskEvent.getExchange()));
-                snapshot.addGroup(group);
-                groupCounter += 1;
-            }
-            // if present, set the BID section of the snapshot
-            if(mBidEvent != null) {
-                Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-                group.setField(new MDEntryType(MDEntryType.BID));
-                group.setField(new MDEntryPx(mBidEvent.getPrice()));
-                group.setField(new MDEntrySize(mBidEvent.getSize()));
-                group.setField(new MDMkt(mBidEvent.getExchange()));
-                snapshot.addGroup(group);
-                groupCounter += 1;
-            }
-            // if present, set the TRADE section of the snapshot
-            if(mTradeEvent != null) {
-                Group group = new MarketDataSnapshotFullRefresh.NoMDEntries();
-                group.setField(new MDEntryType(MDEntryType.TRADE));
-                group.setField(new MDEntryPx(mTradeEvent.getPrice()));
-                group.setField(new MDEntrySize(mTradeEvent.getSize()));
-                group.setField(new MDMkt(mTradeEvent.getExchange()));
-                snapshot.addGroup(group);
-                groupCounter += 1;
-            }
-            snapshot.setField(new NoMDEntries(groupCounter));
-            return snapshot;
+            return mFullBook;
         }
-        /* (non-Javadoc)
-         * @see java.lang.Object#hashCode()
+        /**
+         * Get the latest tick value.
+         *
+         * @return a <code>MessageTuple</code> value
          */
-        @Override
-        public int hashCode()
+        private Message getLatestTick()
         {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((mSymbol == null) ? 0 : mSymbol.hashCode());
-            return result;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            final EventTuple other = (EventTuple) obj;
-            if (mSymbol == null) {
-                if (other.mSymbol != null)
-                    return false;
-            } else if (!mSymbol.equals(other.mSymbol))
-                return false;
-            return true;
+            return mLatestTick;
         }
     }
 }

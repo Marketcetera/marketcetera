@@ -7,12 +7,13 @@ import junit.framework.TestSuite;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.marketdata.FeedException;
+import org.marketcetera.marketdata.MockMarketDataFeed;
+import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
+import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
-import org.marketcetera.photon.marketdata.mock.MockMarketDataFeed;
-import org.marketcetera.photon.marketdata.mock.MockMarketDataFeedCredentials;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.OrderFormatterTest;
 import org.marketcetera.photon.parser.ParserTest;
@@ -138,7 +139,10 @@ public class TS_Photon {
 		}
 
 		// register mock feed
-		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(new MockMarketDataFeed());
+		MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.SIMULATED,
+		                                                 new MockMarketDataFeedCredentials());
+		feed.start();
+		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(feed);
 		bundleContext.registerService(MarketDataFeedService.class.getName(), feedService, null);
 		PhotonPlugin.getDefault().getScriptRegistry().connectToMarketDataFeed(feedService.getMarketDataFeed());
 	}

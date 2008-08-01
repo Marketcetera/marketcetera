@@ -387,7 +387,7 @@ public class OptionMarketDataView
 	public void publishTo(Object obj) {
 		Message message;
 		if (obj instanceof SymbolExchangeEvent){
-			message = ((SymbolExchangeEvent) obj).getFIXMessage();
+			message = ((SymbolExchangeEvent) obj).getLatestTick();
 		} else {
 			message = (Message) obj;
 		}

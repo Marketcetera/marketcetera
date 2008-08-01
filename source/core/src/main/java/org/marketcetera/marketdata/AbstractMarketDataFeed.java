@@ -21,6 +21,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.event.AbstractEventTranslator;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.IEventTranslator;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
@@ -64,7 +65,7 @@ import quickfix.field.SubscriptionRequestType;
 public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F,C>, 
                                              C extends IMarketDataFeedCredentials, 
                                              X extends IMessageTranslator<D>, 
-                                             E extends IEventTranslator,
+                                             E extends AbstractEventTranslator,
                                              D,
                                              F extends AbstractMarketDataFeed<?,?,?,?,?,?>> 
     implements IMarketDataFeed<T,C> 
@@ -151,6 +152,38 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         return marketDataRequest(inSymbols,
                                  inSubscribeToResults,
                                  FIXMessageUtil.FULL_BOOK_DEPTH);
+    }
+    /**
+     * Creates a <code>Security List Request</code> FIX message.
+     *
+     * @return a <code>Message</code> value
+     * @throws FeedException if an error occurs constructing the <code>Message</code>
+     */
+    public static Message securityListRequest()
+        throws FeedException 
+    {
+        try {
+            InternalID id = getNextID(); // generate a unique ID for this FIX message
+            return DEFAULT_MESSAGE_FACTORY.getMessageFactory().newSecurityListRequest(id.toString());
+        } catch (NoMoreIDsException e) {
+            throw new FeedException(e);
+        }
+    }
+    /**
+     * Creates a <code>Derivative Security List Request</code> FIX message.
+     *
+     * @return a <code>Message</code> value
+     * @throws FeedException if an error occurs constructing the <code>Message</code>
+     */
+    public static Message derivativeSecurityListRequest()
+        throws FeedException 
+    {
+        try {
+            InternalID id = getNextID(); // generate a unique ID for this FIX message
+            return DEFAULT_MESSAGE_FACTORY.getMessageFactory().newDerivativeSecurityListRequest(id.toString());
+        } catch (NoMoreIDsException e) {
+            throw new FeedException(e);
+        }
     }
     /**
      * Creates a FIX message for the given symbols at the given depth with subscription set accordingly.
@@ -443,7 +476,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     protected abstract T generateToken(MarketDataFeedTokenSpec<C> inTokenSpec)
         throws InterruptedException, FeedException;
     /**
-     * Executes the market data request represented by the passed value.
+     * Executes the Latest-Tick market data request represented by the passed value.
      * 
      * <p>The values returned in the handle list must be unique with respect
      * to the current JVM invocation for this data feed.
@@ -456,7 +489,23 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * @throws FeedException if the request cannot be transmitted to the feed
      * @see IMessageTranslator#translate(Message)
      */
-    protected abstract List<String> doMarketDataRequest(D inData)
+    protected abstract List<String> doLevelOneMarketDataRequest(D inData)
+        throws InterruptedException, FeedException;
+    /**
+     * Executes the Full Depth-of-Book market data request represented by the passed value.
+     * 
+     * <p>The values returned in the handle list must be unique with respect
+     * to the current JVM invocation for this data feed.
+     *
+     * @param inData a <code>D</code> value containing the data returned by
+     *   the corresponding {@link IMessageTranslator}.
+     * @return a <code>List&lt;String&gt;</code> value containing the set of
+     *   handles to be associated with this request
+     * @throws InterruptedException if the thread was interrupted during execution
+     * @throws FeedException if the request cannot be transmitted to the feed
+     * @see IMessageTranslator#translate(Message)
+     */
+    protected abstract List<String> doFullBookMarketDataRequest(D inData)
         throws InterruptedException, FeedException;
     /**
      * Executes the derivative security list request represented by the passed value.
@@ -747,8 +796,16 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             // translate the FIX message to an appropriate proprietary format
             D data = xlator.translate(message);
             if(FIXMessageUtil.isMarketDataRequest(message)) {
-                processResponse(doMarketDataRequest(data), 
-                                inToken);
+                if(FIXMessageUtil.isLevelOne(message)) {
+                    processResponse(doLevelOneMarketDataRequest(data), 
+                                    inToken);
+                } else if(FIXMessageUtil.isFullBook(message)) {
+                    processResponse(doFullBookMarketDataRequest(data), 
+                                    inToken);
+                } else {
+                    Messages.ERROR_MARKET_DATA_FEED_UNKNOWN_MESSAGE_TYPE.error(this);
+                    return false;
+                }
                 return true;
             }
             if(FIXMessageUtil.isDerivativeSecurityListRequest(message)) {
@@ -1200,7 +1257,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * <p>The handle created is guaranteed to be unique within the scope of all
      * data feeds in the current JVM run iff:
      * <ol>
-     *   <li>all proto-handles returned by {@link AbstractMarketDataFeed#doMarketDataRequest(Object)} 
+     *   <li>all proto-handles returned by {@link AbstractMarketDataFeed#doLevelOneMarketDataRequest(Object)} 
      *       are unique within the scope of the relevant feed in the current JVM run</li>
      *   <li>the set of values returned by {@link IMarketDataFeedFactory#getProviderName()} from all
      *       data feeds contains no duplicates</li>

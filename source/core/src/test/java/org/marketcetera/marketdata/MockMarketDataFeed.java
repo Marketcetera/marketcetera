@@ -12,7 +12,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.MockEventTranslator;
 import org.marketcetera.quickfix.MockMessageTranslator;
-import org.marketcetera.util.log.I18NBoundMessage0P;
+import static org.marketcetera.marketdata.TestMessages.*;
 
 /* $License$ */
 
@@ -26,12 +26,13 @@ import org.marketcetera.util.log.I18NBoundMessage0P;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockMarketDataFeed
     extends AbstractMarketDataFeed<MockMarketDataFeedToken,
-        MockMarketDataFeedCredentials,
-        MockMessageTranslator,
-        MockEventTranslator,
+                                   MockMarketDataFeedCredentials,
+                                   MockMessageTranslator,
+                                   MockEventTranslator,
                                    String,
-        MockMarketDataFeed>
+                                   MockMarketDataFeed>
 {
+    private static final String SOME_DSL_IDENTIFIER = "some dsl identifier"; //$NON-NLS-1$
     private final int mDelay;
     
     private int mCounter = 0;
@@ -388,8 +389,7 @@ public class MockMarketDataFeed
     protected List<String> doDerivativeSecurityListRequest(String inData)
             throws FeedException
     {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return Arrays.asList(SOME_DSL_IDENTIFIER);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doSecurityListRequest(java.lang.Object)
@@ -548,5 +548,63 @@ public class MockMarketDataFeed
             return mTimeout;
         }
         return super.getTimeout();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doBBOMarketDataRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doLevelOneMarketDataRequest(String inData)
+            throws InterruptedException, FeedException
+    {
+        if(getExecutionFails()) {
+            throw new FeedException(EXPECTED_EXCEPTION);
+        }
+        if(mDelay > 0) {
+            try {
+                Thread.sleep(sRandom.nextInt(mDelay));
+            } catch (InterruptedException e) {
+                throw new FeedException(e);
+            }
+        }
+        String handle = String.format("%d", //$NON-NLS-1$
+                                      ++mCounter);
+        if(!getExecuteReturnsNothing() &&
+           !getExecuteReturnsNull()) {
+            mCreatedHandles.add(handle);
+            mQueue.add(handle);
+        }
+        if(getExecuteReturnsNull()) {
+            return null;
+        }
+        return getExecuteReturnsNothing() ? new ArrayList<String>() : Arrays.asList(handle);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doFullBookMarketDataRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doFullBookMarketDataRequest(String inData)
+            throws InterruptedException, FeedException
+    {
+        if(getExecutionFails()) {
+            throw new FeedException(EXPECTED_EXCEPTION);
+        }
+        if(mDelay > 0) {
+            try {
+                Thread.sleep(sRandom.nextInt(mDelay));
+            } catch (InterruptedException e) {
+                throw new FeedException(e);
+            }
+        }
+        String handle = String.format("%d", //$NON-NLS-1$
+                                      ++mCounter);
+        if(!getExecuteReturnsNothing() &&
+           !getExecuteReturnsNull()) {
+            mCreatedHandles.add(handle);
+            mQueue.add(handle);
+        }
+        if(getExecuteReturnsNull()) {
+            return null;
+        }
+        return getExecuteReturnsNothing() ? new ArrayList<String>() : Arrays.asList(handle);
     }
 }

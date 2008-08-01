@@ -35,40 +35,64 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  * Additionally this class holds a QuickFIX message that is intended to be
  * the message edited by the order ticket UI.
  * @author gmiller
- *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public abstract class OrderTicketModel
+public abstract class OrderTicketModel 
     implements Messages
 {
-	public static class OrderTicketPublication
-    	{
-    	    public enum Type {
-    	        BID,OFFER
-    	    };	    
-    	    private final Type type;
-    	    private final MarketDataSnapshotFullRefresh.NoMDEntries message;
-    	    OrderTicketPublication(Type inType,
-    	                           MarketDataSnapshotFullRefresh.NoMDEntries inMessage)
-    	    {
-    	        type = inType;
-    	        message = inMessage;
-    	    }
-    	    public Type getType()
-    	    {
-    	        return type;
-    	    }
-    	    public MarketDataSnapshotFullRefresh.NoMDEntries getMessage()
-    	    {
-    	        return message;
-    	    }
-    	    public String toString()
-    	    {
-    	        return String.format("OrderTicketModel %s publication: %s",  //$NON-NLS-1$
-    	                             type,
-    	                             message);
-    	    }
-    	}
+    /**
+     * Indicates to model subscribers that the model has changed.
+     *
+     * @author gmiller
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$") //$NON-NLS-1$
+    public static class OrderTicketPublication 
+    {
+        public enum Type {
+            BID,OFFER,SYMBOL_CHANGE
+        };	    
+        private final Type type;
+        private final MarketDataSnapshotFullRefresh.NoMDEntries message; 
+        private final String mSymbolFragment;
+
+        OrderTicketPublication(Type inType,
+                               MarketDataSnapshotFullRefresh.NoMDEntries inMessage)
+                               {
+            type = inType;
+            message = inMessage;
+            mSymbolFragment = null;
+                               }
+        OrderTicketPublication(Type inType,
+                               String inSymbolFragment)
+                               {
+            type = inType;
+            message = null;
+            mSymbolFragment = inSymbolFragment;
+                               }
+        public Type getType()
+        {
+            return type;
+        }
+        public MarketDataSnapshotFullRefresh.NoMDEntries getMessage()
+        {
+            return message;
+        }
+        public String getSymbolFragment()
+        {
+            return mSymbolFragment;
+        }    	    
+        public String toString()
+        {
+            return String.format("OrderTicketModel %s publication: %s",  //$NON-NLS-1$
+                                 type,
+                                 message);
+        }
+    }
 
     private final PropertyChangeSupport propertyChangeSupport;
 	protected Message orderMessage;
@@ -188,6 +212,8 @@ public abstract class OrderTicketModel
 			@Override
 			protected void doSetValue(Object value) {
 				orderMessage.setField(new Symbol((String)value));
+				getPublisher().publish(new OrderTicketPublication(OrderTicketPublication.Type.SYMBOL_CHANGE,
+				                                                  ((String)value)));
 			}
 		};
 	}

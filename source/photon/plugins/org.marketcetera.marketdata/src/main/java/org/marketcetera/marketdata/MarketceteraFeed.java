@@ -463,7 +463,7 @@ public class MarketceteraFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doMarketDataRequest(Message inData) 
+    protected List<String> doLevelOneMarketDataRequest(Message inData) 
         throws FeedException
     {
         try {
@@ -485,6 +485,16 @@ public class MarketceteraFeed
         } catch (Throwable t) {
             throw new FeedException(t);
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doFullBookMarketDataRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doFullBookMarketDataRequest(Message inData)
+            throws InterruptedException, FeedException
+    {
+        // for now, just do the same as the BBO request
+        return doLevelOneMarketDataRequest(inData);
     }
     /**
      * Associates the given request handles with the given subscription object.
