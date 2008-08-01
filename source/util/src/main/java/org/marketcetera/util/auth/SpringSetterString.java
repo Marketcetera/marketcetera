@@ -16,7 +16,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SpringSetterString
     extends SpringSetter<Holder<String>>
 {

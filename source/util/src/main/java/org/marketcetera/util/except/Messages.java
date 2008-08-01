@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -25,7 +25,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_except");
+        new I18NMessageProvider("util_except"); //$NON-NLS-1$
 
     /**
      * The logger.
@@ -39,9 +39,9 @@ public interface Messages
      */
 
     static final I18NMessage0P THREAD_INTERRUPTED=
-        new I18NMessage0P(LOGGER,"thread_interrupted");
+        new I18NMessage0P(LOGGER,"thread_interrupted"); //$NON-NLS-1$
     static final I18NMessage0P THROWABLE_IGNORED=
-        new I18NMessage0P(LOGGER,"throwable_ignored");
+        new I18NMessage0P(LOGGER,"throwable_ignored"); //$NON-NLS-1$
     static final I18NMessage2P COMBINE_MESSAGES=
-        new I18NMessage2P(LOGGER,"combine_messages");
+        new I18NMessage2P(LOGGER,"combine_messages"); //$NON-NLS-1$
 }

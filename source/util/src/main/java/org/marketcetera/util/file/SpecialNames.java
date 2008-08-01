@@ -13,26 +13,29 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface SpecialNames
 {
     /**
      * The standard input stream.
      */
 
-    static final String STANDARD_INPUT=":stdin:";
+    static final String STANDARD_INPUT=
+        ":stdin:"; //$NON-NLS-1$
 
     /**
      * The standard output stream.
      */
 
-    static final String STANDARD_OUTPUT=":stdout:";
+    static final String STANDARD_OUTPUT=
+        ":stdout:"; //$NON-NLS-1$
 
     /**
      * The standard error stream.
      */
 
-    static final String STANDARD_ERROR=":stderr:";
+    static final String STANDARD_ERROR=
+        ":stderr:"; //$NON-NLS-1$
 
     /**
      * When this prefix appears in front of an output file name, it
@@ -40,5 +43,6 @@ public interface SpecialNames
      * file, instead of overwriting existing data.
      */
 
-    static final String PREFIX_APPEND=":append:";
+    static final String PREFIX_APPEND=
+        ":append:"; //$NON-NLS-1$
 }

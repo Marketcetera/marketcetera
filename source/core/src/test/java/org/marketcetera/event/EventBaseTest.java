@@ -30,10 +30,10 @@ public class EventBaseTest
         throws Exception
     {
         MockEvent e1 = new MockEvent();
-        Thread.sleep(1);
+        Thread.sleep(100);
         MockEvent e2 = new MockEvent();
         MockEvent e3 = new MockEvent(e2.getTimestamp());
-        Thread.sleep(1);
+        Thread.sleep(100);
         MockEvent e4 = new MockEvent();
         assertTrue(e1.getTimestamp() < e2.getTimestamp());
         assertTrue(e2.getTimestamp() == e3.getTimestamp());

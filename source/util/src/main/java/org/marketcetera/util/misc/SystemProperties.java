@@ -11,63 +11,63 @@ package org.marketcetera.util.misc;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface SystemProperties
 {
     static final String JAVA_VERSION=
-        System.getProperty("java.version");
+        System.getProperty("java.version"); //$NON-NLS-1$
     static final String JAVA_VENDOR=
-        System.getProperty("java.vendor");
+        System.getProperty("java.vendor"); //$NON-NLS-1$
     static final String JAVA_VENDOR_URL=
-        System.getProperty("java.vendor.url");
+        System.getProperty("java.vendor.url"); //$NON-NLS-1$
     static final String JAVA_HOME=
-        System.getProperty("java.home");
+        System.getProperty("java.home"); //$NON-NLS-1$
     static final String JAVA_VM_SPECIFICATION_VERSION=
-        System.getProperty("java.vm.specification.version");
+        System.getProperty("java.vm.specification.version"); //$NON-NLS-1$
     static final String JAVA_VM_SPECIFICATION_VENDOR=
-        System.getProperty("java.vm.specification.vendor");
+        System.getProperty("java.vm.specification.vendor"); //$NON-NLS-1$
     static final String JAVA_VM_SPECIFICATION_NAME=
-        System.getProperty("java.vm.specification.name");
+        System.getProperty("java.vm.specification.name"); //$NON-NLS-1$
     static final String JAVA_VM_VERSION=
-        System.getProperty("java.vm.version");
+        System.getProperty("java.vm.version"); //$NON-NLS-1$
     static final String JAVA_VM_VENDOR=
-        System.getProperty("java.vm.vendor");
+        System.getProperty("java.vm.vendor"); //$NON-NLS-1$
     static final String JAVA_VM_NAME=
-        System.getProperty("java.vm.name");
+        System.getProperty("java.vm.name"); //$NON-NLS-1$
     static final String JAVA_SPECIFICATION_VERSION=
-        System.getProperty("java.specification.version");
+        System.getProperty("java.specification.version"); //$NON-NLS-1$
     static final String JAVA_SPECIFICATION_VENDOR=
-        System.getProperty("java.specification.vendor");
+        System.getProperty("java.specification.vendor"); //$NON-NLS-1$
     static final String JAVA_SPECIFICATION_NAME=
-        System.getProperty("java.specification.name");
+        System.getProperty("java.specification.name"); //$NON-NLS-1$
     static final String JAVA_CLASS_VERSION=
-        System.getProperty("java.class.version");
+        System.getProperty("java.class.version"); //$NON-NLS-1$
     static final String JAVA_CLASS_PATH=
-        System.getProperty("java.class.path");
+        System.getProperty("java.class.path"); //$NON-NLS-1$
     static final String JAVA_LIBRARY_PATH=
-        System.getProperty("java.library.path");
+        System.getProperty("java.library.path"); //$NON-NLS-1$
     static final String JAVA_IO_TMPDIR=
-        System.getProperty("java.io.tmpdir");
+        System.getProperty("java.io.tmpdir"); //$NON-NLS-1$
     static final String JAVA_COMPILER=
-        System.getProperty("java.compiler");
+        System.getProperty("java.compiler"); //$NON-NLS-1$
     static final String JAVA_EXT_DIRS=
-        System.getProperty("java.ext.dirs");
+        System.getProperty("java.ext.dirs"); //$NON-NLS-1$
     static final String OS_NAME=
-        System.getProperty("os.name");
+        System.getProperty("os.name"); //$NON-NLS-1$
     static final String OS_ARCH=
-        System.getProperty("os.arch");
+        System.getProperty("os.arch"); //$NON-NLS-1$
     static final String OS_VERSION=
-        System.getProperty("os.version");
+        System.getProperty("os.version"); //$NON-NLS-1$
     static final String FILE_SEPARATOR=
-        System.getProperty("file.separator");
+        System.getProperty("file.separator"); //$NON-NLS-1$
     static final String PATH_SEPARATOR=
-        System.getProperty("path.separator");
+        System.getProperty("path.separator"); //$NON-NLS-1$
     static final String LINE_SEPARATOR=
-        System.getProperty("line.separator");
+        System.getProperty("line.separator"); //$NON-NLS-1$
     static final String USER_NAME=
-        System.getProperty("user.name");
+        System.getProperty("user.name"); //$NON-NLS-1$
     static final String USER_HOME=
-        System.getProperty("user.home");
+        System.getProperty("user.home"); //$NON-NLS-1$
     static final String USER_DIR=
-        System.getProperty("user.dir");
+        System.getProperty("user.dir"); //$NON-NLS-1$
 }

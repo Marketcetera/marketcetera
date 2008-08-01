@@ -13,7 +13,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -22,7 +22,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_misc");
+        new I18NMessageProvider("util_misc"); //$NON-NLS-1$
 
     /**
      * The logger.

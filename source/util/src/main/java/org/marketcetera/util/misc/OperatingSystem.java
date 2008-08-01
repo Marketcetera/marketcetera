@@ -12,20 +12,20 @@ package org.marketcetera.util.misc;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum OperatingSystem
 {
-    WINDOWS_2000("Windows 2000"),
-    WINDOWS_2003("Windows 2003"),
-    WINDOWS_CE("Windows CE"),
-    WINDOWS_XP("Windows XP"),
-    WINDOWS_VISTA("Windows Vista"),
-    MAC_OS_X("Mac OS X"),
-    DARWIN("Darwin"),
-    LINUX("Linux"),
-    SOLARIS("SunOS"),
-    AIX("AIX"),
-    HPUX("HP-UX"),
+    WINDOWS_2000("Windows 2000"), //$NON-NLS-1$
+    WINDOWS_2003("Windows 2003"), //$NON-NLS-1$
+    WINDOWS_CE("Windows CE"), //$NON-NLS-1$
+    WINDOWS_XP("Windows XP"), //$NON-NLS-1$
+    WINDOWS_VISTA("Windows Vista"), //$NON-NLS-1$
+    MAC_OS_X("Mac OS X"), //$NON-NLS-1$
+    DARWIN("Darwin"), //$NON-NLS-1$
+    LINUX("Linux"), //$NON-NLS-1$
+    SOLARIS("SunOS"), //$NON-NLS-1$
+    AIX("AIX"), //$NON-NLS-1$
+    HPUX("HP-UX"), //$NON-NLS-1$
     UNKNOWN(null);
 
 
@@ -35,13 +35,15 @@ public enum OperatingSystem
      * The label attached to Windows variants by {@link #toString()}.
      */
 
-    public static final String LABEL_WIN32="win32";
+    public static final String LABEL_WIN32=
+        "win32"; //$NON-NLS-1$
 
     /**
      * The label attached to UNIX variants by {@link #toString()}.
      */
 
-    public static final String LABEL_UNIX="unix";
+    public static final String LABEL_UNIX=
+        "unix"; //$NON-NLS-1$
 
     /**
      * The operating system on which this JVM is running.
@@ -106,15 +108,15 @@ public enum OperatingSystem
         StringBuilder builder=new StringBuilder();
         builder.append(super.toString());
         if (getJavaName()!=null) {
-            builder.append(',');
+            builder.append(','); //$NON-NLS-1$
             builder.append(getJavaName());
         }
         if (isWin32()) {
-            builder.append(',');
+            builder.append(','); //$NON-NLS-1$
             builder.append(LABEL_WIN32);
         }
         if (isUnix()) {
-            builder.append(',');
+            builder.append(','); //$NON-NLS-1$
             builder.append(LABEL_UNIX);
         }
         return builder.toString();

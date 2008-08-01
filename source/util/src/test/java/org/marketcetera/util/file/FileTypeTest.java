@@ -99,7 +99,7 @@ public class FileTypeTest
     @Test
     public void exceptionThrown()
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
         setLevel(TEST_CATEGORY,Level.WARN);
         assertEquals(UNKNOWN,get(TEST_PLAIN_FILE));
         assertSingleEvent

@@ -10,7 +10,7 @@ package org.marketcetera.util.misc;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class StringUtils
 {
 
@@ -107,9 +107,9 @@ public final class StringUtils
         boolean addSpace=false;
         for (int c:toUCPArray(s)) {
             if (addSpace) {
-                builder.append(' ');
+                builder.append(' '); //$NON-NLS-1$
             }
-            builder.append("U+");
+            builder.append("U+"); //$NON-NLS-1$
             builder.append(Integer.toHexString(c));
             addSpace=true;
         }

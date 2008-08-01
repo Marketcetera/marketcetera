@@ -46,7 +46,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SpringContext
     extends Context<SpringSetter<?>>
 {
@@ -54,7 +54,7 @@ public class SpringContext
     // CLASS DATA.
 
     private static final String CONFIGURER_BEAN_NAME=
-        SpringContext.class.getName()+".configurer";
+        SpringContext.class.getName()+".configurer"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.

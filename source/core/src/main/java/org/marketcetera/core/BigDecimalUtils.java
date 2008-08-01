@@ -3,14 +3,16 @@ package org.marketcetera.core;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Locale;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class BigDecimalUtils {
 //	 default to read a double primitive value of 18 digit
 //	 precision
 	public static final NumberFormat DEFAULT_DECIMAL_FORMAT =
-	    new DecimalFormat ("#.0#################");  //$NON-NLS-1$
+	    new DecimalFormat ("#.0#################",new DecimalFormatSymbols(Locale.US));  //$NON-NLS-1$
 
     public static final MathContext DEFAULT_CONTEXT = new MathContext(4);
 

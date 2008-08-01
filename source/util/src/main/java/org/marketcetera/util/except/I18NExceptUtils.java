@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 final class I18NExceptUtils
 {
 
@@ -64,7 +64,8 @@ final class I18NExceptUtils
             }
         }
         if ((selfMessage!=null) && (causeMessage!=null)) {
-            return selfMessage+" ("+causeMessage+")";
+            return selfMessage+
+                " ("+causeMessage+")"; //$NON-NLS-1$ //$NON-NLS-2$
         }
         if (selfMessage!=null) {
             return selfMessage;

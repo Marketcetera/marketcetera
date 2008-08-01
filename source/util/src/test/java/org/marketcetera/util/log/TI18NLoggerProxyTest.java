@@ -261,7 +261,7 @@ public class TI18NLoggerProxyTest
     public void messages()
     {
         messageCheck
-            (Locale.US,TEST_MSG_EN,TEST_MSG_EN_NULL,TEST_MSG_EN_NOSUB);
+            (Locale.ROOT,TEST_MSG_EN,TEST_MSG_EN_NULL,TEST_MSG_EN_NOSUB);
         messageCheck
             (Locale.FRENCH,TEST_MSG_FR,TEST_MSG_FR_NULL,TEST_MSG_FR_NOSUB);
     }

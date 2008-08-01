@@ -26,7 +26,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class PropertiesFileInfo
     implements MessageInfoProvider
 {
@@ -34,7 +34,7 @@ public class PropertiesFileInfo
     // CLASS DATA.
 
     private static final Pattern PARAM_PATTERN=
-        Pattern.compile("\\{(\\d+)");
+        Pattern.compile("\\{(\\d+)"); //$NON-NLS-1$
 
 
     // INSTANCE DATA.
@@ -72,10 +72,10 @@ public class PropertiesFileInfo
         builder.append(getProvider().getProviderId());
         builder.append(I18NMessageProvider.MESSAGE_FILE_EXTENSION);
         if (getLocale()!=null) {
-            builder.append('_');
+            builder.append('_'); //$NON-NLS-1$
             builder.append(getLocale().toString());
         }
-        builder.append(".properties");
+        builder.append(".properties"); //$NON-NLS-1$
         String fileName=builder.toString();        
 
         // Load file as a resource.

@@ -18,7 +18,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class Deleter
 {
 
@@ -53,7 +53,7 @@ public class Deleter
          * @see DirectoryWalker#handleDirectoryEnd(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") //$NON-NLS-1$
         @Override
         protected void handleDirectoryEnd
             (File directory,
@@ -70,7 +70,7 @@ public class Deleter
          * @see DirectoryWalker#handleFile(File,int,Collection)
          */
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings("unchecked") //$NON-NLS-1$
         @Override
         protected void handleFile
             (File file,

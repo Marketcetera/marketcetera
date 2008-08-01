@@ -232,7 +232,7 @@ public class ExecTest
     @Before
     public void setupExecTest()
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
         setLevel(TEST_CATEGORY,Level.TRACE);
     }
 

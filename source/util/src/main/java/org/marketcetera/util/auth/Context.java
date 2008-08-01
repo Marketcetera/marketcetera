@@ -21,7 +21,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class Context<T extends Setter<?>>
 {
 
@@ -132,12 +132,12 @@ public abstract class Context<T extends Setter<?>>
             stream.print(Messages.CONTEXT_ANONYMOUS.getText());
         }
         if (getOverride()) {
-            stream.print(' ');
+            stream.print(' '); //$NON-NLS-1$
             stream.print(Messages.CONTEXT_OVERRIDES.getText());
         }
         stream.println();
         for (Setter<?> setter:getSetters()) {
-            stream.print(' ');
+            stream.print(' '); //$NON-NLS-1$
             stream.println(setter.getUsage().getText());
         }
     }

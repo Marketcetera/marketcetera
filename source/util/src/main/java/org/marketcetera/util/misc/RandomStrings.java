@@ -14,7 +14,7 @@ import java.util.Random;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class RandomStrings
 {
 
@@ -375,7 +375,7 @@ public final class RandomStrings
         (int len)
     {
         if (len<=0) {
-            return "";
+            return ""; //$NON-NLS-1$
         }
         StringBuilder builder=new StringBuilder();
         builder.appendCodePoint(genUCPLetter());

@@ -13,7 +13,7 @@ import java.util.ListIterator;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class CollectionUtils
 {
 

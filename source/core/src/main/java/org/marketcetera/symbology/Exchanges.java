@@ -21,7 +21,7 @@ public class Exchanges {
 
     private static Map<String, Exchange> micMap = new HashMap<String, Exchange>();
     private static EnumMap<SymbolScheme, ExchangeMap> schemeMap = new EnumMap<SymbolScheme, ExchangeMap>(SymbolScheme.class);
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM yyyy"); //$NON-NLS-1$
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("MMMM yyyy",Locale.US); //$NON-NLS-1$
 
     static {
         try {

@@ -73,7 +73,7 @@ public class CloseableRegistryTest
     public void setupCloseableRegistryTest()
     {
         OrderedCloseable.resetStaticSequence();
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
         setLevel(TEST_CATEGORY,Level.WARN);
     }
 
