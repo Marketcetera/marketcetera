@@ -55,6 +55,10 @@ my(%patternsCustom)=(
 	  => ('bin'),
 	'private/source/photon/plugins/com.marketcetera.marketdata.opentick.tests'
 	  => ('bin'),
+	'private/source/photon/plugins/com.marketcetera.marketdata.activfinancial'
+	  => ('bin'),
+	'private/source/photon/plugins/com.marketcetera.marketdata.activfinancial.tests'
+	  => ('bin'),
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ('bin'),
 	'public/source/photon/plugins/org.marketcetera.core'
