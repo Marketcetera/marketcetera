@@ -23,7 +23,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class StandardAuthentication
 {
 
@@ -33,47 +33,54 @@ public class StandardAuthentication
      * The default name of the properties file bean (Spring context).
      */
 
-    public static final String PROPERTIES_FILE_BEAN="propertiesFiles";
+    public static final String PROPERTIES_FILE_BEAN=
+        "propertiesFiles"; //$NON-NLS-1$
 
     /**
      * The default property name for the username (Spring context).
      */
 
-    public static final String USER_PROP="activemq.user";
+    public static final String USER_PROP=
+        "activemq.user"; //$NON-NLS-1$
 
     /**
      * The default property name for the password (Spring context).
      */
 
-    public static final String PASSWORD_PROP="activemq.password";
+    public static final String PASSWORD_PROP=
+        "activemq.password"; //$NON-NLS-1$
 
     /**
      * The default short form of the command-line option for the
      * username (command-line context).
      */
 
-    public static final String USER_SHORT="u";
+    public static final String USER_SHORT=
+        "u"; //$NON-NLS-1$
 
     /**
      * The default long form of the command-line option for the
      * username (command-line context).
      */
 
-    public static final String USER_LONG="user";
+    public static final String USER_LONG=
+        "user"; //$NON-NLS-1$
 
     /**
      * The default short form of the command-line option for the
      * password (command-line context).
      */
 
-    public static final String PASSWORD_SHORT="p";
+    public static final String PASSWORD_SHORT=
+        "p"; //$NON-NLS-1$
 
     /**
      * The default long form of the command-line option for the
      * password (command-line context).
      */
 
-    public static final String PASSWORD_LONG="password";
+    public static final String PASSWORD_LONG=
+        "password"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.

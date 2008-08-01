@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class LogUtils
 {
 
@@ -35,22 +35,22 @@ public final class LogUtils
             list=new Object[] {null};
         }
         StringBuilder builder=new StringBuilder();
-        builder.append('(');
+        builder.append('('); //$NON-NLS-1$
         boolean first=true;
         for (Object e:list) {
             if (!first) {
-                builder.append(',');
+                builder.append(','); //$NON-NLS-1$
             }
             if (e==null) {
-                builder.append("[null]");
+                builder.append("[null]"); //$NON-NLS-1$
             } else {
-                builder.append('\'');
+                builder.append('\''); //$NON-NLS-1$
                 builder.append(e.toString());
-                builder.append('\'');
+                builder.append('\''); //$NON-NLS-1$
             }
             first=false;
         }
-        builder.append(')');
+        builder.append(')'); //$NON-NLS-1$
         return builder.toString();
     }
 
@@ -70,10 +70,10 @@ public final class LogUtils
          I18NMessage message,
          Object... params)
     {
-        return "provider '"+provider.getProviderId()+
-            "'; id '"+message.getMessageId()+
-            "'; entry '"+message.getEntryId()+
-            "'; parameters "+getListText(params);
+        return "provider '"+provider.getProviderId()+ //$NON-NLS-1$
+            "'; id '"+message.getMessageId()+ //$NON-NLS-1$
+            "'; entry '"+message.getEntryId()+ //$NON-NLS-1$
+            "'; parameters "+getListText(params); //$NON-NLS-1$
     }
 
     /**

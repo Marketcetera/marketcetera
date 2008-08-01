@@ -11,7 +11,9 @@ import org.marketcetera.util.misc.ClassVersion;
  * An internationalized message provider, mapping instances of {@link
  * I18NMessage} onto text. The locale used for the translation is
  * either one supplied at the time of translation, or the active
- * locale per {@link ActiveLocale}.
+ * locale per {@link ActiveLocale}; if the chosen locale does not
+ * provide a message, the default JVM locale and root locale (in that
+ * order) are used as fallbacks.
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -20,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class I18NMessageProvider
 {
 
@@ -32,7 +34,7 @@ public class I18NMessageProvider
      */
 
     public static final String MESSAGE_FILE_EXTENSION=
-        "_messages";
+        "_messages"; //$NON-NLS-1$
         // "_message"; // EXTREME TEST 1.
 
     /*
@@ -41,17 +43,17 @@ public class I18NMessageProvider
      */
 
     private static final String MESSAGE_FILE_NOT_FOUND=
-        "Message file missing: provider '{}'; base name '{}'";
+        "Message file missing: provider '{}'; base name '{}'"; //$NON-NLS-1$
     private static final String MESSAGE_NOT_FOUND=
-        "Message missing: provider ''{0}''; id ''{1}''; entry ''{2}''; "+
-        "parameters {3}";
+        "Message missing: provider ''{0}''; id ''{1}''; "+ //$NON-NLS-1$
+        "entry ''{2}''; parameters {3}"; //$NON-NLS-1$
     private static final String UNEXPECTED_EXCEPTION_CONTEXT=
-        "Abnormal exception: provider ''{0}''; id ''{1}''; entry ''{2}''; "+
-        "parameters {3}";
+        "Abnormal exception: provider ''{0}''; id ''{1}''; "+ //$NON-NLS-1$
+        "entry ''{2}''; parameters {3}"; //$NON-NLS-1$
     private static final String UNEXPECTED_EXCEPTION_TRACE=
-        "Abnormal exception: stack trace";
+        "Abnormal exception: stack trace"; //$NON-NLS-1$
     private static final String CORRUPTED_STORE=
-        "Corrupted/unavailable message map";
+        "Corrupted/unavailable message map"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.

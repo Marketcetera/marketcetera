@@ -31,16 +31,16 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum UnicodeCharset
 {
     UTF8(CharEncoding.UTF_8),
     UTF16BE(CharEncoding.UTF_16BE),
     UTF16LE(CharEncoding.UTF_16LE),
     UTF16(CharEncoding.UTF_16),
-    UTF32BE("UTF-32BE"),
-    UTF32LE("UTF-32LE"),
-    UTF32("UTF-32");
+    UTF32BE("UTF-32BE"), //$NON-NLS-1$
+    UTF32LE("UTF-32LE"), //$NON-NLS-1$
+    UTF32("UTF-32"); //$NON-NLS-1$
 
 
     // INSTANCE DATA.

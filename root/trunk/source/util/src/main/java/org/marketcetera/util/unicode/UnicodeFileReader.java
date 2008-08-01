@@ -20,7 +20,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class UnicodeFileReader
     extends UnicodeInputStreamReader
 {

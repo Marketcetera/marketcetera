@@ -127,6 +127,6 @@ public class SetterContextTestBase
     @Before
     public void setupSetterContextTestBase()
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
     }
 }

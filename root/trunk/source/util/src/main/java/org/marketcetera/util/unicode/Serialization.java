@@ -19,7 +19,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public enum Serialization
 {
     UTF8(SignatureCharset.UTF8_UTF8),

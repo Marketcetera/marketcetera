@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -23,7 +23,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_spring");
+        new I18NMessageProvider("util_spring"); //$NON-NLS-1$
 
     /**
      * The logger.

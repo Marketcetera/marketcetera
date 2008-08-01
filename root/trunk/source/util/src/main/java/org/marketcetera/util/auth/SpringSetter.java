@@ -20,7 +20,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class SpringSetter<T extends Holder<?>>
     extends Setter<T>
 {
@@ -28,7 +28,7 @@ public abstract class SpringSetter<T extends Holder<?>>
     // CLASS DATA.
 
     private static final String PROPERTY_PROXY_BEAN_NAME_PREFIX=
-        SpringSetter.class.getName()+".propertyProxy";
+        SpringSetter.class.getName()+".propertyProxy"; //$NON-NLS-1$
 
 
     // INSTANCE DATA.
@@ -104,7 +104,8 @@ public abstract class SpringSetter<T extends Holder<?>>
     {
         mBeanName=PROPERTY_PROXY_BEAN_NAME_PREFIX+index;
         SpringUtils.addStringBean
-            (context,mBeanName,"${"+getPropertyName()+"}");
+            (context,mBeanName,
+             "${"+getPropertyName()+"}"); //$NON-NLS-1$ //$NON-NLS-2$
         properties.put(getPropertyName(),StringUtils.EMPTY);
     }
 

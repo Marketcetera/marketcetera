@@ -16,7 +16,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class SpringSetterCharArray
     extends SpringSetter<Holder<char[]>>
 {

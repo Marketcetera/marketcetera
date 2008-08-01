@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class I18NBoundMessageBase<T extends I18NMessage>
     implements I18NBoundMessage
 {

@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ConsoleSetterString
     extends ConsoleSetter<Holder<String>>
 {
@@ -44,7 +44,8 @@ public class ConsoleSetterString
     public void setValue
         (Console console)
     {
-        String value=console.readLine("%s",getPrompt().getText());
+        String value=console.readLine
+            ("%s",getPrompt().getText()); //$NON-NLS-1$
         if ((value!=null) && !StringUtils.EMPTY.equals(value)) {
             getHolder().setValue(value);
         }

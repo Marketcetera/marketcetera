@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class ConsoleSetter<T extends Holder<?>>
     extends Setter<T>
 {

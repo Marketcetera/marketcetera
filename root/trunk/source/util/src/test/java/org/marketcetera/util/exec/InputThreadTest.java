@@ -126,7 +126,7 @@ public class InputThreadTest
     public void cannotCopy()
         throws Exception
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
         setLevel(TEST_CATEGORY,Level.ERROR);
         single(true);
         single(false);

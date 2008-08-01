@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ConsoleSetterCharArray
     extends ConsoleSetter<Holder<char[]>>
 {
@@ -44,7 +44,8 @@ public class ConsoleSetterCharArray
     public void setValue
         (Console console)
     {
-        char[] value=console.readPassword("%s",getPrompt().getText());
+        char[] value=console.readPassword
+            ("%s",getPrompt().getText()); //$NON-NLS-1$
         if ((value!=null) && (value.length!=0)) {
             getHolder().setValue(value);
         }

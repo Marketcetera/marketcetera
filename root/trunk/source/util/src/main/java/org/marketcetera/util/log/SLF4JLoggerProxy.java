@@ -17,7 +17,7 @@ import org.slf4j.spi.LocationAwareLogger;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class SLF4JLoggerProxy
 {
 
@@ -27,14 +27,16 @@ public final class SLF4JLoggerProxy
      * The logging message used when none is explicitly specified. 
      */
     
-    public static final String UNKNOWN_MESSAGE="Unknown Message";
+    public static final String UNKNOWN_MESSAGE=
+        "Unknown Message"; //$NON-NLS-1$
 
     /**
      * The name of the category used when no category is explicitly
      * specified.
      */
 
-    public static final String UNKNOWN_LOGGER_NAME="UNKNOWN";
+    public static final String UNKNOWN_LOGGER_NAME=
+        "UNKNOWN"; //$NON-NLS-1$
 
     /**
      * The logger used when no category is explicitly specified.

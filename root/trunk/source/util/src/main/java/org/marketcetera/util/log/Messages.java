@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -21,7 +21,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_log");
+        new I18NMessageProvider("util_log"); //$NON-NLS-1$
 
     /**
      * The logger.
@@ -35,7 +35,7 @@ public interface Messages
      */
 
     static final I18NMessage4P MESSAGE_NOT_FOUND=
-        new I18NMessage4P(LOGGER,"message_not_found");
+        new I18NMessage4P(LOGGER,"message_not_found"); //$NON-NLS-1$
     static final I18NMessage4P UNEXPECTED_EXCEPTION=
-        new I18NMessage4P(LOGGER,"unexpected_exception");
+        new I18NMessage4P(LOGGER,"unexpected_exception"); //$NON-NLS-1$
 }

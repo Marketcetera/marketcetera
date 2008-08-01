@@ -24,7 +24,7 @@ import org.marketcetera.util.misc.ReflectUtils;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class ContainerClassInfo
     implements MessageInfoProvider
 {
@@ -70,7 +70,8 @@ public class ContainerClassInfo
                         Messages.NULL_FIELD_IGNORED.info(this,name);
                         continue;
                     }
-                    String key=message.getMessageId()+"."+message.getEntryId();
+                    String key=message.getMessageId()+"."+ //$NON-NLS-1$
+                        message.getEntryId();
                     messageInfo.put
                         (key,new I18NMessageInfo
                          (key,message.getParamCount(),message));

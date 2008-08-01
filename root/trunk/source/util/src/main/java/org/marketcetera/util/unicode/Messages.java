@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -25,7 +25,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_unicode");
+        new I18NMessageProvider("util_unicode"); //$NON-NLS-1$
 
     /**
      * The logger.
@@ -39,13 +39,13 @@ public interface Messages
      */
 
     static final I18NMessage1P UNKNOWN_CHARSET=
-        new I18NMessage1P(LOGGER,"unknown_charset");
+        new I18NMessage1P(LOGGER,"unknown_charset"); //$NON-NLS-1$
     static final I18NMessage0P STREAM_CLOSED=
-        new I18NMessage0P(LOGGER,"stream_closed");
+        new I18NMessage0P(LOGGER,"stream_closed"); //$NON-NLS-1$
     static final I18NMessage0P STREAM_ACCESS_ERROR=
-        new I18NMessage0P(LOGGER,"stream_access_error");
+        new I18NMessage0P(LOGGER,"stream_access_error"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_GET_LENGTH=
-        new I18NMessage1P(LOGGER,"cannot_get_length");
+        new I18NMessage1P(LOGGER,"cannot_get_length"); //$NON-NLS-1$
     static final I18NMessage0P NO_SIGNATURE_MATCHES=
-        new I18NMessage0P(LOGGER,"no_signature_matches");
+        new I18NMessage0P(LOGGER,"no_signature_matches"); //$NON-NLS-1$
 }

@@ -30,7 +30,7 @@ public class I18NMessageProviderTest
     @Before
     public void setupI18NMessageProviderTest()
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
         setLevel(TEST_CATEGORY,Level.ERROR);
     }
 
@@ -56,12 +56,24 @@ public class I18NMessageProviderTest
         assertEquals
             ("Bonjour Le Monde!",TestMessages.PROVIDER.
              getText(Locale.FRENCH,TestMessages.HELLO_TITLE,"Le Monde"));
-        assertEquals
-            ("Hello",TestMessages.PROVIDER.
-             getText(Locale.GERMAN,TestMessages.HELLO_MSG));
-        assertEquals
-            ("Hello Welt!",TestMessages.PROVIDER.
-             getText(Locale.GERMAN,TestMessages.HELLO_TITLE,"Welt"));
+
+        Locale saved=Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.ROOT);
+            assertEquals
+                ("Hello",TestMessages.PROVIDER.
+                 getText(Locale.GERMAN,TestMessages.HELLO_MSG));
+            Locale.setDefault(Locale.JAPANESE);
+            assertEquals
+                ("Hello",TestMessages.PROVIDER.
+                 getText(Locale.GERMAN,TestMessages.HELLO_MSG));
+            Locale.setDefault(Locale.FRENCH);
+            assertEquals
+                ("Bonjour",TestMessages.PROVIDER.
+                 getText(Locale.GERMAN,TestMessages.HELLO_MSG));
+        } finally {
+            Locale.setDefault(saved);
+        }
 
         assertEquals
             ("Hello a {0} 'a' \"a\" b!",TestMessages.PROVIDER.

@@ -53,7 +53,7 @@ public class I18NThrowableTestBase
     @Before
     public void setupI18NThrowableTestBase()
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
     }
 
     protected static void empty

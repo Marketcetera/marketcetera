@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class HolderCharArray
     extends Holder<char[]>
 {
@@ -90,7 +90,7 @@ public class HolderCharArray
     {
         char[] value=getValue();
         if (value!=null) {
-            Arrays.fill(value,'\0');
+            Arrays.fill(value,'\0'); //$NON-NLS-1$
             super.setValue(null);
         }
     }

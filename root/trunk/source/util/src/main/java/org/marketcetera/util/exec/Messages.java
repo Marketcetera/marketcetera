@@ -15,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -24,7 +24,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_exec");
+        new I18NMessageProvider("util_exec"); //$NON-NLS-1$
 
     /**
      * The logger.
@@ -38,9 +38,9 @@ public interface Messages
      */
 
     static final I18NMessage1P CANNOT_COPY_OUTPUT=
-        new I18NMessage1P(LOGGER,"cannot_copy_output");
+        new I18NMessage1P(LOGGER,"cannot_copy_output"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_EXECUTE=
-        new I18NMessage1P(LOGGER,"cannot_execute");
+        new I18NMessage1P(LOGGER,"cannot_execute"); //$NON-NLS-1$
     static final I18NMessage1P UNEXPECTED_TERMINATION=
-        new I18NMessage1P(LOGGER,"unexpected_termination");
+        new I18NMessage1P(LOGGER,"unexpected_termination"); //$NON-NLS-1$
 }

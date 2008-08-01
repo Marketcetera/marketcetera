@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class I18NMessage
 {
 
@@ -27,7 +27,8 @@ public abstract class I18NMessage
      * The default entry ID.
      */
 
-    public static final String UNKNOWN_ENTRY_ID="msg";    
+    public static final String UNKNOWN_ENTRY_ID=
+        "msg"; //$NON-NLS-1$
     
 
     // INSTANCE DATA.

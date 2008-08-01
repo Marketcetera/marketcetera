@@ -6,9 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation to retain subversion $Id$ during runtime. Use by
- * prefixing each class, interface, and enum with
- * <code>@ClassVersion("$Id$")</code>.
+ * Annotation to retain subversion &#x24;Id&#x24; during runtime. Use
+ * by prefixing each class, interface, and enum with
+ * <code>@ClassVersion("&#x24;Id&#x24;")</code>.
  *
  * @author tlerios@marketcetera.com
  * @since 0.6.0

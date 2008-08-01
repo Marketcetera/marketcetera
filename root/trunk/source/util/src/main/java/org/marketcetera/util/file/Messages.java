@@ -17,7 +17,7 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
 
@@ -26,7 +26,7 @@ public interface Messages
      */
 
     static final I18NMessageProvider PROVIDER=
-        new I18NMessageProvider("util_file");
+        new I18NMessageProvider("util_file"); //$NON-NLS-1$
 
     /**
      * The logger.
@@ -40,30 +40,30 @@ public interface Messages
      */
 
     static final I18NMessage0P CLOSING_FAILED=
-        new I18NMessage0P(LOGGER,"closing_failed");
+        new I18NMessage0P(LOGGER,"closing_failed"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_GET_TYPE=
-        new I18NMessage1P(LOGGER,"cannot_get_type");
+        new I18NMessage1P(LOGGER,"cannot_get_type"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_DELETE=
-        new I18NMessage1P(LOGGER,"cannot_delete");
+        new I18NMessage1P(LOGGER,"cannot_delete"); //$NON-NLS-1$
 
     static final I18NMessage2P CANNOT_COPY_FILES=
-        new I18NMessage2P(LOGGER,"cannot_copy_files");
+        new I18NMessage2P(LOGGER,"cannot_copy_files"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_COPY_MEMORY_SRC=
-        new I18NMessage1P(LOGGER,"cannot_copy_memory_src");
+        new I18NMessage1P(LOGGER,"cannot_copy_memory_src"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_COPY_MEMORY_DST=
-        new I18NMessage1P(LOGGER,"cannot_copy_memory_dst");
+        new I18NMessage1P(LOGGER,"cannot_copy_memory_dst"); //$NON-NLS-1$
 
     static final I18NMessage0P CANNOT_COPY_STREAMS=
-        new I18NMessage0P(LOGGER,"cannot_copy_streams");
+        new I18NMessage0P(LOGGER,"cannot_copy_streams"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_COPY_ISTREAM=
-        new I18NMessage1P(LOGGER,"cannot_copy_istream");
+        new I18NMessage1P(LOGGER,"cannot_copy_istream"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_COPY_OSTREAM=
-        new I18NMessage1P(LOGGER,"cannot_copy_ostream");
+        new I18NMessage1P(LOGGER,"cannot_copy_ostream"); //$NON-NLS-1$
 
     static final I18NMessage0P CANNOT_COPY_CSTREAMS=
-        new I18NMessage0P(LOGGER,"cannot_copy_cstreams");
+        new I18NMessage0P(LOGGER,"cannot_copy_cstreams"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_COPY_READER=
-        new I18NMessage1P(LOGGER,"cannot_copy_reader");
+        new I18NMessage1P(LOGGER,"cannot_copy_reader"); //$NON-NLS-1$
     static final I18NMessage1P CANNOT_COPY_WRITER=
-        new I18NMessage1P(LOGGER,"cannot_copy_writer");
+        new I18NMessage1P(LOGGER,"cannot_copy_writer"); //$NON-NLS-1$
 }

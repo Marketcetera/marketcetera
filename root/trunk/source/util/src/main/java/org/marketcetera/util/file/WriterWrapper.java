@@ -27,7 +27,7 @@ import static org.marketcetera.util.file.SpecialNames.*;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class WriterWrapper
     implements Closeable
 {

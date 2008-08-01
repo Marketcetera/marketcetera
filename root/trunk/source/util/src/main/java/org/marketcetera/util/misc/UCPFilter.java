@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class UCPFilter
 {
 
@@ -176,7 +176,8 @@ public abstract class UCPFilter
     public static final UCPFilter getFileSystemCharset()
     {
         return UCPFilter.forCharset
-            (Charset.forName(System.getProperty("file.encoding")));
+            (Charset.forName(System.getProperty
+                             ("file.encoding"))); //$NON-NLS-1$
     }
 
 

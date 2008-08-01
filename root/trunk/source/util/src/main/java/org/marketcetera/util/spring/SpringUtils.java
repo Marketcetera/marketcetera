@@ -18,7 +18,7 @@ import org.springframework.context.support.GenericApplicationContext;
 
 /* $License$ */
 
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class SpringUtils
 {
 
@@ -67,7 +67,7 @@ public final class SpringUtils
         bean.setResourceDescription(SpringUtils.class.getName());
         MutablePropertyValues values=new MutablePropertyValues();
         values.addPropertyValue
-            ("locations",new RuntimeBeanReference(locationRef));
+            ("locations",new RuntimeBeanReference(locationRef)); //$NON-NLS-1$
         bean.setPropertyValues(values);
         context.registerBeanDefinition(configurerName,bean);
     }

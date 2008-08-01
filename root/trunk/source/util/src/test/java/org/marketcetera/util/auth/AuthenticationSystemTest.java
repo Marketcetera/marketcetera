@@ -151,7 +151,7 @@ public class AuthenticationSystemTest
     public void setupAuthenticationSystemTest()
     {
         setLevel(TEST_CATEGORY,Level.ERROR);
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
     }
 
 

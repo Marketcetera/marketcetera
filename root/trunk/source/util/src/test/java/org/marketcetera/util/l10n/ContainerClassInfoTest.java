@@ -89,7 +89,7 @@ public class ContainerClassInfoTest
     public void nonstandardFields()
         throws Exception
     {
-        ActiveLocale.setProcessLocale(Locale.US);
+        ActiveLocale.setProcessLocale(Locale.ROOT);
         ContainerClassInfo info=new ContainerClassInfo(NonstandardFields.class);
         String category=info.getClass().getName();
         setLevel(category,Level.INFO);
