@@ -15,7 +15,7 @@ public class TradeRecommendation extends OutgoingMessageHolder {
 	
 	public TradeRecommendation(Message message, Double score) {
 		super(message);
-		createdAt = new Date();
+		createdAt = new Date(); //i18n_datetime
 		this.score = score;
 	}
 	

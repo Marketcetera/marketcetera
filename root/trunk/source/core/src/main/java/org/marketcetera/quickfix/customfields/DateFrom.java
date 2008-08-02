@@ -15,7 +15,7 @@ import java.util.Date;
 public class DateFrom extends UtcTimeStampField {
     public static final int FIELD = 9883;
     public DateFrom() {
-        super(FIELD, new Date());
+        super(FIELD, new Date()); //non-i18n
     }
 
     public DateFrom(Date date) {

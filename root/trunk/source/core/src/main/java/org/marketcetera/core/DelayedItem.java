@@ -36,7 +36,7 @@ public class DelayedItem<T> implements Delayed {
             mClock = clock;
         }
         mItemSendTime = mClock.getTime() + delayInMillis;
-        SLF4JLoggerProxy.debug(this, "Will send at {}", new Date(mItemSendTime));  //$NON-NLS-1$
+        SLF4JLoggerProxy.debug(this, "Will send at {}", new Date(mItemSendTime));  //$NON-NLS-1$  //non-i18n
         mItem = anItem;
     }
 

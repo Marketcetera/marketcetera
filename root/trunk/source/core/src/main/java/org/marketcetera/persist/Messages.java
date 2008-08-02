@@ -1,11 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.util.log.I18NLoggerProxy;
-import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.log.I18NMessage2P;
-import org.marketcetera.util.log.I18NMessageProvider;
+import org.marketcetera.util.log.*;
 
 /* $License$ */
 /**
@@ -36,8 +32,12 @@ public interface Messages {
             new I18NMessage2P(LOGGER,"ers_already_initialized");  //$NON-NLS-1$
     static final I18NMessage0P JPA_VENDOR_NOT_INITIALIZED =
             new I18NMessage0P(LOGGER,"jpa_vendor_not_initialized");  //$NON-NLS-1$
+    static final I18NMessage0P DB_VENDOR_NOT_INITIALIZED =
+            new I18NMessage0P(LOGGER,"db_vendor_not_initialized");  //$NON-NLS-1$
     static final I18NMessage2P JPA_VENDOR_ALREADY_INITIALIZED =
             new I18NMessage2P(LOGGER,"jpa_vendor_already_initialized");  //$NON-NLS-1$
+    static final I18NMessage2P DB_VENDOR_ALREADY_INITIALIZED =
+            new I18NMessage2P(LOGGER,"db_vendor_already_initialized");  //$NON-NLS-1$
     static final I18NMessage2P INVALID_STRING_FILTER =
             new I18NMessage2P(LOGGER,"invalid_string_filter");  //$NON-NLS-1$
     static final I18NMessage0P EXCEPTION_TRANSLATE_ISSUE =
@@ -52,4 +52,8 @@ public interface Messages {
             new I18NMessage0P(LOGGER,"hibernate_integration_issue");  //$NON-NLS-1$
     static final I18NMessage0P UNEXPECTED_SETUP_ISSUE =
             new I18NMessage0P(LOGGER,"unexpected_setup_issue");  //$NON-NLS-1$
+    static final I18NMessage0P UNEXPECTED_ERROR =
+            new I18NMessage0P(LOGGER,"unexpected_error");  //$NON-NLS-1$
+    static final I18NMessage3P UNSUPPORTED_CHARACTER =
+            new I18NMessage3P(LOGGER,"unsupported_character");  //$NON-NLS-1$
 }

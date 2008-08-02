@@ -169,6 +169,34 @@
     Typically, single instance queries will be fairly simple. For multi instance queries you may
     want to declare additional filters, orders and operations.
 </p>
+<h3>Validation</h3>
+<p>
+    Entities should be validated prior to save to ensure that all the attributes
+    have valid values. See {@link org.marketcetera.persist.NDEntityBase#validate()}
+    for an example on how to do it. Be sure to add both
+    {@link javax.persistence.PrePersist} and {@link javax.persistence.PreUpdate} to
+    ensure that validation happens during insert as well as update
+</p>
+<p>
+    The current database can only save a subset of characters supported by java.
+    Hence all the strings that are being persisted should be validated to ensure that
+    they comply with the character set supported by the database.
+    {@link org.marketcetera.persist.VendorUtils#validateText(String)} should be invoked
+    to validate all the string query parameters, & entity attributes.
+    
+    Do ensure that all string attributes of the entity being saved are validated
+    prior to save. Currently, only the name attribute of
+    {@link org.marketcetera.persist.NDEntityBase} is validated. Any other string attributes
+    in the entity (including description) should be validated to only contain supported
+    characters.
+</p>
+<p>
+    All the string parameters to the query are validated to only supported characters
+    during query execution with {@link org.marketcetera.persist.QueryBase}.
+    Hence no special validation is required during query execution. However, if you
+    author queries that do not make use <code>QueryBase</code>, make sure that all
+    string parameters to the query are validated.
+</p>
 <h3>Unit Testing</h3>
 <p>
     Since the extent of compile-time checking is limited. Base classes are available to extensively

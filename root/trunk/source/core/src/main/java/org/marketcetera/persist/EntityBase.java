@@ -308,7 +308,7 @@ public abstract class EntityBase implements SummaryEntityBase {
      *
      * @return  time the object was last modified.
      */
-    @Temporal(TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP) //i18n_datetime when storing to / retrieving from database
     public Date getLastUpdated() {
         return lastUpdated;
     }
@@ -333,7 +333,7 @@ public abstract class EntityBase implements SummaryEntityBase {
     @PreUpdate
     private void setLastUpdated() {
         //Set lastUpdated to the current date.
-        setLastUpdated(new Date());
+        setLastUpdated(new Date()); //non-i18n
     }
 
     public String toString() {

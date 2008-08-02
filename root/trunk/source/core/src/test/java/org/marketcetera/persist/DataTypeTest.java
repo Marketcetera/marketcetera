@@ -2,6 +2,11 @@ package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.file.CopyCharsUtils;
+import org.marketcetera.util.file.CopyCharsUnicodeUtils;
+import org.marketcetera.util.unicode.DecodingStrategy;
+import org.marketcetera.util.test.UnicodeData;
+import org.marketcetera.util.log.I18NBoundMessage3P;
+import static org.marketcetera.persist.Messages.*;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import org.junit.Ignore;
@@ -26,7 +31,141 @@ import java.io.File;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataType> {
+public class DataTypeTest extends
+        CorePersistNDTestBase<DataTypes,SummaryDataType> {
+    private static final double DELTA_DOUBLE = 0.0000000001;
+    private static final double DELTA_FLOAT = 0.00001;
+
+    /**
+     * Verifies that the queries verify that string parameters
+     * are validated to only contain characters that are supported
+     * by the database.
+     *
+     * @throws Exception if there were errors
+     */
+    @Test
+    public void unsupportedCharQueryValidation() throws Exception {
+        String s = "mytestname";
+        final int errIdx = s.length();
+        // mysql version dependency: this piece of code depends on the
+        // specific version of mysql and may need to change whenever
+        // mysql version is updated
+        s += UnicodeData.GOATS_LNB;
+        final String expSubString = "tname";
+        final String value = s;
+
+        //Verify single entity query
+        assertFailure(new Callable<Object>(){
+            public Object call() throws Exception {
+                fetchByName(value);
+                return null;
+            }
+        },ValidationException.class,
+                new I18NBoundMessage3P(UNSUPPORTED_CHARACTER,
+                        UnicodeData.GOATS_LNB_CHARS[0], errIdx,
+                        expSubString));
+        //Verify multi-entity query
+        assertFailure(new Callable<Object>(){
+            public Object call() throws Exception {
+                MultiDataTypesQuery q = MultiDataTypesQuery.all();
+                q.setDescriptionFilter(new StringFilter(value));
+                q.fetchSummary();
+                return null;
+            }
+        },ValidationException.class,
+                new I18NBoundMessage3P(UNSUPPORTED_CHARACTER,
+                        UnicodeData.GOATS_LNB_CHARS[0], errIdx,
+                        expSubString));
+    }
+
+    /**
+     * Verifies the string validation failure.
+     *
+     * @throws Exception if there was an error
+     */
+    @Test
+    public void unsupportedCharSaveValidation() throws Exception {
+        //Verifies that validation errors for unsupported Char
+        //are correctly thrown during insert / update
+        DataTypes d = new DataTypes();
+        //append string having surrogate chars.
+        String s = "mytestname";
+        final int errIdx = s.length();
+        s += UnicodeData.GOATS_LNB;
+        final String expSubString = "tname";
+        d.setName(s);
+        assertSaveFailure(d,ValidationException.class,
+                new I18NBoundMessage3P(UNSUPPORTED_CHARACTER,
+                        UnicodeData.GOATS_LNB_CHARS[0], errIdx,
+                        expSubString));
+        //reset the value and save the entity
+        d.setName(randomString());
+        d.save();
+        assertSavedEntity(d);
+        //verify that the validation happens during update as well
+        d.setName(s);
+        assertSaveFailure(d,ValidationException.class,
+                new I18NBoundMessage3P(UNSUPPORTED_CHARACTER,
+                        UnicodeData.GOATS_LNB_CHARS[0], errIdx,
+                        expSubString));
+    }
+
+    /**
+     * Verifies database's lack of support for supplementary characters
+     *
+     * @throws Exception if there was a failure
+     */
+    @Test
+    public void unsupportedCharacterDBFailure() throws Exception {
+        // mysql version dependency: this piece of code depends on the
+        // specific version of mysql and may need to change whenever
+        // mysql version is updated
+        DataTypes d = new DataTypes();
+        d.setName(randomString());
+        d.setDescription(randomString() + UnicodeData.G_CLEF_MSC);
+        // Test for jdbc exception from mysql
+        assertSaveFailure(d, PersistenceException.class, UNEXPECTED_ERROR);
+    }
+
+    /**
+     * Verifies that all the supported characters can be saved
+     * and retrieved from the database
+     *
+     * @throws Exception if there were errors
+     */
+    @Test
+    public void supportedCharacters() throws Exception {
+        //choose an increment greater than 1 to make the test run faster.
+        final int len = 255;
+        String s;
+        DataTypes d;
+        int iterations = 0;
+        // mysql version dependency: this piece of code depends on the
+        // specific version of mysql and may need to change whenever
+        // mysql version is updated
+        while((s = getNextString(len)) != null) {
+            d = new DataTypes();
+            d.setName(randomString());
+            d.setDescription(s);
+            d.save();
+            assertEntityEquals(d, fetchByName(d.getName()));
+            iterations++;
+        }
+        final int nChars = Character.MAX_VALUE -
+                ((Character.MAX_HIGH_SURROGATE - Character.MIN_HIGH_SURROGATE) +
+                (Character.MAX_LOW_SURROGATE - Character.MIN_LOW_SURROGATE));
+        //verify that we had expected number of iterations
+        assertEquals(nChars / len +
+                //add an extra iteration if there's a non-zero remainder
+                Math.min(nChars % len, 1),
+                iterations);
+    }
+
+    /**
+     * Tests clob database operations
+     *
+     * @throws Exception if there were errors
+     */
     @Test
     public void clob() throws Exception {
         //Create an entity and then read / write the clob
@@ -34,6 +173,8 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         d.save();
         assertSavedEntity(d);
         DataTypes saved = fetchByID(d.getId());
+        //Verify that the test file exists
+        assertTrue(TEST_UNICODE_FILE.exists());
         //Verify initial value
         File f = File.createTempFile("clob","persist"); //$NON-NLS-1$ //$NON-NLS-2$
         f.deleteOnExit();
@@ -41,9 +182,11 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         assertFalse(f.exists());
         d.readFromClob(f.toURI().toURL());
         assertTrue(f.exists());
-        assertEquals(0,f.length());
+        assertEquals(0, CopyCharsUnicodeUtils.copy(f.getAbsolutePath(),
+                DECODING_STRATEGY).length);
         //Now write stuff to the file
-        CopyCharsUtils.copy(randomString().toCharArray(), f.getAbsolutePath());
+        CopyCharsUnicodeUtils.copy(TEST_UNICODE_FILE.getAbsolutePath(),
+                DECODING_STRATEGY, f.getAbsolutePath());
         //make state changes
         changeAttributes(d);
         //Write to the clob
@@ -66,12 +209,20 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         assertEquals(saved.getUpdateCount(),d.getUpdateCount());
         //Verify that the clob was correctly read
         assertTrue(read.exists());
-        assertEquals(f.length(), read.length());
-        assertArrayEquals(CopyCharsUtils.copy(f.getAbsolutePath()),
-                CopyCharsUtils.copy(read.getAbsolutePath()));
+        assertArrayEquals(read.getAbsolutePath(),
+                CopyCharsUnicodeUtils.copy(f.getAbsolutePath(),
+                        DECODING_STRATEGY),
+                CopyCharsUnicodeUtils.copy(read.getAbsolutePath(),
+                        DECODING_STRATEGY));
         f.delete();
         read.delete();
     }
+
+    /**
+     * Tests blob operations.
+     *
+     * @throws Exception if there was an error
+     */
     @Test
     public void blob() throws Exception {
         //Create an entity and then read / write the blob
@@ -219,7 +370,7 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
     }
 
     /**
-     * Tests concurrent blob / clob operations 
+     * Tests concurrent blob / clob operations
      * @throws Exception
      */
     @Test
@@ -374,17 +525,17 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
     @Override
     protected void assertDefaultValues(DataTypes dataTypes) {
         super.assertDefaultValues(dataTypes);
-        dataTypes.getBigDecimal();
-        dataTypes.getBigInteger();
-        dataTypes.getBytes();
-        dataTypes.getDate();
-        dataTypes.getNumDouble();
-        dataTypes.getNumFloat();
-        dataTypes.getNumInt();
-        dataTypes.getSerialTester();
-        dataTypes.getTestEnum();
-        dataTypes.getTime();
-        dataTypes.getTimestamp();
+        assertNull(dataTypes.getBigDecimal());
+        assertNull(dataTypes.getBigInteger());
+        assertNull(dataTypes.getBytes());
+        assertNull(dataTypes.getDate());
+        assertEquals(0.0d, dataTypes.getNumDouble(), DELTA_DOUBLE);
+        assertEquals(0.0f, dataTypes.getNumFloat(), DELTA_FLOAT);
+        assertEquals(0,dataTypes.getNumInt());
+        assertNull(dataTypes.getSerialTester());
+        assertNull(dataTypes.getTestEnum());
+        assertNull(dataTypes.getTime());
+        assertNull(dataTypes.getTimestamp());
     }
 
     @Override
@@ -400,12 +551,17 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
     }
 
     private static void assertSummaryEquals(SummaryDataType s1, SummaryDataType s2) {
-        assertTrue(Math.abs(s1.getBigDecimal().subtract(s2.getBigDecimal()).doubleValue()) < 0.0000000001);
+        if (s1.getBigDecimal() != null && s2.getBigDecimal() != null) {
+            assertTrue(Math.abs(s1.getBigDecimal().subtract(s2.getBigDecimal()).doubleValue()) < DELTA_DOUBLE);
+        } else {
+            assertNull(s1.getBigDecimal());
+            assertNull(s2.getBigDecimal());
+        }
         assertEquals(s1.getBigInteger(), s2.getBigInteger());
         assertTrue(Arrays.equals(s1.getBytes(), s2.getBytes()));
         assertCalendarEquals(s1.getDate(), s2.getDate(), TemporalType.DATE);
-        assertEquals(s1.getNumDouble(), s2.getNumDouble(),0.0000000001);
-        assertEquals(s1.getNumFloat(), s2.getNumFloat(),0.00001);
+        assertEquals(s1.getNumDouble(), s2.getNumDouble(), DELTA_DOUBLE);
+        assertEquals(s1.getNumFloat(), s2.getNumFloat(), DELTA_FLOAT);
         assertEquals(s1.getNumInt(), s2.getNumInt());
         assertEquals(s1.getSerialTester(), s2.getSerialTester());
         assertEquals(s1.getTestEnum(), s2.getTestEnum());
@@ -456,4 +612,45 @@ public class DataTypeTest extends CorePersistNDTestBase<DataTypes,SummaryDataTyp
         d.setTime(new Time(new java.util.Date().getTime()));
         d.setTimestamp(new Timestamp(new java.util.Date().getTime()));
     }
+
+    /**
+     * Generates strings of supplied length, with increasing
+     * character values, avoiding the high/low surrogate characters.
+     *
+     * @param len the requested length of the string.
+     *
+     * @return the generated string, null if characters upto
+     * {link Character#MAX_VALUE} have already been generated. The length of
+     * the returned string may be less than the requested length.
+     */
+    private String getNextString(int len) {
+        if(count > Character.MAX_VALUE) {
+            return null;
+        }
+        StringBuilder sb = new StringBuilder(len);
+        char c;
+        while(len-- > 0) {
+            c = (char) count;
+            // mysql version dependency: this piece of code depends on the
+            // specific version of mysql and may need to change whenever
+            // mysql version is updated
+            while(Character.isLowSurrogate(c) ||
+                    Character.isHighSurrogate(c)) {
+                count++;
+                c = (char) count;
+            }
+            if(count > Character.MAX_VALUE) {
+                break;
+            }
+            sb.append(c);
+            count++;
+        }
+        return sb.toString();
+    }
+    private int count = Character.MIN_CODE_POINT;
+    private static final DecodingStrategy DECODING_STRATEGY =
+            DecodingStrategy.SIG_REQ;
+
+    private static final File TEST_UNICODE_FILE = new File(TEST_SAMPLE_DATA,
+            "unicode.txt"); //$NON-NLS-1$
 }

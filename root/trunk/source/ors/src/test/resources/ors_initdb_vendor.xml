@@ -13,7 +13,9 @@
         <constructor-arg ref="sqlFiles"/>
         <constructor-arg ref="mysqlpool"/>
     </bean>
+  <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
+        scope="singleton"/>
     <!-- Inject DB initiailzation before any ORM stuff -->
     <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
-          scope="singleton" depends-on="initSchema"/>
+          scope="singleton" depends-on="initSchema,dbVendor"/>
 </beans>

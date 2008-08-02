@@ -63,6 +63,10 @@ public class EnvironmentConfigurationTest extends PersistTestBase {
         DataTypes dt = new DataTypes();
         final String version = dt.fetchDBVersion();
         SLF4JLoggerProxy.debug(this,version);
+        // If the mysql version number is updated, search for source
+        // files containing the string mysql to find sections of code
+        // that might have mysql version dependency
+        // (like change in supported unicode version)
         assertTrue("Unexpected MySQL version: "+version, //$NON-NLS-1$
                 version.indexOf("5.0.5") >= 0); //$NON-NLS-1$
         assertEquals("Unexpected database charset","utf8",dt.fetchDBCharset()); //$NON-NLS-1$ //$NON-NLS-2$

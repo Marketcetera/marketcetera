@@ -151,7 +151,7 @@ public abstract class ApplicationBase implements Clock {
       * @see Clock#getTime()
       */
     public long getTime() {
-        return System.currentTimeMillis();
+        return System.currentTimeMillis(); //i18n_datetime
     }
 
     /* (non-Javadoc)
@@ -159,7 +159,7 @@ public abstract class ApplicationBase implements Clock {
     */
     public long getApproximateTime() {
         // TODO: make this read a variable that is updated periodically by a thread
-        return System.currentTimeMillis();
+        return System.currentTimeMillis(); //i18n_datetime
     }
 
     /** Subclasses can override the implementation if they need to add additoinal or specific

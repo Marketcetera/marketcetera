@@ -33,30 +33,30 @@ public class OrderLimitException extends CoreException {
     public static OrderLimitException createMaxQuantityException(BigDecimal over, BigDecimal limit, String symbol)
     {
         return new OrderLimitException(new I18NBoundMessage3P(Messages.ERROR_OL_MAX_QTY,
-                                                              over.toPlainString(),
-                                                              limit.toPlainString(), 
+                                                              over.toPlainString(),  //i18n_number
+                                                              limit.toPlainString(),  //i18n_number
                                                               symbol));
     }
 
     public static OrderLimitException createMaxNotionalException(BigDecimal over, BigDecimal limit, String symbol)
     {
         return new OrderLimitException(new I18NBoundMessage3P(Messages.ERROR_OL_MAX_NOTIONAL,
-                                                              over.toPlainString(),
-                                                              limit.toPlainString(), 
+                                                              over.toPlainString(), //i18n_currency
+                                                              limit.toPlainString(), //i18n_currency
                                                               symbol));
     }
     public static OrderLimitException createMaxPriceException(BigDecimal over, BigDecimal limit, String symbol)
     {
         return new OrderLimitException(new I18NBoundMessage3P(Messages.ERROR_OL_MAX_PRICE,
-                                                              over.toPlainString(),
-                                                              limit.toPlainString(), 
+                                                              over.toPlainString(), //i18n_currency
+                                                              limit.toPlainString(), //i18n_currency
                                                               symbol));
     }
     public static OrderLimitException createMinPriceException(BigDecimal over, BigDecimal limit, String symbol)
     {
         return new OrderLimitException(new I18NBoundMessage3P(Messages.ERROR_OL_MIN_PRICE,
-                                                              over.toPlainString(),
-                                                              limit.toPlainString(), 
+                                                              over.toPlainString(), //i18n_currency
+                                                              limit.toPlainString(), //i18n_currency
                                                               symbol));
     }
     public static OrderLimitException createMarketOrderWithPriceException(String symbol)

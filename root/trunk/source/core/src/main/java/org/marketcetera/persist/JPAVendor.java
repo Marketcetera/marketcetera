@@ -26,7 +26,7 @@ abstract class JPAVendor {
      * @throws PersistSetupException if there's an error
      */
     protected JPAVendor() throws PersistSetupException {
-        VendorUtils.setVendor(this);
+        VendorUtils.setJPAVendor(this);
     }
 
     /**

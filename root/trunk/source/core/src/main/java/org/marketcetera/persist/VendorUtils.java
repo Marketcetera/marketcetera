@@ -29,7 +29,7 @@ public class VendorUtils {
      * initializing the clob
      */
     public static Clob initClob() throws PersistenceException {
-        return getVendor().initClob();
+        return getJPAVendor().initClob();
     }
 
     /**
@@ -42,7 +42,20 @@ public class VendorUtils {
      * initializing the blob
      */
     public static Blob initBlob() throws PersistenceException {
-        return getVendor().initBlob();
+        return getJPAVendor().initBlob();
+    }
+
+    /**
+     * Validates that the supplied text is supported by the underlying database
+     *
+     * @param s the string that needs to be validated
+     *
+     * @throws ValidationException if the supplied string includes characters
+     * that cannot be saved into the database
+     * @throws PersistSetupException if the DB vendor is not setup 
+     */
+    public static void validateText(CharSequence s) throws PersistenceException {
+        getDBVendor().validateText(s);
     }
 
     /**
@@ -53,11 +66,25 @@ public class VendorUtils {
      * @throws PersistSetupException if a vendor is
      * not configured
      */
-    private static JPAVendor getVendor() throws PersistSetupException {
-        if(vendor == null) {
+    private static JPAVendor getJPAVendor() throws PersistSetupException {
+        if(mJPAVendor == null) {
             throw new PersistSetupException(JPA_VENDOR_NOT_INITIALIZED);
         }
-        return vendor;
+        return mJPAVendor;
+    }
+    /**
+     * Gets the current DB vendor implementation.
+     *
+     * @return the current db vendor implementation.
+     *
+     * @throws PersistSetupException if a vendor is
+     * not configured
+     */
+    private static DBVendor getDBVendor() throws PersistSetupException {
+        if(mDBVendor == null) {
+            throw new PersistSetupException(DB_VENDOR_NOT_INITIALIZED);
+        }
+        return mDBVendor;
     }
 
     /**
@@ -69,22 +96,48 @@ public class VendorUtils {
      * 
      * @throws PersistSetupException if a vendor is already configured
      */
-    static void setVendor(JPAVendor v) throws PersistSetupException {
-        if(vendor != null) {
-            throw new PersistSetupException(initStackTrace,new I18NBoundMessage2P(
+    static void setJPAVendor(JPAVendor v) throws PersistSetupException {
+        if(mJPAVendor != null) {
+            throw new PersistSetupException(mJPAInitStackTrace,new I18NBoundMessage2P(
                     JPA_VENDOR_ALREADY_INITIALIZED,
                     v.getClass().getName(),
-                    vendor.getClass().getName()));
+                    mJPAVendor.getClass().getName()));
         }
-        vendor = v;
-        initStackTrace = new Exception("Original Initialization"); //$NON-NLS-1$
+        mJPAVendor = v;
+        mJPAInitStackTrace = new Exception("Original Initialization"); //$NON-NLS-1$
 
     }
-    private static JPAVendor vendor;
+    /**
+     * Sets the current DB vendor implementation. A vendor is automatically
+     * registered when an instance of
+     * {@link org.marketcetera.persist.DBVendor} is instantiated.
+     *
+     * @param v the current DB vendor implementation
+     *
+     * @throws PersistSetupException if a vendor is already configured
+     */
+    static void setDBVendor(DBVendor v) throws PersistSetupException {
+        if(mDBVendor != null) {
+            throw new PersistSetupException(mDBInitStackTrace,new I18NBoundMessage2P(
+                    DB_VENDOR_ALREADY_INITIALIZED,
+                    v.getClass().getName(),
+                    mDBVendor.getClass().getName()));
+        }
+        mDBVendor = v;
+        mDBInitStackTrace = new Exception("Original Initialization"); //$NON-NLS-1$
+
+    }
+    private static JPAVendor mJPAVendor;
+    private static DBVendor mDBVendor;
     /**
      * This field is there to aid debugging when multiple initializations
      * of the singleton are discovered
      */
-    private static Exception initStackTrace;
+    private static Exception mJPAInitStackTrace;
+    /**
+     * This field is there to aid debugging when multiple initializations
+     * of the singleton are discovered
+     */
+    private static Exception mDBInitStackTrace;
 
 }

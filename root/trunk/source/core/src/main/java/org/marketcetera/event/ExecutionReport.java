@@ -129,7 +129,7 @@ public class ExecutionReport
 
 	private BigDecimal safeGetBigDecimal(int field, Message message) {
 		try {
-			return new BigDecimal(message.getString(field));
+			return new BigDecimal(message.getString(field)); //non-i18n
 		} catch (Exception ex){}
 		return null;
 	}

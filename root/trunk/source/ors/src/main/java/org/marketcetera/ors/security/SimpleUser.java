@@ -135,9 +135,9 @@ public class SimpleUser extends NDEntityBase {
      * <p>
      * This method validates if the user password is non-empty.
      *
-     * @throws ValidationException
+     * @throws PersistenceException if there were validation failures
      */
-    public void validate() throws ValidationException {
+    public void validate() throws PersistenceException {
         super.validate();
         if(getHashedPassword() == null || getHashedPassword().length() == 0) {
             throw new ValidationException(EMPTY_PASSWORD);

@@ -4,7 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.file.CopyBytesUtils;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.except.I18NException;
-import org.marketcetera.util.unicode.UnicodeCharset;
+import org.marketcetera.util.unicode.*;
 
 import javax.persistence.*;
 import java.math.BigInteger;
@@ -342,9 +342,10 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
             try {
                 if (!lc.isRead()) {
                     if(lc.isClob()) {
-                        CopyCharsUtils.copy(new InputStreamReader(
-                                    lc.getUrl().openStream(),
-                                    UnicodeCharset.UTF8.getName()),
+                        CopyCharsUtils.copy(
+                                new UnicodeInputStreamReader(
+                                        lc.getUrl().openStream(),
+                                        DecodingStrategy.SIG_REQ),
                                 false,
                                 d.getCharLob().setCharacterStream(1),
                                 false);
@@ -459,8 +460,9 @@ public class DataTypes extends NDEntityBase implements SummaryDataType {
                 if(lc.isRead()) {
                     if(lc.isClob()) {
                         CopyCharsUtils.copy(d.getCharLob().getCharacterStream(),
-                                false,                
-                                new FileWriter(lc.getUrl().getPath()),
+                                false,
+                                new UnicodeFileWriter(lc.getUrl().getPath(),
+                                        SignatureCharset.UTF8_UTF8),
                                 false);
                     } else {
                         CopyBytesUtils.copy(d.getBinaryLob().getBinaryStream(),

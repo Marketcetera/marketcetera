@@ -25,7 +25,7 @@ public abstract class EventBase
     /**
      * milliseconds since EPOCH in GMT
      */
-    private final long timestamp;
+    private final long timestamp; //i18n_datetime use Date instead?
     /**
      * Create a new EventBase instance.
      *
@@ -64,7 +64,7 @@ public abstract class EventBase
      */
     public Date getTimestampAsDate()
     {
-        return new Date(getTimestamp());
+        return new Date(getTimestamp()); //non-i18n
     }
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()

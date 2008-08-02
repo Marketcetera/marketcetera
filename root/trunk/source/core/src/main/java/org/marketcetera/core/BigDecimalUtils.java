@@ -29,13 +29,13 @@ public class BigDecimalUtils {
 
 	public static BigDecimal multiply (double a, double b) {
 	    String s = DEFAULT_DECIMAL_FORMAT.format(a);
-	    BigDecimal bd = new BigDecimal (s);
+	    BigDecimal bd = new BigDecimal (s); //non-i18n
 	    return multiply (bd, b);
 	}
 
 	public static BigDecimal multiply (BigDecimal a, double b) {
 	    String s = DEFAULT_DECIMAL_FORMAT.format(b);
-	    BigDecimal bd = new BigDecimal (s);
+	    BigDecimal bd = new BigDecimal (s); //non-i18n
 	    return multiply (a, bd);
 	}
 

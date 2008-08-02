@@ -1,8 +1,9 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
-//import org.marketcetera.core.MessageBundleManager;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.RandomStrings;
+import org.marketcetera.util.misc.UCPFilter;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.ApplicationContext;
@@ -14,8 +15,10 @@ import java.beans.PropertyDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
+import java.io.File;
 
 import static org.junit.Assert.*;
+import org.apache.log4j.PropertyConfigurator;
 
 /* $License$ */
 /**
@@ -25,7 +28,6 @@ import static org.junit.Assert.*;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class PersistTestBase {
-    private static SecureRandom generator;
 
     /**
      * Sets up the spring configuration for the given spring configuration
@@ -77,7 +79,13 @@ public class PersistTestBase {
      * Sets up logging.
      */
     protected static void logSetup() {
-        //MessageBundleManager.registerCoreMessageBundle();
+        if(!LOGGER_CONFIG.exists()) {
+            SLF4JLoggerProxy.warn(PersistTestBase.class,
+                    "logger configuration file {} not found", //$NON-NLS-1$ 
+                    LOGGER_CONFIG.getAbsolutePath());
+        }
+        PropertyConfigurator.configureAndWatch
+            (LOGGER_CONFIG.getAbsolutePath(), 10 * 1000l); //10 seconds
     }
 
     /**
@@ -86,8 +94,7 @@ public class PersistTestBase {
      * @return a random string.
      */
     public static String randomString() {
-        return Long.toString(Math.abs(generator.nextLong()),
-                Character.MAX_RADIX);
+        return RandomStrings.genStr(PersistUCPFilter.INSTANCE, 10);
     }
 
     /**
@@ -192,4 +199,25 @@ public class PersistTestBase {
             org.junit.Assert.assertEquals(c1.get(Calendar.SECOND),c2.get(Calendar.SECOND));
         }
     }
+
+    /**
+     * UCP Filter used for generating characters for testing.
+     */
+    private static class PersistUCPFilter extends UCPFilter {
+        static final PersistUCPFilter INSTANCE = new PersistUCPFilter();
+        public boolean isAcceptable(int ucp) {
+            // mysql version dependency: this piece of code depends
+            // on specific version of mysql and may need to be updated
+            // whenever mysql version is updated
+            return Character.isLetterOrDigit(ucp) &&
+                    //mysql doesn't support supplementary code points.
+                    (!Character.isSupplementaryCodePoint(ucp));
+        }
+    }
+    public static final File TEST_ROOT = new File("src" + //$NON-NLS-1$
+            File.separator + "test"); //$NON-NLS-1$
+    public static final File TEST_SAMPLE_DATA = new File(TEST_ROOT, "sample_data"); //$NON-NLS-1$
+    public static final File TEST_CONF = new File(TEST_SAMPLE_DATA, "conf"); //$NON-NLS-1$
+    public static final File LOGGER_CONFIG = new File(TEST_CONF, "log4j.properties"); //$NON-NLS-1$
+    private static SecureRandom generator;
 }

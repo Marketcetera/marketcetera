@@ -70,7 +70,8 @@
     <!-- Sessions are configured directly in the Spring configuration -->
     <!-- There is no use of the standard QF configuration file -->
 
-	<bean id="qfApplication" class="org.marketcetera.ors.QuickFIXApplication" scope="singleton">
+	<bean id="qfApplication" class="org.marketcetera.ors.QuickFIXApplication"
+        scope="singleton" depends-on="broker">
         <constructor-arg ref="fixMessageFactory"/>
         <property name="jmsOperations" ref="outgoingJmsTemplate"/>
         <property name="tradeRecorderJMS" ref="tradeRecorderJMSTemplate"/>

@@ -81,12 +81,12 @@ public class FIXValueExtractor {
 				if (fieldType == null){
 					value = map.getString(fieldID);
 				} else if (fieldType.equals(FieldType.UtcTimeOnly)) {
-					value = map.getUtcTimeOnly(fieldID);
+					value = map.getUtcTimeOnly(fieldID); //i18n_time
 				} else if (fieldType.equals(FieldType.UtcTimeStamp)){
-					value = map.getUtcTimeStamp(fieldID);
+					value = map.getUtcTimeStamp(fieldID); //i18n_datetime
 				} else if (fieldType.equals(FieldType.UtcDateOnly)
 						||fieldType.equals(FieldType.UtcDate)){
-					value = map.getUtcDateOnly(fieldID);
+					value = map.getUtcDateOnly(fieldID); //i18n_date
 				} else if (Number.class.isAssignableFrom(fieldType.getJavaType())){
 					value = map.getDecimal(fieldID);
 				} else if (humanReadable && dict.hasFieldValue(fieldID)){

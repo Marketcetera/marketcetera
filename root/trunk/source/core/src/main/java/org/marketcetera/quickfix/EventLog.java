@@ -45,7 +45,7 @@ public class EventLog implements quickfix.Log {
     }
 
     private void openLogStreams(boolean append) throws FileNotFoundException {
-        events = new FileOutputStream(eventFileName, append);
+        events = new FileOutputStream(eventFileName, append); ///i18n_streams
     }
 
     public void onEvent(String message) {
@@ -63,7 +63,7 @@ public class EventLog implements quickfix.Log {
     }
 
     private void writeTimeStamp(OutputStream out) throws IOException {
-        String formattedTime = UtcTimestampConverter.convert(SystemTime.getDate(), includeMillis);
+        String formattedTime = UtcTimestampConverter.convert(SystemTime.getDate(), includeMillis); //i18n_datetime
         out.write(formattedTime.getBytes());
         out.write(TIME_STAMP_DELIMETER);
     }
