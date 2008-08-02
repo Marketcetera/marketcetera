@@ -229,7 +229,7 @@ public class OutgoingMessageHandler {
             SLF4JLoggerProxy.debug(this, mfix, "Could not find field"); //$NON-NLS-1$
             // ignore the exception since we are already sending a reject
         }
-        rejection.getHeader().setField(new SendingTime(new Date()));
+        rejection.getHeader().setField(new SendingTime(new Date())); //non-i18n
         return rejection;
     }
 
@@ -238,11 +238,11 @@ public class OutgoingMessageHandler {
             String clOrdId = newOrder.getString(ClOrdID.FIELD);
             char side = newOrder.getChar(Side.FIELD);
             String symbol = newOrder.getString(Symbol.FIELD);
-            BigDecimal orderQty = new BigDecimal(newOrder.getString(OrderQty.FIELD));
+            BigDecimal orderQty = new BigDecimal(newOrder.getString(OrderQty.FIELD)); //non-i18n
             BigDecimal orderPrice = null;
             try {
                 String strPrice = newOrder.getString(Price.FIELD);
-                orderPrice =  new BigDecimal(strPrice);
+                orderPrice =  new BigDecimal(strPrice); //non-i18n
             } catch(FieldNotFound ex) {
                 // leave as null
             }
@@ -268,7 +268,7 @@ public class OutgoingMessageHandler {
                         BigDecimal.ZERO,
                         new MSymbol(symbol),
                         inAccount);
-            execReport.getHeader().setField(new SendingTime(new Date()));
+            execReport.getHeader().setField(new SendingTime(new Date())); //non-i18n
             FIXMessageUtil.fillFieldsFromExistingMessage(execReport, newOrder, false);
             return execReport;
         } else {

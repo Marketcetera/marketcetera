@@ -55,9 +55,9 @@ public class HttpDatabaseIDFactory extends DBBackedIDFactory {
         inputReader = getInputReader();
         Document document = parser.parse(new InputSource(inputReader));
         Node nextIDNode = document.getElementsByTagName("next").item(0); //$NON-NLS-1$
-        int nextID = Integer.parseInt(nextIDNode.getTextContent());
+        int nextID = Integer.parseInt(nextIDNode.getTextContent()); //i18n_number?
         Node numAllowedNode = document.getElementsByTagName("num").item(0); //$NON-NLS-1$
-        int numAllowed = Integer.parseInt(numAllowedNode.getTextContent());
+        int numAllowed = Integer.parseInt(numAllowedNode.getTextContent()); //i18n_number?
         setNextID(nextID);
         setMaxAllowedID(nextID + numAllowed);
     }

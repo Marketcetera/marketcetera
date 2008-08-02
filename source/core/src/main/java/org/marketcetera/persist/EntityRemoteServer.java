@@ -170,7 +170,8 @@ class EntityRemoteServer extends EntityRemoteServices {
             } else {
                 //if matching subclass is not found, create a top-level
                 //exception class.
-                throw new PersistenceException(e);
+                throw new org.marketcetera.persist.PersistenceException(e,
+                        UNEXPECTED_ERROR);
             }
         } catch (InstantiationException e1) {
             throw new PersistSetupException(e1,EXCEPTION_TRANSLATE_ISSUE);

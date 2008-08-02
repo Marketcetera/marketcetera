@@ -11,6 +11,7 @@ import javax.persistence.TemporalType;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.concurrent.Callable;
 
 /* $License$ */
 /**
@@ -697,20 +698,38 @@ public abstract class EntityTestBase<E extends EntityBase,
      * @param clazz the expected exception class
      * @param message the optional message on the exception class.
      */
-    protected void assertSaveFailure(E e,
+    protected void assertSaveFailure(final E e,
                                    Class<? extends PersistenceException> clazz,
                                    I18NBoundMessage message) {
+        assertFailure(new Callable<Object>(){
+            public Object call() throws Exception {
+                save(e);
+                return null;
+            }
+        }, clazz, message);
+    }
+
+    /**
+     * Verifies that the supplied code block fails with the supplied failure
+     *
+     * @param callable the code block to test
+     * @param clazz the exception class of the expected failure
+     * @param message the expected exception message
+     */
+    protected static void assertFailure(Callable<?> callable,
+                                        Class<? extends PersistenceException> clazz,
+                                        I18NBoundMessage message) {
         try {
-            save(e);
-            fail("Save is expected to fail"); //$NON-NLS-1$
+            callable.call();
+            fail("expected to fail"); //$NON-NLS-1$
         } catch(Exception ex) {
             assertTrue(ex.toString(), clazz.isInstance(ex));
             PersistenceException pe = (PersistenceException) ex;
             if (message != null) {
                 assertEquals(message.getMessage(),
                         pe.getI18NBoundMessage().getMessage());
-                assertArrayEquals(pe.getI18NBoundMessage().getParams(),
-                        message.getParams());
+                assertArrayEquals(message.getParams(),
+                        pe.getI18NBoundMessage().getParams());
             }
         }
     }

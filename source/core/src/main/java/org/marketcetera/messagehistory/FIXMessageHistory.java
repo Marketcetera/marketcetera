@@ -68,7 +68,7 @@ public class FIXMessageHistory {
 		if(SLF4JLoggerProxy.isDebugEnabled(this) && fixMessage.getHeader().isSetField(SendingTime.FIELD)) {
 			long sendingTime =0;
 			try {
-				sendingTime = fixMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD).getTime();
+				sendingTime = fixMessage.getHeader().getUtcTimeStamp(SendingTime.FIELD).getTime(); //non-i18n
 			} catch (FieldNotFound ignored) {
                 // ignored
             }
@@ -104,9 +104,9 @@ public class FIXMessageHistory {
 						newExecutionReport.setField(new ExecType(ExecType.ORDER_STATUS));
 					}
 					if (newExecutionReport.isSetField(TransactTime.FIELD)) {
-						newExecutionReport.setField(new TransactTime(new Date()));
+						newExecutionReport.setField(new TransactTime(new Date())); //i18n_datetime
 					}
-					newExecutionReport.getHeader().setField(new SendingTime(new Date()));
+					newExecutionReport.getHeader().setField(new SendingTime(new Date())); //i18n_datetime
 					
 					newExecutionReport.getHeader().removeField(MsgSeqNum.FIELD);
 					newExecutionReport.removeField(ExecID.FIELD);

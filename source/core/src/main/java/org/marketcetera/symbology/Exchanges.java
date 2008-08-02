@@ -78,7 +78,7 @@ public class Exchanges {
             if (row.length == 8) {
                 Date addedDate;
                 String dateString = row[DATE_ADDED_COLUMN];
-                addedDate = DATE_FORMAT.parse(dateString);
+                addedDate = DATE_FORMAT.parse(dateString); //i18n_date
 
                 Exchange anExchange = new Exchange(
                         row[COUNTRY_COLUMN],

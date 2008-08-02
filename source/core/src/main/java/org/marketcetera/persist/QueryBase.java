@@ -240,9 +240,11 @@ public abstract class QueryBase implements Serializable {
      *
      * @throws IllegalStateException if the query string was not specified
      * when creating this instance
+     * @throws PersistenceException if there were errors creating the query
      */
     private <T> Query createQuery(
-            EntityManager em, QueryProcessor<T> processor) {
+            EntityManager em, QueryProcessor<T> processor)
+            throws PersistenceException {
         StringBuilder queryString = new StringBuilder();
         generateQueryString(queryString, processor);
 
@@ -315,8 +317,11 @@ public abstract class QueryBase implements Serializable {
      * on the query instance before its executed.
      *
      * @param q the query instance on which the parameters need to be set.
+     * 
+     * @throws PersistenceException if there were errors setting 
+     * the parameters
      */
-    private void setParameters(Query q) {
+    private void setParameters(Query q) throws PersistenceException {
         //Let subclasses set any parameters if they want
         preSetParameters(q);
         if(!queryParameters.isEmpty()) {
@@ -334,6 +339,9 @@ public abstract class QueryBase implements Serializable {
                     q.setParameter(e.getKey(), (Date)e.getValue(),
                             TemporalType.TIME);
                 } else {
+                    if(e.getValue() instanceof String) {
+                        VendorUtils.validateText((String)e.getValue());
+                    }
                     q.setParameter(e.getKey(), e.getValue());
                 }
             }

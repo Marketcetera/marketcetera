@@ -413,7 +413,7 @@ public class FIXMessageUtil {
 			}
 		} else {
 			try {
-				text = aMessage.getString(EncodedText.FIELD);
+				text = aMessage.getString(EncodedText.FIELD); //i18n_string todo use the correct MessageEncoding value
 			} catch (FieldNotFound ignored) {
 			}
 		}

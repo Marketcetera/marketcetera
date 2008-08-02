@@ -13,8 +13,12 @@
     -->
     <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera?logSlowQueries=true"/></bean>
 
-    <!-- Initialize hibernate as JPA Vendor Implementation -->
-    <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor" scope="singleton"/>
+  <!-- Initialize MySQL as DB Vendor Implementation -->
+    <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
+          scope="singleton"/>
+  <!-- Initialize hibernate as JPA Vendor Implementation -->
+    <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
+          scope="singleton" depends-on="dbVendor"/>
     <!--
     Properties for configuring the dbcp connection pool. See
     http://commons.apache.org/dbcp/configuration.html

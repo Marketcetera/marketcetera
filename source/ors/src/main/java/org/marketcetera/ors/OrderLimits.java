@@ -91,7 +91,7 @@ public class OrderLimits {
         BigDecimal maxPrice = getMaxPrice();
         if(maxPrice != null) {
             verifyMarketOrder(inMessage, new I18NBoundMessage1P(Messages.ERROR_OL_MARKET_NOT_ALLOWED_PRICE, inMessage.getString(Symbol.FIELD)));
-            BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));
+            BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD)); //i18n_currency?
             if(maxPrice.compareTo(price) < 0) {
                 throw OrderLimitException.createMaxPriceException(price, maxPrice, inMessage.getString(Symbol.FIELD));
             }
@@ -102,7 +102,7 @@ public class OrderLimits {
         BigDecimal minPrice = getMinPrice();
         if(minPrice != null) {
             verifyMarketOrder(inMessage, new I18NBoundMessage1P(Messages.ERROR_OL_MARKET_NOT_ALLOWED_PRICE, inMessage.getString(Symbol.FIELD)));
-            BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));
+            BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));  //i18n_currency?
             if(minPrice.compareTo(price) > 0) {
                 throw OrderLimitException.createMinPriceException(price, minPrice, inMessage.getString(Symbol.FIELD));
             }
@@ -113,8 +113,8 @@ public class OrderLimits {
         BigDecimal maxNotional = getMaxNotionalPerOrder();
         if(maxNotional != null) {
             verifyMarketOrder(inMessage, new I18NBoundMessage1P(Messages.ERROR_OL_MARKET_NOT_ALLOWED_PRICE, inMessage.getString(Symbol.FIELD)));
-            BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));
-            BigDecimal qty = new BigDecimal(inMessage.getString(OrderQty.FIELD));
+            BigDecimal price = new BigDecimal(inMessage.getString(Price.FIELD));  //i18n_currency?
+            BigDecimal qty = new BigDecimal(inMessage.getString(OrderQty.FIELD));  //i18n_number
             BigDecimal notional = price.multiply(qty);
 
             if(maxNotional.compareTo(notional) < 0) {
@@ -126,7 +126,7 @@ public class OrderLimits {
     protected void verifyMaxQty(Message inMessage)  throws FieldNotFound, OrderLimitException {
         BigDecimal maxQty = getMaxQuantityPerOrder();
         if(maxQty != null) {
-            BigDecimal qty = new BigDecimal(inMessage.getString(OrderQty.FIELD));
+            BigDecimal qty = new BigDecimal(inMessage.getString(OrderQty.FIELD));  //i18n_number?
 
             if(maxQty.compareTo(qty) < 0) {
                 throw OrderLimitException.createMaxQuantityException(qty, maxQty, inMessage.getString(Symbol.FIELD));

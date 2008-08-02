@@ -53,7 +53,7 @@ public class ThreadLocalSimpleDateFormat extends ThreadLocal<SimpleDateFormat> {
 	}
 
 	@Override
-	protected SimpleDateFormat initialValue() {
+	protected SimpleDateFormat initialValue() {  //i18n_datetime
 		SimpleDateFormat simpleDateFormat;
 		if (locale != null){
 			simpleDateFormat = new SimpleDateFormat(formatString, locale);

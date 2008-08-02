@@ -23,8 +23,8 @@ public class NumericStringSortable implements Comparable<NumericStringSortable> 
 	public int compareTo(NumericStringSortable that) {
 		try {
 			//agl attempt to compare as numerics
-			Long thisNumericOrderId = Long.valueOf(this.orderId);
-			Long thatNumericOrderId = Long.valueOf(that.orderId);
+			Long thisNumericOrderId = Long.valueOf(this.orderId); //non-i18n
+			Long thatNumericOrderId = Long.valueOf(that.orderId); //non-i18n
 			return thisNumericOrderId.compareTo(thatNumericOrderId);
 		} catch (NumberFormatException nfe) {
 			//agl either id is not numeric -- compare as strings

@@ -173,7 +173,7 @@ public class DefaultMessageModifier implements MessageModifier {
             if (defaultFieldsMatcher.matches()) {
                 int groupCount = defaultFieldsMatcher.groupCount();
                 String fieldIDString = defaultFieldsMatcher.group(1);
-                int fieldID = Integer.parseInt(fieldIDString);
+                int fieldID = Integer.parseInt(fieldIDString); //non-i18n
                 if (groupCount == 3) {
                     predicate = defaultFieldsMatcher.group(3);
                 }

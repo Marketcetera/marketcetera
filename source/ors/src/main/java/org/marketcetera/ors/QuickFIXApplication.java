@@ -104,7 +104,7 @@ public class QuickFIXApplication implements Application {
         Message logout = fixMessageFactory.createMessage(MsgType.LOGOUT);
         logout.getHeader().setField(new SenderCompID(session.getSenderCompID()));
         logout.getHeader().setField(new TargetCompID(session.getTargetCompID()));
-        logout.getHeader().setField(new SendingTime(new Date()));
+        logout.getHeader().setField(new SendingTime(new Date())); //non-i18n
         if (jmsOperations != null) {
             try {
                 jmsOperations.convertAndSend(logout);

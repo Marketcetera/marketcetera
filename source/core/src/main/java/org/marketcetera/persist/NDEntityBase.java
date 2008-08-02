@@ -79,12 +79,15 @@ public abstract class NDEntityBase extends EntityBase
     }
 
     /**
-     * Validates if this entity can be saved. This method 
+     * Validates if this entity can be saved. This method
+     *
      * @throws ValidationException if the validation failed.
+     * @throws PersistenceException if a problem was encountered
+     * when carrying out validation.
      */
     @PrePersist
     @PreUpdate
-    public void validate() throws ValidationException {
+    public void validate() throws PersistenceException {
         if(getName() == null || getName().trim().length() < 1) {
             throw new ValidationException(UNSPECIFIED_NAME_ATTRIBUTE);
         }
@@ -92,6 +95,8 @@ public abstract class NDEntityBase extends EntityBase
             throw new ValidationException(new I18NBoundMessage1P(
                     NAME_ATTRIBUTE_TOO_LONG,getName()));
         }
+        //Verify that the name can be saved
+        VendorUtils.validateText(getName());
         if(!namePattern.matcher(getName()).matches()) {
             throw new ValidationException(new I18NBoundMessage2P(
                     NAME_ATTRIBUTE_INVALID,getName(),

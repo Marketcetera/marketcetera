@@ -138,7 +138,7 @@ public class FIXMessageFactory {
 			cancelMessage.setField(oldMessage.getField(new OrderQty()));
 		}
         addTransactionTimeIfNeeded(cancelMessage);
-        cancelMessage.getHeader().setField(new SendingTime(new Date()));
+        cancelMessage.getHeader().setField(new SendingTime(new Date())); //non-i18n
 		return cancelMessage;
 
 	}
@@ -459,7 +459,7 @@ public class FIXMessageFactory {
     public void addTransactionTimeIfNeeded(Message msg)
     {
         if(msgAugmentor.needsTransactTime(msg)) {
-            msg.setField(new TransactTime(new Date()));
+            msg.setField(new TransactTime(new Date())); //non-i18n
         }
     }
 
@@ -470,13 +470,13 @@ public class FIXMessageFactory {
 			// from 0
 			rr.setField(new BeginSeqNo(0));
 		} else {
-			rr.setField(new StringField(BeginSeqNo.FIELD,beginSeqNo.toString()));
+			rr.setField(new StringField(BeginSeqNo.FIELD,beginSeqNo.toString()));//i18n_number
 		}
 		if (endSeqNo == null){
 			// to infinity 
 			rr.setField(new EndSeqNo(0));
 		} else {
-			rr.setField(new StringField(EndSeqNo.FIELD,endSeqNo.toString()));
+			rr.setField(new StringField(EndSeqNo.FIELD,endSeqNo.toString()));//i18n_number
 		}
 		return rr;
 	}

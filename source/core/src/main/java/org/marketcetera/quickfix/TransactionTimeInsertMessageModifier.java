@@ -29,7 +29,7 @@ public class TransactionTimeInsertMessageModifier implements MessageModifier
             return false;
         } catch (FieldNotFound ex){
             if(augmentor.needsTransactTime(order)) {
-                order.setField(new TransactTime(new Date()));
+                order.setField(new TransactTime(new Date())); //non-i18n
                 return true;
             }
             return false;

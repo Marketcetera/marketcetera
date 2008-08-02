@@ -4,11 +4,13 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
 
+  <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
+        scope="singleton"/>
     <!--
         Initialize hibernate as JPA Vendor Implementation
         This is kept in a separate file to allow the unit tests
         to initialize the database prior to ORM setup when running unit tests
     -->
     <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
-          scope="singleton"/>
+          scope="singleton" depends-on="dbVendor"/>
 </beans>
