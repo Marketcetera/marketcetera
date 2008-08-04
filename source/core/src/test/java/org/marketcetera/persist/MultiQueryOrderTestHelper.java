@@ -53,6 +53,22 @@ public abstract class MultiQueryOrderTestHelper<C extends EntityBase,
     }
 
     /**
+     * Gets the value of the field being tested
+     * 
+     * @param s the summary view of the entity
+     * 
+     * @return the field value
+     * 
+     * @throws Exception if there were errors fetching the field value.
+     */
+    protected Object getOrderField(S s) throws Exception {
+        if(pDesc.getReadMethod() == null) {
+            fail("Unreadable property:"+pDesc.getReadMethod()); //$NON-NLS-1$
+        }
+        return pDesc.getReadMethod().invoke(s);
+    }
+
+    /**
      * Compares the order field value on the supplied entity
      * instance and returns a negative, 0 or positive value
      * depending on whether the field value on the first instance
