@@ -2,6 +2,7 @@ package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
+import org.marketcetera.util.misc.StringUtils;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -274,9 +275,19 @@ public abstract class EntityTestBase<E extends EntityBase,
                         if(prev != null) {
                             //Compare adjacent instances for the correct order
                             if(isReverse) {
-                                assertTrue(helper.compareOrderField(prev,s) >= 0);
+                                assertTrue(StringUtils.toUCPArrayStr(
+                                        helper.getOrderField(prev).toString()) +
+                                        "!>=" + //$NON-NLS-1$
+                                        StringUtils.toUCPArrayStr(
+                                                helper.getOrderField(s).toString()), 
+                                        helper.compareOrderField(prev,s) >= 0);
                             } else {
-                                assertTrue(helper.compareOrderField(prev,s) <= 0);
+                                assertTrue(StringUtils.toUCPArrayStr(
+                                        helper.getOrderField(prev).toString()) +
+                                        "!<=" + //$NON-NLS-1$
+                                        StringUtils.toUCPArrayStr(
+                                                helper.getOrderField(s).toString()),
+                                        helper.compareOrderField(prev,s) <= 0);
                             }
                         }
                         E e = ldi.next();
