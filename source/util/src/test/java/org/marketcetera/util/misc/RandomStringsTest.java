@@ -166,15 +166,38 @@ public class RandomStringsTest
             assertEquals(ucp,RandomStrings.genUCP());
         }
 
+        long seed=RandomStrings.resetGeneratorRandom();
+        ucp=RandomStrings.genUCP();
+        for (int i=0;i<RANDOM_ITERATION_COUNT;i++) {
+            RandomStrings.resetGeneratorRandom(seed);
+            assertEquals(ucp,RandomStrings.genUCP());
+        }
+
+        boolean failure=true;
+        seed=RandomStrings.resetGeneratorRandom();
+        for (int i=0;i<RANDOM_ITERATION_COUNT;i++) {
+            if (seed!=RandomStrings.resetGeneratorRandom()) {
+                failure=false;
+                break;
+            }
+        }
+        if (failure) {
+            fail("Cannot create random seed");
+        }
+
+        failure=true;
         RandomStrings.resetGeneratorRandom();
         ucp=RandomStrings.genUCP();
         for (int i=0;i<RANDOM_ITERATION_COUNT;i++) {
             RandomStrings.resetGeneratorRandom();
             if (ucp!=RandomStrings.genUCP()) {
-                return;
+                failure=false;
+                break;
             }
         }
-        fail("Cannot seed with random number");
+        if (failure) {
+            fail("Cannot produce random numbers");
+        }
     }
 
     @Test
