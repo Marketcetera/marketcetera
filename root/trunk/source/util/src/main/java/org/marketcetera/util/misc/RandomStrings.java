@@ -85,24 +85,42 @@ public final class RandomStrings
     }
 
     /**
-     * Resets the random number generator used by this class to a
-     * fixed value, which results in a repeatable, deterministic
-     * sequence of random code points and strings.
+     * Resets the random number generator used by this class to the
+     * given seed value, which henceforth results in a repeatable,
+     * deterministic sequence of random code points and strings.
+     *
+     * @param seed The seed.
      */
 
-    public static void resetGeneratorFixed()
+    public static void resetGeneratorRandom
+        (long seed)
     {
-        sGenerator.setSeed(0);
+        sGenerator.setSeed(seed);
     }
 
     /**
      * Resets the random number generator used by this class to a
-     * random value.
+     * random seed value, and returns that value.
+     *
+     * @return The seed.
      */
 
-    public static void resetGeneratorRandom()
+    public static long resetGeneratorRandom()
     {
-        sGenerator.setSeed(System.nanoTime());
+        long seed=System.nanoTime();
+        resetGeneratorRandom(seed);
+        return seed;
+    }
+
+    /**
+     * Resets the random number generator used by this class to a
+     * fixed seed value, which henceforth results in a repeatable,
+     * deterministic sequence of random code points and strings.
+     */
+
+    public static void resetGeneratorFixed()
+    {
+        resetGeneratorRandom(0);
     }
 
     /**
