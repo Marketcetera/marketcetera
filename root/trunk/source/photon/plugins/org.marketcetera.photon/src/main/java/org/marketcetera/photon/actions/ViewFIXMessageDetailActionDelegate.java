@@ -9,12 +9,13 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.actions.ActionDelegate;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
 import org.marketcetera.photon.views.fixmessagedetail.IFIXMessageDetail;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.Message;
 
@@ -66,7 +67,7 @@ public class ViewFIXMessageDetailActionDelegate
 						.getActiveWorkbenchWindow();
 				IWorkbenchPage targetPage = activeWindow.getActivePage();
 				if (targetPage == null) {
-					throw new MarketceteraException(NULL_TARGET_PAGE.getText());
+					throw new CoreException(NULL_TARGET_PAGE);
 				}
 				IViewPart viewPart = targetPage
 						.showView(FIXMessageDetailView.ID);
@@ -74,7 +75,7 @@ public class ViewFIXMessageDetailActionDelegate
 					IFIXMessageDetail messageDetailView = (IFIXMessageDetail) viewPart;
 					messageDetailView.showMessage(fixMessage);
 				} else {
-					throw new MarketceteraException(VIEW_DOES_NOT_IMPLEMENT.getText(IFIXMessageDetail.class));
+					throw new CoreException(new I18NBoundMessage1P(VIEW_DOES_NOT_IMPLEMENT, IFIXMessageDetail.class));
 				}
 			} catch (Exception anyException) {
 				PhotonPlugin.getMainConsoleLogger().error(FAILED_TO_OPEN_VIEW.getText(FIXMessageDetailView.ID), 
