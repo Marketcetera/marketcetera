@@ -9,11 +9,12 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.photon.IImageKeys;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.TextContributionItem;
+import org.marketcetera.util.log.I18NBoundMessage4P;
 
 /* $License$ */
 
@@ -73,7 +74,7 @@ public class ShowSymbolInNewViewAction
 			try {
 				IWorkbenchPage targetPage = targetWindow.getActivePage();
 				if (targetPage == null) {
-					throw new MarketceteraException(NULL_TARGET.getText());
+					throw new CoreException(NULL_TARGET);
 				}
 				IViewPart viewPart = targetPage.showView(targetViewPrimayID,
 						secondaryId, IWorkbenchPage.VIEW_CREATE);
@@ -81,7 +82,7 @@ public class ShowSymbolInNewViewAction
 					IMSymbolListener listener = (IMSymbolListener) viewPart;
 					listener.onAssertSymbol(new MSymbol(text.getText()));
 				} else {
-					throw new MarketceteraException(VIEW_DOES_NOT_ACCEPT_SYMBOLS.getText(targetViewPrimayID,
+					throw new CoreException(new I18NBoundMessage4P(VIEW_DOES_NOT_ACCEPT_SYMBOLS, targetViewPrimayID,
 					                                                                     IMSymbolListener.class.getName(),
 					                                                                     (viewPart == null ? 0 : 1),
 					                                                                     (viewPart == null ? null : viewPart.getClass().getName())));

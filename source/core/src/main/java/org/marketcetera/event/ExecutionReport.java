@@ -3,7 +3,6 @@ package org.marketcetera.event;
 import java.math.BigDecimal;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MessageKey;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.Message;

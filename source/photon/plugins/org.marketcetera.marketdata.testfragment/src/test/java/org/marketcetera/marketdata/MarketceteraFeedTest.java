@@ -4,7 +4,7 @@ import junit.framework.Test;
 import junit.framework.TestCase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.NoOpLogger;
 import org.marketcetera.photon.marketdata.MarketDataUtils;

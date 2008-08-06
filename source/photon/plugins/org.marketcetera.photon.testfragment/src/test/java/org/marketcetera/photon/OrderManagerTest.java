@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.MarketceteraException;
+import org.marketcetera.core.CoreException;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
@@ -137,7 +137,7 @@ public class OrderManagerTest extends TestCase {
 	/*
 	 * Test method for 'org.marketcetera.photon.OrderManager.handleInternalMessage(Message)'
 	 */
-	public void testHandleInternalMessage() throws FieldNotFound, MarketceteraException {
+	public void testHandleInternalMessage() throws FieldNotFound, CoreException {
 		Message message = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
