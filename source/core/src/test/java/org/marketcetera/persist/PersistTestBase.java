@@ -90,11 +90,23 @@ public class PersistTestBase {
 
     /**
      * Returns a random string for testing.
+     * The string can contain any letter or digit unicode character between
+     * \u0000 & \uFFFF, except for surrogate characters.
      *
      * @return a random string.
      */
     public static String randomString() {
         return RandomStrings.genStr(PersistUCPFilter.INSTANCE, 10);
+    }
+    /**
+     * Returns a random name string that only has ASCII characters.
+     * The returned string will pass the name validations
+     * used within NDEntityTestBase instances
+     *
+     * @return a random name string.
+     */
+    public static String randomNameString() {
+        return RandomStrings.genStr(PersistNameStringFilter.INSTANCE, 10);
     }
 
     /**
@@ -210,8 +222,21 @@ public class PersistTestBase {
             // on specific version of mysql and may need to be updated
             // whenever mysql version is updated
             return Character.isLetterOrDigit(ucp) &&
+                    //Make sure its a character in the range that mysql can handle
+                    UCPFilter.CHAR.isAcceptable(ucp) && 
                     //mysql doesn't support supplementary code points.
                     (!Character.isSupplementaryCodePoint(ucp));
+        }
+    }
+
+    /**
+     * UCP Filter used to generate ASCII characters that are
+     * letters & digit for testing.
+     */
+    private static class PersistNameStringFilter extends UCPFilter {
+        static final PersistNameStringFilter INSTANCE = new PersistNameStringFilter();
+        public boolean isAcceptable(int ucp) {
+            return ucp >= 32 && ucp <= 127 && Character.isLetterOrDigit(ucp); 
         }
     }
     public static final File TEST_ROOT = new File("src" + //$NON-NLS-1$

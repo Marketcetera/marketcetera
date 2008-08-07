@@ -50,7 +50,10 @@ public class MultiQueryOrderStringTestHelper<C extends EntityBase,
         }
         return STRINGS[idx / STRINGS.length] +
                 STRINGS[idx % STRINGS.length] +
-                PersistTestBase.randomString();
+                // Use ascii strings only as java and mysql collators do
+                // not generate consistent orderings for non-ascii characters
+                // @see DataTypeTest.dbJavaOrderingCompare().
+                PersistTestBase.randomNameString();
     }
 
     private static final String[] STRINGS = {
