@@ -253,7 +253,10 @@ public class SimpleUserTest extends NDEntityTestBase<SimpleUser,SimpleUser> {
         return MultiSimpleUserQuery.class;
     }
     /* *****Over-ride necessary methods****** */
-
+    @Override
+    protected String getUserFriendlyName() {
+        return Messages.SIMPLE_USER_NAME.getText();
+    }
 
     @BeforeClass
     public static void setup() throws Exception {

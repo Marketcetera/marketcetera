@@ -3,6 +3,9 @@ package org.marketcetera.persist;
 import org.marketcetera.core.ClassVersion;
 import static org.marketcetera.persist.Messages.*;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
 
 import javax.persistence.*;
 import javax.persistence.PersistenceException;
@@ -10,6 +13,8 @@ import java.util.List;
 import java.util.Hashtable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 /* $License$ */
 
 /**
@@ -162,11 +167,11 @@ class EntityRemoteServer extends EntityRemoteServices {
     private void translateAndThrow(javax.persistence.PersistenceException e)
             throws org.marketcetera.persist.PersistenceException {
         //Translate the exception using the exception translation table.
-        Constructor<? extends org.marketcetera.persist.PersistenceException> constr =
+        ExceptionTranslator translator =
                 exceptionTable.get(e.getClass());
         try {
-            if(constr != null) {
-                throw constr.newInstance(e);
+            if(translator != null) {
+                throw translator.translate(e);
             } else {
                 //if matching subclass is not found, create a top-level
                 //exception class.
@@ -199,33 +204,19 @@ class EntityRemoteServer extends EntityRemoteServices {
         entityManagerFactory = emf;
         try {
             exceptionTable.put(javax.persistence.EntityExistsException.class,
-                    org.marketcetera.persist.EntityExistsException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new EntityExistsTranslator());
             exceptionTable.put(javax.persistence.EntityNotFoundException.class,
-                    org.marketcetera.persist.EntityNotFoundException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new DefaultTranslator(org.marketcetera.persist.EntityNotFoundException.class));
             exceptionTable.put(javax.persistence.NonUniqueResultException.class,
-                    org.marketcetera.persist.NonUniqueResultException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new DefaultTranslator(org.marketcetera.persist.NonUniqueResultException.class));
             exceptionTable.put(javax.persistence.NoResultException.class,
-                    org.marketcetera.persist.NoResultException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new DefaultTranslator(org.marketcetera.persist.NoResultException.class));
             exceptionTable.put(javax.persistence.OptimisticLockException.class,
-                    org.marketcetera.persist.OptimisticLockException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new OptimisticLockTranslator());
             exceptionTable.put(javax.persistence.RollbackException.class,
-                    org.marketcetera.persist.RollbackException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new DefaultTranslator(org.marketcetera.persist.RollbackException.class));
             exceptionTable.put(javax.persistence.TransactionRequiredException.class,
-                    org.marketcetera.persist.TransactionRequiredException.
-                            class.getDeclaredConstructor(
-                            Throwable.class));
+                    new DefaultTranslator(org.marketcetera.persist.TransactionRequiredException.class));
             SLF4JLoggerProxy.debug(this,"Exception Table: {}",exceptionTable); //$NON-NLS-1$
         } catch (NoSuchMethodException e) {
             throw new PersistSetupException(e,EXCEPTION_TRANSLATE_ISSUE);
@@ -250,6 +241,136 @@ class EntityRemoteServer extends EntityRemoteServices {
     }
 
     /**
+     * Translates a JPA exception to a system exception.
+     */
+    private static interface ExceptionTranslator {
+        /**
+         * Translate the supplied JPA exception to a persistence exception.
+         *
+         * @param exception the JPA exception
+         *
+         * @return the translated exception
+         *
+         * @throws InvocationTargetException if there was an error
+         * @throws InstantiationException if there was an error
+         * @throws IllegalAccessException if there was an error
+         * @throws org.marketcetera.persist.PersistenceException if there was
+         * an error
+         */
+        org.marketcetera.persist.PersistenceException translate(
+                PersistenceException exception)
+                throws InvocationTargetException,
+                InstantiationException,
+                IllegalAccessException,
+                org.marketcetera.persist.PersistenceException;
+    }
+
+    /**
+     * Default exception translator. The translated exception is
+     * created without a custom message and wraps the original
+     * exception as a nested exception.
+     */
+    private static class DefaultTranslator implements ExceptionTranslator {
+        private DefaultTranslator(Class<? extends
+                org.marketcetera.persist.PersistenceException> clazz)
+                throws NoSuchMethodException {
+            mConstructor = clazz.getDeclaredConstructor(Throwable.class);
+        }
+
+        @Override
+        public org.marketcetera.persist.PersistenceException translate(
+                PersistenceException exception)
+                throws InvocationTargetException,
+                InstantiationException,
+                IllegalAccessException {
+            return mConstructor.newInstance(exception);
+        }
+        private Constructor<? extends
+                org.marketcetera.persist.PersistenceException> mConstructor;
+    }
+
+    /**
+     * A translator for <code>OptimisticLockException</code>.
+     */
+    private static class OptimisticLockTranslator implements ExceptionTranslator {
+        @Override
+        public org.marketcetera.persist.PersistenceException translate(
+                PersistenceException exception) {
+            javax.persistence.OptimisticLockException ole =
+                    (javax.persistence.OptimisticLockException)exception;
+            Object o = ole.getEntity();
+            return new OptimisticLockException(exception,
+                    new I18NBoundMessage1P(OPTMISTIC_LOCK_ERROR,
+                            getEntityName(o)));
+        }
+    }
+
+    private static class EntityExistsTranslator implements ExceptionTranslator {
+        public org.marketcetera.persist.PersistenceException translate(
+                PersistenceException exception)
+                throws InvocationTargetException,
+                InstantiationException,
+                IllegalAccessException,
+                org.marketcetera.persist.PersistenceException {
+            return new EntityExistsException(exception,
+                    VendorUtils.getEntityExistsMessage(
+                            (javax.persistence.EntityExistsException)exception));
+        }
+    }
+
+    /**
+     * Returns the user-friendly entity name if a custom one has been
+     * provided for the entity. If a custom name is not provided the
+     * simple class name is used as the entity name. If the class of the
+     * entity cannot be ascertained, a value indicating 'unknown' is returned.
+     *
+     * @param o the entity, its class name or its class object. Can be null,
+     * if the value is null, default name is used.
+     * 
+     * @return the user-friendly name
+     */
+    static String getEntityName(Object o) {
+        String entityName = null;
+        Class clazz = null;
+        if (o != null) {
+            if(o instanceof EntityBase) {
+                clazz = o.getClass();
+            } else if (o instanceof Class) {
+                clazz = (Class) o;
+            } else if (o instanceof String) {
+                try {
+                    clazz = Class.forName((String)o);
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
+            if(clazz != null && EntityBase.class.isAssignableFrom(clazz)) {
+                try {
+                    Method m = clazz.getDeclaredMethod("getUserFriendlyName");  //$NON-NLS-1$
+                    if(Modifier.isStatic(m.getModifiers()) &&
+                            I18NMessage0P.class.isAssignableFrom(m.getReturnType())) {
+                        m.setAccessible(true);
+                        I18NMessage0P msg = (I18NMessage0P) m.invoke(null);
+                        if(msg != null) {
+                            entityName = msg.getText();
+                        }
+                    }
+                } catch (NoSuchMethodException ignore) {
+                } catch (IllegalAccessException ignore) {
+                } catch (InvocationTargetException ignore) {
+                }
+            }
+        }
+        if(entityName == null) {
+            if(clazz != null) {
+                entityName = DEFAULT_ENTITY_NAME.getText(clazz.getSimpleName());
+            } else {
+                entityName = UNKNOWN_ENTITY_NAME.getText();
+            }
+        }
+        return entityName;
+    }
+
+    /**
      * Keeps track of the entity manager instance for the current thread.
      * The entity manager instance for the current thread is not-null
      * if an attempt is made to fetch it from within a
@@ -259,8 +380,8 @@ class EntityRemoteServer extends EntityRemoteServices {
     private static ThreadLocal<EntityManager> entityManager =
             new ThreadLocal<EntityManager>();
     private static Hashtable<Class<? extends javax.persistence.PersistenceException>,
-            Constructor<? extends org.marketcetera.persist.PersistenceException>> exceptionTable =
+            ExceptionTranslator> exceptionTable =
             new Hashtable<Class<? extends PersistenceException>,
-                    Constructor<? extends org.marketcetera.persist.PersistenceException>>();
+                    ExceptionTranslator>();
     private final EntityManagerFactory entityManagerFactory;
 }

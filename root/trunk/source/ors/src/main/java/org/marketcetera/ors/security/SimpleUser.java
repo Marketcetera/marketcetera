@@ -5,6 +5,7 @@ import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
 import static org.marketcetera.persist.Messages.UNSPECIFIED_NAME_ATTRIBUTE;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessage0P;
 import static org.marketcetera.ors.security.Messages.*;
 
 import javax.persistence.*;
@@ -207,6 +208,14 @@ public class SimpleUser extends NDEntityBase {
         }
     }
 
+    /**
+     * The custom localized name for users.
+     *
+     * @return custom localized name for users.
+     */
+    private static I18NMessage0P getUserFriendlyName() {
+        return SIMPLE_USER_NAME;
+    }
 
     /**
      * Hashes the supplied value

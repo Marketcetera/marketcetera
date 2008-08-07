@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 import java.sql.Blob;
 import java.sql.Clob;
@@ -48,4 +49,16 @@ abstract class JPAVendor {
      * initialing the clob
      */
     public abstract Clob initClob() throws PersistenceException;
+
+    /**
+     * Returns the internationalized user-friendly message for the
+     * supplied persistence exception.
+     *
+     * @param exception the JPA exception
+     *
+     * @return the internationalized user-friendly message for the supplied
+     * exception.
+     */
+    public abstract I18NBoundMessage getEntityExistsMessage(
+            javax.persistence.EntityExistsException exception);
 }

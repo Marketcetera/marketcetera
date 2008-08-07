@@ -15,7 +15,7 @@ public interface Messages {
      * The message provider
      */
     static final I18NMessageProvider PROVIDER =
-            new I18NMessageProvider("persist");  //$NON-NLS-1$
+            new I18NMessageProvider("core_persist");  //$NON-NLS-1$
     /**
      * The message logger.
      */
@@ -56,4 +56,14 @@ public interface Messages {
             new I18NMessage0P(LOGGER,"unexpected_error");  //$NON-NLS-1$
     static final I18NMessage3P UNSUPPORTED_CHARACTER =
             new I18NMessage3P(LOGGER,"unsupported_character");  //$NON-NLS-1$
+    static final I18NMessage1P OPTMISTIC_LOCK_ERROR =
+            new I18NMessage1P(LOGGER,"optmistic_lock_error");  //$NON-NLS-1$
+    static final I18NMessage1P DEFAULT_ENTITY_NAME =
+            new I18NMessage1P(LOGGER,"default_entity_name");  //$NON-NLS-1$
+    static final I18NMessage0P UNKNOWN_ENTITY_NAME =
+            new I18NMessage0P(LOGGER,"unknown_entity_name");  //$NON-NLS-1$
+    static final I18NMessage1P ENTITY_EXISTS_INSERT_ERROR =
+            new I18NMessage1P(LOGGER,"entity_exists_error");  //$NON-NLS-1$
+    static final I18NMessage0P ENTITY_EXISTS_GENERIC_ERROR =
+            new I18NMessage0P(LOGGER,"entity_exists_generic_error");  //$NON-NLS-1$
 }

@@ -2,13 +2,14 @@ package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.StringUtils;
+import org.marketcetera.util.log.I18NBoundMessage1P;
+import static org.marketcetera.persist.Messages.DEFAULT_ENTITY_NAME;
 import org.junit.Test;
 import org.junit.Before;
 import org.junit.Ignore;
 import static org.junit.Assert.*;
 
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -188,8 +189,25 @@ public abstract class EntityTestBase<E extends EntityBase,
             save(fetched);
             fail("This test should've failed"); //$NON-NLS-1$
         } catch (OptimisticLockException expected) {
+            assertEquals(new I18NBoundMessage1P(Messages.OPTMISTIC_LOCK_ERROR,
+                    getUserFriendlyName()).getText(),
+                    expected.getI18NBoundMessage().getText());
+            assertNotNull(expected.getCause());
+            assertTrue(expected.getCause() instanceof
+                    javax.persistence.OptimisticLockException);
         }
         save(e);
+    }
+
+    /**
+     * The expected user friendly name for the entity being tested.
+     * This method should be over-ridden if the entity defines a
+     * custom name message for itself.
+     *
+     * @return the custom message for entity name
+     */
+    protected String getUserFriendlyName() {
+        return DEFAULT_ENTITY_NAME.getText(getEntityClass().getSimpleName());
     }
 
     /**
@@ -274,19 +292,17 @@ public abstract class EntityTestBase<E extends EntityBase,
                     for(S s:l) {
                         if(prev != null) {
                             //Compare adjacent instances for the correct order
+                            final String prevValue = helper.getOrderField(prev).toString();
+                            final String thisValue = helper.getOrderField(s).toString();
                             if(isReverse) {
-                                assertTrue(StringUtils.toUCPArrayStr(
-                                        helper.getOrderField(prev).toString()) +
+                                assertTrue(prevValue +
                                         "!>=" + //$NON-NLS-1$
-                                        StringUtils.toUCPArrayStr(
-                                                helper.getOrderField(s).toString()), 
+                                        thisValue,
                                         helper.compareOrderField(prev,s) >= 0);
                             } else {
-                                assertTrue(StringUtils.toUCPArrayStr(
-                                        helper.getOrderField(prev).toString()) +
+                                assertTrue(prevValue +
                                         "!<=" + //$NON-NLS-1$
-                                        StringUtils.toUCPArrayStr(
-                                                helper.getOrderField(s).toString()),
+                                        thisValue,
                                         helper.compareOrderField(prev,s) <= 0);
                             }
                         }

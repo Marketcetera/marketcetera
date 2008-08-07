@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import static org.marketcetera.persist.Messages.ENTITY_EXISTS_GENERIC_ERROR;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -186,6 +187,8 @@ public abstract class ManyToManyTestBase<SE extends SummaryEntityBase,
                 deleteAll();
                 fail("Delete should've failed"); //$NON-NLS-1$
             } catch(EntityExistsException expected) {
+                assertEquals(ENTITY_EXISTS_GENERIC_ERROR,
+                        expected.getI18NBoundMessage().getMessage());
             }
             assertContainedEquals(e,fetch(e.getId()));
             //Remove relationship and verify that it can be deleted.

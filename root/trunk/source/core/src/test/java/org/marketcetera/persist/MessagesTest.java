@@ -23,4 +23,10 @@ public class MessagesTest {
         MessageComparator comparator=new MessageComparator(Messages.class);
         assertTrue(comparator.getDifferences(),comparator.isMatch());
     }
+    @Test
+    public void testMessagesMatch() throws Exception {
+        MessageComparator comparator=new MessageComparator(
+                org.marketcetera.persist.example.Messages.class);
+        assertTrue(comparator.getDifferences(),comparator.isMatch());
+    }
 }

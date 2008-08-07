@@ -1,6 +1,7 @@
 package org.marketcetera.persist.example;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
+import org.marketcetera.util.log.I18NMessage0P;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -73,6 +74,15 @@ public class Group extends NDEntityBase implements SummaryGroup {
      */
     public void delete() throws PersistenceException {
         deleteRemote(null);
+    }
+
+    /**
+     * The custom localized name for groups.
+     *
+     * @return custom localized name for groups.
+     */
+    private static I18NMessage0P getUserFriendlyName() {
+        return Messages.NAME_GROUP;
     }
 
     /**

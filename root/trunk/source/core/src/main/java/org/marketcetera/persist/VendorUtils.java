@@ -2,6 +2,7 @@ package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.util.log.I18NBoundMessage2P;
+import org.marketcetera.util.log.I18NBoundMessage;
 import static org.marketcetera.persist.Messages.*;
 
 import java.sql.Clob;
@@ -56,6 +57,23 @@ public class VendorUtils {
      */
     public static void validateText(CharSequence s) throws PersistenceException {
         getDBVendor().validateText(s);
+    }
+
+    /**
+     * Returns the internationalized user-friendly message for the
+     * supplied persistence exception.
+     *
+     * @param exception the exception for which a user-friendly message is
+     * desired.
+     *
+     * @return the internationalized user-friendly message.
+     *
+     * @throws PersistSetupException if the JPA vendor is not configured.
+     */
+    static I18NBoundMessage getEntityExistsMessage(
+            javax.persistence.EntityExistsException exception)
+            throws PersistSetupException {
+        return getJPAVendor().getEntityExistsMessage(exception);
     }
 
     /**

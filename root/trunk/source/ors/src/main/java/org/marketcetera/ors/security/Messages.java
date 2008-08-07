@@ -87,4 +87,6 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "cli_prompt_password"); //$NON-NLS-1$
     static final I18NMessage1P CLI_PROMPT_NEW_PASSWORD =
             new I18NMessage1P(LOGGER, "cli_prompt_new_password"); //$NON-NLS-1$
+    static final I18NMessage0P SIMPLE_USER_NAME =
+            new I18NMessage0P(LOGGER, "simple_user_name"); //$NON-NLS-1$
 }
