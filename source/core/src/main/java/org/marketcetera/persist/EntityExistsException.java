@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /* $License$ */
 /**
@@ -21,5 +22,15 @@ public class EntityExistsException extends PersistenceException {
      */
     public EntityExistsException(Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * Creates a new instance
+     *
+     * @param cause the cause
+     * @param message the error message
+     */
+    public EntityExistsException(Throwable cause, I18NBoundMessage message) {
+        super(cause, message);
     }
 }

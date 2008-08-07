@@ -77,6 +77,12 @@ public abstract class NDEntityTestBase<E extends NDEntityBase,
             save(n);
             fail();
         } catch(EntityExistsException expected) {
+            assertEquals(new I18NBoundMessage1P(Messages.ENTITY_EXISTS_INSERT_ERROR,
+                    getUserFriendlyName()).getText(),
+                    expected.getI18NBoundMessage().getText());
+            assertNotNull(expected.getCause());
+            assertTrue(expected.getCause() instanceof
+                    javax.persistence.EntityExistsException);
         }
         //Verify that the entity state is not
         //dirtied as the result of failed transaction

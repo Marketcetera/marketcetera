@@ -19,6 +19,16 @@ import java.util.Date;
  * the entity was updated. This value is updated every time
  * the entity is updated</li> 
  * </ul>
+ * <p>
+ * The Entity subclass can optionally define a method that
+ * returns a customized name to use for the entity in user visible messages.
+ * The method needs to have the following signature.
+ * <pre>
+ * private static {@link org.marketcetera.util.log.I18NMessage0P getUserFriendlyName()}
+ * </pre>
+ * If this method is not defined, the {@link Class#getSimpleName() simple}
+ * class name is used to refer to the entity in user visible messages.
+ * 
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

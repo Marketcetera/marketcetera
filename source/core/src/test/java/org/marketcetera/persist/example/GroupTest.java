@@ -127,7 +127,11 @@ public class GroupTest extends CorePersistNDTestBase<Group,SummaryGroup> {
         assertCollectionPermutation(e1.getAuthorizations(),e2.getAuthorizations());
     }
 
-    /* ********* Test setup and cleanup *********** */
+    @Override
+    protected String getUserFriendlyName() {
+        return Messages.NAME_GROUP.getText();
+    }
+/* ********* Test setup and cleanup *********** */
 
     @BeforeClass
     public static void setupData() throws Exception {

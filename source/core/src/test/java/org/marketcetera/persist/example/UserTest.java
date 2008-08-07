@@ -369,4 +369,9 @@ public class UserTest extends CorePersistNDTestBase<User, SummaryUser> {
         assertNull(uq.getEmployeeIDFilter());
         assertNull(uq.getEnabledFilter());
     }
+
+    @Override
+    protected String getUserFriendlyName() {
+        return Messages.NAME_USER.getText();
+    }
 }

@@ -2,6 +2,7 @@ package org.marketcetera.persist.example;
 import org.marketcetera.persist.*;
 import org.marketcetera.persist.PersistenceException;
 import static org.marketcetera.persist.JPQLConstants.*;
+import org.marketcetera.util.log.I18NMessage0P;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -435,6 +436,15 @@ public class User extends NDEntityBase implements SummaryUser {
             }
         }
     };
+
+    /**
+     * The custom localized name for users.
+     *
+     * @return custom localized name for users.
+     */
+    private static I18NMessage0P getUserFriendlyName() {
+        return Messages.NAME_USER;
+    }
     /**
      * The attribute employee ID used in JPQL queries
      */

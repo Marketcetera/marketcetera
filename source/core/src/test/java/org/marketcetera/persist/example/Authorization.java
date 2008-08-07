@@ -5,6 +5,7 @@ import org.marketcetera.persist.NDEntityBase;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.persist.SaveResult;
 import org.marketcetera.persist.PersistContext;
+import org.marketcetera.util.log.I18NMessage0P;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -113,6 +114,18 @@ public class Authorization extends NDEntityBase {
 
     private void setGroups(Set<SummaryGroup> groups) {
         this.groups = groups;
+    }
+    
+    /**
+     * The custom localized name for authorizations.
+     *
+     * @return custom localized name for authorizations.
+     */
+    private static I18NMessage0P getUserFriendlyName() {
+        //return null to test the edge case where this method
+        //returns null. The generic entity name should be used
+        //in this case.
+        return null;
     }
 
     private Set<SummaryGroup> groups;

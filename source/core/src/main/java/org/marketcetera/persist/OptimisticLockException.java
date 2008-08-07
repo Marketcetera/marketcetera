@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.util.log.I18NBoundMessage;
 
 /* $License$ */
 /**
@@ -30,5 +31,17 @@ public class OptimisticLockException extends PersistenceException {
      */
     public OptimisticLockException(Throwable cause) {
         super(cause);
+    }
+
+    /**
+     * Constructs a new instance given the supplied message and
+     * underlying cause.
+     *
+     * @param cause the cause
+     * @param message the message.         
+     */
+    public OptimisticLockException(Throwable cause,
+                                   I18NBoundMessage message) {
+        super(cause, message);
     }
 }
