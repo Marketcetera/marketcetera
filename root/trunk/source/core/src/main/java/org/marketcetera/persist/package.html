@@ -181,7 +181,7 @@
     The current database can only save a subset of characters supported by java.
     Hence all the strings that are being persisted should be validated to ensure that
     they comply with the character set supported by the database.
-    {@link org.marketcetera.persist.VendorUtils#validateText(String)} should be invoked
+    {@link org.marketcetera.persist.VendorUtils#validateText(CharSequence)} should be invoked
     to validate all the string query parameters, & entity attributes.
     
     Do ensure that all string attributes of the entity being saved are validated
