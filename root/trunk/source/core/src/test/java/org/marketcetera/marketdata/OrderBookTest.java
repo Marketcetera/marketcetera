@@ -35,7 +35,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.6.0
  */
 public class OrderBookTest
 {

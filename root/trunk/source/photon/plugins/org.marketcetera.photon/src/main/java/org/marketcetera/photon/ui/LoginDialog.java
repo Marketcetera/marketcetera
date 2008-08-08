@@ -60,7 +60,7 @@ public class LoginDialog
     implements Messages
 {
 
-    private static final String ORS_URL = "href=\"http://www.marketcetera.com/0.5.0/docs/authentication\""; //$NON-NLS-1$
+    private static final String ORS_URL = "href=\"http://www.marketcetera.com/0.6.0/docs/authentication\""; //$NON-NLS-1$
 
     private Combo userIdText;
 

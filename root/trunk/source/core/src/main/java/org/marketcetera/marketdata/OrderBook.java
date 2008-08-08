@@ -54,7 +54,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.6.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class OrderBook
@@ -591,7 +591,7 @@ public class OrderBook
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private enum MessageType
@@ -605,7 +605,7 @@ public class OrderBook
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private static class BookCollection<E extends BidAskEvent>

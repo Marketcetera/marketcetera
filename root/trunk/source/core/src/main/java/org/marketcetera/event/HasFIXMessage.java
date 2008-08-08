@@ -13,7 +13,7 @@ import quickfix.Message;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.6.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface HasFIXMessage

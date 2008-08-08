@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 
 /**
  * @author klim@marketcetera.com
- * @since $Release$
+ * @since 0.6.0
  * @version $Id$
  */
 public class MessagesTest

@@ -7,7 +7,7 @@ import org.marketcetera.util.log.I18NBoundMessage;
 
 /**
  * @author klim@marketcetera.com
- * @since $Release$
+ * @since 0.6.0
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

@@ -437,7 +437,7 @@ public class BogusFeed
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private static class OrderBookSettler
@@ -660,7 +660,7 @@ public class BogusFeed
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private static class Request
@@ -803,7 +803,7 @@ public class BogusFeed
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private static class OrderBookWrapper

@@ -162,7 +162,7 @@ public abstract class BidAskEvent
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     public enum Action 
@@ -180,7 +180,7 @@ public abstract class BidAskEvent
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     public final static class BookPriceComparator
