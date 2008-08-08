@@ -39,7 +39,7 @@ import quickfix.field.MsgType;
  * 
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @since $Release$
+ * @since 0.6.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class OrderTicketController <T extends OrderTicketModel>

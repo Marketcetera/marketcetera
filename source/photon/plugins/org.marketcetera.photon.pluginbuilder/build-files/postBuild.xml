@@ -61,7 +61,7 @@
 
 	<target name="-appendFeatureElement">
 		<!-- we can not rely on ${version.full} at this point since people could use
-			a fix feature id like 0.5.0.qualifier. ${version.full} would only work if
+			a fix feature id like 0.6.0.qualifier. ${version.full} would only work if
 			the feature were set to 0.0.0 --> 
 		<loadfile property="featurexml" srcfile="${buildDirectory}/features/${featureId}/feature.xml"/>
 		<SetRegex input="${featurexml}" match="^.*&lt;feature.+?version=&quot;(.+?)&quot;.*$" property="realFeatureVersion" value="\1" />

@@ -36,7 +36,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  * the message edited by the order ticket UI.
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @since $Release$
+ * @since 0.6.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class OrderTicketModel 
@@ -48,7 +48,7 @@ public abstract class OrderTicketModel
      * @author gmiller
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     public static class OrderTicketPublication 

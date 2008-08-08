@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
-      version="0.5.0"
+      version="0.6.0"
       provider-name="Marketcetera, Inc.">
 
    <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">

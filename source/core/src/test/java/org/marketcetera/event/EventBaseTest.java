@@ -16,7 +16,7 @@ import org.junit.Test;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.6.0
  */
 public class EventBaseTest
 {
@@ -70,7 +70,7 @@ public class EventBaseTest
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.6.0
      */
     public static class MockEvent
         extends EventBase

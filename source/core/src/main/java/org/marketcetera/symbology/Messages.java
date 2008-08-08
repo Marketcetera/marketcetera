@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * The internationalization constants used by this package.
  *
  * @author klim@marketcetera.com
- * @since $Release$
+ * @since 0.6.0
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

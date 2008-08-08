@@ -20,7 +20,7 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
  * @author gmiller
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.6.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class Level2ContentProvider
