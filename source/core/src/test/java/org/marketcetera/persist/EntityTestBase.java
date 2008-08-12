@@ -136,7 +136,13 @@ public abstract class EntityTestBase<E extends EntityBase,
         save(e);
         E f = fetchByID(e.getId());
         save(e);
-        assertSavedEntity(f,e);
+        // The update count gets incremented some times
+        // but not always. Since the object's contents have
+        // not been updated, it doesn't really matter if the
+        // update count has been updated. If the update count
+        // does get updated, the user may get a spurious
+        // dirty object write error, when its not needed.
+        assertSavedEntity(f,e,true);
     }
 
     /**
@@ -403,9 +409,12 @@ public abstract class EntityTestBase<E extends EntityBase,
     protected void assertSavedEntity(E e) throws Exception {
         assertSavedEntity(null,e);
     }
-
     /**
      * Verifies the state of the entity after its been updated.
+     * This method ensures that the update count of the entity
+     * is greater than the previous instance's value.
+     * Invoking this method is the same as invoking
+     * <code>assertSavedEntity(E, E, false)</code>
      *
      * @param prev the previous copy of the entity.
      * @param e the recently saved entity
@@ -413,13 +422,32 @@ public abstract class EntityTestBase<E extends EntityBase,
      * @throws Exception if there's an error
      */
     protected void assertSavedEntity(E prev, E e) throws Exception {
+        assertSavedEntity(prev,e,false);
+    }
+
+    /**
+     * Verifies the state of the entity after its been updated.
+     *
+     * @param prev the previous copy of the entity.
+     * @param e the recently saved entity
+     * @param equalUpdateCount if the update count of two entities
+     * can be equal
+     *
+     * @throws Exception if there's an error
+     */
+    protected void assertSavedEntity(E prev, E e, boolean equalUpdateCount)
+            throws Exception {
         assertTrue(fetchExistsByID(e.getId()));
         assertTrue(e.isPersistent());
         assertTrue(String.valueOf(e.getUpdateCount()), e.getUpdateCount() >= 0);
         assertNotNull(e.getLastUpdated());
         if(prev != null) {
             assertEquals(prev.getId(),e.getId());
-            assertTrue(e.getUpdateCount() > prev.getUpdateCount());
+            if (equalUpdateCount) {
+                assertTrue(e.getUpdateCount() >= prev.getUpdateCount());
+            } else {
+                assertTrue(e.getUpdateCount() > prev.getUpdateCount());
+            }
             assertTrue(prev.getLastUpdated().compareTo(e.getLastUpdated()) < 0);
         }
         // Sleep to get adequate difference between
