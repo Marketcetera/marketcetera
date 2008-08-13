@@ -49,12 +49,11 @@
 
             <li class="display" title="help"><a title="Help" href="#help">Help</a>
               <ul class="stretcher">
-                <li><a title="Documentation" href="http://www.marketcetera.com/0.6.0/docs/Tradebase">Documentation</a></li>
+                <li><a title="Documentation" href="http://www.marketcetera.com/masha/docs?qualifier=tradebase&version=<%= RELEASE_VERSION %>">Documentation</a></li>
                 <li><a title="Report Bug" href="http://trac.marketcetera.org/trac.fcgi/wiki/Marketcetera/NewTicket">Report a Bug</a></li>
                 <li><a title="About Marketcetera" href="http://www.marketcetera.com">About Marketcetera</a></li>
                 <%  if(RUN_ON_APPLIANCE) %>
                   <li><%= link_to "Server Diagnostics", {:action => 'server_info', :controller => 'diagnostics'}, :title => "Server Diagnostics" %></li>
-                  <li><%= link_to "Update ORS Config", {:action => 'index', :controller => 'update_ors'}, :title => "Update ORS Configuration" %></li>
                   <li><%= link_to "ORS Log", {:action => 'ors_log_display', :controller => 'diagnostics'}, :title => "ORS Log" %></li>
                 <% end %>
                 <li><%= link_to "Tradebase Log", {:action => 'tradebase_log_display', :controller => 'diagnostics'}, :title => "Tradebase Log" %></li>
