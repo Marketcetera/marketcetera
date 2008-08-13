@@ -484,4 +484,18 @@ public interface Messages
                                                               "ask_label"); //$NON-NLS-1$
     public static I18NMessage0P ASK_SZ_LABEL = new I18NMessage0P(LOGGER,
                                                                  "ask_sz_label"); //$NON-NLS-1$
+    public static I18NMessage1P OPEN_NEW_LABEL = new I18NMessage1P(LOGGER,
+                                                                   "open_new_label"); //$NON-NLS-1$
+    public static I18NMessage1P OPEN_NEW_TOOLTIPS = new I18NMessage1P(LOGGER,
+                                                                      "open_new_tooltips"); //$NON-NLS-1$
+    public static I18NMessage1P CANNOT_OPEN_VIEW = new I18NMessage1P(LOGGER,
+                                                                     "cannot_open_view"); //$NON-NLS-1$
+    public static I18NMessage0P AVERAGE_PRICE_VIEW_LABEL = new I18NMessage0P(LOGGER,
+                                                                             "average_price_view_label"); //$NON-NLS-1$
+    public static I18NMessage0P OPEN_ORDERS_VIEW_LABEL = new I18NMessage0P(LOGGER,
+                                                                           "open_orders_view_label"); //$NON-NLS-1$
+    public static I18NMessage0P FIX_MESSAGES_VIEW_LABEL = new I18NMessage0P(LOGGER,
+                                                                            "fix_messages_view_label"); //$NON-NLS-1$
+    public static I18NMessage0P FILLS_VIEW_LABEL = new I18NMessage0P(LOGGER,
+                                                                     "fills_view_label"); //$NON-NLS-1$
 }
