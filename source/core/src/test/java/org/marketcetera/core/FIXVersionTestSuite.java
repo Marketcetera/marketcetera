@@ -43,28 +43,6 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         suiteName = aClass.getName();
     }
 
-    public FIXVersionTestSuite(Class aClass, MessageBundleInfo extraBundle, FIXVersion[] inVersions) {
-        super();
-        init(new MessageBundleInfo[]{extraBundle});
-        addTestForEachVersion(aClass, inVersions, new HashSet<String>(), new FIXVersion[0]);
-        suiteName = aClass.getName();
-    }
-
-    public FIXVersionTestSuite(Class aClass, MessageBundleInfo[] extraBundles, FIXVersion[] inVersions) {
-        super();
-        init(extraBundles);
-        addTestForEachVersion(aClass, inVersions, new HashSet<String>(), new FIXVersion[0]);
-        suiteName = aClass.getName();
-    }
-
-    public FIXVersionTestSuite(Class aClass, MessageBundleInfo extraBundle, FIXVersion[] inVersions,
-                               Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
-        super();
-        init(new MessageBundleInfo[]{extraBundle});
-        addTestForEachVersion(aClass, inVersions, exceptionMethods, exceptionVersions);
-        suiteName = aClass.getName();
-    }
-
     public FIXVersionTestSuite(Class aClass, FIXVersion[] inVersions,
                                Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
         super();
@@ -72,15 +50,6 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         suiteName = aClass.getName();
     }
     
-    public FIXVersionTestSuite(Class aClass, MessageBundleInfo[] extraBundles, FIXVersion[] inVersions,
-                               Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
-        super();
-        init(extraBundles);
-        addTestForEachVersion(aClass, inVersions, exceptionMethods, exceptionVersions);
-        suiteName = aClass.getName();
-    }
-
-
     public FIXDataDictionaryManager getFixDataDictionaryManager() {
         return fixDDMgr;
     }

@@ -60,17 +60,6 @@
       <artifactId>persistence-api</artifactId>
     </dependency>
 
-    <!-- Compile: log4j is invoked directly, not via slf4j. -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <scope>compile</scope>
-    </dependency>
-
-    <!-- Runtime. -->
-
-
-    
     <!-- Testing. -->
     <dependency>
       <groupId>${public.package}</groupId>
