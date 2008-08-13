@@ -56,24 +56,28 @@
             id="org.marketcetera.photon.category"
             name="Photon"/>
       <view
+            allowMultiple="true"
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.FIXMessagesView"
             icon="icons/silk/application_view_list.png"
             id="org.marketcetera.photon.views.FIXMessagesView"
             name="FIX Messages"/>
       <view
+            allowMultiple="true"
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.OpenOrdersView"
             icon="icons/silk/book_open.png"
             id="org.marketcetera.photon.views.OpenOrdersView"
             name="Open Orders"/>
       <view
+            allowMultiple="true"
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.FillsView"
             icon="icons/silk/folder_star.png"
             id="org.marketcetera.photon.views.FillsView"
             name="Fills"/>
       <view
+            allowMultiple="true"
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.AveragePriceView"
             icon="icons/silk/calculator.png"

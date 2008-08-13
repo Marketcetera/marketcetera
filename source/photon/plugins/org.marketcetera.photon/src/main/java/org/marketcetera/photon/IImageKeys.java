@@ -43,4 +43,5 @@ public interface IImageKeys {
 	public static final String STATUS_AVAILABLE = "icons/other/greenled.gif"; //$NON-NLS-1$
 	public static final String STATUS_ERROR = "icons/other/redled.gif"; //$NON-NLS-1$
 	public static final String RECOVER_MESSAGES = "icons/silk/application_get.png"; //$NON-NLS-1$
+	public static final String OPEN_ADDITIONAL_VIEW = "/icons/silk/photo_add.png"; //$NON-NLS-1$
 }

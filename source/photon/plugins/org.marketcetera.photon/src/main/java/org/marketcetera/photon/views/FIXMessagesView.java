@@ -6,9 +6,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.PartInitException;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.FIXMatcher;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
+import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 import org.marketcetera.photon.actions.ShowHeartbeatsAction;
 import org.marketcetera.photon.ui.DirectionalMessageTableFormat;
 import org.marketcetera.photon.ui.FIXMessageTableFormat;
@@ -18,13 +20,17 @@ import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 import ca.odell.glazedlists.matchers.Matcher;
 
+/* $License$ */
+
 /**
  * FIX Messages view.
  * 
  * @author gmiller
  * @author andrei@lissovski.org
  * @author michael.lossos@softwaregoodness.com
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXMessagesView extends AbstractFIXMessagesView implements
 		IHeartbeatsToggle {
 
@@ -90,6 +96,9 @@ public class FIXMessagesView extends AbstractFIXMessagesView implements
 	protected void initializeToolBar(IToolBarManager theToolBarManager) {
 		// theToolBarManager.add(new TextContributionItem(""));
 		theToolBarManager.add(showHeartbeatsAction);
+        theToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
+                                                           FIX_MESSAGES_VIEW_LABEL.getText(),
+                                                           ID));
 	}
 
 	@Override
