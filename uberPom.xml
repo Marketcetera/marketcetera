@@ -74,6 +74,11 @@
         <version>[2.5.2]</version>
       </dependency>
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>[2.5.2]</version>
+      </dependency>
+      <dependency>
         <groupId>org.skife.kasparov</groupId>
         <artifactId>csv</artifactId>
         <version>[1.0]</version>
@@ -111,7 +116,7 @@
       <dependency>
         <groupId>commons-i18n</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>[20080730]</version>
+        <version>[20080812]</version>
       </dependency>
       <dependency>
         <groupId>commons-csv</groupId>
@@ -122,6 +127,16 @@
         <groupId>javax.persistence</groupId>
         <artifactId>persistence-api</artifactId>
         <version>[1.0]</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>[2.5]</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ccil.cowan.tagsoup</groupId>
+        <artifactId>tagsoup</artifactId>
+        <version>[1.2]</version>
       </dependency>
 
       <!-- Runtime. -->
@@ -169,15 +184,15 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-entitymanager</artifactId>
-        <version>[3.3.2.GA]</version>
+        <groupId>hsqldb</groupId>
+        <artifactId>hsqldb</artifactId>
+        <version>[1.8.0.10]</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>
-        <artifactId>hibernate</artifactId>
-        <version>[3.2.6.ga]</version>
+        <artifactId>hibernate-entitymanager</artifactId>
+        <version>[3.3.2.GA]</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -199,7 +214,7 @@
         <scope>runtime</scope>
       </dependency>
 
-      <!-- Testing. -->
+      <!-- Testing: local modules. -->
       <dependency>
         <groupId>${public.package}</groupId>
         <artifactId>core</artifactId>
@@ -211,6 +226,14 @@
         <groupId>${public.package}</groupId>
         <artifactId>util-test</artifactId>
         <version>[${project.version}]</version>
+        <scope>test</scope>
+      </dependency>
+
+      <!-- Testing: other. -->
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>[2.5.2]</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -228,7 +251,6 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <configuration>
               <showDeprecation>true</showDeprecation>
@@ -258,10 +280,34 @@
     <pluginManagement>
       <plugins>
 
-        <!-- Test jar generation. -->
+        <!-- jar generation. -->
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
           <version>2.2</version>
+        </plugin>
+
+        <!-- war generation. -->
+        <plugin>
+          <artifactId>maven-war-plugin</artifactId>
+          <version>2.1-alpha-1</version>
+        </plugin>
+
+        <!-- mvn eclipse:eclipse -->
+        <plugin>
+          <artifactId>maven-eclipse-plugin</artifactId>
+          <version>2.5.1</version>
+        </plugin>
+
+        <!-- mvn clean -->
+        <plugin>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>2.2</version>
+        </plugin>
+
+        <!-- mvn antrun:run -->
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.2</version>
         </plugin>
 
         <!-- mvn exec:exec or exec:java -->
@@ -283,8 +329,8 @@
 
         <!-- mvn compile -->
         <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
           <configuration>
             <source>1.${javase.version}</source>
             <target>1.${javase.version}</target>
@@ -310,6 +356,13 @@
               <link>http://commons.apache.org/cli/api-release/</link>
             </links>
           </configuration>
+        </plugin>
+
+        <!-- Database schema generator. -->
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>hibernate3-maven-plugin</artifactId>
+          <version>2.1</version>
         </plugin>
 
         <!-- mvn assembly:assembly -->
@@ -351,11 +404,6 @@
               <version>${xjc.version}</version>
             </dependency>
           </dependencies>
-        </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>hibernate3-maven-plugin</artifactId>
-          <version>2.1</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -405,6 +453,9 @@
     <pluginRepository>
       <id>maven2-repository.dev.java.net</id>
       <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
     </pluginRepository>
   </pluginRepositories>
 
