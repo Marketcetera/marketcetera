@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
-import org.marketcetera.core.MessageBundleInfo;
 
 import quickfix.Message;
 
@@ -36,34 +35,6 @@ public class MarketDataFeedTestSuite
     public MarketDataFeedTestSuite(Class<?> inClass)
     {
         super(inClass);
-
-    }
-
-    /**
-     * Create a new <code>MarketDataFeedTestSuite</code> instance.
-     *
-     * @param inClass
-     * @param inExtraBundle
-     */
-    public MarketDataFeedTestSuite(Class<?> inClass,
-                                   MessageBundleInfo inExtraBundle)
-    {
-        super(inClass,
-              inExtraBundle);
-
-    }
-
-    /**
-     * Create a new <code>MarketDataFeedTestSuite</code> instance.
-     *
-     * @param inClass
-     * @param inExtraBundles
-     */
-    public MarketDataFeedTestSuite(Class<?> inClass,
-                                   MessageBundleInfo[] inExtraBundles)
-    {
-        super(inClass,
-              inExtraBundles);
 
     }
 

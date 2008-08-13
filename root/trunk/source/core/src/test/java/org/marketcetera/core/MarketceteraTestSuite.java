@@ -14,32 +14,16 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 public class MarketceteraTestSuite extends TestSuite {
     public MarketceteraTestSuite() {
         super();
-        init(null);
+        init();
     }
 
     public MarketceteraTestSuite(Class aClass) {
         super(aClass);
-        init(null);
+        init();
     }
 
-    public MarketceteraTestSuite(Class aClass, MessageBundleInfo extraBundle) {
-        super(aClass);
-        init(new MessageBundleInfo[]{extraBundle});
-    }
-
-    public MarketceteraTestSuite(Class aClass, MessageBundleInfo[] extraBundles) {
-        super(aClass);
-        init(extraBundles);
-    }
-
-    public void init(MessageBundleInfo[] inBundles)
+    public void init()
     {
-        if (inBundles != null){
-            for (MessageBundleInfo messageBundleInfo : inBundles) {
-                MessageBundleManager.registerMessageBundle(messageBundleInfo);
-            }
-        }
-        MessageBundleManager.registerCoreMessageBundle();
         try {
             FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
         } catch (Exception ex) {

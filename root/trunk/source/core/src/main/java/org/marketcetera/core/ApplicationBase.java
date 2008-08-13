@@ -20,7 +20,7 @@ import java.util.concurrent.Semaphore;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public abstract class ApplicationBase implements Clock {
+public class ApplicationBase implements Clock {
 
     public static String LOGGER_CONF_FILE = "log4j.properties"; //$NON-NLS-1$
     public static final int LOGGER_WATCH_DELAY = 20*1000;
@@ -50,17 +50,6 @@ public abstract class ApplicationBase implements Clock {
     protected FIXDataDictionary fixDD;
     private boolean waitingForever = false;
     private static final String FIX_VERSION_NAME = "fixVersionEnum"; //$NON-NLS-1$
-
-    public ApplicationBase()
-    {
-        List<MessageBundleInfo> bundles = getLocalMessageBundles();
-        MessageBundleManager.registerCoreMessageBundle();
-        if (bundles != null){
-            for (MessageBundleInfo messageBundleInfo : bundles) {
-                MessageBundleManager.registerMessageBundle(messageBundleInfo);
-            }
-        }
-    }
 
     private static final class MyApplicationContext
         extends ClassPathXmlApplicationContext
@@ -161,11 +150,6 @@ public abstract class ApplicationBase implements Clock {
         // TODO: make this read a variable that is updated periodically by a thread
         return System.currentTimeMillis(); //i18n_datetime
     }
-
-    /** Subclasses can override the implementation if they need to add additoinal or specific
-     * message bundles for internationalization.
-     */
-    protected abstract List<MessageBundleInfo> getLocalMessageBundles();
 
     /** Returns a pointer to the Spring application context that started this app */
     public ClassPathXmlApplicationContext getAppCtx() {

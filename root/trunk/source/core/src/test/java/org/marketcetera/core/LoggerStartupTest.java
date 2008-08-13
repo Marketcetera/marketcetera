@@ -26,16 +26,9 @@ public class LoggerStartupTest extends TestCase {
      * @throws Exception
      */
     public void testLogSomething() throws Exception {
-        MyApp app = new MyApp();
+        ApplicationBase app = new ApplicationBase();
 
         SLF4JLoggerProxy.info(this, "info message coming through"); //$NON-NLS-1$
         SLF4JLoggerProxy.error(this, "not a real error: testing erro message coming through"); //$NON-NLS-1$
-    }
-
-    private class MyApp extends ApplicationBase
-    {
-        protected List<MessageBundleInfo> getLocalMessageBundles() {
-            return null;
-        }
     }
 }
