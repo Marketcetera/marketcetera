@@ -29,6 +29,9 @@ RUN_ON_APPLIANCE = false
 # The default location is in lib directory
 JAVA_JMX_CONNECTOR_LIB='lib/marketcetera-jmx-connector-1.0.jar'
 
+# Version of the application
+RELEASE_VERSION = "0.6.0"
+
 Rails::Initializer.run do |config|
   # Settings in config/environments/* take precedence those specified here
   

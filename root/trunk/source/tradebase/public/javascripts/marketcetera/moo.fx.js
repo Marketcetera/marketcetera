@@ -1,133 +1,136 @@
-/*
-moo.fx, simple effects library built with prototype.js (http://prototype.conio.net).
-by Valerio Proietti (http://mad4milk.net) MIT-style LICENSE.
-for more info (http://moofx.mad4milk.net).
-Sunday, March 05, 2006
-v 1.2.3
-*/
+//(c) 2006 Valerio Proietti (http://mad4milk.net). MIT-style license.
+//moo.fx.js - depends on prototype.js OR prototype.lite.js
+//version 2.0
 
-var fx = new Object();
-//base
-fx.Base = function(){};
-fx.Base.prototype = {
-	setOptions: function(options) {
-	this.options = {
-		duration: 500,
-		onComplete: '',
-		transition: fx.sinoidal
-	}
-	Object.extend(this.options, options || {});
+var Fx = fx = {};
+
+Fx.Base = function(){};
+Fx.Base.prototype = {
+
+	setOptions: function(options){
+		this.options = Object.extend({
+			onStart: function(){},
+			onComplete: function(){},
+			transition: Fx.Transitions.sineInOut,
+			duration: 500,
+			unit: 'px',
+			wait: true,
+			fps: 50
+		}, options || {});
 	},
 
-	step: function() {
-		var time  = (new Date).getTime();
-		if (time >= this.options.duration+this.startTime) {
+	step: function(){
+		var time = new Date().getTime();
+		if (time < this.time + this.options.duration){
+			this.cTime = time - this.time;
+			this.setNow();
+		} else {
+			setTimeout(this.options.onComplete.bind(this, this.element), 10);
+			this.clearTimer();
 			this.now = this.to;
-			clearInterval (this.timer);
-			this.timer = null;
-			if (this.options.onComplete) setTimeout(this.options.onComplete.bind(this), 10);
-		}
-		else {
-			var Tpos = (time - this.startTime) / (this.options.duration);
-			this.now = this.options.transition(Tpos) * (this.to-this.from) + this.from;
 		}
 		this.increase();
 	},
 
-	custom: function(from, to) {
-		if (this.timer != null) return;
-		this.from = from;
-		this.to = to;
-		this.startTime = (new Date).getTime();
-		this.timer = setInterval (this.step.bind(this), 13);
+	setNow: function(){
+		this.now = this.compute(this.from, this.to);
 	},
 
-	hide: function() {
-		this.now = 0;
-		this.increase();
+	compute: function(from, to){
+		var change = to - from;
+		return this.options.transition(this.cTime, from, change, this.options.duration);
 	},
 
-	clearTimer: function() {
+	clearTimer: function(){
 		clearInterval(this.timer);
 		this.timer = null;
-	}
-}
-
-//stretchers
-fx.Layout = Class.create();
-fx.Layout.prototype = Object.extend(new fx.Base(), {
-	initialize: function(el, options) {
-		this.el = $(el);
-		this.el.style.overflow = "hidden";
-		this.iniWidth = this.el.offsetWidth;
-		this.iniHeight = this.el.offsetHeight;
-		this.setOptions(options);
-	}
-});
-
-fx.Height = Class.create();
-Object.extend(Object.extend(fx.Height.prototype, fx.Layout.prototype), {	
-	increase: function() {
-		this.el.style.height = this.now + "px";
+		return this;
 	},
 
-	toggle: function() {
-		if (this.el.offsetHeight > 0) this.custom(this.el.offsetHeight, 0);
-		else this.custom(0, this.el.scrollHeight);
-	}
-});
-
-fx.Width = Class.create();
-Object.extend(Object.extend(fx.Width.prototype, fx.Layout.prototype), {	
-	increase: function() {
-		this.el.style.width = this.now + "px";
+	_start: function(from, to){
+		if (!this.options.wait) this.clearTimer();
+		if (this.timer) return;
+		setTimeout(this.options.onStart.bind(this, this.element), 10);
+		this.from = from;
+		this.to = to;
+		this.time = new Date().getTime();
+		this.timer = setInterval(this.step.bind(this), Math.round(1000/this.options.fps));
+		return this;
 	},
 
-	toggle: function(){
-		if (this.el.offsetWidth > 0) this.custom(this.el.offsetWidth, 0);
-		else this.custom(0, this.iniWidth);
-	}
-});
+	custom: function(from, to){
+		return this._start(from, to);
+	},
 
-//fader
-fx.Opacity = Class.create();
-fx.Opacity.prototype = Object.extend(new fx.Base(), {
-	initialize: function(el, options) {
-		this.el = $(el);
-		this.now = 1;
+	set: function(to){
+		this.now = to;
 		this.increase();
-		this.setOptions(options);
+		return this;
 	},
 
-	increase: function() {
-		if (this.now == 1 && (/Firefox/.test(navigator.userAgent))) this.now = 0.9999;
-		this.setOpacity(this.now);
-	},
-	
-	setOpacity: function(opacity) {
-		if (opacity == 0 && this.el.style.visibility != "hidden") this.el.style.visibility = "hidden";
-		else if (this.el.style.visibility != "visible") this.el.style.visibility = "visible";
-		if (window.ActiveXObject) this.el.style.filter = "alpha(opacity=" + opacity*100 + ")";
-		this.el.style.opacity = opacity;
+	hide: function(){
+		return this.set(0);
 	},
 
-	toggle: function() {
-		if (this.now > 0) this.custom(1, 0);
-		else this.custom(0, 1);
+	setStyle: function(e, p, v){
+		if (p == 'opacity'){
+			if (v == 0 && e.style.visibility != "hidden") e.style.visibility = "hidden";
+			else if (e.style.visibility != "visible") e.style.visibility = "visible";
+			if (window.ActiveXObject) e.style.filter = "alpha(opacity=" + v*100 + ")";
+			e.style.opacity = v;
+		} else e.style[p] = v+this.options.unit;
 	}
+
+};
+
+Fx.Style = Class.create();
+Fx.Style.prototype = Object.extend(new Fx.Base(), {
+
+	initialize: function(el, property, options){
+		this.element = $(el);
+		this.setOptions(options);
+		this.property = property.camelize();
+	},
+
+	increase: function(){
+		this.setStyle(this.element, this.property, this.now);
+	}
+
 });
 
-//transitions
-fx.sinoidal = function(pos){
-	return ((-Math.cos(pos*Math.PI)/2) + 0.5);
-	//this transition is from script.aculo.us
-}
-fx.linear = function(pos){
-	return pos;
-}
-fx.cubic = function(pos){
-	return Math.pow(pos, 3);
-}
-fx.circ = function(pos){
-	return Math.sqrt(pos);
-}
+Fx.Styles = Class.create();
+Fx.Styles.prototype = Object.extend(new Fx.Base(), {
+
+	initialize: function(el, options){
+		this.element = $(el);
+		this.setOptions(options);
+		this.now = {};
+	},
+
+	setNow: function(){
+		for (p in this.from) this.now[p] = this.compute(this.from[p], this.to[p]);
+	},
+
+	custom: function(obj){
+		if (this.timer && this.options.wait) return;
+		var from = {};
+		var to = {};
+		for (p in obj){
+			from[p] = obj[p][0];
+			to[p] = obj[p][1];
+		}
+		return this._start(from, to);
+	},
+
+	increase: function(){
+		for (var p in this.now) this.setStyle(this.element, p, this.now[p]);
+	}
+
+});
+
+//Transitions (c) 2003 Robert Penner (http://www.robertpenner.com/easing/), BSD License.
+
+Fx.Transitions = {
+	linear: function(t, b, c, d) { return c*t/d + b; },
+	sineInOut: function(t, b, c, d) { return -c/2 * (Math.cos(Math.PI*t/d) - 1) + b; }
+};
