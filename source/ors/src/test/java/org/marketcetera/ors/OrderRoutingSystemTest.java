@@ -44,7 +44,7 @@ public class OrderRoutingSystemTest extends FIXVersionedTestCase
 
     public static Test suite()
     {
-        return new FIXVersionTestSuite(OrderRoutingSystemTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(OrderRoutingSystemTest.class,
                 new FIXVersion[]{FIXVersion.FIX42});
     }
 

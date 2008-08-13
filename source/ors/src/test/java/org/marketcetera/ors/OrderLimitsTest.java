@@ -29,7 +29,7 @@ public class OrderLimitsTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
-        return new FIXVersionTestSuite(OrderLimitsTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(OrderLimitsTest.class,
                 FIXVersionTestSuite.ALL_VERSIONS);
     }
 
