@@ -65,11 +65,8 @@ public class XMLMessageProvider implements MessageProvider {
     /* (non-Javadoc)
      * @see org.apache.commons.i18n.MessageProvider#getText(java.lang.String, java.lang.String, java.util.Locale)
      */
-    public String getText(String id, String entry, Locale locale) {
+    public String getText(String id, String entry, Locale locale) throws MessageNotFoundException {
         Message message = findMessage(id, locale);
-        if (message==null) {
-            return null;
-        }
         return message.getEntry(entry);
     }
 
@@ -78,13 +75,6 @@ public class XMLMessageProvider implements MessageProvider {
      */
     public Map getEntries(String id, Locale locale) throws MessageNotFoundException {
         Message message = findMessage(id, locale);
-        if (message==null) {
-            throw new MessageNotFoundException
-                (MessageFormat.format
-                 (I18nUtils.INTERNAL_MESSAGES.getString
-                  (I18nUtils.NO_MESSAGE_ENTRIES_FOUND),
-                  new String[] { id }));
-        }
         return message.getEntries();
     }
 
@@ -93,13 +83,10 @@ public class XMLMessageProvider implements MessageProvider {
         if (message == null) {
             message = lookupMessage(id, Locale.getDefault());
         }
-        /* MUST NOT THROW EXCEPTION, OTHERWISE MessageManager iteration in
-           getText will not proceed to the next provider.
         if (message == null ) throw new MessageNotFoundException(
                 MessageFormat.format(
                         I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.NO_MESSAGE_ENTRIES_FOUND),
                         new String[] { id }));
-        */
         return message;
     }
 

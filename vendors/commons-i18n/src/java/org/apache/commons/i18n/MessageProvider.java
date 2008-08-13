@@ -1,7 +1,7 @@
 /*
  * $Header: /home/jerenkrantz/tmp/commons/commons-convert/cvs/home/cvs/jakarta-commons-sandbox//i18n/src/java/org/apache/commons/i18n/MessageProvider.java,v 1.2 2004/12/29 17:03:55 dflorey Exp $
  * $Revision$
- * $Date: 2006-11-29 01:00:46 -0800 (Wed, 29 Nov 2006) $
+ * $Date: 2006-11-29 03:00:46 -0600 (Wed, 29 Nov 2006) $
  *
  * ====================================================================
  *
@@ -37,9 +37,10 @@ public interface MessageProvider {
      * @param id unique id that specifies a particular message  
      * @param entry specifies a particular entry in the specified message 
      * @param locale the locale for which this text should be provided
-     * @return returns the localized message entry matching the given message id, entry key and locale. If the id is not found, or if the
+     * @return returns the localized message entry matching the given message id, entry key and locale. If
      * no match is found for the given locale, the parent locale is used, and finally the default. If the
      * id is found but the entry is not, null is returned. 
+     * @throws MessageNotFoundException thrown if no message exists matching the given id
      */
     public String getText(String id, String entry, Locale locale);
     

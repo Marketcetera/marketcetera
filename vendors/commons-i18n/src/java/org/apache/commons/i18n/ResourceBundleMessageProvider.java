@@ -62,7 +62,7 @@ public class ResourceBundleMessageProvider implements MessageProvider {
     /* (non-Javadoc)
      * @see org.apache.commons.i18n.MessageProvider#getText(java.lang.String, java.lang.String, java.util.Locale)
      */
-    public String getText(String id, String entry, Locale locale) {
+    public String getText(String id, String entry, Locale locale) throws MessageNotFoundException {
         try {
             ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
              return resourceBundle.getObject(id+"."+entry).toString();
