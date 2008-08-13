@@ -112,7 +112,7 @@ public class MessageManager {
                     locale);
             if(text != null)
                 return (arguments != null && arguments.length > 0) ?
-                        formatMessage(text, arguments, locale) : text;
+                        MessageFormat.format(text, arguments) : text;
         }
         throw new MessageNotFoundException(MessageFormat.format(
                 I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.MESSAGE_ENTRY_NOT_FOUND),
@@ -145,7 +145,7 @@ public class MessageManager {
             return getText(id, entry, arguments, locale);
         } catch (MessageNotFoundException e) {
             return (arguments != null && arguments.length > 0) ?
-                    formatMessage(defaultText, arguments, locale) : defaultText;
+                    MessageFormat.format(defaultText, arguments) : defaultText;
         }
     }
 
@@ -176,7 +176,7 @@ public class MessageManager {
         String text = provider.getText(id, entry, locale);
         if(text != null)
             return (arguments != null && arguments.length > 0) ?
-                    formatMessage(text, arguments, locale) : text;
+                    MessageFormat.format(text, arguments) : text;
         else
             throw new MessageNotFoundException(MessageFormat.format(
                     I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.MESSAGE_ENTRY_NOT_FOUND),
@@ -210,7 +210,7 @@ public class MessageManager {
             return getText(providerId, id, entry, arguments, locale);
         } catch (MessageNotFoundException e) {
             return (arguments != null && arguments.length > 0) ?
-                    formatMessage(defaultText, arguments, locale) : defaultText;
+                    MessageFormat.format(defaultText, arguments) : defaultText;
         }
     }
 
@@ -233,24 +233,6 @@ public class MessageManager {
             }
         }
         throw exception;
-    }
-
-    /**
-     * Formats the supplied message ensuring that the arguments are formatted
-     * using formatters setup with the supplied locale.
-     *
-     * @param text
-     *          the message text
-     * @param arguments
-     *          message arguments
-     * @param locale
-     *          the locale for message arguments
-     * 
-     * @return the localized text
-     */
-    private static String formatMessage(String text, Object[] arguments, Locale locale) {
-        MessageFormat mf = new MessageFormat(text,locale);
-        return mf.format(arguments);
     }
 
   /**

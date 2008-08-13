@@ -19,9 +19,6 @@ package org.apache.commons.i18n;
 
 import java.util.Locale;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
-import java.text.MessageFormat;
 
 /**
  * @author Mattias Jiderhamn
@@ -168,44 +165,4 @@ public class MessageManagerTest extends MockProviderTestBase {
         assertEquals("Entry 1 match", "Source=mockProvider2 Id=dummyId Entry=entry1 Locale=en_US", entries.get("entry1"));
         assertEquals("Entry 2 match", "Source=mockProvider2 Id=dummyId Entry=entry2 Locale=en_US", entries.get("entry2"));
     }
-    
-    public void testParameterLocalization() {
-        // Verify that formatters for the parameters are initalized with the
-        // correct locale
-        final String providerID = "parameterCheck";
-        final String messageID = "mymsg";
-        MessageManager.addMessageProvider(providerID, new MessageProvider(){
-            public String getText(String id, String entry, Locale locale) {
-                if (messageID.equals(id)) {
-                    return TEST_FORMAT;
-                } else {
-                    throw new MessageNotFoundException(id);
-                }
-            }
-            public Map getEntries(String id, Locale locale) throws MessageNotFoundException {
-                HashMap m = new HashMap();
-                m.put(messageID,TEST_FORMAT);
-                return m;
-            }
-        });
-        try {
-            // The message parameters to the message
-            Object []parameters = new Object[]{new Date(),new Integer(Integer.MAX_VALUE)};
-
-            //Iterate through all the locales
-            Locale [] locales = Locale.getAvailableLocales();
-            for(int i = 0; i < locales.length; i++) {
-                MessageFormat mf = new MessageFormat(TEST_FORMAT, locales[i]);
-                final String expectedValue = mf.format(parameters);
-                assertEquals(expectedValue, MessageManager.getText(messageID,"x",parameters,locales[i]));
-                assertEquals(expectedValue, MessageManager.getText("notPresent","x",parameters,locales[i],TEST_FORMAT));
-                assertEquals(expectedValue, MessageManager.getText(providerID,messageID,"x",parameters,locales[i]));
-                assertEquals(expectedValue, MessageManager.getText(providerID,"notPresent","x",parameters,locales[i],TEST_FORMAT));
-            }
-        } finally {
-            MessageManager.removeMessageProvider(providerID);
-        }
-    }
-    private static final String TEST_FORMAT = "Date is {0,date,full} or {0,time,full} " +
-            "and Currency is {1,number,currency}";
 }
