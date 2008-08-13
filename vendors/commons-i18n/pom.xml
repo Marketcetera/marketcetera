@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-sandbox-parent</artifactId>
-    <version>5</version>
+    <version>7</version>
   </parent>
   <artifactId>commons-i18n</artifactId>
   <version>1.0-SNAPSHOT</version>
@@ -120,6 +120,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-changes-plugin</artifactId>
+        <version>2.0</version>
         <configuration>
           <xmlPath>${basedir}/xdocs/changes.xml</xmlPath>
           <issueLinkTemplate>%URL%/%ISSUE%</issueLinkTemplate>
@@ -136,6 +137,7 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>findbugs-maven-plugin</artifactId>
+        <version>1.2</version>
       </plugin>
       -->
     </plugins>

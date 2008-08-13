@@ -37,8 +37,8 @@ public interface MessageProvider {
      * @param id unique id that specifies a particular message  
      * @param entry specifies a particular entry in the specified message 
      * @param locale the locale for which this text should be provided
-     * @return returns the localized message entry matching the given message id, entry key and locale. If
-     * no match is found for the given locale, the parent locale is used, and finally the default. If the is is not found, or if the
+     * @return returns the localized message entry matching the given message id, entry key and locale. If the id is not found, or if the
+     * no match is found for the given locale, the parent locale is used, and finally the default. If the
      * id is found but the entry is not, null is returned. 
      */
     public String getText(String id, String entry, Locale locale);
