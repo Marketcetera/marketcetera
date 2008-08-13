@@ -80,6 +80,7 @@ my(@externals)=(
 );
 
 my(@executables)=(
+	'private/source/exsim/exchange/src/test/bin/killExchange.sh',
 	'private/tools/install4j/misc/getbins.sh',
 	'private/tools/install4j/template-win/.shortcuts/editORSConfig.bat',
 	'private/tools/install4j/template-win/.shortcuts/editTradebaseConfig.bat',
