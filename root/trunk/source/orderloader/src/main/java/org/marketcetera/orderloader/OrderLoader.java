@@ -15,12 +15,12 @@ import javax.jms.JMSException;
 import org.apache.activemq.Service;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
+import org.apache.log4j.PropertyConfigurator;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
-import org.marketcetera.core.MessageBundleInfo;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.util.auth.StandardAuthentication;
 import org.marketcetera.util.log.I18NBoundMessage0P;
@@ -145,11 +145,6 @@ public class OrderLoader
         System.exit(1);
     }
 
-    protected List<MessageBundleInfo> getLocalMessageBundles() 
-    {
-        return new LinkedList<MessageBundleInfo>();
-    }
-
     /**
      * @param args
      * Incoming CSV file format:
@@ -158,6 +153,9 @@ public class OrderLoader
      */
     public static void main(String[] args) throws Exception
     {
+        PropertyConfigurator.configureAndWatch
+            (ApplicationBase.CONF_DIR+LOGGER_CONF_FILE, LOGGER_WATCH_DELAY);
+
         authentication=new StandardAuthentication(CFG_BASE_FILE_NAME,args);
         if (!authentication.setValues()) {
             usage();

@@ -36,7 +36,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public static Test suite() {
-        return new FIXVersionTestSuite(QuickFIXApplicationTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(QuickFIXApplicationTest.class,
                 FIXVersionTestSuite.ALL_VERSIONS);
     }
 

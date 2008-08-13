@@ -43,7 +43,6 @@ public class OrderRoutingSystem extends ApplicationBase {
         "file:"+CONF_DIR+"ors_base.xml"; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static final String LOGGER_NAME = OrderRoutingSystem.class.getName();
-    public static final MessageBundleInfo ORS_MESSAGE_BUNDLE_INFO = new MessageBundleInfo("ors", "ors_messages"); //$NON-NLS-1$ //$NON-NLS-2$
     public static final String[] APP_CONTEXT_CONFIG_FILES =
             {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     "ors.xml", "ors-shared.xml", "ors_db.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -51,12 +50,6 @@ public class OrderRoutingSystem extends ApplicationBase {
 
     private static StandardAuthentication authentication;
     private volatile static OrderRoutingSystem instance = null;
-
-    protected List<MessageBundleInfo> getLocalMessageBundles() {
-        LinkedList<MessageBundleInfo> bundles = new LinkedList<MessageBundleInfo>();
-        bundles.add(ORS_MESSAGE_BUNDLE_INFO);
-        return bundles;
-    }
 
     public static void initializeLogger(String logConfig)
     {

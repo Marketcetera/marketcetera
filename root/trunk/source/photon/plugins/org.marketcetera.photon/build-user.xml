@@ -9,7 +9,7 @@
 		<property name="QUICKFIXJ_PLUGIN" value="org.quickfixj_1.3.1.jar"/>
 		<property name="LOG4J_PLUGIN" value="org.apache.log4j_1.2.9.jar"/>
 		<property name="CSV_PLUGIN" value="org.skife.kasparov.csv_1.0.0.jar"/>
-		<property name="I18N_PLUGIN" value="org.apache.commons.i18n_0.0.20060814.jar"/>
+		<property name="I18N_PLUGIN" value="org.apache.commons.i18n_0.0.20080812.jar"/>
 
 		<get src="http://repo.marketcetera.org/eclipse/build/${GLAZEDLISTS_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${GLAZEDLISTS_PLUGIN}" usetimestamp="true"/>
 		<get src="http://repo.marketcetera.org/eclipse/build/${CORE_PLUGIN}" dest="${ECLIPSE_HOME}/plugins/${CORE_PLUGIN}" usetimestamp="true"/>

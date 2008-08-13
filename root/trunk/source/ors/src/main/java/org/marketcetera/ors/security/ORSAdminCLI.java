@@ -1,7 +1,6 @@
 package org.marketcetera.ors.security;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MessageBundleManager;
 import static org.marketcetera.ors.security.Messages.*;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.util.except.I18NException;
@@ -42,7 +41,6 @@ public class ORSAdminCLI {
      * @param err The error stream to write error output to
      */
     public ORSAdminCLI(PrintStream out, PrintStream err) {
-        MessageBundleManager.registerCoreMessageBundle();
         OrderRoutingSystem.initializeLogger("log4j-cli.properties"); //$NON-NLS-1$
         this.out = out;
         this.err = err;

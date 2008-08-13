@@ -45,10 +45,10 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 /*
         MarketceteraTestSuite suite = new MarketceteraTestSuite();
         suite.addTest(new OutgoingMessageHandlerTest("testNewExecutionReportFromOrder", FIXVersion.FIX41));
-        suite.init(new MessageBundleInfo[]{OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO});
+        suite.init();
         return suite;
 /*/
-        return new FIXVersionTestSuite(OutgoingMessageHandlerTest.class, OrderRoutingSystem.ORS_MESSAGE_BUNDLE_INFO,
+        return new FIXVersionTestSuite(OutgoingMessageHandlerTest.class,
                 FIXVersionTestSuite.ALL_VERSIONS,
                 new HashSet<String>(Arrays.asList("testIncompatibleFIXVersions")), //$NON-NLS-1$
                 new FIXVersion[]{FIXVersion.FIX40});
