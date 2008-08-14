@@ -28,7 +28,7 @@
 
     <!-- Compile. -->
     <dependency>
-      <groupId>${public.package}</groupId>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>util</artifactId>
     </dependency>
     <dependency>
@@ -62,7 +62,7 @@
 
     <!-- Testing. -->
     <dependency>
-      <groupId>${public.package}</groupId>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
     <dependency>
