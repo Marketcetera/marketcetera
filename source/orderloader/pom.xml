@@ -89,7 +89,7 @@
             <configuration>
               <mainClass>org.marketcetera.orderloader.OrderLoader</mainClass>
               <arguments>
-                <argument>src/test/resources/smallMarket.csv</argument>
+                <argument>src/test/sample_data/inputs/smallMarket.csv</argument>
               </arguments>
               <classpathScope>test</classpathScope>
             </configuration>
