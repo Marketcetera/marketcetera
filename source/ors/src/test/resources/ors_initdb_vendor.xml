@@ -11,9 +11,9 @@
     </util:list>
     <bean id="initSchema" class="org.marketcetera.persist.ExecuteSQLFromFile">
         <constructor-arg ref="sqlFiles"/>
-        <constructor-arg ref="mysqlpool"/>
+        <constructor-arg ref="${mvn.persist.datasource}"/>
     </bean>
-  <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
+  <bean id="dbVendor" class="${mvn.persist.db.vendor}"
         scope="singleton"/>
     <!-- Inject DB initiailzation before any ORM stuff -->
     <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
