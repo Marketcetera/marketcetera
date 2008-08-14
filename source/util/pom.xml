@@ -58,7 +58,7 @@
 
     <!-- Testing. -->
     <dependency>
-      <groupId>${public.package}</groupId>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>util-test</artifactId>
     </dependency>
     <dependency>

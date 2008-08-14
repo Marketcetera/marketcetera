@@ -28,11 +28,11 @@
 
     <!-- Compile. -->
     <dependency>
-      <groupId>${public.package}</groupId>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
-      <groupId>${public.package}</groupId>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>util</artifactId>
     </dependency>
     <dependency>
@@ -63,7 +63,7 @@
 
     <!-- Testing. -->
     <dependency>
-      <groupId>${public.package}</groupId>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
       <type>test-jar</type>
     </dependency>
@@ -115,7 +115,7 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <executable>${perl.path}</executable>
+              <executable>${mvn.perl.path}</executable>
               <arguments>
                 <argument>../../tools/scripts/createScript.pl</argument>
                 <argument>${project.build.directory}/${project.artifactId}</argument>

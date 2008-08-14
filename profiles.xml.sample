@@ -19,15 +19,15 @@
       <id>user.settings</id>
       <properties>
         <!-- Optional: local JRuby installation. -->
-        <jruby.home>C:\jruby1.0.3</jruby.home>
+        <mvn.jruby.home>C:\jruby1.0.3</mvn.jruby.home>
         <!-- Optional: local Jython installation. -->
-        <jython.home>C:\jython2.2.1</jython.home>
+        <mvn.jython.home>C:\jython2.2.1</mvn.jython.home>
         <!-- Optional: local Perl installation. -->
-        <perl.path>C:\Perl\bin\perl.exe</perl.path>
+        <mvn.perl.path>C:\Perl\bin\perl.exe</mvn.perl.path>
         <!-- Optional: custom locale. -->
-        <jvm.locale.language></jvm.locale.language>
-        <jvm.locale.country></jvm.locale.country>
-        <jvm.locale.variant></jvm.locale.variant>
+        <mvn.jvm.locale.language></mvn.jvm.locale.language>
+        <mvn.jvm.locale.country></mvn.jvm.locale.country>
+        <mvn.jvm.locale.variant></mvn.jvm.locale.variant>
       </properties>
     </profile>
   </profiles>
