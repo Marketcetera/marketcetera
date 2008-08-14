@@ -38,12 +38,12 @@
     </file>
     <file>
       <fileMode>420</fileMode>
-      <source>src/test/resources/smallMarket.csv</source>
+      <source>src/test/sample_data/inputs/smallMarket.csv</source>
       <outputDirectory>samples</outputDirectory>
     </file>
     <file>
       <fileMode>420</fileMode>
-      <source>src/test/resources/reasonableOrders.csv</source>
+      <source>src/test/sample_data/inputs/reasonableOrders.csv</source>
       <outputDirectory>samples</outputDirectory>
       <destName>largeMarket.csv</destName>
     </file>
