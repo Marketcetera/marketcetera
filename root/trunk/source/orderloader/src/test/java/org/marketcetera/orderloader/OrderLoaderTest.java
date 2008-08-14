@@ -7,7 +7,6 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.util.unicode.UnicodeOutputStreamWriter;
 import org.marketcetera.util.unicode.SignatureCharset;
 import quickfix.Field;
 import quickfix.Message;
@@ -15,8 +14,6 @@ import quickfix.field.*;
 
 import javax.jms.JMSException;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Vector;
 
@@ -484,7 +481,7 @@ public class OrderLoaderTest
 
         public MyOrderLoader(boolean fSendPassThrough) throws Exception
         {
-            super("enduser","enduser_password"); //$NON-NLS-1$ //$NON-NLS-2$
+            super("admin","admin"); //$NON-NLS-1$ //$NON-NLS-2$
             mSendPassThrough = fSendPassThrough;
         }
 
