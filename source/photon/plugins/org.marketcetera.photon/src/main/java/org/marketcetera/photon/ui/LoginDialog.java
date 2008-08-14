@@ -164,7 +164,7 @@ public class LoginDialog
 		passwordText.setLayoutData(new GridData(GridData.FILL, GridData.FILL,
 				true, false));
 
-		String lastUser = "enduser"; //$NON-NLS-1$
+		String lastUser = "admin"; //$NON-NLS-1$
 		if (connectionDetails != null)
 			lastUser = connectionDetails.getUserId();
 		initializeUsers(lastUser);
