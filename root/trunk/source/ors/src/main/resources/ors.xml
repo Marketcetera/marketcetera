@@ -75,7 +75,7 @@
 
     <!-- Create an ID factory that reads next IDs from database -->
     <bean id="idFactory" class="org.marketcetera.core.DatabaseIDFactory">
-        <constructor-arg ref="${mvn.persist.datasource}"/>
+        <constructor-arg ref="mysqlpool"/>
     </bean>
 
     <!-- Location (host/port) of the FIX reciever we are connecting to -->

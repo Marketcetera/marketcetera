@@ -12,7 +12,7 @@
         spring configuration.
        -->
       <properties>
-         <property name="hibernate.dialect" value="${mvn.persist.sql.dialect}"/>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
          <property name="hibernate.hbm2ddl.auto" value="validate"/>
       </properties>
    </persistence-unit>

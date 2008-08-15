@@ -14,8 +14,7 @@
     <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="jdbc:mysql://localhost:3306/marketcetera?logSlowQueries=true"/></bean>
 
   <!-- Initialize MySQL as DB Vendor Implementation -->
-    <!-- mvn.persist.db.vendor is set via the uberPom.xml file -->
-    <bean id="dbVendor" class="${mvn.persist.db.vendor}"
+    <bean id="dbVendor" class="org.marketcetera.persist.MySQLDBVendor"
           scope="singleton"/>
   <!-- Initialize hibernate as JPA Vendor Implementation -->
     <bean id="jpaVendor" class="org.marketcetera.persist.HibernateVendor"
@@ -49,8 +48,7 @@
         <property name="testConnectionOnCheckout" value="true"/>
     </bean>
     <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="jpaVendor">
-        <!-- mvn.persist.datasource property is set in the uberPom.xml file  -->
-        <property name="dataSource" ref="${mvn.persist.datasource}"/>
+        <property name="dataSource" ref="mysqlpool"/>
         <property name="persistenceUnitName" value="unit-testing"/>
     </bean>
     <bean id="ers" class="org.marketcetera.persist.EntityRemoteServer" scope="singleton">

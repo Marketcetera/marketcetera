@@ -27,10 +27,6 @@
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
     <mvn.xjc.version>2.1.3</mvn.xjc.version>
-    <!-- Persistence properties to help switch between db vendors. -->
-    <mvn.persist.sql.dialect>org.hibernate.dialect.MySQLDialect</mvn.persist.sql.dialect>
-    <mvn.persist.datasource>mysqlpool</mvn.persist.datasource>
-    <mvn.persist.db.vendor>org.marketcetera.persist.MySQLDBVendor</mvn.persist.db.vendor>
   </properties>
 
   <dependencyManagement>
@@ -281,20 +277,6 @@
   </profiles>
 
   <build>
-
-    <!-- Expand ${prop} strings into their values within all resources. -->
-    <resources>
- 	  <resource>
- 	    <directory>src/main/resources</directory>
- 	    <filtering>true</filtering>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>src/test/resources</directory>
- 	    <filtering>true</filtering>
- 	  </testResource>
-    </testResources>
 
     <pluginManagement>
       <plugins>
