@@ -8,7 +8,7 @@
     -->
     <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
           depends-on="jpaVendor">
-        <property name="dataSource" ref="${mvn.persist.datasource}"/>
+        <property name="dataSource" ref="mysqlpool"/>
         <property name="persistenceUnitName" value="ors"/>
     </bean>
     <bean id="ers" class="org.marketcetera.persist.EntityRemoteServer" scope="singleton">

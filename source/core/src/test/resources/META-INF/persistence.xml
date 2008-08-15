@@ -12,8 +12,7 @@
         spring configuration.
        -->
       <properties>
-        <!-- mvn.persist.sql.dialect property is set in the uberPom.xml file -->
-         <property name="hibernate.dialect" value="${mvn.persist.sql.dialect}"/>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
          <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
       </properties>
    </persistence-unit>
