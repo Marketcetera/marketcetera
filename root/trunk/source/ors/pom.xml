@@ -133,7 +133,10 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>org.marketcetera.ors.OrderRoutingSystem</mainClass>
+              <mainClass>org.marketcetera.ors.DBInit</mainClass>
+              <arguments>
+                <argument>org.marketcetera.ors.OrderRoutingSystem</argument>
+              </arguments>
               <classpathScope>test</classpathScope>
             </configuration>
           </plugin>

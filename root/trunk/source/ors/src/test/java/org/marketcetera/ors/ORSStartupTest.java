@@ -66,11 +66,6 @@ public class ORSStartupTest extends TestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        //Initialize the schema and create the admin user
-        //Close the spring context so that ORS can startup
-        PersistTestBase.springSetup(new String[]{
-                "ors_initdb_create_admin_vendor.xml", "ors_db.xml"}, //$NON-NLS-1$ //$NON-NLS-2$
-                new FileSystemXmlApplicationContext(
-                        OrderRoutingSystem.CFG_BASE_FILE_NAME)).close();
+        DBInit.initORSDB();
     }
 }
