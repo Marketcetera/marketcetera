@@ -61,13 +61,17 @@ public class MarketDataFeedTestBase
     {
         super.setUp();
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
-        MockEventTranslator.setTranslateToEventsReturnsZeroEvents(false);
-        MockEventTranslator.setTranslateToEventsThrows(false);
-        MockEventTranslator.setTranslateToEventsReturnsNull(false);
+        MockEventTranslator.reset();
         MockMessageTranslator.setTranslateThrows(false);
         mMessage = MarketDataFeedTestSuite.generateFIXMessage();
         mCredentials = new MockMarketDataFeedCredentials();
     }    
+	
+	@Override
+	protected void tearDown() throws Exception {
+		MockEventTranslator.reset();
+		super.tearDown();
+	}
 
     protected void resetSubscriber(MockSubscriber inSubscriber)
     {
