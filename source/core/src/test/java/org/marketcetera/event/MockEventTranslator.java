@@ -105,4 +105,15 @@ public class MockEventTranslator
     {
         sMessageToReturn = inMessageToReturn;
     }
+    
+    /**
+     * Resets the behavior to the default.  Tests that configure this class should use this method to cleanup.
+     */
+    public static void reset()
+    {
+    	sMessageToReturn = null;
+    	sTranslateToEventsReturnsNull = false;
+    	sTranslateToEventsReturnsZeroEvents = false;
+    	sTranslateToEventsThrows = false;
+    }
 }

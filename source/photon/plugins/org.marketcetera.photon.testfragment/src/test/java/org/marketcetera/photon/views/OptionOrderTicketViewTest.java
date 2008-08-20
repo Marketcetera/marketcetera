@@ -82,6 +82,13 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		
 		
 		controller = PhotonPlugin.getDefault().getOptionOrderTicketController();
+		MockEventTranslator.reset();
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		MockEventTranslator.reset();
+		super.tearDown();
 	}
 
 	@Override

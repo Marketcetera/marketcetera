@@ -76,10 +76,12 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 			fail("Test view was not created");
 		}
 		controller = PhotonPlugin.getDefault().getStockOrderTicketController();
+		MockEventTranslator.reset();
     }
 
     @Override
 	protected void tearDown() throws Exception {
+    	MockEventTranslator.reset();
 		super.tearDown();
 		controller.clear();
 	}

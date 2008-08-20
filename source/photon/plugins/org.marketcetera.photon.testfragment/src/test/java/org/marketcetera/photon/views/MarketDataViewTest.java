@@ -37,6 +37,18 @@ public class MarketDataViewTest extends ViewTestBase {
 		marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
 		marketDataFeedTracker.open();
 	}
+	
+	@Override
+	protected void setUp() throws Exception {
+		super.setUp();
+		MockEventTranslator.reset();
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		MockEventTranslator.reset();
+		super.tearDown();
+	}
 
 	public void testShowQuote() throws Exception {
 		MarketDataSnapshotFullRefresh fixMessage = new MarketDataSnapshotFullRefresh();
