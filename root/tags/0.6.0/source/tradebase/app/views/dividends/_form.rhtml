@@ -1,0 +1,34 @@
+<%= error_messages_for 'dividend' %>
+
+<!--[form:dividend]-->
+<fieldset>
+    <div class="form_left">
+        <%= render :partial => '/shared/symbol_auto_complete', 
+            :locals => { :errors => @dividend.errors, :init_value => @dividend.equity_m_symbol_root, :error_key => :symbol} %>
+
+        <label for="dividend_amount">Amount</label>
+        <%= text_field 'dividend', 'amount'  %>
+
+        <%= render :partial => '/shared/currency_auto_complete', 
+            :locals => { :alpha_code => @dividend.currency_alpha_code }%>
+
+        <label for="dividend_status">Status</label>
+        <%= text_field 'dividend', 'status'  %>
+    </div>
+    <div class="form_right">
+        <label for="dividend_announce_date">Announce date</label>
+        <div class="date"><%= date_select 'dividend', 'announce_date'  %></div>
+        
+        <label for="dividend_ex_date">Ex date</label>
+        <div class="date"><%= date_select 'dividend', 'ex_date'  %></div>
+
+        <label for="dividend_payable_date">Payable date</label>
+        <div class="date"><%= date_select 'dividend', 'payable_date'  %></div>
+
+        <label for="dividend_description">Description</label>
+        <%= text_area 'dividend', 'description'  %>
+    </div>
+    <div class="clear"></div>
+</fieldset>
+<!--[eoform:dividend]-->
+
