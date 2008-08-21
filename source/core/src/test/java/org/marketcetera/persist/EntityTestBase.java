@@ -445,10 +445,11 @@ public abstract class EntityTestBase<E extends EntityBase,
             assertEquals(prev.getId(),e.getId());
             if (equalUpdateCount) {
                 assertTrue(e.getUpdateCount() >= prev.getUpdateCount());
+                assertTrue(prev.getLastUpdated().compareTo(e.getLastUpdated()) <= 0);
             } else {
                 assertTrue(e.getUpdateCount() > prev.getUpdateCount());
+                assertTrue(prev.getLastUpdated().compareTo(e.getLastUpdated()) < 0);
             }
-            assertTrue(prev.getLastUpdated().compareTo(e.getLastUpdated()) < 0);
         }
         // Sleep to get adequate difference between
         // last updated timestamp values
