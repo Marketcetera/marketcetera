@@ -8,9 +8,11 @@
 
     <amq:broker useJmx="true" brokerName="ORS_BROKER" persistent="false" useShutdownHook="false">
 
+<!--
      <amq:plugins>
        <amq:jaasAuthenticationPlugin configuration="ors-amq-domain" />
      </amq:plugins>
+-->
 
         <!--
             <persistenceAdapter>
