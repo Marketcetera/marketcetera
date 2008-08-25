@@ -1,13 +1,16 @@
 package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
+import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
+import org.marketcetera.photon.messagehistory.FIXStringMatcher;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.quickfix.FIXVersion;
 
@@ -29,15 +32,94 @@ import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
 import quickfix.field.TransactTime;
+import quickfix.field.Urgency;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.NewOrderSingle;
 
-public class AveragePricesViewTest extends ViewTestBase {
-
-	public AveragePricesViewTest(String name) {
-		super(name);
-	}
-
+public class AveragePricesViewTest
+    extends ViewTestBase
+{
+    public AveragePricesViewTest(String name)
+    {
+        super(name);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.ViewTestBase#getFilterTestConditions()
+     */
+    @Override
+    protected List<FilterTestCondition> getFilterTestConditions()
+    {
+        List<FilterTestCondition> conditions = new ArrayList<FilterTestCondition>();
+        // string match on existing field
+        conditions.add(new FilterTestCondition(new FIXStringMatcher(Side.FIELD,
+                                                                    "B"),
+                                               new int[] { 0, 1 }));
+        // string no match on existing field
+        conditions.add(new FilterTestCondition(new FIXStringMatcher(Symbol.FIELD,
+                                                                    "symbol-not-present"),
+                                                                    new int[] { }));
+        // string match on non-existent field
+        conditions.add(new FilterTestCondition(new FIXStringMatcher(Urgency.FIELD,
+                                                                    "0"),
+                                               new int[] { }));
+        // regex match on existing field
+        conditions.add(new FilterTestCondition(new FIXRegexMatcher(Symbol.FIELD,
+                                                                   "[a-z]*bol[1|2]"),
+                                               new int[] { 0, 1 } ));
+        // regex match on non-existent field
+        conditions.add(new FilterTestCondition(new FIXRegexMatcher(Symbol.FIELD,
+                                                                   "[a-z]*bxol[1|2]"),
+                                               new int[] { } ));
+        // regex no match in non-existent field
+        conditions.add(new FilterTestCondition(new FIXRegexMatcher(Urgency.FIELD,
+                                                                   ".*"),
+                                               new int[] { } ));
+        return conditions;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.ViewTestBase#getFilterTestMessages()
+     */
+    @Override
+    protected List<Message> getFilterTestMessages()
+    {
+        List<Message> messages = new ArrayList<Message>();
+        NewOrderSingle order1 = new NewOrderSingle(new ClOrdID("clordid1"),
+                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+                                                   new Symbol("symbol1"),
+                                                   new Side(Side.BUY),
+                                                   new TransactTime(new Date()),
+                                                   new OrdType(OrdType.MARKET));
+        order1.set(new OrderQty(100));
+        messages.add(order1);
+        NewOrderSingle order2 = new NewOrderSingle(new ClOrdID("clordid2"),
+                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+                                                   new Symbol("symbol2"),
+                                                   new Side(Side.BUY),
+                                                   new TransactTime(new Date()),
+                                                   new OrdType(OrdType.LIMIT)); 
+        order2.set(new OrderQty(100));
+        messages.add(order2);
+        NewOrderSingle order3 = new NewOrderSingle(new ClOrdID("clordid3"),
+                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+                                                   new Symbol("symbol3"),
+                                                   new Side(Side.SELL),
+                                                   new TransactTime(new Date()),
+                                                   new OrdType(OrdType.LIMIT_ON_CLOSE)); 
+        order3.set(new OrderQty(100));
+        messages.add(order3);
+        return messages;
+    }
+    /**
+     * Tests the filtering ability of the view.
+     * 
+     * @throws Exception
+     */
+    public void testFilter()
+        throws Exception
+    {
+        doFilterTest();
+    }
+    
 	public void testShowMessage() throws Exception {
 		FIXMessageHistory hist = new FIXMessageHistory(FIXVersion.FIX42.getMessageFactory());
 		AveragePriceView view = (AveragePriceView) getTestView();
@@ -134,5 +216,4 @@ public class AveragePricesViewTest extends ViewTestBase {
 	protected String getViewID() {
 		return AveragePriceView.ID;
 	}
-
 }

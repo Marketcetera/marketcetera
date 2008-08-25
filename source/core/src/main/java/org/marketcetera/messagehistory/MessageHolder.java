@@ -62,6 +62,32 @@ public class MessageHolder
 	public String getGroupID() {
 		return groupID;
 	}
-	
-	
+    /* (non-Javadoc)
+     * @see java.lang.Object#hashCode()
+     */
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (messageReference ^ (messageReference >>> 32));
+        return result;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final MessageHolder other = (MessageHolder) obj;
+        if (messageReference != other.messageReference)
+            return false;
+        return true;
+    }
 }

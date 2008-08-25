@@ -21,18 +21,18 @@ import quickfix.Field;
  * @since 0.5.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class CustomField
-    extends Field<Object>
+public class CustomField<T>
+    extends Field<T>
 {
     private static final long serialVersionUID = 7712839170687733751L;
     /**
      * Create a new CustomField instance.
      *
      * @param i an <code>int</code> value
-     * @param inObject an <code>Object</code> value
+     * @param inObject a <code>T</code> value
      */
     public CustomField(int i,
-                       Object inObject)
+                       T inObject)
     {
         super(i, 
               inObject);
@@ -83,7 +83,7 @@ public class CustomField
             return true;
         if (getClass() != obj.getClass())
             return false;
-        final CustomField other = (CustomField) obj;
+        final CustomField<?> other = (CustomField<?>) obj;
         if (getTag() != other.getTag())
             return false;
         return true;
@@ -95,13 +95,13 @@ public class CustomField
      * @return Custom field for the passed in key
      * @throws OrderParsingException
      */
-    public static CustomField getCustomField(String inName)
+    public static CustomField<?> getCustomField(String inName)
         throws OrderParsingException
     {
         try {
             int fieldKey = Integer.parseInt(inName); //non-i18n
-            return new CustomField(fieldKey, 
-                                   null);
+            return new CustomField<Integer>(fieldKey, 
+                                            null);
         } catch(NumberFormatException nex) {
             throw new OrderParsingException(new I18NBoundMessage1P(Messages.ERROR_PARSING_NUMBER_FORMAT, inName));
         }

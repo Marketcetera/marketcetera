@@ -498,4 +498,8 @@ public interface Messages
                                                                             "fix_messages_view_label"); //$NON-NLS-1$
     public static I18NMessage0P FILLS_VIEW_LABEL = new I18NMessage0P(LOGGER,
                                                                      "fills_view_label"); //$NON-NLS-1$
+    public static I18NMessage0P MATCHER_FAILED = new I18NMessage0P(LOGGER,
+                                                                   "matcher_failed"); //$NON-NLS-1$
+    public static I18NMessage1P UNRECOGNIZED_FIELD = new I18NMessage1P(LOGGER,
+                                                                       "unrecognized_field"); //$NON-NLS-1$
 }

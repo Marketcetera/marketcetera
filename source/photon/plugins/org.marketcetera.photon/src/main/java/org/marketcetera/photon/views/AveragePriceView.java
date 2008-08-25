@@ -6,7 +6,6 @@ import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 
-import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.FilterList;
 
 /* $License$ */
@@ -19,34 +18,34 @@ import ca.odell.glazedlists.FilterList;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class AveragePriceView extends AbstractFIXMessagesView {
-
-	public static final String ID = "org.marketcetera.photon.views.AveragePriceView"; //$NON-NLS-1$
-
-	
-	@Override
-	protected String getViewID() {
-		return ID;
-	}
-
-	@Override
-	protected void initializeToolBar(IToolBarManager theToolBarManager)
-	{
-        theToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
+public class AveragePriceView
+        extends AbstractFIXMessagesView
+{
+    public static final String ID = "org.marketcetera.photon.views.AveragePriceView"; //$NON-NLS-1$
+    @Override
+    protected String getViewID()
+    {
+        return ID;
+    }
+    @Override
+    protected void initializeToolBar(IToolBarManager inTheToolBarManager)
+    {
+        super.initializeToolBar(inTheToolBarManager);
+        inTheToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
                                                            AVERAGE_PRICE_VIEW_LABEL.getText(),
                                                            ID));
-	}
-
-	protected FilterList<MessageHolder> getFilterList() {
-		return (FilterList<MessageHolder>) getInput();
-	}
-
-	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
-		return input.getAveragePricesList();
-	}
-
-	@Override
-	public void setFocus()
-	{
-	}
+    }
+    @Override
+    public void setFocus()
+    {
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.messagehistory.FIXMessageHistory)
+     */
+    @Override
+    protected FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory)
+    {
+        return new FilterList<MessageHolder>(inHistory.getAveragePricesList(),
+                                             getFilterMatcherEditor());
+    }
 }

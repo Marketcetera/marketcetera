@@ -11,7 +11,7 @@ import org.marketcetera.util.log.I18NMessage0P;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages {
     /**
      * The message provider
@@ -31,9 +31,9 @@ public interface Messages {
     /**
      * The localized name for users
      */
-    static final I18NMessage0P NAME_USER = new I18NMessage0P(LOGGER,"name_user");
+    static final I18NMessage0P NAME_USER = new I18NMessage0P(LOGGER,"name_user"); //$NON-NLS-1$
     /**
      * The localized name for groups
      */
-    static final I18NMessage0P NAME_GROUP = new I18NMessage0P(LOGGER,"name_group");
+    static final I18NMessage0P NAME_GROUP = new I18NMessage0P(LOGGER,"name_group"); //$NON-NLS-1$
 }
