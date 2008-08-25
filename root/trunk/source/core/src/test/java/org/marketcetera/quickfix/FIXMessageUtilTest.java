@@ -1,13 +1,67 @@
 package org.marketcetera.quickfix;
 
-import junit.framework.Test;
-import org.marketcetera.core.*;
-import quickfix.*;
-import quickfix.field.*;
+import static org.marketcetera.quickfix.Messages.CANNOT_CREATE_FIX_FIELD;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+
+import junit.framework.Test;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.CoreException;
+import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.core.FIXVersionTestSuite;
+import org.marketcetera.core.FIXVersionedTestCase;
+import org.marketcetera.core.MSymbol;
+
+import quickfix.DataDictionary;
+import quickfix.FieldNotFound;
+import quickfix.Group;
+import quickfix.InvalidMessage;
+import quickfix.Message;
+import quickfix.StringField;
+import quickfix.field.Account;
+import quickfix.field.AvgPx;
+import quickfix.field.CFICode;
+import quickfix.field.ClOrdID;
+import quickfix.field.CumQty;
+import quickfix.field.EncodedText;
+import quickfix.field.EncodedTextLen;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.HandlInst;
+import quickfix.field.LastPx;
+import quickfix.field.LastQty;
+import quickfix.field.LeavesQty;
+import quickfix.field.MDEntryPx;
+import quickfix.field.MDEntrySize;
+import quickfix.field.MDEntryType;
+import quickfix.field.MDReqID;
+import quickfix.field.MaturityMonthYear;
+import quickfix.field.MsgType;
+import quickfix.field.NoMDEntries;
+import quickfix.field.NoMDEntryTypes;
+import quickfix.field.NoRelatedSym;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrdType;
+import quickfix.field.OrderID;
+import quickfix.field.OrderQty;
+import quickfix.field.Price;
+import quickfix.field.PutOrCall;
+import quickfix.field.Side;
+import quickfix.field.StrikePrice;
+import quickfix.field.SubscriptionRequestType;
+import quickfix.field.Symbol;
+import quickfix.field.SymbolSfx;
+import quickfix.field.Text;
+import quickfix.field.TimeInForce;
+import quickfix.field.TransactTime;
 
 /**
  * @author Graham Miller
@@ -540,5 +594,38 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         Message msg = new Message();
         msg.getHeader().setField(new MsgType(MsgType.TRADING_SESSION_STATUS));
         assertTrue(FIXMessageUtil.isTradingSessionStatus(msg));
+    }
+    public void testQuickFixFieldFromString()
+        throws Exception
+    {
+        // value is null
+        new ExpectedTestFailure(NullPointerException.class) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                FIXMessageUtil.getQuickFixFieldFromName(null);
+            }
+        }.run();
+        // existing quickfix class
+        quickfix.Field<?> field = FIXMessageUtil.getQuickFixFieldFromName("Side"); //$NON-NLS-1$
+        assertNotNull(field);
+        assertEquals(Side.FIELD,
+                     field.getField());
+        // class does not exist
+        new ExpectedTestFailure(CoreException.class,
+                                CANNOT_CREATE_FIX_FIELD.getText("bogus")) { //$NON-NLS-1$
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                FIXMessageUtil.getQuickFixFieldFromName("bogus"); //$NON-NLS-1$
+            }
+        }.run();
+        // class does not exist but it can be interpreted as an int
+        field = FIXMessageUtil.getQuickFixFieldFromName("0"); //$NON-NLS-1$
+        assertNotNull(field);
+        assertEquals(0,
+                     field.getTag());
     }
 }

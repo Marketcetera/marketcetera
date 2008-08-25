@@ -1,5 +1,7 @@
 package org.marketcetera.quickfix;
 
+import static org.marketcetera.quickfix.Messages.CANNOT_CREATE_FIX_FIELD;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Pattern;
@@ -7,6 +9,7 @@ import java.util.regex.Pattern;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.quickfix.cficode.OptionCFICode;
+import org.marketcetera.util.log.I18NBoundMessage1P;
 
 import quickfix.DataDictionary;
 import quickfix.Field;
@@ -506,7 +509,44 @@ public class FIXMessageUtil {
 		}
 
 	}
-
-
-
+	/**
+	 * package name for the quickfix fields
+	 */
+	private static final String QUICKFIX_PACKAGE = "quickfix.field."; //$NON-NLS-1$
+	/**
+	 * Create a <code>FIX</code> field of the given name.
+	 *
+	 * @param inFieldName a <code>String</code> value to containing the name of the field to create
+	 * @return a <code>Field&lt;?&gt;</code> value
+	 * @throws NullPointerException if <code>inFieldName</code> is null
+	 * @throws CoreException if the value cannot be converted to a field
+	 */
+	public static Field<?> getQuickFixFieldFromName(String inFieldName)
+	    throws CoreException
+	{
+	    if(inFieldName == null) {
+	        throw new NullPointerException();
+	    }
+	    Throwable error = null;
+	    try {
+	        // try the easy case first: the given field might be one of the pre-packaged quickfix fields 
+	        return (Field<?>)Class.forName(QUICKFIX_PACKAGE + inFieldName).newInstance();
+	    } catch(ClassNotFoundException cnfe) {
+	        // if this exception is thrown, that means that the field does not correspond to a pre-packaged quickfix field
+	        // see if we can create a custom field - this means that the field name has to be parseable as an int
+	        try {
+	            int fieldInt = Integer.parseInt(inFieldName);
+	            return new CustomField<Integer>(fieldInt,
+	                                            null);
+	        } catch (Throwable t) {
+	            error = t;
+	        }
+	    } catch (Throwable t) {
+	        error = t;
+	    }
+	    // bah, can't create a field with the stuff we're given
+	    throw new CoreException(error,
+	                            new I18NBoundMessage1P(CANNOT_CREATE_FIX_FIELD,
+	                                                   inFieldName));
+	}
 }

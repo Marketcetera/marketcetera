@@ -64,4 +64,6 @@ public interface Messages
         new I18NMessage1P(LOGGER,"error_could_not_clear_log"); //$NON-NLS-1$
     static final I18NMessage0P ERROR_COULD_NOT_CREATE_FIX_DATA_DICTIONARY = 
         new I18NMessage0P(LOGGER,"error_could_not_create_fix_data_dictionary"); //$NON-NLS-1$
+    static final I18NMessage1P CANNOT_CREATE_FIX_FIELD = new I18NMessage1P(LOGGER,
+                                                                           "cannot_create_fix_field"); //$NON-NLS-1$
 }

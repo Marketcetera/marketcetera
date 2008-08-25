@@ -48,13 +48,13 @@ public class DataTypeTest extends
      */
     @Test
     public void unsupportedCharQueryValidation() throws Exception {
-        String s = "mytestname";
+        String s = "mytestname"; //$NON-NLS-1$
         final int errIdx = s.length();
         // mysql version dependency: this piece of code depends on the
         // specific version of mysql and may need to change whenever
         // mysql version is updated
         s += UnicodeData.GOATS_LNB;
-        final String expSubString = "tname";
+        final String expSubString = "tname"; //$NON-NLS-1$
         final String value = s;
 
         //Verify single entity query
@@ -92,10 +92,10 @@ public class DataTypeTest extends
         //are correctly thrown during insert / update
         DataTypes d = new DataTypes();
         //append string having surrogate chars.
-        String s = "mytestname";
+        String s = "mytestname"; //$NON-NLS-1$
         final int errIdx = s.length();
         s += UnicodeData.GOATS_LNB;
-        final String expSubString = "tname";
+        final String expSubString = "tname"; //$NON-NLS-1$
         d.setName(s);
         assertSaveFailure(d,ValidationException.class,
                 new I18NBoundMessage3P(UNSUPPORTED_CHARACTER,
@@ -490,21 +490,21 @@ public class DataTypeTest extends
     public void dbJavaOrderingCompare() throws Exception {
         //Create test data, with descriptions set to a set of string values
         //that have shown inconsistent orderings between mysql and java
-        SLF4JLoggerProxy.debug(this,"Original Ordering");
+        SLF4JLoggerProxy.debug(this,"Original Ordering"); //$NON-NLS-1$
         for (String s : TEST_STRINGS) {
             DataTypes data = new DataTypes();
             data.setName(randomString());
             data.setDescription(s);
             data.save();
-            SLF4JLoggerProxy.debug(this, "{} {}", s, StringUtils.toUCPArrayStr(s));
+            SLF4JLoggerProxy.debug(this, "{} {}", s, StringUtils.toUCPArrayStr(s)); //$NON-NLS-1$
         }
         //Run a mysql query and order the results by description 
         MultiDataTypesQuery mq = MultiDataTypesQuery.all();
         mq.setEntityOrder(MultiDataTypesQuery.BY_DESCRIPTION);
         List<DataTypes> dbResults = mq.fetch();
-        SLF4JLoggerProxy.debug(this,"MySQL Ordering");
+        SLF4JLoggerProxy.debug(this,"MySQL Ordering"); //$NON-NLS-1$
         for(DataTypes d: dbResults) {
-            SLF4JLoggerProxy.debug(this, "{} {}", d.getDescription(),
+            SLF4JLoggerProxy.debug(this, "{} {}", d.getDescription(), //$NON-NLS-1$
                     StringUtils.toUCPArrayStr(d.getDescription()));
         }
         //Carry out sorting using java collator and print the
@@ -513,13 +513,13 @@ public class DataTypeTest extends
         Collator c = Collator.getInstance(Locale.US);
         c.setStrength(Collator.TERTIARY);
         c.setDecomposition(Collator.FULL_DECOMPOSITION);
-        SLF4JLoggerProxy.debug(this,"Collator {} {}",
+        SLF4JLoggerProxy.debug(this,"Collator {} {}", //$NON-NLS-1$
                 c.getDecomposition(), c.getStrength());
         String[] sorted = Arrays.copyOf(TEST_STRINGS, TEST_STRINGS.length);
         Arrays.sort(sorted, c);
-        SLF4JLoggerProxy.debug(this,"Java Ordering");
+        SLF4JLoggerProxy.debug(this,"Java Ordering"); //$NON-NLS-1$
         for(String s: sorted) {
-            SLF4JLoggerProxy.debug(this, "{} {}", s,
+            SLF4JLoggerProxy.debug(this, "{} {}", s, //$NON-NLS-1$
                     StringUtils.toUCPArrayStr(s));
         }
         boolean isFailed;
@@ -543,11 +543,11 @@ public class DataTypeTest extends
                         if(prev != null) {
                             if(c.compare(prev,au.getDescription()) <= 0) {
                                 isFailed = true;
-                                SLF4JLoggerProxy.debug(this,"Failed Collator {} {} {}",
+                                SLF4JLoggerProxy.debug(this,"Failed Collator {} {} {}", //$NON-NLS-1$
                                         locale.getDisplayName(),
                                         c.getDecomposition(),
                                         c.getStrength());
-                                SLF4JLoggerProxy.debug(this,"at index:{} {} !<= {}", i,
+                                SLF4JLoggerProxy.debug(this,"at index:{} {} !<= {}", i, //$NON-NLS-1$
                                         StringUtils.toUCPArrayStr(prev),
                                         StringUtils.toUCPArrayStr(au.getDescription()));
                                 break;
@@ -558,7 +558,7 @@ public class DataTypeTest extends
                     }
                     //If a matching collator is found return with a successful result
                     if(!isFailed) {
-                        SLF4JLoggerProxy.error(this,"Succeeded Collator {} {} {}",
+                        SLF4JLoggerProxy.error(this,"Succeeded Collator {} {} {}", //$NON-NLS-1$
                                 locale.getDisplayName(),
                                 c.getDecomposition(),
                                 c.getStrength());
@@ -567,7 +567,7 @@ public class DataTypeTest extends
                 }
             }
         }
-        fail("No Java Collator found to match mysql Collation");
+        fail("No Java Collator found to match mysql Collation"); //$NON-NLS-1$
     }
 
     /**
@@ -575,18 +575,18 @@ public class DataTypeTest extends
      * between java and mysql collation. 
      */
     private static final String[] TEST_STRINGS = {
-        "\u0032\u00C4\u1F3A\u0DC2\u83D1\uC4E0\u4820\u7399\u6897\u4953\u932E\u6751",
-        "\u0032\u00E4\u1148\u599D\u738F\u5602\u4108\uC418\u3525\uF9E1\u8A49\u1EC4",
-        "\u0032\u00C4\u1FAB\uC7EE\uCA7B\u5CC4\u071E\u3BFF\u49CF\u483D\u0491\u11DD",
-        "\u0032\u0061\u1250\u437F\u91E0\u1813\u14F4\uD555\uB545\u4570\u0293\u527F",
-        "\u0032\u0041\u1FF8\u78C8\uB79D\uC3FF\uD10C\uB4E4\u8F1F\u8168\u7AD3\u8519",
-        "\u0032\u00E4\u1D21\uBD9F\uB28E\u7825\u71BC\u1545\u1D4D\u9A89\u7BAB\u397A",
-        "\u0032\u00C4\u1FAB\uC7EE\uCA7B\u5CC4\u071E\u3BFF\u49CF\u483D\u0491\u11DD",
-        "\u0032\u0061\u1250\u437F\u91E0\u1813\u14F4\uD555\uB545\u4570\u0293\u527F",
-        "\u0032\u0062\u1F8F\u7CEC\uADC2\uB5D6\u65BF\u6FE8\u3ACF\u0D0C\u5BF1\u7B51",
-        "\u0032\u0042\u0791\u4B5A\uF912\u136C\u7C37\u3432\u41E8\u38C5\uFDF2\uB8F6",
-        "\u0032\u0041\u1F31\u53AF\uCE0B\u5A3B\u76EB\uD43A\u52EB\u5086\u65E7\u01A4",
-        "\u0032\u00C4\u1643\u52F0\u0B1A\u86AC\u13BB\u6773\u9AD4\u5119\uC7BD\u3CCB"
+        "\u0032\u00C4\u1F3A\u0DC2\u83D1\uC4E0\u4820\u7399\u6897\u4953\u932E\u6751", //$NON-NLS-1$
+        "\u0032\u00E4\u1148\u599D\u738F\u5602\u4108\uC418\u3525\uF9E1\u8A49\u1EC4", //$NON-NLS-1$
+        "\u0032\u00C4\u1FAB\uC7EE\uCA7B\u5CC4\u071E\u3BFF\u49CF\u483D\u0491\u11DD", //$NON-NLS-1$
+        "\u0032\u0061\u1250\u437F\u91E0\u1813\u14F4\uD555\uB545\u4570\u0293\u527F", //$NON-NLS-1$
+        "\u0032\u0041\u1FF8\u78C8\uB79D\uC3FF\uD10C\uB4E4\u8F1F\u8168\u7AD3\u8519", //$NON-NLS-1$
+        "\u0032\u00E4\u1D21\uBD9F\uB28E\u7825\u71BC\u1545\u1D4D\u9A89\u7BAB\u397A", //$NON-NLS-1$
+        "\u0032\u00C4\u1FAB\uC7EE\uCA7B\u5CC4\u071E\u3BFF\u49CF\u483D\u0491\u11DD", //$NON-NLS-1$
+        "\u0032\u0061\u1250\u437F\u91E0\u1813\u14F4\uD555\uB545\u4570\u0293\u527F", //$NON-NLS-1$
+        "\u0032\u0062\u1F8F\u7CEC\uADC2\uB5D6\u65BF\u6FE8\u3ACF\u0D0C\u5BF1\u7B51", //$NON-NLS-1$
+        "\u0032\u0042\u0791\u4B5A\uF912\u136C\u7C37\u3432\u41E8\u38C5\uFDF2\uB8F6", //$NON-NLS-1$
+        "\u0032\u0041\u1F31\u53AF\uCE0B\u5A3B\u76EB\uD43A\u52EB\u5086\u65E7\u01A4", //$NON-NLS-1$
+        "\u0032\u00C4\u1643\u52F0\u0B1A\u86AC\u13BB\u6773\u9AD4\u5119\uC7BD\u3CCB" //$NON-NLS-1$
     };
 
 /* ****Implement necessary methods**** */

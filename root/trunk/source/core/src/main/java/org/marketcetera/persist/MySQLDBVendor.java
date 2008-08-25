@@ -14,7 +14,7 @@ import static org.marketcetera.persist.Messages.UNSUPPORTED_CHARACTER;
  *
  * @author anshul@marketcetera.com
  */
-@ClassVersion("$Id$")
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MySQLDBVendor extends DBVendor {
     /**
      * Creates an instance

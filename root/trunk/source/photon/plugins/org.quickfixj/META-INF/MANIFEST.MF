@@ -4,8 +4,6 @@ Bundle-Name: Quickfix/J Plug-in
 Bundle-SymbolicName: org.quickfixj
 Bundle-Version: 1.3.1.bd-2
 Bundle-ClassPath: lib/mina-core-1.1.0.jar,
- lib/slf4j-api-1.3.0.jar,
- lib/slf4j-log4j12-1.3.0.jar,
  lib/quickfixj-core-1.3.1-bd-2.jar,
  lib/quickfixj-msg-fix40-1.3.1-bd-2.jar,
  lib/quickfixj-msg-fix41-1.3.1-bd-2.jar,
@@ -23,7 +21,6 @@ Export-Package: .,
  org.quickfixj.jmx.mbean.connector,
  org.quickfixj.jmx.mbean.session,
  org.quickfixj.jmx.openmbean,
- org.slf4j,
  quickfix,
  quickfix.codegen,
  quickfix.field,

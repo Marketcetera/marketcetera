@@ -11,6 +11,7 @@ import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.actions.OpenAdditionalViewAction;
 
 import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
 
 /* $License$ */
 
@@ -22,36 +23,44 @@ import ca.odell.glazedlists.EventList;
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class FillsView extends AbstractFIXMessagesView {
-
+public class FillsView
+    extends AbstractFIXMessagesView
+{
 	public static final String ID = "org.marketcetera.photon.views.FillsView"; //$NON-NLS-1$
-
 	@Override
 	protected String getViewID() {
 		return ID;
 	}
 
 	@Override
-	protected void initializeToolBar(IToolBarManager theToolBarManager)
+	protected void initializeToolBar(IToolBarManager inTheToolBarManager)
 	{
-		theToolBarManager.add(new ContributionItem() {
+	    super.initializeToolBar(inTheToolBarManager);
+		inTheToolBarManager.add(new ContributionItem() {
 			@Override
 			public void fill(ToolBar parent, int index) {
 				new Text(parent, SWT.BORDER);
 			}
 		});
-        theToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
-                                                           FILLS_VIEW_LABEL.getText(),
-                                                           ID));
-		theToolBarManager.update(true);
+        inTheToolBarManager.add(new OpenAdditionalViewAction(getViewSite().getWorkbenchWindow(),
+                                                             FILLS_VIEW_LABEL.getText(),
+                                                             ID));
+		inTheToolBarManager.update(true);
 	}
-
 	public EventList<MessageHolder> extractList(FIXMessageHistory input) {
 		return input.getFillsList();
 	}
-
 	@Override
 	public void setFocus()
 	{
 	}
+    /* (non-Javadoc)
+     * @see org.marketcetera.photon.views.AbstractFIXMessagesView#getMessageList(org.marketcetera.messagehistory.FIXMessageHistory)
+     */
+    @Override
+    protected FilterList<MessageHolder> getMessageList(FIXMessageHistory inHistory)
+    {
+        return new FilterList<MessageHolder>(inHistory.getFillsList(),
+                                             getFilterMatcherEditor());
+    }
 }
