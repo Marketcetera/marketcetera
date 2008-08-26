@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Util Plug-in
 Bundle-SymbolicName: org.marketcetera.util
-Bundle-Version: 0.6.0
-Bundle-ClassPath: util-0.6.0.jar
+Bundle-Version: 0.7.0
+Bundle-ClassPath: util-0.7.0.jar
 Bundle-Vendor: Marketcetera, Inc.
 Eclipse-RegisterBuddy: org.marketcetera.core
 Require-Bundle: org.slf4j,
