@@ -344,7 +344,7 @@ public class MarketceteraFeed
         url = inCredentials.getURL();
         try {
             idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
-                                              String.format("-%s", //$NON-NLS-1$
+                                              String.format("-%s-", //$NON-NLS-1$
                                                             InetAddress.getLocalHost().toString()));
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException(e);
