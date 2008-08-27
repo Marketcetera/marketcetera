@@ -73,7 +73,7 @@ public abstract class EntityTestBase<E extends EntityBase,
         assertEntitySummaryEquals(fetched, sFetched);
         //Do a save without any changes and verify that update count gets incremented
         save(e);
-        assertSavedEntity(fetched, e);
+        assertSavedEntity(fetched, e, true);
         fetched = fetchByID(e.getId());
         assertEntityEquals(e,fetched);
         //Test that the saved entity can be updated.
