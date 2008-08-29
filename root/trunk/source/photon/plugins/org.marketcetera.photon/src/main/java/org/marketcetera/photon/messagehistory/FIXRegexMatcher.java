@@ -19,10 +19,10 @@ import quickfix.Message;
  * contract.
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: FIXDataDictionaryManager.java 9456 2008-07-31 22:28:30Z klim $")//$NON-NLS-1$
+@ClassVersion("$Id$")//$NON-NLS-1$
 public class FIXRegexMatcher
         extends FIXMatcher<String>
 {

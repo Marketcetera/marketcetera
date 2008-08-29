@@ -39,7 +39,7 @@ import quickfix.fix42.ExecutionReport;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @since $Release$
- * @version $Id: $
+ * @version $Id$
  */
 public class OpenOrdersViewTest
     extends ViewTestBase

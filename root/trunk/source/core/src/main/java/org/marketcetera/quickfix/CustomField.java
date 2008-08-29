@@ -10,9 +10,9 @@ import quickfix.Field;
  * 
  * @author Toli Kuznets
  * @author <a href="mailto:colin@whiskerfish.com">Colin DuPlantis</a>
- * @version $Id: CustomField.java 5380 2008-04-25 20:36:02Z tlerios $
+ * @version $Id$
  */
-@ClassVersion("$Id: CustomField.java 5380 2008-04-25 20:36:02Z tlerios $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class CustomField<T>
     extends Field<T>
 {

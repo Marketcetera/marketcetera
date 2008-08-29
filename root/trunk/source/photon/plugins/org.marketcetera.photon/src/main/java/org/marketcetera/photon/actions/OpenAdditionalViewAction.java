@@ -20,10 +20,10 @@ import org.marketcetera.photon.PhotonPlugin;
  * Opens a new view of the given type.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: AbstractMarketDataFeed.java 9458 2008-08-01 05:27:12Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class OpenAdditionalViewAction
         extends Action
 {
