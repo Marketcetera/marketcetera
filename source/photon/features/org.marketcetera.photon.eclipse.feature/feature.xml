@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.eclipse.feature"
       label="Eclipse Plugins for Photon Feature"
-      version="0.7.0"
+      version="0.8.0"
       provider-name="Marketcetera, Inc.">
 
    <description url="http://www.marketcetera.org/trac.fcgi/wiki/Marketcetera/Photon">

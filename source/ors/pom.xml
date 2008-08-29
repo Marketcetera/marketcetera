@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>source</artifactId>
-    <version>0.7.0</version>
+    <version>0.8.0</version>
   </parent>
   <artifactId>ors</artifactId>
   <packaging>jar</packaging>

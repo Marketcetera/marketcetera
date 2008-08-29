@@ -22,7 +22,7 @@ import quickfix.field.Urgency;
  * Tests {@link FIXStringMatcher}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
 public class FIXStringMatcherTest
@@ -119,7 +119,7 @@ public class FIXStringMatcherTest
      * Test implementation of <code>FIXStringMatcher</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since $Release$
      */
     private static class MockFIXStringMatcher

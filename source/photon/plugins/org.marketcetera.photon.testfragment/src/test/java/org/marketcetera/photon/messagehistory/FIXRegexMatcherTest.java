@@ -19,7 +19,7 @@ import quickfix.field.TimeInForce;
  * Tests {@link FIXRegexMatcher}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
 public class FIXRegexMatcherTest
@@ -127,7 +127,7 @@ public class FIXRegexMatcherTest
      * Test implementation of <code>FIXRegexMatcher</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since $Release$
      */
     private static class MockFIXRegexMatcher
