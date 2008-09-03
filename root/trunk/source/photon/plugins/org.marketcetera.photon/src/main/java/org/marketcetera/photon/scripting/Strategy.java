@@ -1,10 +1,17 @@
 package org.marketcetera.photon.scripting;
 
+import static org.marketcetera.photon.Messages.DEBUG_SUBJECT;
+import static org.marketcetera.photon.Messages.ERROR_SUBJECT;
+import static org.marketcetera.photon.Messages.INFO_SUBJECT;
+import static org.marketcetera.photon.Messages.WARN_SUBJECT;
+
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.views.TradeRecommendationView;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -30,8 +37,9 @@ import quickfix.field.OrderID;
  * a message factory and ID factory.
  * 
  * @author tkuznets
- *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class Strategy {
 
 	private FIXValueExtractor extractor;
@@ -175,8 +183,102 @@ public abstract class Strategy {
 	public void addTradeRecommendation(quickfix.Message message, Double score){
 		TradeRecommendationView.addTradeRecommendation(message, score);
 	}
-
-	
+	/**
+	 * Reports an error to the <code>Photon</code> notification system.
+	 *
+	 * @param inSubject a <code>String</code> value indicating the subject of the error
+	 * @param inBody a <code>String</code> value indicating the body of the error
+	 */
+	public void error(final String inSubject,
+	                  final String inBody)
+	{
+	    NotificationManager.getNotificationManager().publish(StrategyNotification.error(inSubject,
+	                                                                                    inBody));
+	}
+    /**
+     * Reports an error to the <code>Photon</code> notification system.
+     * 
+     * <p>The resulting notification will have a default subject.
+     *
+     * @param inBody a <code>String</code> value indicating the body of the error
+     */
+	public void error(final String inBody)
+	{
+	    error(ERROR_SUBJECT.getText(),
+	          inBody);
+	}
+    /**
+     * Reports a warning to the <code>Photon</code> notification system.
+     *
+     * @param inSubject a <code>String</code> value indicating the subject of the warning
+     * @param inBody a <code>String</code> value indicating the body of the warning
+     */
+	public void warn(final String inSubject,
+	                 final String inBody)
+	{
+        NotificationManager.getNotificationManager().publish(StrategyNotification.warn(inSubject,
+                                                                                       inBody));
+	}
+    /**
+     * Reports a warning to the <code>Photon</code> notification system.
+     * 
+     * <p>The resulting notification will have a default subject.
+     *
+     * @param inBody a <code>String</code> value indicating the body of the warning
+     */
+	public void warn(final String inBody)
+	{
+	    warn(WARN_SUBJECT.getText(),
+	         inBody);
+	}
+    /**
+     * Reports an informational message to the <code>Photon</code> notification system.
+     *
+     * @param inSubject a <code>String</code> value indicating the subject of the informational message
+     * @param inBody a <code>String</code> value indicating the body of the informational message
+     */
+	public void info(final String inSubject,
+	                 final String inBody)
+	{
+        NotificationManager.getNotificationManager().publish(StrategyNotification.info(inSubject,
+                                                                                       inBody));
+	}
+    /**
+     * Reports an informational message to the <code>Photon</code> notification system.
+     * 
+     * <p>The resulting notification will have a default subject.
+     *
+     * @param inBody a <code>String</code> value indicating the body of the informational message
+     */
+	public void info(final String inBody)
+	{
+	    info(INFO_SUBJECT.getText(),
+	         inBody);
+	}
+    /**
+     * Reports a debug message to the <code>Photon</code> notification system.
+     *
+     * @param inSubject a <code>String</code> value indicating the subject of the debug message
+     * @param inBody a <code>String</code> value indicating the body of the debug message
+     */
+	public void debug(final String inSubject,
+	                  final String inBody)
+	{
+        NotificationManager.getNotificationManager().publish(StrategyNotification.debug(inSubject,
+                                                                                        inBody));
+	}
+    /**
+     * Reports a debug message to the <code>Photon</code> notification system.
+     * 
+     * <p>The resulting notification will have a default subject.
+     *
+     * @param inBody a <code>String</code> value indicating the body of the debug message
+     */
+	public void debug(final String inBody)
+	{
+	    debug(DEBUG_SUBJECT.getText(),
+	          inBody);
+	}
 	/**
      * Causes the {@link #timeout_callback} function to be called after the specified number of milliseconds,
      * passing the clientData object into it

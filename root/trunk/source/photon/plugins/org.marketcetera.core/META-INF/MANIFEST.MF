@@ -11,6 +11,7 @@ Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
 Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,
+ org.marketcetera.core.notifications,
  org.marketcetera.core.publisher,
  org.marketcetera.core.resourcepool,
  org.marketcetera.event,
