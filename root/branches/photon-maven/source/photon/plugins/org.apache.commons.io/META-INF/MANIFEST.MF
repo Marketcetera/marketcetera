@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Io Plug-in
+Bundle-SymbolicName: org.apache.commons.io
+Bundle-Version: 1.4
+Bundle-ClassPath: lib/commons-io-1.4.jar,
+ .
+Bundle-Vendor: Marketcetera, Inc.
+Export-Package: org.apache.commons.io,
+ org.apache.commons.io.comparator,
+ org.apache.commons.io.filefilter,
+ org.apache.commons.io.input,
+ org.apache.commons.io.output
