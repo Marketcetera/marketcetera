@@ -502,4 +502,12 @@ public interface Messages
                                                                    "matcher_failed"); //$NON-NLS-1$
     public static I18NMessage1P UNRECOGNIZED_FIELD = new I18NMessage1P(LOGGER,
                                                                        "unrecognized_field"); //$NON-NLS-1$
+    public static I18NMessage0P ERROR_SUBJECT = new I18NMessage0P(LOGGER,
+                                                                  "error_subject"); //$NON-NLS-1$
+    public static I18NMessage0P WARN_SUBJECT = new I18NMessage0P(LOGGER,
+                                                                 "warn_subject"); //$NON-NLS-1$
+    public static I18NMessage0P INFO_SUBJECT = new I18NMessage0P(LOGGER,
+                                                                 "info_subject"); //$NON-NLS-1$
+    public static I18NMessage0P DEBUG_SUBJECT = new I18NMessage0P(LOGGER,
+                                                                  "debug_subject"); //$NON-NLS-1$
 }
