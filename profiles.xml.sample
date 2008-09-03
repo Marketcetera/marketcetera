@@ -28,6 +28,8 @@
         <mvn.jvm.locale.language></mvn.jvm.locale.language>
         <mvn.jvm.locale.country></mvn.jvm.locale.country>
         <mvn.jvm.locale.variant></mvn.jvm.locale.variant>
+        <!-- Required for Photon: directory to install RCP target. --> 
+        <mvn.photon.target>C:\photon-target</mvn.photon.target> 
       </properties>
     </profile>
   </profiles>
