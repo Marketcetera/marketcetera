@@ -12,7 +12,7 @@ import org.marketcetera.quickfix.ConnectionConstants;
 
 public class MarketceteraFeedPreferencePage 
     extends FieldEditorPreferencePage 
-    implements IWorkbenchPreferencePage, Messages
+    implements IWorkbenchPreferencePage, MarketdataMessages
 {
 
 	private UrlFieldEditor feedUrlEditor;

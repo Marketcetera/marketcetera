@@ -77,7 +77,7 @@ public class MarketceteraFeed
                                    MarketceteraFeedEventTranslator,
                                    Message,
                                    MarketceteraFeed> 
-    implements Application, Messages 
+    implements Application, MarketdataMessages 
 {
 	public static final String SETTING_SENDER_COMP_ID = SenderCompID.class.getSimpleName();
 	public static final String SETTING_TARGET_COMP_ID = TargetCompID.class.getSimpleName();
