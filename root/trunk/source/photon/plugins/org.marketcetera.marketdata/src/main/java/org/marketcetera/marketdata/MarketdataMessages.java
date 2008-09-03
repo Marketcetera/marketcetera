@@ -16,7 +16,7 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * @since 0.6.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface Messages
+public interface MarketdataMessages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("marketcetera"); //$NON-NLS-1$
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);

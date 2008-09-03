@@ -10,7 +10,7 @@ import org.marketcetera.symbology.IEquityOptionSymbol;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraOptionSymbol 
     extends MSymbol 
-    implements IEquityOptionSymbol, Messages
+    implements IEquityOptionSymbol, MarketdataMessages
 {
 
 	static final Pattern optionSymbolPattern = Pattern.compile("(\\w{1,3})\\+(\\w)(\\w)"); //$NON-NLS-1$

@@ -37,7 +37,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
     extends AbstractEventTranslator
-    implements Messages
+    implements MarketdataMessages
 {
     private static final String UNKNOWN = "?"; //$NON-NLS-1$
     private static final MarketceteraFeedEventTranslator sInstance = new MarketceteraFeedEventTranslator();
