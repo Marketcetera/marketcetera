@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Cli Plug-in
-Bundle-SymbolicName: org.apache.commons.cli
-Bundle-Version: 1.1
-Bundle-ClassPath: lib/commons-cli-1.1.jar,
- .
-Bundle-Vendor: Marketcetera, Inc.
-Export-Package: org.apache.commons.cli

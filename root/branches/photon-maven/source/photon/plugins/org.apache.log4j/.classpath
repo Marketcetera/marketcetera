@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.13.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>

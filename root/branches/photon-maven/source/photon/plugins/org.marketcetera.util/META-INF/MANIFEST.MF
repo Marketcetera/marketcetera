@@ -5,12 +5,9 @@ Bundle-SymbolicName: org.marketcetera.util
 Bundle-Version: 0.8.0
 Bundle-ClassPath: util-0.8.0.jar
 Bundle-Vendor: Marketcetera, Inc.
-Eclipse-RegisterBuddy: org.marketcetera.core
-Require-Bundle: org.slf4j,
- org.apache.commons.lang,
- org.marketcetera.core,
- org.apache.commons.cli,
- org.apache.commons.io
+Eclipse-RegisterBuddy: org.marketcetera.core, org.marketcetera.thirdparty
+Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport,
+ org.marketcetera.core
 Export-Package: .,
  org.marketcetera.util.auth,
  org.marketcetera.util.except,
