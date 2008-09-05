@@ -8,6 +8,7 @@
 
 use strict;
 use File::Find;
+require 'svnConfig.pl';
 
 
 # Error checking.
@@ -73,38 +74,6 @@ my(%patternsCustom)=(
 	  => ('bin'),
 );
 
-my(@externals)=(
-	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/1.8',
-	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/site_ruby',
-	'public/source/tradebase/vendor/plugins/debug_view_helper',
-);
-
-my(@executables)=(
-	'private/source/exsim/exchange/src/test/bin/killExchange.sh',
-	'private/tools/install4j/misc/getbins.sh',
-	'private/tools/install4j/template-win/.shortcuts/editORSConfig.bat',
-	'private/tools/install4j/template-win/.shortcuts/editTradebaseConfig.bat',
-	'private/tools/install4j/template-win/setEnv.bat',
-	'private/tools/install4j/template-win/sql/create_db.bat',
-	'private/tools/install4j/template-win/sql/start_mysql.bat',
-	'private/tools/install4j/template-win/sql/stop_mysql.bat',
-	'private/tools/install4j/template-win/sql/wait.bat',
-	'private/tools/install4j/template-win/startServerComponents.bat',
-	'public/source/tradebase/script/about',
-	'public/source/tradebase/script/breakpointer',
-	'public/source/tradebase/script/console',
-	'public/source/tradebase/script/destroy',
-	'public/source/tradebase/script/generate',
-	'public/source/tradebase/script/performance/benchmarker',
-	'public/source/tradebase/script/performance/profiler',
-	'public/source/tradebase/script/plugin',
-	'public/source/tradebase/script/poller',
-	'public/source/tradebase/script/process/reaper',
-	'public/source/tradebase/script/process/spawner',
-	'public/source/tradebase/script/runner',
-	'public/source/tradebase/script/server',
-);
-
 # Run command.
 
 sub run($)
@@ -129,7 +98,7 @@ sub walk ()
 	($absName)=($absName=~/(((public)|(private)).*)/io);
 
 	my($external);
-	foreach $external (@externals) {
+	foreach $external (@::externals) {
 		if ($absName eq $external) {
 			warn 'Ignoring external directory: '.$File::Find::name."\n";
 			$File::Find::prune=1;
@@ -171,7 +140,7 @@ sub walk ()
 	my($quoted)='"'.$_.'"';
 	my($executable)=0;
 	my($key);
-	foreach $key (@executables) {
+	foreach $key (@::executables) {
 		if ($absName eq $key) {
 			$executable=1;
 		}
