@@ -1,5 +1,6 @@
 package org.marketcetera.util.l10n;
 
+import java.util.Properties;
 import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -50,6 +51,39 @@ public abstract class MessageInfo
     {
         mKey=key;
         mParamCount=paramCount;
+    }
+
+
+    // CLASS METHODS.
+
+    /**
+     * Returns the given collection of message information as a
+     * properties object. For each message in order, one property is
+     * created (or overwritten, if there is a name conflict): its name
+     * is the message key, and its value is the key alongside all
+     * argument placeholders.
+     *
+     * @param info The collection of message information.
+     *
+     * @return The properties object.
+     */
+
+    public static Properties getList
+        (MessageInfo[] info)
+    {
+        Properties properties=new Properties();
+        for (MessageInfo m:info) {
+            StringBuilder builder=new StringBuilder();
+            builder.append(m.getKey());
+            builder.append(' '); //$NON-NLS-1$
+            for (int i=0;i<m.getParamCount();i++) {
+                builder.append('{'); //$NON-NLS-1$
+                builder.append(i);
+                builder.append('}'); //$NON-NLS-1$
+            }
+            properties.put(m.getKey(),builder.toString());
+        }
+        return properties;
     }
 
 
