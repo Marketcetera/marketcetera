@@ -114,9 +114,9 @@
         </executions>
       </plugin>
       <!-- 
-        Delete the target during a clean build.  Ideally, the maven-clean-plugin
-        could be used instead, but there is a bug that causes it to improperly 
-        handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
+        - Delete the target during a clean build.  Ideally, the maven-clean-plugin
+        - could be used instead, but there is a bug that causes it to improperly 
+        - handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
         -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
