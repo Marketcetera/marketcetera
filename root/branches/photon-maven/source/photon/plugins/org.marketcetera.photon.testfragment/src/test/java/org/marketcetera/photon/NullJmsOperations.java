@@ -99,54 +99,46 @@ public class NullJmsOperations implements JmsOperations{
 
 	@Override
 	public Object browse(BrowserCallback arg0) throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object browse(Queue arg0, BrowserCallback arg1) throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object browse(String arg0, BrowserCallback arg1) throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object browseSelected(String arg0, BrowserCallback arg1)
 			throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object browseSelected(Queue arg0, String arg1, BrowserCallback arg2)
 			throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object browseSelected(String arg0, String arg1, BrowserCallback arg2)
 			throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object execute(Destination arg0, ProducerCallback arg1)
 			throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public Object execute(String arg0, ProducerCallback arg1)
 			throws JmsException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

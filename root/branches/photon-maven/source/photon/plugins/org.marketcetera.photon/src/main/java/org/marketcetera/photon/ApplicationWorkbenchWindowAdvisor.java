@@ -133,8 +133,11 @@ public class ApplicationWorkbenchWindowAdvisor
 		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry"); //$NON-NLS-1$
 		job.schedule();
-		if (PlatformUI.getTestableObject().getTestHarness() == null)
+		
+		// The login dialog interferes with testing, this check is to ensure tests are not being run
+		if (PlatformUI.getTestableObject().getTestHarness() == null) {
 			startJMS();
+		}
 		startMarketDataFeed();
 		startIDFactory();
 		initStatusLine();
