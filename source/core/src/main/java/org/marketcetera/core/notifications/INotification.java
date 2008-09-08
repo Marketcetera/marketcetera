@@ -26,10 +26,9 @@ public interface INotification
     @ClassVersion("$Id: AccountID.java 9456 2008-07-31 22:28:30Z klim $") //$NON-NLS-1$
     public enum Severity
     {
-        ERROR,
-        WARNING,
-        INFO,
-        DEBUG;
+        HIGH,
+        MEDIUM,
+        LOW;
     }
     /**
      * Gets the high-level summary of the <code>INotification</code>.

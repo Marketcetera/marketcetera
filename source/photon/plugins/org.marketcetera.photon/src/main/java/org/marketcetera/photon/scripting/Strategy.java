@@ -1,9 +1,8 @@
 package org.marketcetera.photon.scripting;
 
-import static org.marketcetera.photon.Messages.DEBUG_SUBJECT;
-import static org.marketcetera.photon.Messages.ERROR_SUBJECT;
-import static org.marketcetera.photon.Messages.INFO_SUBJECT;
-import static org.marketcetera.photon.Messages.WARN_SUBJECT;
+import static org.marketcetera.photon.Messages.HIGH_PRIORITY_SUBJECT;
+import static org.marketcetera.photon.Messages.LOW_PRIORITY_SUBJECT;
+import static org.marketcetera.photon.Messages.MEDIUM_PRIORITY_SUBJECT;
 
 import java.math.BigDecimal;
 import java.util.concurrent.ScheduledFuture;
@@ -184,100 +183,76 @@ public abstract class Strategy {
 		TradeRecommendationView.addTradeRecommendation(message, score);
 	}
 	/**
-	 * Reports an error to the <code>Photon</code> notification system.
+	 * Reports a high priority notification to the <code>Photon</code> notification system.
 	 *
-	 * @param inSubject a <code>String</code> value indicating the subject of the error
-	 * @param inBody a <code>String</code> value indicating the body of the error
+	 * @param inSubject a <code>String</code> value containing the subject
+	 * @param inBody a <code>String</code> value containing the body
 	 */
-	public void error(final String inSubject,
-	                  final String inBody)
+	public void notify_high(final String inSubject,
+	                        final String inBody)
 	{
-	    NotificationManager.getNotificationManager().publish(StrategyNotification.error(inSubject,
-	                                                                                    inBody));
+	    NotificationManager.getNotificationManager().publish(StrategyNotification.high(inSubject,
+	                                                                                   inBody));
 	}
     /**
-     * Reports an error to the <code>Photon</code> notification system.
+     * Reports a high priority notification to the <code>Photon</code> notification system.
      * 
      * <p>The resulting notification will have a default subject.
      *
-     * @param inBody a <code>String</code> value indicating the body of the error
+     * @param inBody a <code>String</code> value containing the body
      */
-	public void error(final String inBody)
+	public void notify_high(final String inBody)
 	{
-	    error(ERROR_SUBJECT.getText(),
-	          inBody);
+	    notify_high(HIGH_PRIORITY_SUBJECT.getText(),
+	                inBody);
 	}
     /**
-     * Reports a warning to the <code>Photon</code> notification system.
+     * Reports a medium priority notification to the <code>Photon</code> notification system.
      *
-     * @param inSubject a <code>String</code> value indicating the subject of the warning
-     * @param inBody a <code>String</code> value indicating the body of the warning
+     * @param inSubject a <code>String</code> value containing the subject
+     * @param inBody a <code>String</code> value containing the body
      */
-	public void warn(final String inSubject,
-	                 final String inBody)
+	public void notify_medium(final String inSubject,
+	                          final String inBody)
 	{
-        NotificationManager.getNotificationManager().publish(StrategyNotification.warn(inSubject,
-                                                                                       inBody));
+        NotificationManager.getNotificationManager().publish(StrategyNotification.medium(inSubject,
+                                                                                         inBody));
 	}
     /**
-     * Reports a warning to the <code>Photon</code> notification system.
+     * Reports a medium priority notification to the <code>Photon</code> notification system.
      * 
      * <p>The resulting notification will have a default subject.
      *
-     * @param inBody a <code>String</code> value indicating the body of the warning
+     * @param inBody a <code>String</code> value containing the body
      */
-	public void warn(final String inBody)
+	public void notify_medium(final String inBody)
 	{
-	    warn(WARN_SUBJECT.getText(),
-	         inBody);
+	    notify_medium(MEDIUM_PRIORITY_SUBJECT.getText(),
+	                  inBody);
 	}
     /**
-     * Reports an informational message to the <code>Photon</code> notification system.
+     * Reports a low priority notification to the <code>Photon</code> notification system.
      *
-     * @param inSubject a <code>String</code> value indicating the subject of the informational message
-     * @param inBody a <code>String</code> value indicating the body of the informational message
+     * @param inSubject a <code>String</code> value containing the subject
+     * @param inBody a <code>String</code> value containing the body
      */
-	public void info(final String inSubject,
-	                 final String inBody)
+	public void notify_low(final String inSubject,
+	                       final String inBody)
 	{
-        NotificationManager.getNotificationManager().publish(StrategyNotification.info(inSubject,
-                                                                                       inBody));
+        NotificationManager.getNotificationManager().publish(StrategyNotification.low(inSubject,
+                                                                                      inBody));
 	}
     /**
-     * Reports an informational message to the <code>Photon</code> notification system.
+     * Reports a low priority notification to the <code>Photon</code> notification system.
      * 
      * <p>The resulting notification will have a default subject.
      *
-     * @param inBody a <code>String</code> value indicating the body of the informational message
+     * @param inBody a <code>String</code> value containing the body
      */
-	public void info(final String inBody)
+	public void notify_low(final String inBody)
 	{
-	    info(INFO_SUBJECT.getText(),
-	         inBody);
-	}
-    /**
-     * Reports a debug message to the <code>Photon</code> notification system.
-     *
-     * @param inSubject a <code>String</code> value indicating the subject of the debug message
-     * @param inBody a <code>String</code> value indicating the body of the debug message
-     */
-	public void debug(final String inSubject,
-	                  final String inBody)
-	{
-        NotificationManager.getNotificationManager().publish(StrategyNotification.debug(inSubject,
-                                                                                        inBody));
-	}
-    /**
-     * Reports a debug message to the <code>Photon</code> notification system.
-     * 
-     * <p>The resulting notification will have a default subject.
-     *
-     * @param inBody a <code>String</code> value indicating the body of the debug message
-     */
-	public void debug(final String inBody)
-	{
-	    debug(DEBUG_SUBJECT.getText(),
-	          inBody);
+	    notify_low(LOW_PRIORITY_SUBJECT.getText(),
+	               inBody);
 	}
 	/**
      * Causes the {@link #timeout_callback} function to be called after the specified number of milliseconds,

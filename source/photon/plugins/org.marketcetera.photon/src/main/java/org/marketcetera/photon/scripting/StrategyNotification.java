@@ -45,12 +45,12 @@ public class StrategyNotification
      * @param inBody a <code>String</code> value
      * @return a <code>StrategyNotification</code> value
      */
-    static StrategyNotification debug(String inSubject,
-                                      String inBody)
+    static StrategyNotification low(String inSubject,
+                                    String inBody)
     {
         return new StrategyNotification(inSubject,
                                         inBody,
-                                        Severity.DEBUG);
+                                        Severity.LOW);
     }
     /**
      * Create a <code>StrategyNotification</code> object of severity <code>info</code>.
@@ -59,26 +59,12 @@ public class StrategyNotification
      * @param inBody a <code>String</code> value
      * @return a <code>StrategyNotification</code> value
      */
-    static StrategyNotification info(String inSubject,
-                                     String inBody)
+    static StrategyNotification medium(String inSubject,
+                                       String inBody)
     {
         return new StrategyNotification(inSubject,
                                         inBody,
-                                        Severity.INFO);
-    }
-    /**
-     * Create a <code>StrategyNotification</code> object of severity <code>warn</code>.
-     *
-     * @param inSubject a <code>String</code> value
-     * @param inBody a <code>String</code> value
-     * @return a <code>StrategyNotification</code> value
-     */
-    static StrategyNotification warn(String inSubject,
-                                     String inBody)
-    {
-        return new StrategyNotification(inSubject,
-                                        inBody,
-                                        Severity.WARNING);
+                                        Severity.MEDIUM);
     }
     /**
      * Create a <code>StrategyNotification</code> object of severity <code>error</code>.
@@ -87,12 +73,12 @@ public class StrategyNotification
      * @param inBody a <code>String</code> value
      * @return a <code>StrategyNotification</code> value
      */
-    static StrategyNotification error(String inSubject,
-                                      String inBody)
+    static StrategyNotification high(String inSubject,
+                                     String inBody)
     {
         return new StrategyNotification(inSubject,
                                         inBody,
-                                        Severity.ERROR);
+                                        Severity.HIGH);
     }
     /**
      * Create a new StrategyNotification instance.

@@ -50,7 +50,7 @@ public class NotificationManagerTest
         MockSubscriber subscriber = new MockSubscriber();
         MockNotification notification = new MockNotification("subject", //$NON-NLS-1$
                                                              "body", //$NON-NLS-1$
-                                                             INotification.Severity.INFO,
+                                                             INotification.Severity.MEDIUM,
                                                              this.getClass());
         // make sure the subscriber starts in an empty state
         assertEquals(0,
