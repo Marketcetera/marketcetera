@@ -168,11 +168,16 @@
         <groupId>commons-pool</groupId>
         <artifactId>commons-pool</artifactId>
         <version>[1.2]</version>
-        <!-- Exclude xerces as it pulls in an older buggy version. -->
         <exclusions>
+          <!-- Exclude xerces as it pulls in an older buggy version. -->
           <exclusion>
             <groupId>xerces</groupId>
             <artifactId>xerces</artifactId>
+          </exclusion>
+          <!-- Exclude xml-apis, standard JRE ones are preferable. -->
+          <exclusion>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
           </exclusion>
         </exclusions>
         <scope>runtime</scope>
