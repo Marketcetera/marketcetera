@@ -1,9 +1,6 @@
 package org.marketcetera.photon.scripting;
 
-import static org.marketcetera.photon.Messages.DEBUG_SUBJECT;
-import static org.marketcetera.photon.Messages.ERROR_SUBJECT;
-import static org.marketcetera.photon.Messages.INFO_SUBJECT;
-import static org.marketcetera.photon.Messages.WARN_SUBJECT;
+import static org.marketcetera.photon.Messages.*;
 
 import java.util.ArrayList;
 import java.util.Vector;
@@ -156,24 +153,21 @@ public class StrategyTest extends TestCase {
             public Boolean call()
                     throws Exception
             {
-                return subscriber.getPublishCount() == 8;
+                return subscriber.getPublishCount() == 6;
             }
         });
         // check the publications we got to make sure we got what we expected
         // count the number of notifications of each severity
-        int errorCount = 0;
-        int warnCount = 0;
-        int infoCount = 0;
-        int debugCount = 0;
+        int highCount = 0;
+        int mediumCount = 0;
+        int lowCount = 0;
         // check for the occurrence of one each of the permutations of severity and default vs. custom subject lines 
-        boolean defaultErrorFound = false;
-        boolean customErrorFound = false;
-        boolean defaultWarningFound = false;
-        boolean customWarningFound = false;
-        boolean defaultInfoFound = false;
-        boolean customInfoFound = false;
-        boolean defaultDebugFound = false;
-        boolean customDebugFound = false;
+        boolean defaultHighFound = false;
+        boolean customHighFound = false;
+        boolean defaultMediumFound = false;
+        boolean customMediumFound = false;
+        boolean defaultLowFound = false;
+        boolean customLowFound = false;
         // examine each of the publications captured by our subscriber
         for(Object publication : subscriber.getPublications()) {
             // publication must be an INotification
@@ -185,50 +179,38 @@ public class StrategyTest extends TestCase {
             assertEquals(StrategyNotification.class,
                          notification.getOriginator());
             // check the severity and increment the markers accordingly
-            // check error
-            if(notification.getSeverity().equals(Severity.ERROR)) {
-                errorCount += 1;
+            // check high
+            if(notification.getSeverity().equals(Severity.HIGH)) {
+                highCount += 1;
                 String subject = notification.getSubject();
-                if(subject.equals(ERROR_SUBJECT.getText())) {
-                    defaultErrorFound = true;
+                if(subject.equals(HIGH_PRIORITY_SUBJECT.getText())) {
+                    defaultHighFound = true;
                 } else if(subject.equals(tuple.getSubject())) {
-                    customErrorFound = true;
+                    customHighFound = true;
                 } else {
                     fail("Unexpected subject: " + subject);
                 }
             }
-            // check warning
-            if(notification.getSeverity().equals(Severity.WARNING)) {
-                warnCount += 1;
+            // check medium
+            if(notification.getSeverity().equals(Severity.MEDIUM)) {
+                mediumCount += 1;
                 String subject = notification.getSubject();
-                if(subject.equals(WARN_SUBJECT.getText())) {
-                    defaultWarningFound = true;
+                if(subject.equals(MEDIUM_PRIORITY_SUBJECT.getText())) {
+                    defaultMediumFound = true;
                 } else if(subject.equals(tuple.getSubject())) {
-                    customWarningFound = true;
+                    customMediumFound = true;
                 } else {
                     fail("Unexpected subject: " + subject);
                 }
             }
-            // check info
-            if(notification.getSeverity().equals(Severity.INFO)) {
-                infoCount += 1;
+            // check low
+            if(notification.getSeverity().equals(Severity.LOW)) {
+                lowCount += 1;
                 String subject = notification.getSubject();
-                if(subject.equals(INFO_SUBJECT.getText())) {
-                    defaultInfoFound = true;
+                if(subject.equals(LOW_PRIORITY_SUBJECT.getText())) {
+                    defaultLowFound = true;
                 } else if(subject.equals(tuple.getSubject())) {
-                    customInfoFound = true;
-                } else {
-                    fail("Unexpected subject: " + subject);
-                }
-            }
-            // check debug
-            if(notification.getSeverity().equals(Severity.DEBUG)) {
-                debugCount += 1;
-                String subject = notification.getSubject();
-                if(subject.equals(DEBUG_SUBJECT.getText())) {
-                    defaultDebugFound = true;
-                } else if(subject.equals(tuple.getSubject())) {
-                    customDebugFound = true;
+                    customLowFound = true;
                 } else {
                     fail("Unexpected subject: " + subject);
                 }
@@ -236,21 +218,17 @@ public class StrategyTest extends TestCase {
         }
         // now make sure the markers are correct
         assertEquals(2,
-                     errorCount);
+                     highCount);
         assertEquals(2,
-                     warnCount);
+                     mediumCount);
         assertEquals(2,
-                     infoCount);
-        assertEquals(2,
-                     debugCount);
-        assertTrue(defaultErrorFound);
-        assertTrue(customErrorFound);
-        assertTrue(defaultWarningFound);
-        assertTrue(customWarningFound);
-        assertTrue(defaultInfoFound);
-        assertTrue(customInfoFound);
-        assertTrue(defaultDebugFound);
-        assertTrue(customDebugFound);
+                     lowCount);
+        assertTrue(defaultHighFound);
+        assertTrue(customHighFound);
+        assertTrue(defaultMediumFound);
+        assertTrue(customMediumFound);
+        assertTrue(defaultLowFound);
+        assertTrue(customLowFound);
         // if all this passed, then we got the notifications we were supposed to get and no more
 	}
 	/**
@@ -288,18 +266,15 @@ public class StrategyTest extends TestCase {
 	{
 	    String body = RandomStrings.genStrDefCharset();
 	    String subject = RandomStrings.genStrDefCharset();
-	    inStrategy.error(body);
-        inStrategy.error(subject,
-                         body);
-        inStrategy.warn(body);
-        inStrategy.warn(subject,
-                        body);
-        inStrategy.info(body);
-        inStrategy.info(subject,
-                        body);
-        inStrategy.debug(body);
-        inStrategy.debug(subject,
-                         body);
+	    inStrategy.notify_high(body);
+        inStrategy.notify_high(subject,
+                               body);
+        inStrategy.notify_medium(body);
+        inStrategy.notify_medium(subject,
+                                 body);
+        inStrategy.notify_low(body);
+        inStrategy.notify_low(subject,
+                              body);
         return new NotificationTuple(subject,
                                      body);
 	}
