@@ -27,27 +27,6 @@
    </requires>
 
    <plugin
-         id="net.java.dev.glazedlists"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.activemq"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.log4j"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.marketcetera.marketdata"
          download-size="0"
          install-size="0"
@@ -76,56 +55,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.quickfixj"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="com.swtworkbench.community.xswt"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.skife.kasparov.csv"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.cli"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.i18n"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.io"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.apache.commons.lang"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.slf4j"
          download-size="0"
          install-size="0"
          version="0.0.0"
@@ -138,14 +68,12 @@
          version="0.0.0"
          unpack="false"/>
 
-
    <plugin
          id="org.jruby.bsf"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
-
 
    <plugin
          id="org.marketcetera.photon.registry"
@@ -161,5 +89,10 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.marketcetera.thirdparty"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>

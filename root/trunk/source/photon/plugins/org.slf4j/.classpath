@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="src" path=""/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-1.5.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/slf4j-log4j12-1.5.0.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>

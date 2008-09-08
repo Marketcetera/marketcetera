@@ -6,6 +6,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
@@ -132,7 +133,11 @@ public class ApplicationWorkbenchWindowAdvisor
 		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
 		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry"); //$NON-NLS-1$
 		job.schedule();
-		startJMS();
+		
+		// The login dialog interferes with testing, this check is to ensure tests are not being run
+		if (PlatformUI.getTestableObject().getTestHarness() == null) {
+			startJMS();
+		}
 		startMarketDataFeed();
 		startIDFactory();
 		initStatusLine();

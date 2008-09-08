@@ -1,8 +1,10 @@
 package org.marketcetera.photon.views;
 
 import javax.jms.Destination;
+import javax.jms.Queue;
 
 import org.springframework.jms.JmsException;
+import org.springframework.jms.core.BrowserCallback;
 import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.MessageCreator;
 import org.springframework.jms.core.MessagePostProcessor;
@@ -103,6 +105,53 @@ import org.springframework.jms.core.SessionCallback;
 		}
 	
 		public void send(String destinationName, MessageCreator messageCreator) throws JmsException {
+		}
+
+		@Override
+		public Object browse(BrowserCallback arg0) throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object browse(Queue arg0, BrowserCallback arg1)
+				throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object browse(String arg0, BrowserCallback arg1)
+				throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object browseSelected(String arg0, BrowserCallback arg1)
+				throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object browseSelected(Queue arg0, String arg1,
+				BrowserCallback arg2) throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object browseSelected(String arg0, String arg1,
+				BrowserCallback arg2) throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object execute(Destination arg0, ProducerCallback arg1)
+				throws JmsException {
+			return null;
+		}
+
+		@Override
+		public Object execute(String arg0, ProducerCallback arg1)
+				throws JmsException {
+			return null;
 		}
 
 	}

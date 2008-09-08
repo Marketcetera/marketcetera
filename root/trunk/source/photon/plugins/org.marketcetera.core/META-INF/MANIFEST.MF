@@ -7,7 +7,7 @@ Bundle-ClassPath: core-0.8.0.jar
 Bundle-Vendor: Marketcetera, Inc.
 Eclipse-LazyStart: false
 Eclipse-BuddyPolicy: registered
-Eclipse-RegisterBuddy: org.jruby.bsf, org.quickfixj
+Eclipse-RegisterBuddy: org.jruby.bsf, org.marketcetera.thirdparty
 Bundle-Localization: plugin
 Export-Package: .,
  org.marketcetera.core,
@@ -26,14 +26,6 @@ Export-Package: .,
  org.marketcetera.spring,
  org.marketcetera.symbology,
  quickfix.spring
-Require-Bundle: org.apache.activemq;visibility:=reexport,
- org.apache.log4j;visibility:=reexport,
- org.quickfixj;visibility:=reexport,
- org.skife.kasparov.csv;visibility:=reexport,
- org.apache.commons.i18n;visibility:=reexport,
- org.jruby.bsf;visibility:=reexport,
- org.junit;resolution:=optional,
- org.quickfixj;visibility:=reexport,
- net.java.dev.glazedlists;visibility:=reexport
+Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport
 
 
