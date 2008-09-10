@@ -3,7 +3,7 @@ package org.marketcetera.photon.scripting;
 import java.util.Date;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.notifications.INotification;
+import org.marketcetera.core.notifications.Notification;
 
 /* $License$ */
 
@@ -16,28 +16,12 @@ import org.marketcetera.core.notifications.INotification;
  */
 @ClassVersion("$Id: OrderBook.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
 public class StrategyNotification
-        implements INotification
+        extends Notification
 {
-    /**
-     * notification body
-     */
-    private final String mBody;
-    /**
-     * notification date
-     */
-    private final Date mDate;
     /**
      * originating class
      */
-    private final Class<StrategyNotification> mOriginator = StrategyNotification.class;
-    /**
-     * notification severity
-     */
-    private final Severity mSeverity;
-    /**
-     * notification subject
-     */
-    private final String mSubject;
+    private static final Class<StrategyNotification> sOriginator = StrategyNotification.class;
     /**
      * Create a <code>StrategyNotification</code> object of severity <code>debug</code>.
      *
@@ -91,61 +75,10 @@ public class StrategyNotification
                                  String inBody,
                                  Severity inSeverity)
     {
-        mSubject = inSubject;
-        mBody = inBody;
-        mSeverity = inSeverity;
-        mDate = new Date();
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotification#getBody()
-     */
-    @Override
-    public final String getBody()
-    {
-        return mBody;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotification#getDate()
-     */
-    @Override
-    public final Date getDate()
-    {
-        return mDate;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotification#getOriginator()
-     */
-    @Override
-    public final Class<?> getOriginator()
-    {
-        return mOriginator;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotification#getSeverity()
-     */
-    @Override
-    public final Severity getSeverity()
-    {
-        return mSeverity;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.core.notifications.INotification#getSubject()
-     */
-    @Override
-    public final String getSubject()
-    {
-        return mSubject;
-    }
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public final String toString()
-    {
-        return String.format("Photon %s at %s:\n%s\n%s", //$NON-NLS-1$
-                             getSeverity().toString(),
-                             getDate().toString(),
-                             getSubject(),
-                             getBody());
+        super(inSubject,
+              inBody,
+              new Date(),
+              inSeverity,
+              sOriginator);
     }
 }
