@@ -1,0 +1,5 @@
+<%= render :partial => 'shared/breadcrumbs',
+           :locals=> { :top_level => "Diagnostics", :top_level_controller => 'diagnostics', :action_name=>'ORS Log'} %>
+<h1>ORS Log</h1>
+<p>The last 2000 lines of the ORS log are below.</p>
+<textarea rows="40" cols="80" readonly="true"><%= @log %></textarea>

@@ -1,0 +1,113 @@
+--- 
+m_symbol_00005: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  updated_on: 2007-04-13 13:37:18 -07:00
+  isin: 
+  id: 5
+  bloomberg: 
+  root: fred
+  reuters: 
+m_symbol_00006: 
+  created_on: 2007-04-13 13:37:20 -07:00
+  updated_on: 2007-04-13 13:37:20 -07:00
+  isin: 
+  id: 6
+  bloomberg: 
+  root: GOOG
+  reuters: 
+m_symbol_00007: 
+  created_on: 2007-04-16 13:57:05 -07:00
+  updated_on: 2007-04-16 13:57:05 -07:00
+  isin: 
+  id: 7
+  bloomberg: 
+  root: asdf
+  reuters: 
+m_symbol_00008: 
+  created_on: 2007-04-16 13:59:14 -07:00
+  updated_on: 2007-04-16 13:59:14 -07:00
+  isin: 
+  id: 8
+  bloomberg: 
+  root: bob
+  reuters: 
+m_symbol_00010: 
+  created_on: 2007-04-16 18:57:26 -07:00
+  updated_on: 2007-04-16 18:57:26 -07:00
+  isin: 
+  id: 10
+  bloomberg: 
+  root: a2
+  reuters: 
+m_symbol_00009: 
+  created_on: 2007-04-16 15:17:48 -07:00
+  updated_on: 2007-04-16 15:17:48 -07:00
+  isin: 
+  id: 9
+  bloomberg: 
+  root: a
+  reuters: 
+m_symbol_00011: 
+  created_on: 2007-04-17 10:57:39 -07:00
+  updated_on: 2007-04-17 10:57:39 -07:00
+  isin: 
+  id: 11
+  bloomberg: 
+  root: a3
+  reuters: 
+m_symbol_00012: 
+  created_on: 2007-04-17 10:57:48 -07:00
+  updated_on: 2007-04-17 10:57:48 -07:00
+  isin: 
+  id: 12
+  bloomberg: 
+  root: a4
+  reuters: 
+m_symbol_00001: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  updated_on: 2007-04-13 13:37:18 -07:00
+  isin: 
+  id: 1
+  bloomberg: 
+  root: TOLI
+  reuters: 
+m_symbol_00002: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  updated_on: 2007-04-13 13:37:18 -07:00
+  isin: 
+  id: 2
+  bloomberg: 
+  root: SUNW
+  reuters: 
+m_symbol_00013: 
+  created_on: 2007-04-17 10:57:56 -07:00
+  updated_on: 2007-04-17 10:57:56 -07:00
+  isin: 
+  id: 13
+  bloomberg: 
+  root: a5
+  reuters: 
+m_symbol_00014: 
+  created_on: 2007-04-18 17:49:31 -07:00
+  updated_on: 2007-04-18 17:49:31 -07:00
+  isin: 
+  id: 14
+  bloomberg: 
+  root: FRO
+  reuters: 
+m_symbol_00003: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  updated_on: 2007-04-13 13:37:18 -07:00
+  isin: 
+  id: 3
+  bloomberg: 
+  root: MSFT
+  reuters: 
+m_symbol_00004: 
+  created_on: 2007-04-13 13:37:18 -07:00
+  updated_on: 2007-04-13 13:37:18 -07:00
+  isin: 
+  id: 4
+  bloomberg: 
+  root: IBM
+  reuters: 
