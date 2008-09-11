@@ -25,8 +25,8 @@ public class NotificationTest
         long beginTime = System.currentTimeMillis();
         Thread.sleep(100);
         // test low
-        String subject = "subject_" + System.nanoTime();
-        String body = "body_" + System.nanoTime();
+        String subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
+        String body = "body_" + System.nanoTime(); //$NON-NLS-1$
         Class<?> originator = this.getClass();
         Notification low = Notification.low(subject,
                                             body,
@@ -44,8 +44,8 @@ public class NotificationTest
         assertTrue(low.getDate().getTime() > beginTime);
         // test medium
         Thread.sleep(100);
-        subject = "subject_" + System.nanoTime();
-        body = "body_" + System.nanoTime();
+        subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
+        body = "body_" + System.nanoTime(); //$NON-NLS-1$
         originator = Notification.class;
         Notification medium = Notification.medium(subject,
                                                   body,
@@ -63,8 +63,8 @@ public class NotificationTest
         assertTrue(medium.getDate().getTime() > low.getDate().getTime());
         // test high
         Thread.sleep(100);
-        subject = "subject_" + System.nanoTime();
-        body = "body_" + System.nanoTime();
+        subject = "subject_" + System.nanoTime(); //$NON-NLS-1$
+        body = "body_" + System.nanoTime(); //$NON-NLS-1$
         originator = Notification.class;
         Notification high = Notification.high(subject,
                                               body,
