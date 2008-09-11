@@ -3,6 +3,7 @@ package org.marketcetera.core.notifications;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -46,6 +47,8 @@ public class NotificationManager
      */
     private NotificationManager()
     {
+        // create a special subscriber that is notified of every publication
+        subscribe(new NotificationLogger());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.core.notifications.INotificationManager#subscribe(org.marketcetera.core.publisher.ISubscriber)
@@ -79,5 +82,41 @@ public class NotificationManager
     private PublisherEngine getPublisher()
     {
         return mPublisher;
+    }
+    /**
+     * Logs all notifications to a particular logger category.
+     * 
+     * <p>All notifications are logged at <code>INFO</code> level to
+     * <code>org.marketcetera.notifications.log</code>.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id: $
+     * @since $Release$
+     */
+    @ClassVersion("$Id: $") //$NON-NLS-1$
+    private static class NotificationLogger
+        implements ISubscriber
+    {
+        /**
+         * the special category to use for notifications
+         */
+        private static final String CATEGORY = "notifications.log"; //$NON-NLS-1$
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         */
+        @Override
+        public boolean isInteresting(Object inData)
+        {
+            return inData instanceof INotification;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         */
+        @Override
+        public void publishTo(Object inData)
+        {
+            SLF4JLoggerProxy.info(CATEGORY,
+                                  inData.toString());
+        }
     }
 }
