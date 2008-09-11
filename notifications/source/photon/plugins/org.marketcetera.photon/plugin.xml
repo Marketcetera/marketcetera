@@ -175,6 +175,11 @@
             class="org.eclipse.ui.ExtensionFactory:keysPreferencePage"
             id="org.eclipse.ui.preferencePages.Keys">
       </page>
+      <page
+            class="org.marketcetera.photon.preferences.DesktopNotificationsPreferencesPage"
+            id="org.marketcetera.photon.preferences.DesktopNotificationsPreferencesPage"
+            name="Desktop Notifications">
+      </page>
             
    </extension>
    <extension
@@ -426,6 +431,13 @@
             </with>
          </activeWhen>
       </handler>
+   </extension>
+   <extension
+         point="org.eclipse.ui.console.consoleFactories">
+      <consoleFactory
+            class="org.marketcetera.photon.notification.NotificationConsoleController"
+            label="%notificationConsoleFactory.name">
+      </consoleFactory>
    </extension>
    
 </plugin>
