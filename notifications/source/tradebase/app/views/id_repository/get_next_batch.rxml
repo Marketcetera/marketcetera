@@ -1,4 +1,0 @@
-xml.id do
- xml.next(@current.to_s)
- xml.num(@num_allowed.to_s)
-end
