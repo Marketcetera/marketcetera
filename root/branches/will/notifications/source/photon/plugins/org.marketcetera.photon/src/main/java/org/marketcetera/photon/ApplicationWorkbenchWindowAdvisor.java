@@ -22,6 +22,7 @@ import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
 import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.messaging.JMSFeedService;
+import org.marketcetera.photon.notification.PhotonNotificationSubscriber;
 import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -141,6 +142,7 @@ public class ApplicationWorkbenchWindowAdvisor
 		startMarketDataFeed();
 		startIDFactory();
 		initStatusLine();
+		PhotonNotificationSubscriber.init();
 	}
 
 	/** 

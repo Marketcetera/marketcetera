@@ -27,8 +27,13 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.notifications.Notification;
+import org.marketcetera.core.notifications.NotificationManager;
+import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
+import org.marketcetera.photon.notification.BaseNotification;
+import org.marketcetera.photon.notification.PhotonNotificationSubscriber;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
 import org.marketcetera.photon.scripting.ScriptChangesAdapter;
@@ -55,22 +60,21 @@ import quickfix.Message;
 /**
  * The main plugin class to be used in the Photon application.
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class PhotonPlugin 
-    extends AbstractUIPlugin
-    implements Messages
-{
+@ClassVersion("$Id$")//$NON-NLS-1$
+public class PhotonPlugin extends AbstractUIPlugin implements Messages {
 
 	public static final String ID = "org.marketcetera.photon"; //$NON-NLS-1$
 
-	//The shared instance.
+	// The shared instance.
 	private static PhotonPlugin plugin;
 
 	private FIXMessageHistory fixMessageHistory;
 
-	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
+	private Logger mainConsoleLogger = Logger
+			.getLogger(MAIN_CONSOLE_LOGGER_NAME);
 
-	private Logger marketDataLogger = Logger.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
+	private Logger marketDataLogger = Logger
+			.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
 
 	private ScriptRegistry scriptRegistry;
 
@@ -79,7 +83,7 @@ public class PhotonPlugin
 	private IDFactory idFactory;
 
 	private BundleContext bundleContext;
-	
+
 	public static final String MAIN_CONSOLE_LOGGER_NAME = "main.console.logger"; //$NON-NLS-1$
 
 	public static final String MARKETDATA_CONSOLE_LOGGER_NAME = "marketdata.console.logger"; //$NON-NLS-1$
@@ -119,31 +123,69 @@ public class PhotonPlugin
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		bundleContext = context;
-		
+
 		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
 		changeLogLevel(level == null ? PhotonPage.LOG_LEVEL_VALUE_INFO : level);
-		
+
 		// This sets the internal broker to use on thread per "listener"?
 		// Needed because the version of JRuby we're using doesn't play well
 		// with mutliple threads
-        System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+		System
+				.setProperty(
+						"org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        BSFManager.registerScriptingEngine(ScriptRegistry.RUBY_LANG_STRING,
+		BSFManager.registerScriptingEngine(ScriptRegistry.RUBY_LANG_STRING,
 				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" }); //$NON-NLS-1$ //$NON-NLS-2$
 		initMessageFactory();
 		initIDFactory();
 		initFIXMessageHistory();
 		initScriptRegistry();
 		initPhotonController();
+		
+		new Thread(new Runnable() {
+
+			@Override
+			public void run() {
+
+				while (true) {
+					try {
+						NotificationManager.getNotificationManager().publish(
+								Notification.high("Subject", "Body",
+										getClass()));
+						try {
+							Thread.sleep(8000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						for (int i = 0; i < 10; i++)
+							NotificationManager.getNotificationManager()
+									.publish(
+											Notification.high("Subject", "Body2",
+													getClass()));
+						try {
+							Thread.sleep(8000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					} catch (Throwable e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		}, "Wills").start();
 	}
 
-	public void initOrderTickets(){
+	public void initOrderTickets() {
 		stockOrderTicketModel = new StockOrderTicketModel(messageFactory);
 		optionOrderTicketModel = new OptionOrderTicketModel(messageFactory);
-		stockOrderTicketController = new StockOrderTicketController(stockOrderTicketModel);
-		optionOrderTicketController = new OptionOrderTicketController(optionOrderTicketModel);
+		stockOrderTicketController = new StockOrderTicketController(
+				stockOrderTicketModel);
+		optionOrderTicketController = new OptionOrderTicketController(
+				optionOrderTicketModel);
 	}
-	
+
 	private void initPhotonController() {
 		photonController = new PhotonController();
 		photonController.setMessageHistory(fixMessageHistory);
@@ -161,10 +203,8 @@ public class PhotonPlugin
 		scriptRegistry = new ScriptRegistry();
 		scriptChangesAdapter = new ScriptChangesAdapter();
 		scriptChangesAdapter.setRegistry(scriptRegistry);
-		
+
 	}
-
-
 
 	/**
 	 * This method is called when the plug-in is stopped
@@ -172,9 +212,10 @@ public class PhotonPlugin
 	public void stop(BundleContext context) throws Exception {
 		super.stop(context);
 		plugin = null;
-		
+
 		if (scriptRegistry != null) {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptChangesAdapter);
+			ResourcesPlugin.getWorkspace().removeResourceChangeListener(
+					scriptChangesAdapter);
 			scriptRegistry = null;
 		}
 		if (registryListener != null)
@@ -189,10 +230,11 @@ public class PhotonPlugin
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 *
-	 * @param path the path
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path.
+	 * 
+	 * @param path
+	 *            the path
 	 * @return the image descriptor
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
@@ -204,22 +246,26 @@ public class PhotonPlugin
 		return (ScopedPreferenceStore) super.getPreferenceStore();
 	}
 
-	private void initIDFactory() throws MalformedURLException, UnknownHostException
-	{
-		ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
+	private void initIDFactory() throws MalformedURLException,
+			UnknownHostException {
+		ScopedPreferenceStore preferenceStore = PhotonPlugin.getDefault()
+				.getPreferenceStore();
 		URL url = new URL(
 				"http", //$NON-NLS-1$
 				preferenceStore.getString(ConnectionConstants.WEB_APP_HOST_KEY),
 				preferenceStore.getInt(ConnectionConstants.WEB_APP_PORT_KEY),
 				"/id_repository/get_next_batch" //$NON-NLS-1$
 		);
-		idFactory = new HttpDatabaseIDFactory(url, preferenceStore.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY));
+		idFactory = new HttpDatabaseIDFactory(url, preferenceStore
+				.getString(ConnectionConstants.ORDER_ID_PREFIX_KEY));
 
 	}
-	
+
 	private void initMessageFactory() throws FIXFieldConverterNotAvailable {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
-		String versionString = thePreferenceStore.getString(ConnectionConstants.FIX_VERSION_KEY);
+		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault()
+				.getPreferenceStore();
+		String versionString = thePreferenceStore
+				.getString(ConnectionConstants.FIX_VERSION_KEY);
 		fixVersion = FIXVersion.FIX42;
 		try {
 			fixVersion = FIXVersion.valueOf(versionString);
@@ -228,49 +274,54 @@ public class PhotonPlugin
 		}
 		messageFactory = fixVersion.getMessageFactory();
 		FIXDataDictionaryManager.initialize(FIXVersion.FIX44, "FIX44.xml"); //$NON-NLS-1$
-		FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryURL());
+		FIXDataDictionaryManager.initialize(fixVersion, fixVersion
+				.getDataDictionaryURL());
 	}
 
 	public void startScriptRegistry() {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
+		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault()
+				.getPreferenceStore();
 		try {
-			scriptChangesAdapter.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
+			scriptChangesAdapter
+					.setInitialRegistryValueString(thePreferenceStore
+							.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
 			scriptRegistry.afterPropertiesSet();
 			scriptChangesAdapter.afterPropertiesSet();
 		} catch (BSFException e) {
 			Throwable targetException = e.getTargetException();
 			getMainConsoleLogger().error(CANNOT_START_SCRIPT_ENGINE.getText(),
-			                             targetException);
+					targetException);
 		} catch (Exception e) {
 			getMainConsoleLogger().error(CANNOT_START_SCRIPT_ENGINE.getText(),
-			                             e);
+					e);
 		}
 		thePreferenceStore.addPropertyChangeListener(scriptChangesAdapter);
-		
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
-				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
-		
+
+		ResourcesPlugin.getWorkspace().addResourceChangeListener(
+				scriptChangesAdapter,
+				IResourceChangeEvent.POST_CHANGE
+						| IResourceChangeEvent.PRE_DELETE);
+
 	}
 
 	/**
-	 * Accessor for the console logger singleton.  This logger writes
-	 * messages into the main console displayed to the user in the application.
+	 * Accessor for the console logger singleton. This logger writes messages
+	 * into the main console displayed to the user in the application.
+	 * 
 	 * @return the main console logger
 	 */
-	public Logger getMainLogger()
-	{
+	public Logger getMainLogger() {
 		return mainConsoleLogger;
 	}
 
 	public Logger getMarketDataLogger() {
 		return marketDataLogger;
 	}
-	
-	public static Logger getMainConsoleLogger()
-	{
+
+	public static Logger getMainConsoleLogger() {
 		return getDefault().getMainLogger();
 	}
-	                                            
+
 	/**
 	 * Accessor for the FIXMessageHistory singleton.
 	 * 
@@ -283,17 +334,17 @@ public class PhotonPlugin
 	public ScriptRegistry getScriptRegistry() {
 		return scriptRegistry;
 	}
-	
-	/** 
-	 * Accessor for the OrderManager singleton.  The OrderManager is the 
-	 * holder of most of the business logic for the application.
+
+	/**
+	 * Accessor for the OrderManager singleton. The OrderManager is the holder
+	 * of most of the business logic for the application.
+	 * 
 	 * @return the order manager singleton
 	 */
-	public PhotonController getPhotonController()
-	{
+	public PhotonController getPhotonController() {
 		return photonController;
 	}
-	
+
 	/**
 	 * Accessor for the IDFactory singleton.
 	 * 
@@ -307,56 +358,57 @@ public class PhotonPlugin
 		return bundleContext;
 	}
 
-
-	public void ensureDefaultProject(IProgressMonitor monitor){
+	public void ensureDefaultProject(IProgressMonitor monitor) {
 		monitor.beginTask("Ensure default project", 2); //$NON-NLS-1$
-		
 
 		try {
 			IWorkspace workspace = ResourcesPlugin.getWorkspace();
 			IWorkspaceRoot root = workspace.getRoot();
-			IProject newProject = root.getProject(
-	                DEFAULT_PROJECT_NAME);
-			IProjectDescription description = workspace.newProjectDescription(newProject.getName());
+			IProject newProject = root.getProject(DEFAULT_PROJECT_NAME);
+			IProjectDescription description = workspace
+					.newProjectDescription(newProject.getName());
 
 			if (!newProject.exists()) {
-					newProject.create(description, new SubProgressMonitor(monitor, 1));
+				newProject.create(description, new SubProgressMonitor(monitor,
+						1));
 			}
-			if (!newProject.isOpen()){
+			if (!newProject.isOpen()) {
 				newProject.open(monitor);
 			}
-	
+
 			try {
-				if (!newProject.hasNature(RUBY_NATURE_ID)){
+				if (!newProject.hasNature(RUBY_NATURE_ID)) {
 					try {
-						RubyCore.addRubyNature(newProject, new SubProgressMonitor(monitor, 1));
-					} catch (Throwable t){
+						RubyCore.addRubyNature(newProject,
+								new SubProgressMonitor(monitor, 1));
+					} catch (Throwable t) {
 						// RDT possibly not included...
-					    mainConsoleLogger.error(CANNOT_LOAD_RUBY.getText(),
-					                            t);
+						mainConsoleLogger.error(CANNOT_LOAD_RUBY.getText(), t);
 					}
 				}
 			} catch (CoreException e) {
 				if (mainConsoleLogger.isDebugEnabled())
-					mainConsoleLogger.debug("Exception trying to determine nature of default project.", //$NON-NLS-1$
-					                        e);
+					mainConsoleLogger
+							.debug(
+									"Exception trying to determine nature of default project.", //$NON-NLS-1$
+									e);
 			}
-		} catch (Throwable t){
-			mainConsoleLogger.error(CANNOT_START_DEFAULT_SCRIPT_PROJECT.getText(),
-			                        t);
+		} catch (Throwable t) {
+			mainConsoleLogger.error(CANNOT_START_DEFAULT_SCRIPT_PROJECT
+					.getText(), t);
 		}
-			
+
 		monitor.done();
 	}
-	
-	public void changeLogLevel(String levelValue){
-		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)){
+
+	public void changeLogLevel(String levelValue) {
+		if (PhotonPage.LOG_LEVEL_VALUE_ERROR.equals(levelValue)) {
 			mainConsoleLogger.setLevel(Level.ERROR);
-		} else if (PhotonPage.LOG_LEVEL_VALUE_WARN.equals(levelValue)){
+		} else if (PhotonPage.LOG_LEVEL_VALUE_WARN.equals(levelValue)) {
 			mainConsoleLogger.setLevel(Level.WARN);
-		} else if (PhotonPage.LOG_LEVEL_VALUE_INFO.equals(levelValue)){
+		} else if (PhotonPage.LOG_LEVEL_VALUE_INFO.equals(levelValue)) {
 			mainConsoleLogger.setLevel(Level.INFO);
-		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)){
+		} else if (PhotonPage.LOG_LEVEL_VALUE_DEBUG.equals(levelValue)) {
 			mainConsoleLogger.setLevel(Level.DEBUG);
 		}
 		mainConsoleLogger.info(LOGGER_LEVEL_CHANGED.getText(levelValue));
@@ -385,7 +437,7 @@ public class PhotonPlugin
 		}
 		return null;
 	}
-	
+
 	/**
 	 * @return a view of the expectedClass. null if not found or the found view
 	 *         is not of the expected class.
@@ -400,27 +452,29 @@ public class PhotonPlugin
 		}
 		return null;
 	}
-	
-	public OrderTicketModel getStockOrderTicketModel(){
+
+	public OrderTicketModel getStockOrderTicketModel() {
 		return stockOrderTicketModel;
 	}
-	
-	public OptionOrderTicketModel getOptionOrderTicketModel(){
+
+	public OptionOrderTicketModel getOptionOrderTicketModel() {
 		return optionOrderTicketModel;
 	}
-	
+
 	public StockOrderTicketController getStockOrderTicketController() {
 		return stockOrderTicketController;
 	}
-	
+
 	public OptionOrderTicketController getOptionOrderTicketController() {
 		return optionOrderTicketController;
 	}
-	
+
 	/**
-	 * Returns the order ticket appropriate for the given message (based
-	 * on security type).
-	 * @param orderMessage the message specifying the type of order ticket.
+	 * Returns the order ticket appropriate for the given message (based on
+	 * security type).
+	 * 
+	 * @param orderMessage
+	 *            the message specifying the type of order ticket.
 	 * @return the controller for the appropriate order ticket.
 	 */
 	public IOrderTicketController getOrderTicketController(Message orderMessage) {
@@ -430,7 +484,6 @@ public class PhotonPlugin
 		return getStockOrderTicketController();
 	}
 
-	
 	/**
 	 * @return the next secondary ID for use in IWorkbenchPage.showView()
 	 */
