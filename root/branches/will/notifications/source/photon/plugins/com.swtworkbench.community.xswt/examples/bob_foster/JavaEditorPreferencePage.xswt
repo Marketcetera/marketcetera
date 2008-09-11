@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="xswt.xsd">
+	<composite>
+		<gridData grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL"
+			verticalAlignment="FILL"/>
+		<gridLayout marginHeight="0" marginWidth="0"/>
+		<children>
+			<label text="Java Editor settings:"/>
+			<tabFolder>
+				<gridData grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL"
+					verticalAlignment="FILL"/>
+				<items>
+					<item text="Appeara&amp;nce">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+								<gridLayout numColumns="2"/>
+								<children>
+									<label text="Displayed &amp;tab width:"/>
+									<text style="BORDER" text="4" textLimit="3">
+										<gridData widthHint="20"/>
+									</text>
+									<label text="Print margin col&amp;umn:"/>
+									<text style="BORDER" text="80" textLimit="3" >
+										<gridData widthHint="20"/>
+									</text>
+									<button style="CHECK"
+										text="Synchroni&amp;ze outline selection on cursor move (editor must be reopened)" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button selection="true" style="CHECK" text="Show overview &amp;ruler">
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button style="CHECK" text="Show lin&amp;e numbers">
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button selection="true" style="CHECK" text="Highlight &amp;matching brackets">
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button selection="true" style="CHECK" text="Hi&amp;ghlight current line">
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button style="CHECK" text="Sho&amp;w print margin">
+										<gridData horizontalSpan="2"/>
+									</button>
+									<composite>
+										<gridData heightHint="5"/>
+									</composite>
+									<composite>
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" horizontalSpan="2"/>
+										<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+										<children>
+											<label text="Appearance color options:" >
+												<gridData horizontalSpan="2"/>
+											</label>
+											<list selection="0" style="BORDER SINGLE">
+												<gridData heightHint="100" widthHint="220"/>
+												<items>
+													<item value="Line number foreground" />
+													<item value="Matching brackets highlight" />
+													<item value="Current line highlight" />
+													<item value="Print margin"/>
+													<item value="Find scope"/>
+													<item value="Linked position" />
+													<item value="Link"/>
+												</items>
+											</list>
+											<composite>
+												<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"
+													verticalAlignment="BEGINNING" />
+												<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+												<children>
+													<label text="C&amp;olor:"/>
+													<button>
+														<gridData widthHint="40"/>
+													</button>
+												</children>
+											</composite>
+										</children>
+									</composite>
+								</children>
+							</composite>
+						</control>
+					</item>
+					<item text="Synta&amp;x">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" horizontalSpan="2"/>
+								<gridLayout numColumns="2"/>
+								<children>
+									<group text="Background color:">
+										<gridData/>
+										<gridLayout numColumns="3"/>
+										<children>
+											<button selection="true" style="RADIO" text="S&amp;ystem default">
+												<gridData verticalAlignment="BEGINNING" />
+											</button>
+											<button style="RADIO" text="C&amp;ustom:">
+												<gridData verticalAlignment="BEGINNING" />
+											</button>
+											<button>
+												<gridData widthHint="40"/>
+											</button>
+										</children>
+									</group>
+									<composite>
+										<gridData heightHint="0" widthHint="0" />
+									</composite>
+									<label text="Fo&amp;reground:">
+										<gridData horizontalSpan="2"/>
+									</label>
+									<list style="BORDER SINGLE">
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" verticalAlignment="FILL"/>
+										<items>
+											<item value="Multi-line comment"/>
+											<item value="Single-line comment"/>
+											<item value="Keywords"/>
+											<item value="Strings"/>
+											<item value="Others"/>
+											<item value="Task Tags"/>
+											<item value="Javadoc keywords"/>
+											<item value="Javadoc HTML tags"/>
+											<item value="Javadoc links"/>
+											<item value="Javadoc others"/>
+										</items>
+									</list>
+									<composite>
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" verticalAlignment="BEGINNING"
+											/>
+										<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+										<children>
+											<label text="C&amp;olor:"/>
+											<button>
+												<gridData widthHint="40"/>
+											</button>
+											<button style="CHECK" text="&amp;Bold">
+												<gridData horizontalSpan="2"/>
+											</button>
+										</children>
+									</composite>
+									<label text="Preview:">
+										<gridData horizontalSpan="2"/>
+									</label>
+									<text style="BORDER">
+										<gridData grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" horizontalAlignment="FILL"
+											horizontalSpan="2" verticalAlignment="FILL"/>
+									</text>
+								</children>
+							</composite>
+						</control>
+					</item>
+					<item text="&amp;Code Assist">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+								<gridLayout numColumns="2"/>
+								<children>
+									<composite>
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" horizontalSpan="2"/>
+										<gridLayout marginWidth="0" numColumns="2"/>
+										<children>
+											<button selection="true" style="RADIO" text="Completion inser&amp;ts"/>
+											<button style="RADIO" text="Completion over&amp;writes" />
+										</children>
+									</composite>
+									<button selection="true" style="CHECK" text="Insert single &amp;proposals automatically" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button selection="true" style="CHECK"
+										text="Show only proposals &amp;visible in the invocation context" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button style="CHECK" text="Present proposals in a&amp;lphabetical order" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button selection="true" style="CHECK" text="Automatically add import instead of &amp;qualified name"
+										>
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button style="CHECK" text="&amp;Fill argument names on method completion" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button enabled="false" selection="true" style="CHECK" text="&amp;Guess filled argument names">
+										<gridData horizontalIndent="20"/>
+									</button>
+									<button selection="true" style="CHECK" text="&amp;Enable auto activation">
+										<gridData horizontalSpan="2"/>
+									</button>
+									<label text="Auto activation dela&amp;y:"/>
+									<text style="BORDER" text="500" textLimit="4">
+										<gridData widthHint="30"/>
+									</text>
+									<label text="Auto activation &amp;triggers for Java:" />
+									<text style="BORDER" text="." textLimit="4">
+										<gridData widthHint="30"/>
+									</text>
+									<label text="Auto activation triggers for &amp;Javadoc:" />
+									<text style="BORDER" text="@" textLimit="4">
+										<gridData widthHint="30"/>
+									</text>
+									<composite>
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" horizontalSpan="2"/>
+										<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+										<children>
+											<label text="Code assist colo&amp;r options:" >
+												<gridData horizontalSpan="2"/>
+											</label>
+											<list style="BORDER SINGLE">
+												<gridData heightHint="100" widthHint="180"/>
+												<items>
+													<item value="Completion proposal background" />
+													<item value="Completion proposal foreground" />
+													<item value="Method parameter background" />
+													<item value="Method parameter foreground" />
+													<item value="Completion overwrite background" />
+													<item value="Completion overwrite foreground" />
+												</items>
+											</list>
+											<composite>
+												<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"
+													verticalAlignment="BEGINNING" />
+												<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+												<children>
+													<label text="C&amp;olor:"/>
+													<button>
+														<gridData widthHint="40"/>
+													</button>
+												</children>
+											</composite>
+										</children>
+									</composite>
+								</children>
+							</composite>
+						</control>
+					</item>
+					<item text="Annotation&amp;s">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+								<gridLayout numColumns="2"/>
+								<children>
+									<button selection="true" style="CHECK" text="Analyze annotations &amp;while typing" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<button selection="true" style="CHECK"
+										text="Indicate annotations solvable with &amp;Quick Fix in vertical ruler" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<composite>
+										<gridData heightHint="5"/>
+									</composite>
+									<composite>
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" horizontalSpan="2"/>
+										<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+										<children>
+											<label text="Annotation &amp;presentation:" >
+												<gridData horizontalSpan="2"/>
+											</label>
+											<list style="BORDER SINGLE">
+												<gridData heightHint="100" widthHint="150"/>
+												<items>
+													<item value="Errors"/>
+													<item value="Warnings"/>
+													<item value="Tasks"/>
+													<item value="Search Results" />
+													<item value="Bookmarks"/>
+													<item value="Others"/>
+												</items>
+											</list>
+											<composite>
+												<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"
+													verticalAlignment="BEGINNING" />
+												<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+												<children>
+													<button selection="true" style="CHECK" text="Show in &amp;text" >
+														<gridData horizontalSpan="2"/>
+													</button>
+													<button selection="true" style="CHECK" text="Show in overview &amp;ruler" >
+														<gridData horizontalSpan="2"/>
+													</button>
+													<label text="C&amp;olor:"/>
+													<button>
+														<gridData widthHint="40"/>
+													</button>
+												</children>
+											</composite>
+										</children>
+									</composite>
+								</children>
+							</composite>
+						</control>
+					</item>
+					<item text="T&amp;yping">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+								<gridLayout/>
+								<children>
+									<button selection="true" style="CHECK" text="S&amp;mart cursor positioning at line start and end" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<composite>
+										<gridData heightHint="5"/>
+									</composite>
+									<group text="Select options for automatic text modifications" >
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+										<gridLayout/>
+										<children>
+											<button selection="true" style="CHECK" text="&amp;Wrap Java strings"/>
+											<button selection="true" style="CHECK" text="Pasting fo&amp;r correct indentation" />
+											<button style="CHECK" text="Ins&amp;ert space for tabs (see Code Formatter preference page)" />
+											<button selection="true" style="CHECK" text="Close strin&amp;gs"/>
+											<button selection="true" style="CHECK" text="Close &amp;brackets and parenthesis" />
+											<button selection="true" style="CHECK" text="Cl&amp;ose braces"/>
+											<button selection="true" style="CHECK" text="Close Java&amp;docs and comments" />
+											<button selection="true" style="CHECK" text="Add Javadoc &amp;tags">
+												<gridData horizontalIndent="20"/>
+											</button>
+										</children>
+									</group>
+								</children>
+							</composite>
+						</control>
+					</item>
+					<item text="Ho&amp;vers">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" horizontalSpan="2"/>
+								<gridLayout numColumns="2"/>
+								<children>
+									<label text="&amp;Hover key modifier preferences:" >
+										<gridData horizontalSpan="2"/>
+									</label>
+									<list style="BORDER SINGLE">
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" verticalAlignment="FILL"/>
+										<items>
+											<item value="Best Match"/>
+											<item value="Javadoc"/>
+											<item value="Problems"/>
+											<item value="Source"/>
+											<item value="Variable Values"/>
+										</items>
+									</list>
+									<composite>
+										<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" verticalAlignment="BEGINNING"
+											/>
+										<gridLayout marginHeight="0" marginWidth="0" numColumns="2"/>
+										<children>
+											<button selection="true" style="CHECK" text="&amp;Enabled">
+												<gridData horizontalSpan="2"/>
+											</button>
+											<label text="Key &amp;Modifier:">
+											</label>
+											<text style="BORDER">
+												<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL" />
+											</text>
+											<label text="Description:">
+												<gridData horizontalSpan="2"/>
+											</label>
+											<text style="BORDER READ_ONLY" text="">
+												<gridData grabExcessHorizontalSpace="true" grabExcessVerticalSpace="true" heightHint="60"
+													horizontalAlignment="FILL" horizontalSpan="2" verticalAlignment="FILL"/>
+											</text>
+										</children>
+									</composite>
+								</children>
+							</composite>
+						</control>
+					</item>
+					<item text="Nav&amp;igation">
+						<control>
+							<composite>
+								<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+								<gridLayout numColumns="2"/>
+								<children>
+									<button selection="true" style="CHECK"
+										text="S&amp;upport hyperlink style navigation for &quot;Open Declaration&quot;" >
+										<gridData horizontalSpan="2"/>
+									</button>
+									<label text="Hyperlink style navigation key &amp;modifier:" />
+									<text style="BORDER" text="Ctrl">
+										<gridData widthHint="100"/>
+									</text>
+								</children>
+							</composite>
+						</control>
+					</item>
+				</items>
+			</tabFolder>
+		</children>
+	</composite>
+</xswt>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xswt xmlns:x="http://sweet_swt.sf.net/xswt">
+	<import xmlns="http://sweet_swt.sf.net/xswt">
+		<package name="java.lang"/>
+		<package name="org.eclipse.swt.widgets"/>
+		<package name="org.eclipse.swt.layout"/>
+		<package name="org.eclipse.swt.graphics"/>
+		<package name="org.eclipse.swt.custom"/>
+	</import>
+	<layout x:class="gridLayout"/>
+	<!-- Start of CTabFolder Composite -->
+	<CTabFolder x:id="CtabFolder" TabHeight="22" Background="COLOR_WHITE" SelectionBackground="COLOR_LIST_SELECTION" SelectionForeground="COLOR_WHITE" Simple="false" BorderVisible="false" Foreground="COLOR_BLACK" x:style="TOP|BORDER">
+		<composite x:id="tab1" Background="COLOR_WHITE" />
+		<CTabItem text="Tab 1" font="Verdana 10 NORMAL" control="tab1"/>
+		<composite x:id="tab2" Background="COLOR_BLUE" />
+		<CTabItem text="Tab 2" font="Verdana 10 NORMAL" control="tab2"/>
+		<composite x:id="tab3" Background="COLOR_WHITE" />
+		<CTabItem text="Tab 3" font="Verdana 10 NORMAL" control="tab3"/>
+	</CTabFolder>
+</xswt>

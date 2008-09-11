@@ -1,0 +1,17 @@
+<%= error_messages_for 'equity' %>
+
+<!--[form:equity]-->
+<fieldset>
+    <div class="form_left">
+        <%= render :partial => '/shared/symbol_auto_complete', 
+            :locals => { :errors => @equity.errors, :init_value => @equity.m_symbol_root, :error_key => :m_symbol_id} %>
+        <%= check_box_tag 'create_new', 1, true, :class => 'checkbox'%>
+        <label for="create_new" class="checkbox_label">Create symbol if missing</label>
+        <div class="clear"></div>
+        <label for="equity_description">Description</label>
+        <%= text_area 'equity', 'description', :class => 'description' %>
+    </div>
+    <div class="clear"></div>
+</fieldset>
+<!--[eoform:equity]-->
+
