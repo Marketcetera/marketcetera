@@ -10,9 +10,9 @@ import org.marketcetera.util.misc.ClassVersion;
 /**
  * The internationalization constants used by this package.
  * 
- * @author will@marketcetera.com
- * @since 0.8.0
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
+ * @since $Release$
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public interface Messages {
