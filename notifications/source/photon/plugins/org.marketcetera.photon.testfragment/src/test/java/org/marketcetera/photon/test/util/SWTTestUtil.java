@@ -34,8 +34,8 @@ public class SWTTestUtil {
 		while (System.currentTimeMillis() < endTimeMillis) {
 			if (!display.readAndDispatch())
 				display.sleep();
-			display.update();
 		}
+		display.update();
 	}
 
 	/**
