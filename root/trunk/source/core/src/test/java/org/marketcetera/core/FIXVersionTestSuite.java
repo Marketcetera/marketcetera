@@ -31,7 +31,6 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
             new FIXVersion[]{FIXVersion.FIX40, FIXVersion.FIX41, FIXVersion.FIX42, FIXVersion.FIX43, FIXVersion.FIX44};
     public static final FIXVersion[] FIX42_PLUS_VERSIONS =
             new FIXVersion[]{FIXVersion.FIX42, FIXVersion.FIX43, FIXVersion.FIX44};
-    private FIXDataDictionaryManager fixDDMgr;
 	private String suiteName;
 
     public FIXVersionTestSuite() {
@@ -50,10 +49,6 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         suiteName = aClass.getName();
     }
     
-    public FIXDataDictionaryManager getFixDataDictionaryManager() {
-        return fixDDMgr;
-    }
-
     /** Class to introspect, and the set of versions to apply to all tests in that class
      * Can also have a set of excpetions and a subset of versions to apply to the exceptions
      * The exceptions should be used for when you have testXXX methods that are only applicable
@@ -61,12 +56,6 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
      */
     private void addTestForEachVersion(Class aClass, FIXVersion[] inVersions, Set<String> exceptionMethods, FIXVersion[] exceptionVersions) {
         String[] testNames = getTestNames(aClass);
-
-        try {
-            fixDDMgr = initializeFIXDataDictionaryManager(inVersions);
-        } catch (FIXFieldConverterNotAvailable ex) {
-            Assert.fail("Unable to create all FIX data dictionaries: "+ex.getMessage()); //$NON-NLS-1$
-        }
 
         for (String name : testNames) {
             try {
@@ -107,7 +96,7 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
                 testNames.add(method.getName());
             }
         }
-        return testNames.toArray(new String[0]);
+        return testNames.toArray(new String[testNames.size()]);
     }
 
     @Override
