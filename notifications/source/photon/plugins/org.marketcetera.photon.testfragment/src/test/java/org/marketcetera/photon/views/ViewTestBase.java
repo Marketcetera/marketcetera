@@ -3,6 +3,7 @@ package org.marketcetera.photon.views;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
@@ -16,6 +17,7 @@ import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messagehistory.FIXMatcher;
+import org.marketcetera.photon.test.util.SWTTestUtil;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.views.AbstractFIXMessagesView.FilterMatcherEditor;
 import org.marketcetera.quickfix.FIXVersion;
@@ -62,7 +64,7 @@ public abstract class ViewTestBase extends TestCase {
 		super.tearDown();
 	}
 
-    /**
+	/**
      * Waits until the passed block evaluates to <code>true</code> while
      * allowing the system display queue to execute events.
      * 
@@ -71,52 +73,33 @@ public abstract class ViewTestBase extends TestCase {
      * 
      * @param inCondition a <code>Callable&lt;Boolean&gt;</code> value which must evaluate to true or false
      * @throws Exception if an error occurs
+     * 
+     * TODO: consider deprecating in favor of SWTTestUtil.conditionalDelay
      */
 	public static void doDelay(Callable<Boolean> inCondition)
-        throws Exception
-    {
-        int counter = 0;
-        try {
-            Boolean result = inCondition.call();
-            while(!result &&
-                    counter < 600) {
-                delay(100);
-                result = inCondition.call();
-                counter += 1;
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-            fail("Unexpected exception");
-        } finally {
-            if(counter >= 600) {
-                fail("Timeout waiting for async condition");
-            }
-        }
-    }   
+        throws Exception {
+		SWTTestUtil.conditionalDelay(60, TimeUnit.SECONDS, inCondition);
+    }  
 
+	/**
+	 * TODO: consider deprecating in favor of SWTTestUtil.delay
+	 */
 	protected static void delay(long millis) {
 		Display display = Display.getCurrent();
 		
 		if (display != null){
-			long endTimeMillis = 
-				System.currentTimeMillis() + millis;
-			while (System.currentTimeMillis() < endTimeMillis)
-			{
-				if (!display.readAndDispatch())
-				{
-					display.sleep();
-				}
-				display.update();
-			}
+			SWTTestUtil.delay(millis, TimeUnit.MILLISECONDS);
 		} else {
-			try 
-			{
+			try	{
 				Thread.sleep(millis);
 			} catch (InterruptedException ex){
 			}
 		}
 	}
 
+	/**
+	 * TODO: consider deprecating in favor of SWTTestUtil.waitForJobs
+	 */
 	public static void waitForJobs() {
 		while (Platform.getJobManager().currentJob() != null){
 			delay(1000);

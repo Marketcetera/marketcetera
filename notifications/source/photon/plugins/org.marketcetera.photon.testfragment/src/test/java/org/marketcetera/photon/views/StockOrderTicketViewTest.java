@@ -199,12 +199,12 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		TableViewer bidViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2BidTableViewer();
 		TableViewer offerViewer = ((IStockOrderTicket)view.getOrderTicket()).getLevel2OfferTableViewer();
 		final List<?> bidInput = (List<?>)bidViewer.getInput();
-		List<?> offerInput = (List<?>)offerViewer.getInput();
+		final List<?> offerInput = (List<?>)offerViewer.getInput();
         doDelay(new Callable<Boolean>() {
             public Boolean call() 
                 throws Exception
             {
-                return bidInput.size() > 0;
+                return bidInput.size() > 0 && offerInput.size() > 0;
             }});
 		assertTrue(bidInput.size() > 0);
 		FieldMap bidGroup = (FieldMap) bidInput.get(0);

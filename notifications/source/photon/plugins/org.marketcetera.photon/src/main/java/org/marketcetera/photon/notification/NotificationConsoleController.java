@@ -7,64 +7,71 @@ import org.eclipse.ui.console.IConsoleListener;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.INotificationManager;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.util.misc.ClassVersion;
+
+/* $License$ */
 
 /**
  * Manages the Notification Console.
  * 
- * @author will@marketcetera.com
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
  */
-public class NotificationConsoleController implements IConsoleFactory,
+@ClassVersion("$Id$")//$NON-NLS-1$
+public final class NotificationConsoleController implements IConsoleFactory,
 		IConsoleListener, ISubscriber {
 
 	/**
 	 * Eclipse console manager
 	 */
-	private IConsoleManager consoleManager;
+	private final IConsoleManager mConsoleManager;
 
 	/**
 	 * Core notification manager
 	 */
-	private INotificationManager notificationManager;
+	private final INotificationManager mNotificationManager;
 
 	/**
 	 * The notification console
 	 */
-	private MessageConsole console;
+	private MessageConsole mConsole;
 
 	/**
 	 * The notification message stream
 	 */
-	private MessageConsoleStream defaultStream;
+	private MessageConsoleStream mDefaultStream;
 
 	/**
 	 * Constructor.
 	 */
 	public NotificationConsoleController() {
-		consoleManager = ConsolePlugin.getDefault().getConsoleManager();
-		consoleManager.addConsoleListener(this);
-		notificationManager = NotificationManager.getNotificationManager();
+		mConsoleManager = ConsolePlugin.getDefault().getConsoleManager();
+		mConsoleManager.addConsoleListener(this);
+		mNotificationManager = NotificationManager.getNotificationManager();
 	}
 
 	@Override
 	public void openConsole() {
-		if (console == null) {
+		if (mConsole == null) {
 			Messages.NOTIFICATION_CONSOLE_INIT.info(this);
-			console = new MessageConsole(Messages.NOTIFICATION_CONSOLE_NAME
+			mConsole = new MessageConsole(Messages.NOTIFICATION_CONSOLE_NAME
 					.getText(), null);
-			defaultStream = console.newMessageStream();
+			mDefaultStream = mConsole.newMessageStream();
 			ConsolePlugin.getDefault().getConsoleManager().addConsoles(
-					new IConsole[] { console });
-			notificationManager.subscribe(this);
+					new IConsole[] { mConsole });
+			mNotificationManager.subscribe(this);
 		}
-		consoleManager.showConsoleView(console);
+		mConsoleManager.showConsoleView(mConsole);
 	}
 
 	@Override
-	public boolean isInteresting(Object inData) {
-		return true;
+	public boolean isInteresting(final Object inData) {
+		return inData instanceof INotification;
 	}
 
 	/**
@@ -73,12 +80,12 @@ public class NotificationConsoleController implements IConsoleFactory,
 	 * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
 	 */
 	@Override
-	public void publishTo(Object inData) {
-		defaultStream.println(inData.toString());
+	public void publishTo(final Object inData) {
+		mDefaultStream.println(inData.toString());
 	}
 
 	@Override
-	public void consolesAdded(IConsole[] consoles) {
+	public void consolesAdded(final IConsole[] consoles) {
 		// Do nothing
 	}
 
@@ -89,12 +96,12 @@ public class NotificationConsoleController implements IConsoleFactory,
 	 * @see org.eclipse.ui.console.IConsoleListener#consolesRemoved(org.eclipse.ui.console.IConsole[])
 	 */
 	@Override
-	public void consolesRemoved(IConsole[] consoles) {
+	public void consolesRemoved(final IConsole[] consoles) {
 		for (int i = 0; i < consoles.length; i++) {
-			if (consoles[i] == console) {
-				notificationManager.unsubscribe(this);
-				defaultStream = null;
-				console = null;
+			if (consoles[i] == mConsole) {
+				mNotificationManager.unsubscribe(this);
+				mDefaultStream = null;
+				mConsole = null;
 				return;
 			}
 		}
