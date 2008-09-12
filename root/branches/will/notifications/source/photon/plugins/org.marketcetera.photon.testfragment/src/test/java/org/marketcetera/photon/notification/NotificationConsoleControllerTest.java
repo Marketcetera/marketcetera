@@ -9,6 +9,8 @@ import org.eclipse.ui.console.IConsoleView;
 import org.junit.Test;
 import org.marketcetera.photon.test.util.SWTTestUtil;
 
+/* $License$ */
+
 /**
  * Test {@link NotificationConsoleController}
  * 
