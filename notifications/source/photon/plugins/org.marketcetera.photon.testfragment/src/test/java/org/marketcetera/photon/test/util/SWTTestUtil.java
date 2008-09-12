@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.swt.widgets.Display;
 
+/* $License$ */
+
 /**
  * Utility methods for Photon UI testing
  * 
