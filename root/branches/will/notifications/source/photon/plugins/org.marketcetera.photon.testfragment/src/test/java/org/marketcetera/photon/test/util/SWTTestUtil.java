@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Display;
 /* $License$ */
 
 /**
- * Utility methods for Photon UI testing
+ * Utility methods for Photon UI testing.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -22,8 +22,10 @@ public class SWTTestUtil {
 	 * 
 	 * Must be called from UI thread.
 	 * 
-	 * @param waitTimeMillis
-	 *            the number of milliseconds to wait
+	 * @param delay
+	 *            the delay quantity
+	 * @param delayUnit
+	 *            the delay unit
 	 */
 	public static void delay(long delay, TimeUnit delayUnit) {
 		Display display = Display.getCurrent();
@@ -47,7 +49,9 @@ public class SWTTestUtil {
 	 * Must be called from UI thread.
 	 * 
 	 * @param timeout
-	 *            the number of milliseconds before timeout
+	 *            the timeout quantity
+	 * @param timeoutUnit
+	 *            the timeout unit
 	 * @param condition
 	 *            condition controlling when method should return
 	 * @throws Exception
@@ -78,8 +82,10 @@ public class SWTTestUtil {
 	 * 
 	 * Must be called from UI thread.
 	 * 
-	 * @param maxMillis
-	 *            the number of milliseconds before timeout
+	 * @param timeout
+	 *            the timeout quantity
+	 * @param timeoutUnit
+	 *            the timeout unit
 	 * @param condition
 	 *            condition controlling when method should return
 	 */
@@ -99,6 +105,11 @@ public class SWTTestUtil {
 	 * occurs, an unchecked exception will be thrown.
 	 * 
 	 * Must be called from UI thread.
+	 *
+	 *  @param timeout
+	 *            the timeout quantity
+	 * @param timeoutUnit
+	 *            the timeout unit
 	 */
 	public static void waitForJobs(long timeout, TimeUnit timeoutUnit) {
 		conditionalDelayUnchecked(timeout, timeoutUnit,

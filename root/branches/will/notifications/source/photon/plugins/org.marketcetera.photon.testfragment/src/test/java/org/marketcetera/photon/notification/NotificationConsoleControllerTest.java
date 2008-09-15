@@ -12,7 +12,7 @@ import org.marketcetera.photon.test.util.SWTTestUtil;
 /* $License$ */
 
 /**
- * Test {@link NotificationConsoleController}
+ * Test {@link NotificationConsoleController}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
