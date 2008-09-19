@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: will@marketcetera.com
+  - Since: 0.8.0
+  - Version: $Id$
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>photon-maven</artifactId>
+    <version>0.8.0</version>
+  </parent>
+  <artifactId>photon-rcptarget</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Photon RCP Target</name>
+
+  <dependencies>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>photon-bundle</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>create-eclipse-target</id>
+            <phase>install</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>rcp-sdk</artifactId>
+                  <version>3.3.2</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>delta-pack</artifactId>
+                  <version>3.3.2</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>sdk</artifactId>
+                  <version>3.3.2</version>
+                  <type>zip</type>
+                  <includes>
+                    eclipse/features/org.eclipse.platform.source_*,
+                    eclipse/plugins/org.eclipse.platform.source_*/**,
+                    eclipse/plugins/org.eclipse.ui.forms_*,
+                    eclipse/plugins/org.eclipse.ui.console_*,
+                    eclipse/plugins/org.eclipse.core.resources_*,
+                    eclipse/plugins/org.eclipse.update.ui_*,
+                    eclipse/plugins/org.eclipse.ui.ide_*,
+                    eclipse/plugins/org.eclipse.ui.net_*,
+                    eclipse/plugins/org.junit_*/**,
+                    eclipse/plugins/org.junit4_*/**,
+                    eclipse/plugins/org.apache.lucene_*,
+                    eclipse/plugins/org.eclipse.debug.ui_*,
+                    eclipse/plugins/org.eclipse.search_*,
+                    eclipse/plugins/org.eclipse.team.core_*,
+                    eclipse/plugins/org.eclipse.ui.cheatsheets_*,
+                    eclipse/plugins/org.eclipse.ui.intro_*,
+                    eclipse/plugins/org.eclipse.core.runtime.compatibility_*,
+                    eclipse/plugins/javax.servlet_*,
+                    eclipse/plugins/org.eclipse.core.filebuffers_*,
+                    eclipse/plugins/org.eclipse.core.filesystem_*,
+                    eclipse/plugins/org.eclipse.core.net_*,
+                    eclipse/plugins/org.eclipse.core.variables_*,
+                    eclipse/plugins/org.eclipse.debug.core_*,
+                    eclipse/plugins/org.eclipse.jface.text_*,
+                    eclipse/plugins/org.eclipse.text_*,
+                    eclipse/plugins/org.eclipse.ui.views_*,
+                    eclipse/plugins/org.eclipse.ui.editors_*,
+                    eclipse/plugins/org.eclipse.ui.workbench.texteditor_*,
+                    eclipse/plugins/org.eclipse.update.core_*
+                  </includes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.marketcetera</groupId>
+                  <artifactId>photon-rcptarget-extras</artifactId>
+                  <version>20080827</version>
+                  <type>zip</type>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.marketcetera</groupId>
+                  <artifactId>photon-bundle</artifactId>
+                  <version>${project.version}</version>
+                  <type>jar</type>
+                  <outputDirectory>${mvn.photon.target}/eclipse/plugins/org.marketcetera.thirdparty_${project.version}</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <outputDirectory>${mvn.photon.target}</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- 
+        - Delete the target during a clean build.  Ideally, the maven-clean-plugin
+        - could be used instead, but there is a bug that causes it to improperly 
+        - handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
+        -->
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>clean</phase>
+            <configuration>
+              <tasks>
+                <delete dir="${mvn.photon.target}" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

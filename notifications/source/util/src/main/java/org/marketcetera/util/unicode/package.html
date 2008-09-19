@@ -1,0 +1,76 @@
+<body>
+
+<p>Unicode en/decoding with BOMs, including I/O stream support.</p>
+
+<p>Unicode handling in Java can get a bit confusing, esp. in the
+context of byte order marks (BOMs). Java
+has <a href="http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6378911">flip-flopped
+on the handling of BOMs in UTF-8</a> (Java 6 does not provide any),
+provides BOMs for UTF-16 (see {@link java.nio.charset.Charset}), and
+does not provide BOMs for UTF-32 (unless the <em>UTF-32LE</em>
+or <em>UTF-32BE</em> variants are used). Also, as of Java 5, Java
+moved from UCS-2 to UTF-16 for its internal string representation,
+enhancing the range of byte streams that Java can en/decode. This
+package provides an improved framework for handling BOMs; the classes
+herein are tested with unicode code points beyond those covered by
+UCS-2 (thus exercising the new UTF-16 representation of Java
+strings).</p>
+
+
+<h3>Foundation</h3>
+
+<p>{@link org.marketcetera.util.unicode.UnicodeCharset} is the basic
+tie-in to the JDK unicode facilities. Each instance is just a wrapper
+around a unicode {@link java.nio.charset.Charset} instance, and obeys
+the standard Java semantics for BOMs (with their inconsistencies).</p>
+
+<p>{@link org.marketcetera.util.unicode.Signature} is a generic
+signature detector in the header of a byte stream. Enumeration
+constants are defined for the unicode BOM signatures, but this class
+makes no attempt to handle a map between signatures and charsets.</p>
+
+<p>{@link org.marketcetera.util.unicode.SignatureCharset} pairs up
+charsets to signatures that can mark those charsets. All charsets can
+occur either without a signature ({@link
+org.marketcetera.util.unicode.Signature#NONE}), or with the BOM
+defined by the unicode standard specifically for each charset.</p>
+
+<p>{@link org.marketcetera.util.unicode.Serialization} groups a list
+of {@link org.marketcetera.util.unicode.SignatureCharset}
+instances. We check a byte source against all signatures in a
+serialization (in order), in order to determine the charset we should
+use.</p>
+
+<p>Finally, {@link org.marketcetera.util.unicode.DecodingStrategy}
+groups a list of {@link org.marketcetera.util.unicode.Serialization}
+instances. Functionally, it is similar to {@link
+org.marketcetera.util.unicode.Serialization}, but it occupies a higher
+level of abstraction, making it easy to define signature-detection
+strategies using {@link org.marketcetera.util.unicode.Serialization}
+instances as building blocks.</p>
+
+
+<h3>I/O</h3>
+
+<p>In addition to the basic foundation, this package exposes readers
+and writers that are BOM-aware. This includes:
+
+<ul>
+
+<li>Readers who can recognize a BOM, and thus automatically determine
+a byte stream's charset.</li>
+
+<li>Writers who can place a BOM at the header of a byte stream, thus
+specifying the stream's charset.</li>
+
+</ul>
+
+<p>There are basic input stream/output stream converters to a reader
+({@link org.marketcetera.util.unicode.UnicodeInputStreamReader}) or
+writer ({@link
+org.marketcetera.util.unicode.UnicodeOutputStreamWriter}), as well as
+a file-based reader ({@link
+org.marketcetera.util.unicode.UnicodeFileReader}) and writer ({@link
+org.marketcetera.util.unicode.UnicodeFileWriter}).</p>
+
+</body>
