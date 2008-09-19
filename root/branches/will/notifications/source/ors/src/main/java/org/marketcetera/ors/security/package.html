@@ -1,0 +1,37 @@
+!<body>
+This package contains classes to secure ORS JMS Message Broker access via
+users stored in a database. It has objects to represent the
+{@link org.marketcetera.ors.security.SimpleUser user} and
+{@link org.marketcetera.ors.security.SingleSimpleUserQuery query} it from
+the database.
+<h2>Components</h2>
+<p>
+    A JAAS {@link org.marketcetera.ors.security.ORSLoginModule login module}
+    is provided that can be configured within ActiveMQ
+    configuration such that it authenticates the user identity based
+    on the users stored in the database.
+</p>
+<p>
+    The {@link org.marketcetera.ors.security.ORSAdminCLI} is a command line
+    tool to manage the users stored in the database. It provides commands to
+    list, add & delete users and to change password.
+</p>
+<h2>CLI Syntax</h2>
+Here's the CLI usage syntax
+<pre>
+usage: orsadmin -u &lt;login&gt; -p &lt;password&gt; --listUsers
+                orsadmin -u &lt;login&gt; -p &lt;password&gt; --addUser -n &lt;user name&gt;  -w &lt;user password&gt;
+                orsadmin -u &lt;login&gt; -p &lt;password&gt; --deleteUser -n &lt;user name&gt;
+                orsadmin -u &lt;login&gt; -p &lt;password&gt; --changePassword -w &lt;user password&gt;  [-n &lt;user name&gt; ]
+Options:
+       --addUser                     Add a new user
+       --changePassword              Change Password
+       --deleteUser                  Delete User
+       --listUsers                   List all users
+    -n,--username &lt;user name&gt;        Name of user being operated on
+    -p &lt;password&gt;                    password of the user running the CLI
+    -u &lt;login&gt;                       user name of the user running the CLI
+    -w,--password &lt;user password&gt;    Password of user being operated on
+</pre>
+
+</body>

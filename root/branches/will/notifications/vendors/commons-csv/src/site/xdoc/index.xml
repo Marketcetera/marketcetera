@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one or more
+contributor license agreements.  See the NOTICE file distributed with
+this work for additional information regarding copyright ownership.
+The ASF licenses this file to You under the Apache License, Version 2.0
+(the "License"); you may not use this file except in compliance with
+the License.  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<document>
+ <properties>
+  <title>Home</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+<body>
+<!-- ================================================== -->
+<section name="Commons CSV">
+  <p>Commons CSV was started to unify a common and simple interface for reading and writing CSV files under an ASL license. It has been bootstrapped by a code donation from Netcetera in Switzerland. There are three pre-existing BSD compatible CSV parsers which this component will hopefully make redundant (authors willing): </p>
+  <ul>
+    <li><a href="http://kasparov.skife.org/csv/">Skife CSV</a></li>
+    <li><a href="http://opencsv.sourceforge.net/">Open CSV</a></li>
+    <li><a href="http://www.osjava.org/genjava/multiproject/gj-csv/">Genjava CSV</a></li>
+  </ul>
+  <p>In addition to the code from Netcetera (org.apache.commons.csv), Martin van den Bemt has added an additional writer API (org.apache.commons.csv.writer). </p>
+  <p>Other CSV implementations: </p>
+  <ul>
+    <li><a href="http://supercsv.sourceforge.net/">Super CSV</a></li>
+  </ul>
+</section>
+
+<section name="Getting the code?">
+  <p>There are currently no official downloads, and will not be until CSV moves out of the Sandbox, but a nightly build is available from <a href="http://people.apache.org/builds/commons/nightly/commons-csv/">http://people.apache.org/builds/commons/nightly/commons-csv/</a>. </p>
+  <p>The latest code may be checked out from the following url - <a href="http://svn.apache.org/repos/asf/commons/sandbox/csv/trunk/">http://svn.apache.org/repos/asf/commons/sandbox/csv/trunk/</a>. </p>
+</section>
+
+<section name="Bugs?">
+  <p>Please report any bugs or issues in the Commons Sandbox Jira project at <a href="http://issues.apache.org/jira/browse/SANDBOX">http://issues.apache.org/jira/browse/SANDBOX</a>. Please ask any questions or suggest any ideas for improvement on the commons-dev and commons-user <a href="mail-lists.html">mailing lists</a>. </p>
+</section>
+
+<!-- ================================================== -->
+</body>
+</document>
