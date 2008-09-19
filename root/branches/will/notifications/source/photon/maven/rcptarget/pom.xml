@@ -95,6 +95,23 @@
                   </includes>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>mylyn</artifactId>
+                  <version>3.0.1.v20080721-2100-e3.4</version>
+                  <type>zip</type>
+                  <includes>
+                    plugins/org.apache.commons.codec_*,
+                    plugins/org.apache.commons.httpclient_*,
+                    plugins/org.apache.commons.lang_*,
+                    plugins/org.apache.commons.logging_*,
+                    plugins/org.eclipse.mylyn.commons.net_*,
+                    plugins/org.eclipse.mylyn.commons.ui_*,
+                    plugins/org.eclipse.mylyn.commons.net.source_*,
+                    plugins/org.eclipse.mylyn.commons.ui.source_*
+                  </includes>
+                  <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.marketcetera</groupId>
                   <artifactId>photon-rcptarget-extras</artifactId>
                   <version>20080827</version>
