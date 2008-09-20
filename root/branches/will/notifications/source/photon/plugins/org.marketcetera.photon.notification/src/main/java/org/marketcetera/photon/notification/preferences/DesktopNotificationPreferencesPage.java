@@ -104,18 +104,20 @@ public class DesktopNotificationPreferencesPage extends
 	private Group createSoundGroup(Composite parent) {
 		Font font = parent.getFont();
 
+		// the group
 		Group group = new Group(parent, SWT.NONE);
 		group.setFont(font);
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(group);
 		group.setText(DESKTOP_NOTIFICATIONS_SOUNDS_GROUP.getText());
 
+		// description label
 		Label label = new Label(group, SWT.WRAP);
-		label
-				.setText("Customize sound notifications by selecting the priority");
+		label.setText(DESKTOP_NOTIFICATIONS_SOUNDS_GROUP_DESCRIPTION.getText());
 		label.setFont(font);
 		GridDataFactory.swtDefaults().grab(true, false).span(2, 1).align(
 				SWT.FILL, SWT.CENTER).applyTo(label);
 
+		// table containing notification types
 		Table notificationTypeList = new Table(group, SWT.BORDER | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		notificationTypeList.setFont(parent.getFont());
@@ -129,73 +131,89 @@ public class DesktopNotificationPreferencesPage extends
 		createTableItem(notificationTypeList,
 				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_LOW.getText(),
 				Severity.LOW);
-		final Composite soundsDetails = new Composite(group, SWT.NONE);
-		GridDataFactory.fillDefaults().grab(true, false).applyTo(soundsDetails);
+		
+		// sound details section
+		final Composite soundDetails = new Composite(group, SWT.NONE);
+		GridDataFactory.fillDefaults().grab(true, false).applyTo(soundDetails);
 		final StackLayout layout = new StackLayout();
-		soundsDetails.setLayout(layout);
-		final Composite empty = new Composite(soundsDetails, SWT.NONE);
-		final Composite c1 = createSoundDetail(soundsDetails, Severity.HIGH,
-				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_HIGH.getText());
-		final Composite c2 = createSoundDetail(soundsDetails, Severity.MEDIUM,
-				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_MEDIUM.getText());
-		final Composite c3 = createSoundDetail(soundsDetails, Severity.LOW,
-				DESKTOP_NOTIFICATIONS_SEVERITY_LABEL_LOW.getText());
+		soundDetails.setLayout(layout);
+		final Composite empty = new Composite(soundDetails, SWT.NONE);
+		final Composite high = createSoundDetail(soundDetails, Severity.HIGH);
+		final Composite medium = createSoundDetail(soundDetails, Severity.MEDIUM);
+		final Composite low = createSoundDetail(soundDetails, Severity.LOW);
 		layout.topControl = empty;
-
 		notificationTypeList.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (e.item.getData().equals(Severity.HIGH))
-					layout.topControl = c1;
-				else if (e.item.getData().equals(Severity.MEDIUM))
-					layout.topControl = c2;
-				else if (e.item.getData().equals(Severity.LOW))
-					layout.topControl = c3;
+				Object data = e.item.getData();
+				if (data.equals(Severity.HIGH))
+					layout.topControl = high;
+				else if (data.equals(Severity.MEDIUM))
+					layout.topControl = medium;
+				else if (data.equals(Severity.LOW))
+					layout.topControl = low;
 				else
 					layout.topControl = empty;
-				soundsDetails.layout();
+				soundDetails.layout();
 			}
 		});
 
 		return group;
 	}
 
+	/**
+	 * Helper method to create a simple table item.
+	 * 
+	 * @param table
+	 *            the parent table
+	 * @param text
+	 *            the item text
+	 * @param data
+	 *            the item data
+	 */
 	private void createTableItem(Table table, String text, Object data) {
 		TableItem item = new TableItem(table, SWT.NONE);
 		item.setText(text);
 		item.setData(data);
 	}
 
-	private Composite createSoundDetail(Composite parent, Severity severity,
-			String label) {
+	/**
+	 * Helper method to create a "sound detail" group where sound preferences
+	 * are configured for a given severity.
+	 * 
+	 * @param parent
+	 *            the parent composite
+	 * @param severity
+	 *            the notification severity
+	 * @return the created composite
+	 */
+	private Composite createSoundDetail(Composite parent, Severity severity) {
 		Font font = parent.getFont();
 
+		// Grouping composite
 		final Composite composite = new Composite(parent, SWT.NONE);
 		GridLayoutFactory.fillDefaults().applyTo(composite);
 		GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
 
+		// Button controlling whether to play sound
 		final Button b = new Button(composite, SWT.NONE | SWT.CHECK);
-		b.setText("Play sound");
+		b.setText(DESKTOP_NOTIFICATIONS_PLAY_SOUND_LABEL.getText());
 		b.setFont(font);
 		String clipPref = NotificationPreferences.SOUND_ENABLED_PREFIX
 				+ severity.name();
 		addField(new SimpleFieldEditor(clipPref) {
 			@Override
 			protected void doLoad() {
-				if (b != null) {
-					boolean value = getPreferenceStore().getBoolean(
-							getPreferenceName());
-					b.setSelection(value);
-				}
+				if (b != null)
+					b.setSelection(getPreferenceStore().getBoolean(
+							getPreferenceName()));
 			}
 
 			@Override
 			protected void doLoadDefault() {
-				if (b != null) {
-					boolean value = getPreferenceStore().getDefaultBoolean(
-							getPreferenceName());
-					b.setSelection(value);
-				}
+				if (b != null)
+					b.setSelection(getPreferenceStore().getDefaultBoolean(
+							getPreferenceName()));
 			}
 
 			@Override
@@ -205,25 +223,28 @@ public class DesktopNotificationPreferencesPage extends
 			}
 		});
 
+		// Sound file selection area
 		final Composite fileComposite = new Composite(composite, SWT.NONE);
+		fileComposite.setFont(font);
 		GridDataFactory.fillDefaults().grab(true, false).indent(20, 0).applyTo(
 				fileComposite);
 		GridLayoutFactory.swtDefaults().numColumns(2).equalWidth(true).applyTo(
 				fileComposite);
 		final FileFieldEditor clipEditor = new SoundClipFieldEditor(
 				NotificationPreferences.SOUND_CLIP_PREFIX + severity.name(),
-				DESKTOP_NOTIFICATIONS_SOUND_CLIP_LABEL.getText(label),
 				fileComposite);
 		addField(clipEditor);
+
+		// Enable/disable sound clip editor based on button selection
 		clipEditor.setEnabled(getPreferenceStore().getBoolean(clipPref),
 				fileComposite);
-
 		b.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				clipEditor.setEnabled(b.getSelection(), fileComposite);
 			}
 		});
+
 		return composite;
 	}
 
@@ -238,17 +259,42 @@ public class DesktopNotificationPreferencesPage extends
 	}
 
 	/**
-	 * A FileFieldEditor with Test button that plays the sound file.
+	 * A FileFieldEditor with Test button that tries to play the selected file
+	 * as a sound clip.
 	 * 
-	 * Static scope for unit testing.
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
 	 */
-	static final class SoundClipFieldEditor extends FileFieldEditor {
-		private Button test;
-		private Button browse;
+	@ClassVersion("$Id$")//$NON-NLS-1$
+	private static final class SoundClipFieldEditor extends FileFieldEditor {
+
+		/**
+		 * Cache of text widget (created in superclass) holding file name
+		 */
 		private Text text;
 
-		private SoundClipFieldEditor(String name, String label, Composite parent) {
-			super(name, label, true, parent);
+		/**
+		 * Cache of button (created in superclass) which opens file selection
+		 * dialog
+		 */
+		private Button browse;
+
+		/**
+		 * Button to test selected sound clip
+		 */
+		private Button test;
+
+		/**
+		 * Constructor.
+		 * 
+		 *@param name
+		 *            the name of the preference this field editor works on
+		 * @param parent
+		 *            the parent of the field editor's control
+		 */
+		private SoundClipFieldEditor(String name, Composite parent) {
+			super(name, "", true, parent); //$NON-NLS-1$
 		}
 
 		@Override
@@ -259,10 +305,11 @@ public class DesktopNotificationPreferencesPage extends
 			GridDataFactory.fillDefaults().span(2, 1).grab(true, false)
 					.applyTo(text);
 			browse = getChangeControl(parent);
-			GridDataFactory.fillDefaults().applyTo(browse);
+			GridDataFactory.defaultsFor(browse).applyTo(browse);
 			test = new Button(parent, SWT.PUSH);
-			test.setText("Test");
-			GridDataFactory.fillDefaults().applyTo(test);
+			test.setFont(parent.getFont());
+			test.setText(DESKTOP_NOTIFICATIONS_TEST_BUTTON_LABEL.getText());
+			GridDataFactory.defaultsFor(test).applyTo(test);
 
 			test.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -280,32 +327,34 @@ public class DesktopNotificationPreferencesPage extends
 				text.setEnabled(enabled);
 			if (browse != null)
 				browse.setEnabled(enabled);
-			boolean b = checkState();
 			if (test != null)
-				test.setEnabled(enabled && b);
+				test.setEnabled(enabled);
 		}
 
 		@Override
 		protected boolean checkState() {
+			// Validation is too buggy to be useful so it is skipped
+			// https://bugs.eclipse.org/bugs/show_bug.cgi?id=76127
 			return true;
-			// if (!text.isEnabled()) {
-			// clearErrorMessage();
-			// return true;
-			// }
-			// boolean b = super.checkState();
-			// test.setEnabled(browse.isEnabled() && b);
-			// return b;
-		}
-
-		@Override
-		public void showErrorMessage(String msg) {
-			super.showErrorMessage(DESKTOP_NOTIFICATIONS_SOUND_CLIP_INVALID
-					.getText(getLabelText()));
 		}
 	}
 
-	abstract class SimpleFieldEditor extends FieldEditor {
+	/**
+	 * Field editor without UI. Subclass must implement {@link #doLoad()},
+	 * {@link #doLoadDefault()}, and {@link #doStore()} to work with custom UI.
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
+	private abstract class SimpleFieldEditor extends FieldEditor {
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param name the preference name
+		 */
 		public SimpleFieldEditor(String name) {
 			super();
 			setPreferenceName(name);

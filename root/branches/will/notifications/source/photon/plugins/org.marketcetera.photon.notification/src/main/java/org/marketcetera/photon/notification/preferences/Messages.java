@@ -2,7 +2,6 @@ package org.marketcetera.photon.notification.preferences;
 
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
-import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
@@ -49,8 +48,10 @@ public interface Messages {
 			LOGGER, "desktop_notifications.parenthetical_pattern"); //$NON-NLS-1$
 	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SOUNDS_GROUP = new I18NMessage0P(
 			LOGGER, "desktop_notifications.sounds_group"); //$NON-NLS-1$
-	static final I18NMessage1P DESKTOP_NOTIFICATIONS_SOUND_CLIP_LABEL = new I18NMessage1P(
-			LOGGER, "desktop_notifications.sound_clip_label"); //$NON-NLS-1$
-	static final I18NMessage1P DESKTOP_NOTIFICATIONS_SOUND_CLIP_INVALID = new I18NMessage1P(
-			LOGGER, "desktop_notifications.sound_clip_invalid"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_SOUNDS_GROUP_DESCRIPTION = new I18NMessage0P(
+			LOGGER, "desktop_notifications.sounds_group_description"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_PLAY_SOUND_LABEL = new I18NMessage0P(
+			LOGGER, "desktop_notifications.play_sound_label"); //$NON-NLS-1$
+	static final I18NMessage0P DESKTOP_NOTIFICATIONS_TEST_BUTTON_LABEL = new I18NMessage0P(
+			LOGGER, "desktop_notifications.test_button_label"); //$NON-NLS-1$
 }
