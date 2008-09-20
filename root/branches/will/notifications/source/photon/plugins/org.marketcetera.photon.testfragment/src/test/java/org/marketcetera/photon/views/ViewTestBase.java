@@ -17,7 +17,7 @@ import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messagehistory.FIXMatcher;
-import org.marketcetera.photon.test.util.SWTTestUtil;
+import org.marketcetera.photon.test.SWTTestUtil;
 import org.marketcetera.photon.ui.IndexedTableViewer;
 import org.marketcetera.photon.views.AbstractFIXMessagesView.FilterMatcherEditor;
 import org.marketcetera.quickfix.FIXVersion;
