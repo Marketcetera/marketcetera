@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+
+<document>
+
+ <properties>
+  <title>Quickstart</title>
+  <author email="dev@commons.apache.org">Commons Documentation Team</author>
+ </properties>
+
+ <body>
+ 
+<section name="Getting started">
+<p>In order to get an impression how this component works, we will start with an
+	example showing the capabilities of this package.</p>
+</section>
+<section name="Defining the messages in an XML file">
+<p>First of all we need to define some localized messages. There are two default message providers 
+included that can be used to provide messages either in an XML-based format or in the well known ResourceBundle format.</p>
+	<p>Using XML based files has some advantages:</p>
+	<ul>
+		<li>You can use an XML-editor of your choice to get assistance while typing the messages</li>
+		<li>All entries that belong together are logically grouped into a single XML element</li>
+		<li>All provided languages reside in a single file, so it is easy to add a new language (matter of taste?)</li>
+		<li>As the whole file gets parsed at initialization time, the localization is very fast</li>
+	</ul>
+	<source>
+&lt;?xml version="1.0" encoding="UTF-8" ?>
+&lt;messages>
+  &lt;message id="welcome">
+    &lt;locale language="en"> 
+	  &lt;entry key="text">Welcome&lt;/entry>
+    &lt;/locale> 
+    &lt;locale language="de"> 
+      &lt;entry key="text">Willkommen&lt;/entry>
+    &lt;/locale> 
+  &lt;/message>
+  &lt;message id="usage">
+    &lt;locale language="en"> 
+      &lt;entry key="title">Usage&lt;/entry>
+      &lt;entry key="text">The application requires the following parameters:&lt;/entry>
+      &lt;/locale> 
+    &lt;locale language="de"> 
+      &lt;entry key="title">Benutzung&lt;/entry>
+      &lt;entry key="text">Die folgenden Parameter werden erwartet:&lt;/entry>
+    &lt;/locale> 
+  &lt;/message>
+  &lt;message id="validationFailed">
+    &lt;locale language="en">
+      &lt;entry key="title">Parameter {0} invalid&lt;/entry>
+      &lt;entry key="text">The given value of the parameter {0} is invalid&lt;/entry>
+      &lt;entry key="summary">Value of parameter {0} invalid&lt;/entry>
+      &lt;entry key="details">The given value {1} of parameter {0} is invalid.&lt;/entry>
+    &lt;/locale>
+    &lt;locale language="de">
+      &lt;entry key="title">Parametervalidierung fehlgeschlagen.&lt;/entry>
+      &lt;entry key="text">Die Validierung des Parameters {0} ist fehlgeschlagen.&lt;/entry>
+      &lt;entry key="summary">Validierung des Parameters {0} fehlgeschlagen.&lt;/entry>
+      &lt;entry key="details">Der Wert {1} des Parameters {0} ist ungültig.&lt;/entry>
+    &lt;/locale>
+  &lt;/message>	
+&lt;/messages>
+	</source>
+<p>This is an example that shows how to create localized bundles. As you can see each
+	message is identified by a message id and contains the bundled messages for the 
+	defined locales. The language identifiers are well known from the <code>Locale</code> class
+	and support language variants and the appropriate fallback mechanism.</p>
+<p>Each bundle can consist of a number of message entries that belong to this bundle. You are free
+	to add as many entries to each bundle as you like. The I18n component contains 
+	a number of classes that simplify the access to entries of frequently used bundles.</p>
+<p>After defining the messages we have to add them to the message provider dealing with xml-based messages 
+by providing an input stream giving access to the xml document containing the localized messages.</p>
+</section>
+<section name="ResourceBundle based message provider">
+	<p>The <code>ResourceBundleMessageProvider</code> enables you to keep your property files that may contain localized messages.</p>
+	<p>You can group message entries by adding the key at the end of the existing message key. The
+		following example shows how a property file should look like to provide the same messages as the previous XML based example.</p>
+<p>As you know you'll need two files, each containing the messages for a specific locale. This one might be
+	the default one calld myMessages.properties:</p>
+	<source>
+welcome.text=Welcome
+usage.title=Usage
+usage.text=The application requires the following parameters:
+validationFailed.title=Parameter {0} invalid
+validationFailed.text=The given value of the parameter {0} is invalid
+validationFailed.summary=Value of parameter {0} invalid
+validationFailed.details=The given value {1} of parameter {0} is invalid.
+</source>
+<p>The following one would contain the corresponding german translations in a file called myMessages_de.properties:</p>
+	<source>
+welcome.text=Willkommen
+usage.title=Benutzung
+usage.text=Die folgenden Parameter werden erwartet:
+validationFailed.title=Parametervalidierung fehlgeschlagen.
+validationFailed.text=Die Validierung des Parameters {0} ist fehlgeschlagen.
+validationFailed.summary=Validierung des Parameters {0} fehlgeschlagen.
+validationFailed.details=Der Wert {1} des Parameters {0} ist ungültig.
+</source>
+</section>
+	<section name="Initializing the messages">
+<p>Now that we created the desired messages, we want to make use of them.
+To do so we have to initialize the appropriate <code>MessageProvider</code> with these messages.</p>
+	<p>Initializing messages depends on the <code>MessageProvider</code> that you are using. In case of 
+		an <code>XMLMessageProvider</code> initialization looks like this:</p>
+<source>
+...
+try {
+	FileInputStream inputStream = new FileInputStream("myMessages.xml");
+	XMLMessageProvider.install("myMessages", inputStream);
+} catch ( FileNotFoundException e ) {
+	// handle exception
+}
+...
+</source>
+<p>As you can see it is very easy to install new messages. All you need is to provide a unique identifier and an 
+	input stream to access the xml messages.</p><p>Why is the manager initialized with an input stream
+	and not using a file name? You might want to use the i18n component within web applications
+	where you want probably load messages from you .war archive. So an input stream is much
+	more flexible, even if it is a little bit more unconvenient than using
+	a file name in our use case.</p>
+<p>When installing messages we can specify an identifier that enables us to uninstall or update these messages later on.</p>
+<p>In case of the brand new <code>ResourceBundleMessageProvider</code> initialization looks even simpler:</p>
+<source>
+...
+ResourceBundleMessageProvider.install("myMessages");
+...
+</source>
+<p>It's this simple, because the <code>ResourceBundleMessageProvider</code> uses the build-in features of Java to locate 
+	and load the appropriate property files or resource bundle classes.</p>
+</section>
+<section name="Using message bundles">
+	<p>Now we are ready to go! First of all we want to print out a simple localized welcome
+		message to the user. There are different way to do so: We can call the
+	<code>MessageManager</code> directly by asking for a specific entry of a message:</p>
+<source>
+...
+System.out.println(MessageManager.getText("welcome", "text", new Object[0], Locale.getDefault()));
+...
+</source>
+<p>If you are familiar with text formatting in Java you will have guessed correctly that you
+	have the ability to pass arguments to the localized text. In our case we don't pass any
+	arguments but just an empty object array.</p>
+<p>The previous example might be useful if you want to print out some localized message quick
+	and dirty, but the recommended way is the following:</p>
+<source>
+...
+TextBundle welcome = new TextBundle("welcome");
+// Using the default locale
+System.out.println(welcome.getText(Locale.getDefault()));
+// Using some other specific locale
+System.out.println(welcome.getText(Locale.GERMAN));
+...
+</source>
+<p>In this example we make use of the predefined message bundle called <code>TextBundle</code>
+	that just consists of a single text element. The advantage of this approach is, that you
+	avoid misspelling as you have getter-methods for each entry. You also have the ability to
+	pass some default text that will be used if the message was not found:</p>
+<source>
+...
+TextBundle welcome = new TextBundle("welcome");
+System.out.println(welcome.getText(Locale.GERMAN, "No welcome message found!"));
+...
+</source>
+<p>As the <code>MessageManager</code> can not find the message with id <code>welcome</code>,
+	a <code>MessageNotFoundeException</code> is thrown. This one is a <code>RuntimeException</code>
+	as this avoids bloating up the code with exception handling.</p> 
+	<p>The <code>TextBundle</code>
+	handles this exception and returns the given default text instead.</p>
+</section>
+<section name="Using localized exceptions">
+<p>The concept of message bundles is very useful when it comes to exception handling.
+You can simply create a <code>LocalizedException</code> that will be constructed with an <code>ErrorBundle</code>
+object containing title, text, summary and details of the exception. In addition you can specify the causing exception:</p>
+<source>
+...
+try {
+	doSomething();
+} catch ( SomeException exception ) {
+	throw new LocalizedException(
+		new ErrorBundle("somethingFailed", new Object[] { agrument1 }),
+		exception);
+}
+...
+</source>
+<p>The big advantage of this approach is that you can create localized exceptions with all arguments
+	that are describing the error in detail and print out localized details including this arguments
+	later on. Have a look at the <a href="examples.html">examples</a> to see how this can simplify your life ;-)</p>
+</section>
+<section name="Pluggable message providers">
+<p>You can add your own custom message providers.</p>
+<p>This is a big plus if you already have your localized messages in a database for example.
+	You do not have to convert them into the supported XML or property-based format, but you
+	can write a simple <code>MessageProvider</code> by implementing a the <code>MessageProvider</code> interface and plug it in.</p>
+</section>
+</body>
+</document>
