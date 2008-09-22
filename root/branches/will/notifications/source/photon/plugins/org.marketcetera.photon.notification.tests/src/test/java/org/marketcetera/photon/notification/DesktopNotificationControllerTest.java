@@ -10,7 +10,7 @@ import org.marketcetera.core.notifications.INotification;
 /* $License$ */
 
 /**
- * Tests for {@link PhotonNotificationSubscriber}.
+ * Tests for {@link DesktopNotificationController}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
