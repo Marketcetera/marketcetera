@@ -1,0 +1,38 @@
+<body>
+
+<p>Process execution.</p>
+
+<p>Process execution in Java is harder than it seems. {@link
+java.lang.ProcessBuilder} simplifies some of the necessary steps, but
+still does not address several aspects of process management that this
+package addresses. Specifically, {@link
+org.marketcetera.util.exec.Exec} provides execution of a process
+with the following enhancements:</p>
+
+<ul>
+
+<li><p>Routing/capture of its standard output and error streams. Both
+streams are always routed to the same destination {@link
+org.marketcetera.util.exec.Disposition}, which can be in-memory
+capture, or redirection to the parent process standard output or error
+stream (both child streams go to the same parent stream).</p></li>
+
+<li><p>Exit code capture. The exit code of the child process is
+captured (always) alongside the process output (if in-memory
+disposition was elected) in {@link
+org.marketcetera.util.exec.ExecResult}.</p></li>
+
+<li><p>Synchronous execution. The parent blocks while waiting for the
+child to complete. The package assumes children do not need any data
+to be provided in their standard input steam, or else the parent may
+wait indefinitely on a blocked child.</p></li>
+
+<li><p>Setting working directory. The working directory of the child
+can be set before the child process is started.</p></li>
+
+</ul>
+
+<p>All of the above functionality is available via simple static calls
+into methods of {@link org.marketcetera.util.exec.Exec}.</p>
+
+</body>

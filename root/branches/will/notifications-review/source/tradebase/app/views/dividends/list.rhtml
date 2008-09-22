@@ -1,0 +1,27 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Dividends", :action_name => "List Dividends", :top_level_controller => @controller.controller_name } %>
+<h1>List Dividends</h1>
+
+<table>
+  <tr>
+    <th>Symbol</th>
+    <%= show_relevant_table_columns(Dividend.new, true) %>
+    <th colspan="3"/>
+  </tr>
+  
+<% i=0
+for dividend in @dividends %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <td><%= dividend.equity.m_symbol.root %></td>
+    <td class="number"><%= dividend.amount%></td>
+    <td><%=h dividend.announce_date %></td>
+    <td><%=h dividend.ex_date %></td>
+    <td><%=h dividend.payable_date %></td>
+    <td><%=h dividend.status %></td>
+    <td><%=h shorten_string(dividend.description) %></td>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => dividend, :controller_name => 'dividends'} %>
+  </tr>
+<% end %>
+</table>
+
+<%= pagination_links(@dividend_pages) %>
