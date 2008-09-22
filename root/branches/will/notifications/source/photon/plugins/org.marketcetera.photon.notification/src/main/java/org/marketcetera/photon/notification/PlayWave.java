@@ -39,7 +39,7 @@ public class PlayWave extends Thread {
 	/**
 	 * sound clip file
 	 */
-	private String filename;
+	private String mFilename;
 
 	/**
 	 * Constructor.
@@ -48,15 +48,15 @@ public class PlayWave extends Thread {
 	 *            wav file path
 	 */
 	public PlayWave(String filename) {
-		this.filename = filename;
+		this.mFilename = filename;
 	}
 
 	@Override
 	public void run() {
-		SLF4JLoggerProxy.debug(this, "Playing audio file: \"{0}\"", filename);
-		File soundFile = new File(filename);
+		SLF4JLoggerProxy.debug(this, "Playing audio file: \"{0}\"", mFilename);
+		File soundFile = new File(mFilename);
 		if (!soundFile.exists()) {
-			Messages.AUDIO_CANNOT_FIND_FILE.error(this, filename);
+			Messages.AUDIO_CANNOT_FIND_FILE.error(this, mFilename);
 			return;
 		}
 

@@ -48,7 +48,7 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	/**
 	 * the notification
 	 */
-	private INotification notification;
+	private INotification mNotification;
 
 	/**
 	 * Constructor.
@@ -61,7 +61,7 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	public DesktopNotificationPopup(Display display, INotification notification) {
 		super(display);
 		Assert.isNotNull(notification);
-		this.notification = notification;
+		this.mNotification = notification;
 		setFadingEnabled(true);
 		setDelayClose(CLOSE_DELAY);
 	}
@@ -69,7 +69,7 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	@Override
 	protected void createContentArea(Composite parent) {
 		createHeading(parent);
-		createLabel(parent, notification.getBody(), parent.getFont(), SWT.WRAP);
+		createLabel(parent, mNotification.getBody(), parent.getFont(), SWT.WRAP);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 
 		// layout depends on whether there is an image
-		Image image = getImage(notification);
+		Image image = getImage(mNotification);
 		GridLayoutFactory layout = GridLayoutFactory.swtDefaults().spacing(15,
 				5);
 		if (image != null) {
@@ -109,18 +109,18 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 		subject.addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
-				subject.setText(fitToWidth(e.gc, notification.getSubject(),
+				subject.setText(fitLineToWidth(e.gc, mNotification.getSubject(),
 						e.width));
 			}
 		});
 
 		createLabel(composite, Messages.POPUP_PRIORITY_LABEL.getText(),
 				getLabelFont(), SWT.RIGHT);
-		createLabel(composite, getSeverityLabel(notification.getSeverity()),
+		createLabel(composite, getSeverityLabel(mNotification.getSeverity()),
 				parent.getFont(), SWT.NONE);
 		createLabel(composite, Messages.POPUP_TIMESTAMP_LABEL.getText(),
 				getLabelFont(), SWT.RIGHT);
-		createLabel(composite, notification.getDate().toString(), parent
+		createLabel(composite, mNotification.getDate().toString(), parent
 				.getFont(), SWT.NONE);
 	}
 
@@ -212,10 +212,11 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	 *            the maximum width
 	 * @return a new string, shortened with ellipsis if necessary
 	 */
-	protected String fitToWidth(GC gc, String text, int width) {
+	protected static String fitLineToWidth(GC gc, String text, int width) {
 		int pixels = 0;
 		int dotextent = gc.stringExtent(ELLIPSIS).x;
 		StringCharacterIterator iter = new StringCharacterIterator(text);
+		pixels += gc.getAdvanceWidth(iter.current());
 		char c;
 		while ((c = iter.next()) != CharacterIterator.DONE) {
 			pixels += gc.getAdvanceWidth(c);
