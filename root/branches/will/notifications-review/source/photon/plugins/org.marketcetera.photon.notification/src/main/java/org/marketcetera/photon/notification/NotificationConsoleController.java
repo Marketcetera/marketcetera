@@ -7,11 +7,12 @@ import org.eclipse.ui.console.IConsoleListener;
 import org.eclipse.ui.console.IConsoleManager;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.INotificationManager;
 import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.util.misc.ClassVersion;
+
 
 /* $License$ */
 
