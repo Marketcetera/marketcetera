@@ -12,7 +12,7 @@ import org.marketcetera.photon.notification.NotificationPlugin;
 /* $License$ */
 
 /**
- * Test {@link DesktopNotificationPreferences}
+ * Test {@link NotificationPreferences}
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
