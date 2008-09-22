@@ -1,10 +1,7 @@
 package org.marketcetera.photon.notification;
 
 import org.eclipse.ui.IStartup;
-import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.marketcetera.core.notifications.Notification;
-import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.photon.notification.preferences.NotificationPreferences;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -31,14 +28,19 @@ public class NotificationPlugin extends AbstractUIPlugin {
 	/**
 	 * The shared instance
 	 */
-	private static NotificationPlugin plugin;
+	private static NotificationPlugin sPlugin;
 
 	/**
 	 * The plugin temporarily overriding <code>plugin</code>. See
 	 * {@link #setOverride}.
 	 */
-	private static NotificationPlugin overridePlugin;
+	private static NotificationPlugin sOverridePlugin;
 
+	/**
+	 * Handles desktop notification popups
+	 */
+	private DesktopNotificationController mDesktopNotificationController;
+	
 	/**
 	 * The constructor
 	 */
@@ -48,49 +50,15 @@ public class NotificationPlugin extends AbstractUIPlugin {
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
-		plugin = this;
-
-		// TODO: remove test code
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					try {
-						NotificationManager.getNotificationManager().publish(
-								Notification.high("Subject",
-										"\u3055\u3088\u3046\u306A\u3089",
-										getClass()));
-						try {
-							Thread.sleep(4000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						for (int i = 0; i < 10; i++)
-							NotificationManager.getNotificationManager()
-									.publish(
-											Notification.low("Subject",
-													"\u0645\u0646\u0632\u0644",
-													getClass()));
-						try {
-							Thread.sleep(4000);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} catch (Throwable e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}, "Wills").start();
-		new PopupJob(getNotificationProvider().getNotificationQueue(),
-				PlatformUI.getWorkbench().getDisplay()).schedule();
+		sPlugin = this;
+		mDesktopNotificationController = new DesktopNotificationController();
+		mDesktopNotificationController.init();
 	}
 
 	@Override
 	public void stop(BundleContext context) throws Exception {
-		plugin = null;
+		mDesktopNotificationController.shutdown();
+		sPlugin = null;
 		super.stop(context);
 	}
 
@@ -101,9 +69,9 @@ public class NotificationPlugin extends AbstractUIPlugin {
 	 * @return the shared instance
 	 */
 	public static NotificationPlugin getDefault() {
-		if (overridePlugin != null)
-			return overridePlugin;
-		return plugin;
+		if (sOverridePlugin != null)
+			return sOverridePlugin;
+		return sPlugin;
 	}
 
 	/**
@@ -115,19 +83,7 @@ public class NotificationPlugin extends AbstractUIPlugin {
 	 *            the override plugin
 	 */
 	public static void setOverride(NotificationPlugin overridePlugin) {
-		NotificationPlugin.overridePlugin = overridePlugin;
-	}
-
-	/**
-	 * Creates and initializes the {@link INotificationProvider} this plugin
-	 * will use.
-	 * 
-	 * @return the notification provider
-	 */
-	protected INotificationProvider getNotificationProvider() {
-		PhotonNotificationSubscriber provider = new PhotonNotificationSubscriber();
-		NotificationManager.getNotificationManager().subscribe(provider);
-		return provider;
+		NotificationPlugin.sOverridePlugin = overridePlugin;
 	}
 
 	/**

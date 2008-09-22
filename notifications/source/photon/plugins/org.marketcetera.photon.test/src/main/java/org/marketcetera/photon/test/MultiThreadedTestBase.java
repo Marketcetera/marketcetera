@@ -22,7 +22,7 @@ public class MultiThreadedTestBase {
 	/**
 	 * Caches the first reported exception.
 	 */
-	private Throwable failure;
+	private Throwable mFailure;
 
 	/**
 	 * Records an exception to report to JUnit. Only the first reported
@@ -32,8 +32,8 @@ public class MultiThreadedTestBase {
 	 *            the exception to record
 	 */
 	protected synchronized void setFailure(Throwable failure) {
-		if (this.failure == null)
-			this.failure = failure;
+		if (this.mFailure == null)
+			this.mFailure = failure;
 	}
 
 	/**
@@ -41,8 +41,8 @@ public class MultiThreadedTestBase {
 	 * thread so the exception will be reported.
 	 */
 	protected synchronized void checkFailure() {
-		if (failure != null)
-			throw new RuntimeException(failure);
+		if (mFailure != null)
+			throw new RuntimeException(mFailure);
 	}
 
 	/**

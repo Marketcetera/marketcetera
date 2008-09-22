@@ -27,18 +27,18 @@ public class PopupJob extends AbstractPopupJob {
 	/**
 	 * The plugin, used for determining user preferences.
 	 */
-	private final NotificationPlugin plugin = NotificationPlugin
+	private final NotificationPlugin mPlugin = NotificationPlugin
 			.getDefault();
 
 	/**
 	 * Display on which to perform UI actions.
 	 */
-	private Display display;
+	private Display mDisplay;
 
 	/**
 	 * Caches the popup created on the UI thread.
 	 */
-	private volatile Window popup;
+	private volatile Window mPopup;
 
 	/**
 	 * Constructor.
@@ -51,7 +51,7 @@ public class PopupJob extends AbstractPopupJob {
 	public PopupJob(Queue<INotification> queue, Display display) {
 		super("Desktop Notification Popup Job", queue); //$NON-NLS-1$
 		Assert.isNotNull(display);
-		this.display = display;
+		this.mDisplay = display;
 		setSystem(true);
 	}
 
@@ -65,20 +65,20 @@ public class PopupJob extends AbstractPopupJob {
 	@Override
 	public void showPopup(final INotification notification) {
 		final Severity severity = notification.getSeverity();
-		if (plugin.shouldDisplayPopup(severity)) {
-			popup = null;
-			display.syncExec(new Runnable() {
+		if (mPlugin.shouldDisplayPopup(severity)) {
+			mPopup = null;
+			mDisplay.syncExec(new Runnable() {
 				@Override
 				public void run() {
-					if (plugin.shouldPlaySound(severity))
-						playSoundClip(plugin.getSoundClip(severity));
-					popup = createPopup(notification);
-					popup.open();
+					if (mPlugin.shouldPlaySound(severity))
+						playSoundClip(mPlugin.getSoundClip(severity));
+					mPopup = createPopup(notification);
+					mPopup.open();
 				}
 			});
 			// wait for popup to close before returning
-			while (popup != null && popup.getShell() != null
-					&& !popup.getShell().isDisposed())
+			while (mPopup != null && mPopup.getShell() != null
+					&& !mPopup.getShell().isDisposed())
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
@@ -95,7 +95,7 @@ public class PopupJob extends AbstractPopupJob {
 	 * @return the popup
 	 */
 	protected Window createPopup(final INotification notification) {
-		return new DesktopNotificationPopup(display, notification);
+		return new DesktopNotificationPopup(mDisplay, notification);
 	}
 
 	/**

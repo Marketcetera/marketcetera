@@ -55,7 +55,7 @@ public abstract class AbstractPopupJob extends Job {
 	/**
 	 * The queue which provides notifications.
 	 */
-	private final Queue<INotification> queue;
+	private final Queue<INotification> mQueue;
 
 	/**
 	 * Constructor.
@@ -66,7 +66,7 @@ public abstract class AbstractPopupJob extends Job {
 	public AbstractPopupJob(String name, Queue<INotification> queue) {
 		super(name);
 		Assert.isNotNull(queue);
-		this.queue = queue;
+		this.mQueue = queue;
 	}
 
 	/**
@@ -76,13 +76,13 @@ public abstract class AbstractPopupJob extends Job {
 	 */
 	@Override
 	protected IStatus run(IProgressMonitor monitor) {
-		int size = queue.size();
+		int size = mQueue.size();
 		if (size == 0) {
 			// Wait a bit before running again
 			schedule(FREQUENCY);
 		} else if (size == 1) {
 			// Show popup for the single notification on the queue
-			INotification n = queue.poll();
+			INotification n = mQueue.poll();
 			if (n != null)
 				showPopup(n);
 			schedule();
@@ -90,9 +90,9 @@ public abstract class AbstractPopupJob extends Job {
 			// Too many notifications, summarize into one
 			Severity max = Severity.LOW;
 			int count = 0;
-			while (!queue.isEmpty()) {
-				while (!queue.isEmpty()) {
-					INotification n = queue.poll();
+			while (!mQueue.isEmpty()) {
+				while (!mQueue.isEmpty()) {
+					INotification n = mQueue.poll();
 					if (n != null) {
 						count++;
 						// End job if threshold is reached

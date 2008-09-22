@@ -3,7 +3,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.marketcetera.photon.notification.AbstractPopupJobTest;
 import org.marketcetera.photon.notification.NotificationPluginTest;
-import org.marketcetera.photon.notification.PhotonNotificationSubscriberTest;
+import org.marketcetera.photon.notification.DesktopNotificationControllerTest;
 import org.marketcetera.photon.notification.PopupJobTest;
 import org.marketcetera.photon.notification.preferences.NotificationPreferencesTest;
 
@@ -22,7 +22,7 @@ import org.marketcetera.photon.notification.preferences.NotificationPreferencesT
 	PopupJobTest.class,
 	NotificationPreferencesTest.class,
 	NotificationPluginTest.class,
-	PhotonNotificationSubscriberTest.class
+	DesktopNotificationControllerTest.class
 })
 public class HeadlessSuite {
 
