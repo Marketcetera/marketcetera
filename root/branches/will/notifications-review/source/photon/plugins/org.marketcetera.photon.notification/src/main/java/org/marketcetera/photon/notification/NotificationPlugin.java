@@ -2,6 +2,8 @@ package org.marketcetera.photon.notification;
 
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.core.notifications.INotificationManager;
+import org.marketcetera.core.notifications.NotificationManager;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.photon.notification.preferences.NotificationPreferences;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -31,35 +33,52 @@ public class NotificationPlugin extends AbstractUIPlugin {
 	private static NotificationPlugin sPlugin;
 
 	/**
-	 * The plugin temporarily overriding <code>plugin</code>. See
+	 * The plugin temporarily overriding <code>sPlugin</code>. See
 	 * {@link #setOverride}.
 	 */
 	private static NotificationPlugin sOverridePlugin;
 
 	/**
+	 * Core notification manager
+	 */
+	private final INotificationManager mNotificationManager;
+
+	/**
 	 * Handles desktop notification popups
 	 */
 	private DesktopNotificationController mDesktopNotificationController;
-	
+
 	/**
 	 * The constructor
 	 */
 	public NotificationPlugin() {
+		mNotificationManager = NotificationManager.getNotificationManager();
 	}
 
 	@Override
-	public void start(BundleContext context) throws Exception {
+	public final void start(BundleContext context) throws Exception {
 		super.start(context);
 		sPlugin = this;
 		mDesktopNotificationController = new DesktopNotificationController();
-		mDesktopNotificationController.init();
 	}
 
 	@Override
-	public void stop(BundleContext context) throws Exception {
-		mDesktopNotificationController.shutdown();
+	public final void stop(BundleContext context) throws Exception {
+		if (mDesktopNotificationController != null) {
+			mDesktopNotificationController.dispose();
+			mDesktopNotificationController = null;
+		}
 		sPlugin = null;
 		super.stop(context);
+	}
+
+	/**
+	 * Provides access to the core notification manager.
+	 * 
+	 * @return the notification manager used by this plugin
+	 */
+	public INotificationManager getNotificationManager() {
+		return mNotificationManager;
 	}
 
 	/**
@@ -101,7 +120,9 @@ public class NotificationPlugin extends AbstractUIPlugin {
 			try {
 				return Severity.valueOf(string).compareTo(severity) <= 0;
 			} catch (IllegalArgumentException e) {
-				SLF4JLoggerProxy.debug(this, e);
+				SLF4JLoggerProxy.debug(this, e,
+						"Invalid value '{}' for preference '{}'", //$NON-NLS-1$
+						string, NotificationPreferences.PRIORITY);
 			}
 		}
 		return false;
@@ -145,7 +166,7 @@ public class NotificationPlugin extends AbstractUIPlugin {
 	 * @since $Release$
 	 */
 	@ClassVersion("$Id$")
-	public static class NotificationPluginStartup implements IStartup {
+	public static final class NotificationPluginStartup implements IStartup {
 		@Override
 		public void earlyStartup() {
 			// Do nothing

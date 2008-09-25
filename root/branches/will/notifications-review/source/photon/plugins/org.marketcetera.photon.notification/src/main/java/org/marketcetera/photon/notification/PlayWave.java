@@ -17,6 +17,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
+ * Plays a wave file.
+ * 
  * Modified from
  * http://www.anyexample.com/programming/java/java_play_wav_sound_file.xml
  * 
@@ -53,7 +55,7 @@ public class PlayWave extends Thread {
 
 	@Override
 	public void run() {
-		SLF4JLoggerProxy.debug(this, "Playing audio file: \"{0}\"", mFilename);
+		SLF4JLoggerProxy.debug(this, "Playing audio file: \"{0}\"", mFilename); //$NON-NLS-1$
 		File soundFile = new File(mFilename);
 		if (!soundFile.exists()) {
 			Messages.AUDIO_CANNOT_FIND_FILE.error(this, mFilename);
@@ -64,10 +66,10 @@ public class PlayWave extends Thread {
 		try {
 			audioInputStream = AudioSystem.getAudioInputStream(soundFile);
 		} catch (UnsupportedAudioFileException e) {
-			SLF4JLoggerProxy.error(this, e);
+			SLF4JLoggerProxy.warn(this, e);
 			return;
 		} catch (IOException e) {
-			SLF4JLoggerProxy.error(this, e);
+			SLF4JLoggerProxy.warn(this, e);
 			return;
 		}
 
@@ -79,7 +81,7 @@ public class PlayWave extends Thread {
 			auline = (SourceDataLine) AudioSystem.getLine(info);
 			auline.open(format);
 		} catch (LineUnavailableException e) {
-			SLF4JLoggerProxy.error(this, e);
+			SLF4JLoggerProxy.warn(this, e);
 			return;
 		}
 
@@ -94,7 +96,7 @@ public class PlayWave extends Thread {
 					auline.write(abData, 0, nBytesRead);
 			}
 		} catch (IOException e) {
-			SLF4JLoggerProxy.error(this, e);
+			SLF4JLoggerProxy.warn(this, e);
 			return;
 		} finally {
 			auline.drain();
