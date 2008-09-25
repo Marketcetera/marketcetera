@@ -49,7 +49,7 @@ public class NotificationUtil {
 				if (obj instanceof SummaryNotification) {
 					final SummaryNotification other = (SummaryNotification) obj;
 					return getSeverity().equals(other.getSeverity())
-							&& getSubject().equals(other.getSubject());
+							&& getBody().equals(other.getBody());
 				}
 				return false;
 			}

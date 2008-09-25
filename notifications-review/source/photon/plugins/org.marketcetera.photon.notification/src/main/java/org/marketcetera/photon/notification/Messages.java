@@ -41,6 +41,8 @@ public interface Messages {
 			LOGGER, "threshold_notification.subject"); //$NON-NLS-1$
 	static final I18NMessage0P THRESHOLD_NOTIFICATION_BODY = new I18NMessage0P(
 			LOGGER, "threshold_notification.body"); //$NON-NLS-1$
+	static final I18NMessage0P POPUP_ELLIPSIS = new I18NMessage0P(
+			LOGGER, "popup.ellipsis"); //$NON-NLS-1$
 	static final I18NMessage0P POPUP_SUBJECT_LABEL = new I18NMessage0P(
 			LOGGER, "popup.subject_label"); //$NON-NLS-1$
 	static final I18NMessage0P POPUP_PRIORITY_LABEL = new I18NMessage0P(

@@ -37,8 +37,12 @@ public class MultiThreadedTestBase {
 	}
 
 	/**
-	 * Throws the reported exception. This should be called from the main JUnit
+	 * If an exception was recorded, it will be wrapped and thrown as a
+	 * {@link RuntimeException}. This should be called from the main JUnit
 	 * thread so the exception will be reported.
+	 * 
+	 * @throws RuntimeException
+	 *             if an exception was recorded by this class
 	 */
 	protected synchronized void checkFailure() {
 		if (mFailure != null)

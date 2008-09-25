@@ -4,10 +4,10 @@ import java.text.CharacterIterator;
 import java.text.StringCharacterIterator;
 
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.window.Window;
 import org.eclipse.mylyn.internal.provisional.commons.ui.AbstractNotificationPopup;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -25,7 +25,16 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * A popup that display a {@link INotification}.
+ * A popup that displays an {@link INotification}.
+ * 
+ * This class may be subclassed to override
+ * <ul>
+ * <li>{@link #getImage(INotification)} - the images displayed for the
+ * notifications</li>
+ * <li>{@link #getLabelFont()} - the font used for the heading labels</li>
+ * <li>{@link #fitLineToWidth(GC, String, int)} - the algorithm for truncating
+ * the subject text to fit on a single line</li>
+ * </ul>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -43,20 +52,26 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	/**
 	 * used for truncating long text
 	 */
-	private static final String ELLIPSIS = "...";
-	
+	private static final String ELLIPSIS = Messages.POPUP_ELLIPSIS.getText();
+
 	/**
 	 * the notification
 	 */
-	private INotification mNotification;
+	private final INotification mNotification;
 
 	/**
 	 * Constructor.
 	 * 
+	 * Subclasses should call this constructor, but may customize/override
+	 * configuration by calling {@link #setFadingEnabled(boolean)} and
+	 * {@link #setDelayClose(long)}.
+	 * 
 	 * @param display
-	 *            the display
+	 *            the display used by {@link AbstractNotificationPopup}
 	 * @param notification
-	 *            the notification to display
+	 *            the notification to display, cannot be null
+	 * @throws AssertionFailedException
+	 *             if notification is null
 	 */
 	public DesktopNotificationPopup(Display display, INotification notification) {
 		super(display);
@@ -67,13 +82,13 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	}
 
 	@Override
-	protected void createContentArea(Composite parent) {
+	protected final void createContentArea(Composite parent) {
 		createHeading(parent);
 		createLabel(parent, mNotification.getBody(), parent.getFont(), SWT.WRAP);
 	}
 
 	/**
-	 * Creates the heading area (image, subject, priority, timestamp).
+	 * Creates the heading area of the popup.
 	 * 
 	 * @param parent
 	 *            the parent
@@ -109,8 +124,8 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 		subject.addPaintListener(new PaintListener() {
 			@Override
 			public void paintControl(PaintEvent e) {
-				subject.setText(fitLineToWidth(e.gc, mNotification.getSubject(),
-						e.width));
+				subject.setText(fitLineToWidth(e.gc,
+						mNotification.getSubject(), e.width));
 			}
 		});
 
@@ -171,6 +186,8 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	 * Provides the label font. Default is to the bold version of the JFace
 	 * default font.
 	 * 
+	 * Subclasses can override to provide a different font.
+	 * 
 	 * @return the font to use for heading labels
 	 */
 	protected Font getLabelFont() {
@@ -187,7 +204,9 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	 * <li>LOW - SWT.ICON_INFORMATION</li>
 	 * </ul>
 	 * 
-	 * @return the image to display, or null for no image
+	 * Subclass can return null if no image is desired.
+	 * 
+	 * @return the image to display or null for no image
 	 */
 	protected Image getImage(INotification notification) {
 		switch (notification.getSeverity()) {
@@ -201,8 +220,11 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	}
 
 	/**
-	 * Strategy for reducing text to a specified width using ellipsis.  The default strategy
-	 * tries to break at a space if possible.
+	 * Strategy for truncating text to a specified width using ellipsis. The
+	 * default strategy tries to break at a space if possible.
+	 * 
+	 * Subclass implementations must return a String that fits inside the given
+	 * width when rendered using the provided GC.
 	 * 
 	 * @param gc
 	 *            the graphics context
@@ -212,9 +234,14 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	 *            the maximum width
 	 * @return a new string, shortened with ellipsis if necessary
 	 */
-	protected static String fitLineToWidth(GC gc, String text, int width) {
+	protected String fitLineToWidth(GC gc, String text, int width) {
 		int pixels = 0;
 		int dotextent = gc.stringExtent(ELLIPSIS).x;
+		if (dotextent >= width) {
+			// No point truncating if the ellipsis is greater than the provided
+			// width
+			return ""; //$NON-NLS-1$
+		}
 		StringCharacterIterator iter = new StringCharacterIterator(text);
 		pixels += gc.getAdvanceWidth(iter.current());
 		char c;
@@ -236,30 +263,21 @@ public class DesktopNotificationPopup extends AbstractNotificationPopup {
 	}
 
 	/**
-	 * Get an <code>Image</code> from the provide SWT image constant.
+	 * Helper method to get an <code>Image</code> from the provided SWT image
+	 * constant.
 	 * 
 	 * @param imageID
 	 *            the SWT image constant
 	 * @return image the image
 	 */
 	private Image getSWTImage(final int imageID) {
-		final Display display = getShell().getDisplay();
-		final Image[] image = new Image[1];
-		display.syncExec(new Runnable() {
-			public void run() {
-				image[0] = display.getSystemImage(imageID);
-			}
-		});
-		return image[0];
+		return getShell().getDisplay().getSystemImage(imageID);
 	}
 
-	/**
-	 * Overridden to hide discouraged access warning from clients.
-	 * 
-	 * @see Window#open()
-	 */
 	@Override
-	public int open() {
+	public final int open() {
+		// Simply call the superclass implementation. This method was overridden
+		// purely to hide the discouraged access warning from clients.
 		return super.open();
 	}
 

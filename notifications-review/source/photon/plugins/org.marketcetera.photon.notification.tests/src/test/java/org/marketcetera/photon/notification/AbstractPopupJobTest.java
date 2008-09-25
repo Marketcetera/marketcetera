@@ -47,7 +47,6 @@ public class AbstractPopupJobTest extends MultiThreadedTestBase {
 				}
 			}
 		};
-		mJob.schedule();
 	}
 
 	@After
@@ -57,6 +56,7 @@ public class AbstractPopupJobTest extends MultiThreadedTestBase {
 
 	@Test
 	public void steadyStream() throws InterruptedException {
+		mJob.schedule();
 		for (int i = 0; i < 4; i++) {
 			final INotification notification = createNotification(Severity.HIGH);
 			mQueue.add(notification);
@@ -69,6 +69,7 @@ public class AbstractPopupJobTest extends MultiThreadedTestBase {
 		for (int i = 0; i < 4; i++) {
 			mQueue.add(createNotification(Severity.HIGH));
 		}
+		mJob.schedule();
 		checkFailureAndAssertEquals(createSummaryExpectation(4, Severity.HIGH), mProcessed
 				.poll(TIMEOUT, TimeUnit.MILLISECONDS));
 	}
@@ -77,6 +78,7 @@ public class AbstractPopupJobTest extends MultiThreadedTestBase {
 	public void summaryAggregation() throws InterruptedException {
 		mQueue.add(createNotification(Severity.LOW));
 		mQueue.add(createNotification(Severity.MEDIUM));
+		mJob.schedule();
 		checkFailureAndAssertEquals(createSummaryExpectation(2, Severity.MEDIUM), mProcessed
 				.poll(TIMEOUT, TimeUnit.MILLISECONDS));
 	}
@@ -87,7 +89,8 @@ public class AbstractPopupJobTest extends MultiThreadedTestBase {
 		mQueue.add(createNotification(Severity.MEDIUM));
 		mQueue.add(createNotification(Severity.HIGH));
 		mQueue.add(createNotification(Severity.LOW));
-		checkFailureAndAssertEquals(createSummaryExpectation(2, Severity.HIGH), mProcessed
+		mJob.schedule();
+		checkFailureAndAssertEquals(createSummaryExpectation(4, Severity.HIGH), mProcessed
 				.poll(TIMEOUT, TimeUnit.MILLISECONDS));
 	}
 
@@ -96,6 +99,7 @@ public class AbstractPopupJobTest extends MultiThreadedTestBase {
 		for (int i = 0; i < AbstractPopupJob.THRESHOLD + 2; i++) {
 			mQueue.add(createNotification(Severity.LOW));
 		}
+		mJob.schedule();
 		INotification processedNotification = mProcessed.poll(TIMEOUT, TimeUnit.MILLISECONDS);
 		checkFailureAndAssertTrue(processedNotification instanceof ThresholdReachedNotification);
 	}

@@ -59,22 +59,4 @@ public class PopupJobTest {
 	public void testConstructor3() {
 		new PopupJob(null, mockDisplay);
 	}
-
-	@Test
-	public void testNotificationFilter() {
-		stub(mockPlugin.shouldDisplayPopup((Severity) anyObject())).toReturn(true);
-		new PopupJob(mockQueue, mockDisplay).showPopup(NotificationUtil.createNotification(Severity.HIGH));
-		new PopupJob(mockQueue, mockDisplay).showPopup(NotificationUtil.createNotification(Severity.MEDIUM));
-		new PopupJob(mockQueue, mockDisplay).showPopup(NotificationUtil.createNotification(Severity.LOW));
-		verify(mockDisplay, times(3)).syncExec((Runnable) anyObject());
-	}
-
-	@Test
-	public void testNotificationFilter2() {
-		stub(mockPlugin.shouldDisplayPopup((Severity) anyObject())).toReturn(false);
-		new PopupJob(mockQueue, mockDisplay).showPopup(NotificationUtil.createNotification(Severity.HIGH));
-		new PopupJob(mockQueue, mockDisplay).showPopup(NotificationUtil.createNotification(Severity.MEDIUM));
-		new PopupJob(mockQueue, mockDisplay).showPopup(NotificationUtil.createNotification(Severity.LOW));
-		verify(mockDisplay, times(0)).syncExec((Runnable) anyObject());
-	}
 }

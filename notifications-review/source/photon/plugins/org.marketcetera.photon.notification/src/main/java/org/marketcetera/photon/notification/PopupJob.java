@@ -13,9 +13,16 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Uses {@link NotificationPlugin} preferences to determine behavior of
- * {@link #showPopup(INotification)}. Popups are created using Mylyn
- * {@link DesktopNotificationPopup} and sounds are played using {@link PlayWave}
- * .
+ * {@link #showPopup(INotification)}. Popup windows are created and displayed
+ * with an optional sound.
+ * 
+ * This class may be subclassed to override
+ * <ul>
+ * <li>{@link #createPopup(INotification)} - to provide an alternate popup
+ * window implementation</li>
+ * <li>{@link #playSoundClip(String)} - to provide an method of playing the
+ * sound file</li>
+ * </ul>
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -27,8 +34,7 @@ public class PopupJob extends AbstractPopupJob {
 	/**
 	 * The plugin, used for determining user preferences.
 	 */
-	private final NotificationPlugin mPlugin = NotificationPlugin
-			.getDefault();
+	private final NotificationPlugin mPlugin = NotificationPlugin.getDefault();
 
 	/**
 	 * Display on which to perform UI actions.
@@ -41,10 +47,12 @@ public class PopupJob extends AbstractPopupJob {
 	private volatile Window mPopup;
 
 	/**
-	 * Constructor.
+	 * Constructor. Will throw an unchecked exception if <code>queue</code> or
+	 * <code>display</code> is null.
 	 * 
 	 * @param queue
-	 *            notification queue, cannot be null
+	 *            the queue from which to retrieve notifications, must be
+	 *            non-null and thread safe
 	 * @param display
 	 *            display to use for UI, cannot be null
 	 */
@@ -57,34 +65,33 @@ public class PopupJob extends AbstractPopupJob {
 
 	/**
 	 * This implementation of {@link AbstractPopupJob#showPopup(INotification)}
-	 * consults the plugin preferences to determine correct behavior. If a popup
-	 * should be displayed, this method will show the popup and will not return
-	 * until the popup is closed. If configured to do so, a sound clip will be
-	 * played as well.
+	 * displays the popup created by {@link #createPopup(INotification)} and
+	 * consults the plugin preferences to determine if a sound should be played
+	 * as well.
+	 * 
+	 * This method will block until the popup has been closed.
 	 */
 	@Override
 	public void showPopup(final INotification notification) {
-		final Severity severity = notification.getSeverity();
-		if (mPlugin.shouldDisplayPopup(severity)) {
-			mPopup = null;
-			mDisplay.syncExec(new Runnable() {
-				@Override
-				public void run() {
-					if (mPlugin.shouldPlaySound(severity))
-						playSoundClip(mPlugin.getSoundClip(severity));
-					mPopup = createPopup(notification);
-					mPopup.open();
-				}
-			});
-			// wait for popup to close before returning
-			while (mPopup != null && mPopup.getShell() != null
-					&& !mPopup.getShell().isDisposed())
-				try {
-					Thread.sleep(100);
-				} catch (InterruptedException e) {
-					Thread.currentThread().interrupt();
-				}
-		}
+		mPopup = null;
+		mDisplay.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				Severity severity = notification.getSeverity();
+				if (mPlugin.shouldPlaySound(severity))
+					playSoundClip(mPlugin.getSoundClip(severity));
+				mPopup = createPopup(notification);
+				mPopup.open();
+			}
+		});
+		// wait for popup to close before returning
+		while (mPopup != null && mPopup.getShell() != null
+				&& !mPopup.getShell().isDisposed())
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				Thread.currentThread().interrupt();
+			}
 	}
 
 	/**

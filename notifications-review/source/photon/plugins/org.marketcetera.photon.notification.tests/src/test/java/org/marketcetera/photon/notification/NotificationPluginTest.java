@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.Random;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.notifications.INotification.Severity;
@@ -34,6 +35,11 @@ public class NotificationPluginTest {
 				return mockPreferences;
 			}
 		};
+	}
+	
+	@After
+	public void tearDown() {
+		NotificationPlugin.setOverride(null);
 	}
 	
 	@Test

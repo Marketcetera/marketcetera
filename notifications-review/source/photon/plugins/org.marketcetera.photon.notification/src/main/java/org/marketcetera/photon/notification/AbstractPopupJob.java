@@ -29,28 +29,22 @@ public abstract class AbstractPopupJob extends Job {
 	/**
 	 * The frequency in milliseconds at which the job checks for new
 	 * notifications.
-	 * 
-	 * Package scope for test access.
 	 */
-	static final long FREQUENCY = 2000;
+	/* default for test access */static final long FREQUENCY = 2000;
 
 	/**
 	 * When too many notifications arrive, a single summary notification is
 	 * generated. Before the summary is shown, there must be a break in the
 	 * notification stream. This constant is the minimum time in milliseconds
 	 * that the stream must be "quiet".
-	 * 
-	 * Package scope for test access.
 	 */
-	static final long SUMMARY_DELAY = 1000;
+	/* default for test access */static final long SUMMARY_DELAY = 1000;
 
 	/**
 	 * When the notification queue surpasses the threshold, the job will shut
 	 * down and a single popup will be displayed to inform the user.
-	 * 
-	 * Package scope for test access.
 	 */
-	static final int THRESHOLD = 50;
+	/* default for test access */static final int THRESHOLD = 50;
 
 	/**
 	 * The queue which provides notifications.
@@ -58,24 +52,28 @@ public abstract class AbstractPopupJob extends Job {
 	private final Queue<INotification> mQueue;
 
 	/**
-	 * Constructor.
+	 * Constructor. Will throw an unchecked exception if <code>queue</code> is
+	 * null.
 	 * 
+	 * @param name
+	 *            the name of the job, see {@link Job#Job(String)}
 	 * @param queue
-	 *            the queue from which to retrieve notifications
+	 *            the queue from which to retrieve notifications, must be
+	 *            non-null and thread safe
 	 */
-	public AbstractPopupJob(String name, Queue<INotification> queue) {
+	protected AbstractPopupJob(String name, Queue<INotification> queue) {
 		super(name);
 		Assert.isNotNull(queue);
 		this.mQueue = queue;
 	}
 
 	/**
-	 * Processes the notification queue and reschedules the job.
-	 * 
-	 * @see org.eclipse.core.runtime.jobs.Job#run(org.eclipse.core.runtime.IProgressMonitor)
+	 * This implementation of {@link Job#run(IProgressMonitor)} processes
+	 * notifications in the queue, summarizing them if necessary. Unless
+	 * something goes wrong, this method will reschedule the job.
 	 */
 	@Override
-	protected IStatus run(IProgressMonitor monitor) {
+	protected final IStatus run(IProgressMonitor monitor) {
 		int size = mQueue.size();
 		if (size == 0) {
 			// Wait a bit before running again
@@ -124,9 +122,14 @@ public abstract class AbstractPopupJob extends Job {
 	}
 
 	/**
-	 * Process the notification
+	 * Process the notification.
+	 * 
+	 * This method should not return until the notification has been completely
+	 * processed and the user is ready to receive another, e.g. when the popup
+	 * has been closed.
 	 * 
 	 * @param notification
+	 *            notification to process
 	 */
 	public abstract void showPopup(INotification notification);
 
@@ -138,6 +141,7 @@ public abstract class AbstractPopupJob extends Job {
 	 * @version $Id$
 	 * @since $Release$
 	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static class SummaryNotification extends Notification {
 
 		/**
@@ -162,6 +166,7 @@ public abstract class AbstractPopupJob extends Job {
 	 * @version $Id$
 	 * @since $Release$
 	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static class ThresholdReachedNotification extends Notification {
 
 		/**
@@ -169,8 +174,8 @@ public abstract class AbstractPopupJob extends Job {
 		 */
 		public ThresholdReachedNotification() {
 			super(Messages.THRESHOLD_NOTIFICATION_SUBJECT.getText(),
-					Messages.THRESHOLD_NOTIFICATION_BODY.getText(),
-					new Date(), Severity.HIGH, AbstractPopupJob.class);
+					Messages.THRESHOLD_NOTIFICATION_BODY.getText(), new Date(),
+					Severity.HIGH, AbstractPopupJob.class);
 		}
 	}
 
