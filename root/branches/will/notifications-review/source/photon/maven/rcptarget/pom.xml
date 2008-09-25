@@ -73,6 +73,8 @@
                     eclipse/plugins/org.eclipse.ui.net_*,
                     eclipse/plugins/org.junit_*/**,
                     eclipse/plugins/org.junit4_*/**,
+                    eclipse/plugins/org.eclipse.jdt.junit4.runtime_*,
+                    eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
                     eclipse/plugins/org.apache.lucene_*,
                     eclipse/plugins/org.eclipse.debug.ui_*,
                     eclipse/plugins/org.eclipse.search_*,
