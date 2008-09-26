@@ -427,12 +427,5 @@
          </activeWhen>
       </handler>
    </extension>
-   <extension
-         point="org.eclipse.ui.console.consoleFactories">
-      <consoleFactory
-            class="org.marketcetera.photon.notification.NotificationConsoleController"
-            label="%notificationConsoleFactory.name">
-      </consoleFactory>
-   </extension>
    
 </plugin>

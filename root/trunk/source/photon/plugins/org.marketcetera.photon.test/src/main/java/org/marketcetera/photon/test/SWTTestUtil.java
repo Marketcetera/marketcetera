@@ -1,4 +1,4 @@
-package org.marketcetera.photon.test.util;
+package org.marketcetera.photon.test;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
