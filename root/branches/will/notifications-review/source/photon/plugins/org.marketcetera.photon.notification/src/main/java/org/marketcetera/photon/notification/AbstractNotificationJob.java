@@ -2,8 +2,8 @@ package org.marketcetera.photon.notification;
 
 import java.util.Date;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -16,15 +16,26 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Abstract base class for popup notification job. Handles the queue logic, but
- * delegates view aspect to subclasses.
+ * A {@link Job} that processes {@link INotification} objects asynchronously.
+ * Clients call {@link #enqueueNotification(INotification)} to queue a
+ * notifications to be processed when this job runs.
+ * 
+ * When multiple notifications are enqueued between runs, they will be replaced
+ * by a single {@link SummaryNotification}.
+ * 
+ * If too many notifications arrive in a short period of time, a
+ * {@link ThresholdReachedNotification} will be issued and the job will stop
+ * running, ignoring any later notifications.
+ * 
+ * Subclasses must define how a notification should processed by overriding
+ * {@link #showPopup(INotification, IProgressMonitor)}.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
-public abstract class AbstractPopupJob extends Job {
+public abstract class AbstractNotificationJob extends Job {
 
 	/**
 	 * The frequency in milliseconds at which the job checks for new
@@ -52,50 +63,49 @@ public abstract class AbstractPopupJob extends Job {
 	private final Queue<INotification> mQueue;
 
 	/**
-	 * Constructor. Will throw an unchecked exception if <code>queue</code> is
-	 * null.
+	 * Constructor.
 	 * 
 	 * @param name
 	 *            the name of the job, see {@link Job#Job(String)}
-	 * @param queue
-	 *            the queue from which to retrieve notifications, must be
-	 *            non-null and thread safe
 	 */
-	protected AbstractPopupJob(String name, Queue<INotification> queue) {
+	protected AbstractNotificationJob(String name) {
 		super(name);
-		Assert.isNotNull(queue);
-		this.mQueue = queue;
+		this.mQueue = new ConcurrentLinkedQueue<INotification>();
 	}
 
 	/**
 	 * This implementation of {@link Job#run(IProgressMonitor)} processes
-	 * notifications in the queue, summarizing them if necessary. Unless
-	 * something goes wrong, this method will reschedule the job.
+	 * notifications in the queue, summarizing them if necessary. Unless the
+	 * threshold is exceeded or the job is interrupted/canceled, this method
+	 * will reschedule the job.
 	 */
 	@Override
 	protected final IStatus run(IProgressMonitor monitor) {
+		long delay = 0;
+		INotification notification = null;
 		int size = mQueue.size();
 		if (size == 0) {
 			// Wait a bit before running again
-			schedule(FREQUENCY);
+			delay = FREQUENCY;
 		} else if (size == 1) {
 			// Show popup for the single notification on the queue
-			INotification n = mQueue.poll();
-			if (n != null)
-				showPopup(n);
-			schedule();
+			notification = mQueue.poll();
+			if (notification != null) {
+				showPopup(notification, monitor);
+			}
 		} else {
 			// Too many notifications, summarize into one
 			Severity max = Severity.LOW;
 			int count = 0;
-			while (!mQueue.isEmpty()) {
+			while (!monitor.isCanceled() && !mQueue.isEmpty()) {
 				while (!mQueue.isEmpty()) {
 					INotification n = mQueue.poll();
 					if (n != null) {
 						count++;
 						// End job if threshold is reached
 						if (count > THRESHOLD) {
-							showPopup(new ThresholdReachedNotification());
+							showPopup(new ThresholdReachedNotification(),
+									monitor);
 							return Status.CANCEL_STATUS;
 						}
 						// Update max severity
@@ -109,16 +119,35 @@ public abstract class AbstractPopupJob extends Job {
 					// until there is a break in the notification stream.
 					Thread.sleep(SUMMARY_DELAY);
 				} catch (InterruptedException e) {
-					// TODO: should I re-throw? do anything else
-					Thread.currentThread().interrupt();
+					// Cancelling is the proper way to notify an interrupt.
+					// The framework ignores
+					// Thread.currentThread().isInterrupted()
+					return Status.CANCEL_STATUS;
 				}
 			}
-			if (count > 0)
-				showPopup(new SummaryNotification(count, max));
-			schedule();
+			if (count > 0 && !monitor.isCanceled())
+				showPopup(new SummaryNotification(count, max), monitor);
 		}
 
+		if (monitor.isCanceled()) {
+			return Status.CANCEL_STATUS;
+		}
+
+		schedule(delay);
 		return Status.OK_STATUS;
+	}
+
+	/**
+	 * Enqueues an {@link INotification} to be processed by this job. If the job
+	 * is not scheduled, this method does nothing.
+	 * 
+	 * @param notification
+	 *            notification for this job to process asynchronously.
+	 */
+	public void enqueueNotification(INotification notification) {
+		if (getState() != Job.NONE) {
+			mQueue.add(notification);
+		}
 	}
 
 	/**
@@ -130,8 +159,12 @@ public abstract class AbstractPopupJob extends Job {
 	 * 
 	 * @param notification
 	 *            notification to process
+	 * @param monitor
+	 *            the monitor to be used for reporting progress and responding
+	 *            to cancellation. The monitor is never <code>null</code>
 	 */
-	public abstract void showPopup(INotification notification);
+	protected abstract void showPopup(INotification notification,
+			IProgressMonitor monitor);
 
 	/**
 	 * A notification that summarizes a set of notifications when they arrive
@@ -155,7 +188,7 @@ public abstract class AbstractPopupJob extends Job {
 		public SummaryNotification(int count, Severity severity) {
 			super(Messages.SUMMARY_NOTIFICATION_SUBJECT.getText(),
 					Messages.SUMMARY_NOTIFICATION_BODY.getText(count),
-					new Date(), severity, AbstractPopupJob.class);
+					new Date(), severity, AbstractNotificationJob.class);
 		}
 	}
 
@@ -175,7 +208,7 @@ public abstract class AbstractPopupJob extends Job {
 		public ThresholdReachedNotification() {
 			super(Messages.THRESHOLD_NOTIFICATION_SUBJECT.getText(),
 					Messages.THRESHOLD_NOTIFICATION_BODY.getText(), new Date(),
-					Severity.HIGH, AbstractPopupJob.class);
+					Severity.HIGH, AbstractNotificationJob.class);
 		}
 	}
 

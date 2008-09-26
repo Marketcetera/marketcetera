@@ -1,8 +1,7 @@
 package org.marketcetera.photon.notification;
 
-import java.util.Queue;
-
 import org.eclipse.core.runtime.Assert;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Display;
 import org.marketcetera.core.notifications.INotification;
@@ -13,8 +12,8 @@ import org.marketcetera.util.misc.ClassVersion;
 
 /**
  * Uses {@link NotificationPlugin} preferences to determine behavior of
- * {@link #showPopup(INotification)}. Popup windows are created and displayed
- * with an optional sound.
+ * {@link #showPopup(INotification, IProgressMonitor)}. Popup windows are
+ * created and displayed with an optional sound.
  * 
  * This class may be subclassed to override
  * <ul>
@@ -29,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class PopupJob extends AbstractPopupJob {
+public class PopupJob extends AbstractNotificationJob {
 
 	/**
 	 * The plugin, used for determining user preferences.
@@ -56,23 +55,24 @@ public class PopupJob extends AbstractPopupJob {
 	 * @param display
 	 *            display to use for UI, cannot be null
 	 */
-	public PopupJob(Queue<INotification> queue, Display display) {
-		super("Desktop Notification Popup Job", queue); //$NON-NLS-1$
+	public PopupJob(Display display) {
+		super("Desktop Notification Popup Job"); //$NON-NLS-1$
 		Assert.isNotNull(display);
 		this.mDisplay = display;
 		setSystem(true);
 	}
 
 	/**
-	 * This implementation of {@link AbstractPopupJob#showPopup(INotification)}
-	 * displays the popup created by {@link #createPopup(INotification)} and
-	 * consults the plugin preferences to determine if a sound should be played
-	 * as well.
+	 * This implementation of
+	 * {@link AbstractNotificationJob#showPopup(INotification)} displays the
+	 * popup created by {@link #createPopup(INotification)} and determines if a
+	 * sound should be played.
 	 * 
 	 * This method will block until the popup has been closed.
 	 */
 	@Override
-	public void showPopup(final INotification notification) {
+	public void showPopup(final INotification notification,
+			final IProgressMonitor monitor) {
 		mPopup = null;
 		mDisplay.syncExec(new Runnable() {
 			@Override

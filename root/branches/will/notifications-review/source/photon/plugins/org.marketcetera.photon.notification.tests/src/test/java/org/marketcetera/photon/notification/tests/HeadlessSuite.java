@@ -1,7 +1,7 @@
 package org.marketcetera.photon.notification.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
-import org.marketcetera.photon.notification.AbstractPopupJobTest;
+import org.marketcetera.photon.notification.AbstractNotificationJobTest;
 import org.marketcetera.photon.notification.NotificationPluginTest;
 import org.marketcetera.photon.notification.DesktopNotificationControllerTest;
 import org.marketcetera.photon.notification.PopupJobTest;
@@ -18,7 +18,7 @@ import org.marketcetera.photon.notification.preferences.NotificationPreferencesT
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	AbstractPopupJobTest.class,
+	AbstractNotificationJobTest.class,
 	PopupJobTest.class,
 	NotificationPreferencesTest.class,
 	NotificationPluginTest.class,
