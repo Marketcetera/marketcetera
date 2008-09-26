@@ -5,7 +5,7 @@ import java.util.Date;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.INotification.Severity;
-import org.marketcetera.photon.notification.AbstractPopupJob.SummaryNotification;
+import org.marketcetera.photon.notification.AbstractNotificationJob.SummaryNotification;
 
 /* $License$ */
 
@@ -46,6 +46,8 @@ public class NotificationUtil {
 		return new SummaryNotification(count, severity) {
 			@Override
 			public boolean equals(final Object obj) {
+				if (this == obj)
+					return true;
 				if (obj instanceof SummaryNotification) {
 					final SummaryNotification other = (SummaryNotification) obj;
 					return getSeverity().equals(other.getSeverity())

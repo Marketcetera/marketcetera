@@ -4,12 +4,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Queue;
-
-import org.eclipse.core.runtime.jobs.Job;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.INotificationManager;
@@ -31,30 +27,20 @@ public class DesktopNotificationControllerTest {
 	
 	private INotificationManager mMockNotificationManager;
 	
-	private Queue<INotification> mMockQueue;
-	
-	private Job mMockJob;
+	private AbstractNotificationJob mMockJob;
 	
 	private DesktopNotificationController mFixture;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
 		mMockPlugin = mock(NotificationPlugin.class);
 		NotificationPlugin.setOverride(mMockPlugin);
 		mMockNotificationManager = mock(INotificationManager.class);
 		stub(mMockPlugin.getNotificationManager()).toReturn(mMockNotificationManager);
-		mMockQueue = mock(Queue.class);
-		mMockJob = mock(Job.class);
+		mMockJob = mock(AbstractNotificationJob.class);
 		mFixture = new DesktopNotificationController() {
 			@Override
-			protected Queue<INotification> createQueue() {
-				return mMockQueue;
-			}
-			
-			@Override
-			protected Job createJob(Queue<INotification> queue) {
-				assertEquals(mMockQueue, queue);
+			protected AbstractNotificationJob createJob() {
 				return mMockJob;
 			}
 		};
@@ -83,7 +69,7 @@ public class DesktopNotificationControllerTest {
 		verify(mMockNotificationManager).subscribe(mFixture);
 		INotification mockNotification = mock(INotification.class);
 		mFixture.publishTo(mockNotification);
-		verify(mMockQueue).add(mockNotification);
+		verify(mMockJob).enqueueNotification(mockNotification);
 		mFixture.dispose();
 		verify(mMockNotificationManager).unsubscribe(mFixture);
 	}
