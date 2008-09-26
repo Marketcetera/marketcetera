@@ -73,6 +73,8 @@
                     eclipse/plugins/org.eclipse.ui.net_*,
                     eclipse/plugins/org.junit_*/**,
                     eclipse/plugins/org.junit4_*/**,
+                    eclipse/plugins/org.eclipse.jdt.junit4.runtime_*,
+                    eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
                     eclipse/plugins/org.apache.lucene_*,
                     eclipse/plugins/org.eclipse.debug.ui_*,
                     eclipse/plugins/org.eclipse.search_*,
@@ -93,6 +95,23 @@
                     eclipse/plugins/org.eclipse.ui.workbench.texteditor_*,
                     eclipse/plugins/org.eclipse.update.core_*
                   </includes>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>mylyn</artifactId>
+                  <version>3.0.1.v20080721-2100-e3.4</version>
+                  <type>zip</type>
+                  <includes>
+                    plugins/org.apache.commons.codec_*,
+                    plugins/org.apache.commons.httpclient_*,
+                    plugins/org.apache.commons.lang_*,
+                    plugins/org.apache.commons.logging_*,
+                    plugins/org.eclipse.mylyn.commons.net_*,
+                    plugins/org.eclipse.mylyn.commons.ui_*,
+                    plugins/org.eclipse.mylyn.commons.net.source_*,
+                    plugins/org.eclipse.mylyn.commons.ui.source_*
+                  </includes>
+                  <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.marketcetera</groupId>
