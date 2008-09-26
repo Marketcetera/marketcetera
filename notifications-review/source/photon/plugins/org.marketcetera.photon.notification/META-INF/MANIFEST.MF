@@ -6,7 +6,7 @@ Bundle-Version: 0.8.0
 Bundle-Activator: org.marketcetera.photon.notification.NotificationPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.mylyn.commons.ui,
+ org.eclipse.mylyn.commons.ui;bundle-version="3.0.1",
  org.marketcetera.core,
  org.marketcetera.util,
  org.eclipse.ui.console
