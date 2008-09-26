@@ -28,7 +28,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
-class NotificationConsoleController implements IConsoleFactory,
+public class NotificationConsoleController implements IConsoleFactory,
 		IConsoleListener {
 
 	/**
@@ -54,7 +54,7 @@ class NotificationConsoleController implements IConsoleFactory,
 	/**
 	 * Constructor.
 	 */
-	protected NotificationConsoleController() {
+	public NotificationConsoleController() {
 		mConsoleManager = ConsolePlugin.getDefault().getConsoleManager();
 		mConsoleManager.addConsoleListener(this);
 		mNotificationManager = NotificationPlugin.getDefault()

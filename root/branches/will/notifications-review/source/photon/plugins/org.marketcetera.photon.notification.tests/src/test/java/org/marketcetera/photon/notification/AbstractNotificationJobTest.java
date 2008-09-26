@@ -47,7 +47,7 @@ public class AbstractNotificationJobTest extends MultiThreadedTestBase {
 				}
 			}
 		};
-		mJob.schedule(500);
+		mJob.schedule(2000);
 	}
 
 	@After
