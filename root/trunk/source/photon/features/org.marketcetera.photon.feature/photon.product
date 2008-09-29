@@ -37,6 +37,7 @@ Visit http://www.marketcetera.org
       </win>
    </launcher>
 
+
    <vm>
    </vm>
 
@@ -45,9 +46,9 @@ Visit http://www.marketcetera.org
 
    <features>
       <feature id="org.marketcetera.photon.feature" version="0.1.4"/>
+      <feature id="org.rubypeople.rdt" version="0.8.1.609062100PRD"/>
       <feature id="org.eclipse.rcp" version="3.3.1.R33x_r20070802-8y8eE8sEV3Fz0z0GlHJrXvTAUS"/>
       <feature id="org.marketcetera.photon.eclipse.feature" version="0.8.0"/>
-      <feature id="org.rubypeople.rdt" version="1.0.3.200807071913NGT"/>
    </features>
 
 </product>
