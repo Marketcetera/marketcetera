@@ -1,0 +1,40 @@
+<%= render :partial => 'shared/breadcrumbs', :locals=> { :top_level => "Position Reports",
+           :top_level_controller => 'positions', :action_name=>''} %>
+<h1>Position Reports</h1>
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+ end %>
+<p>Please choose from the following reports:</p>
+    <div id="positions_as_of">
+        <% form_tag({ :controller => 'positions_queries', :action => 'positions_as_of'}, :method => :get) do -%>
+            <fieldset>
+                <h2>Positions As Of Date</h2>
+                <label for="on_date">Positions as of: </label>
+                <% if(!@report.nil? && !@report.errors[:on_date].nil?) %>
+                    <div class="fieldWithErrors">
+                <% end -%>
+                <div class="date"><%= date_select :date, :on, :order => [:year, :month, :day] %></div>
+                <% if(!@report.nil? && !@report.errors[:on_date].nil?)%></div><% end -%>
+            </fieldset>
+            <div>
+                <%= submit_tag 'List Positions', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>
+    
+    <div id="positions_by_account">
+        <% form_tag({ :controller => 'positions_queries', :action => 'positions_by_account'}, :method => :get) do -%>
+            <fieldset>
+                <h2>Positions By Account</h2>
+                <p>List all positions for a particular account</p>
+                <label for="account_nickname">Account</label>
+                <%= text_field_with_auto_complete :account, :nickname %>
+            </fieldset>
+            <div>
+                <%= submit_tag 'Search by Account', :class => "submit floatright"  %>
+                <div class="clear"></div>
+            </div>
+        <% end -%>
+    </div>    
+    

@@ -1,0 +1,20 @@
+# Read about fixtures at http://ar.rubyonrails.org/classes/Fixtures.html
+SUNW:
+  id: 1
+  description: sun micro
+  m_symbol_id: 2
+
+GOOG:
+  id: 2
+  description: google
+  m_symbol_id: 1
+  
+TOLI:
+  id: 3
+  description: hubris
+  m_symbol_id: 3 
+
+BEER:
+  id: 4
+  description: hops, yeast and barley
+  m_symbol_id: 4
