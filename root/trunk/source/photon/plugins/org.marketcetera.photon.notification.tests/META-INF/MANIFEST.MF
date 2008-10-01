@@ -2,10 +2,10 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Notification Test Fragment
 Bundle-SymbolicName: org.marketcetera.photon.notification.tests
-Bundle-Version: 0.8.0
+Bundle-Version: 0.9.0
 Bundle-Vendor: Marketcetera, Inc.
-Fragment-Host: org.marketcetera.photon.notification;bundle-version="0.8.0"
+Fragment-Host: org.marketcetera.photon.notification;bundle-version="0.9.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.junit4;bundle-version="4.3.1",
- org.marketcetera.photon.test;bundle-version="0.8.0"
+ org.marketcetera.photon.test;bundle-version="0.9.0"
 Bundle-ClassPath: .
