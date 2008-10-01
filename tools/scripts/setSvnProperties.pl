@@ -63,11 +63,11 @@ my(%patternsCustom)=(
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ('bin'),
 	'public/source/photon/plugins/org.marketcetera.core'
-	  => ('core-0.8.0.jar'),
+	  => ('core-0.9.0.jar'),
 	'public/source/photon/plugins/org.marketcetera.core.tests'
-	  => ('core-0.8.0-tests.jar'),
+	  => ('core-0.9.0-tests.jar'),
 	'public/source/photon/plugins/org.marketcetera.util'
-	  => ('util-0.8.0.jar'),
+	  => ('util-0.9.0.jar'),
 	'public/source/photon/plugins/org.marketcetera.bogusfeed'
 	  => ('bin'),
 	'public/source/photon/plugins/org.slf4j'

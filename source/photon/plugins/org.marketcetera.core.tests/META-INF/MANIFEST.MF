@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Tests Plug-in
 Bundle-SymbolicName: org.marketcetera.core.tests
-Bundle-Version: 0.8.0
-Bundle-ClassPath: core-0.8.0-tests.jar
+Bundle-Version: 0.9.0
+Bundle-ClassPath: core-0.9.0-tests.jar
 Bundle-Vendor: Marketcetera, Inc.
 Export-Package: org.marketcetera.core;uses:="junit.framework,org.marketcetera.quickfix,org.marketcetera.util.test",
  org.marketcetera.core.publisher;uses:="junit.framework",
