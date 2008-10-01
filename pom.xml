@@ -30,4 +30,18 @@
     <module>source</module>
     <module>tools</module>
   </modules>
+
+  <build>
+    <plugins>
+      <!-- javadoc customization -->
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <doctitle>Marketcetera Platform ${project.version} API</doctitle>
+          <windowtitle>Marketcetera Platform ${project.version} API</windowtitle>
+          <overview>tools/javadoc/overview.html</overview>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

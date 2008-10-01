@@ -369,16 +369,18 @@
           <configuration>
             <aggregate>true</aggregate>
             <links>
-              <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
-              <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
-              <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
-              <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
-              <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+              <link>http://commons.apache.org/cli/api-release/</link>
+              <link>http://commons.apache.org/collections/api-release/</link>
               <link>http://commons.apache.org/io/api-release/</link>
               <link>http://commons.apache.org/lang/api-release/</link>
-              <link>http://commons.apache.org/collections/api-release/</link>
               <link>http://commons.apache.org/vfs/apidocs/</link>
-              <link>http://commons.apache.org/cli/api-release/</link>
+              <link>http://help.eclipse.org/help32/nftopic/org.eclipse.platform.doc.isv/reference/api</link>
+              <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
+              <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
+              <link>http://logging.apache.org/log4j/1.2/apidocs/</link>
+              <link>http://publicobject.com/glazedlists/glazedlists-1.7.0/api/</link>
+              <link>http://static.springframework.org/spring/docs/2.5.2/api/</link>
+              <link>http://www.quickfixj.org/quickfixj/javadoc/</link>
             </links>
           </configuration>
         </plugin>

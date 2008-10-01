@@ -25,6 +25,5 @@
   <name>Public Tools</name>
 
   <modules>
-    <module>get-listed</module>
   </modules>
 </project>
