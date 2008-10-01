@@ -27,4 +27,19 @@
   <modules>
     <module>maven</module>
   </modules>
+
+  <build>
+    <plugins>
+      <!-- javadoc customization -->
+      <plugin>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <doctitle>Marketcetera Photon ${project.version} API</doctitle>
+          <windowtitle>Marketcetera Photon ${project.version} API</windowtitle>
+          <sourcepath>plugins/org.marketcetera.bogusfeed;plugins/org.marketcetera.marketdata;plugins/org.marketcetera.photon</sourcepath>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
