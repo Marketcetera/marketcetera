@@ -106,9 +106,11 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
      */
     private static void waitToProceed() throws InterruptedException {
         synchronized (STOP_LOCK) {
-            if (!isReadyStop) {
+            if (!sReadyToProceed) {
                 STOP_LOCK.wait();
             }
+            //Reset the flag, for the next test.
+            sReadyToProceed = false;
         }
     }
 
@@ -118,8 +120,8 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
      */
     static void readyToProceed() {
         synchronized (STOP_LOCK) {
-            isReadyStop = true;
-            STOP_LOCK.notifyAll();
+            sReadyToProceed = true;
+            STOP_LOCK.notify();
         }
     }
 
@@ -143,7 +145,7 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
     }
 
     private static final Object STOP_LOCK = new Object();
-    private static boolean isReadyStop = false;
+    private static boolean sReadyToProceed = false;
 
     /**
      * A task thats run in a separate thread to emit data.
