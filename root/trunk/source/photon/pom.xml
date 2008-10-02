@@ -36,7 +36,7 @@
         <configuration>
           <doctitle>Marketcetera Photon ${project.version} API</doctitle>
           <windowtitle>Marketcetera Photon ${project.version} API</windowtitle>
-          <sourcepath>plugins/org.marketcetera.bogusfeed;plugins/org.marketcetera.marketdata;plugins/org.marketcetera.photon</sourcepath>
+          <sourcepath>plugins/org.marketcetera.bogusfeed;plugins/org.marketcetera.marketdata;plugins/org.marketcetera.photon;plugins/org.marketcetera.photon.notification</sourcepath>
         </configuration>
       </plugin>
     </plugins>
