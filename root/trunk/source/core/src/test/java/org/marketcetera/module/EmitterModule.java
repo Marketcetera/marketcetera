@@ -100,11 +100,11 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
 
     /**
      * Invoked by the task to wait before it requests a stop via
-     * the data emit support interface.
+     * the data emit support interface or it emits a null value.
      *
      * @throws InterruptedException if the wait is interrupted.
      */
-    private static void waitToStop() throws InterruptedException {
+    private static void waitToProceed() throws InterruptedException {
         synchronized (STOP_LOCK) {
             if (!isReadyStop) {
                 STOP_LOCK.wait();
@@ -113,10 +113,10 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
     }
 
     /**
-     * Invoked by testing code to allow the task to request a stop
-     * via the data emit interface.
+     * Invoked by testing code to allow the task to proceed to request a stop
+     * via the data emit interface or emit a null value.
      */
-    static void readyToStop() {
+    static void readyToProceed() {
         synchronized (STOP_LOCK) {
             isReadyStop = true;
             STOP_LOCK.notifyAll();
@@ -171,12 +171,15 @@ public class EmitterModule extends ModuleBase implements DataEmitter {
                         }
                         //Use a special marker to mark the end of this transmission.
                         mSupport.send(Boolean.FALSE);
+                        if(emitNull || (requestStop != null && requestStop)) {
+                            //wait if asked to emit null or request stop.
+                            waitToProceed();
+                        }
                         if(emitNull) {
                             mSupport.send(null);
                         }
                         //if asked to request data flow stop, do it
                         if(requestStop != null && requestStop) {
-                            waitToStop();
                             mSupport.dataEmitError(
                                     TestMessages.STOP_DATA_FLOW, true);
                         }

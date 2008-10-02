@@ -678,7 +678,7 @@ public class DataFlowTest extends ModuleTestBase {
         List<DataFlowID> flows = sManager.getDataFlows(true);
         assertEquals(1,flows.size());
         assertEquals(flowID, flows.get(0));
-        EmitterModule.readyToStop();
+        EmitterModule.readyToProceed();
         //wait for the flow to stop
         while(!sManager.getDataFlows(true).isEmpty()) {
             Thread.sleep(1000);
@@ -720,10 +720,12 @@ public class DataFlowTest extends ModuleTestBase {
                 new DataRequest(EmitterModuleFactory.INSTANCE_URN, param),
                 new DataRequest(procURN, String.class.getName())
         });
-        sSink.waitUntilTerminator();
         List<DataFlowID> flows = sManager.getDataFlows(true);
         assertEquals(1,flows.size());
         assertEquals(flowID, flows.get(0));
+        sSink.waitUntilTerminator();
+        //Now let the emitter emit null
+        EmitterModule.readyToProceed();
         //wait for the flow to stop
         while(!sManager.getDataFlows(true).isEmpty()) {
             Thread.sleep(1000);
