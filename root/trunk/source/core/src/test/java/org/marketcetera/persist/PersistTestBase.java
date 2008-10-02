@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.RandomStrings;
 import org.marketcetera.util.misc.UCPFilter;
@@ -15,10 +16,8 @@ import java.beans.PropertyDescriptor;
 import java.beans.IntrospectionException;
 import java.beans.BeanInfo;
 import java.beans.Introspector;
-import java.io.File;
 
 import static org.junit.Assert.*;
-import org.apache.log4j.PropertyConfigurator;
 
 /* $License$ */
 /**
@@ -58,7 +57,7 @@ public class PersistTestBase {
             ApplicationContext parent) throws Exception {
         try {
             generator = SecureRandom.getInstance("SHA1PRNG"); //$NON-NLS-1$
-            logSetup();
+            LoggerConfiguration.logSetup();
             //runs multiple tests in the same vm (which it currently does)
             ClassPathXmlApplicationContext context;
             if (parent == null) {
@@ -73,19 +72,6 @@ public class PersistTestBase {
             SLF4JLoggerProxy.error(PersistTestBase.class, "FailedSetup:", e); //$NON-NLS-1$
             throw e;
         }
-    }
-
-    /**
-     * Sets up logging.
-     */
-    protected static void logSetup() {
-        if(!LOGGER_CONFIG.exists()) {
-            SLF4JLoggerProxy.warn(PersistTestBase.class,
-                    "logger configuration file {} not found", //$NON-NLS-1$ 
-                    LOGGER_CONFIG.getAbsolutePath());
-        }
-        PropertyConfigurator.configureAndWatch
-            (LOGGER_CONFIG.getAbsolutePath(), 10 * 1000l); //10 seconds
     }
 
     /**
@@ -239,10 +225,6 @@ public class PersistTestBase {
             return ucp >= 32 && ucp <= 127 && Character.isLetterOrDigit(ucp); 
         }
     }
-    public static final File TEST_ROOT = new File("src" + //$NON-NLS-1$
-            File.separator + "test"); //$NON-NLS-1$
-    public static final File TEST_SAMPLE_DATA = new File(TEST_ROOT, "sample_data"); //$NON-NLS-1$
-    public static final File TEST_CONF = new File(TEST_SAMPLE_DATA, "conf"); //$NON-NLS-1$
-    public static final File LOGGER_CONFIG = new File(TEST_CONF, "log4j.properties"); //$NON-NLS-1$
+
     private static SecureRandom generator;
 }

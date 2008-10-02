@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerConfiguration;
 import static org.marketcetera.persist.Messages.ERS_NOT_INITIALIZED;
 import static org.marketcetera.persist.Messages.JPA_VENDOR_NOT_INITIALIZED;
 import static org.junit.Assert.*;
@@ -44,6 +45,6 @@ public class IncorrectSetupTest extends PersistTestBase {
     }
     @BeforeClass
     public static void setup() {
-        logSetup();
+        LoggerConfiguration.logSetup();
     }
 }
