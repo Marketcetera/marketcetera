@@ -28,6 +28,7 @@
     <module>core</module>
     <module>orderloader</module>
     <module>ors</module>
+    <module>strategyagent</module>
     <module>photon</module>
     <module>util</module>
     <module>util-test</module>

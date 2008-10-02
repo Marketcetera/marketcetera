@@ -124,6 +124,11 @@
         <version>[20080514]</version>
       </dependency>
       <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>[1.8.0]</version>
+      </dependency>
+      <dependency>
         <groupId>javax.persistence</groupId>
         <artifactId>persistence-api</artifactId>
         <version>[1.0]</version>
@@ -259,6 +264,12 @@
         <version>[1.5]</version>
         <scope>test</scope>
       </dependency> 
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>[1.5.3]</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
   </dependencyManagement>
 

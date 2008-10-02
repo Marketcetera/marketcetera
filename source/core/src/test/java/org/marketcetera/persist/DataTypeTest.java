@@ -1,6 +1,7 @@
 package org.marketcetera.persist;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.util.file.CopyCharsUtils;
 import org.marketcetera.util.file.CopyCharsUnicodeUtils;
 import org.marketcetera.util.unicode.DecodingStrategy;
@@ -784,6 +785,6 @@ public class DataTypeTest extends
     private static final DecodingStrategy DECODING_STRATEGY =
             DecodingStrategy.SIG_REQ;
 
-    private static final File TEST_UNICODE_FILE = new File(TEST_SAMPLE_DATA,
+    private static final File TEST_UNICODE_FILE = new File(LoggerConfiguration.TEST_SAMPLE_DATA,
             "unicode.txt"); //$NON-NLS-1$
 }
