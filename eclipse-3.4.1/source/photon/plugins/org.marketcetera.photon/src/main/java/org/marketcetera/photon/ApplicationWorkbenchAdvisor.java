@@ -7,6 +7,12 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PerspectiveAdapter;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -67,6 +73,43 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		
 		System.setOut(new PrintStream(photonConsole.getInfoMessageStream(), true));
 		System.setErr(new PrintStream(photonConsole.getErrorMessageStream(), true));
+	}
+	
+	@Override
+	public void postStartup() {
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.addPerspectiveListener(new PerspectiveAdapter() {
+					@Override
+					public void perspectiveActivated(IWorkbenchPage page,
+							IPerspectiveDescriptor perspective) {
+						IWorkbenchPartReference reference = page
+								.getReference(page.getActiveEditor());
+						if (reference != null) {
+							if (perspective.getId().equals(
+									"org.rubypeople.rdt.ui.PerspectiveRuby"))
+								page.setPartState(reference,
+										IWorkbenchPage.STATE_RESTORED);
+							else
+								page.setPartState(reference,
+										IWorkbenchPage.STATE_MINIMIZED);
+						}
+					}
+				});
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.addPerspectiveListener(new PerspectiveAdapter() {
+					@Override
+					public void perspectiveActivated(IWorkbenchPage page,
+							IPerspectiveDescriptor perspective) {
+						IViewReference hierarchyView = page
+								.findViewReference("org.rubypeople.rdt.ui.TypeHierarchy");
+						if (hierarchyView != null
+								&& perspective
+										.getId()
+										.equals(
+												"org.rubypeople.rdt.ui.PerspectiveRuby"))
+							page.hideView(hierarchyView);
+					}
+				});
 	}
 
 	
