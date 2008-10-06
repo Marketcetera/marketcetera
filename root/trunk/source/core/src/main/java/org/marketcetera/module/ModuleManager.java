@@ -878,11 +878,11 @@ public final class ModuleManager {
                 throw new DataFlowNotFoundException(new I18NBoundMessage1P(
                         Messages.DATA_FLOW_NOT_FOUND, inFlowID.getValue()));
             }
+            flow.cancel(inRequester == null
+                    ? null
+                    : inRequester.getURN());
+            addToFlowHistory(flow.toDataFlowInfo());
         }
-        flow.cancel(inRequester == null
-                ? null
-                : inRequester.getURN());
-        addToFlowHistory(flow.toDataFlowInfo());
     }
 
     /**
@@ -1057,34 +1057,35 @@ public final class ModuleManager {
      * auto-created, if they are no longer participating in any data flow, they
      * are deleted.
      *
+     * Invokers of this method should acquire the operations lock while
+     * invoking it.
+     *
      * @param inDataFlowInfo data flow info to add to the history.
      * null, if there are no records to add.
      * @throws ModuleException if there were issues deleting auto-created
      * modules that are not participating in any data flows.
      */
     private void addToFlowHistory(DataFlowInfo inDataFlowInfo) throws ModuleException {
-        synchronized(mOperationsLock) {
-            while (mFlowHistory.size() > mMaxFlowHistory) {
-                mFlowHistory.removeLast();
-            }
-            if (inDataFlowInfo != null) {
-                mFlowHistory.addFirst(inDataFlowInfo);
-                //figure out if there are any auto-created modules
-                //and if they are not participating in any data flows
-                //delete them
-                for(DataFlowStep step: inDataFlowInfo.getFlowSteps()) {
-                    Module m = mModules.get(step.getModuleURN());
-                    if(m != null && m.isAutoCreated()) {
-                        //delete the module if its not participating
-                        //in any data flows
-                        final Set<DataFlowID> flows =
-                                mDataFlows.getFlowsParticipating(m.getURN());
-                        if(flows == null || flows.isEmpty()) {
-                            Messages.LOG_DELETE_AUTO_CREATED_MODULE.info(
-                                    this, m.getURN(),
-                                    inDataFlowInfo.getFlowID());
-                            deleteModule(m.getURN());
-                        }
+        while (mFlowHistory.size() > mMaxFlowHistory) {
+            mFlowHistory.removeLast();
+        }
+        if (inDataFlowInfo != null) {
+            mFlowHistory.addFirst(inDataFlowInfo);
+            //figure out if there are any auto-created modules
+            //and if they are not participating in any data flows
+            //delete them
+            for(DataFlowStep step: inDataFlowInfo.getFlowSteps()) {
+                Module m = mModules.get(step.getModuleURN());
+                if(m != null && m.isAutoCreated()) {
+                    //delete the module if its not participating
+                    //in any data flows
+                    final Set<DataFlowID> flows =
+                            mDataFlows.getFlowsParticipating(m.getURN());
+                    if(flows == null || flows.isEmpty()) {
+                        Messages.LOG_DELETE_AUTO_CREATED_MODULE.info(
+                                this, m.getURN(),
+                                inDataFlowInfo.getFlowID());
+                        deleteModule(m.getURN());
                     }
                 }
             }
