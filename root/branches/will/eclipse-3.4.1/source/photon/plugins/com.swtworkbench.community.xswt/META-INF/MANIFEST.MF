@@ -20,7 +20,7 @@ Export-Package: com.swtworkbench.community.xswt,
 Require-Bundle: org.eclipse.core.runtime,
       org.eclipse.ui,
       org.eclipse.ui.forms,
-      org.kxml2,
+      org.kxml,
       org.eclipse.swt
 Bundle-SymbolicName: com.swtworkbench.community.xswt;singleton:=true
 Bundle-ClassPath: .

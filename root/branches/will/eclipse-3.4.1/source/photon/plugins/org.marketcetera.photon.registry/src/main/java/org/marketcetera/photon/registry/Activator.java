@@ -45,7 +45,6 @@ public class Activator implements BundleActivator {
 	
 	private static final String[] UNWANTED_EXTENSIONS = new String[] {
 		"org.eclipse.ui.resourcePerspective",  //$NON-NLS-1$
-		"org.rubypeople.rdt.ui.RubyBrowsingPerspective",  //$NON-NLS-1$
 		"org.eclipse.update.internal.ui.preferences.MainPreferencePage",  //$NON-NLS-1$
 		"org.eclipse.debug.ui.launchActionSet",  //$NON-NLS-1$
 		"org.rubypeople.rdt.debug.ui.RDTDebugActionSet",  //$NON-NLS-1$
@@ -62,7 +61,12 @@ public class Activator implements BundleActivator {
 		"org.eclipse.ui.WorkingSetActionSet",  //$NON-NLS-1$
 		"org.eclipse.ui.edit.text.actionSet.annotationNavigation",  //$NON-NLS-1$
 		"org.eclipse.debug.ui.contextualLaunch.debug",  //$NON-NLS-1$
-		"org.eclipse.search.searchActionSet"	// tk - removing search menu to fix bug #39
+		"org.eclipse.search.searchActionSet",	// tk - removing search menu to fix bug #39
+		"org.eclipse.team.ui.TeamPreferences",
+		"org.eclipse.compare.internal.ComparePreferencePage",
+		"org.rubypeople.rdt.ui.SearchActionSet",
+		"org.eclipse.team.ui.TeamSynchronizingPerspective",
+		"org.eclipse.team.ui.actionSet"
 	};
 
 	private RegistryProviderOSGI registryProvider;
