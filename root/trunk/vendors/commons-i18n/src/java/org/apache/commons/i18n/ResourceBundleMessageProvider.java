@@ -39,20 +39,47 @@ public class ResourceBundleMessageProvider implements MessageProvider {
     private static Logger logger = Logger.getLogger(ResourceBundleMessageProvider.class.getName());
 
     private final String baseName;
+    private final ClassLoader classLoader;
+    /**
+     * Creates an instance.
+     *
+     * @param baseName the bundle base name
+     *
+     * @throws MessageNotFoundException Thrown if the resource bundle
+     * does not exist.
+     */
+    public ResourceBundleMessageProvider(String baseName)
+            throws MessageNotFoundException {
+        this(baseName, null);
+    }
 
     /**
+     * Creates an instance.
      *
-     * @throws MessageNotFoundException Thrown if the resource bundle does not exist.
+     * @param baseName the bundle base name
+     * @param classLoader the class loader to use for loading the bundle.
+     * 
+     * @throws MessageNotFoundException Thrown if the resource bundle
+     * does not exist.
      */
-    public ResourceBundleMessageProvider(String baseName) throws MessageNotFoundException {
+    public ResourceBundleMessageProvider(String baseName,
+                                         ClassLoader classLoader)
+            throws MessageNotFoundException {
         this.baseName = baseName;
+        this.classLoader = classLoader;
         // Test if resource exists
         try {
-            ResourceBundle.getBundle(baseName);
+            if(classLoader == null) {
+                ResourceBundle.getBundle(baseName);
+            } else {
+                ResourceBundle.getBundle(baseName,
+                        Locale.getDefault(), classLoader);
+            }
         }
         catch ( MissingResourceException e ) {
             String msg = MessageFormat.format(
-                    I18nUtils.INTERNAL_MESSAGES.getString(I18nUtils.RESOURCE_BUNDLE_NOT_FOUND),
+                    I18nUtils.INTERNAL_MESSAGES.getString(
+                            I18nUtils.RESOURCE_BUNDLE_NOT_FOUND),
                     new String[]{baseName});
             logger.log(Level.WARNING, msg);
             throw new MessageNotFoundException(msg);
@@ -64,7 +91,9 @@ public class ResourceBundleMessageProvider implements MessageProvider {
      */
     public String getText(String id, String entry, Locale locale) {
         try {
-            ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
+            ResourceBundle resourceBundle = classLoader == null
+                    ? ResourceBundle.getBundle(baseName, locale)
+                    :ResourceBundle.getBundle(baseName, locale, classLoader);
              return resourceBundle.getObject(id+"."+entry).toString();
         }
         catch ( MissingResourceException e ) {
@@ -83,7 +112,9 @@ public class ResourceBundleMessageProvider implements MessageProvider {
     public Map getEntries(String id, Locale locale) {
         String messageIdentifier = id+".";
         Map entries = null;
-        ResourceBundle resourceBundle = ResourceBundle.getBundle(baseName, locale);
+        ResourceBundle resourceBundle = classLoader == null
+                ? ResourceBundle.getBundle(baseName, locale)
+                :ResourceBundle.getBundle(baseName, locale, classLoader);
         Enumeration keys = resourceBundle.getKeys();
         while ( keys.hasMoreElements() ) {
             String key = (String)keys.nextElement();
