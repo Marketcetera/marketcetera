@@ -3,6 +3,7 @@ package org.marketcetera.strategyagent;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.unicode.UnicodeFileReader;
 import org.marketcetera.util.spring.SpringUtils;
+import org.marketcetera.util.except.I18NException;
 import org.marketcetera.core.ApplicationBase;
 import org.marketcetera.module.*;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -73,9 +74,9 @@ public class StrategyAgent extends ApplicationBase {
             }
         } catch (Throwable e) {
             Messages.LOG_ERROR_CONFIGURE_AGENT.error(StrategyAgent.class,
-                    e.getLocalizedMessage());
+                    getMessage(e));
             Messages.LOG_ERROR_CONFIGURE_AGENT.debug(StrategyAgent.class,
-                    e, e.getLocalizedMessage());
+                    e, getMessage(e));
             inAgent.exit(EXIT_START_ERROR);
             return;
         }
@@ -84,9 +85,9 @@ public class StrategyAgent extends ApplicationBase {
             inAgent.init();
         } catch (Throwable e) {
             Messages.LOG_ERROR_INITIALIZING_AGENT.error(StrategyAgent.class,
-                    e.getLocalizedMessage());
+                    getMessage(e));
             Messages.LOG_ERROR_INITIALIZING_AGENT.debug(StrategyAgent.class,
-                    e, e.getLocalizedMessage());
+                    e, getMessage(e));
             inAgent.exit(EXIT_INIT_ERROR);
             return;
         }
@@ -114,6 +115,21 @@ public class StrategyAgent extends ApplicationBase {
      */
     ModuleManager getManager() {
         return mManager;
+    }
+
+    /**
+     * Return the exception message from the supplied Throwable.
+     *
+     * @param inThrowable the throwable whose message needs to be returned.
+     *
+     * @return the throwable message.
+     */
+    private static String getMessage(Throwable inThrowable) {
+        if(inThrowable instanceof I18NException) {
+            return ((I18NException)inThrowable).getLocalizedDetail();
+        } else {
+            return inThrowable.getLocalizedMessage();
+        }
     }
 
     /**
@@ -236,11 +252,11 @@ public class StrategyAgent extends ApplicationBase {
                     Messages.LOG_ERROR_EXEC_CMD.warn(this,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            e.getLocalizedMessage());
+                            getMessage(e));
                     Messages.LOG_ERROR_EXEC_CMD.debug(this, e,
                             c.getRunner().getName(),
                             c.getParameter(), c.getLineNum(),
-                            e.getLocalizedMessage());
+                            getMessage(e));
                 }
             }
         }
