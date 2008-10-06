@@ -50,11 +50,6 @@ public class SinkModule extends Module
     @Override
     public void receiveData(DataFlowID inFlowID, Object inData)
             throws UnsupportedDataTypeException, StopDataFlowException {
-        if(mManager == null) {
-            Messages.LOG_SINK_MODULE_MISCONFIGURED.error(this);
-        } else {
-            mManager.receiveSinkData(inFlowID, inData);
-        }
         synchronized(this) {
             String type = inData == null
                     ? String.valueOf(null)
@@ -71,6 +66,11 @@ public class SinkModule extends Module
                 mDataFlowStats.put(inFlowID, c);
             }
             c.increment();
+        }
+        if(mManager == null) {
+            Messages.LOG_SINK_MODULE_MISCONFIGURED.error(this);
+        } else {
+            mManager.receiveSinkData(inFlowID, inData);
         }
     }
 
