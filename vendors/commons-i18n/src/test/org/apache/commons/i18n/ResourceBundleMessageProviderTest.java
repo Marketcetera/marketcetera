@@ -22,6 +22,12 @@ package org.apache.commons.i18n;
 
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
+import java.util.HashMap;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
 
 import org.apache.commons.i18n.bundles.MessageBundle;
 
@@ -120,5 +126,93 @@ public class ResourceBundleMessageProviderTest extends MessageProviderTestBase {
         catch(MessageNotFoundException mnfex) {
             assertEquals("Could not find resource bundle with base name nonExistentBundle, uninstalling it", mnfex.getMessage());
         }
+    }
+
+    /**
+     * Tests resource bundle loading with a specific classloader.
+     */
+    public void testClassLoader() {
+        //Test that bundle is not available in the default classloader
+        String bundleName="classBundle";
+        try {
+            new ResourceBundleMessageProvider(bundleName);
+            fail("Should fail with bundle not exist error");
+        } catch (MessageNotFoundException e) {
+            assertEquals("Could not find resource bundle with base name classBundle, uninstalling it", e.getMessage());
+        }
+        try {
+            new ResourceBundleMessageProvider(bundleName, null);
+            fail("Should fail with bundle not exist error");
+        } catch (MessageNotFoundException e) {
+            assertEquals("Could not find resource bundle with base name classBundle, uninstalling it", e.getMessage());
+        }
+        //Create a new classloader with the bundle.
+        Properties p = new Properties();
+        p.put("helloWorld.title","Hello World");
+        p.put("helloWorld.text","Hello World, we are in {0}.");
+        p.put("helloWorld.notTranslated","This entry is not translated to any other languages");
+        Properties pDE = new Properties();
+        pDE.put("helloWorld.title","Hallo Welt");
+        pDE.put("helloWorld.text","Hallo Welt, wir sind in {0}.");
+        DynamicResourceLoader loader = new DynamicResourceLoader();
+        loader.addResource(bundleName + ".properties", p);
+        loader.addResource(bundleName + "_de.properties", pDE);
+        //Create a provider with the classloader
+        ResourceBundleMessageProvider provider =
+                new ResourceBundleMessageProvider(bundleName, loader);
+        //Test get text for messages
+        super.testGetText(provider);
+        //Test Entries
+        Map usEntries = provider.getEntries("helloWorld", Locale.US);
+        assertEquals("Default locale, no of entries", 3, usEntries.size());
+        assertEquals("Default locale, titel", "Hello World", usEntries.get("title"));
+        assertEquals("Default locale, text", "Hello World, we are in {0}.", usEntries.get("text"));
+        assertEquals("This entry is not translated to any other languages", usEntries.get("notTranslated"));
+
+        Map germanEntries = provider.getEntries("helloWorld", Locale.GERMAN);
+        assertEquals("No of entries", 3, germanEntries.size());
+        assertEquals("Hallo Welt", germanEntries.get("title"));
+        assertEquals("Hallo Welt, wir sind in {0}.", germanEntries.get("text"));
+        assertEquals("This entry is not translated to any other languages", germanEntries.get("notTranslated"));
+        try {
+            provider.getEntries("fooBar", Locale.GERMAN);
+            fail("Bundle does not exist and should cause error");
+        }
+        catch(MessageNotFoundException mnfex) {
+            assertEquals("No message entries found for bundle with key fooBar", mnfex.getMessage());
+        }
+    }
+
+    /**
+     * A Test classloader to dynamically load Properties instances as
+     * properties files.
+     */
+    private static class DynamicResourceLoader extends ClassLoader {
+        public InputStream getResourceAsStream(String name) {
+            try {
+                if(mResources.containsKey(name)) {
+                    Properties p = (Properties) mResources.get(name);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    p.store(baos,"");
+                    baos.close();
+                    return new ByteArrayInputStream(baos.toByteArray());
+                }
+            } catch (IOException ignore) {
+            }
+            return super.getResourceAsStream(name);
+        }
+
+        /**
+         * Adds the property file with the specified name and contents to
+         * the set of resources that should be returned by this class loader.
+         *
+         * @param inName the resource name.
+         * @param inProperties the property value.
+         */
+        public void addResource(String inName, Properties inProperties) {
+            mResources.put(inName, inProperties);
+        }
+
+        private HashMap mResources = new HashMap();
     }
 }
