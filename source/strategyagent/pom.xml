@@ -62,6 +62,7 @@
     <dependency>
       <groupId>asm</groupId>
       <artifactId>asm</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
