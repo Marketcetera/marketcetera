@@ -223,6 +223,15 @@
         <version>[0.9.1.1]</version>
         <scope>runtime</scope>
       </dependency>
+      <!-- Used for testing but setting its scope to testing over-rides
+           its scope to testing for cases where it is a transitive runtime
+           dependency -->
+      <dependency>
+        <groupId>asm</groupId>
+        <artifactId>asm</artifactId>
+        <version>[1.5.3]</version>
+        <scope>runtime</scope>
+      </dependency>
 
       <!-- Testing: local modules. -->
       <dependency>
@@ -264,12 +273,6 @@
         <version>[1.5]</version>
         <scope>test</scope>
       </dependency> 
-      <dependency>
-        <groupId>asm</groupId>
-        <artifactId>asm</artifactId>
-        <version>[1.5.3]</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
