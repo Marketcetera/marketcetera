@@ -76,11 +76,33 @@ public class I18NMessageProvider
     public I18NMessageProvider
         (String providerId)
     {
+        this(providerId, null);
+    }
+
+    /**
+     * Creates a new message provider with the given ID. The provider
+     * ID is combined with the suffix {@link #MESSAGE_FILE_EXTENSION}
+     * to form the name of a mapping file. The file should be
+     * retrievable as a resource, and its format should be that used
+     * by Apache Commons i18n.
+     *
+     * @param providerId The provider ID.
+     * @param classLoader the class loader to use for loading the mapping file.
+     */
+    public I18NMessageProvider
+        (String providerId,
+         ClassLoader classLoader)
+    {
         mProviderId=providerId;
         String baseName=getProviderId()+MESSAGE_FILE_EXTENSION;
         ResourceBundleMessageProvider provider;
         try {
-            provider=new ResourceBundleMessageProvider(baseName);
+            if (classLoader==null) {
+                provider=new ResourceBundleMessageProvider(baseName);
+            } else {
+                provider=new ResourceBundleMessageProvider(baseName,
+                        classLoader);
+            }
         } catch (MessageNotFoundException ex) {
             SLF4JLoggerProxy.error
                 (this,MESSAGE_FILE_NOT_FOUND,getProviderId(),baseName);

@@ -2,6 +2,13 @@ package org.marketcetera.util.log;
 
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Properties;
+import java.util.List;
+import java.io.InputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
@@ -171,6 +178,64 @@ public class I18NMessageProviderTest
              "'util_log_test'; "+
              "identit\u00E9 'nonexistent_msg'; entr\u00E9e 'msg'; "+
              "param\u00E8tres ('a')",TEST_LOCATION);
+    }
+    
+    @Test
+    public void classLoader() {
+         //Verify that the resource is not available
+        final String providerName = "loader_prv";
+        I18NMessageProvider provider=new I18NMessageProvider(providerName);
+        Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Message file missing: provider '"+
+                     providerName+
+                     "'; base name '"+
+                     providerName+
+                     I18NMessageProvider.MESSAGE_FILE_EXTENSION+
+                     "'", TEST_LOCATION);
+        assertEvent
+            (events.next(),Level.ERROR,TEST_CATEGORY,
+             "Abnormal exception: stack trace",TEST_LOCATION);
+        assertFalse(events.hasNext());
+        getAppender().clear();
+        final Properties messages=new Properties();
+        messages.put("hello.msg","Hello");
+        messages.put("hello.title","Hello {0}!");
+        final String propertiesName=providerName+
+                I18NMessageProvider.MESSAGE_FILE_EXTENSION+
+                ".properties"; 
+        //Create a provider with a custom classloader
+        provider=new I18NMessageProvider(providerName,new ClassLoader(){
+            @Override
+            public InputStream getResourceAsStream(String name) {
+                try {
+                    if(propertiesName.equals(name)) {
+                        ByteArrayOutputStream baos=new ByteArrayOutputStream();
+                        messages.store(baos,"");
+                        baos.close();
+                        return new ByteArrayInputStream(baos.toByteArray());
+                    }
+                } catch (IOException ignore) {
+                }
+                return super.getResourceAsStream(name);
+            }
+        });
+        //Verify that resource was found.
+        final List<LoggingEvent> logs=getAppender().getEvents();
+        assertTrue(logs.toString(),logs.isEmpty());
+        I18NLoggerProxy logger=new I18NLoggerProxy(provider);
+        I18NMessage0P helloMsg=new I18NMessage0P(logger,"hello");
+        I18NMessage1P helloTitle=new I18NMessage1P(logger,"hello","title");
+        //Verify that messages can now be translated
+        Locale saved=Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.ROOT);
+            assertEquals("Hello",provider.getText(helloMsg));
+            assertEquals("Hello World!",provider.getText(helloTitle,"World"));
+        } finally {
+            Locale.setDefault(saved);
+        }
     }
 
     /*
