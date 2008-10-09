@@ -38,7 +38,7 @@ import quickfix.field.Urgency;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.7.0
  */
 public abstract class FIXMatcherTest<T>
     extends TestCase
@@ -394,7 +394,7 @@ public abstract class FIXMatcherTest<T>
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.7.0
      */
     protected static class MatchTuple
     {

@@ -236,7 +236,7 @@ public class StrategyTest extends TestCase {
 	 *
 	 * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 0.8.0
 	 */
 	private static class NotificationTuple
 	{

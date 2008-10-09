@@ -32,7 +32,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.8.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class AbstractNotificationJob extends Job {
@@ -172,7 +172,7 @@ public abstract class AbstractNotificationJob extends Job {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 0.8.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static class SummaryNotification extends Notification {
@@ -197,7 +197,7 @@ public abstract class AbstractNotificationJob extends Job {
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$
-	 * @since $Release$
+	 * @since 0.8.0
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public static class ThresholdReachedNotification extends Notification {

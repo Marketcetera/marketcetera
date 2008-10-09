@@ -26,7 +26,7 @@ import ca.odell.glazedlists.matchers.Matcher;
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.7.0
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public abstract class FIXMatcher<T>
@@ -218,7 +218,7 @@ public abstract class FIXMatcher<T>
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.7.0
      */
     @ClassVersion("$Id$")//$NON-NLS-1$
     private static class FIXConverter
