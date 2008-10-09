@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="Marketcetera trade database" />
+    <meta name="robots" content="index, follow" />
+    <%= stylesheet_link_tag "scaffold" %>
+    <%= stylesheet_link_tag "global" %>
+    <%= javascript_include_tag :defaults %>
+    <%= javascript_include_tag "marketcetera/moo.fx.js" %>
+    <%= javascript_include_tag "marketcetera/accordion.js" %>
+    <%= javascript_include_tag "marketcetera/event-selectors" %>
+    <%= javascript_include_tag "marketcetera/navigation" %>
+    <%= javascript_include_tag "marketcetera/marketcetera" %>
+    <title>Marketcetera Trade Database: <%= controller.action_name + ' ' + controller.controller_name %></title>
+    <link rel="alternate" type="application/rss+xml" title="" href="" />
+    <link rel="shorcut icon" type="image/x-ico" href="/images/favicon.ico" />
+</head>
+
+<body>
+    <div id="productcontainer">
+<!-- BEGIN HEADER -->
+      <div id="header">
+        <div id="logo">
+           <%= link_to(image_tag("/images/logo.jpg", :alt=>"Marketcetera"), {:controller => 'welcome'})%>
+        </div>
+        <div id="slogan">
+           <%= link_to(image_tag("/images/slogan.gif", :alt=>"download.run.trade."),
+                       "http://www.marketcetera.com")%>
+        </div>
+        <div class="clear"></div>
+      </div>
+<!-- END HEADER -->
+
+<!-- BEGIN BODY -->
+      <div id="body">
+      <div id="navitem"><%= NavigationHelper::NAVIGATION_MAPPING[@controller.controller_name]%></div>
+<%= render :partial => 'shared/left_navigation_column' %>
+        <div class="right_column">
+   

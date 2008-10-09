@@ -1,0 +1,55 @@
+<body>
+
+<p>Miscellaneous utilities for file management.</p>
+
+<p>This package complements the standard Java file handling facilities
+and apache's {@link org.apache.commons.io.IOUtils}. These include:</p>
+
+<ul>
+
+<li><p>The {@link org.marketcetera.util.file.CopyBytesUtils}, {@link
+org.marketcetera.util.file.CopyCharsUtils}, and {@link
+org.marketcetera.util.file.CopyCharsUnicodeUtils} classes provide
+utilities for copying data between files, streams, and memory, in
+various combinations.</p></li>
+
+<li><p>{@link org.marketcetera.util.file.FileType} offers symbolic
+link detection and file typing, in the minimal fashion possible within
+the platform-independent Java.</p></li>
+
+<li><p>{@link org.marketcetera.util.file.SmartLinksDirectoryWalker}
+offers recursive file tree traversal and {@link
+org.marketcetera.util.file.Deleter} offers tree deletion; both are
+sensitive to symbolic links.</p></li>
+
+</ul>
+
+<p>In addition to utilities, the package makes available a recommended
+design pattern for handling streams safely via the supporting class
+{@link org.marketcetera.util.file.CloseableRegistry}. When a series of
+streams need to be opened and eventually closed, it is important that
+such closures takes place in a timely fashion via explicit calls
+to <code>close()</code>. This must happen even if an exception
+interrupts normal processing, to ensure that the operating system does
+not maintain locks on unused files or uses up file descriptors. Here
+is the recommended approach for handling stream closure:</p>
+
+<pre>
+CloseableRegistry r=new CloseableRegistry();
+try {
+  ByteArrayOutputStream byteArray=new ByteArrayOutputStream();
+  r.register(byteArray);
+  PrintStream printStream=new PrintStream(byteArray);
+  r.register(printStream);
+  ... use printStream
+} finally {
+  r.close();
+}
+</pre>
+
+<p>Many of the above utilities recognize sentinel values as input or
+output file names, such as <code>:stdin:</code> for standard input;
+the complete set of such special names is the constants of {@link
+org.marketcetera.util.file.SpecialNames}.</p>
+
+</body>

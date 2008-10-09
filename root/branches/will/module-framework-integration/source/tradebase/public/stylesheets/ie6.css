@@ -1,0 +1,11 @@
+#body .right_column fieldset select {
+  width: 139px;
+}
+
+#body .right_column fieldset .radio_label {
+  padding-top: 6px;
+}
+
+#body .right_column fieldset #trade_comment {
+  height: 34px;
+}
