@@ -13,7 +13,7 @@ import org.marketcetera.core.ClassVersion;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
- * @since $Release$
+ * @since 0.8.0
  */
 @ClassVersion("$Id: $") //$NON-NLS-1$
 public class Notification

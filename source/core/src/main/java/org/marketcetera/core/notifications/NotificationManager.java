@@ -19,7 +19,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: $
- * @since $Release$
+ * @since 0.8.0
  */
 @ClassVersion("$Id: AccountID.java 9456 2008-07-31 22:28:30Z klim $") //$NON-NLS-1$
 public class NotificationManager
@@ -91,7 +91,7 @@ public class NotificationManager
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id: $
-     * @since $Release$
+     * @since 0.8.0
      */
     @ClassVersion("$Id: $") //$NON-NLS-1$
     private static class NotificationLogger

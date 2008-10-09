@@ -187,7 +187,7 @@ public class FIXMessagesView
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
      * @version $Id$
-     * @since $Release$
+     * @since 0.7.0
      */
     @ClassVersion("$Id$") //$NON-NLS-1$
     private class HeartbeatMatcher

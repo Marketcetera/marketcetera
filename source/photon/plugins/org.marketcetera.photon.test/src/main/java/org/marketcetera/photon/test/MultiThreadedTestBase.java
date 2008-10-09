@@ -15,7 +15,7 @@ import org.junit.Assert;
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.8.0
  */
 public class MultiThreadedTestBase {
 
