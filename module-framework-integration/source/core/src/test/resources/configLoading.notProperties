@@ -1,0 +1,5 @@
+fix.sendercompid=DMAM
+fix.targetcompid=ARCA
+jms.connection.factory=connectionFactory
+jms.context.factory=com.ubermq.jms.client.JMSInitialContextFactory
+jms.incoming.queue=queue:ors-commands
