@@ -8,7 +8,11 @@
 
 use strict;
 use File::Find;
-require 'svnConfig.pl';
+
+my($volume,$dir,$file)=File::Spec->splitpath(__FILE__);
+my($svnConfig)=File::Spec->catpath
+	($volume,$dir,'svnConfig.pl');
+require $svnConfig;
 
 
 # Error checking.
