@@ -13,7 +13,7 @@ import org.marketcetera.core.notifications.INotification.Severity;
  * Tests {@link Notification}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.8.0
  */
 public class NotificationTest

@@ -18,7 +18,7 @@ import org.marketcetera.marketdata.MarketDataFeedTestBase;
  * Tests {@link NotificationManager}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.8.0
  */
 public class NotificationManagerTest
@@ -93,7 +93,7 @@ public class NotificationManagerTest
      * Sample implementation of <code>INotification</code>.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: $
+     * @version $Id$
      * @since 0.8.0
      */
     public static class MockNotification
