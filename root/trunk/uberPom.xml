@@ -379,16 +379,14 @@
         <!-- mvn javadoc:javadoc -->
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>2.4</version>
+          <version>2.5</version>
           <configuration>
-            <aggregate>true</aggregate>
             <links>
               <link>http://commons.apache.org/cli/api-release/</link>
               <link>http://commons.apache.org/collections/api-release/</link>
               <link>http://commons.apache.org/io/api-release/</link>
               <link>http://commons.apache.org/lang/api-release/</link>
               <link>http://commons.apache.org/vfs/apidocs/</link>
-              <link>http://help.eclipse.org/help32/nftopic/org.eclipse.platform.doc.isv/reference/api</link>
               <link>http://java.sun.com/javaee/${mvn.javaee.version}/docs/api/</link>
               <link>http://java.sun.com/javase/${mvn.javase.version}/docs/api/</link>
               <link>http://logging.apache.org/log4j/1.2/apidocs/</link>

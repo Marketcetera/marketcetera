@@ -27,6 +27,7 @@
   <modules>
     <module>bundle</module>
     <module>rcptarget</module>
+    <module>app</module>
   </modules>
 
   <dependencyManagement>
