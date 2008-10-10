@@ -10,10 +10,10 @@ import org.marketcetera.core.publisher.ISubscriber;
  * Coordinates receipt and delivery of {@link INotification} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id: AccountID.java 9456 2008-07-31 22:28:30Z klim $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface INotificationManager
     extends IPublisher
 {

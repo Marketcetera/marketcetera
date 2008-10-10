@@ -11,10 +11,10 @@ import org.marketcetera.core.notifications.Notification;
  * <code>INotification</code> implementation used by {@link Strategy}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since 0.8.0
  */
-@ClassVersion("$Id: OrderBook.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class StrategyNotification
         extends Notification
 {
