@@ -25,9 +25,9 @@
   <name>Photon Maven Components</name>
 
   <modules>
+    <module>app</module>
     <module>bundle</module>
     <module>rcptarget</module>
-    <module>app</module>
   </modules>
 
   <dependencyManagement>
@@ -41,6 +41,7 @@
         <groupId>${mvn.public.package}</groupId>
         <artifactId>photon-rcptarget</artifactId>
         <version>[${project.version}]</version>
+        <type>pom</type>
       </dependency>
     </dependencies>
   </dependencyManagement>
