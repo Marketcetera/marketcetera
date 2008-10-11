@@ -24,17 +24,13 @@
 
   <name>Photon App Components</name>
 
-  <!-- This dependency does not seem to work correctly.
-    -  Leaving this block once we figure out why.
-    -  The workaround was to add this module as the last
-    -  in parent pom.xml.
   <dependencies>
     <dependency>
       <groupId>${mvn.public.package}</groupId>
       <artifactId>photon-rcptarget</artifactId>
+      <type>pom</type>
     </dependency>
   </dependencies>
-  -->
 
   <build>
     <plugins>
