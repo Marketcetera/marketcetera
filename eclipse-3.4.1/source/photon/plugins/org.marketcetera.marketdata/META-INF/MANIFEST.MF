@@ -6,7 +6,7 @@ Bundle-Version: 0.9.0
 Bundle-Activator: org.marketcetera.marketdata.MarketceteraFeedPlugin
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
-Eclipse-RegisterBuddy: org.marketcetera.photon
+Eclipse-RegisterBuddy: org.marketcetera.photon, org.marketcetera.thirdparty
 Require-Bundle: org.eclipse.core.runtime,
  org.marketcetera.core,
  org.marketcetera.photon,
