@@ -23,6 +23,7 @@ Visit http://www.marketcetera.org
    </configIni>
 
    <launcherArgs>
+      <programArgs>--launcher.XXMaxPermSize 256M</programArgs>
       <vmArgs>-Xmx512m</vmArgs>
    </launcherArgs>
 
@@ -41,7 +42,6 @@ Visit http://www.marketcetera.org
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
    </vm>
