@@ -8,7 +8,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IPerspectiveDescriptor;
-import org.eclipse.ui.IViewReference;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.PerspectiveAdapter;
@@ -77,6 +76,8 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 	
 	@Override
 	public void postStartup() {
+		// Hides Editor area when leaving Ruby perspective so editor-related toolbar
+		// items will disappear
 		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
 				.addPerspectiveListener(new PerspectiveAdapter() {
 					@Override
@@ -86,28 +87,13 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 								.getReference(page.getActiveEditor());
 						if (reference != null) {
 							if (perspective.getId().equals(
-									"org.rubypeople.rdt.ui.PerspectiveRuby"))
+									"org.marketcetera.photon.ruby.RubyPerspective")) //$NON-NLS-1$
 								page.setPartState(reference,
 										IWorkbenchPage.STATE_RESTORED);
 							else
 								page.setPartState(reference,
 										IWorkbenchPage.STATE_MINIMIZED);
 						}
-					}
-				});
-		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-				.addPerspectiveListener(new PerspectiveAdapter() {
-					@Override
-					public void perspectiveActivated(IWorkbenchPage page,
-							IPerspectiveDescriptor perspective) {
-						IViewReference hierarchyView = page
-								.findViewReference("org.rubypeople.rdt.ui.TypeHierarchy");
-						if (hierarchyView != null
-								&& perspective
-										.getId()
-										.equals(
-												"org.rubypeople.rdt.ui.PerspectiveRuby"))
-							page.hideView(hierarchyView);
 					}
 				});
 	}
