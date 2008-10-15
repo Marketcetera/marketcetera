@@ -46,52 +46,87 @@
                 <artifactItem>
                   <groupId>org.eclipse</groupId>
                   <artifactId>rcp-sdk</artifactId>
-                  <version>3.3.2</version>
+                  <version>${mvn.eclipse.version}</version>
+                  <classifier>win32</classifier>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.eclipse</groupId>
                   <artifactId>delta-pack</artifactId>
-                  <version>3.3.2</version>
+                  <version>${mvn.eclipse.version}</version>
                   <type>zip</type>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.eclipse</groupId>
                   <artifactId>sdk</artifactId>
-                  <version>3.3.2</version>
+                  <version>${mvn.eclipse.version}</version>
+                  <classifier>win32</classifier>
                   <type>zip</type>
                   <includes>
-                    eclipse/features/org.eclipse.platform.source_*,
-                    eclipse/plugins/org.eclipse.platform.source_*/**,
                     eclipse/plugins/org.eclipse.ui.forms_*,
+                    eclipse/plugins/org.eclipse.ui.forms.source_*,
                     eclipse/plugins/org.eclipse.ui.console_*,
+                    eclipse/plugins/org.eclipse.ui.console.source_*,
                     eclipse/plugins/org.eclipse.core.resources_*,
+                    eclipse/plugins/org.eclipse.core.resources.source_*,
                     eclipse/plugins/org.eclipse.update.ui_*,
+                    eclipse/plugins/org.eclipse.update.ui.source_*,
                     eclipse/plugins/org.eclipse.ui.ide_*,
+                    eclipse/plugins/org.eclipse.ui.ide.source_*,
                     eclipse/plugins/org.eclipse.ui.net_*,
+                    eclipse/plugins/org.eclipse.ui.net.source_*,
                     eclipse/plugins/org.junit_*/**,
+                    eclipse/plugins/org.junit.source_*,
                     eclipse/plugins/org.junit4_*/**,
+                    eclipse/plugins/org.junit4.source_*,
                     eclipse/plugins/org.eclipse.jdt.junit4.runtime_*,
+                    eclipse/plugins/org.eclipse.jdt.junit4.runtime.source_*,
                     eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
-                    eclipse/plugins/org.apache.lucene_*,
+                    eclipse/plugins/org.eclipse.jdt.junit.runtime.source_*,
                     eclipse/plugins/org.eclipse.debug.ui_*,
+                    eclipse/plugins/org.eclipse.debug.ui.source_*,
                     eclipse/plugins/org.eclipse.search_*,
+                    eclipse/plugins/org.eclipse.search.source_*,
                     eclipse/plugins/org.eclipse.team.core_*,
-                    eclipse/plugins/org.eclipse.ui.cheatsheets_*,
-                    eclipse/plugins/org.eclipse.ui.intro_*,
-                    eclipse/plugins/org.eclipse.core.runtime.compatibility_*,
-                    eclipse/plugins/javax.servlet_*,
+                    eclipse/plugins/org.eclipse.team.core.source_*,
                     eclipse/plugins/org.eclipse.core.filebuffers_*,
+                    eclipse/plugins/org.eclipse.core.filebuffers.source_*,
                     eclipse/plugins/org.eclipse.core.filesystem_*,
+                    eclipse/plugins/org.eclipse.core.filesystem.source_*,
                     eclipse/plugins/org.eclipse.core.net_*,
+                    eclipse/plugins/org.eclipse.core.net.source_*,
                     eclipse/plugins/org.eclipse.core.variables_*,
+                    eclipse/plugins/org.eclipse.core.variables.source_*,
                     eclipse/plugins/org.eclipse.debug.core_*,
+                    eclipse/plugins/org.eclipse.debug.core.source_*,
                     eclipse/plugins/org.eclipse.jface.text_*,
+                    eclipse/plugins/org.eclipse.jface.text.source_*,
                     eclipse/plugins/org.eclipse.text_*,
+                    eclipse/plugins/org.eclipse.text.source_*,
                     eclipse/plugins/org.eclipse.ui.views_*,
+                    eclipse/plugins/org.eclipse.ui.views.source_*,
                     eclipse/plugins/org.eclipse.ui.editors_*,
+                    eclipse/plugins/org.eclipse.ui.editors.source_*,
                     eclipse/plugins/org.eclipse.ui.workbench.texteditor_*,
-                    eclipse/plugins/org.eclipse.update.core_*
+                    eclipse/plugins/org.eclipse.ui.workbench.texteditor.source_*,
+                    eclipse/plugins/org.eclipse.update.core_*,
+                    eclipse/plugins/org.eclipse.update.core.source_*,
+                    eclipse/plugins/org.eclipse.equinox.security_*,
+                    eclipse/plugins/org.eclipse.equinox.security.source_*,
+                    eclipse/plugins/org.eclipse.ltk.core.refactoring_*,
+                    eclipse/plugins/org.eclipse.ltk.core.refactoring.source_*,
+                    eclipse/plugins/org.eclipse.ltk.ui.refactoring_*,
+                    eclipse/plugins/org.eclipse.ltk.ui.refactoring.source_*,
+                    eclipse/plugins/org.eclipse.ui.navigator_*,
+                    eclipse/plugins/org.eclipse.ui.navigator.source_*,
+                    eclipse/plugins/org.eclipse.compare_*,
+                    eclipse/plugins/org.eclipse.compare.source_*,
+                    eclipse/plugins/org.eclipse.team.ui_*,
+                    eclipse/plugins/org.eclipse.team.ui.source_*,
+                    eclipse/plugins/org.eclipse.ui.navigator.resources_*,
+                    eclipse/plugins/org.eclipse.ui.navigator.resources.source_*,
+                    eclipse/plugins/org.eclipse.ui.views.properties.tabbed_*,
+                    eclipse/plugins/org.eclipse.ui.views.properties.tabbed.source_*
                   </includes>
                 </artifactItem>
                 <artifactItem>
@@ -112,10 +147,31 @@
                   <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
                 </artifactItem>
                 <artifactItem>
-                  <groupId>org.marketcetera</groupId>
-                  <artifactId>photon-rcptarget-extras</artifactId>
-                  <version>20080827</version>
+                  <groupId>org.rubypeople</groupId>
+                  <artifactId>rdt</artifactId>
+                  <version>1.0.3.200807071913NGT</version>
                   <type>zip</type>
+                  <includes>
+                    plugins/org.kxml2_*,
+                    plugins/org.jruby_*,
+                    plugins/org.rubypeople.rdt.core_*,
+                    plugins/org.rubypeople.rdt.debug.core_*,
+                    plugins/org.rubypeople.rdt.launching_*,
+                    plugins/org.rubypeople.rdt.ui_*,
+                    plugins/org.epic.regexp_*,
+                    plugins/com.aptana.rdt_*
+                  </includes>
+                  <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                </artifactItem>
+                <artifactItem>
+                  <groupId>com.swtworkbench.community</groupId>
+                  <artifactId>xswt</artifactId>
+                  <version>1.1.2</version>
+                  <type>zip</type>
+                  <includes>
+                    plugins/org.kxml_*/**
+                  </includes>
+                  <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
                 </artifactItem>
                 <artifactItem>
                   <groupId>org.marketcetera</groupId>
@@ -139,6 +195,24 @@
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>unpack-plugins</id>
+            <phase>install</phase>
+            <configuration>
+              <tasks>
+                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar" 
+                dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT"/>
+                <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar" />
+                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar" 
+                dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT"/>
+                <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar" />
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>clean-target</id>
             <phase>clean</phase>
             <configuration>
               <tasks>

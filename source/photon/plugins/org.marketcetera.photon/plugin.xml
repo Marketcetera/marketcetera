@@ -115,25 +115,12 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
          <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
-         <perspectiveShortcut
                id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
-
       <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
          <perspectiveShortcut
                id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
       </perspectiveExtension>
-
-      <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
-         <perspectiveShortcut
-               id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
-      </perspectiveExtension>
-
       <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
          <view
                id="org.eclipse.ui.console.ConsoleView"
@@ -192,7 +179,7 @@
                value="Marketcetera Photon&#x0A;&#x0A;Version: 0.9.0&#x0A;&#x0A;(c) Copyright Marketcetera Inc 2006-2008.  All rights reserved.&#x0A;Visit http://www.marketcetera.org"/>
          <property
                name="preferenceCustomization"
-               value="photon_customization.ini"/>
+               value="plugin_customization.ini"/>
          <property
                name="windowImages"
                value="icons/marketcetera/photon-16x16.gif,icons/marketcetera/photon-32x32.gif,icons/marketcetera/photon-48x48.gif,icons/marketcetera/photon-64x64.gif,icons/marketcetera/photon-128x128.gif"/>

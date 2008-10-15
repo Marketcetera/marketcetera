@@ -7,6 +7,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IPerspectiveDescriptor;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartReference;
+import org.eclipse.ui.PerspectiveAdapter;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.IWorkbenchConfigurer;
 import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchAdvisor;
@@ -67,6 +72,30 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		
 		System.setOut(new PrintStream(photonConsole.getInfoMessageStream(), true));
 		System.setErr(new PrintStream(photonConsole.getErrorMessageStream(), true));
+	}
+	
+	@Override
+	public void postStartup() {
+		// Hides Editor area when leaving Ruby perspective so editor-related toolbar
+		// items will disappear
+		PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+				.addPerspectiveListener(new PerspectiveAdapter() {
+					@Override
+					public void perspectiveActivated(IWorkbenchPage page,
+							IPerspectiveDescriptor perspective) {
+						IWorkbenchPartReference reference = page
+								.getReference(page.getActiveEditor());
+						if (reference != null) {
+							if (perspective.getId().equals(
+									"org.marketcetera.photon.ruby.RubyPerspective")) //$NON-NLS-1$
+								page.setPartState(reference,
+										IWorkbenchPage.STATE_RESTORED);
+							else
+								page.setPartState(reference,
+										IWorkbenchPage.STATE_MINIMIZED);
+						}
+					}
+				});
 	}
 
 	

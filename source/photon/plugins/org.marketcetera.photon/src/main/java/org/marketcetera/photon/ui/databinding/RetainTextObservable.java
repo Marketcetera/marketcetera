@@ -1,6 +1,5 @@
 package org.marketcetera.photon.ui.databinding;
 
-import org.eclipse.jface.internal.databinding.internal.swt.ComboObservableList;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Combo;
 
@@ -15,7 +14,8 @@ import org.eclipse.swt.widgets.Combo;
  * @author gmiller
  *
  */
-public class RetainTextObservable extends ComboObservableList {
+@SuppressWarnings("restriction")
+public class RetainTextObservable extends org.eclipse.jface.internal.databinding.swt.ComboObservableList {
 
 	private Combo combo;
 

@@ -769,9 +769,9 @@ public abstract class OrderTicketView
 		for (Object bindingObj : bindingArray) {
 			Binding binding = ((Binding) (bindingObj));
 			IObservable observable = binding.getTarget();
-			if (observable instanceof  org.eclipse.jface.internal.databinding.internal.swt.ComboObservableValue ||
-                observable instanceof org.eclipse.jface.internal.databinding.internal.swt.CComboObservableValue ||
-                observable instanceof org.eclipse.jface.internal.databinding.internal.swt.TextObservableValue) {
+			if (observable instanceof  org.eclipse.jface.internal.databinding.swt.ComboObservableValue ||
+                observable instanceof org.eclipse.jface.internal.databinding.swt.CComboObservableValue ||
+                observable instanceof org.eclipse.jface.internal.databinding.swt.TextObservableValue) {
 				IObservableValue observableValue = (IObservableValue) observable;
 				clearables.add(observableValue);
 			}

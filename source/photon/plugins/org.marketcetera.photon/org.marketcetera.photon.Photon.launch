@@ -7,10 +7,10 @@
 <stringAttribute key="bootstrap" value=""/>
 <stringAttribute key="checked" value="[NONE]"/>
 <booleanAttribute key="clearConfig" value="true"/>
-<booleanAttribute key="clearws" value="false"/>
+<booleanAttribute key="clearws" value="true"/>
 <booleanAttribute key="clearwslog" value="false"/>
 <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/org.marketcetera.photon.Photon"/>
-<booleanAttribute key="default" value="true"/>
+<booleanAttribute key="default" value="false"/>
 <booleanAttribute key="includeOptional" value="true"/>
 <stringAttribute key="location" value="${workspace_loc}/../runtime-org.marketcetera.photon.Photon"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-os ${target.os} -ws ${target.ws} -arch ${target.arch} -nl ${target.nl} -clean"/>
@@ -18,6 +18,8 @@
 <booleanAttribute key="pde.generated.config" value="false"/>
 <stringAttribute key="pde.version" value="3.3"/>
 <stringAttribute key="product" value="org.marketcetera.photon.Photon"/>
+<stringAttribute key="selected_target_plugins" value="org.eclipse.text,org.eclipse.team.core,org.rubypeople.rdt.launching,org.eclipse.search,org.eclipse.core.filesystem.win32.x86,org.eclipse.ui.views.properties.tabbed,org.eclipse.update.core,org.junit,org.eclipse.core.databinding,org.eclipse.equinox.common,org.eclipse.ltk.ui.refactoring,org.eclipse.ui.net,org.eclipse.core.expressions,org.eclipse.core.commands,org.eclipse.core.filebuffers,com.aptana.rdt,org.eclipse.ui.navigator,org.rubypeople.rdt.core,org.eclipse.debug.ui,org.eclipse.help,org.eclipse.ltk.core.refactoring,org.eclipse.debug.core,org.eclipse.ui.workbench,org.apache.commons.lang,org.eclipse.core.net,org.kxml,org.apache.commons.httpclient,org.eclipse.compare,org.eclipse.jface.text,org.eclipse.core.runtime,org.eclipse.core.contenttype,org.apache.commons.logging,org.eclipse.swt.win32.win32.x86,org.eclipse.core.runtime.compatibility.auth,org.eclipse.ui.ide,org.eclipse.equinox.registry,org.eclipse.core.variables,org.eclipse.update.ui,org.eclipse.core.jobs,org.eclipse.ui.navigator.resources,org.eclipse.equinox.app,org.apache.commons.codec,org.kxml2,org.eclipse.equinox.security.win32.x86,org.eclipse.ui.views,org.eclipse.jface,org.eclipse.core.resources.win32.x86,org.eclipse.ui.console,org.eclipse.ui.editors,org.epic.regexp,org.eclipse.equinox.security,org.eclipse.swt,org.eclipse.ui,org.eclipse.team.ui,org.eclipse.equinox.preferences,org.eclipse.jface.databinding,org.eclipse.core.resources,org.junit4,org.eclipse.update.core.win32,org.eclipse.ui.workbench.texteditor,org.eclipse.ui.win32,org.rubypeople.rdt.ui,org.eclipse.core.net.win32.x86,org.eclipse.ui.forms,org.eclipse.update.configurator,org.eclipse.mylyn.commons.ui,org.eclipse.core.databinding.beans,org.rubypeople.rdt.debug.core,org.eclipse.osgi,com.ibm.icu,org.eclipse.mylyn.commons.net,org.jruby,org.marketcetera.thirdparty,org.eclipse.core.filesystem"/>
+<stringAttribute key="selected_workspace_plugins" value="org.marketcetera.photon,org.marketcetera.util,org.marketcetera.photon.registry,org.marketcetera.bogusfeed,org.jruby.bsf,org.marketcetera.core,org.marketcetera.marketdata,jfun.parsec,org.marketcetera.photon.notification,com.swtworkbench.community.xswt"/>
 <booleanAttribute key="show_selected_only" value="false"/>
 <stringAttribute key="templateConfig" value="${workspace_loc:org.marketcetera.photon/config.ini}"/>
 <booleanAttribute key="tracing" value="false"/>

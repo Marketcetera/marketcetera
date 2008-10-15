@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.1"?>
+<?pde version="3.4"?>
 
-<product name="Photon 0.9.0" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.application" useFeatures="true">
+<product name="Photon 0.9.0" id="org.marketcetera.photon.Photon" application="org.marketcetera.photon.application" version="0.9.0" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.marketcetera.photon/icons/marketcetera/logo-150x55.gif"/>
@@ -15,10 +15,12 @@ Visit http://www.marketcetera.org
       </text>
    </aboutInfo>
 
-   <configIni use="default"/>
+   <configIni use="default">
+   </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xmx512m -Djava.util.logging.config.file=java.util.logging.properties -Declipse.createRegistry=false -Dosgi.bundles=org.eclipse.equinox.registry@2:start,org.eclipse.equinox.common@2:start,org.eclipse.equinox.app@2:start,org.eclipse.update.configurator@3:start,org.marketcetera.photon.registry@4:start,org.eclipse.core.runtime@5:start -Dosgi.bundles.defaultStartLevel=6</vmArgs>
+      <programArgs>--launcher.XXMaxPermSize 256M</programArgs>
+      <vmArgs>-Xmx512m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.marketcetera.photon/icons/marketcetera/photon-16x16.gif" i32="/org.marketcetera.photon/icons/marketcetera/photon-32x32.gif" i48="/org.marketcetera.photon/icons/marketcetera/photon-48x48.gif" i64="/org.marketcetera.photon/icons/marketcetera/photon-64x64.gif" i128="/org.marketcetera.photon/icons/marketcetera/photon-128x128.gif"/>
@@ -45,10 +47,7 @@ Visit http://www.marketcetera.org
    </plugins>
 
    <features>
-      <feature id="org.marketcetera.photon.feature" version="0.1.4"/>
-      <feature id="org.rubypeople.rdt" version="0.8.1.609062100PRD"/>
-      <feature id="org.eclipse.rcp" version="3.3.1.R33x_r20070802-8y8eE8sEV3Fz0z0GlHJrXvTAUS"/>
-      <feature id="org.marketcetera.photon.eclipse.feature" version="0.9.0"/>
+      <feature id="org.marketcetera.photon.feature" version="0.9.0"/>
    </features>
 
 </product>
