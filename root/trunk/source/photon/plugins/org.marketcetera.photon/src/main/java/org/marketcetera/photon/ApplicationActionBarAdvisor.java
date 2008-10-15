@@ -208,7 +208,8 @@ public class ApplicationActionBarAdvisor
 		// Edit menu
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_EditMenuName.getText(),
-				IWorkbenchActionConstants.M_EDIT);
+				// Don't use IWorkbenchActionConstants.M_EDIT to avoid unwanted Ruby contributions
+				"org.marketcetera.photon.editMenu");//$NON-NLS-1$
 		menu.add(undoAction);
 		menu.add(redoAction);
 		menu.add(new Separator());
@@ -229,9 +230,6 @@ public class ApplicationActionBarAdvisor
 				PhotonConstants.M_SCRIPT);
 		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));  //agl necessary since the RunScript action is contributed as an editorContribution (see plugin.xml) 
 		menuBar.add(menu);
-
-		// Contributions to the top-level menu
-		menuBar.add(new GroupMarker(IWorkbenchActionConstants.MB_ADDITIONS));
 
 		// Window menu
 		menu = new MenuManager(
