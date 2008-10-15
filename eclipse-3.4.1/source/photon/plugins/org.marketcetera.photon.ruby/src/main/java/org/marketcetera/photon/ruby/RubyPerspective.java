@@ -3,14 +3,23 @@ package org.marketcetera.photon.ruby;
 import org.eclipse.ui.IFolderLayout;
 import org.eclipse.ui.IPageLayout;
 import org.eclipse.ui.IPerspectiveFactory;
+import org.marketcetera.util.misc.ClassVersion;
+import org.rubypeople.rdt.internal.ui.RdtPerspectiveFactory;
 import org.rubypeople.rdt.ui.IRubyConstants;
 import org.rubypeople.rdt.ui.RubyUI;
 
-public class RubyPerspective implements IPerspectiveFactory {
+/* $License$ */
 
-	public RubyPerspective() {
-		super();
-	}
+/**
+ * This perspective integrates RDT into Photon.  It is used instead of {@link RdtPerspectiveFactory}
+ * to provide more control.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$") //$NON-NLS-1$
+public class RubyPerspective implements IPerspectiveFactory {
 
 	public void createInitialLayout(IPageLayout layout) {
 		String editorArea = layout.getEditorArea();
