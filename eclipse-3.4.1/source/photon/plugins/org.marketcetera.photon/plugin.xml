@@ -115,25 +115,12 @@
          point="org.eclipse.ui.perspectiveExtensions">
       <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
          <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
-         <perspectiveShortcut
                id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
-
       <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
          <perspectiveShortcut
                id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
       </perspectiveExtension>
-
-      <perspectiveExtension targetID="org.rubypeople.rdt.ui.PerspectiveRuby">
-         <perspectiveShortcut
-               id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
-      </perspectiveExtension>
-
       <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
          <view
                id="org.eclipse.ui.console.ConsoleView"

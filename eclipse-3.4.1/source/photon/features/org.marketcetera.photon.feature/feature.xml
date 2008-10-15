@@ -497,13 +497,6 @@
          unpack="false"/>
 
    <plugin
-         id="org.marketcetera.photon.registry"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.marketcetera.thirdparty"
          download-size="0"
          install-size="0"
@@ -513,13 +506,15 @@
          id="org.marketcetera.util"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.rubypeople.rdt.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.rubypeople.rdt.debug.core"
@@ -550,6 +545,13 @@
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.marketcetera.photon.ruby"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
