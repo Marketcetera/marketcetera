@@ -1,0 +1,20 @@
+#!/bin/sh
+rm -rf *.cache
+rm -rf config
+mkdir config
+echo aclocal...
+aclocal
+echo autoheader...
+autoheader
+echo libtoolize...
+`which glibtoolize`
+if [ $? = 0 ]; then
+    glibtoolize --force --copy --automake
+else
+    libtoolize --force --copy --automake
+fi
+echo automake...
+automake --foreign --add-missing --copy
+echo autoconf...
+autoconf
+echo "Now run configure with any arguments necessary"
