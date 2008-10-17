@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+    <!--
+     The file sets up the connection pool to the database
+    -->
+
+    <!-- -Gets the properties setup from the properties files- -->
+    <bean
+     class=
+      "org.springframework.beans.factory.config.PreferencesPlaceholderConfigurer">
+     <property name="locations" ref="propertiesFiles"/>
+    </bean>
+    <!-- JDBC Setup -->
+    <bean name="JdbcDriver" class="java.lang.String"><constructor-arg value="${jdbc.driver}"/></bean>
+    <bean name="JdbcUser" class="java.lang.String"><constructor-arg value="${jdbc.user}"/></bean>
+    <bean name="JdbcPassword" class="java.lang.String"><constructor-arg value="${jdbc.password}"/></bean>
+    <!--
+    The mysql jdbc url. See
+    http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-configuration-properties.html
+    for a complete list of options that can be specified for connecting to msql.
+    -->
+    <bean name="JdbcURL" class="java.lang.String"><constructor-arg value="${jdbc.url}"/></bean>
+
+    <!--
+    Properties for configuring the c3p0 connection pool. See
+    http://www.mchange.com/projects/c3p0/index.html#configuration_properties
+    for a complete list of options that can be specified here
+     -->
+    <bean name="JdbcPoolSize" class="java.lang.Integer"><constructor-arg value="${jdbc.poolSize}"/></bean>
+    <bean id="mysqlpool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" ref="JdbcDriver"/>
+        <property name="jdbcUrl" ref="JdbcURL"/>
+        <property name="user" ref="JdbcUser"/>
+        <property name="password" ref="JdbcPassword"/>
+        <property name="maxPoolSize" ref="JdbcPoolSize"/>
+        <property name="preferredTestQuery" value="select 1"/>
+        <property name="testConnectionOnCheckout" value="true"/>
+    </bean>
+</beans>

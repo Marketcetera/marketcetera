@@ -1,0 +1,387 @@
+<body>
+        <p>
+            This package provides basic building blocks for creating objects that can be stored
+            within an rdbms. Base classes are provided to represent entities and to query them.
+            Facilities are also provided to transparently save and query entities across a remoting
+            API, like JMX or JMS.
+        </p>
+        <p>
+            The persistence infrastructure has two layers.
+            <ol>
+            <li>The Services layer abstracts all persistence operations into a small set of internal
+                methods that can easily be remoted if needed. This layer also provides transaction
+                boundaries and JPA entity manager instances for the entities layer above it. The
+                interfaces provided by this layer are only meant to be used by the Entities layer.</li>
+            <li>The Entities layer runs on top of services layer and provides abstractions that
+                are meant to be subclassed by anyone wanting to author persistent entities and
+                provide simple services to save, update, delete and query them. Clients of persistence
+                infrastructure should use the API provided by the Entities layer.</li>
+            </ol>
+            The Entities Layer is meant to be used by the clients of this system, whereas
+        the Services layer is a part of the implementation.
+        </p>
+<h2>Services Layer</h2>
+        <p>All persistence operations are abstracted into method calls on the
+            {@link org.marketcetera.persist.EntityRemoteServices}
+            interface. Only one concrete implementation of this interface,
+            {@link org.marketcetera.persist.EntityRemoteServer} is provided. It implements these
+            methods by invoking the local JPA EntityManagerFactory instance.
+        </p>
+        <p>
+            The intent is that, in the future, other implementations of the
+            {@link org.marketcetera.persist.EntityRemoteServices} can be supplied that can
+            transparently remote (via JMS, JMX, RMI or any other remoting infrastructure)
+            persistence operations across JVMs from a client-side VM to the server-side VM that
+            has an EntityRemoteServer instance configured to carry out all the persistence
+            operations on a local database.
+        </p>
+        <p>
+            This layer is configured via spring. The spring configuration is responsible
+            for configuring a database connection pool, an entity manager factory and injecting
+            that factory into the EntityRemoteServer instance.
+        </p>
+        <p>
+            Another piece of the infrastructure that is configured via spring is
+            {@link org.marketcetera.persist.JPAVendor} implementation.
+            {@link org.marketcetera.persist.JPAVendor} abstracts out our dependency on
+            vendor specific code. JPA doesn't seem to cover all our usage scenarios,
+            like blob/clob initialization. This class is used to provide a vendor neutral
+            mechanism to carry out persistence operations that are not covered via JPA.
+            This functionality is exposed to the clients of persistence layer via the
+            {@link org.marketcetera.persist.VendorUtils} class.
+        </p>
+
+<h2>Entities Layer</h2>
+        <p>
+            The entities layer provides base classes for Entities and single / multi instance
+            queries to fetch them.
+        </p>
+
+<h3>Entities</h3>
+        <p>
+            Any new persistent entity can either extend
+            {@link org.marketcetera.persist.EntityBase} or
+            {@link org.marketcetera.persist.NDEntityBase},
+            if it has name and description. Make sure to add appropriate JPA annotations to mark it
+            as a persistent entity. Do annotate any of its non-persitent attributes with a Transient
+            annotation.
+        </p>
+        <h4>Views</h4>
+        <p>
+            Entities can have attributes that are lazy loaded. These attributes are the ones
+            that are costly to fetch. Examples include, attributes that represent the entity's
+            relationship with other entities etc.
+            To facilitate choice between loading these attributes or not, summary view interfaces
+            like {@link org.marketcetera.persist.SummaryEntityBase} and
+            {@link org.marketcetera.persist.SummaryNDEntityBase} are provided. These interfaces
+            do not contain any setters for the attributes. Its expected, that the sub entites
+            will create sub-interfaces that extend from these summary interfaces and add all
+            other non-lazy loaded attributes to it.
+        </p>
+
+<h3>Queries</h3>
+        <p>
+            Two types of queries are supported.
+        </p>
+        <ul>
+            <li>Queries that fetch single instances: {@link org.marketcetera.persist.SingleEntityQuery}</li>
+            <li>Queries that fetch multiple entity instances:{@link org.marketcetera.persist.MultipleEntityQuery}</li>
+        </ul>
+        <p>
+            Queries provide the option to either load the summary view of the entity or
+            its full view. Loading the full view is more expensive
+        </p>
+
+<h4>SingleEntityQuery</h4>
+        <p>
+            These queries fetch a single instance of the entity. Examples include fetching
+            the entity by ID or by its name, etc.
+        </p>
+
+<h4>MultipleEntityQuery</h4>
+        <p>
+            These queries fetch multiple instances of the entity. These queries support
+            filtering, ordering and paging of the results. For Entities that extend
+            {@link org.marketcetera.persist.NDEntityBase},
+            a base class {@link org.marketcetera.persist.MultiNDQuery} is provided for others
+            to extend. The subclass implements the filtering & ordering behavior for
+            entity name and description.
+        </p>
+        <p>
+            MultiQueries have filter properties on them to filter their results. By default
+            these filters are not set. A client of these queries can set these filters to
+            apply them to the results. See {@link org.marketcetera.persist.MultiNDQuery#getNameFilter()}
+            for example.
+        </p>
+        <p>
+            MultiQueries can have an ordering applied to their results. See
+            {@link org.marketcetera.persist.MultipleEntityQuery#getEntityOrder()}. 
+        </p>
+        <p>
+            MultiQueries can specify the
+            {@link org.marketcetera.persist.MultipleEntityQuery#getFirstResult() starting}
+            position of the results and the
+            {@link org.marketcetera.persist.MultipleEntityQuery#getMaxResult() maximum} number of results
+            to return back. 
+        </p>
+<h2>Development Notes</h2>
+<p>
+    Once the entities, that need to be persisted, and the relationships between them have
+    been figured out, we can start authoring classes for them using the persistence
+    infrastructure. Base classes are available for basic entity operations and unit testing.
+    See <code>org.marketcetera.persist.example</code> package in the unit test sources for a
+    sample implementation
+</p>
+<h3>Entities</h3>
+<p>
+    Each entity can either extend {@link org.marketcetera.persist.EntityBase} or
+    {@link org.marketcetera.persist.NDEntityBase} based on whether
+    the entity has name and description attributes. If the entity has relationships or lazy loaded
+    attributes, its recommended that a Summary View be defined for the entity that doesn't
+    include any relationship or lazy-loaded attributes. The summary view can extend either of
+    {@link org.marketcetera.persist.SummaryEntityBase} or
+    {@link org.marketcetera.persist.SummaryNDEntityBase} depending on whether the entity
+    has name and description attributes.
+</p>
+<p>
+    Each entity subclass adds appropriate attributes to the class definition. The attributes can
+    be annotated with JPA annotations if the default behavior is not sufficient.
+</p>
+<p>
+    Each entity subclass can expose operations to save and delete the entity that in turn invoke
+    the protected operations provided in the super classes. The entity can also define their own
+    operations that use these operations. See <code>User</code> class in unit tests for examples
+    of such operations.
+</p>
+<p>
+    Relationships between the entities have a side that owns the relationship. Make sure that
+    the operations to modify the relationship are only exposed on the entity that owns the
+    relationship. For example, <code>Group</code> owns the relationship between <code>User</code>
+    and <code>Group</code>
+</p>
+<h3>Queries</h3>
+<p>
+    Each entity has a single instance query and a multi instance query. Base classes are provided
+    for both kinds of queries. See the <code>org.marketcetera.persist.example</code> package for how
+    to extend and use these queries.
+</p>
+<p>
+    Typically, single instance queries will be fairly simple. For multi instance queries you may
+    want to declare additional filters, orders and operations.
+</p>
+<h3>Validation</h3>
+<p>
+    Entities should be validated prior to save to ensure that all the attributes
+    have valid values. See {@link org.marketcetera.persist.NDEntityBase#validate()}
+    for an example on how to do it. Be sure to add both
+    {@link javax.persistence.PrePersist} and {@link javax.persistence.PreUpdate} to
+    ensure that validation happens during insert as well as update
+</p>
+<p>
+    The current database can only save a subset of characters supported by java.
+    Hence all the strings that are being persisted should be validated to ensure that
+    they comply with the character set supported by the database.
+    {@link org.marketcetera.persist.VendorUtils#validateText(CharSequence)} should be invoked
+    to validate all the string query parameters, & entity attributes.
+    
+    Do ensure that all string attributes of the entity being saved are validated
+    prior to save. Currently, only the name attribute of
+    {@link org.marketcetera.persist.NDEntityBase} is validated. Any other string attributes
+    in the entity (including description) should be validated to only contain supported
+    characters.
+</p>
+<p>
+    All the string parameters to the query are validated to only supported characters
+    during query execution with {@link org.marketcetera.persist.QueryBase}.
+    Hence no special validation is required during query execution. However, if you
+    author queries that do not make use <code>QueryBase</code>, make sure that all
+    string parameters to the query are validated.
+</p>
+<h3>Unit Testing</h3>
+<p>
+    Since the extent of compile-time checking is limited. Base classes are available to extensively
+    test the entities and their queries. The design pattern is to extend a suitable base class for
+    testing an entity. It can be either of <code>EntityTestBase</code> or <code>NDEntityTestBase</code>
+    depending on whether the entity has name and description attributes.
+</p>
+<p>
+    You'd need to implement all the abstract methods to be able to compile the unit tests. You'd want
+    to over-ride certain methods for any additional attributes that have been added to the entity.
+    See <code>UserTest</code> for example.
+</p>
+<p>
+    A base class, <code>ManyToManyTestBase</code> is also provided to test many to many relationships
+    between entities. See <code>UserGroupTest</code> for an example
+</p>
+<p>
+    The unit test base classes only provide unit tests to exercise the functionality provided
+    by the infrastructure. You'd want to add unit tests to exercise any features that have been
+    built on top of the features provided by the infrastructure.
+    See <code>UserTest</code> for an example.
+</p>
+<h3>Configuration</h3>
+        <p>
+            The global persistence layer is configured via spring configuration. The entities have
+            to provide a <code>persistence.xml</code>, in the META-INF sub-directory of the jar they
+            are contained in, to enable their persistence. 
+        </p>
+<h4>Spring Configuration</h4>
+        <p>
+            Here's a sample spring configuration snippet:
+            <ol>
+            <li>The first bean configures a connection pool data source</li>
+            <li>The second one configures a JPA entity manager factory, supplying it the connection
+                pool data source.</li>
+            <li>The last bean configures the EntityRemoteServer supplying it the entity manager
+                factory. Notice that it depends on a jpaVendor bean. The only
+                {@link org.marketcetera.persist.JPAVendor} implementation currently available
+                is {@link org.marketcetera.persist.HibernateVendor}.</li>
+            </ol>
+        </p>
+<pre>
+{@code
+...
+    <bean id="mysqlpool" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" ref="JdbcDriver"/>
+        <property name="jdbcUrl" ref="JdbcURL"/>
+        <property name="user" ref="JdbcUser"/>
+        <property name="password" ref="JdbcPassword"/>
+        <property name="maxPoolSize" value="10"/>
+        <property name="preferredTestQuery" value="select 1"/>
+        <property name="testConnectionOnCheckout" value="true"/>
+    </bean>
+    <bean id="emf" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="jpaVendor">
+        <property name="dataSource" ref="mysqlpool"/>
+    </bean>
+    <bean id="ers" class="org.marketcetera.persist.EntityRemoteServer" scope="singleton">
+        <constructor-arg ref="emf"/>
+    </bean>
+...
+}
+</pre>
+        <p>
+            Do note that the dependency on the mysql jdbc connector, apache dbcp connection pooling &
+            spring entity manager bean configuration is only within the spring configuration. The java
+            code has no dependency on these specific implementations.
+        </p>
+        <p>
+            Several properties can be configured for the MySQL jdbc connector and the apache
+            dbcp connection pool. Configuration details can be found at the following locations.
+        </p>
+        <ul>
+            <li>mysql jdbc <a href="http://dev.mysql.com/doc/refman/5.1/en/connector-j-reference-configuration-properties.html">configuration properties</a></li>
+            <li>c3p0 <a href="http://www.mchange.com/projects/c3p0/index.html#configuration_properties">configuration properties</a></li>
+        </ul>
+<h4>persistence.xml Configuration</h4>
+<p>
+    The persistence.xml schema can be found <a href="http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">here</a>.
+    Good notes on configuring persistence.xml can be found in hibernate documentation
+    <a href="http://www.hibernate.org/hib_docs/entitymanager/reference/en/html/configuration.html">here</a>
+    The persistence.xml file should be present in the <code>META-INF</code> subdirectory of jar that contains
+    the classes for the entities being persisted.
+</p>
+<p>
+    Here's an example persistence.xml file, used to persist entities using hibernate's JPA implementation.
+</p>
+<pre>
+{@code
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+   version="1.0">
+   <persistence-unit name="unit-testing" transaction-type="RESOURCE_LOCAL">
+      <provider>org.hibernate.ejb.HibernatePersistence</provider>
+      <properties>
+         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
+         <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      </properties>
+   </persistence-unit>
+</persistence>
+}
+</pre>
+<p>
+    Do note that several hibernate configuration properties can be supplied. Details on the kinds of
+    properties that can be specified can be found
+    <a href="http://www.hibernate.org/hib_docs/reference/en/html/session-configuration.html">here</a>.
+    Do note that an jdbc connection / data source properties should not be specified here as they
+    are specified via spring configuration.
+</p>
+<h2>Design Details</h2>
+<p>
+    This section has details on design and implementation of the persistence
+    infrastructure.
+</p>
+<h3>Code Paths</h3>
+<p>
+    This section has sample code paths for certain key interesting code paths in the persistence system.
+</p>
+<h4>Save Operation</h4>
+<p>
+    This section documents the sequence of API invocations that happen when saving an entity.
+    The sequence is a similar to what happens when the delete operation is invoked.
+</p>
+<p>
+    The methods with the suffix <code>Remote</code> are meant to be invoked by the client
+    facing API to invoke a persistence operation. These method invocations endup invoking
+    the corresponding operation with <code>Local</code> suffix on the entity within the
+    JVM that has access to the database and is configured with appropriate JPA
+    EntityManager to interact with the database. 
+</p>
+<pre>
+    {@link org.marketcetera.persist.EntityBase#saveRemote(PersistContext)}
+       |
+       |-{@link org.marketcetera.persist.EntityBase#createSaveResult()}
+       |
+       |-{@link org.marketcetera.persist.EntityRemoteServices#save(EntityBase,PersistContext)}
+       |    |   (Remoting)
+       |    |
+       |    '-{@link org.marketcetera.persist.EntityRemoteServices#execute(Transaction,PersistContext)}
+       |         |   (Transaction Envelope)
+       |         |
+       |         '-{@link org.marketcetera.persist.EntityBase#saveLocal(EntityManager,PersistContext)}
+       |              |
+       |              |-{@link org.marketcetera.persist.EntityBase#postSaveLocal(EntityManager,EntityBase,PersistContext)}
+       |              |         (Can be over-ridden to carry out custom stuff)
+       |              |
+       |              '-{@link org.marketcetera.persist.EntityBase#createSaveResult()}
+       |
+       '-{@link org.marketcetera.persist.EntityBase#applyRemote(SaveResult)}
+</pre>
+<h4>Multi Query Execution</h4>
+<p>
+    This section documents the sequence of API invocations that happen when running a multi
+    instance query.
+</p>
+<pre>
+
+    {@link org.marketcetera.persist.MultipleEntityQuery#fetchRemote(MultiQueryProcessor)}
+       |
+       '-{@link org.marketcetera.persist.QueryBase#executeRemote(QueryProcessor)}
+            |
+            '-{@link org.marketcetera.persist.QueryBase#executeRemoteMultiple(List)}
+                 |
+                 '-{@link org.marketcetera.persist.EntityRemoteServices#execute(QueryBase,List)}
+                      |   (Remoting)
+                      |
+                      '-{@link org.marketcetera.persist.EntityRemoteServices#execute(Transaction,PersistContext)}
+                           |   (Transaction Envelope)
+                           |
+                           '-{@link org.marketcetera.persist.QueryBase#executeLocal(EntityManager,List)}
+                                |
+                                |-{@link org.marketcetera.persist.QueryBase#createQuery(EntityManager,QueryProcessor)}
+                                |    |   (creates query string customized by query processor)
+                                |    |
+                                |    |-{@link org.marketcetera.persist.QueryProcessor#preGenerate(StringBuilder,QueryBase)}
+                                |    |
+                                |    |-{@link org.marketcetera.persist.QueryProcessor#needsFetchJoins()}
+                                |    |
+                                |    |-{@link org.marketcetera.persist.QueryProcessor#needsOrderBy()}
+                                |    |
+                                |    |-{@link org.marketcetera.persist.QueryProcessor#postGenerate(StringBuilder)}
+                                |    |
+                                |    '-{@link org.marketcetera.persist.MultipleEntityQuery#preSetParameters(Query)}
+                                |
+                                '-{@link org.marketcetera.persist.QueryProcessor#process(EntityManager,Query)}
+                                      (processes the query to generate results)
+</pre>
+</body>
