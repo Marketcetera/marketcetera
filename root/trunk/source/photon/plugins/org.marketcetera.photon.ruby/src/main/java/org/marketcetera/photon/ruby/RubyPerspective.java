@@ -16,7 +16,7 @@ import org.rubypeople.rdt.ui.RubyUI;
  *
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since $Release$
+ * @since 0.9.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class RubyPerspective implements IPerspectiveFactory {
