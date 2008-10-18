@@ -1,0 +1,28 @@
+<xswt xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="xswt.xsd">
+	<composite>
+		<gridData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+		<gridLayout/>
+		<children>
+			<label text="Table Test">
+				<gridData horizontalIndent="75"/>
+				<font height="24"/>
+			</label>
+			<table style="BORDER MULTI FULL_SELECTION" linesVisible="true" headerVisible="true"
+				background="FloralWhite">
+				<columns>
+					<tableColumn text="Column 1" width="100"/>
+					<tableColumn text="Column 2" width="100"/>
+					<tableColumn text="Column 3" width="100"/>
+				</columns>
+				<items>
+					<tableItem><data text="0,0"/><data text="0,1"/><data text="0,2"/></tableItem>
+					<tableItem><data text="1,0"/><data/><data text="1,2"/></tableItem>
+					<tableItem><data text="2,0"/><data text="2,1"/><data text="2,2"/></tableItem>
+				</items>
+			</table>
+			<label text="How do you get rid of that extra stuff on the right?                    ^ ">
+				<font style="ITALIC"/>
+			</label>
+		</children>
+	</composite>
+</xswt>
