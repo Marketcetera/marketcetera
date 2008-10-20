@@ -58,7 +58,7 @@ public class MarketceteraFeedModuleTest
                           "sender");
         provider.addValue(MarketceteraFeedModuleFactory.INSTANCE_URN,
                           "TargetCompID",
-                          "target");
+                          "MRKT");
         moduleManager.setConfigurationProvider(provider);
         moduleManager.init();
         dataSink = new DataSink();
@@ -72,7 +72,6 @@ public class MarketceteraFeedModuleTest
         moduleManager.stop();
         moduleManager = null;
     }
-    @Ignore
     @Test
     public void construction()
         throws Exception
@@ -82,7 +81,6 @@ public class MarketceteraFeedModuleTest
         assertNotNull(emitter = factory.create(this));
         assertNotNull(emitter = factory.create((Object[])null));
     }
-    @Ignore
     @Test
     public void badDataRequests()
         throws Exception
@@ -144,7 +142,6 @@ public class MarketceteraFeedModuleTest
         // cancel the flow
         moduleManager.cancel(flowID);
     }
-//    @Ignore
     @Test
     public void dataRequestProducesData()
         throws Exception
@@ -178,7 +175,6 @@ public class MarketceteraFeedModuleTest
                                  Object inData)
         {
             synchronized(data) {
-                System.out.println(inData);
                 List<Object> dataForID = data.get(inDataFlowID);
                 if(dataForID == null) {
                     dataForID = new ArrayList<Object>();

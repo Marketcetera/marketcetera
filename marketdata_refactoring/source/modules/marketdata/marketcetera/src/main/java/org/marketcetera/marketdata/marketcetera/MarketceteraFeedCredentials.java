@@ -68,4 +68,14 @@ public class MarketceteraFeedCredentials
     {
         return mTargetCompID;
     }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder output = new StringBuilder();
+        output.append("Marketcetera Feed Credentials: URL=").append(getURL()).append(" SenderCompID=").append(getSenderCompID()).append(" TargetCompID=").append(getTargetCompID());
+        return output.toString();
+    }
 }

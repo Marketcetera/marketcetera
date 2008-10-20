@@ -176,7 +176,7 @@ public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
     /**
      * A mock configuration provider for unit testing.
      */
-    private static class MockConfigurationProvider
+    public static class MockConfigurationProvider
             implements ModuleConfigurationProvider {
 
         public String getDefaultFor(ModuleURN inURN, String inAttribute) {
