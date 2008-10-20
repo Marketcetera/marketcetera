@@ -26,5 +26,6 @@
 
   <modules>
     <module>misc</module>
+    <module>strategy</module>
   </modules>
 </project>

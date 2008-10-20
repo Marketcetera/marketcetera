@@ -17,7 +17,6 @@ import org.marketcetera.event.ExecutionReport;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.old_strategy.IStrategyManager;
-import org.marketcetera.systemmodel.Goal;
 import org.marketcetera.systemmodel.Order;
 import org.marketcetera.systemmodel.OrderID;
 import org.marketcetera.systemmodel.OrderImpl;
@@ -45,7 +44,6 @@ public abstract class AbstractStrategy
     private final int mCounter = sStrategyCounter.getAndIncrement();
     private boolean mIsRunning = false;
     private static final Properties sCommonSpace = new Properties();
-    private final Properties mPrivateSpace = new Properties();
     /**
      * Create a new Strategy instance.
      *
@@ -151,31 +149,6 @@ public abstract class AbstractStrategy
             public BigDecimal getQuantity()
             {
                 return new BigDecimal("100.00");
-            }
-            @Override
-            public MSymbol getSymbol()
-            {
-                return inSecurity;
-            }};
-    }
-    /**
-     * Gets the goal defined for the given security.
-     * 
-     * @param inSecurity a <code>MSymbol</code> value
-     * @return an <code>IGoal</code> value
-     */
-    protected final Goal getGoal(final MSymbol inSecurity)
-    {
-        return new Goal(){
-            @Override
-            public String getName()
-            {
-                return "This is a goal";
-            }
-            @Override
-            public BigDecimal getQuantity()
-            {
-                return new BigDecimal("200.00");
             }
             @Override
             public MSymbol getSymbol()
@@ -307,32 +280,18 @@ public abstract class AbstractStrategy
     protected final void cancelSubscription(IMarketDataFeedToken inToken)
     {
     }
-    protected static void setCommonProperty(String inKey,
-                                            String inValue)
+    protected static void setProperty(String inKey,
+                                      String inValue)
     {
         synchronized(sCommonSpace) {
             sCommonSpace.setProperty(inKey,
                                      inValue);
         }
     }
-    protected static String getCommonProperty(String inKey)
+    protected static String getProperty(String inKey)
     {
         synchronized(sCommonSpace) {
             return sCommonSpace.getProperty(inKey);
-        }
-    }
-    protected final void setPrivateProperty(String inKey,
-                                            String inValue)
-    {
-        synchronized(mPrivateSpace) {
-            mPrivateSpace.setProperty(inKey,
-                                      inValue);
-        }
-    }
-    protected final String getPrivateProperty(String inKey)
-    {
-        synchronized(mPrivateSpace) {
-            return mPrivateSpace.getProperty(inKey);
         }
     }
     protected void onStart()

@@ -201,7 +201,7 @@ public abstract class StrategyTypeTestBase
     {
         resetPropertyHistory(STRATEGY_PROPERTY);
         assertEquals("0",
-                     AbstractStrategy.getCommonProperty(STRATEGY_PROPERTY));
+                     AbstractStrategy.getProperty(STRATEGY_PROPERTY));
         StrategyMetaData strategyData = loadAndStartStrategy("SimpleStrategy",
                                                              getSimpleStrategy());
         assertNotNull(strategyData);
@@ -224,7 +224,7 @@ public abstract class StrategyTypeTestBase
         sendEvents(events,
                    strategyData.getStrategy());
         assertEquals("0",
-                     AbstractStrategy.getCommonProperty(STRATEGY_PROPERTY));
+                     AbstractStrategy.getProperty(STRATEGY_PROPERTY));
         // now, throw a new ask to trigger the strategy
         events.clear();
         events.add(new AskEvent(System.nanoTime(),
@@ -305,7 +305,7 @@ public abstract class StrategyTypeTestBase
     protected final void resetPropertyHistory(String inKey)
         throws Exception
     {
-        AbstractStrategy.setCommonProperty(inKey,
+        AbstractStrategy.setProperty(inKey,
                                            "0");
         propertyHistory.put(inKey,
                             0l);
@@ -314,7 +314,7 @@ public abstract class StrategyTypeTestBase
     protected final void assertPropertyIncremented(String inKey)
         throws Exception
     {
-        long currentAliveMarker = Long.parseLong(AbstractStrategy.getCommonProperty(inKey));
+        long currentAliveMarker = Long.parseLong(AbstractStrategy.getProperty(inKey));
         Long lastAliveMarker = propertyHistory.get(inKey);
         if(lastAliveMarker == null) {
             fail(String.format("There should be an alive marker for strategy %s",
@@ -329,7 +329,7 @@ public abstract class StrategyTypeTestBase
         propertyHistory.put(inKey,
                                     currentAliveMarker);
         // update the common properties alive marker
-        AbstractStrategy.setCommonProperty(inKey,
+        AbstractStrategy.setProperty(inKey,
                                            Long.toString(currentAliveMarker));
     }
     protected abstract StrategyLanguage getLanguage();
