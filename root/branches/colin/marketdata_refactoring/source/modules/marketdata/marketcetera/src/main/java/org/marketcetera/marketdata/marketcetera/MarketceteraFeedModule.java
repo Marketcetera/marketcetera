@@ -17,6 +17,7 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import static org.marketcetera.marketdata.marketcetera.Messages.*;
 
 import quickfix.InvalidMessage;
 import quickfix.Message;
@@ -55,21 +56,24 @@ public class MarketceteraFeedModule
             credentials = MarketceteraFeedCredentials.getInstance(getURL(),
                                                                   getSenderCompID(),
                                                                   getTargetCompID());
+            System.out.println("Credentials are " + credentials);
             feed = MarketceteraFeedFactory.getInstance().getMarketDataFeed(credentials);
         } catch (CoreException e) {
             throw new ModuleException(e.getI18NBoundMessage());
         }
         feed.start();
-        while(!feed.getFeedStatus().equals(FeedStatus.AVAILABLE)) {
-            System.out.println("Sleeping...");
+        // TODO - should wait until the feed status changes to "AVAILABLE", perhaps with a timeout?
+        synchronized(feed) {
             try {
-                Thread.sleep(1000);
+                feed.wait(1000*30);
+                if(!feed.getFeedStatus().equals(FeedStatus.AVAILABLE)) {
+                    throw new ModuleException(CANNOT_START_FEED);
+                }
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                Thread.currentThread().interrupt();
+                throw new ModuleException(e);
             }
         }
-        System.out.println("Feed is at status " + feed.getFeedStatus());
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()

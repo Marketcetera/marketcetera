@@ -696,6 +696,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
                     //  are notified
                     mFeedStatus = inFeedStatus;
                     mFeedStatusPublisher.publish(this);
+                    notifyAll();
                 }
             }
         }

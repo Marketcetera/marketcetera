@@ -251,6 +251,7 @@ public class MarketceteraFeed
 			} catch (FieldNotFound fnf) {
 				feedType = FeedType.LIVE;
 			}
+			System.out.println("In fromAdmin, setting feed status to AVAILABLE");
 			setFeedStatus(FeedStatus.AVAILABLE);
 			SLF4JLoggerProxy.debug(this,
 			                       "Marketcetera feed received Logon"); //$NON-NLS-1$
