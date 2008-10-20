@@ -1,0 +1,29 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Trades", :action_name => "List Unparseable Messages", :top_level_controller => 'trades' } %>
+<h1>List Unparseable Messages</h1>
+<%= if(!@report.nil?)
+       error_messages_for_report :report
+    end %>
+Failed to parse the following messages:
+<table>
+  <tr>
+    <th>Message Text</th>
+    <th/>
+  </tr>
+  
+<!-- Display the messages that have failed to parse -->
+<% i=0
+    for message in @failed_msg %>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"' : ''%> >
+    <td><%=h shorten_string(message.text.gsub("\001", " "), 130) %></td>
+    <td><%= link_to(image_tag("/images/icons/show.png", :alt=> 'Show', :width => 16, :height => 16), 
+                :action => 'show_unparseable_msg', :id => message, :controller => 'message_logs') %></td>
+  </tr>
+<% end %>
+
+</table>
+<p/>
+
+<%= if(!@exec_report_pages.nil?)
+  pagination_links(@exec_report_pages)
+ end %>

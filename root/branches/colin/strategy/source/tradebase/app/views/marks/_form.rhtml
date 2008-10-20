@@ -1,0 +1,35 @@
+<%= error_messages_for 'mark' %>
+
+<!--[form:mark]-->
+<fieldset>
+    <div class="form_left">
+        <% if(@controller.action_name == "edit") %>
+          <label for="asset_type">Asset Type</label>
+          <div id="asset_type" class="data view_data"><%=df @mark.tradeable.class %></div>
+        <% else %>
+          <%= render :partial => '/shared/security_type',
+                     :locals => {:equity_onclick_fn => '', :forex_onclick_fn => '',
+                                 :equity_on => (@mark.class.to_s == Mark.name),
+                                 :forex_on => (@mark.class.to_s == ForexMark.name)} %>
+        <% end %>
+
+        <%= render :partial => '/shared/symbol_auto_complete', 
+            :locals => { :errors => @mark.errors, :init_value => @mark.tradeable_m_symbol_root, :error_key => :symbol} %>
+            
+        <label for="mark_value">Value</label>
+        <%= text_field 'mark', 'mark_value'  %>
+
+    </div>
+    <div class="form_right">
+
+        <label for="mark_type">Type</label>
+        <%= select(:mark, :mark_type, Mark::MARK_TYPES) %>
+        
+        <label for="mark_date">Date</label>
+        <div class="date"><%= date_select 'mark', 'mark_date'  %></div>
+
+    </div>
+    <div class="clear"></div>
+</fieldset>
+<!--[eoform:mark]-->
+
