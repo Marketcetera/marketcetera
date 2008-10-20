@@ -21,7 +21,6 @@ import org.marketcetera.systemmodel.Order;
 import org.marketcetera.systemmodel.OrderID;
 import org.marketcetera.systemmodel.OrderImpl;
 import org.marketcetera.systemmodel.Position;
-import org.marketcetera.systemmodel.TradeSuggestion;
 
 import quickfix.Message;
 import quickfix.field.OrdType;

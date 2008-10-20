@@ -12,9 +12,9 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.ExecutionReport;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractStrategy;
+import org.marketcetera.strategy.TradeSuggestion;
 import org.marketcetera.systemmodel.Order;
 import org.marketcetera.systemmodel.Position;
-import org.marketcetera.systemmodel.TradeSuggestion;
 
 import quickfix.Message;
 

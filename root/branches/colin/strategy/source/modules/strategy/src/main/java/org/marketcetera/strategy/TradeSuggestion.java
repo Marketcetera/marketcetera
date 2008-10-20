@@ -1,6 +1,7 @@
-package org.marketcetera.systemmodel;
+package org.marketcetera.strategy;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.systemmodel.Order;
 
 /* $License$ */
 
