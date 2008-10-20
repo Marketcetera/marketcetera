@@ -35,6 +35,18 @@
       <groupId>commons-csv</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>
+	<dependency>
+      <groupId>org.apache</groupId>
+	  <artifactId>bsf</artifactId>
+	</dependency>
+	<dependency>
+	  <groupId>bsh</groupId>
+	  <artifactId>bsh</artifactId>
+	</dependency>
+	<dependency>
+	  <groupId>jruby</groupId>
+	  <artifactId>jruby</artifactId>
+	</dependency>
     
     <!-- Runtime. -->
     <dependency>

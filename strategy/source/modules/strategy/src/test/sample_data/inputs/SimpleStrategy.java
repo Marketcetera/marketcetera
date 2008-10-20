@@ -37,8 +37,8 @@ public class SimpleStrategy
             BigDecimal askPrice = ask.getPrice();
             String symbol = bid.getSymbol();
             if(askPrice.subtract(bidPrice).compareTo(WIDTH_SPREAD) == -1) {
-                setCommonProperty("STRATEGY_PROPERTY",
-                                  Long.toString(System.nanoTime()));
+                setProperty("STRATEGY_PROPERTY",
+                            Long.toString(System.nanoTime()));
             }
         }
     }

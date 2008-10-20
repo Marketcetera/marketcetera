@@ -12,10 +12,9 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.ExecutionReport;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractStrategy;
-import org.marketcetera.systemmodel.Goal;
-import org.marketcetera.systemmodel.TradeSuggestion;
 import org.marketcetera.systemmodel.Order;
 import org.marketcetera.systemmodel.Position;
+import org.marketcetera.systemmodel.TradeSuggestion;
 
 import quickfix.Message;
 
@@ -47,7 +46,6 @@ public class CPPStrategy
     protected final native Position GetCurrentPositionAtOpen(String inSecurity);
     protected final native Date GetCurrentTime();
     protected final native List<ExecutionReport> GetExecutionReport(String inOrderHandle);
-    protected final native Goal GetGoal(MSymbol inSecurity);
     protected final native void RequestCallback(long inDelay);
     protected final native void SendEvent(EventBase inEvent);
     protected final native void SendMessage(Message inMessage);

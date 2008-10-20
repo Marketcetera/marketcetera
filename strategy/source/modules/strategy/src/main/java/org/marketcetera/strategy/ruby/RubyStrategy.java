@@ -14,7 +14,6 @@ import org.marketcetera.event.ExecutionReport;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.strategy.AbstractStrategy;
-import org.marketcetera.systemmodel.Goal;
 import org.marketcetera.systemmodel.Order;
 import org.marketcetera.systemmodel.OrderID;
 import org.marketcetera.systemmodel.Position;
@@ -156,10 +155,6 @@ abstract class RubyStrategy
     {
         return super.getExecutionReport(inOrderID);
     }
-    public final Goal get_goal(MSymbol inSecurity)
-    {
-        return super.getGoal(inSecurity);
-    }
     public final void request_callback(long inDelay,
                                        TimeUnit inUnit,
                                        Object inData)
@@ -250,11 +245,11 @@ abstract class RubyStrategy
     public final void set_common_property(String inKey,
                                           String inValue)
     {
-        setCommonProperty(inKey,
+        setProperty(inKey,
                           inValue);
     }
     public final String get_common_property(String inKey)
     {
-        return getCommonProperty(inKey);
+        return getProperty(inKey);
     }
 }
