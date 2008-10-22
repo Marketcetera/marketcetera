@@ -2,7 +2,6 @@ package org.marketcetera.util.l10n;
 
 import java.util.Properties;
 import org.junit.Test;
-import org.marketcetera.util.misc.SystemProperties;
 
 import static org.junit.Assert.*;
 
