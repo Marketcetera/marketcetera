@@ -110,18 +110,14 @@
         </executions>
       </plugin>
 
-      <!-- Add custom build tool to generated Eclipse project. -->
+      <!-- Configure Eclipse IDE metadata. -->
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>
         <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
           <additionalBuildcommands>
-            <buildCommand>
-              <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-              <triggers>auto,full,incremental,</triggers>
-              <arguments>
-                <LaunchConfigHandle>&lt;project&gt;/.externalToolBuilders/copyToPlugin.launch</LaunchConfigHandle>
-              </arguments>
-            </buildCommand>
             <buildCommand>
               <name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
               <triggers>auto,full,incremental,</triggers>
@@ -170,7 +166,7 @@
 
   <profiles>
 
-    <!-- Copy generated jars into photon plugin area. -->
+    <!-- Copy generated test jar into photon plugin area. -->
     <profile>
       <id>eclipse-folders</id>
       <build>
@@ -179,19 +175,6 @@
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
-              <execution>
-                <id>copy.core.jar</id>
-                <phase>package</phase>
-                <configuration>
-                  <tasks>
-                    <property name="targetDir" value="../photon/plugins/org.marketcetera.core/" />
-                    <copy file="target/core-${project.version}.jar" todir="${targetDir}" />
-                  </tasks>
-                </configuration>
-                <goals>
-                  <goal>run</goal>
-                </goals>
-              </execution>
               <execution>
                 <id>copy.core.test.jar</id>
                 <phase>compile</phase>
