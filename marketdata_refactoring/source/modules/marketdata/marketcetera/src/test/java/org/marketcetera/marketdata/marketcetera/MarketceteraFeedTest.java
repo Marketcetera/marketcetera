@@ -33,6 +33,11 @@ public class MarketceteraFeedTest extends TestCase {
 //        map.put(MarketceteraFeed.SETTING_TARGET_COMP_ID, "test-target");
 //        feed = new MockMarketceteraFeed("FIX.4.4://localhost:1234", null, null, map);
     }
+    
+    public void testEmpty()
+    {
+        
+    }
 
 //    public void testSubscribe() throws Exception {
 //        ISubscription sub1 = feed.asyncQuery(MarketDataUtils.newSubscribeBBO(new MSymbol("XYZ")));

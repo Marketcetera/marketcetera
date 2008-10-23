@@ -56,7 +56,6 @@ public class MarketceteraFeedModule
             credentials = MarketceteraFeedCredentials.getInstance(getURL(),
                                                                   getSenderCompID(),
                                                                   getTargetCompID());
-            System.out.println("Credentials are " + credentials);
             feed = MarketceteraFeedFactory.getInstance().getMarketDataFeed(credentials);
         } catch (CoreException e) {
             throw new ModuleException(e.getI18NBoundMessage());

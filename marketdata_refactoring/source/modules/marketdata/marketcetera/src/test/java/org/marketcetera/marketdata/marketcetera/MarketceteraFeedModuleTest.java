@@ -11,10 +11,13 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeedTest;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -44,6 +47,18 @@ public class MarketceteraFeedModuleTest
     private ModuleManager moduleManager;
     private DataSink dataSink;
     private MockConfigurationProvider provider;
+    @BeforeClass
+    public static void setupOnce()
+    {
+        System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
+                           "true");
+    }
+    @AfterClass
+    public static void teardownOnce()
+    {
+        System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
+                           "false");
+    }
     @Before
     public void setup()
         throws Exception
@@ -58,7 +73,7 @@ public class MarketceteraFeedModuleTest
                           "sender");
         provider.addValue(MarketceteraFeedModuleFactory.INSTANCE_URN,
                           "TargetCompID",
-                          "MRKT");
+                          "MRKT-" + System.nanoTime());
         moduleManager.setConfigurationProvider(provider);
         moduleManager.init();
         dataSink = new DataSink();
