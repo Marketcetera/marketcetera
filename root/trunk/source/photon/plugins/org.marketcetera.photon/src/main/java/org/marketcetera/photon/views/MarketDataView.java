@@ -20,7 +20,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.LockHelper;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.marketdata.FeedStatus;
@@ -616,7 +615,9 @@ public class MarketDataView
 		} else {
 			message = (Message)aQuote;
 		}
-		onQuote(message);
+		if(message != null) {
+	                onQuote(message);
+		}
 	}
 	
     public void onQuote(final Message aQuote) {
