@@ -115,7 +115,6 @@ public final class BogusFeedModule
         //invoke inSupport.dataEmitError(error_false, true);
         // to indicate errors that interrupt the data flow and request
         // the framework to stop that data flow.
-        System.out.println("Query is " + query);
         try {
             ISubscriber subscriber = new ISubscriber() {
                 @Override

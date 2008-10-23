@@ -109,8 +109,8 @@ public class BogusFeed
      * @throws NoMoreIDsException if a unique identifier could not be generated to
      *   be assigned
      */
-    synchronized static BogusFeed getInstance(String inProviderName,
-                                              BogusFeedCredentials inCredentials) 
+    public synchronized static BogusFeed getInstance(String inProviderName,
+                                                     BogusFeedCredentials inCredentials) 
         throws NoMoreIDsException
     {
         if(sInstance != null) {
