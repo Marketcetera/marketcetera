@@ -260,7 +260,7 @@ public class ComparableAssertTest
     }
 
     @Test
-    public void message()
+    public void prefix()
     {
         try {
             assertComparable("Right now,",new SelfUnequals(0),new Correct(1),
@@ -273,7 +273,7 @@ public class ComparableAssertTest
     }
 
     @Test
-    public void messageNull()
+    public void prefixBadMessage()
     {
         String expected=TEST_MESSAGE+"x";
         try {

@@ -5,7 +5,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import static org.junit.Assert.*;
 
 /**
- * Assertions for equality.
+ * Assertions for equality (and hash code generation).
  * 
  * @author tlerios@marketcetera.com
  * @since $Release$
@@ -109,7 +109,7 @@ public final class EqualityAssert
      * object that is equal to (but not the same as) the target
      * object; all other collection items are unequal to the target
      * object.
-     * @param osOther A nonempty collection of other objects.
+     * @param osOther A nonempty collection of objects.
      */
 
     public static void assertEquality
@@ -140,7 +140,7 @@ public final class EqualityAssert
      * object that is equal to (but not the same as) the target
      * object; all other collection items are unequal to the target
      * object.
-     * @param osOther A nonempty collection of other objects.
+     * @param osOther A nonempty collection of objects.
      */
 
     public static void assertEquality
