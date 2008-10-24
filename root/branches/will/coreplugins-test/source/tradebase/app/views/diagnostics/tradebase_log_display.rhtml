@@ -1,0 +1,7 @@
+<%= render :partial => 'shared/breadcrumbs',
+           :locals=> { :top_level => "Diagnostics", :top_level_controller => 'diagnostics', :action_name=>'Tradebase Log'} %>
+<h1>Tradebase Log</h1>
+<p>The last 2000 lines of the Tradebase log are below.<br>
+    Tradebase is running in <%= RAILS_ENV %> mode.
+</p>
+<textarea rows="40" cols="80" readonly="true"><%= @log %></textarea>

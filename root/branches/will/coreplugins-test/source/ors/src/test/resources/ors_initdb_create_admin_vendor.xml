@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util
+       http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+    <util:list id="sqlFiles">
+      <value>file:src/main/sample_data/conf/001_create_user_schema.sql</value>
+      <value>file:src/test/sample_data/conf/101_create_admin_user.sql</value>
+    </util:list>
+    <bean id="initSchema" class="org.marketcetera.persist.ExecuteSQLFromFile">
+        <constructor-arg ref="sqlFiles"/>
+        <constructor-arg ref="mysqlpool"/>
+    </bean>
+</beans>

@@ -1,0 +1,16 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Symbols", :action_name => "Show Symbol", :top_level_controller => @controller.controller_name } %>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <% for column in MSymbol.content_columns %>
+                <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
+                <div id="<%= column.name %>" class="data view_data"><%=df @m_symbol.send(column.name) %></div>
+            <% end %>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+
+<%= button_to "Edit", {:action => 'edit', :id => @m_symbol}, {:class => "submit floatright"} %>

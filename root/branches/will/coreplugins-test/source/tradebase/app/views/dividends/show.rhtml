@@ -1,0 +1,39 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Dividends", :action_name => "View Dividend", :top_level_controller => @controller.controller_name } %>
+<h1>Dividend for <%= @dividend.equity.m_symbol.root %></h1>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <label for="amount" class="view_background">Amount</label>
+            <div id="amount" class="data view_data"><%=df @dividend.amount %></div>
+
+            <label for="status" class="view_background">Status</label>
+            <div id="status" class="data view_data"><%=df @dividend.status %></div>
+
+            <label for="description" class="view_background">Description</label>
+            <div id="description" class="data view_data"><%=df @dividend.description %></div>
+
+            <label for="currency" class="view_background">Currency Code</label>
+            <div id="currency" class="data view_data"><%=df @dividend.currency_alpha_code %></div>
+
+            <label for="created_on" class="view_background">Created On</label>
+            <div id="created_on" class="data view_data"><%=df @dividend.created_on %></div>
+        </div>
+        <div class="form_right">
+            <label for="announce_date" class="view_background">Announce Date</label>
+            <div id="announce_date" class="data view_data"><%=df @dividend.announce_date %></div>
+
+            <label for="ex_date" class="view_background">Ex Date</label>
+            <div id="ex_date" class="data view_data"><%=df @dividend.ex_date %></div>
+
+            <label for="payable_date" class="view_background">Payable Date</label>
+            <div id="payable_date" class="data view_data"><%=df @dividend.payable_date %></div>
+
+            <label for="updated_on" class="view_background">Updated On</label>
+            <div id="updated_on" class="data view_data"><%=df @dividend.updated_on %></div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
+<%= button_to "Edit", {:action => 'edit', :id => @dividend}, {:class => "submit floatright"} %>

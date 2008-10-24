@@ -1,0 +1,40 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "P &amp; L", :action_name => "P &amp; L Across Accounts", :top_level_controller => 'pnl' } %>
+<h1>Combined P &amp; L from <%= @from_date %> to <%= @to_date %></h1>
+
+<table>
+    <tr>
+        <th>Account</th>
+		<th>Strategy</th>
+        <th>P&amp;L</th>
+		<th>Currency</th>
+		<th><%= BaseCurrency %> P&amp;L</th>
+    </tr>
+<% i=0
+ total = BigDecimal.new("0")
+ for pnl in @pnls 
+ pnl_amount = BigDecimal(pnl.profit_and_loss.to_s) 
+ base_currency_pnl = get_base_currency_pnl_text(pnl_amount, pnl.currency)
+%>
+  <tr <%= ((i+=1)%2)==1 ? 'class="odd"':''%> >
+    <td><%= link_to pnl.account, {:action => :report, :nickname => pnl.account.nickname,
+            :from_date => @from_date, :to_date => @to_date} %></td>
+    <td><%= pnl.strategy %></td>
+    <td <%= pnl_number_class(pnl_amount) %>><%= fn(pnl_amount, 2) %></td>
+	<td><%= pnl.currency.alpha_code %></td>
+<% if (base_currency_pnl.nil?) %>
+    <td <%= pnl_number_class(pnl_amount) %>>
+        <%= link_to("Create mark "+image_tag("/images/icons/pencil.png", :alt=> 'Create New', :width => 16, :height => 16),
+                    :action => 'new_missing', :controller => 'marks', 
+                    :mark_date => @to_date, :tradeable_type => CurrencyPair.to_s,
+                    :currency_pair => pnl.currency.alpha_code + BaseCurrency) %></td>
+<% else %>
+    <td <%= pnl_number_class(pnl_amount) %>><%= base_currency_pnl %></td>
+<% end %>
+  </tr>
+<% end %>
+</table>
+
+<%= button_to 'Calculate again', {:action => :index}, {:class => "submit floatright"} %>
+
+<%= pagination_links(@pnl_pages, :params => {:from_date => @from_date, :to_date => @to_date }) %>
