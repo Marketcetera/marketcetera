@@ -52,8 +52,8 @@
       <artifactId>glazedlists_java15</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-i18n</groupId>
-      <artifactId>org.apache.commons</artifactId>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-i18n</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
