@@ -28,7 +28,7 @@
   <artifactId>maven-eclipse-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>Maven Eclipse Plugin</name>
-  <version>2.5.1</version>
+  <version>20081024</version>
   <prerequisites>
     <maven>2.0.1</maven>
   </prerequisites>

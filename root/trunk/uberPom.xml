@@ -115,14 +115,14 @@
         <version>[3.2.1]</version>
       </dependency>
       <dependency>
-        <groupId>commons-i18n</groupId>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>[20081006]</version>
+        <version>[20081024]</version>
       </dependency>
       <dependency>
-        <groupId>commons-csv</groupId>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>[20080514]</version>
+        <version>[20081024]</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -328,7 +328,7 @@
         <!-- mvn eclipse:eclipse -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.5.1</version>
+          <version>20081024</version>
         </plugin>
 
         <!-- mvn clean -->
@@ -493,6 +493,13 @@
     <pluginRepository>
       <id>maven2-repository.dev.java.net</id>
       <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>internal</id>
+      <url>http://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
