@@ -75,14 +75,6 @@
                     eclipse/plugins/org.eclipse.ui.ide.source_*,
                     eclipse/plugins/org.eclipse.ui.net_*,
                     eclipse/plugins/org.eclipse.ui.net.source_*,
-                    eclipse/plugins/org.junit_*/**,
-                    eclipse/plugins/org.junit.source_*,
-                    eclipse/plugins/org.junit4_*/**,
-                    eclipse/plugins/org.junit4.source_*,
-                    eclipse/plugins/org.eclipse.jdt.junit4.runtime_*,
-                    eclipse/plugins/org.eclipse.jdt.junit4.runtime.source_*,
-                    eclipse/plugins/org.eclipse.jdt.junit.runtime_*,
-                    eclipse/plugins/org.eclipse.jdt.junit.runtime.source_*,
                     eclipse/plugins/org.eclipse.debug.ui_*,
                     eclipse/plugins/org.eclipse.debug.ui.source_*,
                     eclipse/plugins/org.eclipse.search_*,
@@ -147,6 +139,16 @@
                   <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
                 </artifactItem>
                 <artifactItem>
+                  <groupId>org.eclipse</groupId>
+                  <artifactId>junit44-feature-patch-3.4.1</artifactId>
+                  <version>20080903</version>
+                  <type>zip</type>
+                  <includes>
+                    plugins/*
+                  </includes>
+                  <outputDirectory>${mvn.photon.target}/eclipse</outputDirectory>
+                </artifactItem>
+                <artifactItem>
                   <groupId>org.rubypeople</groupId>
                   <artifactId>rdt</artifactId>
                   <version>1.0.3.200807071913NGT</version>
@@ -186,31 +188,53 @@
           </execution>
         </executions>
       </plugin>
-      <!-- 
-        - Delete the target during a clean build.  Ideally, the maven-clean-plugin
-        - could be used instead, but there is a bug that causes it to improperly 
-        - handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
-        -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
+          <!-- 
+	        - Some plugins must be unpacked to allow the Eclipse IDE to compile against their embedded jars.
+	        -->
           <execution>
             <id>unpack-plugins</id>
             <phase>install</phase>
             <configuration>
               <tasks>
-                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar" 
-                dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT"/>
-                <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar" />
-                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar" 
-                dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT"/>
-                <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar" />
+                <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.compile.classpath"/>
+                <if>
+              	  <available file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar"/>
+                  <then>
+	                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar" 
+	                  dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT"/>
+	                <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar"/>
+	              </then>
+	            </if>
+	            <if>
+              	  <available file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar"/>
+                  <then>
+	                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar" 
+                      dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT"/>
+                    <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar"/>
+	              </then>
+	            </if>
+	            <if>
+              	  <available file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
+                  <then>
+	                <unzip src="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar" 
+                      dest="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903"/>
+                    <delete file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
+	              </then>
+	            </if>
               </tasks>
             </configuration>
             <goals>
               <goal>run</goal>
             </goals>
           </execution>
+          <!-- 
+	        - Delete the target during a clean build.  Ideally, the maven-clean-plugin
+	        - could be used instead, but there is a bug that causes it to improperly 
+	        - handle absolute paths. See http://jira.codehaus.org/browse/MCLEAN-36.
+	        -->
           <execution>
             <id>clean-target</id>
             <phase>clean</phase>
