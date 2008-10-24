@@ -46,6 +46,11 @@
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
+        <artifactId>misc</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
         <artifactId>market</artifactId>
         <version>[${project.version}]</version>
       </dependency>
@@ -346,6 +351,11 @@
               <groupId>org.apache.ant</groupId>
               <artifactId>ant-junit</artifactId>
               <version>[1.7.1]</version>
+            </dependency>
+            <dependency>
+              <groupId>ant-contrib</groupId>
+              <artifactId>ant-contrib</artifactId>
+              <version>1.0b2</version>
             </dependency>
           </dependencies>
         </plugin>
