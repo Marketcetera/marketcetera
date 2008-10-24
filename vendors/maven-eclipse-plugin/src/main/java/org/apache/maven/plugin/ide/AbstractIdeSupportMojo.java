@@ -458,8 +458,10 @@ public abstract class AbstractIdeSupportMojo
     /**
      * Flag for mojo implementations to control whether normal maven dependencies should be resolved. Default value is
      * true.
+     *
+     * @parameter expression="${resolveDependencies}" default-value="true"
      */
-    private boolean resolveDependencies = true;
+    private boolean resolveDependencies;
 
     /**
      * @see org.codehaus.plexus.logging.LogEnabled#enableLogging(org.codehaus.plexus.logging.Logger)
