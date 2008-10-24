@@ -32,7 +32,7 @@
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-csv</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>
     

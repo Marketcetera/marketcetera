@@ -53,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>commons-i18n</groupId>
-      <artifactId>commons-i18n</artifactId>
+      <artifactId>org.apache.commons</artifactId>
     </dependency>
     <dependency>
       <groupId>javax.persistence</groupId>
