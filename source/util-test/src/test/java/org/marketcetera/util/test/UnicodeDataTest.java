@@ -77,10 +77,10 @@ public class UnicodeDataTest
         dec.onMalformedInput(CodingErrorAction.REPORT);
         try {
             dec.decode(ByteBuffer.wrap(encoded));
+            fail();
         } catch (CharacterCodingException ex) {
-            return;
+            // Desired.
         }
-        fail("Decoding succeeded");
     }
 
     private static void writeFile
