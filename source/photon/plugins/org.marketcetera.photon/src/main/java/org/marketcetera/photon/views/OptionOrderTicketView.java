@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.io.InputStream;
 import java.util.List;
 
 import org.eclipse.core.databinding.Binding;
@@ -109,8 +110,8 @@ public class OptionOrderTicketView
 	}
 	
 	@Override
-	protected String getXSWTResourceName() {
-		return "/option_order_ticket.xswt"; //$NON-NLS-1$
+	protected InputStream getXSWTResourceStream() {
+		return getClass().getResourceAsStream("/option_order_ticket.xswt"); //$NON-NLS-1$
 	}
 
 
