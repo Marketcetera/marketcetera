@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Ruby Plug-in
+Bundle-SymbolicName: org.marketcetera.photon.ruby;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Require-Bundle: org.rubypeople.rdt.ui;bundle-version="0.0.0",
+ org.eclipse.ui;bundle-version="3.4.1",
+ org.epic.regexp;bundle-version="0.1.4",
+ org.eclipse.debug.core;bundle-version="3.4.0",
+ org.marketcetera.util;bundle-version="0.9.0",
+ org.eclipse.core.runtime;bundle-version="3.4.0"
+Bundle-Localization: plugin

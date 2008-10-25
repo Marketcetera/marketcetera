@@ -1,0 +1,1251 @@
+1.12.4
+------
+ODBC escape values for times used in time values so they work with any database.
+
+Session will not throw an exception when sending a message without a MsgType.
+
+Added NetworkStatusReport and NetworkStatusRequest messages fix FIX 4.4.
+
+.NET SessionID object can be constructed with field objects.
+
+getSessions implemented in SessionSettings object in .NET.
+
+SessionSettings can be output in the same format as the input stream.
+
+Fixed repeating groups in ruby which where incorrectly instantiating arrays
+indicating sorting order.
+
+Fixed crashes in .NET due to logger being called after going out of scope.
+
+Fixed crashes in gcc due to different allocators being used in user application
+vs QuickFIX library by the FieldMap.
+
+Disposing an initiator or acceptor in .NET will also call stop.
+
+1.12.3
+------
+A logon will now be sent immediately after initiator establishes a connection.
+Previously we were waiting up to 1 second before sending a logon.
+
+PersistMessages configuration setting will not store any messages when sent to Y.
+This is useful for sessions where you never want to do a resend request. Mostly for
+high bandwidth sessions.
+
+.NET field objects have static members for each of their enumeration values.
+This is equivalent to the Java implementation. (i.e., OrderSide.BUY).
+
+Fixed bugs in python and ruby APIs where objects passed into Initiator or
+Acceptor were being garbage collected to early causing random crashed.
+This was due to Swig not creating placeholders for these objects to live.
+
+Additional global logging indicated when an initiator/acceptor is created/destroyed,
+and started/stopped.  Global log also with log messages that do not belong to any
+loaded sessions.
+
+Configuration settings are now case insensitive (the keys, not the values).
+
+Underlying socket exception is provided if acceptor cannot be created.
+
+ODBC escape sequences are used for time columns so correct format is always
+sent to the underlying database.
+
+Fixed problem where file descriptors were not being released in ThreadedSocketInitiator
+due to uninitialized variable.
+
+Fixed some incorrect parsting of HTTP messages. Never manifested itself
+as any problem, but fixed none the less.
+
+Various copilation fixes for SunPRO compiler.
+
+1.12.2
+------
+Fixed bug in SocketConnector in Windows where failed connections were not
+being detected. Fixes bad behavior in SocketInitiator where it will attempt
+to connect once, but never try to reconnect.
+
+HttpAcceptPort setting added. When set, QuickFIX will accept HTTP requests
+to the given port.  Pointing a browser to this port will bring up a control
+panel that allows you to view/update certain session states.
+
+Fixed bugs in Python api generation.
+
+Fixed Equals method for Field in .NET.  Added Equals and GetHashCode
+implementations for SessionID.
+
+Log will display ip address instead of hostname of incoming connections
+in log.  Fixes problem where hostname is not always available.
+
+Many performance optimizations.  Performance is considerably better.
+
+Fixed bugs when checking for required fields.
+
+1.12.1
+------
+Fixed bugs with non-blocking sockets where select statement would go into an
+infinite loop due to a bad file descriptor which was not properly removed.
+
+Fixed bug in SocketInitiator where initator would crash if the socket
+was pending a connection when disconnecting.
+
+MemoryStore in .NET api uses proper access specifier so compiler does not
+complain that it is abstract.
+
+Added SendRedundantResendRequests for certifications that require you to
+send a resend request even if it appears redundant.
+
+BusinessMessageReject includes field in text if applicable.
+
+Compiles under gcc 4.1
+
+Fixed UnsatisfiedLinkError when creating FileLogFactory in java.
+
+Fixed various bugs with ResetOnLogon functionality.
+
+Fixed bug where MySQLLog was writing bad strings to table.
+
+Fixed some error messages in MySQL store.
+
+Added support for reconnect in MySQL 5.
+
+Display file name when FileStore or File Log cannot open a file.
+
+Rejects are delivered to fromAdmin even if sequence number is too high.
+
+Initiator stores and instance of the global log.
+
+1.12.0
+------
+SocketAcceptor and ThreadedSocketAcceptor can listen for connections on
+multiple ports.  SocketAcceptPort no longer needs to be in the DEFAULT
+section and can be assigned to sessions.  Sessions can share accepting
+ports like before.
+
+SocketAcceptor/Initiator now implemented using non-blocking sockets.  There
+is no longer a danger of dead-locking when using these objects.
+
+Support for ODBC log and message store.  QuickFIX can now be used with any 
+database with an ODBC driver on windows.  Direct MSSQL implementation is
+no longer supported.
+
+Global log exists for logging that does not pertain to an existing session.
+Things like incoming connections where the session is not yet identified
+go in here.  The message store factory has a new create() method for creating
+a global log without a session id.
+
+MessageStore interface now supports refresh which will load in settings
+from the persisted store.  RefreshOnLogon configuration setting will
+refresh the store whenever the session logs on.  Useful for creating
+backup systems.
+
+Added funtionally complete Ruby API.
+
+Python API now supports repeating groups and start() method.
+
+Message::replaceGroup can be used to replace a specific instance of a 
+repeating group.
+
+Message::isEmpty can be used to determine if there are any fields in a
+message.  Message::clear can clear all fields from a message.
+
+New configuration parameter LogoutTimeout allows you to adjust amount of
+time before session forces a disconnect when there is no logout response.
+
+CheckCompID configuration parameter can be set to N to disable validation
+of message comp ids.  This is for systems that send incorrect compids by
+design.
+
+DataDictionary can now be parsed from a stream.  This allows you to
+store the DataDictionary however you like as long as you can produce
+a stream in the QuickFIX xml format.
+
+Database IOExceptions now contain reasons for the IO failure which is logged
+if possible.
+
+clear() method on database log implementation take the session qualifier into
+account if applicable.
+
+MySQL and PostgreSQL implementations properly escape strings so any message
+can be recorded no matter what it contains.
+
+Double fields now have a constructor allowing you to pass in the padding
+length of the decimal value.
+
+ScreenLog can read setting from configuration file.  No longer required to
+hardcode settings into constructor.
+
+The last received time is now only updated if a message passes validation.
+
+Fixed bug where connections weren't being properly decremented inside
+connection pool.  Caused a resource leak by not releasing connections.
+
+Fixed bug with session time when end time is less than the start time on 
+the next day.
+
+Fixed bug with session time which spans different time zones.
+
+Fixed a bug so logouts will show logout reason.
+
+Fixed bugs pertaining to generating SQL to clear logs.
+
+Support for repeating groups in headers and trailers. DataDictionary validation 
+will also process repeating groups within the message header and trailer.
+
+.NET Field objects now have ToString, Equals, and GetHashCode implementations.
+Added GetHashCode implementation to SessionID.
+
+Reject message will always be processed, even when the session isn't logged on.
+
+Fixed support for nested repeating groups in Java API.
+
+OrigSendingTime now always matches SendingTime when sending a SequenceReset.
+
+Dictionary has a setDay method symetrical to getDay.
+
+Fixed 64 bit compatibility errors in JNI layer.
+
+Added default constructor for SessionID in Java and .NET APIs.
+
+Fixed name of message_log table in mysql creation scripts.
+
+Fixed race condition when stopping/starting initiator/acceptors.
+
+ResetOnLogon will reset state before sending/receiving logon messages.
+
+.NET logs, message stores, initiators and acceptors are now disposable so 
+resources can be immediately recovered.
+
+Fixed incorrect Socket Error log message when properly stopping a threaded
+connection.
+
+1.11.1
+------
+Added padding support for double fields.  Allows you to supply the
+minimum number of decimal places in a double.  When set to two, 9 will
+become 9.00, but 9.121 will remain the same.
+
+Fixed bug in MySQLLog where it tries to log to old incoming_log table
+instead of the newer messages_log table.
+
+FileLog clear() method did not work.  This has been fixed.
+
+clear() method for sql logs were clearing old incoming and outgoing
+tables instead of the newer messages table.
+
+When the clear() method on a log is called, only the logs
+pertaining to that session will be deleted.  Previously it was
+deleting logs from all sessions.
+
+Fixed problem when building from the IDE which would lock the .NET
+libraries causing the builds for some .NET projects to fail.
+
+Added Dictionary, MySQL and PostgreSQL source files to vs6 jni project.
+
+In .NET, settings can now be pulled from the SESSION section, and not
+just the DEFAULT section.
+
+Fixed port issues in example cvonfiguration files.
+
+1.11.0
+------
+Updated code so it will compile under gcc 4.0 and Visual Studio .NET 2005.
+For visual studio, all solution files are merged into a single file.  So
+the quickfix C++, .NET, JNI, test applications and example applications
+are all built in a single step.
+
+Added MessageStore and Log support for PostgreSQL and MS SQL Server.
+
+ConnectionPools are available for MySQL and PostgreSQL. Configuration settings
+MySQLStoreUseConnectionPool, MySQLLogUseConnectionPool, 
+PostgreSQLStoreUseConnectionPool, and PostgreSQLLogUseConnectionPool have been
+added.  When connection pools are enabled, any sessions which share the same
+connection parameters (database, user, password, host and port) will share
+a connection.  This is particularly useful for PostgreSQL which has pretty
+low limitations on the number of connections it allows.
+
+JNI Wrapper has been made compatible with 64 bit systems.
+
+Session::logout can be passed a string which contains the reason for the
+logout.  The reason will be placed into the text field of the Logout message.
+
+FileLog no longer has separate files for incoming and outgoing messages.  All
+messages are placed into one messages file so the original order of the
+transactions can be reconstructed accurately.
+
+SessionSettings can be set programatically from .NET and Java.  You no longer
+have to use the hack where you create a stream in the format of a configuration
+file and parse it into a settings file.  Direct access to getters and setters
+are exposed.
+
+Removing a group will update the leading count field.
+
+Fixed various bugs with resetting sequence numbers using the ResetSeqNumFlag=Y,
+including issues with ResetOnDisconnect and ResetOnLogoff. Also if in a state where
+we are not logged on and the messages are going to be reset, no messages will be
+succesfully sent (there is no point).
+
+Log class has a clear() method which can be used to clear out the logs
+programatically.
+
+Various fixes to handling of resend requests.
+
+Session qualifier can be accessed from SessionID in .NET
+
+getFieldTag method on DataDictionary will use a tags name to return its number.
+
+Milliseconds can be specified by user in UtcTimeStamp and UtcTimeOnly fields.
+
+Deprecated Message::getString method has been removed, you must now use toString.
+
+Reject reasons are logged by the session even if they cannot be sent to the
+counterparty.
+
+Sequence reset will be processed even if the messages sequence number is too high.
+
+Second thread and buffer queue removed from ThreadedSocketConnection.  Each connection
+now only has one thread which interacts with the socket directly.
+
+When a session is reset(), a logout message will be sent to the counterparty.
+
+OrigSendingTime will contain milliseconds when applicable.
+
+Repeating groups can now be removed from messages/groups.
+
+Negative numbers will now be parsed correctly when received in double fields.
+Before these would get converted into 0.
+
+If a null value is set into a character field, the field will be set as empty
+instead of putting a null character into the field.
+
+MySQLLog will use the correct log settings instead of getting its settings
+from the MySQLStore.
+
+Fixed bug where getWeekDay would sometimes return a negative number.
+
+Fixed various issues with FIX data dictionary files.
+
+Added many methods missing from the .NET and Java wrappers of the Session class.
+
+Event object can be passed a value to indicate how long to wait for the event
+instead of being hardcoded to 100 milliseconds.
+
+Fixed out of range error when pulling UtcTimeOnly fields out of groups.
+
+.NET Message wrapper can parse a message with validation turned off.
+setString method also exposed.  fromString method exposed to SessionID.
+
+fromString method exposed to SessionID in java API.
+
+DataDictionary will throw a .NET ConfigError exception instead of letting
+the uncaught unmanaged exception propogate, causing a crash.
+
+Time objects are no longer implemented using tm structure.
+
+1.10.2
+------
+Reset functionality will work if the user appends ResetSeqNumFlag=Y into the
+logon message from the toAdmin callback.  Allows for manual reset support.
+
+1.10.1
+------
+Fixed bugs regarding sequence reset functionality.  QuickFIX was not correctly
+respoding with a logon message when receiving a sequence reset.
+
+1.10.0
+------
+ResetSeqNumFlag is always set when expected sender and target message sequence 
+numbers are 1.  QuickFIX will also reset it's sequence numbers when it
+received a ResetSeqNumFlag set to 'Y'.
+
+ValidateUserDefinedFields configuration parameter available.  Defaults to Y
+which provides functionality of older releases.  When set to N, user defined
+fields will not be validated on incoming messages.
+
+Initiators and Acceptors can be reliably stopped and restarted as many times
+as you like.  Previously they could only be started and stopped once.
+
+Presence of required fields will be validated inside of required repeating
+groups.  Required fields will also be validated in the header and trailer.
+
+getSessions on acceptor and initiator will return a collection of managed
+sessions.
+
+Correctly handle scenario where a SocketConnection receives a first message
+that is not a logon.  Previously it would cause the session to be registered
+without ever unregistering and thus not allowing any new connections.
+
+Hearbeat monitor is reset when receiving a message with incorrect MsgSeqNum.
+
+Much more thorough logging inside of Session class.
+
+QuickFIX will add the text from a RejectLogon exception into the Text field
+of the Logout message.
+
+BusinessMessageReject, instead of Reject, will be send with a conditionally
+required field is not found.
+
+Double fields will no longer encode values less than 0.0001 in scientific
+notation.
+
+Initiator will no longer initiate socket connections outside of the session
+time.  Previously it would connect and immediately close connection during
+every retry interval.
+
+Receipt of a message without an empty MsgType field is now handled gracefully.
+
+Fixed bug where FileStore would not correctly persist numbers if set to a
+lower sequence number that contained less characters than the current
+sequence number.
+
+An exception thrown from Session::generateReject will no longer result in
+a system crash.
+
+SessionID strings can now be correctly parsed if the SenderCompID contains a
+dash.
+
+Very large resend request processing will not longer result in a stack overflow.
+
+If no length is found in the parser buffer, it will now be cleared out 
+instead of reused.
+
+SessionSettings adds extra sanity checks for configuration files, such as 
+ensuring initiator or acceptor are present and spelled correctly.
+
+Removed dependence of socket code on FIONREAD/NREAD.  The value of the recv
+call is now used to determine dropped connections. All socket code has been
+pulled out of the parser class.
+
+Logout message will be processed even if no Logon was received.
+
+C++ MessageCracker contains non-const onMessage methods for use with toAdmin 
+and toApp callbacks.
+
+Added block, poll, and isLoggedOn to initiator/acceptor for java and .NET APIs.
+
+isAdmin, isApp, and GetEnumerator available on Message class in .NET.
+GetEnumerator also available on Header and Trailer.
+
+force flag can be passed into initiator and acceptor stop methods in
+java and .NET
+
+Java will only be compiled under unix when using the -with-java configure
+directive.
+
+CheckSum will not become negative field is set with negative character.
+
+RuntimeErrors regarding port numbers no longer display large numbers as negative.
+
+Directories created by quickfix use more 0777 instead of 0700.
+
+Bug when copying SessionIDs with SessionQualifiers has been fixed.
+
+SessionSettings can be set at runtime using setter calls from java.
+
+Apple standards used when installing java libraries under MAC OS/X.
+
+1.9.4
+-----
+Fixed compilation and linking errors in .NET library.
+
+ThreadedSocketInitiator will reconnect when roaming into a sessions start time.
+
+Instead of the shell/bat scripts allocated extra memory for the JVM to build
+the java API, the memory is allocated in the ant script.
+
+Added mutex locker to Session::unregisterSession
+
+Added strptime implementation from PowerDog for Visual Studio. MySQL code will
+build under windows now.
+
+1.9.3
+-----
+.NET crashes do to random NullPointerExceptions has been fixed.  The
+.NET library seems to be completely stable now even under heavy load.
+
+When supplying a DataDictionary to Message::setString, the fields in
+repeating groups will now be placed in the correct order.
+
+Session will no longer send additional logout messages when one is pending.
+
+SocketAcceptor will no longer allow two connections to log on to the same
+session.
+
+When receiving a resend request for a larger than expected sequence number,
+QF will treat this like an INFINITE request.  This alleviates problems from
+receiving requests for extremely large numbers which cause a lot of lookups.
+
+When receiving a SequenceReset and GapFill flag set to N, the message will
+be processed even if the MsgSeqNum field is completely absent.
+
+Included message stores will now load up start times with the correct day
+of the year so week long sessions can safely be taken down and brought back
+up.
+
+Message and Parser can now handle messages with null characters.
+
+Session::sendToTarget is now able to route orders using a session qualifier.
+
+Message will be invalid in setString if it has trailing characters extra
+trailing characters that do not belong to a field.
+
+Messages with repeating groups can now have a properly implemented
+copy constructor.  It is safe to copy all messages.
+
+Added wrappers in .NET for some missing methods in DataDictionary and 
+Session classes.
+
+process_sleep has proper support for millisecond precision under windows.
+
+Some messages in FIX44.xml were identified with the wrong MsgType string.
+
+Added missing DKReason enumerations to FIX40.xml, FIX41.xml, and FIX42.xml
+
+Fixed problem where FieldMap::calculateString did not properly reset the
+output string under VC6.  This caused problems with resend requests.
+
+JNI library will check input parameters for nulls and throw a 
+NullPointerException if the method cannot handle a null value.
+
+Python library will be installed to the site module path.
+
+get method for retrieving a single message has been removed from MessageStore.
+Only the get methods for retreiving a range needs to be implemented now.
+
+Added missing UserRequest and UserResponse messages for FIX.4.4
+
+Session differentiates between dropping a connection and disconnecting
+normally in the event logs.
+
+1.9.2
+-----
+Fixed incorrect versioning of libraries under unix systems
+
+1.9.1
+-----
+Multi-character Currencies will no longer be rejected
+
+Fixed problems with MySQLStore loading in the wrong fields on startup.
+
+MySQLStore queries will retry once if connection to the daemon got dropped.
+
+Fixed link errors when building with some versions of Visual Studio.
+
+Fixed compilation errors when using STLPort
+
+Applied patches for SUNPro support
+
+Message::toXML() will place field values in a CDATA section in the text 
+element so it can handle special XML characters. Placing XML strings that
+contain CDATA sections into a xmldata field will still cause
+problems but I'm not sure much can be done about that.
+
+More updates to FIX40 and FIX41 data dictionaries.
+
+1.9.0
+-----
+Session time logic pulled out into new SessionTime class.  Now supports 
+weeklong sessions!  CME conterparties, start your engines!  Use the
+StartDay and EndDay configuration settings.
+
+Massive performance improvements.  Receiving and Sending message rates are
+dramatically improved.
+
+SessionQualifier added which allows you to uniquely identify a session with
+otherwise identical characteristics. You can now have multiple sessions
+which share the same BeginString, SenderCompID, and TargetCompID. Use the
+SessionQualifier configuration setting. *NOTE* this necessitated a change in 
+the MySQL schema.  Regenerate your databases.
+
+Fixed some compilation problems which manifested themselves under VB.NET
+
+Administrative processing will be done after receiving a message if necessary.
+This prevents dropping of heartbeats when a session is pegged with
+traffic, causing the session to terminate.
+
+Some improvement in compilation times.  I'd like to see more work done to
+bring them down.
+
+Made several updates and corrections to the data dictionary.
+
+Made compatible with SubPRO compiler. We do not own this compiler so users
+who do will need to keep us up to date on compatability issues.
+
+Fixed some potential memory leaks in the python API.
+
+If a message store cannot be created under java, a proper java exception will
+be thrown.
+
+SessionSettings will throw ConfigError as java exception.
+
+JavaLogFactory throw ConfigError if log cannot be created.
+
+Connection classes correctly propogate RecvFailed exception.
+
+getFieldType exposed in java DataDictionary, although the enumerations are not
+yet exposed.  You need to test against their integer values.
+
+1.8.0
+-----
+Completed python API. Now QuickFIX can be used to FIX enable python scripts. 
+This is currently only tested on linux.  It will probably work on solaris, and 
+FreeBSD. To enable the python interface, run configure with 
+--with-python=<dir containing Python.h>. Most of the python API is generated
+with SWIG (www.swig.org), thanks to them for updating their software to 
+accomodate our requirements. If you wish to regenerate the API off of the 
+SWIG interface definition file, you must get the latest SWIG from cvs.
+
+VB.NET API works again.
+
+Logout message with message indicated expected and received MsgSeqNum is sent
+if a too low sequence number is received.
+
+Initiator and Acceptor poll() commands now work under Windows.
+
+MySQL log and store will use proper escape sequences if any double quotes
+appear in the message.  Previously, these resulted in I/O errors.
+
+UtcDate becomes UtcDateOnly as per FIX.4.4
+
+Executor example application implemented in VB.NET and python. Documentation now
+includes VB.NET and python code snippets.
+
+Fixed a couple bugs with the MySQL message store. Some of the sequence numbers
+were being stored/retrieved in reverse. (thanks to Pasqale d'Aloise)
+
+Correct useful error is logged if a message is received with a sequence number
+too low without a PossDup flag.  The previous error "Field Not Found" was 
+incorrect.
+
+The default behavior in the MessageCracker for admin messages is to ignore the
+messages.  Application messages will continue to throw UnsupportedMessageType.
+
+Unit tests are always built without optimizations to speed up compilation.
+
+MySQL scripts, log, and message store explicitly set the user to root by
+default to reflect requirements of new versions of MySQL.
+
+JNI workspace now points to the project in the correct directory, so the JNI
+library will build normally without having to modify the workspace.
+
+The first message received within the sessions time frame should always be
+processed. There were some circumstances where it would not correctly identify
+itself as being in the session time until the second message.
+
+Fixed some minor issues with the libxml based parse to make it more generally
+useful.
+
+process_sleep can sleep for sub-second timespans again.
+
+Added constructor which takes in SessionSettings to .NET FileLogFactory
+
+1.7.1
+-----
+License moved over to quickfixengine.org. Otherwise it is identical.
+
+logon() and logoff() methods provided for the Session class, allowing you to 
+programatically.  Session times still work normally, but anytime during the 
+session time you can logoff and then re-logon.
+
+When stopping an initiator or acceptor, all sessions will go through a proper 
+logoff sequence instead of just disconnecting.  A session will be killed if it 
+does not receive a logoff response within 5 seconds.
+
+Sequence numbers will be incremented correctly when rejected a resent message.
+This fixes an infinite resend request problem.
+
+Reject messages will no longer reverse routing fields if they
+were sent as blanks, fixing an inifinite resend request problem.
+
+A Session's MessageStore can now be accessed with getStore() method. Both 
+getLog() and getStore() are available in Java and .NET APIs.
+
+Improved logging for disconnect scenarios.
+
+Message class now as isAdmin and isApp member functions.
+
+Message exposes iterators under Java which return fields as 
+StringFields. Now you can iterate through all fields to dynamically
+discover what is available in a message.
+
+removeField added to Java Message.
+
+More Session methods are exposed in Java and .NET.
+
+Methods to retrieve information about what is in a DataDictionary now exposed
+through Java interface.
+
+In Java, constructor that takes in a DataDictionary but turns off validation
+is exposed.
+
+getGroup under Java will throw a proper exception instead of aborting.
+
+In the data dictionary file, omments can be added between values under 
+enumerations without QuickFIX complaining about the format.
+
+Windows version whould now build with millisecond support.
+
+In FIX 4.0, Time type is treated like a UtcTimeStamp instead of a String.
+
+Example applications are part of the main build under *nix.
+
+stop on the initiator and acceptor will now work with the block() call.
+
+SecurityIDSource changed from CHAR to STRING in FIX44.xml
+
+Fixed warning when building .NET library.
+
+1.7.0
+-----
+FIX 4.4 support added to .NET! The .NET API had to be segmented into two
+assemblies: quickfix_net and quickfix_net_messages.  Why?  Well, the Managed
+C++ compiler has a bug that causes it to choke on any class with more than 17
+nested classes.  FIX 4.4 being the monster that it is, has several messages
+with more than 17 repeating groups (yikes!), so the generated code choked.
+This caused me some pain but eventually I came up with the less than ideal
+but workable solution of generating the message code as C#, which does not
+suffer from this problem.  So part of the .NET API is implemented in Managed
+C++ and part of it in C#.
+
+Java package changed from org.quickfix to just quickfix.  I know this is a
+horrible thing to do to you but the fact is we just don't have the domain
+name.  In the meantime I have registered quickfixengine.org (nothing is there yet)
+
+Session mutex is locked during a resend request.  This will prevent new messages
+from being sent in the middle of a resend request, which could cause all sorts
+of havoc.
+
+Support added for Mac OS X and FreeBSD. Mac OS X doesn't currently support
+sending milliseconds in UtcTimeStamps.  Some of the documentation for these
+two systems isn't complete, so you should follow the linux documentation.
+
+Session more gracefully handles sending of messages during the logon process.
+
+Session will disconnect instead of sending a reject message on a bad logon.
+In the future we may want to provide and option to send a logout with an
+error message, although this is not generally recommended.
+
+reverseRoute added to message which will fill in inversed routing information
+based on another message, allowing you to conveniently send a response.  The
+Session class uses this for reject messages in order to ensure optional routing
+tags are included in rejects.
+
+Acceptance test runner ported to ruby 1.8.
+
+For windows, debug libraries are placed into a separate debug directory instead
+of being named things like quickfix_debug.lib.  The reason is that .NET projects
+don't seem to support the notion of different versions of a build having different
+file names, just different directories.  So in order to standardize I had to
+change everything to follow this format.
+
+DataDictionary class has been wrapped for Java and .NET.  This allows you to
+pass a DD into a message constructor along with a string.  This will allow you 
+to parse messages with repeating groups.
+
+Fixed problems with Session states not automatically resetting to prepare for
+the start of a new session.  Sessions should now reset their state at the 
+correct times.
+
+Added toString() call to SessionID
+
+SessionID's can now be streamed in from a string. Useful if you want to stream out
+a list of sessions to a file and recreate the objects from that file.
+
+Values in the settings file are read by a more inclusive regexp so many more
+special characters can be used.
+
+UtcTimeStamps now support milliseconds.  SendingTimes for FIX versions
+4.2 and higher will be sent with millisecond resolution.  A new session level
+setting MillisecondsInTimestamp is provided.  The default value is Y.
+
+Messages will be correctly parsed if it receives a partial BodyLength field.  
+The parser will make sure the complete field has been received before parsing
+the rest of the message.
+
+The blockingStart call has been renamed to simply block, and a new poll call
+has been added to Initiator and Acceptor.  So options for running quickfix are
+through the start(), block(), and poll(), commands.
+
+getYearDay added to UtcTimeStamp and UtcTimeDate which returns the current day
+of the year. (e.g. January 31 = 31, Febuary 1 = 32 )
+
+Floating point fields will be accepted with multiple leading 0's.
+
+.NET now has wrappers for the low-level C++ accessors for Message and Group.
+
+Added support for isSetField to java.
+
+Corrected some threading issues in windows by switching from _beginthread to 
+beginthreadex and from GetCurrentThread to GetCurrentThreadId
+
+1.6.0
+-----
+FIX 4.4 support for C++ and Java APIs, with .NET on the way.  You can
+technically use 4.4 with .NET now, but the generated message classes
+are not yet available.
+
+Messages with repeating groups will no longer be silenty ignored when 
+no data dictionary is available.  QuickFIX will accept the message and 
+send a proper reject message at validation.  Reject message will be
+supplied for unspecified repeating tags, and count mismatches for
+repeating groups.
+
+ResendRequests are now done to INFINITY to reduce race condition
+scenarios.
+
+Out of sequence ResendRequest don't alter sequence numbers which
+would cause race conditions during simultaneous ResendRequests.
+
+Each C++ message is placed in its own file. This separation repairs
+issues with Visual Studio running out of heap space.  This does mean,
+however, that you will need to include the header for each individual
+you intend on using instead of just including Messages.h
+
+Fields of type MultipleValueString that have enumerations will check
+each individual value instead of checking the string as a whole. For
+instance if you are sent a MVS containing "A C 5", the validator will
+verify that A C and 5 are all valid enumerations.
+
+More descriptive error messages when reading invalid DataDictionary
+files.  QuickFIX will no longer crash when givin a badly formatted
+XML document, instead a ConfigError is thrown.
+
+Repeating groups within Component are now read correctly from the
+DataDictionary file.
+
+DataDictionary will enforce that field names are unique.  This
+prevents accidentally assigning two different field names to the
+same tag number.
+
+Fixed a bug where messages sent while logged off were not stored in
+the MessageStore, causing them to never be resent.
+
+By popular demand, the .NET API now exposes the isSetField call. This
+allows .NET users to check for the presence of a field in a message.
+
+Fixed bug where re-used Field classes would not recalculate their
+length and checksum when their values changes, causing messages to
+be sent out with incorrect lenths or checksums.
+
+Fixed bug that cause the sendToTarget( Message, String, String )
+signature would always fail from the Java API.
+
+Fixed incomplete copy operator for DataDictionary.
+
+ScreenLog now displays proper timestamps.
+
+libxml2 can be linked into windows build as an alternative to MSXML.
+
+Added accessor to Session class for the DataDictionary.
+
+Banzai should load correctly with the supplied configuration file.
+
+socket_t will be defined as int if not defined by the system. This
+allows QF to be compiled on older systems such as Solaris 2.6
+
+1.5.0
+-----
+Support for DATA fields. This will allow to safely send encrypted and
+compressed fields.  Out of necessity, FIX parser uses the length field
+instead of just looking for 10=SOH. This means behavior will be slightly
+different when receiving messages with an incorrect length.
+
+Acceptor and Initiator start() method is a non-blocking call. onRun
+is no longer called in your application.  Instead you must call stop on
+your initiator or acceptor when you want it to shut down.
+
+Fixed several problems with parsing nested repeating groups and groups
+with components.
+
+Added UseDataDictionary field which defaults to Y. You must explicitly
+set this field to N if you DONT want to use a DataDictionary.
+
+New include structure for C++. Includes are now in the form of
+quickfix/[file].h instead of the old quickfix/include/[file].h
+
+Several optimizations added to increase the speed of creating, parsing,
+and sending messages.  Overall performance of the engine should be
+considerably better.  Messages with repeating groups should show dramatic 
+performance increase.
+
+All libraries are now build as shared libraries. This also doubles the speed
+of the build under gcc because object files only need to be compiled once
+instead of twice as before.
+
+Header file dependencies have been reduced to speed up build. This may means
+headers that were previously pulled in automatically via other header files,
+may no longer do so.  You will now need to explicitly include these files where
+needed.
+
+Fixed some resource leaks when shutting down threads.
+
+Added java acceptance tests. All FIX test scripts can now be run with
+the runat_java and runat_java.bat commands in the test directory. FIX 4.3
+tests now run with runat_threaded
+
+Queued logon messages (logons messages received with sequence number to
+high), are skipped when processing queue.
+
+Build will pull CFLAGS, CXXFLAGS, and LDFLAGS in from the environment.
+Default compiler flags are now -O2 -g. This may cause problems with some
+older versions of gcc. Set CXXFLAGS to -O or blank if you have problems
+compiling
+
+Added new 'void toString( std::string& )' and 'void toXML( std::string& )' 
+method calls. These are more efficient than 'string toString()' and
+'string toXML' calls.  The new versions should be used if these methods
+are called in a loop for better performance.
+
+FileLog forcefully flushes writes so the state of the storage file is
+always up to date.
+
+1.4.1
+-----
+Fixed compilation errors when building under gcc 3.x (matching throw
+specifiers, JNI patch).  Also got rid of warnings caused by generated
+source files not ending with newlines.
+
+getValue call in Java and .NET message class will throw and IncorrectDataFormat
+exception instead of just crashing.  In C++, method also throws 
+IncorrectDataFormat instead of FieldConvertError.
+
+QuickFIX C++ call stack is available by running configure with the
+--enable-callstack option, or defining USING_CALLSTACK in windows_config.h
+
+Engine will no longer crash when specifying an invalid hostname
+
+Added ConfigError throw specifier to Initiator/Acceptor start method. 
+
+Removed ^M characters from install-sh which caused compile problems on
+some systems.
+
+Fixed code generation so groups withing components within groups are
+show up in message classes.
+
+Added missing SEQNUM type to DataDictionary.
+
+Increased heap size for Visual Studio so heap allocation errors are
+less likely when compiling.
+
+In Java, renamed Session class to SessionSettings to match the C++ API
+
+Fixed bug where session times would not ever reset when the start time
+is greater than the end time.
+
+Reentrant system calls are used when they are available. Fixed
+unsynchronized resource bug on multi-processor machines.
+
+Initiator and Acceptor use correct result after spawning thread,
+instead of assigning the boolean result as the threadid.
+
+Fixed deadlock in ThreadedSocketAcceptor and ThreadedSocketInitiator
+when shutting down.
+
+UtcDate now calls the correct constructor so it is initialized
+properly.
+
+Java MessageCracker now supports FIX 4.3 messages.
+
+1.4.0
+-----
+Support for FIX 4.3
+
+New less redundant DataDictionary format, with support for component blocks
+
+reset method on Session now available in JAVA and .NET API's
+
+setNextSenderMsgSeqNum and setNextTargetMsgSeqNum available on session in all API's
+
+Changes made to messages in toAdmin and toApp in JAVA are correctly applied when sending
+
+new throw specifiers on fromAdmin and fromApp message. Prevents
+crashes from occuring when no data dictionary is used.
+
+isSetField method added to JAVA API. Methods in version specific
+messages also have methods to check if fields are set.
+
+sendToTarget throws SessionNotFound exception instead of just crashing
+under .NET
+
+Fixed memory leaks in JNI interface
+
+Fixed race condition between sending application and admin messages
+
+Processing of Queue in ThreadedSocketConnection modified so it can
+better handle large sustained throughput
+
+.NET namespace changed from Fix to QuickFix. Resolves conflict with
+unmanaged FIX namespace allowing library to be used from VB.NET
+
+Messages with repeating groups no longer take in the number of
+repeating groups in the constructor.  This value was always
+overwritten when adding groups anyway.
+
+The start method in Initiator and Acceptor can throw an exception if a
+serious error occurs.
+
+SocketAcceptor and ThreadedSocketAcceptor will no longer allow you to 
+silently takeover a used port.  An exception will be thrown instead.
+
+New constructor for SessionID takes strings.
+
+New setting ValidateFieldsHaveValue can be set to N to prevent
+rejecting messages with empty fields.
+
+MySQL MessageStore will properly reset sequence numbers
+
+Java field classes have final integers which identify the tag number
+of the field.
+
+Java and .NET will no longer crash when a incorrectly formatted field
+is read from a session without a data dictionary.
+
+1.3.2
+-----
+More portable file copies during build process on unix
+
+1.3.1
+-----
+Fixed memory leak in repeating groups caused by FieldMap not calling
+clear() in destructor.
+
+Corrected some minor errors building sample applications on some systems.
+
+1.3.0
+-----
+Support for java on linux and solaris! Note some compilers/linux distributions
+dont seem to do as well with this as others.
+
+Added support for repeating groups in .NET and java APIs.
+
+Event and message logging now available through the Log interface. This is
+separate from the MessageStore which is now more acurately refered to as
+a state mechanism.
+
+MySQLFileStore added.  Now QuickFIX can maintain state in a production quality
+open source database right out of the box.
+
+--with-stlport configure option added for building with STLport.  This
+fixes stability problems that users have been experiencing on
+multi-processor machines with 2.95.x compilers.
+
+Message decoding has been optimized. Decoding FIX messages is now 3
+times faster than before.
+
+Message class can now output FIX messages as XML.
+
+Fixed copy operator for FieldMaps that contain repeating groups.
+
+Fixed resource leaks in .NET API.  Message class should now be garbage 
+collected correctly. Also implemented IDisposable interface for
+Message. Be sure you know what you are doing before using this!
+
+DataDictionary parser works much better.  In particular it is able to 
+generate the FIX40.xml and FIX41.xml files much more accurately.
+
+Test Requests are now sent properly during times of high activity.
+
+Test Request time span shortened for a timed out connection.
+
+MessageStore sets and gets strings instead of messages. This allows
+the session to properly parse stored messages using its data
+dictionary. The old way was causing problems with resends with 
+repeating groups.
+
+All MessageStore functions can now throw an IOException. If a session traps
+an IOException it will consider it a serious problem and disconnect.
+
+The get method in MessageStore that asks for a range is now a void method
+instead of a boolean. If there is a problem retrieving a message, throw an
+IOException.  If you are asked for a message you do not have, just send back
+whatever is available within the range.
+
+Faster load times for sessions that share a data dictionary. Each 
+DataDictionary file is now only parsed once on startup.
+
+In JAVA booleans are properly represented as booleans instead of Strings
+
+Currency types are properly represented as Strings
+
+Rejecting a resent message will no longer increment the expected
+sequence number.
+
+Can now properly accept a message with repeating group where the
+counter is set to zero.
+
+Continuous builds now being run on windows-vc6, windows-vc7, and 
+linux-pgcc-2-95-2, and solaris-gcc-2-95-3-stlport
+
+Message::getString() deprecated in favor of Message::toString()
+
+1.2.1
+-----
+config.h no longer included from Utility.h.  This was causing problems
+when people wanted to build quickfix application without autotools.
+
+More robust detection of dropped/bad sockets. One of our users ran
+into a problem with this during certification with the CME. He has
+confirmed that it works correctly now.
+
+Closing acceptors now works in all situations.
+
+Mutex locking in session is a little smarter, making it easier to
+syncrhonize applications.
+
+code is now auto formatted with astyle. This makes it easier for
+people to contribute code without having to worry as much about
+conforming to coding standards.
+
+1.2.0
+-----
+First release of .NET API for QuickFIX. The API is mostly a direct
+port of the JAVA API, future versions well attempt to refine this API
+to use more .NET specific constructs. QuickFIX applications can now be
+written in C# or VB.NET or any other CLR language.
+
+Documentation covers all API's, C++, Java, and .NET
+
+New example application executor. Executor example is implemented in
+C++, Java and C# for side by side comparison.
+
+Fixed bug where the session time range was not calculated correctly
+when minutes or seconds were involved. (.i.e., is that start time was
+set to 12:30:00, the 30 would cause problems, wheras 12:00:00 would be fine).
+
+Resend requests with EndSeqNo set to 0 (>=FIX 4.2) or 999999 (<=FIX
+4.1) are now supported.
+
+Possible duplicate messages with a sequence number that is too low
+will no longer be forwarded to the application callback.
+
+FIX Specification parser modified so it will now capture some fields
+that it was missing. The FIX42.xml file in particular is more complete.
+
+Made Java API more consistant with C++ API.
+
+1.1.1
+-----
+Fixed memory leak caused by copying repeating groups.
+
+Added acceptance tests for FIX 4.0 and 4.1
+
+When new fields are added to the header or trailer portion of the XML
+data dictionary, QuickFIX will now handle them appropriately.
+
+Header fields, not just body fields, can now be added to messages
+passing through toApp and toAdmin callbacks
+
+New setting CheckLatency and MaxLatency are available for session 
+configuration. CheckLatency defaults to Y and determines if a session
+will check if a message looks too old to process. MaxLatency defaults
+to 120 and is the maximum number of seconds a message can be out of
+date and still be considered good.
+
+New setting ValidateFieldsOutOfOrder is available for session
+configuration. Sets whether or not header and body fields can be out
+of order. Useful for connecting to systems that don't properly sort their 
+fields.
+
+New setting LogonTimeout is availbale for session configuration. 
+Number of seconds QuickFIX will wait to receive a logon response. 
+Defaults to 10.
+
+Another fix put in to allow string based enumeration to be properly validated.
+
+RefMsgType field no longer added to reject messages in versions
+earlier than 4.2
+
+SequenceReset messages are now appropriately send with OrigSendingTime field.
+
+RejectLogon, DoNotSend and UnsupportedMessageType exceptions added to
+JAVA interface.
+
+New settings ResetOnLogout and ResetOnDisconnect will reset sequence
+numbers when a session is respectively normally or abnormally terminated.
+
+<string> is included from Exceptions.h, which makes QF compilable with STLPort.
+
+1.1.0
+-----
+Added support for messages with repeating groups.
+
+Added ThreadedSocketInitiator and ThreadedSocketAcceptor. Each session
+has its own thread for listening on a socket and one for processing messages.
+
+The signature for toApp and toAdmin have changed from 
+   ( const Message&, const SessionID& )
+to ( Message&, const SessionID& ). 
+This allows applications to add fields to messages before they are sent out. 
+Particularly useful for administrative messages that need fields that arn't
+added by default.
+
+Filestore is much more memory efficient. Only file offsets are stored in memory
+and messages are retreived on in as needed basis. This keeps memory use way
+down and also is a little faster for normal operations.
+
+On Linux and Solaris upgraded from libxml to libxml2. It is recomended by 
+the libxml guys that all new applications use libxml2. configure will verify
+that libxml is installed on a system and automatically add the necessary
+command line parameters.
+
+Possible duplicate messages are now passed to the fromAdmin and
+fromApp application callbacks. Applications must now check for this
+field and determine how possible duplicate messages should be handled.
+
+Values.h correctly generated enumerations for fields of type INT.
+
+Validation works with STRING enumerations, not just CHAR and INT.
+
+Sockets are now properly closed if a connection fails. This fixes a
+leak in socket resources that appeared after a large number of
+reconnect attempts.
+
+RefTagID, RefMsgType are no longer added to reject message in versions
+of FIX 4.1 and earlier. BusinessMessageReject no longer used in FIX
+versions 4.1 and earlier.
+
+Improved DataDictionary generation. More enumerations are listed.
+ 
+1.0.4
+-----
+Fixed bug in FileStore where .session file was overwritten on reload.
+
+SocketInitiator now supports multiple alternate host and ports which allows
+QuickFIX to take advantage of systems with failover servers.
+
+Custom build step under windows is now compatible with Visual Studio 7.
+
+Changed fields from template instantiated classes to standard classes in
+order to stop Visual Studio 6 from crashing while in auto-complete mode.
+
+Changed char pointer comparison operators for StringField to friend functions
+so left hand side comparisons can be done such as "value" == senderCompID.
+
+Began implementation of repeating groups.
+	
+1.0.3
+-----
+Added unit testing framework to ordermatch
+
+Fixed bug in ordermatch where executing a partailly filled order resulted in
+the order being left open with a negative ammount.
+
+Added commands to standard input for ordermatch to list available symbols and
+for displaying a book.
+
+Began implementation of C API.
+
+Added target field to order table in banzai.
+
+Banzai can now properly handle receiving executions from multiple targets
+
+1.0.2
+-----
+Fixed an incorrect number 84600 in FieldTypes.h with the
+constant UTC_DAY which is the correct 86400
+
+1.0.1
+-----
+Several classes deriving from FIX::Application had different throw specifiers 
+than the base class.  This caused compilation errors with some compilers.  
+This has been corrected.
+
+FAQ has been updated.
