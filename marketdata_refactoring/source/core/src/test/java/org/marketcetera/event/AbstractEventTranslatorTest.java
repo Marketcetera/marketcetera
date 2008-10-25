@@ -7,11 +7,11 @@ import junit.framework.TestSuite;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MockMarketDataFeed;
 import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
 import org.marketcetera.marketdata.MockMarketDataFeedToken;
@@ -60,10 +60,9 @@ public class AbstractEventTranslatorTest
             throws Exception
     {
         super.setUp();
-        mSymbol = "YHOO"; //$NON-NLS-1$
+        mSymbol = "YHOO";
         mSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                          AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(mSymbol) }), 
-                                                                                                           true), 
+                                                          MarketDataRequest.newFullBookRequest(mSymbol), 
                                                           Arrays.asList(new MockSubscriber[] { new MockSubscriber() } ));
         mFeed = new MockMarketDataFeed();
         mFeed.start();
@@ -207,8 +206,7 @@ public class AbstractEventTranslatorTest
         String newSymbol = "colin-is-the-symbol"; //$NON-NLS-1$
         MockSubscriber t2 = new MockSubscriber();
         MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> newSpec = MarketDataFeedTokenSpec.generateTokenSpec(mSpec.getCredentials(),
-                                                                                                                   AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol(newSymbol) } ), 
-                                                                                                                                                                    true),
+                                                                                                                   MarketDataRequest.newFullBookRequest(newSymbol),
                                                                                                                    Arrays.asList(new MockSubscriber[] { t2 } ));
         MockMarketDataFeedToken newToken = mFeed.execute(newSpec);
         assertFalse(newToken.getHandle().equals(token.getHandle()));
@@ -452,22 +450,34 @@ public class AbstractEventTranslatorTest
     }
     public static class MessageEvent
         extends EventBase
-        implements HasFIXMessage
     {
-        private final Message mMessage;
+        private final DataRequest request;
+        private final Message message;
         public MessageEvent()
         {
-            this(null);
+            this((DataRequest)null);
         }        
+        public MessageEvent(DataRequest inRequest)
+        {
+            super(System.nanoTime(),
+                  System.currentTimeMillis());
+            request = inRequest;
+            message = null;
+        }
         public MessageEvent(Message inMessage)
         {
             super(System.nanoTime(),
                   System.currentTimeMillis());
-            mMessage = inMessage;
+            message = inMessage;
+            request = null;
+        }
+        public DataRequest getRequest()
+        {
+            return request;
         }
         public Message getMessage()
         {
-            return mMessage;
+            return message;
         }
     }
 }

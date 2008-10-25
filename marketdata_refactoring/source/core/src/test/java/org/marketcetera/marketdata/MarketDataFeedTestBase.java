@@ -10,9 +10,6 @@ import junit.framework.TestSuite;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.MockEventTranslator;
-import org.marketcetera.quickfix.MockMessageTranslator;
-
-import quickfix.Message;
 
 /**
  * Base class for Market Data Feed tests.
@@ -25,7 +22,7 @@ public class MarketDataFeedTestBase
     extends TestCase
 {
     private static MarketDataFeedTestSuite sSuite;
-    protected Message mMessage;
+    protected DataRequest dataRequest;
     protected MockMarketDataFeedCredentials mCredentials;
     
     /**
@@ -62,8 +59,8 @@ public class MarketDataFeedTestBase
         super.setUp();
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
         MockEventTranslator.reset();
-        MockMessageTranslator.setTranslateThrows(false);
-        mMessage = MarketDataFeedTestSuite.generateFIXMessage();
+        MockDataRequestTranslator.setTranslateThrows(false);
+        dataRequest = MarketDataFeedTestSuite.generateDataRequest();
         mCredentials = new MockMarketDataFeedCredentials();
     }    
 	

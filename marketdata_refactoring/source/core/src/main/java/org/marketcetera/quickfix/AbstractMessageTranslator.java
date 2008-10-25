@@ -29,7 +29,6 @@ import quickfix.field.UnderlyingSymbol;
  * @since 0.43-SNAPSHOT
  */
 public abstract class AbstractMessageTranslator<T>
-    implements IMessageTranslator<T>
 {
     /**
      * Indicates what FIX version to use

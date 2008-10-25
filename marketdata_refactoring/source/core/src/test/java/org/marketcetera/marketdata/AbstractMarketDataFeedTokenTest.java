@@ -51,9 +51,9 @@ public class AbstractMarketDataFeedTokenTest
     {
         super.setUp();
         mCredentials = new MockMarketDataFeedCredentials();
-        mMessage = MarketDataFeedTestSuite.generateFIXMessage();
+        dataRequest = MarketDataFeedTestSuite.generateDataRequest();
         mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                               mMessage, 
+                                                               dataRequest, 
                                                                Arrays.asList(new ISubscriber[0]));
         mFeed = new MockMarketDataFeed();
         mFeed.start();
@@ -83,7 +83,7 @@ public class AbstractMarketDataFeedTokenTest
         
         // construct one where all is well with the world
         mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                               MarketDataFeedTestSuite.generateFIXMessage(), 
+                                                               MarketDataFeedTestSuite.generateDataRequest(), 
                                                                Arrays.asList(new ISubscriber[0]));
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(mTokenSpec,
                                                                          mFeed);
@@ -134,10 +134,10 @@ public class AbstractMarketDataFeedTokenTest
         MockSubscriber s3 = new MockSubscriber();
         mToken.unsubscribe(s3);
         // publish again
-        mToken.publishAndWait(mMessage);
+        mToken.publishAndWait(dataRequest);
         verifySubscribers(Arrays.asList(new MockSubscriber[] { s1, s2 }),
                           Arrays.asList(new MockSubscriber[] { s3 }),
-                          mMessage);
+                          dataRequest);
         // remove existing subscribers
         mToken.unsubscribe(s1);
         mToken.unsubscribe(s2);

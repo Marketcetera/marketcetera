@@ -6,8 +6,6 @@ import java.util.List;
 
 import org.marketcetera.core.publisher.ISubscriber;
 
-import quickfix.Message;
-
 /**
  * Stateless portion of the market data feed token.
  * 
@@ -34,9 +32,9 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      */
     private final C mCredentials;
     /**
-     * the <code>FIX</code> message encapsulating the query
+     * the <code>DataRequest</code> encapsulating the query
      */
-    private final Message mMessage;
+    private final DataRequest dataRequest;
     /**
      * the subscribers to whom to send query results
      */
@@ -57,7 +55,7 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      * @throws NullPointerException if the passed credentials or message is null
      */
     public static <C extends IMarketDataFeedCredentials>MarketDataFeedTokenSpec<C> generateTokenSpec(C inCredentials,
-                                                                                                     Message inMessage,
+                                                                                                     DataRequest inMessage,
                                                                                                      List<? extends ISubscriber> inSubscribers)
     {
         return new MarketDataFeedTokenSpec<C>(inCredentials,
@@ -73,7 +71,7 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      * @throws NullPointerException if the passed credentials or message is null
      */
     private MarketDataFeedTokenSpec(C inCredentials,
-                                    Message inMessage,
+                                    DataRequest inMessage,
                                     List<? extends ISubscriber> inSubscribers)
     {
         if(inCredentials == null ||
@@ -81,7 +79,7 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
             throw new NullPointerException();
         }
         mCredentials = inCredentials;
-        mMessage = inMessage;
+        dataRequest = inMessage;
         if(inSubscribers == null) {
             mSubscribers = new ArrayList<ISubscriber>();
         } else {
@@ -98,9 +96,9 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedTokenSpec#getMessage()
      */
-    public Message getMessage()
+    public DataRequest getDataRequest()
     {
-        return mMessage;
+        return dataRequest;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedTokenSpec#getSubscribers()

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
-
-import quickfix.Message;
+import org.marketcetera.marketdata.DataRequest;
 
 /* $License$ */
 
@@ -20,22 +18,22 @@ import quickfix.Message;
 @ClassVersion("$Id: BogusMessage.java 9458 2008-08-01 05:27:12Z colin $") //$NON-NLS-1$
 public class BogusMessage
 {
-    private final Message mMessage;
-    private List<MSymbol> mSymbols = new ArrayList<MSymbol>();    
-    public BogusMessage(Message inMessage)
+    private final DataRequest request;
+    private List<String> symbols = new ArrayList<String>();    
+    public BogusMessage(DataRequest inRequest)
     {
-        mMessage = inMessage;
+        request = inRequest;
     }    
-    public Message getAsMessage()
+    public DataRequest getAsDataRequest()
     {
-        return mMessage;
+        return request;
     }
-    void addSymbol(MSymbol inSymbol)
+    void addSymbol(String inSymbol)
     {
-        mSymbols.add(inSymbol);
+        symbols.add(inSymbol);
     }
-    public List<MSymbol> getSymbols()
+    public List<String> getSymbols()
     {
-        return mSymbols;
+        return symbols;
     }
 }

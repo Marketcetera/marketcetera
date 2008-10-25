@@ -4,7 +4,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,9 +13,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.AbstractMarketDataFeedTest;
-import org.marketcetera.marketdata.bogus.BogusFeed;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.bogus.BogusFeedModule;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
@@ -27,8 +25,6 @@ import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.module.SinkDataListener;
 import org.marketcetera.module.UnsupportedRequestParameterType;
-
-import quickfix.Message;
 
 /* $License$ */
 
@@ -98,8 +94,8 @@ public class BogusFeedEmitterTest
                                                                                  invalidParam) });
             }
         };
-        // String, but not from a FIX message
-        final String invalidString = "There is no way you can make a FIX message from this, so there";
+        // String, but not from a data request
+        final String invalidString = "There is no way you can make a data request from this, so there";
         new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
                                                           BogusFeedModuleFactory.INSTANCE_URN.toString(),
                                                           invalidString) {
@@ -117,8 +113,7 @@ public class BogusFeedEmitterTest
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
-        Message request = BogusFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") }),
-                                                              true);
+        org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
                                                                                                    request.toString()) });
         // wait until some arbitrary number of ticks have been received
@@ -137,8 +132,7 @@ public class BogusFeedEmitterTest
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
-        Message request = BogusFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") }),
-                                                              true);
+        org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
         final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
                                                                                                    request) });
         // wait until some arbitrary number of ticks have been received

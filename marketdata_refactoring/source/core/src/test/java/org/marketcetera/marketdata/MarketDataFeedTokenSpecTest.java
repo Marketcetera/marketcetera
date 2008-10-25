@@ -10,8 +10,6 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 
-import quickfix.Message;
-
 /**
  *
  *
@@ -37,18 +35,17 @@ public class MarketDataFeedTokenSpecTest
         return MarketDataFeedTestBase.suite(MarketDataFeedTokenSpecTest.class);
     }
     
-    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public void testGenerateTokenSpec()
         throws Exception
     {
-        List<? extends ISubscriber> emptySubscribers = new ArrayList<ISubscriber>();
-        List nonemptySubscribers = new ArrayList();
+        List<ISubscriber> emptySubscribers = new ArrayList<ISubscriber>();
+        List<ISubscriber> nonemptySubscribers = new ArrayList<ISubscriber>();
         nonemptySubscribers.add(new MockSubscriber());
         nonemptySubscribers.add(new DoNothingSubscriber());
         for(int a=0;a<=1;a++) {
             for(int b=0;b<=1;b++) {
                 for (int c=0;c<=2;c++) {
-                    List listToUse = null;
+                    List<ISubscriber> listToUse = null;
                     if(c == 1) {
                         listToUse = emptySubscribers;
                     }
@@ -56,7 +53,7 @@ public class MarketDataFeedTokenSpecTest
                         listToUse = nonemptySubscribers;
                     }
                     doValidateTokenSpec(a==0 ? null : mCredentials,
-                                        b==0 ? null : mMessage,
+                                        b==0 ? null : dataRequest,
                                         listToUse);
                 }
             }
@@ -72,7 +69,7 @@ public class MarketDataFeedTokenSpecTest
         subscribers.add(s1);
         subscribers.add(s2);
         MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials,
-                                                                                                                     mMessage, 
+                                                                                                                     dataRequest, 
                                                                                                                      subscribers);
         final List<? extends ISubscriber> returnedSubscribers = tokenSpec.getSubscribers();
         assertEquals(subscribers.size(),
@@ -94,29 +91,29 @@ public class MarketDataFeedTokenSpecTest
     }
     
     private void doValidateTokenSpec(final MockMarketDataFeedCredentials inCredentials,
-                                     final Message inMessage,
-                                     final List<MockSubscriber> inSubscribers)
+                                     final DataRequest inRequest,
+                                     final List<ISubscriber> inSubscribers)
         throws Exception
     {
         if(inCredentials == null ||
-           inMessage == null) {
+           inRequest == null) {
             new ExpectedTestFailure(NullPointerException.class) {
                 protected void execute()
                         throws Throwable
                 {
                     MarketDataFeedTokenSpec.generateTokenSpec(inCredentials, 
-                                                              inMessage,
+                                                              inRequest,
                                                               inSubscribers);
                 }
             }.run();                             
         } else {
-            MarketDataFeedTokenSpec tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(inCredentials, 
-                                                                                          inMessage, 
-                                                                                          inSubscribers);
+            MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> tokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(inCredentials, 
+                                                                                                                         inRequest, 
+                                                                                                                         inSubscribers);
             assertEquals(inCredentials,
                          tokenSpec.getCredentials());
-            assertEquals(inMessage,
-                         tokenSpec.getMessage());
+            assertEquals(inRequest,
+                         tokenSpec.getDataRequest());
             if(inSubscribers == null) {
                 assertEquals(0,
                              tokenSpec.getSubscribers().size());
