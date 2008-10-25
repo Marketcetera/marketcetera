@@ -204,26 +204,12 @@ public class BogusFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doLevelOneMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected final synchronized List<String> doLevelOneMarketDataRequest(BogusMessage inData)
+    protected final synchronized List<String> doMarketDataRequest(BogusMessage inData)
         throws FeedException
     {
         try {
             return Request.submit(inData,
                                   this);
-        } catch (Throwable t) {
-            throw new FeedException(t);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doFullBookMarketDataRequest(java.lang.Object)
-     */
-    @Override
-    protected final synchronized List<String> doFullBookMarketDataRequest(BogusMessage inData)
-            throws InterruptedException, FeedException
-    {
-        try {
-            return Request.submit(inData,
-                                  this);            
         } catch (Throwable t) {
             throw new FeedException(t);
         }
@@ -690,14 +676,15 @@ public class BogusFeed
                                            BogusFeed inFeed) 
         {
             List<String> handles = new ArrayList<String>();
-            List<MSymbol> symbols = inData.getSymbols();
+            List<String> symbols = inData.getSymbols();
             // create a request for each symbol in the passed message
-            for(MSymbol symbol : symbols) {
-                Request request = new Request(symbol);
+            for(String symbol : symbols) {
+                MSymbol theSymbol = new MSymbol(symbol);
+                Request request = new Request(theSymbol);
                 sRequests.put(request.getHandle(),
                               request);
                 handles.add(request.getHandle());
-                inFeed.addRequestForSymbol(symbol);
+                inFeed.addRequestForSymbol(theSymbol);
             }
             return handles;
         }

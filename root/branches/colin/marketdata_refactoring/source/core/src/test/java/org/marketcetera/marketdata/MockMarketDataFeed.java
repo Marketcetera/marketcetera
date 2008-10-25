@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.event.MockEventTranslator;
-import org.marketcetera.quickfix.MockMessageTranslator;
 import static org.marketcetera.marketdata.TestMessages.*;
 
 /* $License$ */
@@ -27,7 +26,7 @@ import static org.marketcetera.marketdata.TestMessages.*;
 public class MockMarketDataFeed
     extends AbstractMarketDataFeed<MockMarketDataFeedToken,
                                    MockMarketDataFeedCredentials,
-                                   MockMessageTranslator,
+                                   MockDataRequestTranslator,
                                    MockEventTranslator,
                                    String,
                                    MockMarketDataFeed>
@@ -159,35 +158,6 @@ public class MockMarketDataFeed
     {
         setState(State.logged_out);
     }
-
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
-     */
-    protected List<String> doMarketDataRequest(String inData)
-            throws FeedException
-    {
-        if(getExecutionFails()) {
-            throw new FeedException(TestMessages.EXPECTED_EXCEPTION);
-        }
-        if(mDelay > 0) {
-            try {
-                Thread.sleep(sRandom.nextInt(mDelay));
-            } catch (InterruptedException e) {
-                throw new FeedException(e);
-            }
-        }
-        String handle = String.format("%d", //$NON-NLS-1$
-                                      ++mCounter);
-        if(!getExecuteReturnsNothing() &&
-           !getExecuteReturnsNull()) {
-            mCreatedHandles.add(handle);
-            mQueue.add(handle);
-        }
-        if(getExecuteReturnsNull()) {
-            return null;
-        }
-        return getExecuteReturnsNothing() ? new ArrayList<String>() : Arrays.asList(handle);
-    }
     private final ConcurrentLinkedQueue<String> mQueue = new ConcurrentLinkedQueue<String>();
     
     /* (non-Javadoc)
@@ -206,18 +176,18 @@ public class MockMarketDataFeed
         }
         if(handle != null) {
             dataReceived(handle,
-                         inToken.getTokenSpec().getMessage());
+                         inToken.getTokenSpec().getDataRequest());
         }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#getMessageTranslator()
      */
-    protected MockMessageTranslator getMessageTranslator()
+    protected MockDataRequestTranslator getMessageTranslator()
     {
         if(getGetMessageTranslatorThrows()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
-        return new MockMessageTranslator();
+        return new MockDataRequestTranslator();
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn()
@@ -398,7 +368,6 @@ public class MockMarketDataFeed
     protected List<String> doSecurityListRequest(String inData)
             throws FeedException
     {
-        // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
     @Override
@@ -550,39 +519,10 @@ public class MockMarketDataFeed
         return super.getTimeout();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doBBOMarketDataRequest(java.lang.Object)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
      */
     @Override
-    protected List<String> doLevelOneMarketDataRequest(String inData)
-            throws InterruptedException, FeedException
-    {
-        if(getExecutionFails()) {
-            throw new FeedException(EXPECTED_EXCEPTION);
-        }
-        if(mDelay > 0) {
-            try {
-                Thread.sleep(sRandom.nextInt(mDelay));
-            } catch (InterruptedException e) {
-                throw new FeedException(e);
-            }
-        }
-        String handle = String.format("%d", //$NON-NLS-1$
-                                      ++mCounter);
-        if(!getExecuteReturnsNothing() &&
-           !getExecuteReturnsNull()) {
-            mCreatedHandles.add(handle);
-            mQueue.add(handle);
-        }
-        if(getExecuteReturnsNull()) {
-            return null;
-        }
-        return getExecuteReturnsNothing() ? new ArrayList<String>() : Arrays.asList(handle);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doFullBookMarketDataRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doFullBookMarketDataRequest(String inData)
+    protected List<String> doMarketDataRequest(String inData)
             throws InterruptedException, FeedException
     {
         if(getExecutionFails()) {

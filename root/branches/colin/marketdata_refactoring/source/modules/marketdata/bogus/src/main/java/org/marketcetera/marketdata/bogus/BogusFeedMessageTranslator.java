@@ -1,19 +1,15 @@
 package org.marketcetera.marketdata.bogus;
 
-import java.util.List;
-
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.quickfix.AbstractMessageTranslator;
-import org.marketcetera.quickfix.IMessageTranslator;
-
-import quickfix.Group;
-import quickfix.Message;
+import org.marketcetera.marketdata.DataRequest;
+import org.marketcetera.marketdata.DataRequestTranslator;
+import org.marketcetera.marketdata.MarketDataRequest;
 
 /* $License$ */
 
 /**
- * Bogus feed implementation of {@link IMessageTranslator}.
+ * Bogus feed implementation of {@link DataRequestTranslator}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BogusFeedMessageTranslator.java 9456 2008-07-31 22:28:30Z klim $
@@ -21,7 +17,7 @@ import quickfix.Message;
  */
 @ClassVersion("$Id: BogusFeedMessageTranslator.java 9456 2008-07-31 22:28:30Z klim $") //$NON-NLS-1$
 public class BogusFeedMessageTranslator
-        extends AbstractMessageTranslator<BogusMessage>
+    implements DataRequestTranslator<BogusMessage>
 {
     /**
      * static instance
@@ -44,25 +40,29 @@ public class BogusFeedMessageTranslator
     {
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.quickfix.IMessageTranslator#translate(quickfix.Message)
+     * @see org.marketcetera.marketdata.DataRequestTranslator#asDataRequest(java.lang.Object)
      */
-    public BogusMessage translate(Message inMessage)
+    @Override
+    public DataRequest asDataRequest(BogusMessage inData)
             throws CoreException
     {
-        BogusMessage message = new BogusMessage(inMessage);
-        List<Group> groups = getGroups(inMessage);
-        for(Group group : groups) {
-            // the symbol is the instrument for which the group is defined            
-            message.addSymbol(getSymbol(group));
-        }
-        return message;
+        return inData.getAsDataRequest();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.quickfix.IMessageTranslator#translate(java.lang.Object)
+     * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
      */
-    public Message asMessage(BogusMessage inData)
+    @Override
+    public BogusMessage translate(DataRequest inRequest)
             throws CoreException
     {
-        return inData.getAsMessage();
+        if(inRequest instanceof MarketDataRequest) {
+            BogusMessage message = new BogusMessage(inRequest);
+            for(String symbol : ((MarketDataRequest)inRequest).getSymbols()) {
+                message.addSymbol(symbol);
+            }
+            return message;
+        } else {
+            throw new UnsupportedOperationException();
+        }
     }
 }

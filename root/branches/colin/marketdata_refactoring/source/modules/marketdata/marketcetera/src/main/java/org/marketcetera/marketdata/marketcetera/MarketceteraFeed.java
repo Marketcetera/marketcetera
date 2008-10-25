@@ -20,11 +20,13 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
@@ -462,43 +464,6 @@ public class MarketceteraFeed
     {
     }
     private final Map<String,List<FIXCorrelationFieldSubscription>> mSubscriptionsBySymbol = new HashMap<String,List<FIXCorrelationFieldSubscription>>();    
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doLevelOneMarketDataRequest(Message inData) 
-        throws FeedException
-    {
-        try {
-            SLF4JLoggerProxy.debug(this,
-                                   "MarketceteraFeed received market data request {}", //$NON-NLS-1$
-                                   inData);
-            List<String> handles = new ArrayList<String>();
-            List<Group> groups = AbstractMessageTranslator.getGroups(inData);
-            for(Group group : groups) {
-                MSymbol symbol = AbstractMessageTranslator.getSymbol(group);
-                handles.add(symbol.getBaseSymbol());
-            }
-            addSubscription(doQuery(inData),
-                            handles);
-            SLF4JLoggerProxy.debug(this,
-                                   "MarketceteraFeed posted query and received handle(s) {}", //$NON-NLS-1$
-                                   Arrays.toString(handles.toArray()));
-            return handles;
-        } catch (Throwable t) {
-            throw new FeedException(t);
-        }
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doFullBookMarketDataRequest(java.lang.Object)
-     */
-    @Override
-    protected List<String> doFullBookMarketDataRequest(Message inData)
-            throws InterruptedException, FeedException
-    {
-        // for now, just do the same as the BBO request
-        return doLevelOneMarketDataRequest(inData);
-    }
     /**
      * Associates the given request handles with the given subscription object.
      * 
@@ -590,5 +555,33 @@ public class MarketceteraFeed
     protected boolean isLoggedIn(MarketceteraFeedCredentials inCredentials)
     {
         return isRunning();
+    }
+
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeed#doMarketDataRequest(java.lang.Object)
+     */
+    @Override
+    protected List<String> doMarketDataRequest(Message inData)
+            throws InterruptedException, FeedException
+    {
+        try {
+            SLF4JLoggerProxy.debug(this,
+                                   "MarketceteraFeed received market data request {}", //$NON-NLS-1$
+                                   inData);
+            List<String> handles = new ArrayList<String>();
+            List<Group> groups = AbstractMessageTranslator.getGroups(inData);
+            for(Group group : groups) {
+                MSymbol symbol = AbstractMessageTranslator.getSymbol(group);
+                handles.add(symbol.getBaseSymbol());
+            }
+            addSubscription(doQuery(inData),
+                            handles);
+            SLF4JLoggerProxy.debug(this,
+                                   "MarketceteraFeed posted query and received handle(s) {}", //$NON-NLS-1$
+                                   Arrays.toString(handles.toArray()));
+            return handles;
+        } catch (Throwable t) {
+            throw new FeedException(t);
+        }
     }
 }

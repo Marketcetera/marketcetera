@@ -8,6 +8,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataRequest;
@@ -16,9 +17,6 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
-
-import quickfix.InvalidMessage;
-import quickfix.Message;
 
 /* $License$ */
 
@@ -86,21 +84,21 @@ public final class BogusFeedModule
             throws UnsupportedRequestParameterType, IllegalRequestParameterValue
     {
         Object obj = inRequest.getData();
-        Message query = null;
+        org.marketcetera.marketdata.DataRequest query = null;
         if(obj == null) {
             throw new IllegalRequestParameterValue(getURN(),
                                                    null);
         }
         if(obj instanceof String) {
+            // TODO need to refactor newRequestFromString to parent DataRequest
             try {
-                query = new Message((String)obj);
-            } catch (InvalidMessage e) {
+                query = MarketDataRequest.newRequestFromString((String)obj);
+            } catch (Exception e) {
                 throw new IllegalRequestParameterValue(getURN(),
-                                                       obj,
-                                                       e);
+                                                       obj);
             }
-        } else if (obj instanceof Message) {
-            query = (Message)obj;
+        } else if (obj instanceof org.marketcetera.marketdata.DataRequest) {
+            query = (org.marketcetera.marketdata.DataRequest)obj;
         } else {
             throw new UnsupportedRequestParameterType(getURN(),
                                                       obj);
