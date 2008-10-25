@@ -1,7 +1,0 @@
-/**
- * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
- * @version $Id: DummyClass.txt 616816 2008-01-30 17:23:08Z aheritier $
- */
-public class DummyClass
-{
-}
