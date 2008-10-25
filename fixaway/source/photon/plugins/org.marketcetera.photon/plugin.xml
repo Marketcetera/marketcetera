@@ -85,10 +85,16 @@
             name="Average Price"/>
       <view
             category="org.marketcetera.photon.category"
+            class="org.marketcetera.photon.views.FIXMarketDataView"
+            icon="icons/silk/chart_curve.png"
+            id="org.marketcetera.photon.views.FIXMarketDataView"
+            name="Market Data"/>
+      <view
+            category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.MarketDataView"
             icon="icons/silk/chart_curve.png"
             id="org.marketcetera.photon.views.MarketDataView"
-            name="Market Data"/>
+            name="Market Data (No FIX)"/>
       <view
             allowMultiple="true"
             category="org.marketcetera.photon.category"
@@ -222,6 +228,12 @@
             commandId="org.marketcetera.photon.SelectOptionMarketDataCommandAction"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
             keySequence="M3+O"/>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            description="%command.lookup.description"
+            id="org.marketcetera.photon.lookup"
+            name="%command.lookup.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -299,7 +311,7 @@
 	     </viewerContribution>
    <viewerContribution
          id="org.marketcetera.photon.Actions.DeleteItemActionDelegate"
-         targetID="org.marketcetera.photon.views.MarketDataView">
+         targetID="org.marketcetera.photon.views.FIXMarketDataView">
       <action
             class="org.marketcetera.photon.actions.DeleteItemActionDelegate"
             enablesFor="+"
@@ -362,6 +374,53 @@
              <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
           </location>
        </widget>
+       <menuContribution
+             locationURI="popup:org.marketcetera.photon.views.MarketDataView">
+          <command
+                commandId="org.eclipse.ui.edit.delete"
+                icon="icons/silk/cancel.png"
+                label="%marketDataView.delete.label"
+                mnemonic="%marketDataView.delete.mnemonic"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.eclipse.ui.edit.copy"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.marketcetera.photon.lookup"
+                icon="icons/silk/world_go.png"
+                label="%marketDataView.lookup.label"
+                mnemonic="%marketDataView.lookup.mnemonic"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.symbolProviderSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <separator
+                name="beforeChooseColumns"
+                visible="true">
+          </separator>
+          <menu
+                label="%chooseColumns.label">
+             <dynamic
+                   class="org.marketcetera.photon.ui.ChooseColumnsMenu"
+                   id="org.marketcetera.photon.chooseColumnsMenu">
+             </dynamic>
+          </menu>
+       </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -413,6 +472,64 @@
             </with>
          </activeWhen>
       </handler>
+      <handler
+            class="org.marketcetera.photon.actions.GoogleFinanceLookupHandler"
+            commandId="org.marketcetera.photon.lookup">
+         <activeWhen>
+            <reference
+                  definitionId="org.marketcetera.photon.symbolProviderSelected">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.views.MarketDataView$DeleteCommandHandler"
+            commandId="org.eclipse.ui.edit.delete">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.views.MarketDataView">
+               </equals>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.views.MarketDataView$CopyCommandHandler"
+            commandId="org.eclipse.ui.edit.copy">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.views.MarketDataView">
+               </equals>
+            </with>
+         </activeWhen>
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="org.marketcetera.photon.symbolProviderSelected">
+         <and>
+            <count
+               value="1">
+            </count>
+            <iterate>
+               <instanceof
+                  value="org.marketcetera.photon.ui.ISymbolProvider">
+               </instanceof>
+            </iterate>
+         </and>
+      </definition>
+      <definition
+            id="org.marketcetera.photon.marketDataRowsSelected">
+         <iterate
+               ifEmpty="false">
+           <instanceof
+              value="org.marketcetera.photon.views.MarketDataView$MarketDataSubscriber">
+           </instanceof>
+         </iterate>
+      </definition>
    </extension>
    
 </plugin>

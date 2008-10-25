@@ -37,14 +37,14 @@ public class OptionOrderTicketControllerTest extends TestCase {
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol(optionRoot));
 
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, new BigDecimal(93), new BigDecimal(88), new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE, new BigDecimal(89), new BigDecimal(103), new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE_VOLUME, new BigDecimal(1000), new BigDecimal(2000), new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.CLOSING_PRICE, new BigDecimal(13), new BigDecimal(14), new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(15), new BigDecimal(16), new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(66), new BigDecimal(67), new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(61), new BigDecimal(62), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, new BigDecimal(93), new BigDecimal(88), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE, new BigDecimal(89), new BigDecimal(103), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE_VOLUME, new BigDecimal(1000), new BigDecimal(2000), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.CLOSING_PRICE, new BigDecimal(13), new BigDecimal(14), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(15), new BigDecimal(16), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(66), new BigDecimal(67), new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(61), new BigDecimal(62), new Date(), "BGUS");
 //		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)controller.getPrimaryMarketDataToken()).getCorrelationFieldValue()));
 
 		controller.doOnPrimaryQuote(quoteMessageToSend);

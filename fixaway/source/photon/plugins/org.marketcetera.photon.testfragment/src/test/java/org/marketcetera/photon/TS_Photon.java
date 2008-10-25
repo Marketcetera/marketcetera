@@ -40,7 +40,7 @@ import org.marketcetera.photon.ui.validation.fix.StringDateObservableValueTest;
 import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
-import org.marketcetera.photon.views.MarketDataViewTest;
+import org.marketcetera.photon.views.FIXMarketDataViewTest;
 import org.marketcetera.photon.views.OpenOrdersViewTest;
 import org.marketcetera.photon.views.OptionDateHelperTest;
 import org.marketcetera.photon.views.OptionOrderTicketControllerTest;
@@ -120,7 +120,7 @@ public class TS_Photon {
 		suite.addTestSuite(AveragePricesViewTest.class);
 		suite.addTestSuite(FillsViewTest.class);
 		suite.addTestSuite(FIXMessagesViewTest.class);
-		suite.addTestSuite(MarketDataViewTest.class);
+		suite.addTestSuite(FIXMarketDataViewTest.class);
 		suite.addTestSuite(StockOrderTicketViewTest.class);
 		suite.addTestSuite(OptionOrderTicketViewTest.class);
 		suite.addTestSuite(OptionDateHelperTest.class);
