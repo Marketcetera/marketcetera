@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-SymbolicName: org.marketcetera.testutil;singleton:=true
+Bundle-SymbolicName: org.marketcetera.util-test;singleton:=true
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Name: Marketcetera Test Utilities
 Bundle-Version: 0.9.0

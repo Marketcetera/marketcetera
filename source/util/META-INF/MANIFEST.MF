@@ -6,7 +6,7 @@ Bundle-Name: Marketcetera Utilities
 Bundle-Version: 0.9.0
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.marketcetera.thirdparty;visibility:=reexport,
- org.marketcetera.testutil;resolution:=optional,
+ org.marketcetera.util-test;resolution:=optional,
  org.junit4;bundle-version="4.4.0";resolution:=optional
 Export-Package: org.marketcetera.util.auth,
  org.marketcetera.util.except,
