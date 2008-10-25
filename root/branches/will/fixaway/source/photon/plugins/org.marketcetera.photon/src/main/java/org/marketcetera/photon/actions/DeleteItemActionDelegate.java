@@ -9,7 +9,7 @@ import org.eclipse.ui.IViewActionDelegate;
 import org.eclipse.ui.IViewPart;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.MessageHolder;
-import org.marketcetera.photon.views.MarketDataView;
+import org.marketcetera.photon.views.FIXMarketDataView;
 
 import quickfix.Message;
 import quickfix.field.Symbol;
@@ -20,7 +20,7 @@ public class DeleteItemActionDelegate implements IViewActionDelegate {
 
 	private IStructuredSelection selection;
 
-	private MarketDataView view;
+	private FIXMarketDataView view;
 
 	/**
 	 * Create a new {@link CancelOrderActionDelegate}
@@ -29,7 +29,7 @@ public class DeleteItemActionDelegate implements IViewActionDelegate {
 	}
 	
 	public void init(IViewPart view) {
-		this.view = (MarketDataView) view;
+		this.view = (FIXMarketDataView) view;
 	}
 
 	/**

@@ -337,8 +337,8 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol(callContractSymbol));
 
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 //		quoteMessageToSend.setField(new MDReqID(((FIXCorrelationFieldSubscription)subscription).getCorrelationFieldValue()));
 
@@ -640,13 +640,13 @@ public class OptionOrderTicketViewTest extends ViewTestBase {
 		// set the system TZ to UTC to ensure that timestamps are in UTC - this is just a short-cut for testing
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
 		Date testDate = new Date(1206576015015L); // 3/26/2008 5PM PST
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, testDate, "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, new BigDecimal(23), new BigDecimal(24), testDate, "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE, new BigDecimal(25), new BigDecimal(26), testDate, "BGUS"); 
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE_VOLUME, new BigDecimal(27), new BigDecimal(28), testDate, "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(29), new BigDecimal(30), testDate, "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(31), new BigDecimal(32), testDate, "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(31), new BigDecimal(32), testDate, "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, testDate, "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, new BigDecimal(23), new BigDecimal(24), testDate, "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE, new BigDecimal(25), new BigDecimal(26), testDate, "BGUS"); 
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADE_VOLUME, new BigDecimal(27), new BigDecimal(28), testDate, "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_HIGH_PRICE, new BigDecimal(29), new BigDecimal(30), testDate, "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.TRADING_SESSION_LOW_PRICE, new BigDecimal(31), new BigDecimal(32), testDate, "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OPENING_PRICE, new BigDecimal(31), new BigDecimal(32), testDate, "BGUS");
 
 		controller.doOnPrimaryQuote(quoteMessageToSend);
 		// create the expected result for the timestamp above

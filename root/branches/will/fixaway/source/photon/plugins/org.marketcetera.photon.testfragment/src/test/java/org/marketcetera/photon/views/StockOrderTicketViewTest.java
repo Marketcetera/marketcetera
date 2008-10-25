@@ -187,8 +187,8 @@ public class StockOrderTicketViewTest extends ViewTestBase {
 		MarketDataSnapshotFullRefresh quoteMessageToSend = new MarketDataSnapshotFullRefresh();
 		quoteMessageToSend.set(new Symbol("MRKT"));
 		
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
-		MarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.BID, BigDecimal.ONE, BigDecimal.TEN, new Date(), "BGUS");
+		FIXMarketDataViewTest.addGroup(quoteMessageToSend, MDEntryType.OFFER, BigDecimal.TEN, BigDecimal.TEN, new Date(), "BGUS");
 		quoteMessageToSend.setString(LastPx.FIELD,"123.4");
 		
 		MockEventTranslator.setMessageToReturn(quoteMessageToSend);

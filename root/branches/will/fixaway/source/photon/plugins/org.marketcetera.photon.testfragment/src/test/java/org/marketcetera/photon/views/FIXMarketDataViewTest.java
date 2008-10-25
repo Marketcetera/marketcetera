@@ -25,12 +25,12 @@ import quickfix.fix42.MarketDataSnapshotFullRefresh;
 import ca.odell.glazedlists.EventList;
 
 
-public class MarketDataViewTest extends ViewTestBase {
+public class FIXMarketDataViewTest extends ViewTestBase {
 
 
 	private MarketDataFeedTracker marketDataFeedTracker;
 
-	public MarketDataViewTest(String name) {
+	public FIXMarketDataViewTest(String name) {
 		super(name);
 
 		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
@@ -60,7 +60,7 @@ public class MarketDataViewTest extends ViewTestBase {
 		
 		MockEventTranslator.setMessageToReturn(fixMessage);
 
-		MarketDataView view = (MarketDataView) getTestView();
+		FIXMarketDataView view = (FIXMarketDataView) getTestView();
 		view.addSymbol(new MSymbol("MRKT"));
 		
         final EventList<MessageHolder> input = view.getInput();     
@@ -110,7 +110,7 @@ public class MarketDataViewTest extends ViewTestBase {
 		
 		MockEventTranslator.setMessageToReturn(fixMessage);
 		
-		final MarketDataView view = (MarketDataView)getTestView();
+		final FIXMarketDataView view = (FIXMarketDataView)getTestView();
 		view.addSymbol(new MSymbol("MRKT"));
 		final Table tableView = (Table)view.getMessagesViewer().getControl();
 		doDelay(new Callable<Boolean>() {
@@ -136,6 +136,6 @@ public class MarketDataViewTest extends ViewTestBase {
 
 	@Override
 	protected String getViewID() {
-		return MarketDataView.ID;
+		return FIXMarketDataView.ID;
 	}
 }
