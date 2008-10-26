@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.AbstractEventTranslator;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
+import org.marketcetera.event.IEventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -36,8 +36,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  */
 @ClassVersion("$Id: MarketceteraFeedEventTranslator.java 9515 2008-09-03 15:15:45Z colin $") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
-    extends AbstractEventTranslator
-    implements Messages
+    implements IEventTranslator, Messages
 {
     private static final String UNKNOWN = "?"; //$NON-NLS-1$
     private static final MarketceteraFeedEventTranslator sInstance = new MarketceteraFeedEventTranslator();
@@ -85,7 +84,6 @@ public class MarketceteraFeedEventTranslator
                                                     exchange,
                                                     new BigDecimal(price),
                                                     new BigDecimal(size));
-                        updateEventFixMessageSnapshot(bid);
                         events.add(bid);
                         break;
                     case MDEntryType.OFFER :
@@ -95,7 +93,6 @@ public class MarketceteraFeedEventTranslator
                                                     exchange,
                                                     new BigDecimal(price),
                                                     new BigDecimal(size));
-                        updateEventFixMessageSnapshot(ask);
                         events.add(ask);
                         break;
                     case MDEntryType.TRADE:
@@ -105,7 +102,6 @@ public class MarketceteraFeedEventTranslator
                                                           exchange,
                                                           new BigDecimal(price),
                                                           new BigDecimal(size));
-                        updateEventFixMessageSnapshot(trade);
                         events.add(trade);
                         break;
                     default:

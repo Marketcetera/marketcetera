@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.AbstractEventTranslatorTest.MessageEvent;
 import org.marketcetera.marketdata.DataRequest;
 
 import quickfix.Message;
@@ -21,7 +20,7 @@ import quickfix.Message;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockEventTranslator
-        extends AbstractEventTranslator
+    implements IEventTranslator
 {
     private static boolean sTranslateToEventsThrows = false;
     private static boolean sTranslateToEventsReturnsNull = false;
@@ -61,7 +60,6 @@ public class MockEventTranslator
         }
         if(inData instanceof SymbolExchangeEvent) {
             SymbolExchangeEvent see = (SymbolExchangeEvent)inData;
-            updateEventFixMessageSnapshot(see);
             return Arrays.asList(new EventBase[] { see });
         }
         return Arrays.asList(new EventBase[] { new MessageEvent(request) });

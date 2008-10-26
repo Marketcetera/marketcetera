@@ -22,7 +22,6 @@ import org.marketcetera.core.InternalID;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
-import org.marketcetera.event.AbstractEventTranslator;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.IEventTranslator;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
@@ -60,7 +59,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F,C>, 
                                              C extends IMarketDataFeedCredentials, 
                                              X extends DataRequestTranslator<D>, 
-                                             E extends AbstractEventTranslator,
+                                             E extends IEventTranslator,
                                              D,
                                              F extends AbstractMarketDataFeed<?,?,?,?,?,?>> 
     implements IMarketDataFeed<T,C> 

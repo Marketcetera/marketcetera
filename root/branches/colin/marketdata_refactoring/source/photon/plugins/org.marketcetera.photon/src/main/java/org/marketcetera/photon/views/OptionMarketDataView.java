@@ -385,12 +385,13 @@ public class OptionMarketDataView
 	}
 
 	public void publishTo(Object obj) {
-		Message message;
-		if (obj instanceof SymbolExchangeEvent){
-			message = ((SymbolExchangeEvent) obj).getLatestTick();
-		} else {
-			message = (Message) obj;
-		}
-		onMessage(message);
+	    throw new UnsupportedOperationException("This needs to be fixed");
+//		Message message;
+//		if (obj instanceof SymbolExchangeEvent){
+//			message = ((SymbolExchangeEvent) obj).getLatestTick();
+//		} else {
+//			message = (Message) obj;
+//		}
+//		onMessage(message);
 	}
 }

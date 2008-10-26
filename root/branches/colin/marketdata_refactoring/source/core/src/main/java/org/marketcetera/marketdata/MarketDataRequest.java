@@ -32,7 +32,7 @@ public class MarketDataRequest
     /**
      * exchange to use if no exchange is specified as part of the market data request
      */
-    public static final String NO_EXCHANGE = "NO EXCHANGE SPECIFIED";
+    public static final String NO_EXCHANGE = "NO EXCHANGE SPECIFIED"; //$NON-NLS-1$
     /**
      * Request types for <code>MarketDataRequest</code> objects.
      *
