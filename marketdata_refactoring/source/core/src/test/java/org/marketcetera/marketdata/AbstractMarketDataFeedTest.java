@@ -13,8 +13,8 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.IFeedComponentListener;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
+import org.marketcetera.event.MessageEvent;
 import org.marketcetera.event.MockEventTranslator;
-import org.marketcetera.event.AbstractEventTranslatorTest.MessageEvent;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
 

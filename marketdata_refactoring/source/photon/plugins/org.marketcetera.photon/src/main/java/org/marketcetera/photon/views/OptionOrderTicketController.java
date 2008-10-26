@@ -267,16 +267,16 @@ public class OptionOrderTicketController
 				return true;
 			}
 			public void publishTo(Object obj) {
-				Message message;
-				if (obj instanceof SymbolExchangeEvent){
-					message = ((SymbolExchangeEvent) obj).getLatestTick();
-				} else {
-					message = (Message) obj;
-				}
-
-				handleDerivativeSecurityList(message);
+			    throw new UnsupportedOperationException("This needs to be fixed");
+//				Message message;
+//				if (obj instanceof SymbolExchangeEvent){
+//					message = ((SymbolExchangeEvent) obj).getLatestTick();
+//				} else {
+//					message = (Message) obj;
+//				}
+//
+//				handleDerivativeSecurityList(message);
 			}
-			
 		});
 	}
 

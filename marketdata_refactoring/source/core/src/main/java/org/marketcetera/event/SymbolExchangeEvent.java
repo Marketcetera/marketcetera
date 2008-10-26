@@ -2,8 +2,6 @@ package org.marketcetera.event;
 
 import org.marketcetera.core.ClassVersion;
 
-import quickfix.Message;
-
 /* $License$ */
 
 /**
@@ -16,7 +14,6 @@ import quickfix.Message;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class SymbolExchangeEvent
     extends EventBase
-    implements HasFIXMessage
 {
     /**
      * the symbol for this event
@@ -26,10 +23,6 @@ public abstract class SymbolExchangeEvent
      * the exchange on which the event occurred
      */
     private final String mExchange;
-    /**
-     * underlying latest tick FIX message for this market event
-     */
-    private Message mLatestTick;
     /**
      * Create a new QuoteEvent instance.
      *
@@ -67,39 +60,4 @@ public abstract class SymbolExchangeEvent
     {
         return mExchange;
     }    
-    /**
-     * Returns the underlying latest tick FIX message for this event.
-     *
-     * @return a <code>Message</code> value or null if no <code>Message</code> was specified at creation
-     */
-    @Deprecated
-    public Message getLatestTick()
-    {
-        return mLatestTick;
-    }
-    /**
-     * Clears the <code>FIX</code> messages stored on this event.
-     */
-    @Deprecated
-    public void clearFIXMessages()
-    {
-        mLatestTick = null;
-    }
-    /**
-     * Updates the latest tick for this event.
-     *
-     * @param inMessage a <code>Message</code> value to replace the current one
-     */
-    final void updateLatestTick(Message inMessage)
-    {
-        mLatestTick = inMessage;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.HasFIXMessage#getMessage()
-     */
-    @Override
-    public Message getMessage()
-    {
-        return getLatestTick();
-    }
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.AbstractEventTranslator;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.event.IEventTranslator;
 import org.marketcetera.event.UnsupportedEventException;
@@ -22,8 +21,7 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  */
 @ClassVersion("$Id: BogusFeedEventTranslator.java 9458 2008-08-01 05:27:12Z colin $") //$NON-NLS-1$
 public class BogusFeedEventTranslator
-        extends AbstractEventTranslator
-        implements Messages
+        implements IEventTranslator, Messages
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
@@ -36,7 +34,6 @@ public class BogusFeedEventTranslator
                                                                        inData));
         }
         EventBase event = (EventBase)inData;
-        updateEventFixMessageSnapshot(event);
         return Arrays.asList(new EventBase[] { event } );
     }
     /* (non-Javadoc)
