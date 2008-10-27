@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Test Plug-in
 Bundle-SymbolicName: org.marketcetera.photon.test
-Bundle-Version: 0.9.0
+Bundle-Version: 1.0.0
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.3.100",
