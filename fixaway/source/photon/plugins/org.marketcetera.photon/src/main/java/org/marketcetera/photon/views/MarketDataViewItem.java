@@ -10,7 +10,9 @@ import org.eclipse.core.runtime.Assert;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.ui.ISymbolProvider;
 
 public class MarketDataViewItem implements ISymbolProvider {
@@ -75,6 +77,9 @@ public class MarketDataViewItem implements ISymbolProvider {
 
 	public void setBidEvent(BidEvent bidEvent) {
 		if (!ObjectUtils.equals(mBidEvent, bidEvent)) {
+			if (!validateSymbol(bidEvent)) {
+				return;
+			}
 			BigDecimal oldPxValue = getBidPx();
 			BigDecimal oldSizeValue = getBidSize();
 			mBidEvent = bidEvent;
@@ -87,6 +92,9 @@ public class MarketDataViewItem implements ISymbolProvider {
 
 	public void setAskEvent(AskEvent askEvent) {
 		if (!ObjectUtils.equals(mAskEvent, askEvent)) {
+			if (!validateSymbol(askEvent)) {
+				return;
+			}
 			BigDecimal oldPxValue = getOfferPx();
 			BigDecimal oldSizeValue = getOfferSize();
 			mAskEvent = askEvent;
@@ -99,6 +107,9 @@ public class MarketDataViewItem implements ISymbolProvider {
 
 	public void setTradeEvent(TradeEvent tradeEvent) {
 		if (!ObjectUtils.equals(mTradeEvent, tradeEvent)) {
+			if (!validateSymbol(tradeEvent)) {
+				return;
+			}
 			BigDecimal oldPxValue = getLastPx();
 			BigDecimal oldSizeValue = getLastQty();
 			mTradeEvent = tradeEvent;
@@ -107,6 +118,15 @@ public class MarketDataViewItem implements ISymbolProvider {
 			propertyChangeSupport.firePropertyChange(
 					"lastQty", oldSizeValue, getLastQty()); //$NON-NLS-1$
 		}
+	}
+	
+	private boolean validateSymbol(SymbolExchangeEvent event) {
+		final MSymbol newSymbol = new MSymbol(event.getSymbol());
+		if (!getSymbol().equals(newSymbol)) {
+			Messages.MARKET_DATA_EVENT_SYMBOL_MISMATCH.warn(this, getSymbol(), newSymbol);
+			return false;
+		}
+		return true;
 	}
 
 	public void addPropertyChangeListener(String propertyName,

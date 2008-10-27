@@ -1,5 +1,6 @@
 package org.marketcetera.photon;
 
+import junit.framework.JUnit4TestAdapter;
 import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
@@ -26,6 +27,7 @@ import org.marketcetera.photon.scripting.JRubyBSFTest;
 import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
 import org.marketcetera.photon.scripting.ScriptRegistryTest;
 import org.marketcetera.photon.scripting.StrategyTest;
+import org.marketcetera.photon.ui.ChooseColumnsMenuTest;
 import org.marketcetera.photon.ui.databinding.FormTextObservableValueTest;
 import org.marketcetera.photon.ui.databinding.HasValueConverterTest;
 import org.marketcetera.photon.ui.databinding.IsNewOrderMessageConverterTest;
@@ -41,6 +43,7 @@ import org.marketcetera.photon.views.AveragePricesViewTest;
 import org.marketcetera.photon.views.FIXMessagesViewTest;
 import org.marketcetera.photon.views.FillsViewTest;
 import org.marketcetera.photon.views.FIXMarketDataViewTest;
+import org.marketcetera.photon.views.MarketDataViewItemTest;
 import org.marketcetera.photon.views.OpenOrdersViewTest;
 import org.marketcetera.photon.views.OptionDateHelperTest;
 import org.marketcetera.photon.views.OptionOrderTicketControllerTest;
@@ -130,6 +133,9 @@ public class TS_Photon {
 		suite.addTestSuite(OptionOrderTicketControllerTest.class);
 		suite.addTestSuite(SWTTestViewTest.class);
 		suite.addTestSuite(OpenOrdersViewTest.class);
+		
+		suite.addTest(new JUnit4TestAdapter(ChooseColumnsMenuTest.class));
+		suite.addTest(new JUnit4TestAdapter(MarketDataViewItemTest.class));
 
         return suite; 
 	}

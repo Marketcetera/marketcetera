@@ -508,4 +508,8 @@ public interface Messages
                                                                             "medium_priority_subject"); //$NON-NLS-1$
     public static I18NMessage0P LOW_PRIORITY_SUBJECT = new I18NMessage0P(LOGGER,
                                                                          "low_priority_subject"); //$NON-NLS-1$
+    public static I18NMessage2P MARKET_DATA_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(
+			LOGGER, "market_data_event_symbol_mismatch"); //$NON-NLS-1$
+    public static I18NMessage1P MARKET_DATA_UNEXPECTED_EVENT_TYPE = new I18NMessage1P(
+			LOGGER, "market_data_unexpected_event_type"); //$NON-NLS-1$
 }

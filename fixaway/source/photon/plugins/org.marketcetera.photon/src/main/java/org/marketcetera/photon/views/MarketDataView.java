@@ -50,7 +50,6 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
@@ -113,8 +112,8 @@ public class MarketDataView extends ViewPart implements IMSymbolListener,
 	private Clipboard mClipboard;
 
 	public MarketDataView() {
-		mMarketDataTracker = new MarketDataFeedTracker(PhotonPlugin.getDefault()
-				.getBundleContext());
+		mMarketDataTracker = new MarketDataFeedTracker(PhotonPlugin
+				.getDefault().getBundleContext());
 		mMarketDataTracker.open();
 	}
 
@@ -456,16 +455,14 @@ public class MarketDataView extends ViewPart implements IMSymbolListener,
 
 				@Override
 				public void run() {
-					if (inData instanceof SymbolExchangeEvent) {
-						mViewItem.setSymbol(new MSymbol(
-								((SymbolExchangeEvent) inData).getSymbol()));
-						if (inData instanceof BidEvent) {
-							mViewItem.setBidEvent((BidEvent) inData);
-						} else if (inData instanceof AskEvent) {
-							mViewItem.setAskEvent((AskEvent) inData);
-						} else if (inData instanceof TradeEvent) {
-							mViewItem.setTradeEvent((TradeEvent) inData);
-						}
+					if (inData instanceof BidEvent) {
+						mViewItem.setBidEvent((BidEvent) inData);
+					} else if (inData instanceof AskEvent) {
+						mViewItem.setAskEvent((AskEvent) inData);
+					} else if (inData instanceof TradeEvent) {
+						mViewItem.setTradeEvent((TradeEvent) inData);
+					} else {
+						MARKET_DATA_UNEXPECTED_EVENT_TYPE.warn(this, inData.getClass());
 					}
 				}
 			});
