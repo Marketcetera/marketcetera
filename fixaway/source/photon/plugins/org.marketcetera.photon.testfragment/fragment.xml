@@ -13,5 +13,21 @@
             id="org.marketcetera.photon.views.SWTTestView"
             name="SWT Test View">
       </view>
+      <view
+            class="org.marketcetera.photon.ui.ChooseColumnsMenuTest$MockTableView"
+            id="org.marketcetera.photon.ui.ChooseColumnsMenuTest$MockTableView"
+            name="Choose Columns Menu Test"
+            restorable="true">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.menus">
+      <menuContribution
+            locationURI="popup:org.marketcetera.photon.ui.ChooseColumnsMenuTest$MockTableView">
+         <dynamic
+               class="org.marketcetera.photon.ui.ChooseColumnsMenu"
+               id="org.marketcetera.photon.chooseColumnsMenu">
+         </dynamic>
+      </menuContribution>
    </extension>
 </fragment>
