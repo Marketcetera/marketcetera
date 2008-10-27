@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %pluginName
 Bundle-SymbolicName: org.marketcetera.photon.notification;singleton:=true
-Bundle-Version: 0.9.0
+Bundle-Version: 1.0.0
 Bundle-Activator: org.marketcetera.photon.notification.NotificationPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,

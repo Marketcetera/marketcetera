@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Marketcetera Market Data Plug-in
 Bundle-SymbolicName: org.marketcetera.marketdata;singleton:=true
-Bundle-Version: 0.9.0
+Bundle-Version: 1.0.0
 Bundle-Activator: org.marketcetera.marketdata.MarketceteraFeedPlugin
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
