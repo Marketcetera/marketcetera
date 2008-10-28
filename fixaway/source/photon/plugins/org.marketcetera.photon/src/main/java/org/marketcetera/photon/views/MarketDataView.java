@@ -101,7 +101,7 @@ public class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	private TextContributionItem mSymbolEntryText;
 
-	private MarketDataFeedTracker mMarketDataTracker;
+	private final MarketDataFeedTracker mMarketDataTracker;
 
 	private TableViewer mViewer;
 
@@ -683,7 +683,7 @@ public class MarketDataView extends ViewPart implements IMSymbolListener,
 					if (obj instanceof MarketDataViewItem) {
 						MarketDataViewItem item = (MarketDataViewItem) obj;
 						builder.append(item);
-						builder.append('\n');
+						builder.append(System.getProperty("line.separator")); //$NON-NLS-1$
 					}
 				}
 				view.getClipboard().setContents(

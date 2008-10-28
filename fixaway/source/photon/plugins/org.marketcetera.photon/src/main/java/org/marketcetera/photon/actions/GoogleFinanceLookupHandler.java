@@ -45,7 +45,7 @@ public class GoogleFinanceLookupHandler extends AbstractHandler {
 					view = page.showView(WebBrowserView.ID);
 					((WebBrowserView) view).browseToGoogleFinanceForSymbol(symbol);
 				} catch (PartInitException e) {
-					throw new ExecutionException("Unable to open view", e); //$NON-NLS-1$
+					throw new ExecutionException(null, e);
 				}
 			}
 		}
