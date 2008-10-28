@@ -16,7 +16,7 @@
 
   <groupId>marketcetera</groupId>
   <artifactId>declarations</artifactId>
-  <version>0.9.0</version>
+  <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <name>Declarations</name>
@@ -42,6 +42,11 @@
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>util</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>misc</artifactId>
         <version>[${project.version}]</version>
       </dependency>
       <dependency>
@@ -115,14 +120,14 @@
         <version>[3.2.1]</version>
       </dependency>
       <dependency>
-        <groupId>commons-i18n</groupId>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-i18n</artifactId>
-        <version>[20081006]</version>
+        <version>[20081024]</version>
       </dependency>
       <dependency>
-        <groupId>commons-csv</groupId>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-csv</artifactId>
-        <version>[20080514]</version>
+        <version>[20081024]</version>
       </dependency>
       <dependency>
         <groupId>commons-beanutils</groupId>
@@ -328,7 +333,7 @@
         <!-- mvn eclipse:eclipse -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
-          <version>2.5.1</version>
+          <version>20081024</version>
         </plugin>
 
         <!-- mvn clean -->
@@ -346,6 +351,11 @@
               <groupId>org.apache.ant</groupId>
               <artifactId>ant-junit</artifactId>
               <version>[1.7.1]</version>
+            </dependency>
+            <dependency>
+              <groupId>ant-contrib</groupId>
+              <artifactId>ant-contrib</artifactId>
+              <version>1.0b2</version>
             </dependency>
           </dependencies>
         </plugin>
@@ -493,6 +503,13 @@
     <pluginRepository>
       <id>maven2-repository.dev.java.net</id>
       <url>http://download.java.net/maven/2</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+    <pluginRepository>
+      <id>internal</id>
+      <url>http://repo.marketcetera.org/maven</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

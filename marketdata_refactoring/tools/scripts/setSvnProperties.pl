@@ -66,12 +66,8 @@ my(%patternsCustom)=(
 	  => ('bin'),
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ('bin'),
-	'public/source/photon/plugins/org.marketcetera.core'
-	  => ('core-0.9.0.jar'),
 	'public/source/photon/plugins/org.marketcetera.core.tests'
-	  => ('core-0.9.0-tests.jar'),
-	'public/source/photon/plugins/org.marketcetera.util'
-	  => ('util-0.9.0.jar'),
+	  => ('core-1.0.0-tests.jar'),
 	'public/source/photon/plugins/org.marketcetera.bogusfeed'
 	  => ('bin'),
 	'public/source/photon/plugins/org.slf4j'

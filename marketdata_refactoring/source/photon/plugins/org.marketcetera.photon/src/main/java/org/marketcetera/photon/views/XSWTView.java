@@ -51,9 +51,7 @@ public abstract class XSWTView<T> extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		try {
-			InputStream resourceAsStream = getClass().getResourceAsStream(
-					getXSWTResourceName());
-			XSWT xswt = XSWT.create(resourceAsStream);
+			XSWT xswt = XSWT.create(getXSWTResourceStream());
 			new FormToolkitLayoutBuilder(xswt);
 			xswtView = (T)xswt.parse(parent, getXSWTInterfaceClass());
 			dataBindingContext = new DataBindingContext();
@@ -80,12 +78,12 @@ public abstract class XSWTView<T> extends ViewPart {
 	protected abstract void finishUI();
 
 	/**
-	 * The name of the resource from which to load the XSWT xml
+	 * The input stream from which to load the XSWT xml
 	 * file.
 	 * 
-	 * @return the name of the resource as a string
+	 * @return the input stream
 	 */
-	protected abstract String getXSWTResourceName();
+	protected abstract InputStream getXSWTResourceStream();
 
 	/**
 	 * This utility method sets the "size" hint of a control
