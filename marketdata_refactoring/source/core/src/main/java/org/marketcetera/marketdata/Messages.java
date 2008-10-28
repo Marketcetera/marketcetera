@@ -87,4 +87,10 @@ public interface Messages
                                                                         "invalid_string_value"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_ID = new I18NMessage1P(LOGGER,
                                                               "invalid_id"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_REQUEST_TYPE = new I18NMessage1P(LOGGER,
+                                                                        "invalid_request_type"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_REQUEST_TYPE = new I18NMessage0P(LOGGER,
+                                                                        "missing_request_type"); //$NON-NLS-1$
+    static final I18NMessage2P POORLY_CONSTRUCTED_REQUEST_SUBCLASS = new I18NMessage2P(LOGGER,
+                                                                                       "poorly_constructed_request_subclass"); //$NON-NLS-1$
 }

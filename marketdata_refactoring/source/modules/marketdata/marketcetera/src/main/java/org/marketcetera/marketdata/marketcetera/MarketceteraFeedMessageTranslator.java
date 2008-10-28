@@ -42,7 +42,7 @@ public class MarketceteraFeedMessageTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#asDataRequest(java.lang.Object)
      */
     @Override
-    public DataRequest asDataRequest(Message inData)
+    public DataRequest toDataRequest(Message inData)
             throws CoreException
     {
         throw new UnsupportedOperationException();
@@ -51,7 +51,7 @@ public class MarketceteraFeedMessageTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
      */
     @Override
-    public Message translate(DataRequest inRequest)
+    public Message fromDataRequest(DataRequest inRequest)
             throws CoreException
     {
         if(inRequest instanceof MarketDataRequest) {

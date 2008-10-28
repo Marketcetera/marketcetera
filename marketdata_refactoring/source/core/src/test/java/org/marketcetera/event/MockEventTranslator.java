@@ -20,7 +20,7 @@ import quickfix.Message;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockEventTranslator
-    implements IEventTranslator
+    implements EventTranslator
 {
     private static boolean sTranslateToEventsThrows = false;
     private static boolean sTranslateToEventsReturnsNull = false;
@@ -40,7 +40,7 @@ public class MockEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> translate(Object inData)
+    public List<EventBase> toEvent(Object inData)
             throws CoreException
     {
         if(getTranslateToEventsThrows()) {
@@ -67,7 +67,7 @@ public class MockEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
-    public String translate(EventBase inEvent)
+    public String fromEvent(EventBase inEvent)
             throws CoreException
     {
         return inEvent.toString();

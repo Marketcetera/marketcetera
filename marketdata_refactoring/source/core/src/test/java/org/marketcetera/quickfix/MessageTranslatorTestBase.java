@@ -70,7 +70,7 @@ public abstract class MessageTranslatorTestBase<T>
         DataRequest request = MarketDataFeedTestSuite.generateDataRequest();
         // translate the FIX message into some other data representation - at this point, we don't
         //  know what
-        T xlatedMessage = translator.translate(request);
+        T xlatedMessage = translator.fromDataRequest(request);
         // this message should not be null, but there's not much more we can say about it - in actuality,
         //  it doesn't matter what the format is - it should be sufficient to transmit the contents of the
         //  FIX message to the market data feed server but we cannot evaluate that per se.  if we connected
@@ -78,7 +78,7 @@ public abstract class MessageTranslatorTestBase<T>
         //  no more than that
         assertNotNull(xlatedMessage);
         // translate the given object back into a DataRequest
-        DataRequest newRequest = translator.asDataRequest(xlatedMessage);
+        DataRequest newRequest = translator.toDataRequest(xlatedMessage);
         // we can say a lot more about the white box FIX representation
         // first, is it non-null
         assertNotNull(newRequest);
@@ -96,7 +96,7 @@ public abstract class MessageTranslatorTestBase<T>
         DataRequest bbo = MarketDataRequest.newTopOfBookRequest("YHOO");
         // now translate the message
         DataRequestTranslator<T> translator = getMessageTranslator();
-        T xlatedMessage = translator.translate(bbo);
+        T xlatedMessage = translator.fromDataRequest(bbo);
         // this alone isn't necessarily indicative of successful handling, but at least it's a start 
         assertNotNull(xlatedMessage);        
     }
@@ -112,7 +112,7 @@ public abstract class MessageTranslatorTestBase<T>
         DataRequest full = MarketDataRequest.newFullBookRequest("YHOO");
         // now translate the message
         DataRequestTranslator<T> translator = getMessageTranslator();
-        T xlatedMessage = translator.translate(full);
+        T xlatedMessage = translator.fromDataRequest(full);
         // this alone isn't necessarily indicative of successful handling, but at least it's a start 
         assertNotNull(xlatedMessage);        
     }
@@ -124,14 +124,14 @@ public abstract class MessageTranslatorTestBase<T>
             protected void execute()
                     throws Throwable
             {
-                translator.translate((DataRequest)null);
+                translator.fromDataRequest((DataRequest)null);
             }            
         }.run();
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
             {
-                translator.asDataRequest((T)null);
+                translator.toDataRequest((T)null);
             }            
         }.run();
     }

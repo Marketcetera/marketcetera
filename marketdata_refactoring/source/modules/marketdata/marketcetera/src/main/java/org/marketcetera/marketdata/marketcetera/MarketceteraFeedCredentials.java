@@ -75,7 +75,7 @@ public class MarketceteraFeedCredentials
     public String toString()
     {
         StringBuilder output = new StringBuilder();
-        output.append("Marketcetera Feed Credentials: URL=").append(getURL()).append(" SenderCompID=").append(getSenderCompID()).append(" TargetCompID=").append(getTargetCompID());
+        output.append("Marketcetera Feed Credentials: URL=").append(getURL()).append(" SenderCompID=").append(getSenderCompID()).append(" TargetCompID=").append(getTargetCompID()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
     }
 }

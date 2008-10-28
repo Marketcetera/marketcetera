@@ -6,10 +6,16 @@ import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.MarketDataRequest.FULL_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.NO_EXCHANGE;
 import static org.marketcetera.marketdata.MarketDataRequest.TOP_OF_BOOK;
-import static org.marketcetera.marketdata.Messages.*;
+import static org.marketcetera.marketdata.Messages.INVALID_DEPTH;
+import static org.marketcetera.marketdata.Messages.INVALID_ID;
+import static org.marketcetera.marketdata.Messages.INVALID_STRING_VALUE;
+import static org.marketcetera.marketdata.Messages.INVALID_SYMBOLS;
+import static org.marketcetera.marketdata.Messages.LINE_SEPARATOR_NOT_ALLOWED;
+import static org.marketcetera.marketdata.Messages.MISSING_REQUEST_TYPE;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Test;
@@ -20,7 +26,7 @@ import org.marketcetera.marketdata.MarketDataRequest.UpdateType;
 /* $License$ */
 
 /**
- *
+ * Tests {@link MarketDataRequest}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id:$
@@ -32,7 +38,8 @@ public class MarketDataRequestTest
     public void newFullBookRequest()
         throws Exception
     {
-        new ExpectedTestFailure(NullPointerException.class) {
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_SYMBOLS.getText("null")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -67,10 +74,50 @@ public class MarketDataRequestTest
                                                    "YHOO"));
     }
     @Test
+    public void newFullBookSnapshotRequest()
+        throws Exception
+    {
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_SYMBOLS.getText("null")) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.newFullBookRequest((String[])null);
+            }
+        }.run();
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_SYMBOLS.getText("[]")) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.newFullBookRequest(new String[0]);
+            }
+        }.run();
+        // single symbol
+        verifyRequest(FULL_BOOK,
+                      RequestType.SNAPSHOT,
+                      NO_EXCHANGE,
+                      new String[] { "JAVA" },
+                      UpdateType.FULL_REFRESH,
+                      MarketDataRequest.newFullBookSnapshotRequest("JAVA"));
+        // multiple symbols
+        verifyRequest(FULL_BOOK,
+                      RequestType.SNAPSHOT,
+                      NO_EXCHANGE,
+                      new String[] { "GOOG", "MSFT", "YHOO" },
+                      UpdateType.FULL_REFRESH,
+                      MarketDataRequest.newFullBookSnapshotRequest("GOOG",
+                                                                   "MSFT",
+                                                                   "YHOO"));
+    }
+    @Test
     public void newTopOfBookRequest()
         throws Exception
     {
-        new ExpectedTestFailure(NullPointerException.class) {
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_SYMBOLS.getText("null")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -108,7 +155,8 @@ public class MarketDataRequestTest
     public void newSpecifiedDepthRequest()
         throws Exception
     {
-        new ExpectedTestFailure(NullPointerException.class) {
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_SYMBOLS.getText("null")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -205,10 +253,11 @@ public class MarketDataRequestTest
             protected void execute()
                     throws Throwable
             {
-                MarketDataRequest.newRequestFromString(null);
+                DataRequest.newRequestFromString(null);
             }
         }.run();
-        new ExpectedTestFailure(NullPointerException.class) {
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_SYMBOLS.getText("null")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -227,18 +276,30 @@ public class MarketDataRequestTest
                       NO_EXCHANGE,
                       new String[] { "METC" },
                       UpdateType.INCREMENTAL_REFRESH,
-                      MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
-                                                                                                              null,
-                                                                                                              null,
-                                                                                                              "METC",
-                                                                                                              null,
-                                                                                                              null)));
+                      DataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
+                                                                                                        null,
+                                                                                                        null,
+                                                                                                        "METC",
+                                                                                                        null,
+                                                                                                        null)));
         verifyRequest(FULL_BOOK,
                       RequestType.SUBSCRIBE,
                       NO_EXCHANGE,
                       new String[] { "METC", "AAPL" },
                       UpdateType.INCREMENTAL_REFRESH,
                       MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
+                                                                                                              null,
+                                                                                                              null,
+                                                                                                              "METC,AAPL",
+                                                                                                              null,
+                                                                                                              null)));
+        // add the id
+        verifyRequest(FULL_BOOK,
+                      RequestType.SUBSCRIBE,
+                      NO_EXCHANGE,
+                      new String[] { "METC", "AAPL" },
+                      UpdateType.INCREMENTAL_REFRESH,
+                      MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest("100010",
                                                                                                               null,
                                                                                                               null,
                                                                                                               "METC,AAPL",
@@ -261,14 +322,16 @@ public class MarketDataRequestTest
                                                                                                               null,
                                                                                                               null)));
         // test the symbol delimiter
-        new ExpectedTestFailure(IllegalArgumentException.class) {
+        final String symbolString = exchange + MarketDataRequest.SYMBOL_DELIMITER + extraStuff;
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_STRING_VALUE.getText(symbolString)) {
             @Override
             protected void execute()
                     throws Throwable
             {
                 MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
                                                                                                         null,
-                                                                                                        exchange + MarketDataRequest.SYMBOL_DELIMITER + extraStuff,
+                                                                                                        symbolString,
                                                                                                         "METC",
                                                                                                         null,
                                                                                                         null));
@@ -317,7 +380,7 @@ public class MarketDataRequestTest
             }
         }.run();
         new ExpectedTestFailure(IllegalArgumentException.class,
-                                "java.lang.NumberFormatException") {
+                                INVALID_ID.getText("blap")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -330,9 +393,21 @@ public class MarketDataRequestTest
                                                                                                         null));
             }
         }.run();
+        // valid depth
+        verifyRequest(100,
+                      RequestType.SUBSCRIBE,
+                      NO_EXCHANGE,
+                      new String[] { "METC" },
+                      UpdateType.INCREMENTAL_REFRESH,
+                      DataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
+                                                                                                        "100",
+                                                                                                        null,
+                                                                                                        "METC",
+                                                                                                        null,
+                                                                                                        null)));
         // invalid depth
         new ExpectedTestFailure(IllegalArgumentException.class,
-                                INVALID_DEPTH.getText(-5000)) {
+                                INVALID_DEPTH.getText("-5000")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -346,7 +421,7 @@ public class MarketDataRequestTest
             }
         }.run();
         new ExpectedTestFailure(IllegalArgumentException.class,
-                                "java.lang.NumberFormatException") {
+                                INVALID_DEPTH.getText("foobar")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -460,7 +535,7 @@ public class MarketDataRequestTest
                 }
         }.run();
         new ExpectedTestFailure(IllegalArgumentException.class,
-                                INVALID_SYMBOLS.getText("[]")) {
+                                INVALID_SYMBOLS.getText("")) {
             @Override
             protected void execute()
                     throws Throwable
@@ -501,19 +576,33 @@ public class MarketDataRequestTest
                                                                                                         null));
                 }
         }.run();
-        // TODO
-//        // valid with non-ASCII symbol and exchange
-//        verifyRequest(FULL_BOOK,
-//                      RequestType.SUBSCRIBE,
-//                      UnicodeData.GOODBYE_JA,
-//                      new String[] { UnicodeData.HELLO_GR },
-//                      UpdateType.INCREMENTAL_REFRESH,
-//                      MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
-//                                                                                                              null,
-//                                                                                                              UnicodeData.GOODBYE_JA,
-//                                                                                                              UnicodeData.HELLO_GR,
-//                                                                                                              null,
-//                                                                                                              null)));
+        // missing request type
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                MISSING_REQUEST_TYPE.getText()) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.newRequestFromString("symbols=METC,AAPL");
+            }
+        }.run();
+    }
+    @Test
+    public void addCurrentAttributesValues()
+        throws Exception
+    {
+        final MarketDataRequest request = MarketDataRequest.newFullBookRequest("METC");
+        new ExpectedTestFailure(NullPointerException.class) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                request.addCurrentAttributesValues(null);            
+            }
+        }.run();
+        Properties properties = new Properties();
+        request.addCurrentAttributesValues(properties);
+        
     }
     @Test
     public void testEquals()
@@ -546,6 +635,7 @@ public class MarketDataRequestTest
                                                                     String inRequestType)
     {
         StringBuilder requestAsString = new StringBuilder();
+        requestAsString.append(DataRequest.TYPE_KEY).append("=").append(MarketDataRequest.TYPE).append(":");
         if(inId != null) {
             requestAsString.append("id=").append(inId).append(":");
         }
@@ -574,7 +664,7 @@ public class MarketDataRequestTest
      * @param inExpectedExchange a <code>String</code> value indicating the exchange from which to request the data
      * @param inExpectedSymbols a <code>String[]</code> value containing the symbols for which to request data
      * @param inExpectedUpdateType an <code>UpdateType</code> value indicating how updates should be received
-     * @param inActualRequest a <code>MarketDataRequest</code> value against which to compare the expected values
+     * @param marketDataRequest a <code>MarketDataRequest</code> value against which to compare the expected values
      * @throws Exception if one of the tests fails
      */
     private void verifyRequest(int inExpectedDepth,
@@ -582,27 +672,28 @@ public class MarketDataRequestTest
                                String inExpectedExchange,
                                String[] inExpectedSymbols,
                                UpdateType inExpectedUpdateType,
-                               MarketDataRequest inActualRequest)
+                               DataRequest inActualRequest)
         throws Exception
     {
-        long id = inActualRequest.getId();
+        MarketDataRequest marketDataRequest = (MarketDataRequest)inActualRequest;
+        long id = marketDataRequest.getId();
         assertTrue(id > 0);
         assertFalse("ID " + id + " has already been used",
                     idsSeenSoFar.contains(id));
         idsSeenSoFar.add(id);
         assertEquals(inExpectedDepth,
-                     inActualRequest.getDepth());
+                     marketDataRequest.getDepth());
         assertEquals(inExpectedRequestType,
-                     inActualRequest.getRequestType());
+                     marketDataRequest.getRequestType());
         assertEquals(inExpectedExchange,
-                     inActualRequest.getExchange());
+                     marketDataRequest.getExchange());
         assertTrue(Arrays.equals(inExpectedSymbols,
-                                 inActualRequest.getSymbols()));
+                                 marketDataRequest.getSymbols()));
         assertEquals(inExpectedUpdateType,
-                     inActualRequest.getUpdateType());
+                     marketDataRequest.getUpdateType());
         // test the ability to write this object to a string and read it back
-        assertEquals(inActualRequest,
-                     MarketDataRequest.newRequestFromString(inActualRequest.toString()));
+        assertEquals(marketDataRequest,
+                     MarketDataRequest.newRequestFromString(marketDataRequest.toString()));
     }
     /**
      * used to record ids used so far

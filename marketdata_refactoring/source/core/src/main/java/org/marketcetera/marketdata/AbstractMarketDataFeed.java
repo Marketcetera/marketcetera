@@ -23,7 +23,7 @@ import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.IEventTranslator;
+import org.marketcetera.event.EventTranslator;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -46,7 +46,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
  *   <li>C - The credentials class for this feed</li>
  *   <li>X - The message translator class for this feed</li>
  *   <li>E - The event translator class for this feed</li>
- *   <li>D - The type returned from {@link DataRequestTranslator#translate(DataRequest)}.</li>
+ *   <li>D - The type returned from {@link DataRequestTranslator#fromDataRequest(DataRequest)}.</li>
  *   <li>F - The market data feed type itself</li>
  * </ul>
  *
@@ -59,7 +59,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedToken<F,C>, 
                                              C extends IMarketDataFeedCredentials, 
                                              X extends DataRequestTranslator<D>, 
-                                             E extends IEventTranslator,
+                                             E extends EventTranslator,
                                              D,
                                              F extends AbstractMarketDataFeed<?,?,?,?,?,?>> 
     implements IMarketDataFeed<T,C> 
@@ -72,7 +72,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     /**
      * the singleton instance that aggregates the actual connections to the server 
      */
-    private static ExecutorService sPool = Executors.newFixedThreadPool(10);
+    private static ExecutorService sPool = Executors.newCachedThreadPool();
     /**
      * the status of the feed
      */
@@ -393,7 +393,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *   handles to be associated with this request
      * @throws InterruptedException if the thread was interrupted during execution
      * @throws FeedException if the request cannot be transmitted to the feed
-     * @see DataRequestTranslator#translate(DataRequest)
+     * @see DataRequestTranslator#fromDataRequest(DataRequest)
      */
     protected abstract List<String> doMarketDataRequest(D inData)
         throws InterruptedException, FeedException;
@@ -409,7 +409,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *   handles to be associated with this request
      * @throws InterruptedException if the thread was interrupted during execution
      * @throws FeedException if the request cannot be transmitted to the feed
-     * @see DataRequestTranslator#translate(DataRequest)
+     * @see DataRequestTranslator#fromDataRequest(DataRequest)
      */
     protected abstract List<String> doDerivativeSecurityListRequest(D inData)
         throws InterruptedException, FeedException;
@@ -425,7 +425,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *   handles to be associated with this request
      * @throws InterruptedException if the thread was interrupted during execution
      * @throws FeedException if the request cannot be transmitted to the feed
-     * @see DataRequestTranslator#translate(DataRequest)
+     * @see DataRequestTranslator#fromDataRequest(DataRequest)
      */
     protected abstract List<String> doSecurityListRequest(D inData)
         throws InterruptedException, FeedException;
@@ -478,9 +478,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
     protected abstract void doCancel(String inHandle)
         throws InterruptedException;
     /**
-     * Returns an instance of {@link IEventTranslator} appropriate for this feed.
+     * Returns an instance of {@link EventTranslator} appropriate for this feed.
      *
-     * <p>The {@link IEventTranslator} translates data-types appropriate for this feed
+     * <p>The {@link EventTranslator} translates data-types appropriate for this feed
      * to subclasses of {@link EventBase}.
      * 
      * @return an <code>E</code> value
@@ -612,7 +612,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
         } else {
             try {
                 E eventTranslator = getEventTranslator();
-                List<EventBase> events = eventTranslator.translate(inData);
+                List<EventBase> events = eventTranslator.toEvent(inData);
                 for(EventBase event : events) {
                     publishMarketData(event);
                     token.publish(event);
@@ -685,7 +685,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
             // the request is represented by a request stored on the token
             DataRequest request = inToken.getTokenSpec().getDataRequest();
             // translate the request to an appropriate proprietary format
-            D data = xlator.translate(request);
+            D data = xlator.fromDataRequest(request);
             if(request instanceof MarketDataRequest) {
                 processResponse(doMarketDataRequest(data), 
                                 inToken);

@@ -9,7 +9,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.IEventTranslator;
+import org.marketcetera.event.EventTranslator;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.event.UnsupportedEventException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -36,7 +36,7 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  */
 @ClassVersion("$Id: MarketceteraFeedEventTranslator.java 9515 2008-09-03 15:15:45Z colin $") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
-    implements IEventTranslator, Messages
+    implements EventTranslator, Messages
 {
     private static final String UNKNOWN = "?"; //$NON-NLS-1$
     private static final MarketceteraFeedEventTranslator sInstance = new MarketceteraFeedEventTranslator();
@@ -50,7 +50,7 @@ public class MarketceteraFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> translate(Object inData) 
+    public List<EventBase> toEvent(Object inData) 
         throws CoreException
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
@@ -117,7 +117,7 @@ public class MarketceteraFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
-    public Object translate(EventBase inEvent) 
+    public Object fromEvent(EventBase inEvent) 
         throws CoreException
     {
         throw new UnsupportedOperationException();
