@@ -1,0 +1,20 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Symbols", :action_name => "List Symbols", :top_level_controller => @controller.controller_name } %>
+<h1>List Symbols</h1>
+
+<table>
+  <tr>
+  <%= show_relevant_table_columns(MSymbol.new, true) %>
+  <th colspan="3"/>
+  </tr>
+  
+<% i=0
+for m_symbol in @m_symbols %>
+  <tr <%= ((i+=1)%2)==1?'class="odd"':''%> >
+    <%= show_relevant_table_columns(m_symbol, false) %>
+    <%= render :partial => 'shared/show_edit_delete_links', :locals=> { :object => m_symbol, :controller_name => 'm_symbols'} %>
+  </tr>
+<% end %>
+</table>
+
+<%= pagination_links(@m_symbol_pages) %>
