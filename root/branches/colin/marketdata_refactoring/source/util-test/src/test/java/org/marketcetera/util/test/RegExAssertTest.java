@@ -1,3 +1,4 @@
+
 package org.marketcetera.util.test;
 
 import org.junit.Test;
@@ -19,6 +20,7 @@ public class RegExAssertTest
     public void match()
     {
         assertMatches(".*ab.*","zabc");
+        assertMatches("(?s).*ab.*","zabc\n");
         assertMatches(null,null);
     }
 

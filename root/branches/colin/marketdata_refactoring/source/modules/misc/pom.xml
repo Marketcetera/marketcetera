@@ -17,7 +17,7 @@
   <parent>
     <groupId>org.marketcetera</groupId>
     <artifactId>modules</artifactId>
-    <version>0.9.0</version>
+    <version>1.0.0</version>
   </parent>
   <artifactId>misc</artifactId>
   <packaging>jar</packaging>
@@ -32,7 +32,7 @@
       <artifactId>core</artifactId>
     </dependency>
     <dependency>
-      <groupId>commons-csv</groupId>
+      <groupId>org.apache.commons</groupId>
       <artifactId>commons-csv</artifactId>
     </dependency>
     
@@ -57,4 +57,19 @@
       <artifactId>junit</artifactId>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+
+      <!-- Configure Eclipse IDE metadata. -->
+      <plugin>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <configuration>
+          <pde>true</pde>
+          <manifest>null</manifest>
+          <resolveDependencies>false</resolveDependencies>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

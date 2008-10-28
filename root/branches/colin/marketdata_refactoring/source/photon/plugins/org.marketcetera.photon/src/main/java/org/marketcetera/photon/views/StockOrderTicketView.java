@@ -1,5 +1,6 @@
 package org.marketcetera.photon.views;
 
+import java.io.InputStream;
 import java.lang.reflect.Field;
 
 import org.eclipse.core.databinding.observable.list.WritableList;
@@ -64,8 +65,8 @@ public class StockOrderTicketView extends OrderTicketView {
 	}
 
 	@Override
-	protected String getXSWTResourceName() {
-		return "/stock_order_ticket.xswt"; //$NON-NLS-1$
+	protected InputStream getXSWTResourceStream() {
+		return getClass().getResourceAsStream("/stock_order_ticket.xswt"); //$NON-NLS-1$
 	}
 
 

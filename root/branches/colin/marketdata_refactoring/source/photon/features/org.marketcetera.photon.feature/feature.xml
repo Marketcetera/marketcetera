@@ -2,7 +2,7 @@
 <feature
       id="org.marketcetera.photon.feature"
       label="Photon Feature"
-      version="0.9.0"
+      version="1.0.0"
       provider-name="Marketcetera, Inc."
       plugin="org.marketcetera.photon">
 
@@ -480,7 +480,8 @@
          id="org.marketcetera.core"
          download-size="0"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.marketcetera.marketdata"
