@@ -6,14 +6,14 @@ import java.util.List;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.EventBase;
-import org.marketcetera.event.IEventTranslator;
+import org.marketcetera.event.EventTranslator;
 import org.marketcetera.event.UnsupportedEventException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
 /* $License$ */
 
 /**
- * Bogus feed {@link IEventTranslator} instance.
+ * Bogus feed {@link EventTranslator} instance.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id: BogusFeedEventTranslator.java 9458 2008-08-01 05:27:12Z colin $
@@ -21,12 +21,12 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  */
 @ClassVersion("$Id: BogusFeedEventTranslator.java 9458 2008-08-01 05:27:12Z colin $") //$NON-NLS-1$
 public class BogusFeedEventTranslator
-        implements IEventTranslator, Messages
+        implements EventTranslator, Messages
 {
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> translate(Object inData)
+    public List<EventBase> toEvent(Object inData)
             throws CoreException
     {
         if(!(inData instanceof EventBase)) {
@@ -39,7 +39,7 @@ public class BogusFeedEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
-    public Object translate(EventBase inEvent)
+    public Object fromEvent(EventBase inEvent)
             throws CoreException
     {
         throw new UnsupportedOperationException();

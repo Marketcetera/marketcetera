@@ -27,7 +27,7 @@ public class BogusFeedModuleFactory
         super(PROVIDER_URN,
               PROVIDER_DESCRIPTION,
               false,
-              false);
+              true);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])

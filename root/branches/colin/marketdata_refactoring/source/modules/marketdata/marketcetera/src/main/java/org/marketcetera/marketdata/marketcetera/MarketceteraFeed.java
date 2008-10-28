@@ -20,13 +20,11 @@ import org.marketcetera.core.IDFactory;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.FIXCorrelationFieldSubscription;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.quickfix.AbstractMessageTranslator;
 import org.marketcetera.quickfix.EventLogFactory;
 import org.marketcetera.quickfix.FIXDataDictionary;
@@ -253,7 +251,6 @@ public class MarketceteraFeed
 			} catch (FieldNotFound fnf) {
 				feedType = FeedType.LIVE;
 			}
-			System.out.println("In fromAdmin, setting feed status to AVAILABLE");
 			setFeedStatus(FeedStatus.AVAILABLE);
 			SLF4JLoggerProxy.debug(this,
 			                       "Marketcetera feed received Logon"); //$NON-NLS-1$

@@ -43,7 +43,7 @@ public class BogusFeedMessageTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#asDataRequest(java.lang.Object)
      */
     @Override
-    public DataRequest asDataRequest(BogusMessage inData)
+    public DataRequest toDataRequest(BogusMessage inData)
             throws CoreException
     {
         return inData.getAsDataRequest();
@@ -52,7 +52,7 @@ public class BogusFeedMessageTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.marketdata.DataRequest)
      */
     @Override
-    public BogusMessage translate(DataRequest inRequest)
+    public BogusMessage fromDataRequest(DataRequest inRequest)
             throws CoreException
     {
         if(inRequest instanceof MarketDataRequest) {

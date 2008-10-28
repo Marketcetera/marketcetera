@@ -32,7 +32,7 @@ public class MockDataRequestTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#asDataRequest(java.lang.Object)
      */
     @Override
-    public DataRequest asDataRequest(String inData)
+    public DataRequest toDataRequest(String inData)
             throws CoreException
     {
         return null;
@@ -41,7 +41,7 @@ public class MockDataRequestTranslator
      * @see org.marketcetera.marketdata.DataRequestTranslator#translate(org.marketcetera.module.DataRequest)
      */
     @Override
-    public String translate(DataRequest inMessage)
+    public String fromDataRequest(DataRequest inMessage)
             throws CoreException
     {
         if(getTranslateThrows()) {
