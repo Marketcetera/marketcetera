@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <groupId>quickfixj</groupId>
-      <artifactId>quickfixj-core</artifactId>
+      <artifactId>quickfixj-all</artifactId>
     </dependency>
     <dependency>
       <groupId>org.skife.kasparov</groupId>
