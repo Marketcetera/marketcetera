@@ -502,11 +502,11 @@ public class DataRequestTest
         assertEquals(value[0],
                      DataRequest.validateStringValue(value[0]));
     }
-    protected String constructStringRepresentationOfDataRequest(String inId,
-                                                                String inType,
-                                                                String inVar1,
-                                                                String inVar2,
-                                                                String inVar3)
+    public static String constructStringRepresentationOfDataRequest(String inId,
+                                                                    String inType,
+                                                                    String inVar1,
+                                                                    String inVar2,
+                                                                    String inVar3)
     {
         StringBuilder requestAsString = new StringBuilder();
         if(inType != null) {
@@ -751,30 +751,6 @@ public class DataRequestTest
             result = prime * result + (var2 ? 1231 : 1237);
             result = prime * result + ((var3 == null) ? 0 : var3.hashCode());
             return result;
-        }
-        /* (non-Javadoc)
-         * @see java.lang.Object#equals(java.lang.Object)
-         */
-        @Override
-        protected boolean doEquals(DataRequest obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            MockDataRequestWithHashCodeAndEquals other = (MockDataRequestWithHashCodeAndEquals) obj;
-            if (var1 != other.var1)
-                return false;
-            if (var2 != other.var2)
-                return false;
-            if (var3 == null) {
-                if (other.var3 != null)
-                    return false;
-            } else if (!var3.equals(other.var3))
-                return false;
-            return true;
         }
     }
 }

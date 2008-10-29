@@ -24,6 +24,34 @@ public final class MarketDataRequest
     extends DataRequest
 {
     /**
+     * the delimiter used to distinguish between symbols in the string representation of the symbol collection
+     */
+    public static final String SYMBOL_DELIMITER = ","; //$NON-NLS-1$
+    /**
+     * identifies the {@link #depth} field in the <code>Properties</code> and <code>String</code> representations of this object
+     */
+    public static final String DEPTH_KEY = "depth"; //$NON-NLS-1$
+    /**
+     * identifies the {@link #requestType} field in the <code>Properties</code> and <code>String</code> representations of this object
+     */
+    public static final String REQUEST_TYPE_KEY = "requestType"; //$NON-NLS-1$
+    /**
+     * identifies the {@link #updateType} field in the <code>Properties</code> and <code>String</code> representations of this object
+     */
+    public static final String UPDATE_TYPE_KEY = "updateType"; //$NON-NLS-1$
+    /**
+     * identifies the {@link #exchange} field in the <code>Properties</code> and <code>String</code> representations of this object
+     */
+    public static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
+    /**
+     * identifies the {@link #symbols} field in the <code>Properties</code> and <code>String</code> representations of this object
+     */
+    public static final String SYMBOLS_KEY = "symbols"; //$NON-NLS-1$
+    /**
+     * the request type string for <code>MarketDataRequest</code> objects
+     */
+    public static final String TYPE = "marketdata"; //$NON-NLS-1$
+    /**
      * the entire book
      */
     public static final int FULL_BOOK = 0;
@@ -183,44 +211,6 @@ public final class MarketDataRequest
                                      inSymbols);
     }
     /**
-     * Creates a market data request from the given string.
-     * 
-     * <p>Note that the subcomponents of the request string themselves are allowed to contain neither
-     * the {@link #KEY_VALUE_DELIMITER} nor the {@link MarketDataRequest#SYMBOL_DELIMITER}.  If a subcomponent contains the
-     * <code>KEY_VALUE_DELIMITER</code>, that subcomponent will be <b>truncated</b> at the first occurrence of the delimiter.
-     * If a subcomponent contains the <code>SYMBOL_DELIMITER</code>, an <code>IllegalArgumentException</code> will be thrown.  
-     *
-     * @param inRequestString a <code>String</code> value
-     * @return a <code>MarketDataRequest</code> value
-     * @throws IOException if the <code>String</code> could not be converted to a <code>MarketDataRequest</code>
-     * @throws IllegalArgumentException if <code>inRequestString</code> cannot be parsed properly
-     */
-    protected static MarketDataRequest newRequestFromString(Properties inRequest)
-    {
-        String symbolString = inRequest.getProperty(SYMBOLS_KEY);
-        if(symbolString == null ||
-           symbolString.length() == 0) {
-            throw new IllegalArgumentException(INVALID_SYMBOLS.getText(symbolString));
-        }
-        return new MarketDataRequest(inRequest,
-                                     symbolString.split(SYMBOL_DELIMITER));
-    }
-    /**
-     * Create a new MarketDataRequest instance.
-     * 
-     * @throws IllegalArgumentException if the specified depth is invalid, the symbols cannot be parsed, or the id specified is invalid
-     */
-    private MarketDataRequest(Properties inRequest,
-                              String... inSymbols)
-    {
-        super(inRequest);
-        depth = validateDepth(inRequest.getProperty(DEPTH_KEY));
-        requestType = validateRequestType(inRequest.getProperty(REQUEST_TYPE_KEY).toUpperCase());
-        updateType = validateUpdateType(inRequest.getProperty(UPDATE_TYPE_KEY).toUpperCase());
-        exchange = validateStringValue(inRequest.getProperty(EXCHANGE_KEY));
-        symbols = validateSymbols(inSymbols);
-    }
-    /**
      * Get the depth value.
      *
      * @return a <code>MarketDataRequest</code> value
@@ -265,6 +255,37 @@ public final class MarketDataRequest
     {
         return updateType;
     }
+    /**
+     * does class-level initialization for <code>MarketDataRequest</code>
+     */
+    static
+    {
+        DataRequest.registerType(TYPE,
+                                 MarketDataRequest.class);
+    }
+    /**
+     * Creates a market data request from the given string.
+     * 
+     * <p>Note that the subcomponents of the request string themselves are allowed to contain neither
+     * the {@link #KEY_VALUE_DELIMITER} nor the {@link MarketDataRequest#SYMBOL_DELIMITER}.  If a subcomponent contains the
+     * <code>KEY_VALUE_DELIMITER</code>, that subcomponent will be <b>truncated</b> at the first occurrence of the delimiter.
+     * If a subcomponent contains the <code>SYMBOL_DELIMITER</code>, an <code>IllegalArgumentException</code> will be thrown.  
+     *
+     * @param inRequestString a <code>String</code> value
+     * @return a <code>MarketDataRequest</code> value
+     * @throws IOException if the <code>String</code> could not be converted to a <code>MarketDataRequest</code>
+     * @throws IllegalArgumentException if <code>inRequestString</code> cannot be parsed properly
+     */
+    protected static MarketDataRequest newRequestFromString(Properties inRequest)
+    {
+        String symbolString = inRequest.getProperty(SYMBOLS_KEY);
+        if(symbolString == null ||
+           symbolString.length() == 0) {
+            throw new IllegalArgumentException(INVALID_SYMBOLS.getText(symbolString));
+        }
+        return new MarketDataRequest(inRequest,
+                                     symbolString.split(SYMBOL_DELIMITER));
+    }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.DataRequest#addAttributesToProperties(java.util.Properties)
      */
@@ -306,16 +327,6 @@ public final class MarketDataRequest
         result = prime * result + ((updateType == null) ? 0 : updateType.hashCode());
         return result;
     }
-    /* (non-Javadoc)
-     * @see java.lang.Object#equals(java.lang.Object)
-     */
-    @Override
-    protected boolean doEquals(DataRequest obj)
-    {
-        if (getClass() != obj.getClass())
-            return false;
-        return equivalent((MarketDataRequest)obj);
-    }
     @Override
     public boolean equivalent(DataRequest other)
     {
@@ -348,34 +359,6 @@ public final class MarketDataRequest
         } else if (!updateType.equals(mdrOther.updateType))
             return false;
         return true;
-    }
-    /**
-     * Validates the depth argument in the context of specifying depth-of-book. 
-     *
-     * @param inDepthValue an <code>int</code> value containing a book depth
-     * @return an <code>int</code> value containing a valid depth
-     * @throws IllegalArgumentException if the specified depth is invalid
-     */
-    private int validateDepth(String inDepthValue)
-    {
-        int depthValue;
-        try {
-            depthValue = Integer.parseInt(inDepthValue);
-        } catch (NumberFormatException e) {
-            throw new IllegalArgumentException(INVALID_DEPTH.getText(inDepthValue));
-        }
-        if(depthValue < 0) {
-            throw new IllegalArgumentException(INVALID_DEPTH.getText(inDepthValue));
-        }
-        return depthValue;
-    }
-    private RequestType validateRequestType(String inRequestTypeValue)
-    {
-        return RequestType.valueOf(inRequestTypeValue.toUpperCase());
-    }
-    private UpdateType validateUpdateType(String inUpdateTypeValue)
-    {
-        return UpdateType.valueOf(inUpdateTypeValue.toUpperCase());
     }
     /**
      * Takes the given <code>Properties</code> object and inserts missing keys with their default values if appropriate.
@@ -418,6 +401,63 @@ public final class MarketDataRequest
         return inValue;
     }
     /**
+     * Create a new MarketDataRequest instance.
+     * 
+     * @throws IllegalArgumentException if the specified depth is invalid, the symbols cannot be parsed, or the id specified is invalid
+     */
+    private MarketDataRequest(Properties inRequest,
+                              String... inSymbols)
+    {
+        super(inRequest);
+        depth = validateDepth(inRequest.getProperty(DEPTH_KEY));
+        requestType = validateRequestType(inRequest.getProperty(REQUEST_TYPE_KEY).toUpperCase());
+        updateType = validateUpdateType(inRequest.getProperty(UPDATE_TYPE_KEY).toUpperCase());
+        exchange = validateStringValue(inRequest.getProperty(EXCHANGE_KEY));
+        symbols = validateSymbols(inSymbols);
+    }
+    /**
+     * Validates the depth argument in the context of specifying depth-of-book. 
+     *
+     * @param inDepthValue an <code>int</code> value containing a book depth
+     * @return an <code>int</code> value containing a valid depth
+     * @throws IllegalArgumentException if the specified depth is invalid
+     */
+    private int validateDepth(String inDepthValue)
+    {
+        int depthValue;
+        try {
+            depthValue = Integer.parseInt(inDepthValue);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException(INVALID_DEPTH.getText(inDepthValue));
+        }
+        if(depthValue < 0) {
+            throw new IllegalArgumentException(INVALID_DEPTH.getText(inDepthValue));
+        }
+        return depthValue;
+    }
+    /**
+     * Validates the given <code>String</code> to see if it can be interpreted as a {@link RequestType}.
+     *
+     * @param inRequestTypeValue a <code>String</code> value
+     * @return a <code>RequestType</code> value
+     * @throws IllegalArgumentException if <code>inRequestTypeValue</code> is not a valid <code>RequestType</code>
+     */
+    private RequestType validateRequestType(String inRequestTypeValue)
+    {
+        return RequestType.valueOf(inRequestTypeValue.toUpperCase());
+    }
+    /**
+     * Validates the given <code>String</code> to see if it can be interpreted as an {@link UpdateType}.
+     *
+     * @param inUpdateTypeValue a <code>String</code> value
+     * @return an <code>UpdateType</code> value
+     * @throws IllegalArgumentException if <code>inUpdateTypeValue</code> is not a valid <code>UpdateType</code>
+     */
+    private UpdateType validateUpdateType(String inUpdateTypeValue)
+    {
+        return UpdateType.valueOf(inUpdateTypeValue.toUpperCase());
+    }
+    /**
      * Validates the symbols and returns a valid symbol array.
      *
      * @param inSymbols a <code>String...</code> value
@@ -430,9 +470,7 @@ public final class MarketDataRequest
            inSymbols.length == 0) {
             throw new IllegalArgumentException(INVALID_SYMBOLS.getText(Arrays.toString(inSymbols)));
         }
-        System.out.println("Symbols is " + Arrays.toString(inSymbols));
         for(String symbol : inSymbols) {
-            System.out.println("Symbol is " + symbol);
             if(symbol.length() == 0) {
                 throw new IllegalArgumentException(INVALID_SYMBOLS.getText(Arrays.toString(inSymbols)));
             }
@@ -460,34 +498,4 @@ public final class MarketDataRequest
      * the symbols for which to request market data
      */
     private final String[] symbols;
-    /**
-     * the delimiter used to distinguish between symbols in the string representation of the symbol collection
-     */
-    public static final String SYMBOL_DELIMITER = ","; //$NON-NLS-1$
-    /**
-     * identifies the {@link #depth} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    private static final String DEPTH_KEY = "depth"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #requestType} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    private static final String REQUEST_TYPE_KEY = "requestType"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #updateType} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    private static final String UPDATE_TYPE_KEY = "updateType"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #exchange} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    private static final String EXCHANGE_KEY = "exchange"; //$NON-NLS-1$
-    /**
-     * identifies the {@link #symbols} field in the <code>Properties</code> and <code>String</code> representations of this object
-     */
-    private static final String SYMBOLS_KEY = "symbols"; //$NON-NLS-1$
-    public static final String TYPE = "marketdata";
-    static
-    {
-        DataRequest.registerType(TYPE,
-                                 MarketDataRequest.class);
-    }
 }

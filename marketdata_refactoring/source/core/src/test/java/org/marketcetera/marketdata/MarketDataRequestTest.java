@@ -2,6 +2,7 @@ package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.MarketDataRequest.FULL_BOOK;
 import static org.marketcetera.marketdata.MarketDataRequest.NO_EXCHANGE;
@@ -20,6 +21,7 @@ import java.util.Set;
 
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
+import org.marketcetera.marketdata.DataRequestTest.MockDataRequest;
 import org.marketcetera.marketdata.MarketDataRequest.RequestType;
 import org.marketcetera.marketdata.MarketDataRequest.UpdateType;
 
@@ -182,6 +184,16 @@ public class MarketDataRequestTest
                     throws Throwable
             {
                 MarketDataRequest.newSpecifedDepthRequest(-1,
+                                                          "ORCL");
+            }
+        }.run();
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_DEPTH.getText("-2147483648")) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.newSpecifedDepthRequest(Integer.MAX_VALUE + 1,
                                                           "ORCL");
             }
         }.run();
@@ -597,24 +609,171 @@ public class MarketDataRequestTest
             protected void execute()
                     throws Throwable
             {
-                request.addCurrentAttributesValues(null);            
+                request.addCurrentAttributesValues(null);
             }
         }.run();
         Properties properties = new Properties();
         request.addCurrentAttributesValues(properties);
-        
+        assertEquals(request.getDepth(),
+                     Integer.parseInt(properties.getProperty(MarketDataRequest.DEPTH_KEY)));
+        assertEquals(request.getExchange(),
+                     properties.getProperty(MarketDataRequest.EXCHANGE_KEY));
+        assertEquals(request.getRequestType(),
+                     RequestType.valueOf(properties.getProperty(MarketDataRequest.REQUEST_TYPE_KEY)));
+        assertTrue(Arrays.equals(request.getSymbols(),
+                                 properties.getProperty(MarketDataRequest.SYMBOLS_KEY).split(MarketDataRequest.SYMBOL_DELIMITER)));
+        assertEquals(request.getUpdateType(),
+                     UpdateType.valueOf(properties.getProperty(MarketDataRequest.UPDATE_TYPE_KEY)));
     }
     @Test
-    public void testEquals()
+    public void doEquals()
         throws Exception
     {
         MarketDataRequest r1 = MarketDataRequest.newFullBookRequest("METC");
         MarketDataRequest r2 = MarketDataRequest.newFullBookRequest("ORCL");
         assertFalse(r1.equals(null));
         assertFalse(r1.equals(this));
+        assertFalse(r1.hashCode() == this.hashCode());
         assertFalse(r1.equals(r2));
+        assertFalse(r1.hashCode() == r2.hashCode());
         assertEquals(r1,
                      r1);
+    }
+    @Test
+    public void equivalent()
+        throws Exception
+    {
+        MarketDataRequest r1 = MarketDataRequest.newFullBookRequest("METC");
+        MarketDataRequest r2 = MarketDataRequest.newFullBookRequest("ORCL");
+        MarketDataRequest r3 = MarketDataRequest.newFullBookRequest("ORCL");
+        MockDataRequest.doRegister();
+        MockDataRequest r4 = (MockDataRequest)DataRequest.newRequestFromString(DataRequestTest.constructStringRepresentationOfDataRequest(null,
+                                                                                                                                          MockDataRequest.TYPE,
+                                                                                                                                          "-1",
+                                                                                                                                          "false",
+                                                                                                                                          "booya"));
+        MarketDataRequest r5 = MarketDataRequest.newTopOfBookRequest("ORCL");
+        MarketDataRequest r6 = (MarketDataRequest)DataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null, 
+                                                                                                                                    Integer.toString(r2.getDepth()),
+                                                                                                                                    "some exchange which is not the same",
+                                                                                                                                    "ORCL",
+                                                                                                                                    r2.getUpdateType().toString(),
+                                                                                                                                    r2.getRequestType().toString()));
+        MarketDataRequest r7 = (MarketDataRequest)DataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null, 
+                                                                                                                                    Integer.toString(r2.getDepth()),
+                                                                                                                                    r2.getExchange(),
+                                                                                                                                    "ORCL",
+                                                                                                                                    UpdateType.FULL_REFRESH.toString(),
+                                                                                                                                    r2.getRequestType().toString()));
+        MarketDataRequest r8 = (MarketDataRequest)DataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null, 
+                                                                                                                                    Integer.toString(r2.getDepth()),
+                                                                                                                                    r2.getExchange(),
+                                                                                                                                    "ORCL",
+                                                                                                                                    r2.getUpdateType().toString(),
+                                                                                                                                    RequestType.SNAPSHOT.toString()));
+        assertTrue(r1.equivalent(r1));
+        assertTrue(r2.equivalent(r3));
+        assertFalse(r1.equivalent(null));
+        assertFalse(r1.equivalent(r2));
+        assertFalse(r1.equivalent(r4));
+        assertFalse(r2.equivalent(r5));
+        assertFalse(r2.equivalent(r6));
+        assertFalse(r2.equivalent(r7));
+        assertFalse(r2.equivalent(r8));
+    }
+    @Test
+    public void validateAdnSetRequestDefaultsIfNecessary()
+        throws Exception
+    {
+        new ExpectedTestFailure(NullPointerException.class) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.validateAndSetRequestDefaultsIfNecessary(null);
+            }
+        }.run();
+        Properties properties = new Properties();
+        MarketDataRequest.validateAndSetRequestDefaultsIfNecessary(properties);
+        assertTrue(Long.parseLong(properties.getProperty(DataRequest.ID_KEY)) > 0);
+        assertEquals(FULL_BOOK,
+                     Integer.parseInt(properties.getProperty(MarketDataRequest.DEPTH_KEY)));
+        assertEquals(RequestType.SUBSCRIBE,
+                     RequestType.valueOf(properties.getProperty(MarketDataRequest.REQUEST_TYPE_KEY)));
+        assertEquals(UpdateType.INCREMENTAL_REFRESH,
+                     UpdateType.valueOf(properties.getProperty(MarketDataRequest.UPDATE_TYPE_KEY)));
+        assertEquals(NO_EXCHANGE,
+                     properties.getProperty(MarketDataRequest.EXCHANGE_KEY));
+        // no default for type or symbols
+        assertNull(properties.getProperty(DataRequest.TYPE_KEY));
+        assertNull(properties.getProperty(MarketDataRequest.SYMBOLS_KEY));
+        // now, make sure the properties are not overridden if already specified
+        // first, change properties to non-default values
+        assertTrue(Long.parseLong(properties.getProperty(DataRequest.ID_KEY)) != 0);
+        properties.setProperty(DataRequest.ID_KEY,
+                               "0");
+        assertFalse(properties.getProperty(MarketDataRequest.DEPTH_KEY).equals("100"));
+        properties.setProperty(MarketDataRequest.DEPTH_KEY,
+                               "100");
+        assertFalse(properties.getProperty(MarketDataRequest.REQUEST_TYPE_KEY).equals(RequestType.SNAPSHOT.toString()));
+        properties.setProperty(MarketDataRequest.REQUEST_TYPE_KEY,
+                               RequestType.SNAPSHOT.toString());
+        assertFalse(properties.getProperty(MarketDataRequest.UPDATE_TYPE_KEY).equals(UpdateType.FULL_REFRESH.toString()));
+        properties.setProperty(MarketDataRequest.UPDATE_TYPE_KEY,
+                               UpdateType.FULL_REFRESH.toString());
+        assertFalse(properties.getProperty(MarketDataRequest.EXCHANGE_KEY).equals("some other exchange"));
+        properties.setProperty(MarketDataRequest.EXCHANGE_KEY,
+                               "some other exchange");
+        MarketDataRequest.validateAndSetRequestDefaultsIfNecessary(properties);
+        assertEquals(100,
+                     Integer.parseInt(properties.getProperty(MarketDataRequest.DEPTH_KEY)));
+        assertEquals(RequestType.SNAPSHOT,
+                     RequestType.valueOf(properties.getProperty(MarketDataRequest.REQUEST_TYPE_KEY)));
+        assertEquals(UpdateType.FULL_REFRESH,
+                     UpdateType.valueOf(properties.getProperty(MarketDataRequest.UPDATE_TYPE_KEY)));
+        assertEquals("some other exchange",
+                     properties.getProperty(MarketDataRequest.EXCHANGE_KEY));
+        // no default for type or symbols
+        assertNull(properties.getProperty(DataRequest.TYPE_KEY));
+        assertNull(properties.getProperty(MarketDataRequest.SYMBOLS_KEY));
+    }
+    @Test
+    public void validateStringValue()
+        throws Exception
+    {
+        new ExpectedTestFailure(NullPointerException.class) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.validateStringValue(null);
+            }
+        }.run();
+        final String[] values = new String[1];
+        // don't have to test all parent issues as they're already tested, but do test one to make sure
+        //  the parent validation gets called
+        values[0] = "some stuff" + DataRequest.KEY_VALUE_DELIMITER + " some other stuff";
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_STRING_VALUE.getText(values[0])) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.validateStringValue(values[0]);
+            }
+        }.run();
+        values[0] = "some stuff" + MarketDataRequest.SYMBOL_DELIMITER + " some other stuff";
+        new ExpectedTestFailure(IllegalArgumentException.class,
+                                INVALID_STRING_VALUE.getText(values[0])) {
+            @Override
+            protected void execute()
+                    throws Throwable
+            {
+                MarketDataRequest.validateStringValue(values[0]);
+            }
+        }.run();
+        assertEquals("some stuff",
+                     MarketDataRequest.validateStringValue("some stuff"));
     }
     /**
      * Creates a <code>String</code> containing the given elements for use as a <code>MarketDataRequest</code>.

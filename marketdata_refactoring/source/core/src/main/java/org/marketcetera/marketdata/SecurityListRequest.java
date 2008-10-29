@@ -18,7 +18,25 @@ import org.marketcetera.core.ClassVersion;
 public final class SecurityListRequest
         extends DataRequest
 {
+    /**
+     * the request type string for <code>SecurityListRequest</code> objects
+     */
     public static final String TYPE = "securitylist"; //$NON-NLS-1$
+    /**
+     * Constructs a new <code>SecurityListRequest</code> object.
+     *
+     * @return a <code>SecurityListRequest</code> value
+     */
+    public static SecurityListRequest newSecurityListRequest()
+    {
+        Properties values = new Properties();
+        values.setProperty(TYPE_KEY,
+                           TYPE);
+        return new SecurityListRequest(values);
+    }
+    /**
+     * does class-level initialization for <code>SecurityListRequest</code>
+     */
     static
     {
         DataRequest.registerType(TYPE,
@@ -50,14 +68,5 @@ public final class SecurityListRequest
     private SecurityListRequest(Properties inRequest)
     {
         super(inRequest);
-    }
-    /**
-     *
-     *
-     * @return
-     */
-    public static DataRequest newSecurityListRequest()
-    {
-        return new SecurityListRequest(null);
     }
 }
