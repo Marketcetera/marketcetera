@@ -1,5 +1,6 @@
 package org.marketcetera.module;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.misc.ClassVersion;
@@ -47,7 +48,7 @@ public class IllegalRequestParameterValue extends ModuleException {
     public IllegalRequestParameterValue(ModuleURN inModuleURN,
                                         Object inParameter) {
         super(new I18NBoundMessage2P(Messages.ILLEGAL_REQ_PARM_VALUE,
-                inModuleURN.getValue(), inParameter));
+                                     inModuleURN.getValue(), ObjectUtils.toString(inParameter,null)));
     }
 
     /**
@@ -61,6 +62,6 @@ public class IllegalRequestParameterValue extends ModuleException {
                                         Object inParameter,
                                         Throwable inCause) {
         super(inCause, new I18NBoundMessage2P(Messages.ILLEGAL_REQ_PARM_VALUE,
-                inModuleURN.getValue(), inParameter));
+                                              inModuleURN.getValue(), ObjectUtils.toString(inParameter,null)));
     }
 }
