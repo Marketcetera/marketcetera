@@ -3,13 +3,13 @@ package org.marketcetera.util.auth;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Locale;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.IterableUtils;
-import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -62,7 +62,7 @@ public class SetterContextTestBase
         if (override) {
             usage+=" "+TEST_OVERRIDES;
         }
-        usage+=SystemProperties.LINE_SEPARATOR;
+        usage+=SystemUtils.LINE_SEPARATOR;
 
         assertArrayEquals(new Object[0],
                           IterableUtils.toArray(context.getSetters()));
@@ -94,7 +94,7 @@ public class SetterContextTestBase
         } finally {
             r.close();
         }
-        usage+=" "+TEST_USAGE+SystemProperties.LINE_SEPARATOR;
+        usage+=" "+TEST_USAGE+SystemUtils.LINE_SEPARATOR;
         assertEquals(usage,new String(outputStream.toByteArray()));
 
         assertEquals(override,context.getOverride());

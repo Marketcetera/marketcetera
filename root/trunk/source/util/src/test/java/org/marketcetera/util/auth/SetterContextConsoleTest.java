@@ -107,13 +107,12 @@ public class SetterContextConsoleTest
         ConsoleContext context=new ConsoleContext(true);
         try {
             context.setValues();
+            fail();
         } catch (I18NException ex) {
             assertEquals
                 (ex.getDetail(),Messages.CONSOLE_UNAVAILABLE,
                  ex.getI18NBoundMessage().getMessage());
-            return;
         }
-        fail();
     }
 
 

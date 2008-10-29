@@ -3,13 +3,13 @@ package org.marketcetera.util.auth;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.util.Locale;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.ActiveLocale;
 import org.marketcetera.util.log.I18NBoundMessage;
-import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -173,7 +173,7 @@ public class AuthenticationSystemTest
         AuthenticationSystem system=new AuthenticationSystem();
         system.add(context1);
         usage(system,
-              "1"+SystemProperties.LINE_SEPARATOR);
+              "1"+SystemUtils.LINE_SEPARATOR);
         system.setValues();
 
         assertEquals(1,context1.getCalledCount());
@@ -213,8 +213,8 @@ public class AuthenticationSystemTest
         system.add(context1);
         system.add(context2);
         usage(system,
-              "1"+SystemProperties.LINE_SEPARATOR+
-              "2"+SystemProperties.LINE_SEPARATOR);
+              "1"+SystemUtils.LINE_SEPARATOR+
+              "2"+SystemUtils.LINE_SEPARATOR);
         system.setValues();
  
         assertEquals(1,context1.getCalledCount());
@@ -266,9 +266,9 @@ public class AuthenticationSystemTest
         system.add(context2);
         system.add(context3);
         usage(system,
-              "1"+SystemProperties.LINE_SEPARATOR+
-              "2"+SystemProperties.LINE_SEPARATOR+
-              "3"+SystemProperties.LINE_SEPARATOR);
+              "1"+SystemUtils.LINE_SEPARATOR+
+              "2"+SystemUtils.LINE_SEPARATOR+
+              "3"+SystemUtils.LINE_SEPARATOR);
         system.setValues();
  
         assertEquals(1,context1.getCalledCount());

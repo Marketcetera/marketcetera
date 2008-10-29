@@ -23,5 +23,8 @@ public class MessagesTest
     {
         MessageComparator comparator=new MessageComparator(Messages.class);
         assertTrue(comparator.getDifferences(),comparator.isMatch());
+
+        comparator=new MessageComparator(TestMessages.class);
+        assertTrue(comparator.getDifferences(),comparator.isMatch());
     }
 }
