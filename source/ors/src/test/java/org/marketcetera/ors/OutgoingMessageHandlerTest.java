@@ -14,6 +14,7 @@ import org.marketcetera.util.log.I18NBoundMessage0P;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import quickfix.*;
 import quickfix.field.*;
+import org.apache.commons.lang.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -355,7 +356,7 @@ public class OutgoingMessageHandlerTest extends FIXVersionedTestCase
 
         // verify we got an execReport that's a rejection with the sessionNotfound error message
         Message result = handler.handleMessage(newOrder);
-        verifyRejection(result, msgFactory, new I18NBoundMessage1P(org.marketcetera.core.Messages.ERROR_FIX_SESSION_NOT_FOUND, sessionID));
+        verifyRejection(result, msgFactory, new I18NBoundMessage1P(org.marketcetera.core.Messages.ERROR_FIX_SESSION_NOT_FOUND, ObjectUtils.toString(sessionID,null)));
     }
 
     /** Create props with a route manager entry, and make sure the FIX message is
