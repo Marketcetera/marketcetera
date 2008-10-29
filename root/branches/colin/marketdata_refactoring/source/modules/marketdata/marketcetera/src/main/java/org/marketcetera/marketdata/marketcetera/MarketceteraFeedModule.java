@@ -24,7 +24,11 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- *
+ * StrategyAgent module for {@link MarketceteraFeed}.
+ * 
+ * <p>Note that in case of a credentials change via {@link #setSenderCompID(String)},
+ * {@link #setTargetCompID(String)}, or {@link #setURL(String)}, this module must be
+ * restarted for the changes to take effect.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id:$
@@ -61,7 +65,7 @@ public class MarketceteraFeedModule
             throw new ModuleException(e.getI18NBoundMessage());
         }
         feed.start();
-        // TODO - should wait until the feed status changes to "AVAILABLE", perhaps with a timeout?
+        // wait until the feed starts (connects to the server) for a maximum of 30 seconds before giving up
         synchronized(feed) {
             try {
                 feed.wait(1000*30);
@@ -91,11 +95,8 @@ public class MarketceteraFeedModule
     {
         synchronized(tokens) {
             MarketceteraFeedToken token = tokens.remove(inRequestID);
-            if(token != null) {
-                token.cancel();
-            } else {
-                // TODO this should not happen
-            }
+            assert(token != null);
+            token.cancel();
         }
     }
     /* (non-Javadoc)
@@ -125,16 +126,6 @@ public class MarketceteraFeedModule
             throw new UnsupportedRequestParameterType(getURN(),
                                                       obj);
         }
-        //Submit the market data request to active API and arrange
-        // for it to invoke inSupport.send(market_data_event);
-        // whenever it has market data.
-        //
-        //invoke inSupport.dataEmitError(error_false, false);
-        // to indicate errors that do not interrupt the data flow
-        //
-        //invoke inSupport.dataEmitError(error_false, true);
-        // to indicate errors that interrupt the data flow and request
-        // the framework to stop that data flow.
         try {
             ISubscriber subscriber = new ISubscriber() {
                 @Override

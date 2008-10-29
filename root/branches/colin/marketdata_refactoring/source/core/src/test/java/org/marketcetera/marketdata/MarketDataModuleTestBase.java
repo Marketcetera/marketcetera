@@ -10,7 +10,9 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
@@ -24,6 +26,7 @@ import org.marketcetera.module.ModuleTestBase;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.SinkDataListener;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider;
 
 /* $License$ */
 
@@ -37,16 +40,42 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
 public abstract class MarketDataModuleTestBase
         extends ModuleTestBase
 {
+    /**
+     * global singleton module manager
+     */
     protected ModuleManager moduleManager;
+    /**
+     * test destination of market data requests
+     */
     protected DataSink dataSink;
+    /**
+     * the factory to use to create the market data provider modules
+     */
     protected ModuleFactory<? extends Module> factory;
-    protected MarketDataRequest sampleRequest = MarketDataRequest.newFullBookRequest("GOOG");
-    
+    /**
+     * configuration provider to use to set up the module to be tested, if necessary
+     */
+    protected MockConfigurationProvider provider;
+    @BeforeClass
+    public static void setupOnce()
+    {
+        System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
+                           "true");
+    }
+    @AfterClass
+    public static void teardownOnce()
+    {
+        System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
+                           "false");
+    }
     @Before
     public void setup()
         throws Exception
     {
         moduleManager = new ModuleManager();
+        provider = new MockConfigurationProvider();
+        populateConfigurationProvider(provider);
+        moduleManager.setConfigurationProvider(provider);
         moduleManager.init();
         dataSink = new DataSink();
         moduleManager.addSinkListener(dataSink);
@@ -60,6 +89,9 @@ public abstract class MarketDataModuleTestBase
         stopModule();
         moduleManager.stop();
         moduleManager = null;
+    }
+    protected void populateConfigurationProvider(MockConfigurationProvider inProvider)
+    {
     }
     @Test
     public void badDataRequests()
