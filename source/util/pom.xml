@@ -28,6 +28,10 @@
 
     <!-- Compile. -->
     <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-frontend-jaxws</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
     </dependency>
@@ -56,6 +60,20 @@
       <artifactId>commons-i18n</artifactId>
     </dependency>
 
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>cglib</groupId>
+      <artifactId>cglib-nodep</artifactId>
+    </dependency>
+
     <!-- Testing. -->
     <dependency>
       <groupId>${mvn.public.package}</groupId>
@@ -64,6 +82,11 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.cxf</groupId>
+      <artifactId>cxf-rt-transports-http-jetty</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -84,6 +107,69 @@
   </build>
 
   <profiles>
+
+    <!-- Command-line execution: test. -->
+    <profile>
+      <id>ws.server</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.util.ws.sample.SampleServer</mainClass>
+              <arguments>
+               <argument>-user</argument>
+               <argument>user</argument>
+               <argument>-password</argument>
+               <argument>password</argument>
+               <argument>-longGreeting</argument>
+              </arguments>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Command-line execution: test. -->
+    <profile>
+      <id>ws.client</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.marketcetera.util.ws.sample.SampleClient</mainClass>
+              <arguments>
+               <argument>-user</argument>
+               <argument>user</argument>
+               <argument>-password</argument>
+               <argument>password</argument>
+               <!-- <argument>password</argument> -->
+               <!-- <argument>badPassword</argument> -->
+               <argument>-argument</argument>
+               <!-- <argument>World</argument> -->
+               <!-- <argument>I18NException</argument> -->
+               <!-- <argument>AssertionError</argument> -->
+               <!-- <argument>IllegalArgumentException</argument> -->
+               <argument>World</argument>
+               <!--
+                 -  Omit the next four lines for greetings in the
+                 -  default locale.
+                 -->
+               <argument>-language</argument>
+               <argument>fr</argument>
+               <argument>-country</argument>
+               <argument>CA</argument>
+              </arguments>
+              <classpathScope>test</classpathScope>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
 
     <!-- Command-line execution: test. -->
     <profile>
