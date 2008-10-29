@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -18,17 +19,22 @@ public class I18NBoundMessageNP
     extends I18NBoundMessageBase<I18NMessageNP>
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // CONSTRUCTORS.
 
     /**
      * Constructor mirroring superclass constructor.
      *
-     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Object...)
+     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Serializable...)
      */
 
     public I18NBoundMessageNP
         (I18NMessageNP message,
-         Object... params)
+         Serializable... params)
     {
         super(message,params);
     }

@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -18,20 +19,25 @@ public class I18NBoundMessage4P
     extends I18NBoundMessageBase<I18NMessage4P>
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // CONSTRUCTORS.
 
     /**
      * Constructor mirroring superclass constructor.
      *
-     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Object...)
+     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Serializable...)
      */
 
     public I18NBoundMessage4P
         (I18NMessage4P message,
-         Object p1,
-         Object p2,
-         Object p3,
-         Object p4)
+         Serializable p1,
+         Serializable p2,
+         Serializable p3,
+         Serializable p4)
     {
         super(message,p1,p2,p3,p4);
     }
@@ -45,7 +51,7 @@ public class I18NBoundMessage4P
      * @return The parameter.
      */
 
-    public Object getParam1()
+    public Serializable getParam1()
     {
         return getParams()[0];
     }
@@ -56,7 +62,7 @@ public class I18NBoundMessage4P
      * @return The parameter.
      */
 
-    public Object getParam2()
+    public Serializable getParam2()
     {
         return getParams()[1];
     }
@@ -67,7 +73,7 @@ public class I18NBoundMessage4P
      * @return The parameter.
      */
 
-    public Object getParam3()
+    public Serializable getParam3()
     {
         return getParams()[2];
     }
@@ -78,7 +84,7 @@ public class I18NBoundMessage4P
      * @return The parameter.
      */
 
-    public Object getParam4()
+    public Serializable getParam4()
     {
         return getParams()[3];
     }

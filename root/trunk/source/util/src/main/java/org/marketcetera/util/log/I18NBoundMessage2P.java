@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -18,18 +19,23 @@ public class I18NBoundMessage2P
     extends I18NBoundMessageBase<I18NMessage2P>
 {
 
+    // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
+
+
     // CONSTRUCTORS.
 
     /**
      * Constructor mirroring superclass constructor.
      *
-     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Object...)
+     * @see I18NBoundMessageBase#I18NBoundMessageBase(I18NMessage,Serializable...)
      */
 
     public I18NBoundMessage2P
         (I18NMessage2P message,
-         Object p1,
-         Object p2)
+         Serializable p1,
+         Serializable p2)
     {
         super(message,p1,p2);
     }
@@ -43,7 +49,7 @@ public class I18NBoundMessage2P
      * @return The parameter.
      */
 
-    public Object getParam1()
+    public Serializable getParam1()
     {
         return getParams()[0];
     }
@@ -54,7 +60,7 @@ public class I18NBoundMessage2P
      * @return The parameter.
      */
 
-    public Object getParam2()
+    public Serializable getParam2()
     {
         return getParams()[1];
     }

@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -16,7 +17,15 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface I18NBoundMessage
+    extends Serializable
 {
+
+    /**
+     * An empty parameter list for a bound message.
+     */
+
+    static final Serializable[] EMPTY_PARAMS=
+        new Serializable[0];
 
     /**
      * Returns the logger proxy that can log the receiver.
@@ -48,7 +57,15 @@ public interface I18NBoundMessage
      * @return The parameters.
      */
 
-    Object[] getParams();
+    Serializable[] getParams();
+
+    /**
+     * Returns the receiver's parameters as objects.
+     *
+     * @return The parameters.
+     */
+
+    Object[] getParamsAsObjects();
 
     /**
      * A convenience method for {@link

@@ -20,6 +20,8 @@ public class I18NMessage1P
 
     // CLASS DATA.
 
+    private static final long serialVersionUID=1L;
+
     /**
      * The logging proxy name.
      */

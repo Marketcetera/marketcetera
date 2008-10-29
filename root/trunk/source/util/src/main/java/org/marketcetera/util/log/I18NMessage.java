@@ -1,5 +1,7 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -19,17 +21,20 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class I18NMessage
+    implements Serializable
 {
 
     // CLASS DATA.
-    
+
+    private static final long serialVersionUID=1L;
+        
     /**
      * The default entry ID.
      */
 
     public static final String UNKNOWN_ENTRY_ID=
         "msg"; //$NON-NLS-1$
-    
+
 
     // INSTANCE DATA.
 
@@ -130,4 +135,33 @@ public abstract class I18NMessage
      */
 
     public abstract int getParamCount();
+
+
+    // Object.
+
+    @Override
+    public int hashCode()
+    {
+        return (getParamCount()+
+                ObjectUtils.hashCode(getLoggerProxy())+
+                ObjectUtils.hashCode(getMessageId())+
+                ObjectUtils.hashCode(getEntryId()));
+    }
+
+    @Override
+    public boolean equals
+        (Object other)
+    {
+        if (this==other) {
+            return true;
+        }
+        if ((other==null) || !getClass().equals(other.getClass())) {
+            return false;
+        }
+        I18NMessage o=(I18NMessage)other;
+        return ((getParamCount()==o.getParamCount()) &&
+                ObjectUtils.equals(getLoggerProxy(),o.getLoggerProxy()) &&
+                ObjectUtils.equals(getMessageId(),o.getMessageId()) &&
+                ObjectUtils.equals(getEntryId(),o.getEntryId()));
+    }
 }

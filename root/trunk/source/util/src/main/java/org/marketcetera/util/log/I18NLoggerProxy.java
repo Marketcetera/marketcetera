@@ -1,5 +1,7 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -14,9 +16,12 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class I18NLoggerProxy
+    implements Serializable
 {
 
     // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
 
     /**
      * The logging proxy name used when none is explicitly specified.
@@ -714,5 +719,28 @@ public class I18NLoggerProxy
          Object... params)
     {
         traceProxy(SELF_PROXY,category,message,params);
+    }
+
+
+    // Object.
+
+    @Override
+    public int hashCode()
+    {
+        return ObjectUtils.hashCode(getMessageProvider());
+    }
+
+    @Override
+    public boolean equals
+        (Object other)
+    {
+        if (this==other) {
+            return true;
+        }
+        if ((other==null) || !getClass().equals(other.getClass())) {
+            return false;
+        }
+        I18NLoggerProxy o=(I18NLoggerProxy)other;
+        return ObjectUtils.equals(getMessageProvider(),o.getMessageProvider());
     }
 }
