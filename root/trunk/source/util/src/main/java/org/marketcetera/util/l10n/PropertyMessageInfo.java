@@ -85,7 +85,7 @@ public class PropertyMessageInfo
         if (this==other) {
             return true;
         }
-        if (!(other instanceof PropertyMessageInfo)) {
+        if ((other==null) || !getClass().equals(other.getClass())) {
             return false;
         }
         PropertyMessageInfo o=(PropertyMessageInfo)other;

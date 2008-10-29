@@ -3,9 +3,9 @@ package org.marketcetera.util.l10n;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Locale;
+import org.apache.commons.lang.SystemUtils;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.misc.SystemProperties;
 
 /**
  * A comparator of two message meta-information holders.
@@ -246,7 +246,7 @@ public class MessageComparator
         StringBuilder builder=new StringBuilder();
         for (MessageInfoPair mismatch:getMismatches()) {
             if (builder.length()>0) {
-                builder.append(SystemProperties.LINE_SEPARATOR);
+                builder.append(SystemUtils.LINE_SEPARATOR);
             }
             builder.append
                 (Messages.PARAM_COUNT_MISMATCH.getText
@@ -256,13 +256,13 @@ public class MessageComparator
         }
         for (MessageInfo info:getExtraSrcInfo()) {
             if (builder.length()>0) {
-                builder.append(SystemProperties.LINE_SEPARATOR);
+                builder.append(SystemUtils.LINE_SEPARATOR);
             }
             builder.append(Messages.EXTRA_SRC_MESSAGE.getText(info.getKey()));
         }
         for (MessageInfo info:getExtraDstInfo()) {
             if (builder.length()>0) {
-                builder.append(SystemProperties.LINE_SEPARATOR);
+                builder.append(SystemUtils.LINE_SEPARATOR);
             }
             builder.append(Messages.EXTRA_DST_MESSAGE.getText(info.getKey()));
         }

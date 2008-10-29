@@ -97,7 +97,7 @@ public class MessageInfoPair
         if (this==other) {
             return true;
         }
-        if (!(other instanceof MessageInfoPair)) {
+        if ((other==null) || !getClass().equals(other.getClass())) {
             return false;
         }
         MessageInfoPair o=(MessageInfoPair)other;
