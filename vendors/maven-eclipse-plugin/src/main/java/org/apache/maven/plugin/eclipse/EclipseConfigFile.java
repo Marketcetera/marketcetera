@@ -24,7 +24,7 @@ import java.net.URL;
  * Represents a generic configuration file, with a name and a content.
  * 
  * @author Fabrizio Giustina
- * @version $Id: EclipseConfigFile.java 617563 2008-02-01 17:16:45Z aheritier $
+ * @version $Id$
  */
 public class EclipseConfigFile
 {

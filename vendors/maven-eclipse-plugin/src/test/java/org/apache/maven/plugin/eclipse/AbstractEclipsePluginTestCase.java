@@ -50,7 +50,7 @@ import org.codehaus.plexus.util.StringUtils;
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @author <a href="mailto:fgiust@apache.org">Fabrizio Giustina</a>
- * @version $Id: AbstractEclipsePluginTestCase.java 640523 2008-03-24 19:00:52Z bentmann $
+ * @version $Id$
  */
 public abstract class AbstractEclipsePluginTestCase
     extends PlexusTestCase

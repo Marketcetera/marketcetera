@@ -62,7 +62,7 @@ import org.codehaus.plexus.util.IOUtil;
  * @todo a know problem with this approach is that tests are running with the installed version of the plugin! Don't
  *       enable test in pom.xml at the moment or you will never be able to build.
  * @author Fabrizio Giustina
- * @version $Id: EclipsePluginMasterProjectTest.java 595476 2007-11-15 22:21:55Z aheritier $
+ * @version $Id$
  */
 public class EclipsePluginMasterProjectTest
     extends AbstractEclipsePluginTestCase

@@ -23,7 +23,7 @@ package org.apache.maven.plugin.eclipse;
  * same path are equal.
  * 
  * @author <a href="mailto:fgiust@users.sourceforge.net">Fabrizio Giustina</a>
- * @version $Id: EclipseSourceDir.java 595476 2007-11-15 22:21:55Z aheritier $
+ * @version $Id$
  */
 public class EclipseSourceDir
     implements Comparable

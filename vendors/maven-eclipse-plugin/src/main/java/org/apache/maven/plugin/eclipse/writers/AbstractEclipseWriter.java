@@ -22,7 +22,7 @@ import org.apache.maven.plugin.logging.Log;
 
 /**
  * @author Fabrizio Giustina
- * @version $Id: AbstractEclipseWriter.java 595476 2007-11-15 22:21:55Z aheritier $
+ * @version $Id$
  */
 public abstract class AbstractEclipseWriter
     implements EclipseWriter

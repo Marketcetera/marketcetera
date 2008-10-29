@@ -25,7 +25,7 @@ import org.codehaus.plexus.util.xml.XMLWriter;
  * has been added. These ones are the only differences
  * 
  * @author Fabrizio Giustina
- * @version $Id: EclipseWtpComponent15Writer.java 595639 2007-11-16 12:16:25Z aheritier $
+ * @version $Id$
  */
 public class EclipseWtpComponent15Writer
     extends EclipseWtpComponentWriter

@@ -27,7 +27,7 @@ import java.util.jar.Manifest;
  * Represents an Eclipse plugin that it's packaged as a jar
  * 
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: PackagedPlugin.java 544944 2007-06-06 20:33:18Z carlos $
+ * @version $Id$
  */
 public class PackagedPlugin
     extends AbstractEclipseOsgiPlugin

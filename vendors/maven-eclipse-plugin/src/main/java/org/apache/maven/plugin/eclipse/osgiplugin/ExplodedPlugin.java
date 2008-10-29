@@ -33,7 +33,7 @@ import org.codehaus.plexus.archiver.jar.JarArchiver;
  * Represents an Eclipse plugin that it's exploded in a directory
  * 
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: ExplodedPlugin.java 544944 2007-06-06 20:33:18Z carlos $
+ * @version $Id$
  */
 public class ExplodedPlugin
     extends AbstractEclipseOsgiPlugin

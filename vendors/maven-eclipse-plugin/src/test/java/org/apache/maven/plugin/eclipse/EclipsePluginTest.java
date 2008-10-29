@@ -34,7 +34,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @author <a href="mailto:fgiust@apache.org">Fabrizio Giustina</a>
- * @version $Id: EclipsePluginTest.java 628794 2008-02-18 16:09:11Z aheritier $
+ * @version $Id$
  */
 public class EclipsePluginTest
     extends AbstractEclipsePluginTestCase

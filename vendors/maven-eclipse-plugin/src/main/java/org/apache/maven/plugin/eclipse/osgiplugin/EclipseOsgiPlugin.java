@@ -28,7 +28,7 @@ import java.util.jar.Manifest;
  * Abstraction of Eclipse plugins
  * 
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: EclipseOsgiPlugin.java 595476 2007-11-15 22:21:55Z aheritier $
+ * @version $Id$
  */
 public interface EclipseOsgiPlugin
 {

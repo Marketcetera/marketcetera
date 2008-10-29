@@ -49,7 +49,7 @@ import org.codehaus.plexus.util.xml.XMLWriter;
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @author <a href="mailto:kenney@neonics.com">Kenney Westerhof</a>
  * @author <a href="mailto:fgiust@apache.org">Fabrizio Giustina</a>
- * @version $Id: EclipseClasspathWriter.java 636955 2008-03-14 02:10:42Z aheritier $
+ * @version $Id$
  */
 public class EclipseClasspathWriter
     extends AbstractEclipseWriter

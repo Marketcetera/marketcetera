@@ -51,7 +51,7 @@ import org.codehaus.plexus.util.xml.pull.XmlPullParserException;
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @author <a href="mailto:kenney@neonics.com">Kenney Westerhof</a>
  * @author <a href="mailto:fgiust@apache.org">Fabrizio Giustina</a>
- * @version $Id: EclipseProjectWriter.java 616816 2008-01-30 17:23:08Z aheritier $
+ * @version $Id$
  */
 public class EclipseProjectWriter
     extends AbstractEclipseWriter

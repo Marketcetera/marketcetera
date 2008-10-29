@@ -43,7 +43,7 @@ import org.eclipse.core.internal.localstore.SafeChunkyInputStream;
  * Scan the eclipse workspace and create a array with {@link IdeDependency} for all found artefacts.
  * 
  * @author Richard van Nieuwenhoven
- * @version $Id: ReadWorkspaceLocations.java 628070 2008-02-15 14:24:38Z aheritier $
+ * @version $Id$
  */
 public class ReadWorkspaceLocations
 {

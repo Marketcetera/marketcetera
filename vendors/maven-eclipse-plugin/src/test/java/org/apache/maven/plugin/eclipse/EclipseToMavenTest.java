@@ -25,7 +25,7 @@ import org.apache.maven.model.Dependency;
 /**
  * @author Fabrizio Giustina
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: EclipseToMavenTest.java 595476 2007-11-15 22:21:55Z aheritier $
+ * @version $Id$
  */
 public class EclipseToMavenTest
     extends TestCase
