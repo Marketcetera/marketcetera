@@ -91,7 +91,6 @@ public abstract class DataRequest
             if(e.getCause() instanceof IllegalArgumentException) {
                 throw ((IllegalArgumentException)e.getCause());
             }
-            e.printStackTrace();
             throw new IllegalArgumentException(POORLY_CONSTRUCTED_REQUEST_SUBCLASS.getText(inRequestString,
                                                                                            e.toString()));
         }
@@ -158,7 +157,7 @@ public abstract class DataRequest
         DataRequest other = (DataRequest) obj;
         if (id != other.id)
             return false;
-        return doEquals(other);
+        return equivalent(other);
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -188,22 +187,6 @@ public abstract class DataRequest
     protected int doHashCode()
     {
         return 0;
-    }
-    /**
-     * Allows an implementing subclass to provide a hashCode implementation.
-     * 
-     * <p>A subclass should override this method if it declares any additional
-     * member variables that are germane to its function as a data request.
-     * 
-     * <p>This implementation returns 0, which has no effect on the hashCode
-     * implementation of the parent.
-     *
-     * @param obj a <code>DataRequest</code> value
-     * @return a <code>boolean</code> implementation
-     */
-    protected boolean doEquals(DataRequest obj)
-    {
-        return true;
     }
     /**
      * Validates a <code>String</code> value to make sure it fits within the guidelines for this object.

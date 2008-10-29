@@ -18,7 +18,25 @@ import org.marketcetera.core.ClassVersion;
 public class DerivativeSecurityListRequest
         extends DataRequest
 {
+    /**
+     * the request type string for <code>DerivativeSecurityListRequest</code> objects
+     */
     public static final String TYPE = "securitylist"; //$NON-NLS-1$
+    /**
+     * Constructs a new <code>DerivativeSecurityListRequest</code> object.
+     *
+     * @return a <code>DerivativeSecurityListRequest</code> value
+     */
+    public static DerivativeSecurityListRequest newDerivativeSecurityListRequest()
+    {
+        Properties values = new Properties();
+        values.setProperty(TYPE_KEY,
+                           TYPE);
+        return new DerivativeSecurityListRequest(values);
+    }
+    /**
+     * does class-level initialization for <code>DerivativeSecurityListRequest</code>
+     */
     static
     {
         DataRequest.registerType(TYPE,
@@ -44,14 +62,5 @@ public class DerivativeSecurityListRequest
     private DerivativeSecurityListRequest(Properties inRequest)
     {
         super(inRequest);
-    }
-    /**
-     *
-     *
-     * @return
-     */
-    public static DataRequest newDerivativeSecurityListRequest()
-    {
-        return new DerivativeSecurityListRequest(null);
     }
 }
