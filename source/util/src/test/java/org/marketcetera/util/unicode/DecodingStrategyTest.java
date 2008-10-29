@@ -28,16 +28,12 @@ public class DecodingStrategyTest
     {
         if (sc==null) {
             assertNull(strategy.getPrefixMatch(data));
-            boolean failure=false;
             try {
                 strategy.decode(data);
-                failure=true;
+                fail();
             } catch (I18NException ex) {
                 assertEquals(ex.getDetail(),Messages.NO_SIGNATURE_MATCHES,
                              ex.getI18NBoundMessage());
-            }
-            if (failure) {
-                fail("Decoding did not fail");
             }
             return;
         }
