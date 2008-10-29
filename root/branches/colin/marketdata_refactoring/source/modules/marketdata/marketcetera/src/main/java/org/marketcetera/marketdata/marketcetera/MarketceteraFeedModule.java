@@ -11,7 +11,6 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataRequest;
@@ -20,6 +19,7 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
@@ -30,6 +30,7 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
  * @version $Id:$
  * @since $Release$
  */
+@ClassVersion("$Id:$")  //$NON-NLS-1$
 public class MarketceteraFeedModule
         extends Module
         implements DataEmitter, MarketceteraFeedMXBean
@@ -42,7 +43,7 @@ public class MarketceteraFeedModule
         throws CoreException
     {
         super(MarketceteraFeedModuleFactory.INSTANCE_URN,
-              true);
+              false);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStart()
@@ -112,9 +113,8 @@ public class MarketceteraFeedModule
                                                    null);
         }
         if(obj instanceof String) {
-            // TODO need to refactor newRequestFromString to parent DataRequest
             try {
-                query = MarketDataRequest.newRequestFromString((String)obj);
+                query = org.marketcetera.marketdata.DataRequest.newRequestFromString((String)obj);
             } catch (Exception e) {
                 throw new IllegalRequestParameterValue(getURN(),
                                                        obj);

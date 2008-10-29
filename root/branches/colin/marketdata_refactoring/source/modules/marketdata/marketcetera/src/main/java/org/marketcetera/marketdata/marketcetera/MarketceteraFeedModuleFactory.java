@@ -27,7 +27,7 @@ public class MarketceteraFeedModuleFactory
         super(PROVIDER_URN,
               PROVIDER_DESCRIPTION,
               false,
-              true);
+              false);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.ModuleFactory#create(java.lang.Object[])
