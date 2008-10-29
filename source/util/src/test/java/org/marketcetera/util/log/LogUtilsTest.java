@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -70,12 +71,8 @@ public class LogUtilsTest
             ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ([null])",
              LogUtils.getSimpleMessage
-             (new I18NBoundMessage1P(TestMessages.LOG_MSG,(Object)null)));
-        assertEquals
-            ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
-             "parameters ([null])",
-             LogUtils.getSimpleMessage
-             (new I18NBoundMessage1P(TestMessages.LOG_MSG,(Object[])null)));
+             (new I18NBoundMessage1P(TestMessages.LOG_MSG,
+                                     (Serializable)null)));
         assertEquals
             ("provider 'util_log_test'; id 'log'; entry 'msg'; "+
              "parameters ('a')",

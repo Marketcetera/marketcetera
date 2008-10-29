@@ -231,7 +231,7 @@ public class ActiveLocaleTest
             try {
                 getSimpleChildThread().join();
             } catch (InterruptedException ex) {
-                fail("Unexpected exception");
+                fail();
             }
             setAfterActiveLocale();
         }
@@ -298,7 +298,7 @@ public class ActiveLocaleTest
             try {
                 getComplexChildThread().join();
             } catch (InterruptedException ex) {
-                fail("Unexpected exception");
+                fail();
             }
             setAfterActiveLocale();
         }
@@ -589,6 +589,27 @@ public class ActiveLocaleTest
         ActiveLocale.setProcessLocale(null);
         checkBasics(null,Locale.GERMAN);
         ActiveLocale.setThreadLocale(null);
+        checkBasics(null,DEFAULT_LOCALE);
+
+        ActiveLocale.setProcessLocale(Locale.FRENCH);
+        checkBasics(Locale.FRENCH,Locale.FRENCH);
+        ActiveLocale.pushLocale(Locale.GERMAN);
+        checkBasics(Locale.FRENCH,Locale.GERMAN);
+        ActiveLocale.pushLocale(Locale.KOREAN);
+        checkBasics(Locale.FRENCH,Locale.KOREAN);
+        ActiveLocale.pushLocale(Locale.JAPANESE);
+        checkBasics(Locale.FRENCH,Locale.JAPANESE);
+        ActiveLocale.setThreadLocale(Locale.ITALIAN);
+        checkBasics(Locale.FRENCH,Locale.ITALIAN);
+        ActiveLocale.setThreadLocale(null);
+        checkBasics(Locale.FRENCH,Locale.KOREAN);
+        ActiveLocale.popLocale();
+        checkBasics(Locale.FRENCH,Locale.KOREAN);
+        ActiveLocale.popLocale();
+        checkBasics(Locale.FRENCH,Locale.GERMAN);
+        ActiveLocale.popLocale();
+        checkBasics(Locale.FRENCH,Locale.FRENCH);
+        ActiveLocale.setProcessLocale(null);
         checkBasics(null,DEFAULT_LOCALE);
     }
 

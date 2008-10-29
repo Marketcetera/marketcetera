@@ -1,7 +1,6 @@
 package org.marketcetera.util.log;
 
 import java.util.Locale;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Level;
 import org.junit.Test;
 
@@ -36,11 +35,23 @@ public class TI18NMessage0PTest
 
     protected void boundTests0P
         (I18NBoundMessage msg,
-         I18NBoundMessage ttl)
+         I18NBoundMessage msgCopy,
+         I18NBoundMessage ttl,
+         I18NBoundMessage ttlCopy)
     {
-        boundTests(msg,ArrayUtils.EMPTY_OBJECT_ARRAY,
+        boundTests(msg,msgCopy,
+                   new I18NBoundMessage[] {
+                       ttl,
+                       new I18NBoundMessage1P(TestMessages.P1_MSG,TEST_P1)
+                   },
+                   I18NBoundMessage.EMPTY_PARAMS,
                    TestMessages.P0_MSG,TEST_MSG_EN,TEST_MSG_FR);
-        boundTests(ttl,ArrayUtils.EMPTY_OBJECT_ARRAY,
+        boundTests(ttl,ttlCopy,
+                   new I18NBoundMessage[] {
+                       msg,
+                       new I18NBoundMessage1P(TestMessages.P1_MSG,TEST_P1)
+                   },
+                   I18NBoundMessage.EMPTY_PARAMS,
                    TestMessages.P0_TTL,TEST_TTL_EN,TEST_TTL_FR);
     }
 
@@ -51,6 +62,17 @@ public class TI18NMessage0PTest
         unboundTests
             (0,
              new I18NMessage0P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+             new I18NMessage0P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+             new I18NMessage[] {
+                new I18NMessage0P
+                (TEST_LOGGER_D,TEST_MSG_ID,TEST_ENTRY_ID),
+                new I18NMessage0P
+                (TestMessages.LOGGER,TEST_MSG_ID_D,TEST_ENTRY_ID),
+                new I18NMessage0P
+                (TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID_D),
+                new I18NMessage1P
+                (TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID)
+             },
              new I18NMessage0P(TestMessages.LOGGER,TEST_MSG_ID));
     }
 
@@ -124,10 +146,18 @@ public class TI18NMessage0PTest
     @Test
     public void bound()
     {
-        boundTests0P(TestMessages.P0_MSG,TestMessages.P0_TTL);
+        boundTests0P(TestMessages.P0_MSG,TestMessages.P0_MSG_COPY,
+                     TestMessages.P0_TTL,TestMessages.P0_TTL_COPY);
         I18NBoundMessage0P msg=new I18NBoundMessage0P(TestMessages.P0_MSG);
         I18NBoundMessage0P ttl=new I18NBoundMessage0P(TestMessages.P0_TTL);
-        boundTests0P(msg,ttl);
+        boundTests0P(msg,new I18NBoundMessage0P(TestMessages.P0_MSG),
+                     ttl,new I18NBoundMessage0P(TestMessages.P0_TTL));
+
+        assertFalse(TestMessages.P0_MSG.equals(msg));
+        assertFalse(msg.equals(TestMessages.P0_MSG));
+        assertFalse(TestMessages.P0_TTL.equals(ttl));
+        assertFalse(ttl.equals(TestMessages.P0_TTL));
+
         castOverride(msg.getMessage());
     }
 }

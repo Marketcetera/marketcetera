@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.apache.log4j.Level;
 import org.junit.Test;
@@ -39,7 +40,18 @@ public class TI18NMessage3PTest
         unboundTests
             (3,
              new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
-             new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID));
+             new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+             new I18NMessage[] {
+                new I18NMessage3P
+                (TEST_LOGGER_D,TEST_MSG_ID,TEST_ENTRY_ID),
+                new I18NMessage3P
+                (TestMessages.LOGGER,TEST_MSG_ID_D,TEST_ENTRY_ID),
+                new I18NMessage3P
+                (TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID_D),
+                new I18NMessage0P
+                (TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID)
+             },
+            new I18NMessage3P(TestMessages.LOGGER,TEST_MSG_ID));
     }
 
     @Test
@@ -136,15 +148,31 @@ public class TI18NMessage3PTest
     @Test
     public void bound()
     {
-        Object[] params=new Object[]
+        Serializable[] params=new Serializable[]
             {TEST_P1,TEST_P2,TEST_P3};
         I18NBoundMessage3P m=new I18NBoundMessage3P
             (TestMessages.P3_MSG,TEST_P1,TEST_P2,TEST_P3);
-        boundTests(m,params,TestMessages.P3_MSG,TEST_MSG_EN,TEST_MSG_FR);
+        boundTests(m,new I18NBoundMessage3P
+                   (TestMessages.P3_MSG,TEST_P1,TEST_P2,TEST_P3),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessage3P
+                       (TestMessages.P3_MSG,TEST_P1,TEST_P2,TEST_P1),
+                       new I18NBoundMessage3P
+                       (TestMessages.P3_TTL,TEST_P1,TEST_P2,TEST_P3),
+                       TestMessages.P0_MSG
+                   },params,TestMessages.P3_MSG,TEST_MSG_EN,TEST_MSG_FR);
         castOverride(m.getMessage());
         boundTests(new I18NBoundMessage3P
                    (TestMessages.P3_TTL,TEST_P1,TEST_P2,TEST_P3),
-                    params,TestMessages.P3_TTL,
+                   new I18NBoundMessage3P
+                   (TestMessages.P3_TTL,TEST_P1,TEST_P2,TEST_P3),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessage3P
+                       (TestMessages.P3_TTL,TEST_P1,TEST_P2,TEST_P1),
+                       new I18NBoundMessage3P
+                       (TestMessages.P3_MSG,TEST_P1,TEST_P2,TEST_P3),
+                       TestMessages.P0_TTL
+                   },params,TestMessages.P3_TTL,
                    TEST_TTL_EN,TEST_TTL_FR);
         assertEquals(TEST_P1,m.getParam1());
         assertEquals(TEST_P2,m.getParam2());

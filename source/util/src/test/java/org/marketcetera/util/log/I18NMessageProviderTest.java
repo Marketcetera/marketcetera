@@ -1,14 +1,12 @@
 package org.marketcetera.util.log;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Properties;
-import java.util.List;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Before;
@@ -16,6 +14,8 @@ import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.EqualityAssert.*;
+import static org.marketcetera.util.test.SerializableAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -32,6 +32,8 @@ public class I18NMessageProviderTest
         I18NMessageProvider.class.getName();
     private static final String TEST_LOCATION=
         TEST_CATEGORY;
+    private static final String TEST_MEM_PROVIDER=
+        "classloader_prv";
 
 
     @Before
@@ -45,7 +47,16 @@ public class I18NMessageProviderTest
     @Test
     public void idIsValid()
     {
-        assertEquals("util_log_test",TestMessages.PROVIDER.getProviderId());
+        assertEquals("a",(new I18NMessageProvider("a")).getProviderId());
+    }
+
+    @Test
+    public void equality()
+    {
+        assertEquality(new I18NMessageProvider("a"),
+                       new I18NMessageProvider("a"),
+                       new I18NMessageProvider("b"));
+        assertSerializable(TestMessages.PROVIDER);
     }
 
     @Test
@@ -136,7 +147,8 @@ public class I18NMessageProviderTest
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Message file missing: provider 'nonexistent_prv'; base name "+
-             "'nonexistent_prv_messages'",TEST_LOCATION);
+             "'nonexistent_prv"+I18NMessageProvider.MESSAGE_FILE_EXTENSION+"'",
+             TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Abnormal exception: stack trace",TEST_LOCATION);
@@ -181,53 +193,56 @@ public class I18NMessageProviderTest
     }
     
     @Test
-    public void classLoader() {
-         //Verify that the resource is not available
-        final String providerName = "loader_prv";
-        I18NMessageProvider provider=new I18NMessageProvider(providerName);
+    public void customClassLoader()
+        throws Exception
+    {
+        // Verify that the resource is not available.
+
+        I18NMessageProvider provider=new I18NMessageProvider(TEST_MEM_PROVIDER);
         Iterator<LoggingEvent> events=getAppender().getEvents().iterator();
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
-             "Message file missing: provider '"+
-                     providerName+
-                     "'; base name '"+
-                     providerName+
-                     I18NMessageProvider.MESSAGE_FILE_EXTENSION+
-                     "'", TEST_LOCATION);
+             "Message file missing: provider '"+TEST_MEM_PROVIDER+
+             "'; base name '"+TEST_MEM_PROVIDER+
+             I18NMessageProvider.MESSAGE_FILE_EXTENSION+"'",TEST_LOCATION);
         assertEvent
             (events.next(),Level.ERROR,TEST_CATEGORY,
              "Abnormal exception: stack trace",TEST_LOCATION);
         assertFalse(events.hasNext());
         getAppender().clear();
-        final Properties messages=new Properties();
+
+        // Create a provider with a custom classloader.
+
+        Properties messages=new Properties();
         messages.put("hello.msg","Hello");
         messages.put("hello.title","Hello {0}!");
-        final String propertiesName=providerName+
-                I18NMessageProvider.MESSAGE_FILE_EXTENSION+
-                ".properties"; 
-        //Create a provider with a custom classloader
-        provider=new I18NMessageProvider(providerName,new ClassLoader(){
+        ByteArrayOutputStream output=new ByteArrayOutputStream();
+        try {
+            messages.store(output,StringUtils.EMPTY);
+        } finally {
+            output.close();
+        }
+        final byte[] inputStream=output.toByteArray();
+        final String propertiesName=TEST_MEM_PROVIDER+
+            I18NMessageProvider.MESSAGE_FILE_EXTENSION+".properties"; 
+        provider=new I18NMessageProvider(TEST_MEM_PROVIDER,new ClassLoader() {
             @Override
-            public InputStream getResourceAsStream(String name) {
-                try {
-                    if(propertiesName.equals(name)) {
-                        ByteArrayOutputStream baos=new ByteArrayOutputStream();
-                        messages.store(baos,"");
-                        baos.close();
-                        return new ByteArrayInputStream(baos.toByteArray());
-                    }
-                } catch (IOException ignore) {
+            public InputStream getResourceAsStream
+                (String name)
+            {
+                if (propertiesName.equals(name)) {
+                    return new ByteArrayInputStream(inputStream);
                 }
                 return super.getResourceAsStream(name);
             }
         });
-        //Verify that resource was found.
-        final List<LoggingEvent> logs=getAppender().getEvents();
-        assertTrue(logs.toString(),logs.isEmpty());
+        assertNoEvents();
+        
+        // Messages can now be translated.
+
         I18NLoggerProxy logger=new I18NLoggerProxy(provider);
         I18NMessage0P helloMsg=new I18NMessage0P(logger,"hello");
         I18NMessage1P helloTitle=new I18NMessage1P(logger,"hello","title");
-        //Verify that messages can now be translated
         Locale saved=Locale.getDefault();
         try {
             Locale.setDefault(Locale.ROOT);
