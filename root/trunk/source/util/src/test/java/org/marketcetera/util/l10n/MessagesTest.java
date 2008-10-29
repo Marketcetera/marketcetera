@@ -22,5 +22,8 @@ public class MessagesTest
     {
         MessageComparator comparator=new MessageComparator(Messages.class);
         assertTrue(comparator.getDifferences(),comparator.isMatch());
+
+        // Test files not tested because messages are intentionally
+        // problematic.
     }
 }

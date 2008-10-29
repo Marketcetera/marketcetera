@@ -1,10 +1,11 @@
 package org.marketcetera.util.l10n;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Test;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
 import org.marketcetera.util.log.I18NMessageNP;
-import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -42,7 +43,7 @@ public class MessageComparatorTest
     private static void assertMatches
         (MessageComparator comparator)
     {
-        assertEquals("",comparator.getDifferences());
+        assertEquals(StringUtils.EMPTY,comparator.getDifferences());
         assertTrue(comparator.isMatch());
     }
 
@@ -87,9 +88,9 @@ public class MessageComparatorTest
         assertEquals
             ("Parameter count mismatch: message key 'b1.ttl'; "+
              "source count is 1; destination count is 0"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              "Extra message in source: key 'b3.ttl'"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              "Extra message in destination: key 'b2.ttl'",
              comparator.getDifferences());
     }

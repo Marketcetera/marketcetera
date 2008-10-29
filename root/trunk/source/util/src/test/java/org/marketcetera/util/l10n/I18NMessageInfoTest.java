@@ -3,6 +3,7 @@ package org.marketcetera.util.l10n;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.EqualityAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -21,13 +22,10 @@ public class I18NMessageInfoTest
         retention(TEST_I18N_INFO);
         assertEquals(TEST_MESSAGE,TEST_I18N_INFO.getMessage());
 
-        assertTrue(TEST_I18N_INFO!=TEST_I18N_INFO_SAME);
-        assertTrue(TEST_I18N_INFO.equals(TEST_I18N_INFO_SAME));
-        assertEquals(TEST_I18N_INFO.hashCode(),
-                     TEST_I18N_INFO_SAME.hashCode());
-
-        assertFalse(TEST_I18N_INFO.equals(TEST_I18N_INFO_KD));
-        assertFalse(TEST_I18N_INFO.equals(TEST_I18N_INFO_PCD));
-        assertFalse(TEST_I18N_INFO.equals(TEST_I18N_INFO_MD));
+        assertEquality(TEST_I18N_INFO,
+                       TEST_I18N_INFO_SAME,
+                       TEST_I18N_INFO_KD,
+                       TEST_I18N_INFO_PCD,
+                       TEST_I18N_INFO_MD);
     }
 }
