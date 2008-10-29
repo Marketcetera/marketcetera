@@ -31,10 +31,6 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>${mvn.public.package}</groupId>
-      <artifactId>util</artifactId>
-    </dependency>
 
     <!-- Compile: log4j is invoked directly, not via slf4j. -->
     <dependency>
@@ -87,6 +83,7 @@
 
   <build>
     <plugins>
+
       <!-- Database schema generator. -->
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
