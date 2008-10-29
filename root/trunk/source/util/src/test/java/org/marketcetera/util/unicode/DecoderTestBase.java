@@ -1,6 +1,7 @@
 package org.marketcetera.util.unicode;
 
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Ignore;
 
 import static org.junit.Assert.*;
@@ -69,9 +70,9 @@ public abstract class DecoderTestBase
         testDecode(null,HELLO_EN_NAT,HELLO_EN);
         testDecode(null,null,HELLO_EN_NAT,HELLO_EN);
 
-        testDecode(ArrayUtils.EMPTY_BYTE_ARRAY,"");
-        testDecode(null,ArrayUtils.EMPTY_BYTE_ARRAY,"");
-        testDecode(null,null,ArrayUtils.EMPTY_BYTE_ARRAY,"");
+        testDecode(ArrayUtils.EMPTY_BYTE_ARRAY,StringUtils.EMPTY);
+        testDecode(null,ArrayUtils.EMPTY_BYTE_ARRAY,StringUtils.EMPTY);
+        testDecode(null,null,ArrayUtils.EMPTY_BYTE_ARRAY,StringUtils.EMPTY);
     }
 
     @Override
@@ -81,7 +82,7 @@ public abstract class DecoderTestBase
         throws Exception
     {
         testDecode(sc,bytes,COMBO);
-        testDecode(sc,ArrayUtils.EMPTY_BYTE_ARRAY,"");
+        testDecode(sc,ArrayUtils.EMPTY_BYTE_ARRAY,StringUtils.EMPTY);
     }
 
     @Override
@@ -95,7 +96,7 @@ public abstract class DecoderTestBase
         testDecode
             (strategy,sc,bytes,string);
         testDecode
-            (strategy,sc,ArrayUtils.EMPTY_BYTE_ARRAY,"");
+            (strategy,sc,ArrayUtils.EMPTY_BYTE_ARRAY,StringUtils.EMPTY);
         testDecode
             (strategy,SignatureCharset.UTF8_UTF8,
              ArrayUtils.addAll(Signature.UTF8.getMark(),COMBO_UTF8),

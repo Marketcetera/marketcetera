@@ -44,26 +44,18 @@ public class ReaderTest
 
             assertFalse(reader.markSupported());
 
-            boolean failure=false;
             try {
                 reader.mark(0);
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Mark did not fail");
             }
 
-            failure=false;
             try {
                 reader.reset();
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Reset did not fail");
             }
 
             assertEquals(HELLO_EN.charAt(0),reader.read());
@@ -94,26 +86,18 @@ public class ReaderTest
             // Ensure that close() has closed the stream, by trying to
             // read from the reader: this is not testing whether
             // read() fails; it tests whether close() worked.
-            failure=false;
             try {
                 reader.read();
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Read after close did not fail");
             }
 
-            failure=false;
             try {
                 reader.ready();
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Ready after close did not fail");
             }
         } finally {
             r.close();
@@ -142,26 +126,18 @@ public class ReaderTest
 
             assertFalse(reader.markSupported());
 
-            boolean failure=false;
             try {
                 reader.mark(0);
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Mark did not fail");
             }
 
-            failure=false;
             try {
                 reader.reset();
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Reset did not fail");
             }
 
             assertEquals(-1,reader.read());
@@ -181,26 +157,18 @@ public class ReaderTest
             // Ensure that close() has closed the stream, by trying to
             // read from the reader: this is not testing whether
             // read() fails; it tests whether close() worked.
-            failure=false;
             try {
                 reader.read();
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Read after close did not fail");
             }
 
-            failure=false;
             try {
                 reader.ready();
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Ready after close did not fail");
             }
         } finally {
             r.close();

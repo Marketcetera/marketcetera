@@ -77,15 +77,11 @@ public class WriterTest
             // Ensure that close() has closed the stream, by trying to
             // write to the writer: this is not testing whether
             // write() fails; it tests whether close() worked.
-            boolean failure=false;
             try {
                 writer.write('a');
-                failure=true;
+                fail();
             } catch (IOException ex) {
                 // Desired.
-            }
-            if (failure) {
-                fail("Write after close did not fail");
             }
         } finally {
             r.close();

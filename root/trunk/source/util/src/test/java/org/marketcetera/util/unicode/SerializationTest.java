@@ -116,16 +116,12 @@ public class SerializationTest
         byte[] data=new byte[] {(byte)0x01};
 
         assertNull(getPrefixMatch(NO_SERIALIZATIONS,data));
-        boolean failure=false;
         try {
             decode(NO_SERIALIZATIONS,data);
-            failure=true;
+            fail();
         } catch (I18NException ex) {
             assertEquals(ex.getDetail(),Messages.NO_SIGNATURE_MATCHES,
                          ex.getI18NBoundMessage());
-        }
-        if (failure) {
-            fail("Decoding did not fail");
         }
 
         assertEquals(SignatureCharset.NONE_UTF16BE,getPrefixMatch
