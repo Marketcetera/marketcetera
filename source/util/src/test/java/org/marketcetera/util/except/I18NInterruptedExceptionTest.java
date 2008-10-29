@@ -16,6 +16,18 @@ import static org.junit.Assert.*;
 public class I18NInterruptedExceptionTest
     extends I18NThrowableTestBase
 {
+    private final static I18NThrowable[] ALL=new I18NThrowable[] {
+        new I18NInterruptedException
+        (new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NInterruptedException
+        (new InterruptedException(),
+         new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NException
+        (new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        null
+    };
+
+
     @Test
     public void empty()
     {
@@ -40,7 +52,7 @@ public class I18NInterruptedExceptionTest
             (new Exception(TEST_MSG_1),
              new I18NInterruptedException
              (new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,0);
     }
 
     @Test
@@ -51,7 +63,7 @@ public class I18NInterruptedExceptionTest
             (nested,new Exception(TEST_MSG_1,nested),
              new I18NInterruptedException
              (nested,new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,1);
     }
 
     @Test
@@ -67,14 +79,13 @@ public class I18NInterruptedExceptionTest
         Thread.currentThread().interrupt();
         try {
             I18NInterruptedException.checkInterruption();
+            fail();
         } catch (I18NInterruptedException ex) {
             assertTrue(Thread.interrupted());
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NBoundMessage());
             assertNull(ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -92,14 +103,13 @@ public class I18NInterruptedExceptionTest
         Thread.currentThread().interrupt();
         try {
             I18NInterruptedException.checkInterruption(nested);
+            fail();
         } catch (I18NInterruptedException ex) {
             assertTrue(Thread.interrupted());
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NBoundMessage());
             assertEquals(nested,ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -119,16 +129,16 @@ public class I18NInterruptedExceptionTest
             I18NInterruptedException.checkInterruption
                 (new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+            fail();
         } catch (I18NInterruptedException ex) {
             assertTrue(Thread.interrupted());
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
-            assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
-                         m.getMessage());
-            assertEquals(MID_MSG_PARAM,m.getParam1());
+            assertEquals
+                (ex.getDetail(),
+                 new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+                 ex.getI18NBoundMessage());
             assertNull(ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -151,15 +161,15 @@ public class I18NInterruptedExceptionTest
                 (nested,
                  (new I18NBoundMessage1P
                   (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+            fail();
         } catch (I18NInterruptedException ex) {
             assertTrue(Thread.interrupted());
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
-            assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
-                         m.getMessage());
-            assertEquals(MID_MSG_PARAM,m.getParam1());
+            assertEquals
+                (ex.getDetail(),
+                 new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+                 ex.getI18NBoundMessage());
             assertEquals(nested,ex.getCause());
-            return;
         }
-        fail();
     }
 }

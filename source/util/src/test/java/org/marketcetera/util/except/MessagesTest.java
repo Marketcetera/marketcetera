@@ -23,5 +23,11 @@ public class MessagesTest
     {
         MessageComparator comparator=new MessageComparator(Messages.class);
         assertTrue(comparator.getDifferences(),comparator.isMatch());
+
+        comparator=new MessageComparator(TestMessages.class);
+        assertTrue(comparator.getDifferences(),comparator.isMatch());
+
+        // French locale not tested because omission of message
+        // top_exception.msg is intentional.
     }
 }

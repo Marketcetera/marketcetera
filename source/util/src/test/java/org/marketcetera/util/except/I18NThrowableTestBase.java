@@ -8,6 +8,8 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.EqualityAssert.*;
+import static org.marketcetera.util.test.SerializableAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -50,15 +52,28 @@ public class I18NThrowableTestBase
     protected static final String TOP_MSG_ALL=
         "Top-level test exception (expected)";
 
+
     @Before
     public void setupI18NThrowableTestBase()
     {
         ActiveLocale.setProcessLocale(Locale.ROOT);
     }
 
+
+    private static void equality
+        (I18NThrowable t,
+         Object[] tComps,
+         int copyIndex)
+    {
+        assertEquality(t,copyIndex,tComps);
+        assertSerializable(t);
+    }
+
     protected static void empty
         (Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         assertNull(t1.getMessage());
         assertNull(t1.getLocalizedMessage());
@@ -79,12 +94,16 @@ public class I18NThrowableTestBase
         assertNull(t2.getDetail());
         assertNull(t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName(),t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void causeWithoutMessage
         (Throwable tNested,
          Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         String nestedMessage=tNested.getClass().getName();
 
@@ -110,12 +129,16 @@ public class I18NThrowableTestBase
         assertNull(t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void causeWithMessage
         (Throwable tNested,
          Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         String nestedMessage=tNested.getClass().getName()+": "+TEST_MSG_1;
 
@@ -141,12 +164,16 @@ public class I18NThrowableTestBase
         assertEquals(TEST_MSG_1,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void causeWithI18NMessage
         (I18NThrowable tNested,
          Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         String nestedMessage=tNested.getClass().getName()+": "+MID_MSG_EN;
 
@@ -172,20 +199,25 @@ public class I18NThrowableTestBase
         assertEquals(MID_MSG_FR,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+nestedMessage,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void myMessage
         (Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         assertEquals(TEST_MSG_1,t1.getMessage());
         assertEquals(TEST_MSG_1,t1.getLocalizedMessage());
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
-        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
-        assertEquals(MID_MSG_PARAM,m.getParam1());
+        assertEquals
+            (t2.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             t2.getI18NBoundMessage());
         assertNull(t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -202,21 +234,26 @@ public class I18NThrowableTestBase
         assertEquals(MID_MSG_FR,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void myMessageAndCauseWithoutMessage
         (Throwable tNested,
          Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         assertEquals(TEST_MSG_1,t1.getMessage());
         assertEquals(TEST_MSG_1,t1.getLocalizedMessage());
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
-        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
-        assertEquals(MID_MSG_PARAM,m.getParam1());
+        assertEquals
+            (t2.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -233,12 +270,16 @@ public class I18NThrowableTestBase
         assertEquals(MID_MSG_FR,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void myMessageAndCauseWithMessage
         (Throwable tNested,
          Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         String suffix=" ("+TEST_MSG_2+")";
 
@@ -247,9 +288,10 @@ public class I18NThrowableTestBase
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
-        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
-        assertEquals(MID_MSG_PARAM,m.getParam1());
+        assertEquals
+            (t2.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -266,21 +308,26 @@ public class I18NThrowableTestBase
         assertEquals(MID_MSG_FR+suffix,t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void myMessageAndCauseWithI18NMessage
         (I18NThrowable tNested,
          Throwable t1,
-         I18NThrowable t2)
+         I18NThrowable t2,
+         I18NThrowable[] t2Comps,
+         int sameIndex)
     {
         assertEquals(TEST_MSG_1,t1.getMessage());
         assertEquals(TEST_MSG_1,t1.getLocalizedMessage());
         assertEquals(t1.getClass().getName()+": "+TEST_MSG_1,
                      t1.toString());
 
-        I18NBoundMessage1P m=(I18NBoundMessage1P)t2.getI18NBoundMessage();
-        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
-        assertEquals(MID_MSG_PARAM,m.getParam1());
+        assertEquals
+            (t2.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             t2.getI18NBoundMessage());
         assertEquals(tNested,t2.getCause());
 
         assertEquals(MID_MSG,t2.getMessage());
@@ -297,6 +344,8 @@ public class I18NThrowableTestBase
         assertEquals(MID_MSG_FR+" ("+BOT_MSG_FR+")",t2.getLocalizedDetail());
         assertEquals(t2.getClass().getName()+": "+MID_MSG_FR,
                      t2.toString());
+
+        equality(t2,t2Comps,sameIndex);
     }
 
     protected static void nesting

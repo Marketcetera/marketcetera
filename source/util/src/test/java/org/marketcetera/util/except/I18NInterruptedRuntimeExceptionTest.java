@@ -16,6 +16,18 @@ import static org.junit.Assert.*;
 public class I18NInterruptedRuntimeExceptionTest
     extends I18NThrowableTestBase
 {
+    private final static I18NThrowable[] ALL=new I18NThrowable[] {
+        new I18NInterruptedRuntimeException
+        (new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NInterruptedRuntimeException
+        (new InterruptedException(),
+         new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NRuntimeException
+        (new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        null
+    };
+
+
     @Test
     public void empty()
     {
@@ -42,7 +54,7 @@ public class I18NInterruptedRuntimeExceptionTest
             (new Exception(TEST_MSG_1),
              new I18NInterruptedRuntimeException
              (new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,0);
     }
 
     @Test
@@ -53,7 +65,7 @@ public class I18NInterruptedRuntimeExceptionTest
             (nested,new Exception(TEST_MSG_1,nested),
              new I18NInterruptedRuntimeException
              (nested,new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,1);
     }
 
     @Test
@@ -69,14 +81,13 @@ public class I18NInterruptedRuntimeExceptionTest
         Thread.currentThread().interrupt();
         try {
             I18NInterruptedRuntimeException.checkInterruption();
+            fail();
         } catch (I18NInterruptedRuntimeException ex) {
             assertTrue(Thread.interrupted());
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NBoundMessage());
             assertNull(ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -94,14 +105,13 @@ public class I18NInterruptedRuntimeExceptionTest
         Thread.currentThread().interrupt();
         try {
             I18NInterruptedRuntimeException.checkInterruption(nested);
+            fail();
         } catch (I18NInterruptedRuntimeException ex) {
             assertTrue(Thread.interrupted());
             assertEquals(ex.getDetail(),Messages.THREAD_INTERRUPTED,
                          ex.getI18NBoundMessage());
             assertEquals(nested,ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -121,16 +131,16 @@ public class I18NInterruptedRuntimeExceptionTest
             I18NInterruptedRuntimeException.checkInterruption
                 (new I18NBoundMessage1P
                  (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
+            fail();
         } catch (I18NInterruptedRuntimeException ex) {
             assertTrue(Thread.interrupted());
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
-            assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
-                         m.getMessage());
-            assertEquals(MID_MSG_PARAM,m.getParam1());
+            assertEquals
+                (ex.getDetail(),
+                 new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+                 ex.getI18NBoundMessage());
             assertNull(ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -153,15 +163,15 @@ public class I18NInterruptedRuntimeExceptionTest
                 (nested,
                  (new I18NBoundMessage1P
                   (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+            fail();
         } catch (I18NInterruptedRuntimeException ex) {
             assertTrue(Thread.interrupted());
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
-            assertEquals(ex.getDetail(),TestMessages.MID_EXCEPTION,
-                         m.getMessage());
-            assertEquals(MID_MSG_PARAM,m.getParam1());
+            assertEquals
+                (ex.getDetail(),
+                 new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+                 ex.getI18NBoundMessage());
             assertEquals(nested,ex.getCause());
-            return;
         }
-        fail();
     }
 }
