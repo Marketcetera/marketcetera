@@ -11,7 +11,7 @@ import org.junit.Test;
 /* $License$ */
 
 public class ServiceBaseImplTest
-    extends ServiceImplTestBase
+    extends ServiceImplTestBase<Object>
 {
     @Test
     public void all()
