@@ -1,5 +1,7 @@
 package org.marketcetera.ors;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import org.marketcetera.core.*;
 import org.marketcetera.quickfix.*;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -132,7 +134,7 @@ public class OutgoingMessageHandler {
             MarketceteraFIXException mfix = MarketceteraFIXException.createFieldNotFoundException(fnfEx);
             returnExecReport = createRejectionMessage(mfix, message);
         } catch(SessionNotFound snf) {
-            CoreException ex = new CoreException(snf, new I18NBoundMessage1P(org.marketcetera.core.Messages.ERROR_FIX_SESSION_NOT_FOUND, defaultSessionID));
+            CoreException ex = new CoreException(snf, new I18NBoundMessage1P(org.marketcetera.core.Messages.ERROR_FIX_SESSION_NOT_FOUND, ObjectUtils.toString(defaultSessionID,null)));
             returnExecReport = createRejectionMessage(ex, message);
         } catch(UnsupportedMessageType umt) {
             try {

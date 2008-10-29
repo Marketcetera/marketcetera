@@ -6,11 +6,11 @@ import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NMessage1P;
-import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.persist.PersistenceException;
 import org.marketcetera.persist.StringFilter;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.lang.SystemUtils;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.FileSystemXmlApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
@@ -382,7 +382,7 @@ public class ORSAdminCLI {
         final int width = 100;
         final int leftPad = 4;
         final int descPad = 4;
-        final String LS = SystemProperties.LINE_SEPARATOR;
+        final String LS = SystemUtils.LINE_SEPARATOR;
         final String l = "-u <" + CLI_ARG_LOGIN_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
         final String p = "-p <" + CLI_ARG_LOGIN_PASSWORD_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
         final String u = "-n <" + CLI_ARG_USER_NAME_VALUE.getText() + "> "; //$NON-NLS-1$ //$NON-NLS-2$
