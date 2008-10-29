@@ -1,6 +1,6 @@
-package org.marketcetera.bogusfeed;
+package org.marketcetera.marketdata;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -11,36 +11,37 @@ import java.util.concurrent.Callable;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.marketcetera.marketdata.AbstractMarketDataFeedTest;
-import org.marketcetera.marketdata.MarketDataRequest;
-import org.marketcetera.marketdata.bogus.BogusFeedModule;
-import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.Module;
+import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleManager;
+import org.marketcetera.module.ModuleState;
 import org.marketcetera.module.ModuleTestBase;
+import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.SinkDataListener;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 
 /* $License$ */
 
 /**
- *
+ * Base class for market data provider <code>Module</code> tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id:$
  * @since $Release$
  */
-public class BogusFeedEmitterTest
-    extends ModuleTestBase
+public abstract class MarketDataModuleTestBase
+        extends ModuleTestBase
 {
-    private BogusFeedModuleFactory factory;
-    private ModuleManager moduleManager;
-    private DataSink dataSink;
+    protected ModuleManager moduleManager;
+    protected DataSink dataSink;
+    protected ModuleFactory<? extends Module> factory;
+    protected MarketDataRequest sampleRequest = MarketDataRequest.newFullBookRequest("GOOG");
+    
     @Before
     public void setup()
         throws Exception
@@ -49,23 +50,16 @@ public class BogusFeedEmitterTest
         moduleManager.init();
         dataSink = new DataSink();
         moduleManager.addSinkListener(dataSink);
-        factory = new BogusFeedModuleFactory();
+        factory = getFactory();
+        startModule();
     }
     @After
     public void cleanup()
         throws Exception
     {
+        stopModule();
         moduleManager.stop();
         moduleManager = null;
-    }
-    @Test
-    public void construction()
-        throws Exception
-    {
-        BogusFeedModule emitter = factory.create(new Object[0]);
-        assertNotNull(emitter);
-        assertNotNull(emitter = factory.create(this));
-        assertNotNull(emitter = factory.create((Object[])null));
     }
     @Test
     public void badDataRequests()
@@ -73,48 +67,47 @@ public class BogusFeedEmitterTest
     {
         // null request data
         new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
-                                                          BogusFeedModuleFactory.INSTANCE_URN.toString(),
+                                                          getInstanceURN().toString(),
                                                           null) {
             protected void run()
                 throws Exception
             {
-                moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
+                moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                  null) });
             }
         };
         // inappropriate datatype
         final Object invalidParam = new Object();
         new ExpectedFailure<UnsupportedRequestParameterType>(org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE,
-                                                             BogusFeedModuleFactory.INSTANCE_URN.toString(),
+                                                             getInstanceURN().toString(),
                                                              invalidParam.getClass().getName()) {
             protected void run()
                 throws Exception
             {
-                moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
+                moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                  invalidParam) });
             }
         };
         // String, but not from a data request
         final String invalidString = "There is no way you can make a data request from this, so there";
         new ExpectedFailure<IllegalRequestParameterValue>(org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE,
-                                                          BogusFeedModuleFactory.INSTANCE_URN.toString(),
+                                                          getInstanceURN().toString(),
                                                           invalidString) {
             protected void run()
                 throws Exception
             {
-                moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
+                moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                  invalidString) });
             }
         };
     }
-    @Ignore
     @Test
     public void dataRequestFromString()
         throws Exception
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
         org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
-        final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
+        final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request.toString()) });
         // wait until some arbitrary number of ticks have been received
         AbstractMarketDataFeedTest.wait(new Callable<Boolean>() {
@@ -133,7 +126,7 @@ public class BogusFeedEmitterTest
     {
         assertTrue(moduleManager.getDataFlows(true).isEmpty());
         org.marketcetera.marketdata.DataRequest request = MarketDataRequest.newFullBookRequest("GOOG");
-        final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.INSTANCE_URN,
+        final DataFlowID flowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(getInstanceURN(),
                                                                                                    request) });
         // wait until some arbitrary number of ticks have been received
         AbstractMarketDataFeedTest.wait(new Callable<Boolean>() {
@@ -147,10 +140,56 @@ public class BogusFeedEmitterTest
         moduleManager.cancel(flowID);
         
     }
+    /**
+     * Starts the module to be tested and verifies that it has started.
+     *
+     * @throws Exception if an error occurs
+     */
+    protected void startModule()
+        throws Exception
+    {
+        moduleManager.start(getInstanceURN());
+        assertEquals(ModuleState.STARTED,
+                     moduleManager.getModuleInfo(getInstanceURN()).getState());
+    }
+    /**
+     * Stops the module to be tested and verifies that it has stopped.
+     *
+     * @throws Exception if an error occurs
+     */
+    protected void stopModule()
+        throws Exception
+    {
+        moduleManager.stop(getInstanceURN());
+        assertEquals(ModuleState.STOPPED,
+                     moduleManager.getModuleInfo(getInstanceURN()).getState());
+    }
+    /**
+     * Returns a <code>ModuleFactory</code> instance appropriate for the module to be tested. 
+     *
+     * @return a <code>ModuleFactory&lt;? extends Module&gt;</code> value
+     */
+    protected abstract ModuleFactory<? extends Module> getFactory();
+    /**
+     * Returns a <code>ModuleURN</code> instance appropriate for the module to be tested. 
+     *
+     * @return a <code>ModuleURN</code> value
+     */
+    protected abstract ModuleURN getInstanceURN();
+    /**
+     * Sample <code>SinkDataListener</code> implementation that stores the objects it receives.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id:$
+     * @since $Release$
+     */
     public static class DataSink
         implements SinkDataListener
     {
-        private final Map<DataFlowID,List<Object>> data = new HashMap<DataFlowID,List<Object>>(); 
+        /**
+         * data received by the <code>DataFlowID</code> that caused it to be delivered
+         */
+        private final Map<DataFlowID,List<Object>> data = new HashMap<DataFlowID,List<Object>>();
         /* (non-Javadoc)
          * @see org.marketcetera.module.SinkDataListener#receivedData(org.marketcetera.module.DataFlowID, java.lang.Object)
          */
@@ -168,6 +207,12 @@ public class BogusFeedEmitterTest
                 dataForID.add(inData);
             }
         }
+        /**
+         * Retrieves the data collected by this object.
+         *
+         * @param inDataFlowID a <code>DataFlowID</code> value
+         * @return a <code>List&lt;Object&gt;</code> value
+         */
         public List<Object> getData(DataFlowID inDataFlowID)
         {
             synchronized(data) {

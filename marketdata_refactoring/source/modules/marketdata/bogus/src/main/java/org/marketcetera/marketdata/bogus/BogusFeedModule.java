@@ -8,7 +8,6 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.EventBase;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
-import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataRequest;
@@ -17,29 +16,32 @@ import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- *
+ * StrategyAgent module for {@link BogusFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id:$
  * @since $Release$
  */
+@ClassVersion("$Id:$")  //$NON-NLS-1$
 public final class BogusFeedModule
         extends Module
         implements DataEmitter
 {
     /**
      * Create a new BogusFeedEmitter instance.
+     * 
      * @throws CoreException 
      */
     BogusFeedModule()
         throws CoreException
     {
         super(BogusFeedModuleFactory.INSTANCE_URN,
-              true);
+              false);
         feed = BogusFeedFactory.getInstance().getMarketDataFeed();
     }
     /* (non-Javadoc)
@@ -68,11 +70,8 @@ public final class BogusFeedModule
     {
         synchronized(tokens) {
             BogusFeedToken token = tokens.remove(inRequestID);
-            if(token != null) {
-                token.cancel();
-            } else {
-                // TODO this should not happen
-            }
+            assert(token != null);
+            token.cancel();
         }
     }
     /* (non-Javadoc)
@@ -83,36 +82,25 @@ public final class BogusFeedModule
                                   final DataEmitterSupport inSupport)
             throws UnsupportedRequestParameterType, IllegalRequestParameterValue
     {
-        Object obj = inRequest.getData();
-        org.marketcetera.marketdata.DataRequest query = null;
-        if(obj == null) {
+        Object requestPayload = inRequest.getData();
+        org.marketcetera.marketdata.DataRequest request = null;
+        if(requestPayload == null) {
             throw new IllegalRequestParameterValue(getURN(),
                                                    null);
         }
-        if(obj instanceof String) {
-            // TODO need to refactor newRequestFromString to parent DataRequest
+        if(requestPayload instanceof String) {
             try {
-                query = MarketDataRequest.newRequestFromString((String)obj);
+                request = org.marketcetera.marketdata.DataRequest.newRequestFromString((String)requestPayload);
             } catch (Exception e) {
                 throw new IllegalRequestParameterValue(getURN(),
-                                                       obj);
+                                                       requestPayload);
             }
-        } else if (obj instanceof org.marketcetera.marketdata.DataRequest) {
-            query = (org.marketcetera.marketdata.DataRequest)obj;
+        } else if (requestPayload instanceof org.marketcetera.marketdata.DataRequest) {
+            request = (org.marketcetera.marketdata.DataRequest)requestPayload;
         } else {
             throw new UnsupportedRequestParameterType(getURN(),
-                                                      obj);
+                                                      requestPayload);
         }
-        //Submit the market data request to active API and arrange
-        // for it to invoke inSupport.send(market_data_event);
-        // whenever it has market data.
-        //
-        //invoke inSupport.dataEmitError(error_false, false);
-        // to indicate errors that do not interrupt the data flow
-        //
-        //invoke inSupport.dataEmitError(error_false, true);
-        // to indicate errors that interrupt the data flow and request
-        // the framework to stop that data flow.
         try {
             ISubscriber subscriber = new ISubscriber() {
                 @Override
@@ -127,7 +115,7 @@ public final class BogusFeedModule
                 }
             };
             MarketDataFeedTokenSpec<BogusFeedCredentials> spec = MarketDataFeedTokenSpec.generateTokenSpec(BogusFeedCredentials.getInstance(),
-                                                                                                           query,
+                                                                                                           request,
                                                                                                            Arrays.asList(new ISubscriber[] { subscriber }));
             synchronized(tokens) {
                 tokens.put(inSupport.getRequestID(),
@@ -138,6 +126,12 @@ public final class BogusFeedModule
                                     true);
         }
     }
+    /**
+     * tokens for active data requests
+     */
     private final Map<RequestID,BogusFeedToken> tokens = new HashMap<RequestID,BogusFeedToken>();
+    /**
+     * actual market data provider
+     */
     private final BogusFeed feed;
 }
