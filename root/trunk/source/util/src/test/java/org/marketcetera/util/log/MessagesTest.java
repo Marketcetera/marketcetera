@@ -27,5 +27,8 @@ public class MessagesTest
 
         comparator=new MessageComparator(Messages.class,Locale.FRENCH);
         assertTrue(comparator.getDifferences(),comparator.isMatch());
+
+        // Test files not tested because messages are intentionally
+        // problematic.
     }
 }

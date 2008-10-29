@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.apache.log4j.Level;
 import org.junit.Test;
@@ -66,6 +67,17 @@ public class TI18NMessageNPTest
         unboundTests
             (-1,
              new I18NMessageNP(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+             new I18NMessageNP(TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID),
+             new I18NMessage[] {
+                new I18NMessageNP
+                (TEST_LOGGER_D,TEST_MSG_ID,TEST_ENTRY_ID),
+                new I18NMessageNP
+                (TestMessages.LOGGER,TEST_MSG_ID_D,TEST_ENTRY_ID),
+                new I18NMessageNP
+                (TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID_D),
+                new I18NMessage0P
+                (TestMessages.LOGGER,TEST_MSG_ID,TEST_ENTRY_ID)
+             },
              new I18NMessageNP(TestMessages.LOGGER,TEST_MSG_ID));
     }
 
@@ -210,38 +222,147 @@ public class TI18NMessageNPTest
     @Test
     public void bound()
     {
-        Object[] params=new Object[]
+        Serializable[] params=new Serializable[]
             {TEST_P1,TEST_P2,TEST_P3,TEST_P4,
              TEST_P5,TEST_P6,TEST_P7};
         I18NBoundMessageNP m=new I18NBoundMessageNP
             (TestMessages.PN_MSG,TEST_P1,TEST_P2,TEST_P3,TEST_P4,TEST_P5,
              TEST_P6,TEST_P7);
-        boundTests(m,params,TestMessages.PN_MSG,TEST_MSG_EN,TEST_MSG_FR);
+        boundTests(m,new I18NBoundMessageNP
+                   (TestMessages.PN_MSG,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                    TEST_P5,TEST_P6,TEST_P7),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6,TEST_P7,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6,TEST_P7),
+                       TestMessages.P0_MSG
+                   },params,TestMessages.PN_MSG,TEST_MSG_EN,TEST_MSG_FR);
         castOverride(m.getMessage());
         boundTests(new I18NBoundMessageNP
+                   (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                    TEST_P5,TEST_P6,TEST_P7),
+                   new I18NBoundMessageNP
                    (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,TEST_P5,
-                    TEST_P6,TEST_P7),params,TestMessages.PN_TTL,
+                    TEST_P6,TEST_P7),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6,TEST_P7,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,TEST_P1,TEST_P2,TEST_P3,TEST_P4,
+                        TEST_P5,TEST_P6,TEST_P7),
+                       TestMessages.P0_TTL
+                   },params,TestMessages.PN_TTL,
                    TEST_TTL_EN,TEST_TTL_FR);
 
-        params=new Object[] {null,null,null,null,null,null,null};
+        params=new Serializable[] {null,null,null,null,null,null,null};
         boundTests(new I18NBoundMessageNP
-                   (TestMessages.PN_MSG,(Object)null,(Object)null,(Object)null,
-                    (Object)null,(Object)null,(Object)null,(Object)null),
-                   params,
+                   (TestMessages.PN_MSG,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null),
+                   new I18NBoundMessageNP
+                   (TestMessages.PN_MSG,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null),
+                       TestMessages.P0_MSG
+                   },params,
                    TestMessages.PN_MSG,TEST_MSG_EN_NULL,TEST_MSG_FR_NULL);
         boundTests(new I18NBoundMessageNP
-                   (TestMessages.PN_TTL,(Object)null,(Object)null,(Object)null,
-                    (Object)null,(Object)null,(Object)null,(Object)null),
-                   params,
+                   (TestMessages.PN_TTL,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null),
+                   new I18NBoundMessageNP
+                   (TestMessages.PN_TTL,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null,
+                    (Serializable)null,(Serializable)null),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null,
+                        (Serializable)null,(Serializable)null),
+                       TestMessages.P0_TTL
+                   },params,
                    TestMessages.PN_TTL,TEST_TTL_EN_NULL,TEST_TTL_FR_NULL);
 
         boundTests(new I18NBoundMessageNP
-                   (TestMessages.PN_MSG,(Object[])null),
-                   null,
+                   (TestMessages.PN_MSG,(Serializable[])null),
+                   new I18NBoundMessageNP
+                   (TestMessages.PN_MSG,I18NBoundMessage.EMPTY_PARAMS),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,(Serializable[])null),
+                       TestMessages.P0_MSG
+                   },I18NBoundMessage.EMPTY_PARAMS,
                    TestMessages.PN_MSG,TEST_MSG_EN_NOSUB,TEST_MSG_FR_NOSUB);
         boundTests(new I18NBoundMessageNP
-                   (TestMessages.PN_TTL,(Object[])null),
-                   null,
+                   (TestMessages.PN_TTL,(Serializable[])null),
+                   new I18NBoundMessageNP
+                   (TestMessages.PN_TTL,I18NBoundMessage.EMPTY_PARAMS),
+                   new I18NBoundMessage[] {
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_TTL,TEST_P1),
+                       new I18NBoundMessageNP
+                       (TestMessages.PN_MSG,(Serializable[])null),
+                       TestMessages.P0_TTL
+                   },I18NBoundMessage.EMPTY_PARAMS,
                    TestMessages.PN_TTL,TEST_TTL_EN_NOSUB,TEST_TTL_FR_NOSUB);
     }
 }

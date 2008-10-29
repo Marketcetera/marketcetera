@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
+import static org.marketcetera.util.test.EqualityAssert.*;
+import static org.marketcetera.util.test.SerializableAssert.*;
 
 /**
  * @author tlerios@marketcetera.com
@@ -256,6 +258,14 @@ public class TI18NLoggerProxyTest
             (TestMessages.PROVIDER,TestMessages.LOGGER.getMessageProvider());
     }
 
+    @Test
+    public void equality()
+    {
+        assertEquality(new I18NLoggerProxy(new I18NMessageProvider("a")),
+                       new I18NLoggerProxy(new I18NMessageProvider("a")),
+                       new I18NLoggerProxy(new I18NMessageProvider("b")));
+        assertSerializable(TestMessages.LOGGER);
+    }
 
     @Test
     public void messages()

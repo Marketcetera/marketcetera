@@ -38,7 +38,11 @@ public interface TestMessages
 
     static final I18NMessage0P P0_MSG=
         new I18NMessage0P(LOGGER,"p0");
+    static final I18NMessage0P P0_MSG_COPY=
+        new I18NMessage0P(LOGGER,"p0");
     static final I18NMessage0P P0_TTL=
+        new I18NMessage0P(LOGGER,"p0","ttl");
+    static final I18NMessage0P P0_TTL_COPY=
         new I18NMessage0P(LOGGER,"p0","ttl");
     static final I18NMessage1P P1_MSG=
         new I18NMessage1P(LOGGER,"p1");
