@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AbstractEventTranslator;
@@ -56,7 +58,7 @@ public class MarketceteraFeedEventTranslator
     {
         if(!(inData instanceof MarketDataSnapshotFullRefresh)) {
             throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_EVENT_TYPE,
-                                                                       inData));
+            		ObjectUtils.toString(inData,null)));
         }
         MarketDataSnapshotFullRefresh refresh = (MarketDataSnapshotFullRefresh)inData;
         List<EventBase> events = new ArrayList<EventBase>();
