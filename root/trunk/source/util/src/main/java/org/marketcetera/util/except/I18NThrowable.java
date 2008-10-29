@@ -1,5 +1,6 @@
 package org.marketcetera.util.except;
 
+import java.io.Serializable;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -24,7 +25,8 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 @ClassVersion("$Id$") //$NON-NLS-1$
-interface I18NThrowable
+public interface I18NThrowable
+    extends Serializable
 {
     /**
      * Returns the receiver's raw message, as implemented by {@link
