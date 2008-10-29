@@ -164,14 +164,14 @@ public class DeleterTest
         String name=rootName+File.separator+TEST_PLAIN_FILE;
         try {
             Deleter.apply(name);
+            fail();
         } catch (I18NException ex) {
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_DELETE,m.getMessage());
-            assertEquals((new File(name)).getAbsolutePath(),m.getParam1());
-            return;
+                (ex.getDetail(),
+                 new I18NBoundMessage1P(Messages.CANNOT_DELETE,
+                                        (new File(name)).getAbsolutePath()),
+                 ex.getI18NBoundMessage());
         }
-        fail();
     }
     */
 }
