@@ -101,7 +101,7 @@ public class ClientServerTestBase
     protected static void checkException
         (RemoteException ex)
     {
-        assertEquals("Remote exception; see cause for details",
+        assertEquals(EXPECTED_MESSAGE,
                      ex.getMessage());
         assertEquals(new RemoteProperties(TEST_EXCEPTION),
                      ex.getProperties());
