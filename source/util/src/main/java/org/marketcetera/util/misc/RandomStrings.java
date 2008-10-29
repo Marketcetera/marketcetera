@@ -393,7 +393,7 @@ public final class RandomStrings
         (int len)
     {
         if (len<=0) {
-            return ""; //$NON-NLS-1$
+            return org.apache.commons.lang.StringUtils.EMPTY;
         }
         StringBuilder builder=new StringBuilder();
         builder.appendCodePoint(genUCPLetter());

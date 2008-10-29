@@ -1,5 +1,7 @@
 package org.marketcetera.util.misc;
 
+import org.apache.commons.lang.SystemUtils;
+
 /**
  * An enumeration of operating systems. The expected value of the
  * <code>os.name</code> system property for each operating system is
@@ -50,7 +52,7 @@ public enum OperatingSystem
      */
 
     public static final OperatingSystem LOCAL=
-        get(SystemProperties.OS_NAME);
+        get(SystemUtils.OS_NAME);
 
 
     // INSTANCE DATA.
