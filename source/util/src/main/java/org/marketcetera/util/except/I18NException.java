@@ -108,4 +108,20 @@ public class I18NException
     {
         return mMessage;
     }
+
+
+    // Object.
+
+    @Override
+    public int hashCode()
+    {
+        return ExceptUtils.getHashCode(this);
+    }
+
+    @Override
+    public boolean equals
+        (Object other)
+    {
+        return ExceptUtils.areEqual(this,other);
+    }
 }

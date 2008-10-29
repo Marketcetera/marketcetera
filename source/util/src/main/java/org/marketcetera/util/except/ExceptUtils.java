@@ -4,6 +4,7 @@ import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
 import javax.naming.InterruptedNamingException;
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.log.I18NBoundMessage;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -296,6 +297,69 @@ public final class ExceptUtils
             return new I18NInterruptedRuntimeException(throwable);
         }
         return new I18NRuntimeException(throwable);
+    }
+
+    /**
+     * Returns the hash code of the given throwable. The result
+     * matches the equality definition of {@link
+     * #areEqual(Throwable,Object)}.
+     *
+     * @param t The throwable.
+     *
+     * @return The hash code.
+     */
+
+    public static int getHashCode
+        (Throwable t)
+    {
+        if (t==null) {
+            return 0;
+        }
+        int code=ObjectUtils.hashCode(t.getClass());
+        if (t instanceof I18NThrowable) {
+            code+=ObjectUtils.hashCode
+                (((I18NThrowable)t).getI18NBoundMessage());
+        } else {
+            code+=ObjectUtils.hashCode(t.getMessage());
+        }
+        code+=getHashCode(t.getCause());
+        return code;
+    }
+
+    /**
+     * Checks whether the given throwable is equal to the given
+     * object. Equality requires identical classes, equal messages,
+     * and equal causes.
+     *
+     * @param t The throwable. It may be null.
+     * @param o The object. It may be null.
+     *
+     * @return True if so.
+     */
+ 
+    public static boolean areEqual
+        (Throwable t,
+         Object o)
+    {
+        if (t==o) {
+            return true;
+        }
+        if ((o==null) || (t==null) || !t.getClass().equals(o.getClass())) {
+            return false;
+        }
+        Throwable to=(Throwable)o;
+        if (o instanceof I18NThrowable) {
+            if (!ObjectUtils.equals
+                (((I18NThrowable)t).getI18NBoundMessage(),
+                 ((I18NThrowable)o).getI18NBoundMessage())) {
+                return false;
+            }
+        } else {
+            if (!ObjectUtils.equals(t.getMessage(),to.getMessage())) {
+                return false;
+            }
+        }
+        return areEqual(t.getCause(),to.getCause());
     }
 
 
