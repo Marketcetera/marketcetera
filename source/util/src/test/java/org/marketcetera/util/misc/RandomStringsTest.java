@@ -263,7 +263,8 @@ public class RandomStringsTest
     @Test
     public void genStrLen()
     {
-        assertEquals("",RandomStrings.genStr(UCP_FILTER_CUSTOM,0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStr(UCP_FILTER_CUSTOM,0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -272,7 +273,8 @@ public class RandomStringsTest
                         (UCP_FILTER_CUSTOM,STR_LEN); }},
                 UCP_FILTER_CUSTOM);
 
-        assertEquals("",RandomStrings.genStrCharset
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrCharset
                      (UnicodeCharset.UTF8.getCharset(),0));
         testStrLen
             (new StrGenerator() {
@@ -282,7 +284,8 @@ public class RandomStringsTest
                         (UnicodeCharset.UTF8.getCharset(),STR_LEN); }},
                 UCP_FILTER_UTF8);
 
-        assertEquals("",RandomStrings.genStrDefCharset(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrDefCharset(0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -290,7 +293,8 @@ public class RandomStringsTest
                     return RandomStrings.genStrDefCharset(STR_LEN); }},
                 UCP_FILTER_DC);
 
-        assertEquals("",RandomStrings.genStrFileSystem(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrFileSystem(0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -298,7 +302,8 @@ public class RandomStringsTest
                     return RandomStrings.genStrFileSystem(STR_LEN); }},
                 UCP_FILTER_FS);
 
-        assertEquals("",RandomStrings.genStrValid(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrValid(0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -306,7 +311,8 @@ public class RandomStringsTest
                     return RandomStrings.genStrValid(STR_LEN); }},
                 UCPFilter.VALID);
 
-        assertEquals("",RandomStrings.genStrDigit(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrDigit(0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -314,7 +320,8 @@ public class RandomStringsTest
                     return RandomStrings.genStrDigit(STR_LEN); }},
                 UCPFilter.DIGIT);
 
-        assertEquals("",RandomStrings.genStrLetter(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrLetter(0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -322,7 +329,8 @@ public class RandomStringsTest
                     return RandomStrings.genStrLetter(STR_LEN); }},
                 UCPFilter.LETTER);
 
-        assertEquals("",RandomStrings.genStrAlNum(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrAlNum(0));
         testStrLen
             (new StrGenerator() {
                 @Override
@@ -335,7 +343,8 @@ public class RandomStringsTest
     public void genStrIdLen()
     {
 
-        assertEquals("",RandomStrings.genStrId(0));
+        assertEquals(org.apache.commons.lang.StringUtils.EMPTY,
+                     RandomStrings.genStrId(0));
         testStrId(1,RandomStrings.genStrId(1));
         testStrId(2,RandomStrings.genStrId(2));
 
