@@ -73,7 +73,7 @@ import org.codehaus.plexus.util.StringUtils;
  * 
  * @author Fabrizio Giustina
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: EclipseToMavenMojo.java 638635 2008-03-18 23:24:40Z carlos $
+ * @version $Id$
  * @goal to-maven
  * @requiresProject false
  */

@@ -33,7 +33,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author Fabrizio Giustina
- * @version $Id: EclipseWriterConfig.java 641616 2008-03-26 22:42:42Z aheritier $
+ * @version $Id$
  */
 public class EclipseWriterConfig
 {

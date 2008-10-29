@@ -38,7 +38,7 @@ import org.codehaus.plexus.util.xml.XMLWriter;
  * Writes eclipse .wtpmodules file.
  * 
  * @author <a href="mailto:fgiust@users.sourceforge.net">Fabrizio Giustina</a>
- * @version $Id: EclipseWtpmodulesWriter.java 595639 2007-11-16 12:16:25Z aheritier $
+ * @version $Id$
  */
 public class EclipseWtpmodulesWriter
     extends AbstractWtpResourceWriter

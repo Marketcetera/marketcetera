@@ -35,7 +35,7 @@ import org.codehaus.plexus.util.StringUtils;
  * 
  * @author Fabrizio Giustina
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: MakeArtifactsMojo.java 618464 2008-02-04 22:12:32Z aheritier $
+ * @version $Id$
  * @goal make-artifacts
  * @requiresProject false
  * @deprecated use {@link EclipseToMavenMojo} for the latest naming conventions

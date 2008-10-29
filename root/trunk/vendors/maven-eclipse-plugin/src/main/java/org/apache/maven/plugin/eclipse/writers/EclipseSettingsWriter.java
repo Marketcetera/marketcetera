@@ -33,7 +33,7 @@ import org.apache.maven.plugin.ide.IdeUtils;
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @author <a href="mailto:kenney@neonics.com">Kenney Westerhof</a>
  * @author <a href="mailto:fgiust@users.sourceforge.net">Fabrizio Giustina</a>
- * @version $Id: EclipseSettingsWriter.java 487861 2006-12-16 19:29:12Z fgiust $
+ * @version $Id$
  */
 public class EclipseSettingsWriter
     extends AbstractEclipseWriter

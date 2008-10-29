@@ -81,7 +81,7 @@ import org.codehaus.plexus.util.IOUtil;
  * </pre>
  * 
  * @author Fabrizio Giustina
- * @version $Id: AbstractIdeSupportMojo.java 628794 2008-02-18 16:09:11Z aheritier $
+ * @version $Id$
  */
 public abstract class AbstractIdeSupportMojo
     extends AbstractMojo

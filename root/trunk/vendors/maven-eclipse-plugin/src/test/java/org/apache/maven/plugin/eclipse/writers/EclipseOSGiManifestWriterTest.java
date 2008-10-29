@@ -22,7 +22,7 @@ import junit.framework.TestCase;
 
 /**
  * @author Fabrizio Giustina
- * @version $Id: EclipseOSGiManifestWriterTest.java 485864 2006-12-11 20:41:36Z fgiust $
+ * @version $Id$
  */
 public class EclipseOSGiManifestWriterTest
     extends TestCase

@@ -24,7 +24,7 @@ import org.apache.maven.project.MavenProject;
 
 /**
  * @author Fabrizio Giustina
- * @version $Id: IdeDependency.java 616964 2008-01-31 00:04:15Z aheritier $
+ * @version $Id$
  */
 public class IdeDependency
     implements Comparable

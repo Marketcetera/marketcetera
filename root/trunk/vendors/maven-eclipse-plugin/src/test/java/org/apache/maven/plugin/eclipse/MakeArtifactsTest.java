@@ -22,7 +22,7 @@ import org.apache.maven.model.Dependency;
 
 /**
  * @author Fabrizio Giustina
- * @version $Id: MakeArtifactsTest.java 595476 2007-11-15 22:21:55Z aheritier $
+ * @version $Id$
  * @deprecated use {@link EclipseToMavenTest}
  */
 public class MakeArtifactsTest

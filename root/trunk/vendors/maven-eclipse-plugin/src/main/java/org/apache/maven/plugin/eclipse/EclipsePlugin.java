@@ -76,7 +76,7 @@ import org.codehaus.plexus.util.xml.Xpp3Dom;
  * 
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
  * @author <a href="mailto:fgiust@apache.org">Fabrizio Giustina</a>
- * @version $Id: EclipsePlugin.java 641616 2008-03-26 22:42:42Z aheritier $
+ * @version $Id$
  * @goal eclipse
  * @execute phase="generate-resources"
  */

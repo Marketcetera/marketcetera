@@ -40,7 +40,7 @@ import org.codehaus.plexus.util.xml.XMLWriter;
  * 
  * @author <a href="mailto:rahul.thakur.xdev@gmail.com">Rahul Thakur</a>
  * @author <a href="mailto:fgiust@apache.org">Fabrizio Giustina</a>
- * @version $Id: EclipseWtpFacetsWriter.java 642028 2008-03-27 23:43:36Z aheritier $
+ * @version $Id$
  */
 public class EclipseWtpFacetsWriter
     extends AbstractWtpResourceWriter

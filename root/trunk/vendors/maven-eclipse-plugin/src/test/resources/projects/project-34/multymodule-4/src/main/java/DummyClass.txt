@@ -1,6 +1,6 @@
 /**
  * @author <a href="mailto:trygvis@inamo.no">Trygve Laugst&oslash;l</a>
- * @version $Id: DummyClass.txt 359507 2005-12-28 13:14:19Z fgiust $
+ * @version $Id$
  */
 public class DummyClass
 {

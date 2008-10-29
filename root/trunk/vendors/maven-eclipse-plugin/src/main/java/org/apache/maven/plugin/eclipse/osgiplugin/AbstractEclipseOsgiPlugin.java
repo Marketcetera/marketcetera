@@ -29,7 +29,7 @@ import java.util.zip.ZipEntry;
  * Common functionality for both exploded and packaged plugins.
  * 
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: AbstractEclipseOsgiPlugin.java 544961 2007-06-06 21:25:57Z carlos $
+ * @version $Id$
  */
 public abstract class AbstractEclipseOsgiPlugin
     implements EclipseOsgiPlugin

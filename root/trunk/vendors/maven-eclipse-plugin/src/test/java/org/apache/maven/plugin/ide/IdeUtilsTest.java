@@ -24,7 +24,7 @@ import junit.framework.TestCase;
  * Test for {@link IdeUtils}
  * 
  * @author <a href="mailto:carlos@apache.org">Carlos Sanchez</a>
- * @version $Id: IdeUtilsTest.java 545068 2007-06-07 05:35:31Z carlos $
+ * @version $Id$
  */
 public class IdeUtilsTest
     extends TestCase

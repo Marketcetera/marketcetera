@@ -24,7 +24,7 @@ import java.util.ResourceBundle;
 
 /**
  * @author <a href="mailto:fgiust@users.sourceforge.net">Fabrizio Giustina</a>
- * @version $Id: Messages.java 485864 2006-12-11 20:41:36Z fgiust $
+ * @version $Id$
  */
 public class Messages
 {
