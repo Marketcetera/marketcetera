@@ -37,7 +37,7 @@ public class MySQLDBVendor extends DBVendor {
                 int startIdx = Math.max(i - 5, 0);
                 throw new ValidationException(
                         new I18NBoundMessage3P(UNSUPPORTED_CHARACTER,
-                                c, i, s.subSequence(startIdx,i)));
+                                c, i, s.subSequence(startIdx,i).toString()));
             }
         }
     }
