@@ -66,7 +66,7 @@ public class ClientServerTest
         singleServer((StatelessServer)server,
                      (StatelessServer)empty);
 
-        assertEquals(TEST_AUTHENTICATOR,server.getAuthenticator());
+        assertNull(server.getAuthenticator());
         assertEquals(TEST_MANAGER,server.getSessionManager());
 
         assertNull(empty.getAuthenticator());
@@ -84,8 +84,7 @@ public class ClientServerTest
             (new Client(TEST_HOST,TEST_PORT,TEST_APP),
              new Client(TEST_APP));
         singleServer
-            (new Server<Object>
-             (TEST_HOST,TEST_PORT,TEST_AUTHENTICATOR,TEST_MANAGER),
+            (new Server<Object>(TEST_HOST,TEST_PORT,null,TEST_MANAGER),
              new Server<Object>());
         calls
             (new Server<Object>(),
@@ -103,7 +102,9 @@ public class ClientServerTest
         throws Exception
     {
         Client c=new Client();
-        new Server<Object>(TEST_AUTHENTICATOR,TEST_MANAGER);
+
+        Server<Object> s=new Server<Object>(TEST_AUTHENTICATOR,TEST_MANAGER);
+        assertEquals(TEST_AUTHENTICATOR,s.getAuthenticator());
 
         try {
             c.assertValidSession();
