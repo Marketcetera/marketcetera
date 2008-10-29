@@ -7,6 +7,16 @@ import java.util.HashMap;
 /**
  * A filter for Unicode code points. It also maintains a cache of
  * filters associated with {@link Charset} instances.
+ *
+ * <p>For charset-based filters, this class may perform slowly when
+ * the cache is built, if the JVM is running with an active debugging
+ * agent. This is because the JRE implements the acceptability test by
+ * throwing and catching an exception, which is trapped by the agent;
+ * if the charset can only encode a small subset of the Unicode code
+ * points, then a lot of exceptions are thrown and caught, resulting
+ * in a performance degradation as the agent intercepts repeatedly
+ * (even if the debugger does not indicate an interest in
+ * exceptions).</p>
  * 
  * @author tlerios@marketcetera.com
  * @since 0.6.0
