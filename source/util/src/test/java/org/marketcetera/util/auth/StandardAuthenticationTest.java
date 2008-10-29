@@ -6,11 +6,11 @@ import java.io.PrintStream;
 import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.util.file.CloseableRegistry;
 import org.marketcetera.util.log.ActiveLocale;
-import org.marketcetera.util.misc.SystemProperties;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -150,26 +150,26 @@ public class StandardAuthenticationTest
         }
         assertEquals
             ("Spring framework (overriding context)"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              " Set 'activemq.user' to username in properties file"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              " Set 'activemq.password' to password in properties file"+
-             SystemProperties.LINE_SEPARATOR+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              "Command-line options (overriding context)"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              " -u or -user followed by username"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              " -p or -password followed by password"+
-             SystemProperties.LINE_SEPARATOR+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              "Console terminal"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              " Type username when prompted"+
-             SystemProperties.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR+
              " Type password when prompted (password won't echo)"+
-             SystemProperties.LINE_SEPARATOR+
-             SystemProperties.LINE_SEPARATOR,
+             SystemUtils.LINE_SEPARATOR+
+             SystemUtils.LINE_SEPARATOR,
              new String(outputStream.toByteArray()));
     }
 

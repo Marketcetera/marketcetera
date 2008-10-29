@@ -208,12 +208,11 @@ public class SetterContextCliTest
         CliContext context=new CliContext(true,new String[] {"-x"});
         try {
             context.setValues();
+            fail();
         } catch (I18NException ex) {
             assertEquals
                 (ex.getDetail(),Messages.PARSING_FAILED,
                  ex.getI18NBoundMessage().getMessage());
-            return;
         }
-        fail();
     }
 }
