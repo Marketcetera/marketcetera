@@ -1,10 +1,14 @@
 package org.marketcetera.util.log;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 import java.text.MessageFormat;
 import java.util.Locale;
 import org.apache.commons.i18n.MessageManager;
 import org.apache.commons.i18n.MessageNotFoundException;
 import org.apache.commons.i18n.ResourceBundleMessageProvider;
+import org.apache.commons.lang.ObjectUtils;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -14,6 +18,12 @@ import org.marketcetera.util.misc.ClassVersion;
  * locale per {@link ActiveLocale}; if the chosen locale does not
  * provide a message, the default JVM locale and root locale (in that
  * order) are used as fallbacks.
+ *
+ * <p>Message providers can be serialized. However, upon
+ * deserialization, they are not guaranteed to have the same
+ * classloader as during serialization, and hence may be unable to
+ * access the same message files as were available during
+ * serialization.</p>
  * 
  * @author tlerios@marketcetera.com
  * @since 0.5.0
@@ -24,9 +34,12 @@ import org.marketcetera.util.misc.ClassVersion;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class I18NMessageProvider
+    implements Serializable
 {
 
     // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
 
     /**
      * The string added to the end of the provider ID to obtain the
@@ -67,8 +80,28 @@ public class I18NMessageProvider
      * Creates a new message provider with the given ID. The provider
      * ID is combined with the suffix {@link #MESSAGE_FILE_EXTENSION}
      * to form the name of a mapping file. The file should be
-     * retrievable as a resource, and its format should be that used
-     * by Apache Commons i18n.
+     * retrievable as a resource via the given class loader, and its
+     * format should be that used by Apache Commons i18n.
+     *
+     * @param providerId The provider ID.
+     * @param classLoader The class loader used to load the mapping
+     * file. It may be null to use the default classloader.
+     */
+
+    public I18NMessageProvider
+        (String providerId,
+         ClassLoader classLoader)
+    {
+        mProviderId=providerId;
+        init(classLoader);
+    }
+
+    /**
+     * Creates a new message provider with the given ID. The provider
+     * ID is combined with the suffix {@link #MESSAGE_FILE_EXTENSION}
+     * to form the name of a mapping file. The file should be
+     * retrievable as a resource via the default class loader, and its
+     * format should be that used by Apache Commons i18n.
      *
      * @param providerId The provider ID.
      */
@@ -76,32 +109,30 @@ public class I18NMessageProvider
     public I18NMessageProvider
         (String providerId)
     {
-        this(providerId, null);
+        this(providerId,null);
     }
 
+
+    // INSTANCE METHODS.
+
     /**
-     * Creates a new message provider with the given ID. The provider
-     * ID is combined with the suffix {@link #MESSAGE_FILE_EXTENSION}
-     * to form the name of a mapping file. The file should be
-     * retrievable as a resource, and its format should be that used
-     * by Apache Commons i18n.
+     * Initializes the receiver.
      *
-     * @param providerId The provider ID.
-     * @param classLoader the class loader to use for loading the mapping file.
+     * @param classLoader The class loader used to load the mapping
+     * file. It may be null to use the default classloader.
      */
-    public I18NMessageProvider
-        (String providerId,
-         ClassLoader classLoader)
+
+    private void init
+        (ClassLoader classLoader)
     {
-        mProviderId=providerId;
         String baseName=getProviderId()+MESSAGE_FILE_EXTENSION;
         ResourceBundleMessageProvider provider;
         try {
             if (classLoader==null) {
                 provider=new ResourceBundleMessageProvider(baseName);
             } else {
-                provider=new ResourceBundleMessageProvider(baseName,
-                        classLoader);
+                provider=new ResourceBundleMessageProvider
+                    (baseName,classLoader);
             }
         } catch (MessageNotFoundException ex) {
             SLF4JLoggerProxy.error
@@ -112,9 +143,6 @@ public class I18NMessageProvider
         MessageManager.addMessageProvider(getProviderId(),provider);
     }
 
-
-    // INSTANCE METHODS.
-
     /**
      * Returns the receiver's provider ID.
      *
@@ -124,6 +152,25 @@ public class I18NMessageProvider
     public String getProviderId()
     {
         return mProviderId;
+    }
+
+    /**
+     * Java serialization. Reads a receiver instance from the given
+     * stream.
+     *
+     * @param in The stream.
+     *
+     * @throws IOException Per serialization spec.
+     * @throws ClassNotFoundException Per serialization spec.
+     */
+
+    private void readObject
+        (ObjectInputStream in)
+        throws IOException,
+               ClassNotFoundException
+    {
+        in.defaultReadObject();
+        init(null);
     }
 
     /**
@@ -208,5 +255,28 @@ public class I18NMessageProvider
          Object... params)
     {
         return getText(ActiveLocale.getLocale(),message,params);
+    }
+
+
+    // Object.
+
+    @Override
+    public int hashCode()
+    {
+        return ObjectUtils.hashCode(getProviderId());
+    }
+
+    @Override
+    public boolean equals
+        (Object other)
+    {
+        if (this==other) {
+            return true;
+        }
+        if ((other==null) || !getClass().equals(other.getClass())) {
+            return false;
+        }
+        I18NMessageProvider o=(I18NMessageProvider)other;
+        return ObjectUtils.equals(getProviderId(),o.getProviderId());
     }
 }

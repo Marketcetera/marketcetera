@@ -105,7 +105,8 @@ public final class LogUtils
     public static String getSimpleMessage
         (I18NBoundMessage message)
     {
-        return getSimpleMessage(message.getMessage(),message.getParams());
+        return getSimpleMessage
+            (message.getMessage(),message.getParamsAsObjects());
     }
 
 

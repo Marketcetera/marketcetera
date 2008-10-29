@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.util.EmptyStackException;
 import java.util.Locale;
 import java.util.Stack;
 import java.util.concurrent.Callable;
@@ -130,8 +131,9 @@ public class ActiveLocale
     }
 
     /**
-     * Sets the locale at the top of the thread-specific
-     * (i.e. specific to the caller's thread) locale stack.
+     * Sets the locale at the top of the thread-specific (that is,
+     * specific to the caller's thread) locale stack to the given
+     * locale.
      *
      * @param locale The locale. It may be null.
      */
@@ -142,6 +144,34 @@ public class ActiveLocale
         Stack<Locale> stack=sThreadStack.get();
         stack.pop();
         stack.push(locale);
+    }
+
+    /**
+     * Pushes the given locale onto the thread-specific (that is,
+     * specific to the caller's thread) locale stack. This call must
+     * be paired up with a call to {@link #popLocale()}.
+     *
+     * @param locale The locale. It may be null.
+     */
+
+    public static void pushLocale
+        (Locale locale)
+    {
+        sThreadStack.get().push(locale);
+    }
+
+    /**
+     * Pop the locale at the top of the thread-specific (that is,
+     * specific to the caller's thread) locale stack. This call must
+     * be paired up with a call to {@link #pushLocale(Locale)}.
+     *
+     * @throws EmptyStackException Thrown if the locale stack is
+     * empty.
+     */
+
+    public static void popLocale()
+    {
+        sThreadStack.get().pop();
     }
 
     /**
@@ -157,11 +187,11 @@ public class ActiveLocale
         (Runnable runnable,
          Locale locale)
     {
-        sThreadStack.get().push(locale);
+        pushLocale(locale);
         try {
             runnable.run();
         } finally {
-            sThreadStack.get().pop();
+            popLocale();
         }
     }
 
@@ -184,11 +214,11 @@ public class ActiveLocale
          Locale locale)
         throws Exception
     {
-        sThreadStack.get().push(locale);
+        pushLocale(locale);
         try {
             return callable.call();
         } finally {
-            sThreadStack.get().pop();
+            popLocale();
         }
     }
 

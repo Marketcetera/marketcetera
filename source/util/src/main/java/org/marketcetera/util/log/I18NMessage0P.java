@@ -1,5 +1,6 @@
 package org.marketcetera.util.log;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.apache.commons.lang.ArrayUtils;
 import org.marketcetera.util.misc.ClassVersion;
@@ -21,6 +22,8 @@ public class I18NMessage0P
 {
 
     // CLASS DATA.
+
+    private static final long serialVersionUID=1L;
 
     /**
      * The logging proxy name.
@@ -78,7 +81,13 @@ public class I18NMessage0P
     }
 
     @Override
-    public Object[] getParams()
+    public Serializable[] getParams()
+    {
+        return I18NBoundMessage.EMPTY_PARAMS;
+    }
+
+    @Override
+    public Object[] getParamsAsObjects()
     {
         return ArrayUtils.EMPTY_OBJECT_ARRAY;
     }

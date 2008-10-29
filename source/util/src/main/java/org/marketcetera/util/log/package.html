@@ -198,4 +198,15 @@ determine the right translation of a handle into a string (when an
 explicit locale is not supplied). Similarly, all code that needs to
 get/set the active locale should use that class.</p>
 
+
+<h3>Serialization gotcha</h3>
+
+<p>Messages and their providers can be serialized. However, upon
+deserialization (even if it is successful), they are not guaranteed to
+be resolvable (localizable) as the appropriate localization message
+files may not exist in the deserialization context. Even if the files
+exist, the classloader employed by {@link
+org.marketcetera.util.log.I18NMessageProvider} may not be the right
+one. So serialize messages with care.</p>
+
 </body>
