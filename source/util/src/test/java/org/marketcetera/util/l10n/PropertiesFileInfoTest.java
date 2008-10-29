@@ -4,6 +4,7 @@ import java.util.Locale;
 import org.junit.Test;
 import org.marketcetera.util.except.I18NException;
 import org.marketcetera.util.log.I18NBoundMessage1P;
+import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.test.TestCaseBase;
 
 import static org.junit.Assert.*;
@@ -78,14 +79,13 @@ public class PropertiesFileInfoTest
     {
         try {
             new PropertiesFileInfo(TestMessages.PROVIDER,Locale.GERMAN);
+            fail();
         } catch (I18NException ex) {
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.BAD_TEXT,m.getMessage());
-            assertEquals("{0",m.getParam1());
-            return;
+                (ex.getDetail(),
+                 new I18NBoundMessage1P(Messages.BAD_TEXT,"{0"),
+                 ex.getI18NBoundMessage());
         }
-        fail();
     }
 
     @Test
@@ -93,13 +93,15 @@ public class PropertiesFileInfoTest
     {
         try {
             new PropertiesFileInfo(TestMessages.PROVIDER,Locale.FRENCH);
+            fail();
         } catch (I18NException ex) {
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.NONEXISTENT_RESOURCE,m.getMessage());
-            assertEquals("util_l10n_test_messages_fr.properties",m.getParam1());
-            return;
+                (ex.getDetail(),
+                 new I18NBoundMessage1P
+                 (Messages.NONEXISTENT_RESOURCE,
+                  "util_l10n_test"+I18NMessageProvider.MESSAGE_FILE_EXTENSION+
+                  "_fr.properties"),
+                 ex.getI18NBoundMessage());
         }
-        fail();
     }
 }

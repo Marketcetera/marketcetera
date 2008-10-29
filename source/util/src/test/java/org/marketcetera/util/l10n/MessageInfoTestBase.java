@@ -60,10 +60,5 @@ public class MessageInfoTestBase
     {
         assertEquals(TEST_KEY,info.getKey());
         assertEquals(TEST_PC,info.getParamCount());
-
-        assertTrue(info.equals(info));
-
-        assertFalse(info.equals(null));
-        assertFalse(info.equals(0));
     }
 }

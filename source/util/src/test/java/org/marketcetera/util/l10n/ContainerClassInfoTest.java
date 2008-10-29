@@ -115,13 +115,13 @@ public class ContainerClassInfoTest
     {
         try {
             new ContainerClassInfo(EmptyNoProvider.class);
+            fail();
         } catch (I18NException ex) {
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.MISSING_PROVIDER,m.getMessage());
-            assertEquals(EmptyNoProvider.class.getName(),m.getParam1());
-            return;
+                (ex.getDetail(),
+                 new I18NBoundMessage1P(Messages.MISSING_PROVIDER,
+                                        EmptyNoProvider.class.getName()),
+                 ex.getI18NBoundMessage());
         }
-        fail();
     }
 }
