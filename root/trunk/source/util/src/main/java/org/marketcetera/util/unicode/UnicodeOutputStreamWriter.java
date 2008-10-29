@@ -302,8 +302,8 @@ public class UnicodeOutputStreamWriter
     }
 
     /**
-     * Returns the receiver's actual signature/charset (i.e. the one
-     * in use to encode the stream).
+     * Returns the receiver's actual signature/charset (that is, the
+     * one in use to encode the stream).
      *
      * @return The signature/charset, which may be null if the default
      * JVM charset is used.
