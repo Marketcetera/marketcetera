@@ -2,6 +2,7 @@ package org.marketcetera.util.misc;
 
 import java.util.Arrays;
 import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.junit.Test;
 import org.marketcetera.util.test.TestCaseBase;
 
@@ -26,13 +27,13 @@ public class CollectionUtilsTest
                    (Arrays.asList(new Integer[] {})));
         assertNull(CollectionUtils.getLastNonNull
                    (Arrays.asList(new Integer[] {null})));
-        assertEquals(new Integer(1),CollectionUtils.getLastNonNull
+        assertEquals(NumberUtils.INTEGER_ONE,CollectionUtils.getLastNonNull
                      (Arrays.asList(1)));
-        assertEquals(new Integer(2),CollectionUtils.getLastNonNull
-                     (Arrays.asList(1,null,2,null)));
-        assertEquals(new Integer(2),CollectionUtils.getLastNonNull
-                     (Arrays.asList(1,null,null,2)));
-        assertEquals(new Integer(1),CollectionUtils.getLastNonNull
+        assertEquals(NumberUtils.INTEGER_ONE,CollectionUtils.getLastNonNull
+                     (Arrays.asList(2,null,1,null)));
+        assertEquals(NumberUtils.INTEGER_ONE,CollectionUtils.getLastNonNull
+                     (Arrays.asList(2,null,null,1)));
+        assertEquals(NumberUtils.INTEGER_ONE,CollectionUtils.getLastNonNull
                      (Arrays.asList(1,null,null)));
     }
 
