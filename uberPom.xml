@@ -26,7 +26,9 @@
     <mvn.public.package>org.marketcetera</mvn.public.package>
     <mvn.javase.version>6</mvn.javase.version>
     <mvn.javaee.version>5</mvn.javaee.version>
-    <mvn.xjc.version>2.1.3</mvn.xjc.version>
+    <mvn.spring.version>2.5.2</mvn.spring.version>
+    <!-- Match version used by org.apache.cxf.cxf-rt-frontend-jaxws. -->
+    <mvn.xjc.version>2.1.7</mvn.xjc.version>
     <mvn.eclipse.version>3.4.1</mvn.eclipse.version>
   </properties>
 
@@ -47,11 +49,6 @@
       <dependency>
         <groupId>${mvn.public.package}</groupId>
         <artifactId>misc</artifactId>
-        <version>[${project.version}]</version>
-      </dependency>
-      <dependency>
-        <groupId>${mvn.public.package}</groupId>
-        <artifactId>market</artifactId>
         <version>[${project.version}]</version>
       </dependency>
 
@@ -75,14 +72,26 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxws</artifactId>
+        <version>[2.1.2]</version>
+        <exclusions>
+          <!-- Exclude jaxb-xjc: nonessential and confuses photon bundle. -->
+          <exclusion>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring</artifactId>
-        <version>[2.5.2]</version>
+        <version>[${mvn.spring.version}]</version>
       </dependency>
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-webmvc</artifactId>
-        <version>[2.5.2]</version>
+        <version>[${mvn.spring.version}]</version>
       </dependency>
       <dependency>
         <groupId>org.skife.kasparov</groupId>
@@ -164,6 +173,18 @@
 
       <!-- Runtime. -->
       <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>[${mvn.spring.version}]</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>[1.5.0]</version>
@@ -194,6 +215,19 @@
         <scope>runtime</scope>
       </dependency>
       <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-transports-http-jetty</artifactId>
+        <version>[2.1.2]</version>
+        <scope>runtime</scope>
+        <exclusions>
+          <!-- Exclude slf4j-jdk14, let application choose slf4j binding. -->
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
         <version>[1.1.1]</version>
@@ -222,6 +256,19 @@
         <artifactId>hibernate-entitymanager</artifactId>
         <version>[3.3.2.GA]</version>
         <scope>runtime</scope>
+        <exclusions>
+          <!-- Exclude cglib variant that conflicts with spring. -->
+          <exclusion>
+            <groupId>cglib</groupId>
+            <artifactId>cglib</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>cglib</groupId>
+        <artifactId>cglib-nodep</artifactId>
+        <version>[2.1_3]</version>
+        <scope>runtime</scope>
       </dependency>
       <dependency>
         <groupId>c3p0</groupId>
@@ -229,9 +276,11 @@
         <version>[0.9.1.1]</version>
         <scope>runtime</scope>
       </dependency>
-      <!-- Used for testing but setting its scope to testing over-rides
-           its scope to testing for cases where it is a transitive runtime
-           dependency -->
+      <!--
+        -  Used for testing, but setting its scope to test here incorrectly
+        -  overrides a scope of runtime, which is required via transitive
+        -  dependencies.
+        -->
       <dependency>
         <groupId>asm</groupId>
         <artifactId>asm</artifactId>
@@ -258,7 +307,7 @@
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
-        <version>[2.5.2]</version>
+        <version>[${mvn.spring.version}]</version>
         <scope>test</scope>
       </dependency>
       <dependency>
@@ -292,7 +341,11 @@
             <configuration>
               <showDeprecation>true</showDeprecation>
               <showWarnings>true</showWarnings>
-              <compilerArgument>-Xlint</compilerArgument>
+              <!--
+                -  Path warnings cause maven to fail, hence excluded; see
+                -  http://jira.codehaus.org/browse/MCOMPILER-59
+                -->
+              <compilerArgument>-Xlint:-path</compilerArgument>
             </configuration>
           </plugin>
         </plugins>
@@ -330,7 +383,20 @@
           <version>2.1-alpha-1</version>
         </plugin>
 
-        <!-- mvn eclipse:eclipse -->
+        <!-- bundle generation. -->
+        <plugin>
+          <groupId>org.apache.felix</groupId>
+          <artifactId>maven-bundle-plugin</artifactId>
+          <version>1.4.3</version>
+        </plugin>
+
+        <!-- mvn dependency:* -->
+        <plugin>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>2.0</version>
+        </plugin>
+
+        <!-- mvn eclipse:* -->
         <plugin>
           <artifactId>maven-eclipse-plugin</artifactId>
           <version>20081024</version>
@@ -342,7 +408,7 @@
           <version>2.2</version>
         </plugin>
 
-        <!-- mvn antrun:run -->
+        <!-- mvn antrun:* -->
         <plugin>
           <artifactId>maven-antrun-plugin</artifactId>
           <version>1.2</version>
@@ -360,7 +426,7 @@
           </dependencies>
         </plugin>
 
-        <!-- mvn exec:exec or exec:java -->
+        <!-- mvn exec:* -->
         <plugin>
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>exec-maven-plugin</artifactId>
@@ -387,7 +453,7 @@
           </configuration>
         </plugin>
 
-        <!-- mvn javadoc:javadoc -->
+        <!-- mvn javadoc:* -->
         <plugin>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>2.5</version>
@@ -415,7 +481,7 @@
           <version>2.1</version>
         </plugin>
 
-        <!-- mvn assembly:assembly -->
+        <!-- mvn assembly:* -->
         <plugin>
           <artifactId>maven-assembly-plugin</artifactId>
           <!-- Version 2.2-beta-2 throws NPE under dependency management. -->
@@ -429,7 +495,9 @@
         <!--
           -  Explicit dependencies are listed here because maven-jaxb2-plugin
           -  uses jaxb 2.1.5 by default, which is different than the xjc
-          -  version included with jdk 1.6 (2.1.3 as of 1.6.0_04).
+          -  version included with jdk 1.6 (2.1.3 as of 1.6.0_07) and that
+          -  required by org.apache.cxf.cxf-rt-frontend-jaxws (2.1.7 as of
+          -  CXF 2.1.2). We match the CXF one because we use CXF at run-time.
           -->
         <plugin>
           <groupId>org.jvnet.jaxb2.maven2</groupId>
@@ -461,24 +529,17 @@
 
   <repositories>
     <!--
-     -  The central repository is included here due to a bug in Maven 2.0.9.
-     -  Without this inclusion, Maven finds commons-i18n in the central repo
-     -  (versions 0.4 and 0.5) and in the Internal repo (20060814). Since
-     -  we need 20060814, Maven downloads the pom from the Internal repo,
-     -  but then tries to fetch the jar from the central repo, where it
-     -  does not exist. Thus Maven fails to resolve the commons-i18n
-     -  artifact. The workaround is to search central ahead of Internal.
-     -->
+      -  The central repository is included here due to a bug in Maven 2.0.9.
+      -  Without this inclusion, Maven finds commons-i18n in the central repo
+      -  (versions 0.4 and 0.5) and in the Internal repo (20yymmdd). Since
+      -  we need 20yymmdd, Maven downloads the pom from the Internal repo,
+      -  but then tries to fetch the jar from the central repo, where it
+      -  does not exist. Thus Maven fails to resolve the commons-i18n
+      -  artifact. The workaround is to search central ahead of Internal.
+      -->
     <repository>
       <id>central</id>
       <url>http://repo1.maven.org/maven2</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>codehaus.snapshots</id>
-      <url>http://snapshots.repository.codehaus.org/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
