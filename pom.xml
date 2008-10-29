@@ -33,7 +33,7 @@
 
   <build>
     <plugins>
-      <!-- javadoc customization -->
+      <!-- Add customizations to javadoc. -->
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
