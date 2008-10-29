@@ -26,11 +26,11 @@
 
   <modules>
     <module>core</module>
+    <module>modules</module>
     <module>orderloader</module>
     <module>ors</module>
-    <module>strategyagent</module>
-    <module>modules</module>
     <module>photon</module>
+    <module>strategyagent</module>
     <module>util</module>
     <module>util-test</module>
   </modules>
