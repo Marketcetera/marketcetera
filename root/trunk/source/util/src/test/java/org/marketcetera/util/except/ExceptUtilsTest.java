@@ -3,7 +3,10 @@ package org.marketcetera.util.except;
 import java.io.InterruptedIOException;
 import java.nio.channels.ClosedByInterruptException;
 import java.nio.channels.FileLockInterruptionException;
+import java.rmi.activation.ActivationException;
+import java.rmi.activation.UnknownObjectException;
 import javax.naming.InterruptedNamingException;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.log4j.Level;
 import org.junit.Before;
 import org.junit.Test;
@@ -59,9 +62,11 @@ public class ExceptUtilsTest
         I18NException out=ExceptUtils.wrap
             (ex,new I18NBoundMessage1P
              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
-        I18NBoundMessage1P m=(I18NBoundMessage1P)out.getI18NBoundMessage();
-        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
-        assertEquals(MID_MSG_PARAM,m.getParam1());
+
+        assertEquals
+            (out.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             out.getI18NBoundMessage());
         assertEquals(ex,out.getCause());
         assertTrue(out instanceof I18NException);
         assertEquals(interruption,out instanceof I18NInterruptedException);
@@ -76,9 +81,10 @@ public class ExceptUtilsTest
         I18NRuntimeException outR=ExceptUtils.wrapRuntime
             (ex,new I18NBoundMessage1P
              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
-        m=(I18NBoundMessage1P)outR.getI18NBoundMessage();
-        assertEquals(TestMessages.MID_EXCEPTION,m.getMessage());
-        assertEquals(MID_MSG_PARAM,m.getParam1());
+        assertEquals
+            (outR.getDetail(),
+             new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM),
+             outR.getI18NBoundMessage());
         assertEquals(ex,outR.getCause());
         assertTrue(outR instanceof I18NRuntimeException);
         assertEquals(interruption,
@@ -91,6 +97,28 @@ public class ExceptUtilsTest
         assertEquals(interruption,
                      outR instanceof I18NInterruptedRuntimeException);
         assertEquals(interruption,Thread.interrupted());
+    }
+
+    private static void equalityHelper
+        (Throwable t1,
+         Throwable t2,
+         Throwable[] diffs)
+    {
+        assertTrue(ExceptUtils.areEqual(t1,t1));
+
+        assertTrue(ExceptUtils.areEqual(t1,t2));
+        assertTrue(ExceptUtils.areEqual(t2,t1));
+        assertNotSame(t1,t2);
+
+        for (Throwable t:diffs) {
+            assertFalse(ExceptUtils.areEqual(t1,t));
+            assertFalse(ExceptUtils.areEqual(t,t1));
+        }
+
+        assertFalse(ExceptUtils.areEqual(t1,null));
+        assertFalse(ExceptUtils.areEqual(t1,NumberUtils.INTEGER_ZERO));
+
+        assertEquals(ExceptUtils.getHashCode(t1),ExceptUtils.getHashCode(t2));
     }
 
 
@@ -114,13 +142,12 @@ public class ExceptUtilsTest
         Thread.currentThread().interrupt();
         try {
             ExceptUtils.checkInterruption();
+            fail();
         } catch (InterruptedException ex) {
             assertTrue(Thread.interrupted());
             assertEquals("Thread execution was interrupted",ex.getMessage());
             assertNull(ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -138,13 +165,12 @@ public class ExceptUtilsTest
         Thread.currentThread().interrupt();
         try {
             ExceptUtils.checkInterruption(nested);
+            fail();
         } catch (InterruptedException ex) {
             assertTrue(Thread.interrupted());
             assertEquals("Thread execution was interrupted",ex.getMessage());
             assertEquals(nested,ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -160,13 +186,12 @@ public class ExceptUtilsTest
         Thread.currentThread().interrupt();
         try {
             ExceptUtils.checkInterruption(TEST_MSG_1);
+            fail();
         } catch (InterruptedException ex) {
             assertTrue(Thread.interrupted());
             assertEquals(TEST_MSG_1,ex.getMessage());
             assertNull(ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -184,13 +209,12 @@ public class ExceptUtilsTest
         Thread.currentThread().interrupt();
         try {
             ExceptUtils.checkInterruption(nested,TEST_MSG_1);
+            fail();
         } catch (InterruptedException ex) {
             assertTrue(Thread.interrupted());
             assertEquals(TEST_MSG_1,ex.getMessage());
             assertEquals(nested,ex.getCause());
-            return;
         }
-        fail();
     }
 
     @Test
@@ -251,5 +275,44 @@ public class ExceptUtilsTest
         wrapHelper(new InterruptedNamingException(),true);
         wrapHelper(new I18NInterruptedException(),true);
         wrapHelper(new I18NInterruptedRuntimeException(),true);
+    }
+
+    @Test
+    public void equality()
+    {
+        assertTrue(ExceptUtils.areEqual(null,null));
+        equalityHelper
+            (new ActivationException(TEST_MSG_1),
+             new ActivationException(TEST_MSG_1),
+             new Throwable[] {
+                new ActivationException(),
+                new ActivationException(TEST_MSG_2),
+                new UnknownObjectException(TEST_MSG_1),
+                new I18NException(),
+                null
+            });
+        equalityHelper
+            (new I18NException
+             (new ActivationException(TEST_MSG_1),
+              new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+             new I18NException
+             (new ActivationException(TEST_MSG_1),
+              new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+             new Throwable[] {
+                new I18NException
+                (new ActivationException(TEST_MSG_1)),
+                new I18NException
+                (new ActivationException(TEST_MSG_1),
+                 TestMessages.BOT_EXCEPTION),
+                new I18NException
+                (new ActivationException(TEST_MSG_2),
+                 new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+                new I18NException
+                (new I18NBoundMessage1P
+                 (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+                new ActivationException(TEST_MSG_1),
+                null
+            });
     }
 }

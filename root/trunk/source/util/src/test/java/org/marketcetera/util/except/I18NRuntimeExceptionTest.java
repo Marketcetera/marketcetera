@@ -14,10 +14,35 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 public class I18NRuntimeExceptionTest
     extends I18NThrowableTestBase
 {
+    private final static I18NThrowable[] ALL=new I18NThrowable[] {
+        new I18NRuntimeException(),
+        new I18NRuntimeException
+        (new ArrayStoreException()),
+        new I18NRuntimeException
+        (new ArrayStoreException(TEST_MSG_1)),
+        new I18NRuntimeException
+        (new I18NRuntimeException
+         (new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM))),
+        new I18NRuntimeException
+        (new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NRuntimeException
+        (new ArrayStoreException(),
+         new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NRuntimeException
+        (new ArrayStoreException(TEST_MSG_2),
+         new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NRuntimeException
+        (new I18NRuntimeException(TestMessages.BOT_EXCEPTION),
+         new I18NBoundMessage1P(TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),
+        new I18NError(),
+        null
+    };
+
+
     @Test
     public void empty()
     {
-        empty(new RuntimeException(),new I18NRuntimeException());
+        empty(new RuntimeException(),new I18NRuntimeException(),ALL,0);
     }
 
     @Test
@@ -26,7 +51,7 @@ public class I18NRuntimeExceptionTest
         ArrayStoreException nested=new ArrayStoreException();
         causeWithoutMessage
             (nested,new RuntimeException(nested),
-             new I18NRuntimeException(nested));
+             new I18NRuntimeException(nested),ALL,1);
     }
 
     @Test
@@ -36,7 +61,7 @@ public class I18NRuntimeExceptionTest
             new ArrayStoreException(TEST_MSG_1);
         causeWithMessage
             (nested,new RuntimeException(nested),
-             new I18NRuntimeException(nested));
+             new I18NRuntimeException(nested),ALL,2);
     }
 
     @Test
@@ -47,7 +72,7 @@ public class I18NRuntimeExceptionTest
              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM));
         causeWithI18NMessage
             (nested,new RuntimeException(nested),
-             new I18NRuntimeException(nested));
+             new I18NRuntimeException(nested),ALL,3);
     }
 
     @Test
@@ -57,7 +82,7 @@ public class I18NRuntimeExceptionTest
             (new RuntimeException(TEST_MSG_1),
              new I18NRuntimeException
              (new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,4);
     }
 
     @Test
@@ -68,7 +93,7 @@ public class I18NRuntimeExceptionTest
             (nested,new RuntimeException(TEST_MSG_1,nested),
              new I18NRuntimeException
              (nested,new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,5);
     }
 
     @Test
@@ -80,7 +105,7 @@ public class I18NRuntimeExceptionTest
             (nested,new RuntimeException(TEST_MSG_1,nested),
              new I18NRuntimeException
              (nested,new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,6);
     }
 
     @Test
@@ -92,7 +117,7 @@ public class I18NRuntimeExceptionTest
             (nested,new RuntimeException(TEST_MSG_1,nested),
              new I18NRuntimeException
              (nested,new I18NBoundMessage1P
-              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)));
+              (TestMessages.MID_EXCEPTION,MID_MSG_PARAM)),ALL,7);
     }
 
     @Test
