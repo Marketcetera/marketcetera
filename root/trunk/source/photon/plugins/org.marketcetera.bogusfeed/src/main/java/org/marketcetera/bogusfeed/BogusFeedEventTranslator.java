@@ -3,6 +3,8 @@ package org.marketcetera.bogusfeed;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.event.AbstractEventTranslator;
@@ -33,7 +35,7 @@ public class BogusFeedEventTranslator
     {
         if(!(inData instanceof EventBase)) {
             throw new UnsupportedEventException(new I18NBoundMessage1P(UNKNOWN_EVENT_TYPE,
-                                                                       inData));
+            		ObjectUtils.toString(inData,null)));
         }
         EventBase event = (EventBase)inData;
         updateEventFixMessageSnapshot(event);
