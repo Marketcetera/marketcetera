@@ -128,7 +128,7 @@ public abstract class MessageInfo
         if (this==other) {
             return true;
         }
-        if (!(other instanceof MessageInfo)) {
+        if ((other==null) || !getClass().equals(other.getClass())) {
             return false;
         }
         MessageInfo o=(MessageInfo)other;

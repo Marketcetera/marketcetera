@@ -85,7 +85,7 @@ public class I18NMessageInfo
         if (this==other) {
             return true;
         }
-        if (!(other instanceof I18NMessageInfo)) {
+        if ((other==null) || !getClass().equals(other.getClass())) {
             return false;
         }
         I18NMessageInfo o=(I18NMessageInfo)other;
