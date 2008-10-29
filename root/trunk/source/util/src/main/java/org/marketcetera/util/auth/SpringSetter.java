@@ -89,7 +89,7 @@ public abstract class SpringSetter<T extends Holder<?>>
      * Injects the receiver's proxy bean into the given context. The
      * injected bean is assigned a unique name based on the given
      * index. The given properties are augmented with a default value
-     * (empty string, i.e. do-not-touch-holder) for the receiver's
+     * (empty string, that is, do-not-touch-holder) for the receiver's
      * property.
      *
      * @param context The context.

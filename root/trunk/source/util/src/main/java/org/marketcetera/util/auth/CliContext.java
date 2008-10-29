@@ -85,8 +85,8 @@ public class CliContext
 
     /**
      * Returns the receiver's parsed command-line. It may be null if
-     * the receiver never had a reason to parse the command-line
-     * (e.g. a non-override context which is asked to set values after
+     * the receiver never had a reason to parse the command-line (such
+     * as a non-override context which is asked to set values after
      * all values have already been set).
      *
      * @return The parsed command-line.

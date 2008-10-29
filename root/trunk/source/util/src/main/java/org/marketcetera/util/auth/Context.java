@@ -67,9 +67,10 @@ public abstract class Context<T extends Setter<?>>
 
     /**
      * Checks whether the receiver should process the specified
-     * setter, i.e. attempt to use it to set the holder data. Override
-     * contexts will always process all setters; non-override contexts
-     * will only process setters whose data is not yet set.
+     * setter, that is, attempt to use it to set the holder
+     * data. Override contexts will always process all setters;
+     * non-override contexts will only process setters whose data is
+     * not yet set.
      *
      * @param setter The setter.
      *
