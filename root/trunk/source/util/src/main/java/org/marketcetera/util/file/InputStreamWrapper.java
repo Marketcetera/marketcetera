@@ -15,8 +15,8 @@ import static org.marketcetera.util.file.SpecialNames.*;
  * input stream, or any other {@link InputStream} instance. This
  * wrapper is intended to wrap {@link InputStream} instances for use
  * with {@link CloseableRegistry}, hence such instances should not be
- * closed directly, i.e. without going through the wrapper's {@link
- * #close()} method.
+ * closed directly, that is, without going through the wrapper's
+ * {@link #close()} method.
  *
  * @author tlerios@marketcetera.com
  * @since 0.5.0
