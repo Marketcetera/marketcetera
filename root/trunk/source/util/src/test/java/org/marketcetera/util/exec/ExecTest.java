@@ -309,15 +309,15 @@ public class ExecTest
     {
         try {
             Exec.run((File)null,Disposition.MEMORY,TEST_NONEXISTENT_FILE);
+            fail();
         } catch (I18NException ex) {
             assertFalse(ex instanceof I18NInterruptedException);
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_EXECUTE,m.getMessage());
-            assertEquals(TEST_NONEXISTENT_FILE,m.getParam1());
-            return;
+                (ex.getDetail(),
+                 new I18NBoundMessage1P(Messages.CANNOT_EXECUTE,
+                                        TEST_NONEXISTENT_FILE),
+                 ex.getI18NBoundMessage());
         }
-        fail();
     }
 
     @Test
@@ -325,15 +325,14 @@ public class ExecTest
     {
         try {
             run(TEST_NONEXISTENT_FILE,Disposition.MEMORY,DIR_ROOT);
+            fail();
         } catch (I18NException ex) {
             assertFalse(ex instanceof I18NInterruptedException);
-            I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
             assertEquals
-                (ex.getDetail(),Messages.CANNOT_EXECUTE,m.getMessage());
-            assertEquals(getJava(),m.getParam1());
-            return;
+                (ex.getDetail(),
+                 new I18NBoundMessage1P(Messages.CANNOT_EXECUTE,getJava()),
+                 ex.getI18NBoundMessage());
         }
-        fail();
     }
 
     @Test
@@ -347,10 +346,10 @@ public class ExecTest
         Thread.sleep(SLEEP_DURATION);
         I18NException ex=child.getException();
         assertTrue(ex instanceof I18NInterruptedException);
-        I18NBoundMessage1P m=(I18NBoundMessage1P)ex.getI18NBoundMessage();
         assertEquals
-            (ex.getDetail(),Messages.UNEXPECTED_TERMINATION,m.getMessage());
-        assertEquals(getJava(),m.getParam1());
+            (ex.getDetail(),
+             new I18NBoundMessage1P(Messages.UNEXPECTED_TERMINATION,getJava()),
+             ex.getI18NBoundMessage());
     }
 
     /*
