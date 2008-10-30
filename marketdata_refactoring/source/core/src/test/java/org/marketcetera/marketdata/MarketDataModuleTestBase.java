@@ -27,6 +27,7 @@ import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.SinkDataListener;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -230,6 +231,9 @@ public abstract class MarketDataModuleTestBase
                                  Object inData)
         {
             synchronized(data) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Test DataSink received {}",
+                                       inData);
                 List<Object> dataForID = data.get(inDataFlowID);
                 if(dataForID == null) {
                     dataForID = new ArrayList<Object>();
