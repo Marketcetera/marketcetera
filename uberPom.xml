@@ -106,7 +106,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
-        <version>[1.5.0]</version>
+        <version>[1.5.3]</version>
       </dependency>
       <dependency>
         <groupId>commons-io</groupId>
@@ -187,7 +187,7 @@
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
-        <version>[1.5.0]</version>
+        <version>[1.5.3]</version>
         <scope>runtime</scope>
       </dependency>
       <dependency>
@@ -529,14 +529,14 @@
 
   <repositories>
     <!--
-      -  The central repository is included here due to a bug in Maven 2.0.9.
-      -  Without this inclusion, Maven finds commons-i18n in the central repo
+     -  The central repository is included here due to a bug in Maven 2.0.9.
+     -  Without this inclusion, Maven finds commons-i18n in the central repo
       -  (versions 0.4 and 0.5) and in the Internal repo (20yymmdd). Since
       -  we need 20yymmdd, Maven downloads the pom from the Internal repo,
-      -  but then tries to fetch the jar from the central repo, where it
-      -  does not exist. Thus Maven fails to resolve the commons-i18n
-      -  artifact. The workaround is to search central ahead of Internal.
-      -->
+     -  but then tries to fetch the jar from the central repo, where it
+     -  does not exist. Thus Maven fails to resolve the commons-i18n
+     -  artifact. The workaround is to search central ahead of Internal.
+     -->
     <repository>
       <id>central</id>
       <url>http://repo1.maven.org/maven2</url>
