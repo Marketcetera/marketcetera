@@ -567,6 +567,9 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      */
     protected final void setFeedStatus(FeedStatus inFeedStatus)
     {
+        SLF4JLoggerProxy.debug(this,
+                               "Setting feed status to {}", //$NON-NLS-1$
+                               inFeedStatus);
         if(inFeedStatus == null) {
             throw new NullPointerException();
         }
@@ -817,7 +820,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      *
      * @return a <code>AbstractMarketDataFeed</code> value
      */
-    private C getLatestCredentials()
+    protected final C getLatestCredentials()
     {
         return mLatestCredentials;
     }

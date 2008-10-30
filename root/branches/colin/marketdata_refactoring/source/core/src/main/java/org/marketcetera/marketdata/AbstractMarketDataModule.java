@@ -27,6 +27,7 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import static org.marketcetera.marketdata.Messages.*;
 
 /* $License$ */
 
@@ -167,8 +168,8 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
     /**
      * Create a new AbstractMarketDataModule instance.
      *
-     * @param inInstanceURN
-     * @param inFeed
+     * @param inInstanceURN a <code>ModuleURN</code> value containing the URN of the module
+     * @param inFeed an <code>IMarketDataFeed&lt;T,C&gt;</code> value containing the instance of the market data feed that this module wraps
      */
     protected AbstractMarketDataModule(ModuleURN inInstanceURN,
                                        IMarketDataFeed<T,C> inFeed)
@@ -180,7 +181,7 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
         feedStatus = feed.getFeedStatus();
         MBeanNotificationInfo notifyInfo = new MBeanNotificationInfo(new String[] { AttributeChangeNotification.ATTRIBUTE_CHANGE },
                                                                      AttributeChangeNotification.class.getName(),
-                                                                     "An attribute of this MBean has changed");  // TODO message catalog
+                                                                     BEAN_ATTRIBUTE_CHANGED.getText());
         mNotificationDelegate = new NotificationBroadcasterSupport(notifyInfo);
         feed.addFeedComponentListener(new IFeedComponentListener() {
             @Override
@@ -209,19 +210,27 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
         feed.stop();
     }
     /**
-     * 
+     * Returns a credentials instance relevant to this feed.
      *
-     *
-     * @return
-     * @throws CoreException 
+     * @return a <code>C</code> value
+     * @throws CoreException if the credentials object cannot be created
      */
     protected abstract C getCredentials()
         throws CoreException;
     /**
+     * 
+     *
+     *
+     * @return
+     */
+    protected final IMarketDataFeed<T,C> getFeed()
+    {
+        return feed;
+    }
+    /**
      * Sets the feed status as tracked by the module.
      *
-     *
-     * @param inNewFeedStatus
+     * @param inNewFeedStatus a <code>FeedStatus</code> value
      */
     private void setFeedStatus(FeedStatus inNewFeedStatus)
     {
@@ -231,16 +240,34 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
         mNotificationDelegate.sendNotification(new AttributeChangeNotification(this,
                                                                                mSequence.getAndIncrement(),
                                                                                System.currentTimeMillis(),
-                                                                               "Feed Status Changed", // TODO message catalog
-                                                                               "FeedStatus",
-                                                                               "String",
+                                                                               FEED_STATUS_CHANGED.getText(),
+                                                                               "FeedStatus", //$NON-NLS-1$
+                                                                               "String", //$NON-NLS-1$
                                                                                newStatusString,
                                                                                oldStatusString));
     }
+    /**
+     * this is the unique instance URN of the module
+     */
     private final ModuleURN instanceURN;
+    /**
+     * the actual feed object that handles market data requests
+     */
     private final IMarketDataFeed<T,C> feed;
+    /**
+     * tracks the tokens of active data requests
+     */
     private final Map<RequestID,T> tokens = new HashMap<RequestID,T>();
+    /**
+     * provides JMX notification services
+     */
     private final NotificationBroadcasterSupport mNotificationDelegate;
+    /**
+     * counter providing increasing sequence of values unique to this JVM instance 
+     */
     private final AtomicLong mSequence = new AtomicLong();
+    /**
+     * the feed status of the underlying feed object 
+     */
     private FeedStatus feedStatus;
 }

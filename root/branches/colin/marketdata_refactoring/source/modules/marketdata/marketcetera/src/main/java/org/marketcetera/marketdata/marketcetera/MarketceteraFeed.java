@@ -82,16 +82,13 @@ public class MarketceteraFeed
                                    MarketceteraFeed> 
     implements Application, Messages 
 {
-	private int serverPort;
-	private String server;
 	private SessionID sessionID;
 	private final IDFactory idFactory;
 	private FeedType feedType;
 	private boolean isRunning = false;
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
-	private Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
-	private final String url;
+	private final Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
 
 	private FIXCorrelationFieldSubscription doQuery(Message query) {
 		try {
@@ -185,50 +182,105 @@ public class MarketceteraFeed
 	{
 	    isRunning = inIsRunning;
 	}
-
-	public void start() 
+	/**
+	 * Creates an active connection to the Marketcetera Exchange server.
+	 *
+	 * <p>Attempts to connect to the server with the most recent set of credentials available.  If there
+	 * is already an active connection, this method does nothing.  This method will block for 30 seconds
+	 * while waiting for confirmation from the server.  If at the end of 30 seconds the server has not
+	 * responded, this method throws a <code>FeedException</code>.  This method updates the feed status
+	 * based on the results of the connection attempt.
+	 * 
+	 * @throws FeedException if a connection cannot be made to the server 
+	 */
+	private void connectToServer()
+	    throws Exception
 	{
-		synchronized(this) {
-			try {
-				if (!isRunning()) {
-				    CONNECTION_STARTED.info(this, 
-				                            url);
-					MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
-					SessionSettings sessionSettings;
-					sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("fixdatafeed.properties")); //$NON-NLS-1$
-					sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
-					sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
-	
-					File workspaceDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
-					File quoteFeedLogDir = new File(workspaceDir,
-					                                "marketdata"); //$NON-NLS-1$
-					if (!quoteFeedLogDir.exists())
-					{
-						quoteFeedLogDir.mkdir();
-					}
-					sessionSettings.setString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH, quoteFeedLogDir.getCanonicalPath());
-	
-					LogFactory logFactory = new EventLogFactory(sessionSettings);
-					messageFactory = new MessageFactory();
-					socketInitiator = new SocketInitiator(this, messageStoreFactory, sessionSettings, logFactory, messageFactory);
-					socketInitiator.start();
-					setIsRunning(true);
-					// this method intentionally does not call super.start() because the actual start mechanism happens in fromAdmin
-				}
-			} catch (Throwable t) {
-			    CANNOT_START_FEED.error(this,
-			                            t);
-				setFeedStatus(FeedStatus.ERROR);
-			}
-		}
-	}
+        SLF4JLoggerProxy.debug(this,
+                               "Checking connection to Marketcetera Feed"); //$NON-NLS-1$
+	    if(isRunning()) {
+	        SLF4JLoggerProxy.debug(this,
+                                   "Already connected to Marketcetera Feed"); //$NON-NLS-1$
+	        return;
+	    }
+	    MarketceteraFeedCredentials credentials = getLatestCredentials();
+        if(credentials == null) {
+            SLF4JLoggerProxy.debug(this,
+                                   "No credentials to work with, cancelling connection request - try again later"); //$NON-NLS-1$
+        }
+        SLF4JLoggerProxy.debug(this,
+                               "Not connected yet, connecting with credentials [{}]...", //$NON-NLS-1$
+                               credentials);
+        String url = credentials.getURL();
+        URI feedURI = new URI(url);
+        int serverPort = feedURI.getPort();
+        if ((serverPort) < 0){
+            throw new FeedException(URI_MISSING_PORT);
+        }
+        String server = feedURI.getHost();
+        String senderCompID = credentials.getSenderCompID();
+        if (senderCompID == null || 
+                senderCompID.length() == 0) {
+                senderCompID = idFactory.getNext();
+            }
+        String targetCompID = credentials.getTargetCompID();
+        String scheme;
+        if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ) {
+            throw new CoreException(UNSUPPORTED_FIX_VERSION);
+        } else {
+            sessionID = new SessionID(scheme, 
+                                      senderCompID, 
+                                      targetCompID);
+        }
+        synchronized(this) {
+            try {
+                setFeedStatus(FeedStatus.OFFLINE);
+                CONNECTION_STARTED.info(this, 
+                                        url);
+                MessageStoreFactory messageStoreFactory = new MemoryStoreFactory();
+                SessionSettings sessionSettings;
+                sessionSettings = new SessionSettings(MarketceteraFeed.class.getClassLoader().getResourceAsStream("fixdatafeed.properties")); //$NON-NLS-1$
+                sessionSettings.setString(sessionID, Initiator.SETTING_SOCKET_CONNECT_HOST, server);
+                sessionSettings.setLong(sessionID, Initiator.SETTING_SOCKET_CONNECT_PORT, serverPort);
 
+                File workspaceDir = new File(System.getProperty("java.io.tmpdir")); //$NON-NLS-1$
+                File quoteFeedLogDir = new File(workspaceDir,
+                                                "marketdata"); //$NON-NLS-1$
+                if (!quoteFeedLogDir.exists())
+                {
+                    quoteFeedLogDir.mkdir();
+                }
+                sessionSettings.setString(sessionID, FileLogFactory.SETTING_FILE_LOG_PATH, quoteFeedLogDir.getCanonicalPath());
+
+                LogFactory logFactory = new EventLogFactory(sessionSettings);
+                messageFactory = new MessageFactory();
+                socketInitiator = new SocketInitiator(this, messageStoreFactory, sessionSettings, logFactory, messageFactory);
+                socketInitiator.start();
+                SLF4JLoggerProxy.debug(this,
+                                       "Connected, waiting for confirmation"); //$NON-NLS-1$
+                wait(1000*30);
+                if(!getFeedStatus().equals(FeedStatus.AVAILABLE)) {
+                    throw new FeedException(CANNOT_START_FEED);
+                }
+                setIsRunning(true);
+                SLF4JLoggerProxy.debug(this,
+                                       "Connection confirmed, ready to proceed"); //$NON-NLS-1$
+            } catch (FeedException e) {
+                SLF4JLoggerProxy.debug(this,
+                                       "Connection attempt failed!"); //$NON-NLS-1$
+                CANNOT_START_FEED.error(this,
+                                        e);
+                setFeedStatus(FeedStatus.ERROR);
+                throw e;
+            }
+        }
+	}
 	public void stop() 
 	{
 		synchronized(this) {
 			if (isRunning()) {
 			    CONNECTION_STOPPED.info(this,
-			                            url);
+			                            getLatestCredentials().getURL());
 				socketInitiator.stop(true);
 				setIsRunning(false);
 				super.stop();
@@ -343,32 +395,12 @@ public class MarketceteraFeed
 	    super(FeedType.UNKNOWN,
 	          inProviderName,
 	          inCredentials);
-        url = inCredentials.getURL();
         try {
             idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
                                               String.format("-%s-", //$NON-NLS-1$
                                                             InetAddress.getLocalHost().toString()));
         } catch (UnknownHostException e) {
             throw new IllegalArgumentException(e);
-        }
-        URI feedURI = new URI(url);
-        if ((serverPort = feedURI.getPort()) < 0){
-            throw new CoreException(URI_MISSING_PORT);
-        }
-        server = feedURI.getHost();
-        String senderCompID = inCredentials.getSenderCompID();
-        if (senderCompID == null || 
-                senderCompID.length() == 0) {
-                senderCompID = idFactory.getNext();
-            }
-        String targetCompID = inCredentials.getTargetCompID();
-        String scheme;
-        if (!FIXDataDictionary.FIX_4_4_BEGIN_STRING.equals(scheme = feedURI.getScheme()) ) {
-            throw new CoreException(UNSUPPORTED_FIX_VERSION);
-        } else {
-            sessionID = new SessionID(scheme, 
-                                      senderCompID, 
-                                      targetCompID);
         }
 	}
 	/**
@@ -559,9 +591,10 @@ public class MarketceteraFeed
      */
     @Override
     protected List<String> doMarketDataRequest(Message inData)
-            throws InterruptedException, FeedException
+            throws FeedException
     {
         try {
+            connectToServer();
             SLF4JLoggerProxy.debug(this,
                                    "MarketceteraFeed received market data request {}", //$NON-NLS-1$
                                    inData);
@@ -577,8 +610,8 @@ public class MarketceteraFeed
                                    "MarketceteraFeed posted query and received handle(s) {}", //$NON-NLS-1$
                                    Arrays.toString(handles.toArray()));
             return handles;
-        } catch (Throwable t) {
-            throw new FeedException(t);
+        } catch (Exception e) {
+            throw new FeedException(e);
         }
     }
 }

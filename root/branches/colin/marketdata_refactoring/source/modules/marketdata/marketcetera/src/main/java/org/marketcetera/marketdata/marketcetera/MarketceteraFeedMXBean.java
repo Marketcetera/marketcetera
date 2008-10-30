@@ -3,6 +3,7 @@ package org.marketcetera.marketdata.marketcetera;
 import javax.management.MXBean;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.AbstractMarketDataModuleMXBean;
 import org.marketcetera.module.DisplayName;
 
 /* $License$ */
@@ -18,6 +19,7 @@ import org.marketcetera.module.DisplayName;
 @MXBean(true)
 @DisplayName("Management Interface for Marketcetera Marketdata Feed")
 public interface MarketceteraFeedMXBean
+    extends AbstractMarketDataModuleMXBean
 {
     @DisplayName("The URL for the Marketcetera Exchange Server")
     public String getURL();
