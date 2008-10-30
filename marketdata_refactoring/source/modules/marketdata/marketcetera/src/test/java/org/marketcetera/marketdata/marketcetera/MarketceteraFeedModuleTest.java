@@ -12,7 +12,7 @@ import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvid
  * Tests {@link MarketceteraFeedModule}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 public class MarketceteraFeedModuleTest

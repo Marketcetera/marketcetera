@@ -93,4 +93,8 @@ public interface Messages
                                                                         "missing_request_type"); //$NON-NLS-1$
     static final I18NMessage2P POORLY_CONSTRUCTED_REQUEST_SUBCLASS = new I18NMessage2P(LOGGER,
                                                                                        "poorly_constructed_request_subclass"); //$NON-NLS-1$
+    static final I18NMessage0P BEAN_ATTRIBUTE_CHANGED = new I18NMessage0P(LOGGER,
+                                                                          "bean_attribute_changed"); //$NON-NLS-1$
+    static final I18NMessage0P FEED_STATUS_CHANGED = new I18NMessage0P(LOGGER,
+                                                                       "feed_status_changed"); //$NON-NLS-1$
 }

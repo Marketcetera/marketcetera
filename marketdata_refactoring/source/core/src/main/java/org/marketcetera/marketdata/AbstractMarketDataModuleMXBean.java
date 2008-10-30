@@ -8,7 +8,8 @@ import org.marketcetera.module.DisplayName;
 /* $License$ */
 
 /**
- *
+ * <code>MXBean</code> interface for an {@link AbstractMarketDataModule} enumerating the <code>MXBean</code>
+ * methods available.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$

@@ -34,7 +34,7 @@ import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvid
  * Base class for market data provider <code>Module</code> tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 public abstract class MarketDataModuleTestBase
