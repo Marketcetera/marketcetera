@@ -12,7 +12,7 @@ import org.marketcetera.module.ModuleURN;
  * Tests {@link BogusFeedModule}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 public class BogusFeedModuleTest
