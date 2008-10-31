@@ -4,9 +4,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.ConfigFileLoadingException;
 import org.marketcetera.ors.OrderRoutingSystem;
 import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.persist.PersistTestBase;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
@@ -57,10 +55,10 @@ public class ORSStartupTest extends TestCase {
 
         // call through to the FIXDataDictionary in a way that doesn't explicitly load the dictionary
         assertNotNull("fix dictionary not initialized", //$NON-NLS-1$
-                FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldName(Symbol.FIELD));
-        assertEquals("wrong fix version: " + FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().getVersion(), //$NON-NLS-1$
+                CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldName(Symbol.FIELD));
+        assertEquals("wrong fix version: " + CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary().getVersion(), //$NON-NLS-1$
                 FIXDataDictionary.FIX_4_2_BEGIN_STRING,
-                FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().getVersion());
+                CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary().getVersion());
     }
 
     @Override

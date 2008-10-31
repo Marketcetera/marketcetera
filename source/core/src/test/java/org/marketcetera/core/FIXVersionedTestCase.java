@@ -1,10 +1,7 @@
 package org.marketcetera.core;
 
 import junit.framework.TestCase;
-import org.marketcetera.quickfix.FIXDataDictionary;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.*;
 
 /**
  * Subclass of the regular {@link junit.framework.TestCase} that also knows
@@ -33,7 +30,7 @@ public abstract class FIXVersionedTestCase extends TestCase {
             FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryURL());
             fixDD = FIXDataDictionaryManager.getFIXDataDictionary(fixVersion);
         }
-        FIXDataDictionaryManager.initialize(fixVersion, fixDD);
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(fixDD);
     }
 
     public String getName() {

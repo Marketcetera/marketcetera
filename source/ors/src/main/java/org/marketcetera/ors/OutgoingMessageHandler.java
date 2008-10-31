@@ -141,7 +141,7 @@ public class OutgoingMessageHandler {
                 String msgType = message.getHeader().getString(MsgType.FIELD);
                 returnExecReport = createBusinessMessageReject(msgType,
                         Messages.ERROR_UNSUPPORTED_ORDER_TYPE.getText(
-                        FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType)));
+                        CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType)));
             } catch (FieldNotFound fieldNotFound) {
                 returnExecReport = createBusinessMessageReject("UNKNOWN", Messages.ERROR_UNSUPPORTED_ORDER_TYPE.getText("UNKNOWN")); //$NON-NLS-1$ //$NON-NLS-2$
             }

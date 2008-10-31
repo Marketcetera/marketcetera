@@ -65,7 +65,7 @@ public class NullQuickFIXSender implements IQuickFIXSender {
             if (SLF4JLoggerProxy.isDebugEnabled(this)) {
                 String humanSide = null;
                 try {
-                    humanSide = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(Side.FIELD,
+                    humanSide = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(Side.FIELD,
                                                                                                           ""+message.getChar(Side.FIELD)); //$NON-NLS-1$
                 } catch (FieldNotFound fieldNotFound) {
                     //ignore

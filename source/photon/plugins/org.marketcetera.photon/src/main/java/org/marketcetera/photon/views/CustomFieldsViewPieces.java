@@ -14,7 +14,7 @@ import org.eclipse.ui.forms.widgets.Section;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 
@@ -120,7 +120,7 @@ public class CustomFieldsViewPieces
 
 	public void addCustomFields(Message message) throws CoreException {
 		TableItem[] items = customFieldsTable.getItems();
-		DataDictionary dictionary = FIXDataDictionaryManager
+		DataDictionary dictionary = CurrentFIXDataDictionary
 				.getCurrentFIXDataDictionary().getDictionary();
 		for (TableItem item : items) {
 			if (item.getChecked()) {

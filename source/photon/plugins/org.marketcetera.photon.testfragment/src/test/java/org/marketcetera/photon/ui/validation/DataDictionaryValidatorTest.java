@@ -42,7 +42,8 @@ public class DataDictionaryValidatorTest extends FIXVersionedTestCase {
 		
 		assertEquals(IStatus.OK, validator.validate(TimeInForce.IMMEDIATE_OR_CANCEL).getSeverity());
 		int result = validator.validate(TimeInForce.AT_THE_CLOSE).getSeverity();
-		if (fixVersion.getVersionAsDouble() >= 4.3)
+		double version = fixVersion.getVersionAsDouble();
+		if (version >= 4.3 || version == 0.0)
 		{
 			assertEquals(IStatus.OK, result);
 		} else {

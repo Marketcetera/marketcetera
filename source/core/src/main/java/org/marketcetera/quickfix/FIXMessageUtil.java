@@ -308,7 +308,7 @@ public class FIXMessageUtil {
     {
         try {
             String msgType = outgoingMessage.getHeader().getString(MsgType.FIELD);
-            DataDictionary dict = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
+            DataDictionary dict = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary();
             for (int fieldInt = 1; fieldInt < MAX_FIX_FIELDS; fieldInt++){
                 if ((!onlyCopyRequiredFields || dict.isRequiredField(msgType,
 						fieldInt))
@@ -362,7 +362,7 @@ public class FIXMessageUtil {
     public static boolean isRequiredField(String msgType, int whichField){
     	boolean required = false;
 		try {
-			DataDictionary dictionary = FIXDataDictionaryManager
+			DataDictionary dictionary = CurrentFIXDataDictionary
 					.getCurrentFIXDataDictionary().getDictionary();
 			required = dictionary.isRequiredField(msgType, whichField);
 		} catch (Exception anyException) {
@@ -375,7 +375,7 @@ public class FIXMessageUtil {
     public static boolean isValidField(int whichField) {
 		boolean valid = false;
 		try {
-			DataDictionary dictionary = FIXDataDictionaryManager
+			DataDictionary dictionary = CurrentFIXDataDictionary
 					.getCurrentFIXDataDictionary().getDictionary();
 			valid = dictionary.isField(whichField);
 		} catch (Exception anyException) {

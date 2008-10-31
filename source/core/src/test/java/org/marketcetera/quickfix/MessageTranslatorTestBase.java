@@ -61,9 +61,10 @@ public abstract class MessageTranslatorTestBase<T>
             throws Exception
     {
         super.setUp();
-        FIXDataDictionaryManager.initialize(AbstractMessageTranslator.sMessageVersion, 
-                                            AbstractMessageTranslator.sMessageVersion.getDataDictionaryURL());
-        mFIXDataDictionary = FIXDataDictionaryManager.getFIXDataDictionary(AbstractMessageTranslator.sMessageVersion);
+        mFIXDataDictionary = FIXDataDictionaryManager.initialize(
+                AbstractMessageTranslator.sMessageVersion,
+                AbstractMessageTranslator.sMessageVersion.getDataDictionaryURL());
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(mFIXDataDictionary);
     }
 
     public void testRoundTrip()

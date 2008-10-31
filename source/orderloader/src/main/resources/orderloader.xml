@@ -51,7 +51,8 @@
       <property name="staticField" value="org.marketcetera.quickfix.FIXVersion.FIX42"/>
     </bean>
 
-    <bean id="fixDataDictionaryMgr" class="org.marketcetera.quickfix.FIXDataDictionaryManager" scope="singleton">
+    <bean id="fixDataDictionary" class="org.marketcetera.quickfix.FIXDataDictionaryManager"
+          factory-method="initialize" scope="singleton">
         <constructor-arg ref="fixVersionEnum"/>
         <constructor-arg ref="fixDictionaryPath"/>
     </bean>

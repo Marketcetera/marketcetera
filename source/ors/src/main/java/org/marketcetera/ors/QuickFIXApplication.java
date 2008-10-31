@@ -80,7 +80,7 @@ public class QuickFIXApplication implements Application {
 
         if (FIXMessageUtil.isTradingSessionStatus(message)) {
             Messages.TRADE_SESSION_STATUS.debug(this, 
-                                                FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD, message.getString(TradSesStatus.FIELD)));
+                                                CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(TradSesStatus.FIELD, message.getString(TradSesStatus.FIELD)));
         }
     }
 
@@ -130,7 +130,7 @@ public class QuickFIXApplication implements Application {
                 try {
                     String origText = message.getString(Text.FIELD);
                     String msgType = (message.isSetField(MsgType.FIELD)) ? null : message.getString(RefMsgType.FIELD);
-                    String msgTypeName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType);
+                    String msgTypeName = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(MsgType.FIELD, msgType);
                     String combinedText = Messages.ERROR_INCOMING_MSG_REJECTED.getText(msgTypeName, origText);
                     message.setString(Text.FIELD, combinedText);
                 } catch (FieldNotFound fieldNotFound) {

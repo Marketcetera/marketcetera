@@ -1,9 +1,6 @@
 package org.marketcetera.quickfix;
 
-import java.math.BigDecimal;
-
 import org.marketcetera.core.NumericStringSortable;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
 
 import quickfix.DataDictionary;
@@ -92,7 +89,7 @@ public class FIXValueExtractor {
 				} else if (humanReadable && dict.hasFieldValue(fieldID)){
 					value = map.getString(fieldID);
 					try {
-						value = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
+						value = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(fieldID, map.getString(fieldID));
 					} catch (Exception ex){
 						// do nothing, use the string value
 					}

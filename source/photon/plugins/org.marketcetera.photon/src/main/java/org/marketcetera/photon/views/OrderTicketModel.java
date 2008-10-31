@@ -10,7 +10,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.photon.Messages;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.util.log.I18NBoundMessage1P;
@@ -110,7 +110,7 @@ public abstract class OrderTicketModel
 	public OrderTicketModel(FIXMessageFactory messageFactory) {
 		this.messageFactory = messageFactory;
 		propertyChangeSupport = new PropertyChangeSupport(this);
-		dictionary = FIXDataDictionaryManager
+		dictionary = CurrentFIXDataDictionary
 			.getCurrentFIXDataDictionary().getDictionary();
 	}
 

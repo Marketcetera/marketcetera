@@ -64,5 +64,7 @@ public class FIXDataDictionaryManagerTest extends TestCase {
                 FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX43.getDataDictionaryURL()).getDictionary().getVersion());
         assertEquals(FIXDataDictionary.FIX_4_4_BEGIN_STRING,
                 FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX44.getDataDictionaryURL()).getDictionary().getVersion());
+        assertEquals(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING,
+                FIXDataDictionary.initializeDataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL()).getDictionary().getVersion());
     }
 }

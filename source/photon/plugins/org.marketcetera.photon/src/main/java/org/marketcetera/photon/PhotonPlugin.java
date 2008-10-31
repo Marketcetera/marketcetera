@@ -42,6 +42,7 @@ import org.marketcetera.photon.views.SecondaryIDCreator;
 import org.marketcetera.photon.views.StockOrderTicketController;
 import org.marketcetera.photon.views.StockOrderTicketModel;
 import org.marketcetera.quickfix.ConnectionConstants;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
@@ -231,7 +232,9 @@ public class PhotonPlugin
 		}
 		messageFactory = fixVersion.getMessageFactory();
 		FIXDataDictionaryManager.initialize(FIXVersion.FIX44, "FIX44.xml"); //$NON-NLS-1$
-		FIXDataDictionaryManager.initialize(fixVersion, fixVersion.getDataDictionaryURL());
+		CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
+				FIXDataDictionaryManager.initialize(fixVersion, 
+						fixVersion.getDataDictionaryURL()));
 	}
 
 	public void startScriptRegistry() {
@@ -370,7 +373,7 @@ public class PhotonPlugin
 	}
 
 	public FIXDataDictionary getFIXDataDictionary() {
-		return FIXDataDictionaryManager.getCurrentFIXDataDictionary();
+		return CurrentFIXDataDictionary.getCurrentFIXDataDictionary();
 	}
 
 	public FIXVersion getFIXVersion() {

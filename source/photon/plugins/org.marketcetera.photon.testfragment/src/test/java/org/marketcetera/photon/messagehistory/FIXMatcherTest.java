@@ -14,6 +14,7 @@ import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeedTest;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXFieldConverterNotAvailable;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -85,8 +86,7 @@ public abstract class FIXMatcherTest<T>
         try {
             // this magic incantation gets the conversion field stuff working
             FIXVersionTestSuite.initializeFIXDataDictionaryManager(FIXVersionTestSuite.ALL_VERSIONS);
-            FIXDataDictionaryManager.initialize(FIXVersion.FIX44,
-                                                FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44));
+            CurrentFIXDataDictionary.setCurrentFIXDataDictionary(FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44));
             sMessageFactory = FIXVersion.FIX44.getMessageFactory();
         } catch (FIXFieldConverterNotAvailable ex) {
             SLF4JLoggerProxy.error(AbstractMarketDataFeedTest.class,

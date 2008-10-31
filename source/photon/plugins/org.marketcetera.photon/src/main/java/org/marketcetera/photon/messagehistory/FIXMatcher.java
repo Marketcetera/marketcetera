@@ -6,7 +6,7 @@ import java.util.Map;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 
 import quickfix.DataDictionary;
 import quickfix.FieldNotFound;
@@ -126,7 +126,7 @@ public abstract class FIXMatcher<T>
     {
         validateMessage(inMessage);
         validateField(inFieldNum);
-        DataDictionary dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary();
+        DataDictionary dictionary = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary();
         if (dictionary.isHeaderField(inFieldNum)) {
             return inMessage.getHeader().getString(inFieldNum);
         } else if (dictionary.isTrailerField(inFieldNum)) {
@@ -252,7 +252,7 @@ public abstract class FIXMatcher<T>
         private String convert(String inValue)
         {
             String conversion = FIXFieldLocalizer.getLocalizedFIXValueName(mFieldName,
-                                                                           FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldValue(mFixField,
+            		CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldValue(mFixField,
                                                                                                                                                      inValue));
             // if the conversion comes up empty, that means that the converter exists, but there is no translation
             //  for this particular value.  that's ok, just return the passed value (this is what Photon would display)

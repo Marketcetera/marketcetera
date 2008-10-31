@@ -27,10 +27,24 @@ import java.util.HashMap;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXVersionTestSuite extends MarketceteraTestSuite {
+    /**
+     * All versions of FIX, including the "System" FIX version used
+     * for FIX Agnostic messages.
+     */
     public static final FIXVersion[] ALL_VERSIONS =
-            new FIXVersion[]{FIXVersion.FIX40, FIXVersion.FIX41, FIXVersion.FIX42, FIXVersion.FIX43, FIXVersion.FIX44};
+            new FIXVersion[]{FIXVersion.FIX40, FIXVersion.FIX41,
+                    FIXVersion.FIX42, FIXVersion.FIX43,
+                    FIXVersion.FIX44, FIXVersion.FIX_SYSTEM};
+    /**
+     * All versions of FIX, excluding the "System" FIX Version.
+     */
+    public static final FIXVersion[] ALL_FIX_VERSIONS =
+            new FIXVersion[]{FIXVersion.FIX40, FIXVersion.FIX41,
+                    FIXVersion.FIX42, FIXVersion.FIX43,
+                    FIXVersion.FIX44};
     public static final FIXVersion[] FIX42_PLUS_VERSIONS =
-            new FIXVersion[]{FIXVersion.FIX42, FIXVersion.FIX43, FIXVersion.FIX44};
+            new FIXVersion[]{FIXVersion.FIX42, FIXVersion.FIX43,
+                    FIXVersion.FIX44, FIXVersion.FIX_SYSTEM};
 	private String suiteName;
 
     public FIXVersionTestSuite() {
@@ -71,14 +85,14 @@ public class FIXVersionTestSuite extends MarketceteraTestSuite {
         }
     }
 
-    public static FIXDataDictionaryManager initializeFIXDataDictionaryManager(FIXVersion[] inVersions)
+    public static void initializeFIXDataDictionaryManager(FIXVersion[] inVersions)
             throws FIXFieldConverterNotAvailable
     {
         HashMap<FIXVersion, String> map = new HashMap<FIXVersion, String>();
         for (FIXVersion version : inVersions) {
             map.put(version, version.getDataDictionaryURL());
         }
-        return new FIXDataDictionaryManager(map);
+        FIXDataDictionaryManager.initialize(map);
     }
 
     private void addTestWithVersion(Constructor cons, String testName, FIXVersion[] versions) throws Exception {
