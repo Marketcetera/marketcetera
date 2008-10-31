@@ -3,8 +3,8 @@
 <project default="javadoc">
 
     <path id="photon.classpath">
-        <pathelement location="${plugins.dir}/org.marketcetera.core/core-${javadoc.version}.jar"/>
-        <pathelement location="${plugins.dir}/org.marketcetera.util/util-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/core/target/core-${javadoc.version}.jar"/>
+        <pathelement location="${plugins.dir}/util/target/util-${javadoc.version}.jar"/>
         <fileset dir="${photon.target}">
             <include name="**/*.jar"/>
         </fileset>
