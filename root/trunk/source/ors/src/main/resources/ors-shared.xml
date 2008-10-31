@@ -82,9 +82,9 @@
     <bean id="fixVersion" factory-bean="fixVersionEnum" factory-method="toString"/>
     <bean id="fixMessageFactory" factory-bean="fixVersionEnum" factory-method="getMessageFactory"/>
 
-    <!-- You can create a mapping between custom dictionary files and versions.
-         When using a single version constructor sets that as the "current" FIXDataDictionary -->
-    <bean id="fixDataDictionaryMgr" class="org.marketcetera.quickfix.FIXDataDictionaryManager" scope="singleton">
+    <!-- You can create a mapping between custom dictionary files and versions. -->
+  <bean id="fixDataDictionary" class="org.marketcetera.quickfix.FIXDataDictionaryManager"
+          factory-method="initialize" scope="singleton">
 <!--
     To create multiple FIX mappings, use the following constructor
         <constructor-arg>
@@ -95,6 +95,16 @@
 -->
         <constructor-arg ref="fixVersionEnum"/>
         <constructor-arg ref="fixDictionaryPath"/>
+    </bean>
+    <!-- Explicitly set the current data dictionary -->
+    <bean id="setCurrentDictionary" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+      <property name="targetClass" value="org.marketcetera.quickfix.CurrentFIXDataDictionary"/>
+      <property name="targetMethod" value="setCurrentFIXDataDictionary"/>
+      <property name="arguments">
+        <list>
+          <ref bean="fixDataDictionary"/>
+        </list>
+      </property>
     </bean>
 
     <!-- MBean for managing ORS -->

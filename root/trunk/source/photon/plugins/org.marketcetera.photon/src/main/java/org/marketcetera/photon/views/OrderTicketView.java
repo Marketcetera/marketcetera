@@ -81,7 +81,7 @@ import org.marketcetera.photon.ui.validation.fix.EnumStringConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.FIXObservables;
 import org.marketcetera.photon.ui.validation.fix.PriceConverterBuilder;
 import org.marketcetera.photon.ui.validation.fix.StringToBigDecimalConverter;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
 
 import quickfix.DataDictionary;
@@ -163,7 +163,7 @@ public abstract class OrderTicketView
 				FieldDecorationRegistry.DEC_WARNING);
 		warningImage = deco.getImage();
 		
-		dictionary = FIXDataDictionaryManager.getCurrentFIXDataDictionary()
+		dictionary = CurrentFIXDataDictionary.getCurrentFIXDataDictionary()
 			.getDictionary();
 
 		hasRealCharDatatype = FieldType.Char.equals(dictionary

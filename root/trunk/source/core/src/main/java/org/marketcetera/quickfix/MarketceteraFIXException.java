@@ -30,12 +30,12 @@ public class MarketceteraFIXException extends CoreException {
     }
 
     public static MarketceteraFIXException createFieldNotFoundException(FieldNotFound fnf) {
-        String fieldName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
+        String fieldName = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
         return new MarketceteraFIXException(fnf, new I18NBoundMessage1P(Messages.FIX_FNF_NOMSG, fieldName));
     }
 
     public static MarketceteraFIXException createFieldNotFoundException(FieldNotFound fnf, Message message) {
-        String fieldName = FIXDataDictionaryManager.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
+        String fieldName = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getHumanFieldName(fnf.field);
         return new MarketceteraFIXException(fnf, new I18NBoundMessage2P(Messages.FIX_FNF_MSG, fieldName, message));
     }
 }

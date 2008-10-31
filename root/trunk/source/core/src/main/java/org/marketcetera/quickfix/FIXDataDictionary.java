@@ -17,23 +17,14 @@ import java.io.InputStream;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class FIXDataDictionary {
+    public static final String FIX_SYSTEM_BEGIN_STRING = "FIX.0.0"; //$NON-NLS-1$
     public static final String FIX_4_0_BEGIN_STRING = "FIX.4.0"; //$NON-NLS-1$
     public static final String FIX_4_1_BEGIN_STRING = "FIX.4.1"; //$NON-NLS-1$
     public static final String FIX_4_2_BEGIN_STRING = "FIX.4.2"; //$NON-NLS-1$
     public static final String FIX_4_3_BEGIN_STRING = "FIX.4.3"; //$NON-NLS-1$
     public static final String FIX_4_4_BEGIN_STRING = "FIX.4.4"; //$NON-NLS-1$
 
-    private DataDictionary sCurrent;
-    private static FIXDataDictionary ourInstance;
-
-    static {
-        try {
-            ourInstance = new FIXDataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
-        } catch (FIXFieldConverterNotAvailable fixFieldConverterNotAvailable) {
-            // ignore
-        }
-    }
-
+    private final DataDictionary mDictionary;
 
     /**
      * Load a {@link DataDictionary} from the specified resource
@@ -57,18 +48,12 @@ public class FIXDataDictionary {
             throw new FIXFieldConverterNotAvailable(configError, Messages.ERROR_COULD_NOT_CREATE_FIX_DATA_DICTIONARY);
         }
 
-        sCurrent = theDict;
-    }
-
-    /** To be used by unit tests to avoid an OutOfMemoryError when creating these for every test case */
-    public static void setInstance(FIXDataDictionary fdd)
-    {
-        ourInstance = fdd;
+        mDictionary = theDict;
     }
 
     public String getHumanFieldName(int fieldNumber)
     {
-        return sCurrent.getFieldName(fieldNumber);
+        return mDictionary.getFieldName(fieldNumber);
     }
 
     /** Send in the field number and field value you want to translate
@@ -80,12 +65,12 @@ public class FIXDataDictionary {
      */
     public String getHumanFieldValue(int fieldNumber, String value)
     {
-        String result = sCurrent.getValueName(fieldNumber, value);
+        String result = mDictionary.getValueName(fieldNumber, value);
         return (result == null) ? result : result.replace('_', ' ');
     }
 
     public DataDictionary getDictionary() {
-        return sCurrent;
+        return mDictionary;
     }
 
     /**
@@ -95,7 +80,6 @@ public class FIXDataDictionary {
      */
     public static FIXDataDictionary initializeDataDictionary(String fixDataDictionaryPath) throws CoreException
     {
-        ourInstance = new FIXDataDictionary(fixDataDictionaryPath);
-        return ourInstance;
+        return new FIXDataDictionary(fixDataDictionaryPath);
     }
 }

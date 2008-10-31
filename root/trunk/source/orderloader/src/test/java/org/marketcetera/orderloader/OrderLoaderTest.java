@@ -7,6 +7,7 @@ import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.util.unicode.SignatureCharset;
 import quickfix.Field;
 import quickfix.Message;
@@ -49,7 +50,9 @@ public class OrderLoaderTest
         super.setUp();
         mLoader = new MyOrderLoader(false);
         // includes the custom 9999 field as INT
-        FIXDataDictionaryManager.initialize(FIXVersion.FIX42, "FIX42-orderloader-test.xml"); //$NON-NLS-1$
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
+                FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
+                        "FIX42-orderloader-test.xml")); //$NON-NLS-1$
     }
 
     public void testGetSide()

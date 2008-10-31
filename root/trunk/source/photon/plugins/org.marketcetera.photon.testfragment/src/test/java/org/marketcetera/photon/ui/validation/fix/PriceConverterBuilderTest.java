@@ -8,6 +8,7 @@ import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.marketcetera.photon.parser.PriceImage;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXVersion;
 
@@ -20,7 +21,9 @@ public class PriceConverterBuilderTest extends TestCase {
 
 	@Override
 	protected void setUp() throws Exception {
-		FIXDataDictionaryManager.initialize(FIXVersion.FIX42, FIXVersion.FIX42.getDataDictionaryURL());
+		CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
+				FIXDataDictionaryManager.initialize(FIXVersion.FIX42, 
+						FIXVersion.FIX42.getDataDictionaryURL()));
 		priceConverterBuilder = new PriceConverterBuilder(FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX42).getDictionary());
 		priceConverterBuilder.addMapping(OrdType.MARKET, PriceImage.MKT.getImage());
 	}

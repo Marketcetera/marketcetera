@@ -1,9 +1,10 @@
 package org.marketcetera.quickfix.messagefactory;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.DataDictionary;
 import quickfix.field.*;
 
 import java.util.Arrays;
@@ -45,7 +46,9 @@ public class FIXMessageAugmentor_40 extends NoOpFIXMessageAugmentor {
     /** If the {@link CxlType} field is defined then set it */
     public Message cancelRequestAugment(Message inMessage) {
         super.cancelRequestAugment(inMessage);
-        if(FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary().isField(CxlType.FIELD)) {
+        DataDictionary dictionary = CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary();
+        if(dictionary.isMsgField(dictionary.getMsgType("OrderCancelRequest"),  //$NON-NLS-1$
+                CxlType.FIELD)) {
             inMessage.setField(new CxlType(CxlType.FULL_REMAINING_QUANTITY));
         }
         return inMessage;

@@ -35,12 +35,14 @@ public class FIXVersionsTest extends TestCase {
         DataDictionary dict2 = new DataDictionary(FIXVersion.FIX42.getDataDictionaryURL());
         DataDictionary dict3 = new DataDictionary(FIXVersion.FIX43.getDataDictionaryURL());
         DataDictionary dict4 = new DataDictionary(FIXVersion.FIX44.getDataDictionaryURL());
+        DataDictionary dict5 = new DataDictionary(FIXVersion.FIX_SYSTEM.getDataDictionaryURL());
 
         dict0.validate(createNOSHelper(FIXVersion.FIX40, "toli", 33, Side.BUY), true); //$NON-NLS-1$
         dict1.validate(createNOSHelper(FIXVersion.FIX41, "toli", 33, Side.BUY), true); //$NON-NLS-1$
         dict2.validate(createNOSHelper(FIXVersion.FIX42, "toli", 33, Side.BUY), true); //$NON-NLS-1$
         dict3.validate(createNOSHelper(FIXVersion.FIX43, "toli", 33, Side.BUY), true); //$NON-NLS-1$
         dict4.validate(createNOSHelper(FIXVersion.FIX44, "toli", 33, Side.BUY), true); //$NON-NLS-1$
+        dict5.validate(createNOSHelper(FIXVersion.FIX_SYSTEM, "toli", 33, Side.BUY), true); //$NON-NLS-1$
 
 
     }

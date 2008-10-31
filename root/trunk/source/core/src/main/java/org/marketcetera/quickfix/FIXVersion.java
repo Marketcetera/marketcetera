@@ -3,11 +3,7 @@ package org.marketcetera.quickfix;
 import java.util.HashMap;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_40;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_41;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_42;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_43;
-import org.marketcetera.quickfix.messagefactory.FIXMessageAugmentor_44;
+import org.marketcetera.quickfix.messagefactory.*;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
@@ -30,12 +26,15 @@ public enum FIXVersion {
     FIX43(FIXDataDictionary.FIX_4_3_BEGIN_STRING, 4.3, "FIX43.xml", //$NON-NLS-1$
             new FIXMessageFactory(FIXDataDictionary.FIX_4_3_BEGIN_STRING, new quickfix.fix43.MessageFactory(), new FIXMessageAugmentor_43())),
     FIX44(FIXDataDictionary.FIX_4_4_BEGIN_STRING, 4.4, "FIX44-marketcetera.xml", //$NON-NLS-1$
-            new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44()));
+            new FIXMessageFactory(FIXDataDictionary.FIX_4_4_BEGIN_STRING, new quickfix.fix44.MessageFactory(), new FIXMessageAugmentor_44())),
+    FIX_SYSTEM(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING, 0.0, "FIX00-system.xml", //$NON-NLS-1$
+          new FIXMessageFactory(FIXDataDictionary.FIX_SYSTEM_BEGIN_STRING, new SystemMessageFactory(), new FIXMessageAugmentor_44()));
 
     private static HashMap<String, FIXVersion> versionMap;
 
     static {
         versionMap = new HashMap<String, FIXVersion>();
+        versionMap.put(FIX_SYSTEM.toString(), FIX_SYSTEM);
         versionMap.put(FIX40.toString(), FIX40);
         versionMap.put(FIX41.toString(), FIX41);
         versionMap.put(FIX42.toString(), FIX42);

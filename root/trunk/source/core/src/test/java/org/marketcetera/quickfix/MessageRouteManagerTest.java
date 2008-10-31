@@ -29,7 +29,9 @@ public class MessageRouteManagerTest extends TestCase
 
     public static Test suite() {
         try {
-            FIXDataDictionaryManager.initialize(FIXVersion.FIX42, FIXVersion.FIX42.getDataDictionaryURL());
+            CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
+                    FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
+                            FIXVersion.FIX42.getDataDictionaryURL()));
         } catch (FIXFieldConverterNotAvailable ignored) {
 
         }

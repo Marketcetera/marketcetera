@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.IFieldIdentifier;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
+import org.marketcetera.quickfix.CurrentFIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXValueExtractor;
 import org.marketcetera.quickfix.FIXVersion;
@@ -36,7 +36,7 @@ public class EnumTableFormat<T> implements TableFormat<T>, ITableLabelProvider
 	private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
 
 	public EnumTableFormat(Table table, Enum<?>[] columns){
-		this(table, columns, FIXDataDictionaryManager.getCurrentFIXDataDictionary().getDictionary());
+		this(table, columns, CurrentFIXDataDictionary.getCurrentFIXDataDictionary().getDictionary());
 	}
 	
 	public EnumTableFormat(Table table, Enum<?>[] columns, DataDictionary dataDictionary) {

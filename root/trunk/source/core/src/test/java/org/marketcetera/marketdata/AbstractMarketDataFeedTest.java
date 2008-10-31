@@ -70,8 +70,7 @@ public class AbstractMarketDataFeedTest
     {
         super.setUp();
         mFixDD = FIXDataDictionaryManager.getFIXDataDictionary(AbstractMarketDataFeed.DEFAULT_MESSAGE_FACTORY);
-        FIXDataDictionaryManager.initialize(AbstractMarketDataFeed.DEFAULT_MESSAGE_FACTORY,
-                                            mFixDD);
+        CurrentFIXDataDictionary.setCurrentFIXDataDictionary(mFixDD);
     }
     public void testConstructor()
         throws Exception
