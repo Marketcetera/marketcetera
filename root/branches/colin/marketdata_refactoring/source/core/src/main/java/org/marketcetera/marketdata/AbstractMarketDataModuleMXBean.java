@@ -22,4 +22,11 @@ public interface AbstractMarketDataModuleMXBean
 {
     @DisplayName("The feed status for the market data feed")
     public String getFeedStatus();
+    /**
+     * Reconnects to the feed and resubmits all active queries.
+     *
+     * @throws UnsupportedOperationException if the feed does not support this behavior
+     */
+    @DisplayName("Causes the feed to resubmit existing queries")
+    public void reconnect();
 }

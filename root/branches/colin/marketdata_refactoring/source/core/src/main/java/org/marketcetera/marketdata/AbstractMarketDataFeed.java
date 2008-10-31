@@ -744,7 +744,7 @@ public abstract class AbstractMarketDataFeed<T extends AbstractMarketDataFeedTok
      * Executes the steps necessary when the connection to the feed has been
      * resumed.
      */
-    private void doReconnectToFeed()
+    protected final void doReconnectToFeed()
     {
         SLF4JLoggerProxy.debug(this, "Reconnected to feed, resubmitting queries"); //$NON-NLS-1$
         // retrieve all the tokens for active queries

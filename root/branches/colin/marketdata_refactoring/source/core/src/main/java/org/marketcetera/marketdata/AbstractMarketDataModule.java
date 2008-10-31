@@ -59,6 +59,18 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
         return feedStatus.toString();
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataModuleMXBean#reconnect()
+     */
+    @Override
+    public void reconnect()
+    {
+        if(feed instanceof AbstractMarketDataFeed) {
+            ((AbstractMarketDataFeed<?,?,?,?,?,?>)feed).doReconnectToFeed();
+        } else {
+            throw new UnsupportedOperationException();
+        }
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
      */
     @Override
