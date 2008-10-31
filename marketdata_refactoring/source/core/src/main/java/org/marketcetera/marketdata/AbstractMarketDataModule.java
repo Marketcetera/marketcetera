@@ -243,8 +243,8 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
                                                                                FEED_STATUS_CHANGED.getText(),
                                                                                "FeedStatus", //$NON-NLS-1$
                                                                                "String", //$NON-NLS-1$
-                                                                               newStatusString,
-                                                                               oldStatusString));
+                                                                               oldStatusString,
+                                                                               newStatusString));
     }
     /**
      * this is the unique instance URN of the module
