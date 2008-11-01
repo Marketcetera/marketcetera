@@ -156,6 +156,21 @@
         <artifactId>tagsoup</artifactId>
         <version>[1.2]</version>
       </dependency>
+	<dependency>
+		<groupId>org.apache</groupId>
+		<artifactId>bsf</artifactId>
+		<version>[2.4.0]</version>
+	</dependency>
+	<dependency>
+		<groupId>bsh</groupId>
+		<artifactId>bsh</artifactId>
+		<version>[2.0b4]</version>
+	</dependency>
+	<dependency>
+		<groupId>jruby</groupId>
+		<artifactId>jruby</artifactId>
+		<version>[1.1.4]</version>
+	</dependency>
 
       <!-- Runtime. -->
       <dependency>
