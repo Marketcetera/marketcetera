@@ -470,21 +470,7 @@
          unpack="false"/>
 
    <plugin
-         id="org.marketcetera.bogusfeed"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.marketcetera.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="org.marketcetera.marketdata"
          download-size="0"
          install-size="0"
          version="0.0.0"
