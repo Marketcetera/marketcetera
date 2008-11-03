@@ -268,6 +268,12 @@ public class MarketDataRequestTest
                 DataRequest.newRequestFromString(null);
             }
         }.run();
+        MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
+                                                                                                null,
+                                                                                                null,
+                                                                                                null,
+                                                                                                null,
+                                                                                                null));
         new ExpectedTestFailure(IllegalArgumentException.class,
                                 INVALID_SYMBOLS.getText("null")) {
             @Override
