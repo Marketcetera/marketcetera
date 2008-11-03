@@ -21,7 +21,7 @@ public class DerivativeSecurityListRequest
     /**
      * the request type string for <code>DerivativeSecurityListRequest</code> objects
      */
-    public static final String TYPE = "securitylist"; //$NON-NLS-1$
+    public static final String TYPE = "derivativesecuritylist"; //$NON-NLS-1$
     /**
      * Constructs a new <code>DerivativeSecurityListRequest</code> object.
      *

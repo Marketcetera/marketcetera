@@ -49,7 +49,7 @@ public abstract class DataRequest
      * the {@link #KEY_VALUE_DELIMITER} nor the {@link #LINE_SEPARATOR}.  If a subcomponent contains the
      * <code>KEY_VALUE_DELIMITER</code>, that subcomponent will be <b>truncated</b> at the first occurrence of the delimiter.
      * If a subcomponent contains the <code>LINE_SEPARATOR</code>, an <code>IllegalArgumentException</code> will be thrown.
-    *
+     *
      * @param inRequestString a <code>String</code> value
      * @return a <code>DataRequest</code> value
      * @throws IllegalArgumentException if <code>inRequestString</code> cannot be parsed properly
@@ -369,9 +369,12 @@ public abstract class DataRequest
      */
     private synchronized static void initializeTypeCollectionIfNecessary()
     {
-        if(typesByName == null) {
-            typesByName = new HashMap<String,Class<? extends DataRequest>>();
-        }
+        typesByName.put(MarketDataRequest.TYPE,
+                        MarketDataRequest.class);
+        typesByName.put(DerivativeSecurityListRequest.TYPE,
+                        DerivativeSecurityListRequest.class);
+        typesByName.put(SecurityListRequest.TYPE,
+                        SecurityListRequest.class);
     }
     /**
      * Retrieves the class of the data request.
@@ -408,10 +411,10 @@ public abstract class DataRequest
     /**
      * contains all known valid data request types by their identifier
      */
-    private static Map<String,Class<? extends DataRequest>> typesByName;
+    private static final Map<String,Class<? extends DataRequest>> typesByName = new HashMap<String,Class<? extends DataRequest>>();
     /**
      * the unique identifier for the request (unique for this JVM session)
-f     */
+     */
     private final long id;
     private final String typeIdentifier;
 }
