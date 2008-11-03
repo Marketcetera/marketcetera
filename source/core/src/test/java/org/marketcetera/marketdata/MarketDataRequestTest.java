@@ -19,6 +19,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.marketdata.DataRequestTest.MockDataRequest;
@@ -36,6 +37,11 @@ import org.marketcetera.marketdata.MarketDataRequest.UpdateType;
  */
 public class MarketDataRequestTest
 {
+    @BeforeClass
+    public static void once()
+    {
+        System.out.println(MarketDataRequest.TYPE);
+    }
     @Test
     public void newFullBookRequest()
         throws Exception
@@ -268,12 +274,6 @@ public class MarketDataRequestTest
                 DataRequest.newRequestFromString(null);
             }
         }.run();
-        MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
-                                                                                                null,
-                                                                                                null,
-                                                                                                null,
-                                                                                                null,
-                                                                                                null));
         new ExpectedTestFailure(IllegalArgumentException.class,
                                 INVALID_SYMBOLS.getText("null")) {
             @Override
