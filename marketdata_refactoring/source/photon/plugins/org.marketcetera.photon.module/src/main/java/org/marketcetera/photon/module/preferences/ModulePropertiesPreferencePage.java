@@ -1,6 +1,6 @@
 package org.marketcetera.photon.module.preferences;
 
-import static org.marketcetera.photon.module.ModulePlugin.INSTANCE_DEFAULTS_INDICATOR;
+import static org.marketcetera.photon.module.ModulePlugin.*;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -24,6 +24,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeItem;
@@ -40,7 +41,6 @@ import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.marketcetera.photon.module.ModulePlugin;
 import org.marketcetera.photon.module.PropertiesTree;
 import org.marketcetera.util.misc.ClassVersion;
-/* $License$ */
 
 /**
  * The Module Properties preference page. All properties are stored in a single
@@ -52,7 +52,7 @@ import org.marketcetera.util.misc.ClassVersion;
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
 public final class ModulePropertiesPreferencePage extends PreferencePage
-		implements IWorkbenchPreferencePage, Messages {
+		implements IWorkbenchPreferencePage {
 
 	/**
 	 * Properties separator character.
@@ -91,6 +91,9 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	protected Control createContents(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NO_FOCUS);
 		GridLayoutFactory.fillDefaults().applyTo(composite);
+		Label warningLabel = new Label(composite, SWT.WRAP);
+		warningLabel.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_RESTART_WARNING.getText());
+		GridDataFactory.defaultsFor(warningLabel).applyTo(warningLabel);
 
 		// Nest the property sheet page used by the Properties view.
 		mPage = new PropertySheetPage();
@@ -133,7 +136,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 				// Add
 				if (selection.length <= 1) {
 					manager.add(new Action(
-							MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_ACTION_LABEL
+							Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_ACTION_LABEL
 									.getText()) {
 						@Override
 						public void run() {
@@ -165,7 +168,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 				// Delete
 				if (selection.length >= 1) {
 					manager.add(new Action(
-							MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION_LABEL
+							Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION_LABEL
 									.getText()) {
 						@Override
 						public void run() {
@@ -188,7 +191,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	protected void contributeButtons(Composite parent) {
 		// A button to add properties
 		Button button = new Button(parent, SWT.PUSH);
-		button.setText(MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
+		button.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
 				.getText());
 		GridDataFactory.defaultsFor(button).align(SWT.CENTER, SWT.CENTER)
 				.applyTo(button);

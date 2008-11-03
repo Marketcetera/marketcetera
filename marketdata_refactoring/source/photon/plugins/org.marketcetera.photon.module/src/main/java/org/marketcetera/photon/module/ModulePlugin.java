@@ -5,10 +5,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.lang.management.ManagementFactory;
 import java.text.MessageFormat;
+import java.util.List;
+
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.ModuleConfigurationProvider;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
@@ -127,6 +135,15 @@ public class ModulePlugin extends AbstractUIPlugin implements Messages {
 	}
 
 	/**
+	 * Returns the {@link MBeanServerConnection} used for module management.
+	 * 
+	 * @return the {@link MBeanServerConnection} used for module management
+	 */
+	public MBeanServerConnection getMBeanServerConnection() {
+		return ManagementFactory.getPlatformMBeanServer();
+	}
+
+	/**
 	 * The Module properties from this plugin's preference store.
 	 * 
 	 * @return the properties loaded from preferences, or a new empty properties
@@ -152,7 +169,43 @@ public class ModulePlugin extends AbstractUIPlugin implements Messages {
 		// make a copy to prevent external modification
 		PropertiesTree properties = new PropertiesTree();
 		properties.putAll(mModuleProperties);
+		seedKnownKeys(properties);
 		return properties;
+	}
+
+	private void seedKnownKeys(PropertiesTree properties) {
+		List<ModuleURN> instances = null;
+		try {
+			instances = getModuleManager().getModuleInstances(null);
+		} catch (InvalidURNException e) {
+			// Ignore, I'm not even supplying a URN
+		}
+
+		for (ModuleURN moduleURN : instances) {
+			try {
+				MBeanInfo info = getMBeanServerConnection().getMBeanInfo(
+						moduleURN.toObjectName());
+				MBeanAttributeInfo[] attributes = info.getAttributes();
+				for (MBeanAttributeInfo beanAttributeInfo : attributes) {
+					if (beanAttributeInfo.isWritable()) {
+						String attribute = beanAttributeInfo.getName();
+						String key = MessageFormat.format("{0}.{1}.{2}.{3}",
+								moduleURN.providerType(), moduleURN
+										.providerName(), moduleURN
+										.instanceName(), attribute);
+						if (!properties.containsKey(key)) {
+							properties.put(key, "");
+						}
+					}
+				}
+			} catch (InstanceNotFoundException e) {
+				// Ignore, module does not have bean interface
+			} catch (Exception e) {
+				// Something else went wrong, just skip this one
+				// TODO: log
+			}
+		}
+
 	}
 
 	/**

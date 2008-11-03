@@ -9,9 +9,9 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.ui.menus.AbstractWorkbenchTrimWidget;
 import org.eclipse.ui.swt.IFocusService;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.IPhotonCommand;
@@ -31,11 +31,10 @@ import quickfix.Message;
  * @author andrei@lissovski.org
  */
 public class CommandLineTrimWidget
-    extends AbstractWorkbenchTrimWidget
+    extends Workaround253082ContributionItem
     implements Messages
 {
 
-	private Composite composite = null;
 	private Text textArea;
 
 	private String text = ""; //$NON-NLS-1$
@@ -54,8 +53,8 @@ public class CommandLineTrimWidget
 		this(DEFAULT_CHAR_WIDTH);
 	}
 	
-	
 	public CommandLineTrimWidget(int charWidth) {
+		super();
 		this.charWidth = charWidth;
 		commandParser = new CommandParser();
 		PhotonPlugin plugin = PhotonPlugin.getDefault();
@@ -65,21 +64,10 @@ public class CommandLineTrimWidget
 		
 	}
 
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.menus.AbstractTrimWidget#dispose()
-	 */
-	public void dispose() {
-		if (composite != null && !composite.isDisposed())
-			composite.dispose();
-		composite = null;
-	}
-
-	/* (non-Javadoc)
-	 * @see org.eclipse.jface.menus.AbstractTrimWidget#fill(org.eclipse.swt.widgets.Composite, int, int)
-	 */
-	public void fill(Composite parent, int oldSide, int newSide) {
-		composite = new Composite(parent, SWT.NONE);
+	@Override
+	protected Control createControl(Composite parent) {
+		super.createControl(parent);
+		Composite composite = new Composite(parent, SWT.NONE);
 		composite.setLayout(new RowLayout());
 		composite.setData(this);
 		
@@ -105,8 +93,8 @@ public class CommandLineTrimWidget
 		if (tooltip != null) {
 			textArea.setToolTipText(tooltip);
 		}
+		return composite;
 	}
-
 
 	/**
 	 * The callback for a key release event. Checks to see if the key that was
