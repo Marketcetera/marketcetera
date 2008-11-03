@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -29,6 +30,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
@@ -106,6 +108,8 @@ public class PhotonPlugin
 	private StockOrderTicketController stockOrderTicketController;
 
 	private OptionOrderTicketController optionOrderTicketController;
+	
+	private MarketDataManager marketDataManager;
 
 	/**
 	 * The constructor.
@@ -439,5 +443,17 @@ public class PhotonPlugin
 	 */
 	public String getNextSecondaryID() {
 		return secondaryIDCreator.getNextSecondaryID();
+	}
+
+	public MarketDataManager getMarketDataManager() {
+		if (marketDataManager == null) {
+			marketDataManager = new MarketDataManager();
+		}
+		return marketDataManager;
+	}
+	
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		PhotonImages.initializeSharedImages(reg);
 	}
 }

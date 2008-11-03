@@ -94,7 +94,7 @@ public enum ModuleState {
      *
      * @return true, if the module is started, false otherwise.
      */
-    boolean isStarted() {
+    public boolean isStarted() {
         return mStarted;
     }
 
