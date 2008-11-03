@@ -6,8 +6,6 @@ import java.util.Set;
 
 import org.marketcetera.core.ClassVersion;
 
-import quickfix.Message;
-
 /* $License$ */
 
 /**
@@ -33,14 +31,6 @@ public abstract class BidAskEvent
      * indicates the action of the event
      */
     private final Action mAction;
-    /**
-     * underlying full depth-of-book FIX message for this market event
-     */
-    private Message mFullBook;
-    /**
-     * underlying best-bid-and-offer FIX message for this market event
-     */
-    private Message mBBO;
     /**
      * Create a new AskEvent instance.
      *
@@ -99,57 +89,6 @@ public abstract class BidAskEvent
     public Action getAction()
     {
         return mAction;
-    }
-    /**
-     * Returns the underlying Full depth-of-book FIX message for this event.
-     *
-     * @return a <code>Message</code> value or null if no <code>Message</code> was specified at creation
-     */
-    @Deprecated
-    public Message getFullBook()
-    {
-        return mFullBook;
-    }
-    /**
-     * Returns the underlying Best-Bid-and-Offer FIX message for this event.
-     *
-     * @return a <code>Message</code> value or null if no <code>Message</code> was specified at creation
-     */
-    @Deprecated
-    public Message getBestBidAndOffer()
-    {
-        return mBBO;
-    }
-    /**
-     * Updates the full depth-of-book for this event.
-     *
-     * @param inMessage a <code>Message</code> value to replace the current one
-     */
-    @Deprecated
-    final void updateFullBook(Message inMessage)
-    {
-        mFullBook = inMessage;
-    }
-    /**
-     * Updates the best-bid-and-offer for this event.
-     *
-     * @param inMessage a <code>Message</code> value to replace the current one
-     */
-    @Deprecated
-    final void updateBBO(Message inMessage)
-    {
-        mBBO = inMessage;
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.event.SymbolExchangeEvent#clearFIXMessages()
-     */
-    @Override
-    @Deprecated
-    public void clearFIXMessages()
-    {
-        super.clearFIXMessages();
-        mFullBook = null;
-        mBBO = null;
     }
     /**
      * Gets a description of the type of event.

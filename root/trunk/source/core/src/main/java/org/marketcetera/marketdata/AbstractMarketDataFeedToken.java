@@ -1,6 +1,5 @@
 package org.marketcetera.marketdata;
 
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import org.marketcetera.core.publisher.ISubscriber;
@@ -81,9 +80,9 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
     /**
      * Adds all given subscribers to the subscriber list.
      *
-     * @param inSubscribers a <code>List&lt;ISubscriber&gt;</code> value
+     * @param inSubscribers an <code>ISubscriber...</code> value
      */
-    public final void subscribeAll(List<? extends ISubscriber> inSubscribers)
+    public final void subscribeAll(ISubscriber... inSubscribers)
     {
         if(inSubscribers == null) {
             return;

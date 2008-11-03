@@ -16,7 +16,6 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.photon.Messages;
@@ -267,16 +266,16 @@ public class OptionOrderTicketController
 				return true;
 			}
 			public void publishTo(Object obj) {
-				Message message;
-				if (obj instanceof SymbolExchangeEvent){
-					message = ((SymbolExchangeEvent) obj).getLatestTick();
-				} else {
-					message = (Message) obj;
-				}
-
-				handleDerivativeSecurityList(message);
+			    throw new UnsupportedOperationException("This needs to be fixed");
+//				Message message;
+//				if (obj instanceof SymbolExchangeEvent){
+//					message = ((SymbolExchangeEvent) obj).getLatestTick();
+//				} else {
+//					message = (Message) obj;
+//				}
+//
+//				handleDerivativeSecurityList(message);
 			}
-			
 		});
 	}
 

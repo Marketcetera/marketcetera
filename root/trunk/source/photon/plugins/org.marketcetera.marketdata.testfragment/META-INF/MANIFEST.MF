@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: MarketData Test Fragment
-Bundle-SymbolicName: org.marketcetera.marketdata.testfragment
-Bundle-Version: 1.0.0
-Bundle-Vendor: Marketcetera, Inc.
-Fragment-Host: org.marketcetera.marketdata;bundle-version="1.0.0"
-Require-Bundle: org.marketcetera.core.tests,
- org.junit4
