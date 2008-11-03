@@ -1,0 +1,20 @@
+<%= render :partial => 'shared/breadcrumbs', 
+    :locals=> { :top_level => "Sub-Accounts", :action_name => "List Sub-Accounts", :top_level_controller => @controller.controller_name } %>
+<h1>View Sub-Account</h1>
+
+<form action="">
+    <fieldset>
+        <div class="form_left">
+            <% for column in SubAccount.content_columns %>
+                <label for="<%= column.name %>" class="view_background"><%= column.human_name %></label>
+                <div id="<%= column.name %>" class="data view_data"><%=df @sub_account.send(column.name) %></div>
+            <% end %>
+            <label for="parent_account" class="view_background">Parent Account</label>
+            <div id="parent_account" class="data view_data">
+                <%= link_to @sub_account.account.nickname, :controller => 'accounts', 
+                                     :action => 'show', :id => @sub_account.account %>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </fieldset>
+</form>
