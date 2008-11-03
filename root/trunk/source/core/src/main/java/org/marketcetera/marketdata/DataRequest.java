@@ -398,6 +398,10 @@ public abstract class DataRequest
         }
         return type;
     }
+    protected synchronized static String[] getRegisteredTypes()
+    {
+        return typesByName.keySet().toArray(new String[typesByName.keySet().size()]);
+    }
     /**
      * the delimiter used to separate lines in the <code>Properties</code> representation of this object
      */
