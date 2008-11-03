@@ -1,0 +1,40 @@
+package org.marketcetera.marketdata;
+
+import javax.management.MXBean;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.module.DisplayName;
+
+/* $License$ */
+
+/**
+ * <code>MXBean</code> interface for an {@link AbstractMarketDataModule} enumerating the <code>MXBean</code>
+ * methods available.
+ *
+ * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * @version $Id$
+ * @since $Release$
+ */
+@ClassVersion("$Id$") //$NON-NLS-1$
+@MXBean(true)
+@DisplayName("Management Interface for Marketdata Feeds")
+public interface AbstractMarketDataModuleMXBean
+{
+    /**
+     * Returns the status of the underlying feed.
+     *
+     * @return a <code>String</code> value
+     */
+    @DisplayName("The feed status for the market data feed")
+    public String getFeedStatus();
+    /**
+     * Reconnects to the feed and resubmits all active queries.
+     * 
+     * <p>Regardless of the state of the feed, all existing queries will be canceled
+     * and resubmitted.
+     *
+     * @throws UnsupportedOperationException if the feed does not support this behavior
+     */
+    @DisplayName("Causes the feed to resubmit existing queries")
+    public void reconnect();
+}

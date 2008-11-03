@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.perspectives">
+      <perspective
+            class="org.marketcetera.photon.ruby.RubyPerspective"
+            icon="icons/ruby.gif"
+            id="org.marketcetera.photon.ruby.RubyPerspective"
+            name="Ruby">
+      </perspective>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.marketcetera.photon.ruby.RubyPerspective">
+         <view
+               id="org.epic.regexp.views.RegExpView"
+               relationship="stack"
+               relative="org.eclipse.ui.views.ProblemView">
+         </view>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
+         <perspectiveShortcut
+               id="org.marketcetera.photon.ruby.RubyPerspective"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
+         <perspectiveShortcut
+               id="org.marketcetera.photon.ruby.RubyPerspective"/>
+      </perspectiveExtension>
+      <perspectiveExtension targetID="org.marketcetera.photon.ruby.RubyPerspective">
+         <perspectiveShortcut
+               id="org.marketcetera.photon.EquityPerspective"/>
+         <perspectiveShortcut
+               id="org.marketcetera.photon.OptionPerspective"/>
+      </perspectiveExtension>
+   </extension>
+   <extension
+         point="org.rubypeople.rdt.ui.rubyElementFilters">
+      <filter
+            targetId="org.marketcetera.photon.RubyExplorer"
+            name="%HideSystemFiles.label"
+            enabled="true"
+            description="%HideSystemFiles.description"
+            pattern=".*">
+      </filter>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+          <view
+            name="%rubyExplorerName"
+            icon="icons/ruby.gif"
+            class="org.rubypeople.rdt.internal.ui.packageview.PackageExplorerPart"
+            id="org.marketcetera.photon.RubyExplorer">
+      </view>
+   </extension>   
+   <extension point="org.eclipse.debug.core.sourceLocators">
+		<sourceLocator name="Null Ruby Source Locator"
+			class="org.marketcetera.photon.ruby.NullRubySourceLocator"
+			id="org.rubypeople.rdt.debug.ui.rubySourceLocator">
+		</sourceLocator>
+	</extension>
+	<extension
+      point="org.eclipse.ui.activities">
+   <activity
+         description="Activity used to block unwanted UI contributions"
+         id="org.marketcetera.photon.hidden"
+         name="Hidden Activities">
+   </activity>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.eclipse\.search/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.eclipse\.team\.ui/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.eclipse\.ui\.editors/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.eclipse\.debug\.ui/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.eclipse\.ui\.workbench/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.eclipse\.ui\.ide/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern="org\.rubypeople\.rdt\.ui/.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.hidden"
+         pattern=".*org\.eclipse\.search\.menu.*">
+   </activityPatternBinding>
+   <activity
+         description="Activity to add back hidden UI contributions"
+         id="org.marketcetera.photon.expose"
+         name="Expose">
+   </activity>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.expose"
+         pattern="org\.eclipse\.ui\.ide/org\.eclipse\.ui\.views\.ProblemView">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.expose"
+         pattern="org\.rubypeople\.rdt\.ui/org\.rubypeople\.rdt\.ui\.RubyExplorer.*">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.expose"
+         pattern="org\.rubypeople\.rdt\.ui/org\.rubypeople\.rdt\.ui\.EditorRubyFile">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.expose"
+         pattern="org\.rubypeople\.rdt\.ui/org\.rubypeople\.rdt\.ui\.wizards\.RubyProjectWizard">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.expose"
+         pattern="org\.rubypeople\.rdt\.ui/org\.rubypeople\.rdt\.ui\.wizards\.RubyNewClassWizard">
+   </activityPatternBinding>
+   <activityPatternBinding
+         activityId="org.marketcetera.photon.expose"
+         pattern="org\.rubypeople\.rdt\.ui/org\.rubypeople\.rdt\.ui\.wizards\.RubyNewFileWizard">
+   </activityPatternBinding>
+   <defaultEnablement
+         id="org.marketcetera.photon.expose">
+   </defaultEnablement>>
+</extension>       
+</plugin>
