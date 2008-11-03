@@ -1,13 +1,21 @@
 package org.marketcetera.photon;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.management.ManagementFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.logging.LogManager;
 
 import org.apache.bsf.BSFException;
 import org.apache.bsf.BSFManager;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IResourceChangeEvent;
@@ -19,6 +27,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
@@ -60,7 +70,7 @@ import quickfix.Message;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class PhotonPlugin 
     extends AbstractUIPlugin
-    implements Messages
+    implements Messages, IPropertyChangeListener
 {
 
 	public static final String ID = "org.marketcetera.photon"; //$NON-NLS-1$
@@ -70,9 +80,12 @@ public class PhotonPlugin
 
 	private FIXMessageHistory fixMessageHistory;
 
-	private Logger mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
-
-	private Logger marketDataLogger = Logger.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
+	
+	/**
+	 * Cannot be initialized until after logging infrastructure is set up
+	 */
+	private Logger mainConsoleLogger;
+	private Logger marketDataLogger;
 
 	private ScriptRegistry scriptRegistry;
 
@@ -122,6 +135,13 @@ public class PhotonPlugin
 		super.start(context);
 		bundleContext = context;
 		
+		configureLogs();
+		
+		mainConsoleLogger = Logger.getLogger(MAIN_CONSOLE_LOGGER_NAME);
+		
+		marketDataLogger = Logger.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
+		
+		
 		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true);
 		
 		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
@@ -139,6 +159,7 @@ public class PhotonPlugin
 		initFIXMessageHistory();
 		initScriptRegistry();
 		initPhotonController();
+		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
 
 	public void initOrderTickets(){
@@ -443,4 +464,122 @@ public class PhotonPlugin
 	public String getNextSecondaryID() {
 		return secondaryIDCreator.getNextSecondaryID();
 	}
+
+
+	/**
+	 * The system property that is set to a unique number for every photon
+	 * process. An attempt is made to use the pid value as the value of this
+	 * property. However, if that doesn't work, the system time at the time
+	 * this property is set, is set as the value of this property. 
+	 */
+	private static final String PROCESS_UNIQUE_PROPERTY = "org.marketcetera.photon.unique"; //$NON-NLS-1$
+	/**
+	 * log4j configuration file name.
+	 */
+	private static final String LOG4J_CONFIG = "photon-log4j.properties"; //$NON-NLS-1$
+	/**
+	 * java logging configuration file name.
+	 */
+	private static final String JAVA_LOGGING_CONFIG = "java.util.logging.properties"; //$NON-NLS-1$
+
+    /**
+     * The system property name that contains photon installation
+     * directory
+     */
+	private static final String APP_DIR_PROP="org.marketcetera.appDir"; //$NON-NLS-1$
+	
+	/**
+	 * The configuration sub directory for the application
+	 */
+	private static final String CONF_DIR = "conf"; //$NON-NLS-1$
+
+	/**
+	 * Delay for rereading log4j configuration.
+	 */
+	private static final int LOGGER_WATCH_DELAY = 20*1000;
+
+
+	/**
+	 * Configure Logs
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	private void configureLogs() throws FileNotFoundException, IOException {
+		// Fetch the java process ID. Do note that this mechanism relies on
+		// a non-public interface of the jvm but its very useful to be able
+		// to use the pid.
+		String id = ManagementFactory.getRuntimeMXBean().getName().replaceAll("[^0-9]", ""); //$NON-NLS-1$ //$NON-NLS-2$
+		if(id == null || id.trim().length() < 1) {
+			id = String.valueOf(System.currentTimeMillis());  
+		}
+		// Supply the pid as a system property so that it can be used in
+		// log 4j configuration
+		System.setProperty(PROCESS_UNIQUE_PROPERTY,id);
+		//Figure out if the application install dir is specified
+        String appDir=System.getProperty(APP_DIR_PROP);
+        File confDir = null;
+		// Configure loggers
+        if(appDir != null) {
+        	File dir = new File(appDir,CONF_DIR);
+        	if(dir.isDirectory()) {
+        		confDir = dir;
+        	}
+        }
+        // Configure Java Logging
+        boolean logConfigured = false;
+        if (confDir != null) {
+            File logConfig = new File(confDir,JAVA_LOGGING_CONFIG);
+			if (logConfig.isFile()) {
+				FileInputStream fis = null;
+				try {
+					fis = new FileInputStream(logConfig);
+					LogManager.getLogManager().readConfiguration(fis);
+					logConfigured = true;
+				} catch (Exception ignored) {
+				} finally {
+					if (fis != null) {
+						try {
+							fis.close();
+						} catch (IOException ignored) {
+						}
+					}
+				}
+
+			}
+		}
+		//Do default configuration, if its not already done.
+        if(!logConfigured) {
+    		LogManager.getLogManager().readConfiguration(getClass().
+    				getClassLoader().getResourceAsStream(
+    						JAVA_LOGGING_CONFIG));
+        }
+        
+        // Configure Log4j
+		// Remove default configuration done via log4j.properties file
+		// present in one of the jars that we depend on 
+		BasicConfigurator.resetConfiguration();
+		logConfigured = false;
+		if(confDir != null) {
+	        File logConfig = new File(confDir,LOG4J_CONFIG);
+	        if(logConfig.isFile()) {
+	        	PropertyConfigurator.configureAndWatch(
+	        			logConfig.getAbsolutePath(),LOGGER_WATCH_DELAY);
+	        	logConfigured = true;
+	        } 			
+		}
+        if(!logConfigured) {
+    		//Do default log4j configuration, if its not already done.
+    		PropertyConfigurator.configure(getClass().
+    				getClassLoader().getResource(LOG4J_CONFIG));
+        }
+	}
+	
+	public void propertyChange(PropertyChangeEvent event) {
+		if (event.getProperty().equals(PhotonPage.LOG_LEVEL_KEY)){
+			PhotonPlugin.getDefault().changeLogLevel(""+event.getNewValue()); //$NON-NLS-1$
+		}
+	}
+
+
+	
 }
