@@ -29,6 +29,7 @@ public class MessageRouteManagerTest extends TestCase
 
     public static Test suite() {
         try {
+            LoggerConfiguration.logSetup();
             CurrentFIXDataDictionary.setCurrentFIXDataDictionary(
                     FIXDataDictionaryManager.initialize(FIXVersion.FIX42,
                             FIXVersion.FIX42.getDataDictionaryURL()));
