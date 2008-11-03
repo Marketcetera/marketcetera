@@ -3,7 +3,6 @@ package org.marketcetera.photon.scripting;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -18,12 +17,12 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.internal.progress.ProgressManager;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.marketdata.MarketDataFeedTestBase;
+import org.marketcetera.marketdata.MarketDataRequest;
 import org.marketcetera.marketdata.MockMarketDataFeed;
 import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
 import org.marketcetera.marketdata.IFeedComponent.FeedType;
@@ -198,22 +197,19 @@ public class ScriptRegistryTest extends TestCase {
         // this is the registry we'll use to check the messages
         final TestScriptRegistry registry = new TestScriptRegistry();
         // create three distinct messages to use, making sure they are distinguishable from each other
-        Message message1 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("GOOG") } ), 
-                                                                            false);
-        Message message2 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ), 
-                                                                            false);
-        Message message3 = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("MSFT") } ), 
-                                                                            false);
-        assertFalse(message1.equals(message2));
-        assertFalse(message1.equals(message3));
-        assertFalse(message2.equals(message3));
+        DataRequest request1 = MarketDataRequest.newFullBookRequest("GOOG");
+        DataRequest request2 = MarketDataRequest.newFullBookRequest("YHOO");
+        DataRequest request3 = MarketDataRequest.newFullBookRequest("MSFT");
+        assertFalse(request1.equals(request2));
+        assertFalse(request1.equals(request3));
+        assertFalse(request2.equals(request3));
         // registry starts empty
         assertTrue(registry.getMessagesReceived().isEmpty());
         // subscriber has not been notified yet
         assertNull(subscriber.getData());
         // step #2 pre-test
         // send a message through the feed
-        feed.execute(message1,
+        feed.execute(request1,
                      subscriber);
         // wait until the subscriber is notified
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -228,7 +224,7 @@ public class ScriptRegistryTest extends TestCase {
         assertEquals(1,
                      subscriber.getPublishCount());
         // make sure it was the message we expected
-        assertEquals(message1,
+        assertEquals(request1,
                      ((HasFIXMessage)subscriber.getData()).getMessage());
         // make sure the registry was not notified
         assertTrue(registry.getMessagesReceived().isEmpty());
@@ -237,7 +233,7 @@ public class ScriptRegistryTest extends TestCase {
         // step #3, connect the feed to the registry
         registry.connectToMarketDataFeed(feed);
         // step #4, test
-        feed.execute(message2,
+        feed.execute(request2,
                      subscriber);
         // wait until the subscriber is notified
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -261,13 +257,13 @@ public class ScriptRegistryTest extends TestCase {
         assertEquals(1,
                      subscriber.getPublishCount());
         // make sure it was the message we expected
-        assertEquals(message2,
+        assertEquals(request2,
                      ((HasFIXMessage)subscriber.getData()).getMessage());
         // make sure the registry *did* get this one
         assertEquals(1,
                      registry.getMessagesReceived().size());
         // make sure it was the message we expected
-        assertEquals(message2,
+        assertEquals(request2,
                      registry.getMessagesReceived().get(0));
         // reset
         subscriber.reset();
@@ -275,7 +271,7 @@ public class ScriptRegistryTest extends TestCase {
         // step #5, disconnect
         registry.disconnectFromMarketDataFeed(feed);
         // step #6, re-test
-        feed.execute(message3,
+        feed.execute(request3,
                      subscriber);
         // wait until the subscriber is notified
         MarketDataFeedTestBase.wait(new Callable<Boolean>() {
@@ -290,7 +286,7 @@ public class ScriptRegistryTest extends TestCase {
         assertEquals(1,
                      subscriber.getPublishCount());
         // make sure it was the message we expected
-        assertEquals(message3,
+        assertEquals(request3,
                      ((HasFIXMessage)subscriber.getData()).getMessage());
         // make sure the registry was not notified
         assertTrue(registry.getMessagesReceived().isEmpty());

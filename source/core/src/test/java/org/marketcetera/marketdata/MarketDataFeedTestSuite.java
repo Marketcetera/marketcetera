@@ -1,19 +1,13 @@
 package org.marketcetera.marketdata;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.MarketceteraTestSuite;
-
-import quickfix.Message;
 
 /**
  * Test suite for Market Data Feed Tests.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public class MarketDataFeedTestSuite
     extends MarketceteraTestSuite
@@ -38,17 +32,11 @@ public class MarketDataFeedTestSuite
 
     }
 
-    public static Message generateFIXMessage() 
+    public static DataRequest generateDataRequest() 
         throws FeedException
     {
-        List<MSymbol> symbols = Arrays.asList(new MSymbol[] { new MSymbol("GOOG"), new MSymbol("MSFT"), new MSymbol("YGZ9") }); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        return generateFIXMessage(symbols);
-    }    
-
-    public static Message generateFIXMessage(List<MSymbol> inSymbols) 
-        throws FeedException
-    {
-        return AbstractMarketDataFeed.levelOneMarketDataRequest(inSymbols, 
-                                                                false);
+        return MarketDataRequest.newFullBookRequest("GOOG",
+                                                    "MSFT",
+                                                    "YGZ9");
     }    
 }

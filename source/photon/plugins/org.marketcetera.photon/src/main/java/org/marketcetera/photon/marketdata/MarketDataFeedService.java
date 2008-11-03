@@ -91,8 +91,9 @@ public class MarketDataFeedService<C extends IMarketDataFeedCredentials>
 	                                             ISubscriber subscriber) 
 		throws FeedException
 	{
-		return feed.execute(message, 
-		                    subscriber);
+	    throw new UnsupportedOperationException("Need to translate Message to DataRequest");
+//		return feed.execute(message, 
+//		                    subscriber);
 	}
 
 	public final MSymbol symbolFromString(String symbolString) 

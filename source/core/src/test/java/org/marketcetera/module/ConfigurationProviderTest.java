@@ -1,15 +1,18 @@
 package org.marketcetera.module;
 
-import org.marketcetera.util.misc.ClassVersion;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.HashMap;
 
 import javax.management.JMX;
-import java.util.HashMap;
-import java.math.BigInteger;
-import java.math.BigDecimal;
+
+import org.junit.Test;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 /**
@@ -176,7 +179,7 @@ public class ConfigurationProviderTest extends ConfigurationProviderTestBase {
     /**
      * A mock configuration provider for unit testing.
      */
-    private static class MockConfigurationProvider
+    public static class MockConfigurationProvider
             implements ModuleConfigurationProvider {
 
         public String getDefaultFor(ModuleURN inURN, String inAttribute) {

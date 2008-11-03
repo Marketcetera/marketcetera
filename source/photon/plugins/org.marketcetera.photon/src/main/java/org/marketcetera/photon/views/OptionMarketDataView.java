@@ -22,10 +22,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.CoreException;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.SymbolExchangeEvent;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IMarketDataFeedToken;
 import org.marketcetera.photon.Messages;
@@ -385,12 +384,13 @@ public class OptionMarketDataView
 	}
 
 	public void publishTo(Object obj) {
-		Message message;
-		if (obj instanceof SymbolExchangeEvent){
-			message = ((SymbolExchangeEvent) obj).getLatestTick();
-		} else {
-			message = (Message) obj;
-		}
-		onMessage(message);
+	    throw new UnsupportedOperationException("This needs to be fixed");
+//		Message message;
+//		if (obj instanceof SymbolExchangeEvent){
+//			message = ((SymbolExchangeEvent) obj).getLatestTick();
+//		} else {
+//			message = (Message) obj;
+//		}
+//		onMessage(message);
 	}
 }

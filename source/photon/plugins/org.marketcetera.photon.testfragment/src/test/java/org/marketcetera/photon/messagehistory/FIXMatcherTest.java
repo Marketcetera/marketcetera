@@ -10,7 +10,6 @@ import junit.framework.TestSuite;
 import org.apache.log4j.BasicConfigurator;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.FIXVersionTestSuite;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.AbstractMarketDataFeedTest;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
@@ -103,7 +102,8 @@ public abstract class FIXMatcherTest<T>
             throws Exception
     {
         super.setUp();
-        mMessage = AbstractMarketDataFeed.securityListRequest();
+        fail("This test needs to be fixed after the FIX-Away changes");
+        mMessage = null; //TODO AbstractMarketDataFeed.securityListRequest();
         mGoodFieldValue = mMessage.getString(mGoodField);
     }
     /**

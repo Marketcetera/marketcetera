@@ -1,12 +1,8 @@
 package org.marketcetera.marketdata;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 
 import org.marketcetera.core.publisher.ISubscriber;
-
-import quickfix.Message;
 
 /**
  * Stateless portion of the market data feed token.
@@ -25,7 +21,7 @@ import quickfix.Message;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
 {
@@ -34,13 +30,13 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      */
     private final C mCredentials;
     /**
-     * the <code>FIX</code> message encapsulating the query
+     * the <code>DataRequest</code> encapsulating the query
      */
-    private final Message mMessage;
+    private final DataRequest dataRequest;
     /**
      * the subscribers to whom to send query results
      */
-    private final List<? extends ISubscriber> mSubscribers;
+    private final ISubscriber[] mSubscribers;
     /**
      * Generates a new token spec containing the passed information.
      *
@@ -51,14 +47,14 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      * 
      * @param inCredentials a <code>C</code> value
      * @param inMessage a <code>Message</code> value
-     * @param inSubscribers a <code>List&lt;? extends ISubscriber&gt;</code> value which may be empty
+     * @param inSubscribers a <code>ISubscriber...</code> value which may be empty
      *   or null if no subscribers need to be notified of query results
      * @return a MarketDataFeedTokenSpec&lt;C&gt; value
      * @throws NullPointerException if the passed credentials or message is null
      */
     public static <C extends IMarketDataFeedCredentials>MarketDataFeedTokenSpec<C> generateTokenSpec(C inCredentials,
-                                                                                                     Message inMessage,
-                                                                                                     List<? extends ISubscriber> inSubscribers)
+                                                                                                     DataRequest inMessage,
+                                                                                                     ISubscriber... inSubscribers)
     {
         return new MarketDataFeedTokenSpec<C>(inCredentials,
                                               inMessage,
@@ -69,23 +65,24 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
      *
      * @param inCredentials a <code>C</code> value
      * @param inMessage a <code>Message</code> value
-     * @param inSubscribers a <code>List&lt;? extends ISubscriber&gt;</code> value which may be empty
+     * @param inSubscribers a <code>ISubscriber...</code> value which may be empty
+     *   or null if no subscribers need to be notified of query results
      * @throws NullPointerException if the passed credentials or message is null
      */
     private MarketDataFeedTokenSpec(C inCredentials,
-                                    Message inMessage,
-                                    List<? extends ISubscriber> inSubscribers)
+                                    DataRequest inMessage,
+                                    ISubscriber... inSubscribers)
     {
         if(inCredentials == null ||
            inMessage == null) {
             throw new NullPointerException();
         }
         mCredentials = inCredentials;
-        mMessage = inMessage;
+        dataRequest = inMessage;
         if(inSubscribers == null) {
-            mSubscribers = new ArrayList<ISubscriber>();
+            mSubscribers = new ISubscriber[0];
         } else {
-            mSubscribers = new ArrayList<ISubscriber>(inSubscribers);
+            mSubscribers = inSubscribers;
         }
     }
     /* (non-Javadoc)
@@ -98,15 +95,16 @@ public class MarketDataFeedTokenSpec<C extends IMarketDataFeedCredentials>
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedTokenSpec#getMessage()
      */
-    public Message getMessage()
+    public DataRequest getDataRequest()
     {
-        return mMessage;
+        return dataRequest;
     }
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedTokenSpec#getSubscribers()
      */
-    public List<? extends ISubscriber> getSubscribers()
+    public ISubscriber[] getSubscribers()
     {
-        return Collections.unmodifiableList(mSubscribers);
+        return Arrays.copyOf(mSubscribers,
+                             mSubscribers.length);
     }
 }

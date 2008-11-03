@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.CoreException;
-import org.marketcetera.event.AbstractEventTranslatorTest.MessageEvent;
+import org.marketcetera.marketdata.DataRequest;
 
 import quickfix.Message;
 
@@ -20,13 +20,14 @@ import quickfix.Message;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockEventTranslator
-        extends AbstractEventTranslator
+    implements EventTranslator
 {
     private static boolean sTranslateToEventsThrows = false;
     private static boolean sTranslateToEventsReturnsNull = false;
     private static boolean sTranslateToEventsReturnsZeroEvents = false;
     private static MockEventTranslator sInstance = new MockEventTranslator();
-    private static Message sMessageToReturn = null;
+    private static DataRequest requestToReturn = null;
+    private static Message messageToReturn = null;
     /**
      * Gets a <code>TestEventTranslator</code> value.
      *
@@ -39,7 +40,7 @@ public class MockEventTranslator
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(java.lang.Object)
      */
-    public List<EventBase> translate(Object inData)
+    public List<EventBase> toEvent(Object inData)
             throws CoreException
     {
         if(getTranslateToEventsThrows()) {
@@ -51,23 +52,22 @@ public class MockEventTranslator
         if(getTranslateToEventsReturnsZeroEvents()) {
             return new ArrayList<EventBase>();
         }
-        Message message = null;
-        if(sMessageToReturn != null) {
-            message = sMessageToReturn;
-        } else if(inData instanceof Message) {
-            message = (Message)inData;
+        DataRequest request = null;
+        if(requestToReturn != null) {
+            request = requestToReturn;
+        } else if(inData instanceof DataRequest) {
+            request = (DataRequest)inData;
         }
         if(inData instanceof SymbolExchangeEvent) {
             SymbolExchangeEvent see = (SymbolExchangeEvent)inData;
-            updateEventFixMessageSnapshot(see);
             return Arrays.asList(new EventBase[] { see });
         }
-        return Arrays.asList(new EventBase[] { new MessageEvent(message) });
+        return Arrays.asList(new EventBase[] { new MessageEvent(request) });
     }
     /* (non-Javadoc)
      * @see org.marketcetera.event.IEventTranslator#translate(org.marketcetera.event.EventBase)
      */
-    public String translate(EventBase inEvent)
+    public String fromEvent(EventBase inEvent)
             throws CoreException
     {
         return inEvent.toString();
@@ -97,23 +97,31 @@ public class MockEventTranslator
         sTranslateToEventsReturnsNull = inTranslateToEventsReturnsNull;
     }
     /**
-     * Sets the messageToReturn value.
+     * Sets the requestToReturn value.
      *
-     * @param a <code>MockEventTranslator</code> value
+     * @param a <code>DataRequest</code> value
      */
-    public static void setMessageToReturn(Message inMessageToReturn)
+    public static void setRequestToReturn(DataRequest inRequestToReturn)
     {
-        sMessageToReturn = inMessageToReturn;
+        requestToReturn = inRequestToReturn;
     }
-    
     /**
      * Resets the behavior to the default.  Tests that configure this class should use this method to cleanup.
      */
     public static void reset()
     {
-    	sMessageToReturn = null;
+    	requestToReturn = null;
     	sTranslateToEventsReturnsNull = false;
     	sTranslateToEventsReturnsZeroEvents = false;
     	sTranslateToEventsThrows = false;
+    }
+    /**
+     * Sets the messageToReturn value.
+     *
+     * @param a <code>Message</code> value
+     */
+    public static void setMessageToReturn(Message inMessageToReturn)
+    {
+        messageToReturn = inMessageToReturn;
     }
 }

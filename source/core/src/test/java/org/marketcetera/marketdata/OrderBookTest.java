@@ -17,8 +17,8 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidAskEvent;
 import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.QuantityTuple;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.event.AbstractEventTranslatorTest.QuantityTuple;
 import org.marketcetera.event.BidAskEvent.Action;
 
 import quickfix.Message;

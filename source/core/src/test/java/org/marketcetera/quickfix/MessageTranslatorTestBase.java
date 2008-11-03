@@ -1,21 +1,17 @@
 package org.marketcetera.quickfix;
 
-import java.util.Arrays;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import org.marketcetera.core.ExpectedTestFailure;
-import org.marketcetera.core.MSymbol;
-import org.marketcetera.marketdata.AbstractMarketDataFeed;
+import org.marketcetera.marketdata.DataRequest;
+import org.marketcetera.marketdata.DataRequestTranslator;
 import org.marketcetera.marketdata.MarketDataFeedTestSuite;
-
-import quickfix.Message;
-import quickfix.field.MDReqID;
+import org.marketcetera.marketdata.MarketDataRequest;
 
 /**
- * Base class for all {@link IMessageTranslator} tests.
+ * Base class for all {@link DataRequestTranslator} tests.
  * 
  * <p>Test subclasses should extend this class and provide subclass-specific
  * testing.  The superclass provides some basic help like defining a data
@@ -24,7 +20,7 @@ import quickfix.field.MDReqID;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public abstract class MessageTranslatorTestBase<T>
         extends TestCase
@@ -70,86 +66,73 @@ public abstract class MessageTranslatorTestBase<T>
     public void testRoundTrip()
         throws Exception
     {
-        IMessageTranslator<T> translator = getMessageTranslator();
+        DataRequestTranslator<T> translator = getMessageTranslator();
         // generate a FIX message for a market data request
-        Message fixMessage = MarketDataFeedTestSuite.generateFIXMessage();
+        DataRequest request = MarketDataFeedTestSuite.generateDataRequest();
         // translate the FIX message into some other data representation - at this point, we don't
         //  know what
-        T xlatedMessage = translator.translate(fixMessage);
+        T xlatedMessage = translator.fromDataRequest(request);
         // this message should not be null, but there's not much more we can say about it - in actuality,
         //  it doesn't matter what the format is - it should be sufficient to transmit the contents of the
         //  FIX message to the market data feed server but we cannot evaluate that per se.  if we connected
         //  to the data feed, we could determine empirically if the translation appears to be accurate but
         //  no more than that
         assertNotNull(xlatedMessage);
-        // translate the given object back into FIX representation
-        Message newMessage = translator.asMessage(xlatedMessage);
+        // translate the given object back into a DataRequest
+        DataRequest newRequest = translator.toDataRequest(xlatedMessage);
         // we can say a lot more about the white box FIX representation
         // first, is it non-null
-        assertNotNull(newMessage);
-        // next, is it valid
-        getFIXDataDictionary().getDictionary().validate(newMessage,
-                                                        true);
-        // last, and this is the big banana, is it functionally the same as the message we passed in
-        // cheat, set the ids to be the same to facilitate comparison
-        newMessage.setField(new MDReqID(fixMessage.getString(MDReqID.FIELD)));
-        assertEquals(fixMessage.toString(),
-                     newMessage.toString());
+        assertNotNull(newRequest);
+        assertTrue(request.equivalent(newRequest));
     }
     /**
-     * Tests the message translator's ability to handle Level 1/BBO requests.
+     * Tests the message translator's ability to handle BBO requests.
      *
      * @throws Exception
      */
-    public void testLevel1()
+    public void testBBO()
         throws Exception
     {
         // construct a BBO market data request
-        Message bbo = AbstractMarketDataFeed.levelOneMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ),  //$NON-NLS-1$
-                                                                       false);
-        assertTrue(FIXMessageUtil.isMarketDataRequest(bbo));
-        assertTrue(FIXMessageUtil.isLevelOne(bbo));
+        DataRequest bbo = MarketDataRequest.newTopOfBookRequest("YHOO");
         // now translate the message
-        IMessageTranslator<T> translator = getMessageTranslator();
-        T xlatedMessage = translator.translate(bbo);
+        DataRequestTranslator<T> translator = getMessageTranslator();
+        T xlatedMessage = translator.fromDataRequest(bbo);
         // this alone isn't necessarily indicative of successful handling, but at least it's a start 
         assertNotNull(xlatedMessage);        
     }
     /**
-     * Tests the message translator's ability to handle Level 2/Full depth of book requests.
+     * Tests the message translator's ability to handle Full depth of book requests.
      *
      * @throws Exception
      */
-    public void testLevel2()
+    public void testFullBook()
         throws Exception
     {
         // construct a BBO market data request
-        Message full = AbstractMarketDataFeed.levelTwoMarketDataRequest(Arrays.asList(new MSymbol[] { new MSymbol("YHOO") } ),  //$NON-NLS-1$
-                                                                        false);
-        assertTrue(FIXMessageUtil.isMarketDataRequest(full));
-        assertTrue(FIXMessageUtil.isLevelTwo(full));
+        DataRequest full = MarketDataRequest.newFullBookRequest("YHOO");
         // now translate the message
-        IMessageTranslator<T> translator = getMessageTranslator();
-        T xlatedMessage = translator.translate(full);
+        DataRequestTranslator<T> translator = getMessageTranslator();
+        T xlatedMessage = translator.fromDataRequest(full);
         // this alone isn't necessarily indicative of successful handling, but at least it's a start 
         assertNotNull(xlatedMessage);        
     }
     public void testNullValues()
         throws Exception
     {
-        final IMessageTranslator<T> translator = getMessageTranslator();
+        final DataRequestTranslator<T> translator = getMessageTranslator();
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
             {
-                translator.translate((Message)null);
+                translator.fromDataRequest((DataRequest)null);
             }            
         }.run();
         new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
             {
-                translator.asMessage((T)null);
+                translator.toDataRequest((T)null);
             }            
         }.run();
     }
@@ -162,7 +145,7 @@ public abstract class MessageTranslatorTestBase<T>
      *
      * @return an<code>IMessageTranslator&lt;T&gt;</code> value
      */
-    protected abstract IMessageTranslator<T> getMessageTranslator();
+    protected abstract DataRequestTranslator<T> getMessageTranslator();
 
     /**
      * Get the suite value.

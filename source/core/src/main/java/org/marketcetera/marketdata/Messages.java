@@ -75,4 +75,26 @@ public interface Messages
                                                                                       "cannot_convert_event_to_entry_type"); //$NON-NLS-1$
     static final I18NMessage2P SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL = new I18NMessage2P(LOGGER,
                                                                                            "symbol_does_not_match_order_book_symbol"); //$NON-NLS-1$
+    static final I18NMessage0P SIMULATED_DATA_ALLOWED = new I18NMessage0P(LOGGER,
+                                                                          "simulated_data_allowed"); //$NON-NLS-1$
+    static final I18NMessage0P LINE_SEPARATOR_NOT_ALLOWED = new I18NMessage0P(LOGGER,
+                                                                              "line_separator_not_allowed"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_DEPTH = new I18NMessage1P(LOGGER,
+                                                                 "invalid_depth"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_SYMBOLS = new I18NMessage1P(LOGGER,
+                                                                   "invalid_symbols"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_STRING_VALUE = new I18NMessage1P(LOGGER,
+                                                                        "invalid_string_value"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_ID = new I18NMessage1P(LOGGER,
+                                                              "invalid_id"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_REQUEST_TYPE = new I18NMessage1P(LOGGER,
+                                                                        "invalid_request_type"); //$NON-NLS-1$
+    static final I18NMessage0P MISSING_REQUEST_TYPE = new I18NMessage0P(LOGGER,
+                                                                        "missing_request_type"); //$NON-NLS-1$
+    static final I18NMessage2P POORLY_CONSTRUCTED_REQUEST_SUBCLASS = new I18NMessage2P(LOGGER,
+                                                                                       "poorly_constructed_request_subclass"); //$NON-NLS-1$
+    static final I18NMessage0P BEAN_ATTRIBUTE_CHANGED = new I18NMessage0P(LOGGER,
+                                                                          "bean_attribute_changed"); //$NON-NLS-1$
+    static final I18NMessage0P FEED_STATUS_CHANGED = new I18NMessage0P(LOGGER,
+                                                                       "feed_status_changed"); //$NON-NLS-1$
 }

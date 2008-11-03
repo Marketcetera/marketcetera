@@ -6,6 +6,8 @@ import java.util.List;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.CoreException;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+import org.marketcetera.util.misc.ClassVersion;
+
 import quickfix.FieldNotFound;
 import quickfix.Group;
 import quickfix.Message;
@@ -26,10 +28,10 @@ import quickfix.field.UnderlyingSymbol;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
+@ClassVersion("$Id$") //$NON-NLS-1$
 public abstract class AbstractMessageTranslator<T>
-    implements IMessageTranslator<T>
 {
     /**
      * Indicates what FIX version to use

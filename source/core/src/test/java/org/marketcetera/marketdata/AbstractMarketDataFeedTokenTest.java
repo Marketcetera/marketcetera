@@ -1,7 +1,6 @@
 package org.marketcetera.marketdata;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.Test;
@@ -11,13 +10,12 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
 
-
 /**
  * Tests {@link AbstractMarketDataFeedToken}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public class AbstractMarketDataFeedTokenTest
     extends MarketDataFeedTestBase
@@ -51,10 +49,10 @@ public class AbstractMarketDataFeedTokenTest
     {
         super.setUp();
         mCredentials = new MockMarketDataFeedCredentials();
-        mMessage = MarketDataFeedTestSuite.generateFIXMessage();
+        dataRequest = MarketDataFeedTestSuite.generateDataRequest();
         mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                               mMessage, 
-                                                               Arrays.asList(new ISubscriber[0]));
+                                                               dataRequest, 
+                                                               new ISubscriber[0]);
         mFeed = new MockMarketDataFeed();
         mFeed.start();
         mToken = MockMarketDataFeedToken.getToken(mTokenSpec,
@@ -83,8 +81,8 @@ public class AbstractMarketDataFeedTokenTest
         
         // construct one where all is well with the world
         mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                               MarketDataFeedTestSuite.generateFIXMessage(), 
-                                                               Arrays.asList(new ISubscriber[0]));
+                                                               MarketDataFeedTestSuite.generateDataRequest(), 
+                                                               new ISubscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(mTokenSpec,
                                                                          mFeed);
         assertEquals(Status.NOT_STARTED,
@@ -109,8 +107,8 @@ public class AbstractMarketDataFeedTokenTest
         // publish to subscriber
         mToken.publishAndWait(this);
         // subscriber got publication
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1 }),
-                          Arrays.asList(new MockSubscriber[] { }),
+        verifySubscribers(new MockSubscriber[] { s1 },
+                          new MockSubscriber[] { },
                           this);
         // add second subscriber
         MockSubscriber s2 = new MockSubscriber();
@@ -118,80 +116,80 @@ public class AbstractMarketDataFeedTokenTest
         // publish a different object this time
         mToken.publishAndWait(this.getClass());
         // make sure both subscribers got it
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1, s2 }),
-                          Arrays.asList(new MockSubscriber[] { }),
+        verifySubscribers(new MockSubscriber[] { s1, s2 },
+                          new MockSubscriber[] { },
                           this.getClass());
         // add second subscriber again
         mToken.subscribe(s2);
         // notify with a different type of object
         mToken.publishAndWait(mTokenSpec);
         // make sure subscribers were notified (make sure s2 was notified only once)
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1, s2 }),
-                          Arrays.asList(new MockSubscriber[] { }),
+        verifySubscribers(new MockSubscriber[] { s1, s2 },
+                          new MockSubscriber[] { },
                           mTokenSpec);
         // throw in some unsubscribes
         mToken.unsubscribe(null);
         MockSubscriber s3 = new MockSubscriber();
         mToken.unsubscribe(s3);
         // publish again
-        mToken.publishAndWait(mMessage);
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1, s2 }),
-                          Arrays.asList(new MockSubscriber[] { s3 }),
-                          mMessage);
+        mToken.publishAndWait(dataRequest);
+        verifySubscribers(new MockSubscriber[] { s1, s2 },
+                          new MockSubscriber[] { s3 },
+                          dataRequest);
         // remove existing subscribers
         mToken.unsubscribe(s1);
         mToken.unsubscribe(s2);
         // publish again
         mToken.publishAndWait(mCredentials);
         // nobody should get anything
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { }),
-                          Arrays.asList(new MockSubscriber[] { s1, s2, s3 }),
+        verifySubscribers(new MockSubscriber[] { },
+                          new MockSubscriber[] { s1, s2, s3 },
                           mCredentials);
         // repeat a few tests with the list subscribe
-        mToken.subscribeAll(null);
+        mToken.subscribeAll((ISubscriber[])null);
         // nobody is subscribed
         mToken.publishAndWait(s1);
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { }),
-                          Arrays.asList(new MockSubscriber[] { s1, s2, s3 }),
+        verifySubscribers(new MockSubscriber[] { },
+                          new MockSubscriber[] { s1, s2, s3 },
                           s1);
         List<ISubscriber> subscribers = new ArrayList<ISubscriber>(); 
         // still, nobody is subscribed
-        mToken.subscribeAll(subscribers);
+        mToken.subscribeAll(subscribers.toArray(new ISubscriber[subscribers.size()]));
         mToken.publishAndWait(s2);
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { }),
-                          Arrays.asList(new MockSubscriber[] { s1, s2, s3 }),
+        verifySubscribers(new MockSubscriber[] { },
+                          new MockSubscriber[] { s1, s2, s3 },
                           s2);
         // add a subscriber
         subscribers.add(s1);
-        mToken.subscribeAll(subscribers);
+        mToken.subscribeAll(subscribers.toArray(new ISubscriber[subscribers.size()]));
         mToken.publishAndWait(s3);
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1 }),
-                          Arrays.asList(new MockSubscriber[] { s2, s3 }),
+        verifySubscribers(new MockSubscriber[] { s1 },
+                          new MockSubscriber[] { s2, s3 },
                           s3);
         // repeat one subscriber, add one new one
         subscribers.add(s2);
         assertEquals(2,
                      subscribers.size());
-        mToken.subscribeAll(subscribers);
+        mToken.subscribeAll(subscribers.toArray(new ISubscriber[subscribers.size()]));
         // publish again, make sure each subscriber is notified only once
         mToken.publishAndWait(mToken);
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1, s2 }),
-                          Arrays.asList(new MockSubscriber[] { s3 }),
+        verifySubscribers(new MockSubscriber[] { s1, s2 },
+                          new MockSubscriber[] { s3 },
                           mToken);
         // make sure that subscriber list can handle a mix of types
         DoNothingSubscriber x1 = new DoNothingSubscriber();
-        List<? extends ISubscriber> mixedSubscribers = Arrays.asList(new ISubscriber[] { s1, x1 });
+        ISubscriber[] mixedSubscribers = new ISubscriber[] { s1, x1 };
         mToken.subscribeAll(mixedSubscribers);
         mToken.publishAndWait(mFeed);
-        verifySubscribers(Arrays.asList(new MockSubscriber[] { s1, s2 }),
-                          Arrays.asList(new MockSubscriber[] { s3 }),
+        verifySubscribers(new MockSubscriber[] { s1, s2 },
+                          new MockSubscriber[] { s3 },
                           mFeed);
         assertEquals(mFeed,
                      x1.mData);
     }
     
-    private void verifySubscribers(List<MockSubscriber> inSubscribed,
-                                   List<MockSubscriber> inUnsubscribed,
+    private void verifySubscribers(MockSubscriber[] inSubscribed,
+                                   MockSubscriber[] inUnsubscribed,
                                    Object inData)
         throws Exception
     {

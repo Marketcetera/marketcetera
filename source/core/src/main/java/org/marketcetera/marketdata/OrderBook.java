@@ -203,8 +203,6 @@ public class OrderBook
     {
         // make sure the event is valid before proceeding
         checkEvent(inEvent);
-        // trim extra FIX messages from the event to save memory - these aren't useful to store on the order book
-        inEvent.clearFIXMessages();
         SLF4JLoggerProxy.debug(this,
                                "Received {}\nBook starts at\n{}", //$NON-NLS-1$
                                inEvent,
