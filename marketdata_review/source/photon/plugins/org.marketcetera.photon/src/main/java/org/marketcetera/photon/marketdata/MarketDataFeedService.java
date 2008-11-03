@@ -13,6 +13,7 @@ import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;
 
+@Deprecated
 public class MarketDataFeedService<C extends IMarketDataFeedCredentials> 
     implements IFeedComponentListener, IFeedComponent 
 {

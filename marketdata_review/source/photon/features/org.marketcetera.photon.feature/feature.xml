@@ -555,4 +555,25 @@
          version="0.0.0"
          unpack="false"/>
 
+   <plugin
+         id="org.marketcetera.modules.mdata.bogus"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.marketcetera.modules.mdata.marketcetera"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.marketcetera.photon.module"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
 </feature>

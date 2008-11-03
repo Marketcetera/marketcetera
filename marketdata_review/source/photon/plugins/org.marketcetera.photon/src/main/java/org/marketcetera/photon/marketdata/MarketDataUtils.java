@@ -16,6 +16,7 @@ import quickfix.field.SubscriptionRequestType;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 
+@Deprecated
 public class MarketDataUtils {
 
 	static final String UTC_TIME_ZONE = "UTC"; //$NON-NLS-1$

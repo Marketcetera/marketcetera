@@ -53,4 +53,6 @@ public interface Messages {
 			LOGGER, "module_properties_preference_page.add_action.label"); //$NON-NLS-1$
 	static final I18NMessage0P MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION_LABEL = new I18NMessage0P(
 			LOGGER, "module_properties_preference_page.delete_action.label"); //$NON-NLS-1$
+	static final I18NMessage0P MODULE_PROPERTIES_PREFERENCE_PAGE_RESTART_WARNING = new I18NMessage0P(
+			LOGGER, "module_properties_preference_page.restart_warning"); //$NON-NLS-1$
 }
