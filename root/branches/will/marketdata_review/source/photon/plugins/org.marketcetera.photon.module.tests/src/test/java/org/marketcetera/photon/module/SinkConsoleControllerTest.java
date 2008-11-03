@@ -1,6 +1,5 @@
 package org.marketcetera.photon.module;
 
-import java.lang.management.ManagementFactory;
 import java.util.concurrent.TimeUnit;
 
 import javax.management.JMX;
@@ -32,8 +31,8 @@ public class SinkConsoleControllerTest {
 	public void testCSVDataFlow() throws Exception {
 		ModulePlugin.getDefault().getModuleManager();
 		new SinkConsoleController().openConsole();
-		ModuleManagerMXBean mm = JMX.newMXBeanProxy(ManagementFactory
-				.getPlatformMBeanServer(), new ObjectName(
+		ModuleManagerMXBean mm = JMX.newMXBeanProxy(ModulePlugin.getDefault()
+				.getMBeanServerConnection(), new ObjectName(
 				ModuleManager.MODULE_MBEAN_NAME), ModuleManagerMXBean.class);
 		final String request = "metc:csv:system:single;src/test/resources/table.csv";
 		mm.createDataFlow(request);

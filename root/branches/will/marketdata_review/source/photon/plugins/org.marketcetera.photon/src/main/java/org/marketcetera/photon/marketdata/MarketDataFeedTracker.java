@@ -10,6 +10,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
+@Deprecated
 public class MarketDataFeedTracker extends ServiceTracker {
 
 	private HashSet<FeedEventListener> feedEventListeners = new HashSet<FeedEventListener>();

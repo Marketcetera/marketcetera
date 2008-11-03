@@ -1,6 +1,9 @@
 package org.marketcetera.photon.preferences;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import org.eclipse.jface.preference.ComboFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
@@ -14,7 +17,8 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
+import org.marketcetera.photon.marketdata.MarketDataFeed;
+import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.quickfix.ConnectionConstants;
 
 @ClassVersion("$Id$") //$NON-NLS-1$
@@ -24,7 +28,8 @@ public class ConnectionsPreferencePage
 {
 
 	public static final String ID = "org.marketcetera.photon.preferences.connections"; //$NON-NLS-1$
-
+	
+	private final MarketDataManager mdataManager = PhotonPlugin.getDefault().getMarketDataManager();
 	
 	private UrlFieldEditor jmsServerUrlEditor;
 
@@ -99,10 +104,20 @@ public class ConnectionsPreferencePage
                                                   getFieldEditorParent());
 		addField(webAppPortEditor);
 		
-		String[][] namesValues = ReconnectMarketDataFeedJob.getFeedNames();
+		Collection<MarketDataFeed> providers = mdataManager.getProviders();
+		List<String[]> namesValues = new ArrayList<String[]>();
+		// blank one to represent no selection
+		namesValues.add(new String[] {"",""}); //$NON-NLS-1$ //$NON-NLS-2$
+		for (MarketDataFeed provider : providers) {
+			String name = provider.getName();
+			if (name == null) {
+				name = provider.getId();
+			}
+			namesValues.add(new String[] {name, provider.getId()});
+		}
 		quoteFeedNameEditor = new ComboFieldEditor(ConnectionConstants.MARKETDATA_STARTUP_KEY,
 		                                           MARKET_DATA_FEED_LABEL.getText(),
-		                                           namesValues,
+		                                           namesValues.toArray(new String[namesValues.size()][]),
 		                                           getFieldEditorParent());
 		addField(quoteFeedNameEditor);
 		
