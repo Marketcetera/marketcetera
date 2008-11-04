@@ -2,6 +2,7 @@ package org.marketcetera.marketdata;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.marketdata.MarketDataRequest.FULL_BOOK;
@@ -19,6 +20,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.Set;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.marketdata.DataRequestTest.MockDataRequest;
@@ -36,6 +38,11 @@ import org.marketcetera.marketdata.MarketDataRequest.UpdateType;
  */
 public class MarketDataRequestTest
 {
+    @Before
+    public void setup()
+    {
+        assertNotNull(DataRequest.TYPE_KEY);
+    }
     @Test
     public void newFullBookRequest()
         throws Exception
