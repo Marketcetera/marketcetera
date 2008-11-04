@@ -5,7 +5,9 @@ import java.util.Date;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
@@ -13,14 +15,15 @@ import org.eclipse.ui.application.IWorkbenchWindowConfigurer;
 import org.eclipse.ui.application.WorkbenchWindowAdvisor;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
+import org.eclipse.ui.internal.WorkbenchWindow;
+import org.eclipse.ui.internal.layout.ITrimManager;
+import org.eclipse.ui.internal.layout.IWindowTrim;
 import org.eclipse.ui.internal.progress.ProgressManager;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
-import org.marketcetera.photon.actions.ReconnectMarketDataFeedJob;
 import org.marketcetera.photon.actions.StartScriptRegistryJob;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
@@ -42,9 +45,6 @@ public class ApplicationWorkbenchWindowAdvisor
 	public boolean preWindowShellClose() {
     	try {
     		stopJMS();
-    	} catch (Throwable t){}
-    	try {
-    		stopMarketDataFeed();
     	} catch (Throwable t){}
     	return true;
     }
@@ -182,21 +182,16 @@ public class ApplicationWorkbenchWindowAdvisor
 	
 
 	private void startMarketDataFeed() {
-		ReconnectMarketDataFeedJob job = null;
-		job = new ReconnectMarketDataFeedJob(RECONNECT_QUOTE_FEED.getText());
-		job.schedule();
+		PhotonPlugin.getDefault().getMarketDataManager().reconnectFeed();
 	}
 	
-	private void stopMarketDataFeed() {
-		try {
-			BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-			MarketDataFeedTracker marketDataFeedTracker = new MarketDataFeedTracker(bundleContext);
-			marketDataFeedTracker.open();
-
-			ReconnectMarketDataFeedJob.disconnect(marketDataFeedTracker);
-		} catch (Throwable t){
-			PhotonPlugin.getMainConsoleLogger().error(CANNOT_DISCONNECT_FROM_QUOTE_FEED.getText(),
-			                                          t);
-		}
+	@Override
+	public void createWindowContents(Shell shell) {
+		super.createWindowContents(shell);
+		// Could not do this declaratively due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=253232 
+		ITrimManager trimManager = ((WorkbenchWindow) getWindowConfigurer().getWindow()).getTrimManager();
+		IWindowTrim trim = trimManager.getTrim("org.marketcetera.photon.statusToolbar"); //$NON-NLS-1$
+		IWindowTrim beforeMe = trimManager.getTrim("org.eclipse.jface.action.StatusLineManager"); //$NON-NLS-1$
+		trimManager.addTrim(SWT.BOTTOM, trim, beforeMe);
 	}
 }

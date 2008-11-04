@@ -7,8 +7,8 @@ import org.eclipse.ui.console.IConsoleConstants;
 import org.marketcetera.photon.views.AveragePriceView;
 import org.marketcetera.photon.views.FIXMessagesView;
 import org.marketcetera.photon.views.FillsView;
+import org.marketcetera.photon.views.MarketDataView;
 import org.marketcetera.photon.views.OpenOrdersView;
-import org.marketcetera.photon.views.OptionMarketDataView;
 import org.marketcetera.photon.views.OptionOrderTicketView;
 import org.marketcetera.photon.views.StockOrderTicketView;
 import org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView;
@@ -65,8 +65,7 @@ public class OptionPerspectiveFactory implements IPerspectiveFactory {
 
 		leftFolder = layout.createFolder(LEFT_FOLDER, IPageLayout.LEFT, 0.5f,
 				editorArea);
-		leftFolder.addPlaceholder(OptionMarketDataView.ID + ":*"); //$NON-NLS-1$
-		leftFolder.addView(OptionMarketDataView.ID);
+		leftFolder.addView(MarketDataView.ID);
 		leftFolder.addPlaceholder(FIXMessageDetailView.ID);
 
 		rightFolder = layout.createFolder(RIGHT_FOLDER, IPageLayout.RIGHT,

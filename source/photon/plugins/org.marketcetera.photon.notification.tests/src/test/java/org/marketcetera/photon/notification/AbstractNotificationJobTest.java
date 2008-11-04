@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.notifications.INotification;
 import org.marketcetera.core.notifications.Notification;
@@ -53,16 +54,6 @@ public class AbstractNotificationJobTest extends MultiThreadedTestBase {
 	@After
 	public void tearDown() {
 		mJob.cancel();
-	}
-
-	@Test
-	public void steadyStream() throws InterruptedException {
-		for (int i = 0; i < 4; i++) {
-			final INotification notification = Notification.high(Integer.toString(i), "", getClass());//createNotification(Severity.HIGH);
-			mJob.enqueueNotification(notification);
-			SWTTestUtil.delay(1, TimeUnit.SECONDS);
-			checkFailureAndAssertEquals(notification, mProcessed.poll(TIMEOUT, TIMEOUT_UNIT));
-		}
 	}
 
 	@Test

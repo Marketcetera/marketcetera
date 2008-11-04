@@ -3,8 +3,6 @@ package org.marketcetera.module;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.log.*;
 
-import java.util.regex.Pattern;
-
 /* $License$ */
 /**
  * The message constants for messages used within the module framework.

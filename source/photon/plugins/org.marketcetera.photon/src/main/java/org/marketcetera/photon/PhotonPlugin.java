@@ -27,6 +27,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
+
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.ui.IViewPart;
@@ -39,6 +41,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.IDFactory;
 import org.marketcetera.messagehistory.FIXMessageHistory;
+import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.PhotonPage;
 import org.marketcetera.photon.preferences.ScriptRegistryPage;
@@ -65,7 +68,8 @@ import org.rubypeople.rdt.core.RubyCore;
 import quickfix.Message;
 
 /**
- * The main plugin class to be used in the Photon application.
+ * The main plugin class to be used in the Photon application. This class is not
+ * synchronized and should only be accessed from the UI thread.
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class PhotonPlugin 
@@ -120,6 +124,8 @@ public class PhotonPlugin
 	private StockOrderTicketController stockOrderTicketController;
 
 	private OptionOrderTicketController optionOrderTicketController;
+	
+	private MarketDataManager marketDataManager;
 
 	/**
 	 * The constructor.
@@ -141,9 +147,8 @@ public class PhotonPlugin
 		
 		marketDataLogger = Logger.getLogger(MARKETDATA_CONSOLE_LOGGER_NAME);
 		
-		
-		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true);
-		
+		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
+
 		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
 		changeLogLevel(level == null ? PhotonPage.LOG_LEVEL_VALUE_INFO : level);
 		
@@ -465,6 +470,17 @@ public class PhotonPlugin
 		return secondaryIDCreator.getNextSecondaryID();
 	}
 
+	public MarketDataManager getMarketDataManager() {
+		if (marketDataManager == null) {
+			marketDataManager = new MarketDataManager();
+		}
+		return marketDataManager;
+	}
+	
+	@Override
+	protected void initializeImageRegistry(ImageRegistry reg) {
+		PhotonImages.initializeSharedImages(reg);
+	}
 
 	/**
 	 * The system property that is set to a unique number for every photon

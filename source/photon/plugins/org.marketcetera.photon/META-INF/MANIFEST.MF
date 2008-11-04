@@ -6,7 +6,7 @@ Bundle-Version: 1.0.0
 Bundle-Activator: org.marketcetera.photon.PhotonPlugin
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-Localization: plugin
-Eclipse-RegisterBuddy: org.marketcetera.thirdparty, org.jruby.bsf
+Eclipse-RegisterBuddy: org.marketcetera.thirdparty, org.jruby.bsf, org.marketcetera.core
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .,
  src/main/resources
@@ -34,7 +34,8 @@ Require-Bundle: org.eclipse.core.commands;visibility:=reexport,
  org.eclipse.ui.net,
  org.eclipse.core.databinding.beans,
  com.swtworkbench.community.xswt,
- org.marketcetera.util;visibility:=reexport
+ org.marketcetera.util;visibility:=reexport,
+ org.marketcetera.photon.module
 Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.actions,
  org.marketcetera.photon.commands,
@@ -50,4 +51,4 @@ Export-Package: org.marketcetera.photon,
  org.marketcetera.photon.views,
  org.marketcetera.photon.views.fixmessagedetail,
  org.marketcetera.scripting
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy

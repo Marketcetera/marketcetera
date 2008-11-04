@@ -90,13 +90,6 @@
             id="org.marketcetera.photon.views.MarketDataView"
             name="Market Data"/>
       <view
-            allowMultiple="true"
-            category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.OptionMarketDataView"
-            icon="icons/silk/chart_curve.png"
-            id="org.marketcetera.photon.views.OptionMarketDataView"
-            name="Option Market Data"/>
-      <view
             category="org.marketcetera.photon.category"
             class="org.marketcetera.photon.views.fixmessagedetail.FIXMessageDetailView"
             icon="icons/silk/application_view_list.png"
@@ -222,6 +215,19 @@
             commandId="org.marketcetera.photon.SelectOptionMarketDataCommandAction"
             keyConfigurationId="org.eclipse.ui.defaultAcceleratorConfiguration"
             keySequence="M3+O"/>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            description="%command.lookup.description"
+            id="org.marketcetera.photon.lookup"
+            name="%command.lookup.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.commands"
+            defaultHandler="org.marketcetera.photon.marketdata.ReconnectMarketData"
+            description="%command.reconnectMarketData.description"
+            id="org.marketcetera.photon.reconnectMarketData"
+            name="%command.reconnectMarketData.name">
+      </command>
    </extension>
    <extension
          point="org.eclipse.ui.editors">
@@ -297,18 +303,6 @@
 	            class="org.marketcetera.photon.actions.RunScriptActionDelegate"> 
 	         </action>
 	     </viewerContribution>
-   <viewerContribution
-         id="org.marketcetera.photon.Actions.DeleteItemActionDelegate"
-         targetID="org.marketcetera.photon.views.MarketDataView">
-      <action
-            class="org.marketcetera.photon.actions.DeleteItemActionDelegate"
-            enablesFor="+"
-            icon="icons/silk/cancel.png"
-            id="org.marketcetera.photon.actions.DeleteItemAction"
-            label="&amp;Delete"
-            menubarPath="additions"
-            style="push"/>
-   </viewerContribution>
    <objectContribution
          adaptable="false"
          id="org.marketcetera.photon.actions.ViewFIXMessageDetailActionDelegate"
@@ -323,45 +317,77 @@
    
    <extension
          point="org.eclipse.ui.menus">
-      <group
-            id="org.marketcetera.photon.ui.photonTrimGroup">
-         <location>
-            <bar type="trim"/>
-            <order position="before" relativeTo="status"/>
-         </location>
-      </group>
-      <widget class="org.marketcetera.photon.ui.CommandLineTrimWidget" 
-      		  id="org.marketcetera.photon.ui.commandLineTrimWidget">
-         <location>
-            <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
-         </location>
-      </widget>
-      <widget id="org.marketcetera.photon.ui.statusImageTrimWidget:quoteFeedStatus">
-         <location>
-            <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
-         </location>
-         <class class="org.marketcetera.photon.ui.StatusImageTrimWidget">
-	         <parameter name="service" value="org.marketcetera.photon.marketdata.MarketDataFeedService"/>
-	         <parameter name="idChar" value="Q"/>
-	         <parameter name="name" value="Quote feed"/>
-	     </class>
-      </widget>
-      <widget id="org.marketcetera.photon.ui.statusImageTrimWidget:jmsStatus">
-         <class class="org.marketcetera.photon.ui.StatusImageTrimWidget">
-         	<parameter name="service" value="org.marketcetera.photon.messaging.JMSFeedService"/>
-         	<parameter name="idChar" value="M"/>
-         	<parameter name="name" value="Message server"/>
-	     </class>
-         <location>
-            <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
-         </location>
-      </widget>
-       <widget class="org.marketcetera.photon.ui.ClockTrimWidget"
-                 id="org.marketcetera.photon.ui.clockTrimWidget">
-          <location>
-             <bar path="org.marketcetera.photon.ui.photonTrimGroup" type="trim"/>
-          </location>
-       </widget>
+       <menuContribution
+             locationURI="popup:org.marketcetera.photon.views.MarketDataView">
+          <command
+                commandId="org.eclipse.ui.edit.delete"
+                icon="icons/silk/cancel.png"
+                label="%marketDataView.delete.label"
+                mnemonic="%marketDataView.delete.mnemonic"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.eclipse.ui.edit.copy"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.marketDataRowsSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <command
+                commandId="org.marketcetera.photon.lookup"
+                icon="icons/silk/world_go.png"
+                label="%marketDataView.lookup.label"
+                mnemonic="%marketDataView.lookup.mnemonic"
+                style="push">
+             <visibleWhen>
+                <reference
+                      definitionId="org.marketcetera.photon.symbolProviderSelected">
+                </reference>
+             </visibleWhen>
+          </command>
+          <separator
+                name="beforeChooseColumns"
+                visible="true">
+          </separator>
+          <menu
+                label="%chooseColumns.label">
+             <dynamic
+                   class="org.marketcetera.photon.ui.ChooseColumnsMenu"
+                   id="org.marketcetera.photon.chooseColumnsMenu">
+             </dynamic>
+          </menu>
+       </menuContribution>
+       <menuContribution
+             locationURI="toolbar:org.eclipse.ui.trim.status">
+          <toolbar
+                id="org.marketcetera.photon.statusToolbar">
+             <control
+                   class="org.marketcetera.photon.ui.CommandLineTrimWidget">
+             </control>
+             <control>
+                <class class="org.marketcetera.photon.marketdata.MarketDataStatusIndicator">
+                   <parameter name="overlay" value="icons/overlay/m-template.gif"/>
+                </class>
+             </control>
+             <control>
+                <class class="org.marketcetera.photon.ui.StatusImageTrimWidget">
+	               <parameter name="service" value="org.marketcetera.photon.messaging.JMSFeedService"/>
+         	       <parameter name="overlay" value="icons/overlay/s-template.gif"/>
+         	       <parameter name="name" value="Message server"/>
+	            </class>
+             </control>
+             <control
+                   class="org.marketcetera.photon.ui.ClockTrimWidget">
+             </control>
+          </toolbar>
+       </menuContribution>
    </extension>
    <extension
          point="org.eclipse.ui.handlers">
@@ -413,6 +439,64 @@
             </with>
          </activeWhen>
       </handler>
+      <handler
+            class="org.marketcetera.photon.actions.GoogleFinanceLookupHandler"
+            commandId="org.marketcetera.photon.lookup">
+         <activeWhen>
+            <reference
+                  definitionId="org.marketcetera.photon.symbolProviderSelected">
+            </reference>
+         </activeWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.views.MarketDataView$DeleteCommandHandler"
+            commandId="org.eclipse.ui.edit.delete">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.views.MarketDataView">
+               </equals>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.views.MarketDataView$CopyCommandHandler"
+            commandId="org.eclipse.ui.edit.copy">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.views.MarketDataView">
+               </equals>
+            </with>
+         </activeWhen>
+      </handler>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.definitions">
+      <definition
+            id="org.marketcetera.photon.symbolProviderSelected">
+         <and>
+            <count
+               value="1">
+            </count>
+            <iterate>
+               <instanceof
+                  value="org.marketcetera.photon.ui.ISymbolProvider">
+               </instanceof>
+            </iterate>
+         </and>
+      </definition>
+      <definition
+            id="org.marketcetera.photon.marketDataRowsSelected">
+         <iterate
+               ifEmpty="false">
+           <instanceof
+              value="org.marketcetera.photon.views.MarketDataViewItem">
+           </instanceof>
+         </iterate>
+      </definition>
    </extension>
    
 </plugin>

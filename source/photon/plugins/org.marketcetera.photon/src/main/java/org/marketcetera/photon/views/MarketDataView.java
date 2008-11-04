@@ -1,642 +1,660 @@
 package org.marketcetera.photon.views;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Callable;
 
+import org.eclipse.core.commands.AbstractHandler;
+import org.eclipse.core.commands.ExecutionEvent;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.IHandler;
+import org.eclipse.core.databinding.beans.BeansObservables;
+import org.eclipse.core.databinding.observable.list.WritableList;
+import org.eclipse.core.databinding.observable.map.IObservableMap;
+import org.eclipse.core.runtime.AssertionFailedException;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.databinding.viewers.ObservableListContentProvider;
+import org.eclipse.jface.databinding.viewers.ObservableMapLabelProvider;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ICellModifier;
+import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-import org.eclipse.ui.IWorkbenchPartSite;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.core.IFeedComponentListener;
-import org.marketcetera.core.LockHelper;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.handlers.HandlerUtil;
+import org.eclipse.ui.part.ViewPart;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.publisher.ISubscriber;
-import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.marketdata.FeedStatus;
-import org.marketcetera.marketdata.IFeedComponent;
-import org.marketcetera.marketdata.IMarketDataFeedToken;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
-import org.marketcetera.messagehistory.MessageHolder;
-import org.marketcetera.photon.EclipseUtils;
-import org.marketcetera.photon.IFieldIdentifier;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
-import org.marketcetera.photon.marketdata.MarketDataUtils;
-import org.marketcetera.photon.ui.EventListContentProvider;
-import org.marketcetera.photon.ui.IndexedTableViewer;
-import org.marketcetera.photon.ui.MessageListTableFormat;
+import org.marketcetera.photon.marketdata.MarketDataManager;
+import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
 import org.marketcetera.photon.ui.TextContributionItem;
-import org.marketcetera.quickfix.FIXDataDictionaryManager;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
+import org.marketcetera.util.misc.ClassVersion;
 
-import quickfix.DataDictionary;
-import quickfix.FieldNotFound;
-import quickfix.Message;
 import quickfix.field.BidPx;
 import quickfix.field.BidSize;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDReqID;
-import quickfix.field.NoMDEntries;
 import quickfix.field.OfferPx;
 import quickfix.field.OfferSize;
 import quickfix.field.Symbol;
-import ca.odell.glazedlists.BasicEventList;
-import ca.odell.glazedlists.EventList;
-import ca.odell.glazedlists.FilterList;
-import ca.odell.glazedlists.matchers.Matcher;
 
 /* $License$ */
 
 /**
  * Market data view.
  * 
- * @author gmiller
- * @author caroline.leung@softwaregoodness.com
- * @author andrei.lissovski@softwaregoodness.com
- * @author michael.lossos@softwaregoodness.com
- * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+ * Note: enabling/disabling the symbol entry text field based on feed status has been commented out
+ * since I don't believe it is necessary anymore (now that you can still add tickers even if the feed
+ * is offline). Someone may ask me to add this back so I haven't removed it yet.
+ * 
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
- * @since 0.5.0
+ * @since $Release$
  */
-@ClassVersion("$Id$") //$NON-NLS-1$
-public class MarketDataView
-    extends MessagesView
-    implements IMSymbolListener, IFeedComponentListener, ISubscriber, Messages
-{
+@ClassVersion("$Id$")//$NON-NLS-1$
+public final class MarketDataView extends ViewPart implements IMSymbolListener,
+		ITableProvider, Messages {
 
+	/**
+	 * The view ID.
+	 */
+	public static final String ID = "org.marketcetera.photon.views.MarketDataView"; //$NON-NLS-1$
 
-	public static final String ID = "org.marketcetera.photon.views.MarketDataView";  //$NON-NLS-1$
+	private static final String RESTORED_WIDTH_KEY = "restoredWidth"; //$NON-NLS-1$
 
-	private static final int ZERO_WIDTH_COLUMN_INDEX = 0;
-	private static final int SYMBOL_COLUMN_INDEX = 1;
-//	private static final int LASTPX_COLUMN_INDEX = 2;
-	private static final int LASTQTY_COLUMN_INDEX = 3;
-	private static final int LAST_NORMAL_COLUMN_INDEX = LASTQTY_COLUMN_INDEX;
-    /**
-     * helper object to coordinate read and writes to the model quote list
-     */
-    private final LockHelper mListLocker = new LockHelper();	
+	private static final String COLUMN_WIDTHS = "COLUMN_WIDTHS"; //$NON-NLS-1$
+
+	private static final String COLUMN_ORDER = "COLUMN_ORDER"; //$NON-NLS-1$
+
+	private static final String COLUMN_RESTORED_WIDTHS = "COLUMN_RESTORED_WIDTHS"; //$NON-NLS-1$
+
+	private Map<MSymbol, MarketDataViewSubscriber> mModules = new HashMap<MSymbol, MarketDataViewSubscriber>();
+
+	private TextContributionItem mSymbolEntryText;
+
+	private final MarketDataManager mMarketDataManager = PhotonPlugin.getDefault().getMarketDataManager();
 	
-	public enum MarketDataColumns implements IFieldIdentifier
-	{
-		ZEROWIDTH(""),  //$NON-NLS-1$
-		SYMBOL(Symbol.class), 
-		LASTPX(LastPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
-		LASTQTY(LastQty.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.TRADE), 
-		BIDSZ(BidSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID),
-		BID(BidPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.BID), 
-		ASK(OfferPx.class, MDEntryPx.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER), 
-		ASKSZ(OfferSize.class, MDEntrySize.FIELD, NoMDEntries.FIELD, MDEntryType.FIELD, MDEntryType.OFFER);
-		
-		private String name;
-		private Integer fieldID;
-		private Integer groupID;
-		private Integer groupDiscriminatorID;
-		private Object groupDiscriminatorValue;
+	private TableViewer mViewer;
 
+	private WritableList mItems;
 
-		MarketDataColumns(String name){
-			this.name = name;
+	private IMemento mViewState;
+
+	private Clipboard mClipboard;
+
+//	private IFeedStatusChangedListener mFeedStatusChangedListener;
+
+	/**
+	 * Constructor.
+	 */
+	public MarketDataView() {
+	}
+
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException {
+		super.init(site);
+		mViewState = memento;
+	}
+
+	/**
+	 * Returns the clipboard for this view.
+	 * 
+	 * @return the clipboard for this view
+	 */
+	public Clipboard getClipboard() {
+		if (mClipboard == null) {
+			mClipboard = new Clipboard(mViewer.getControl().getDisplay());
 		}
+		return mClipboard;
+	}
 
-		MarketDataColumns(Class<?> clazz, Integer fieldID, Integer groupID, Integer groupDiscriminatorID, Object groupDiscriminatorValue){
-			this(clazz);
-			this.fieldID = fieldID;
-			this.groupID = groupID;
-			this.groupDiscriminatorID = groupDiscriminatorID;
-			this.groupDiscriminatorValue = groupDiscriminatorValue;
-		}
-
-		MarketDataColumns(Class<?> clazz) {
-			name = clazz.getSimpleName();
-			try {
-				Field fieldField = clazz.getField("FIELD"); //$NON-NLS-1$
-				fieldID = (Integer) fieldField.get(null);
-			} catch (Throwable t){
-				assert(false);
-			}
-		}
-
-		public String toString() {
-			return name;
-		}
-
-		public Integer getFieldID() {
-			return fieldID;
-		}
-		
-		public Integer getGroupID() {
-			return groupID;
-		}
-
-		public Integer getGroupDiscriminatorID() {
-			return groupDiscriminatorID;
-		}
-
-		public Object getGroupDiscriminatorValue() {
-			return groupDiscriminatorValue;
-		}
-
-	};
-
-	private MarketDataFeedTracker marketDataTracker;
-
-	private TextContributionItem symbolEntryText;
-
-	private final Map<MSymbol, IMarketDataFeedToken<?>> tokenMap = new HashMap<MSymbol, IMarketDataFeedToken<?>>();
-
-	public MarketDataView()
-	{
-		super(true);
-		marketDataTracker = new MarketDataFeedTracker(
-				PhotonPlugin.getDefault().getBundleContext());
-		marketDataTracker.open();
+	@Override
+	public Table getTable() {
+		return mViewer != null ? mViewer.getTable() : null;
 	}
 
 	@Override
 	public void createPartControl(Composite parent) {
-		super.createPartControl(parent);
-	    this.setInput(new BasicEventList<MessageHolder>());
+		final IActionBars actionBars = getViewSite().getActionBars();
+		IToolBarManager toolbar = actionBars.getToolBarManager();
+		mSymbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
+//		mFeedStatusChangedListener = new IFeedStatusChangedListener() {
+//
+//			@Override
+//			public void feedStatusChanged(FeedStatusEvent event) {
+//				handleFeedStatusChanged(event.getNewStatus());				
+//			}			
+//		};
+//		mMarketDataManager.addActiveFeedStatusChangedListener(mFeedStatusChangedListener);
+//		handleFeedStatusChanged(mMarketDataManager.getActiveFeedStatus());
+		toolbar.add(mSymbolEntryText);
+		toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
+
+		final Table table = new Table(parent, SWT.MULTI | SWT.FULL_SELECTION
+				| SWT.V_SCROLL | SWT.BORDER);
+		table.setHeaderVisible(true);
+		mViewer = new TableViewer(table);
+		GridDataFactory.defaultsFor(table).applyTo(table);
+
+		final MarketDataItemComparator comparator = new MarketDataItemComparator();
+		mViewer.setComparator(comparator);
+
+		SelectionListener listener = new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				// determine new sort column and direction
+				TableColumn sortColumn = table.getSortColumn();
+				TableColumn currentColumn = (TableColumn) e.widget;
+				final int index = table.indexOf(currentColumn);
+				int dir = table.getSortDirection();
+				if (sortColumn == currentColumn) {
+					dir = dir == SWT.UP ? SWT.DOWN : SWT.UP;
+				} else {
+					table.setSortColumn(currentColumn);
+					dir = SWT.UP;
+				}
+				table.setSortDirection(dir);
+				comparator.setSort(dir == SWT.UP ? 1 : -1);
+				comparator.setIndex(index);
+				mViewer.refresh();
+			}
+		};
+
+		// create columns, using FIXFieldLocalizer to preserve backwards
+		// compatibility
+		TableViewerColumn symbolColumn = new TableViewerColumn(mViewer,
+				createColumn(table,
+						FIXFieldLocalizer.getLocalizedFIXFieldName(Symbol.class
+								.getSimpleName()), SWT.LEFT, listener));
+		symbolColumn.setEditingSupport(new SymbolEditingSupport());
+		createColumn(table, FIXFieldLocalizer
+				.getLocalizedFIXFieldName(LastPx.class.getSimpleName()),
+				SWT.RIGHT, listener);
+		createColumn(table, FIXFieldLocalizer
+				.getLocalizedFIXFieldName(LastQty.class.getSimpleName()),
+				SWT.RIGHT, listener);
+		createColumn(table, FIXFieldLocalizer
+				.getLocalizedFIXFieldName(BidSize.class.getSimpleName()),
+				SWT.RIGHT, listener);
+		createColumn(table, FIXFieldLocalizer
+				.getLocalizedFIXFieldName(BidPx.class.getSimpleName()),
+				SWT.RIGHT, listener);
+		createColumn(table, FIXFieldLocalizer
+				.getLocalizedFIXFieldName(OfferPx.class.getSimpleName()),
+				SWT.RIGHT, listener);
+		createColumn(table, FIXFieldLocalizer
+				.getLocalizedFIXFieldName(OfferSize.class.getSimpleName()),
+				SWT.RIGHT, listener);
+
+		// restore table state if it exists
+		if (mViewState != null) {
+			String columnOrderString = mViewState.getString(COLUMN_ORDER);
+			if (columnOrderString != null) {
+				int[] columnOrder = deserialize(columnOrderString);
+				if (columnOrder.length == table.getColumns().length) {
+					table.setColumnOrder(columnOrder);
+				}
+			}
+			String columnWidthsString = mViewState.getString(COLUMN_WIDTHS);
+			if (columnWidthsString != null) {
+				int[] columnWidths = deserialize(columnWidthsString);
+				if (columnWidths.length == table.getColumns().length) {
+					for (int i = 0; i < columnWidths.length; i++) {
+						table.getColumn(i).setWidth(columnWidths[i]);
+					}
+				}
+			}
+			String columnRestoredWidthsString = mViewState
+					.getString(COLUMN_RESTORED_WIDTHS);
+			if (columnRestoredWidthsString != null) {
+				int[] restoredWidths = deserialize(columnRestoredWidthsString);
+				if (restoredWidths.length == table.getColumns().length) {
+					for (int i = 0; i < restoredWidths.length; i++) {
+						table.getColumn(i).setData(RESTORED_WIDTH_KEY,
+								restoredWidths[i]);
+					}
+				}
+			}
+		}
+
+		registerContextMenu();
+		getSite().setSelectionProvider(mViewer);
+
+		ObservableListContentProvider content = new ObservableListContentProvider();
+		mViewer.setContentProvider(content);
+		IObservableMap[] maps = BeansObservables.observeMaps(content
+				.getKnownElements(), MarketDataViewItem.class, new String[] {
+				"symbol", //$NON-NLS-1$
+				"lastPx", //$NON-NLS-1$
+				"lastQty", //$NON-NLS-1$
+				"bidSize", //$NON-NLS-1$
+				"bidPx", //$NON-NLS-1$
+				"offerPx", //$NON-NLS-1$
+				"offerSize" }); //$NON-NLS-1$
+		mViewer.setLabelProvider(new ObservableMapLabelProvider(maps));
+		mViewer.setUseHashlookup(true);
+		mItems = WritableList.withElementType(MarketDataViewItem.class);
+		mViewer.setInput(mItems);
 	}
+
+	private TableColumn createColumn(final Table table, String text,
+			int alignment, SelectionListener listener) {
+		final TableColumn column = new TableColumn(table, SWT.NONE);
+		column.setWidth(70);
+		column.setText(text);
+		column.setMoveable(true);
+		column.setAlignment(alignment);
+		column.addSelectionListener(listener);
+		return column;
+	}
+
+	/**
+	 * Register the context menu for the viewer so that commands may be added to
+	 * it.
+	 */
+	private void registerContextMenu() {
+		MenuManager contextMenu = new MenuManager();
+		contextMenu.setRemoveAllWhenShown(true);
+		getSite().registerContextMenu(contextMenu, mViewer);
+		Control control = mViewer.getControl();
+		Menu menu = contextMenu.createContextMenu(control);
+		control.setMenu(menu);
+	}
+
+	@Override
+	public void saveState(IMemento memento) {
+		memento.putString(COLUMN_ORDER, serialize(getTable().getColumnOrder()));
+		final TableColumn[] columns = getTable().getColumns();
+		int[] columnWidths = new int[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			columnWidths[i] = columns[i].getWidth();
+		}
+		memento.putString(COLUMN_WIDTHS, serialize(columnWidths));
+		int[] restoredWidths = new int[columns.length];
+		for (int i = 0; i < columns.length; i++) {
+			final Integer restoredWidth = (Integer) columns[i]
+					.getData(RESTORED_WIDTH_KEY);
+			restoredWidths[i] = restoredWidth == null ? 70 : restoredWidth;
+		}
+		memento.putString(COLUMN_RESTORED_WIDTHS, serialize(restoredWidths));
+	}
+
+	private String serialize(int[] array) {
+		StringBuilder builder = new StringBuilder();
+		if (array.length > 0) {
+			builder.append(array[0]);
+			for (int i = 1; i < array.length; i++) {
+				builder.append(',');
+				builder.append(array[i]);
+			}
+		}
+		return builder.toString();
+	}
+
+	private int[] deserialize(String string) {
+		String[] split = string.split(","); //$NON-NLS-1$
+		int[] array = new int[split.length];
+		try {
+			for (int i = 0; i < split.length; i++) {
+				array[i] = Integer.parseInt(split[i]);
+			}
+		} catch (NumberFormatException e) {
+			return new int[0];
+		}
+		return array;
+	}
+
+//	private void handleFeedStatusChanged(FeedStatus status) {
+//		if (mSymbolEntryText == null) {
+//			return;
+//		}
+//		if (status == FeedStatus.AVAILABLE) {
+//			mSymbolEntryText.setEnabled(true);
+//		} else {
+//			mSymbolEntryText.setEnabled(false);
+//		}
+//	}
 
 	@Override
 	public void setFocus() {
-		if(symbolEntryText.isEnabled())
-			symbolEntryText.setFocus();
-	}
-	
-	@Override
-	public void dispose() {
-		marketDataTracker.close();
-		
-		super.dispose();
-	}
-	
-	@Override
-	protected void formatTable(Table messageTable) {
-        messageTable.getVerticalBar().setEnabled(true);
-        messageTable.setForeground(
-        		messageTable.getDisplay().getSystemColor(
-						SWT.COLOR_INFO_FOREGROUND));
-
-        messageTable.setHeaderVisible(true);
-
-		for (int i = 0; i < messageTable.getColumnCount(); i++) {
-			boolean moveable = true;
-			if (i == 0) {
-				moveable = false;
-			}
-			messageTable.getColumn(i).setMoveable(moveable);
-		}
-    }
-
-	@Override
-	protected void packColumns(Table table) {
-		super.packColumns(table);
-		
-		// The following is required to work around the root cause of #132 ""Dirt" rendered in Market Data view 
-		// row selection".
-		//
-		// There is no way to remove the extra spacing in the first TableColumn of an SWT Table on Windows.
-		// This extra spacing is what causes the visible gap on a selected row.
-		// It has nothing to do with the TextCellEditor or TableViewer -- the problem can be 
-		// reproduced using just an SWT Table with text in the TableItems. The first column always has extra space.
-		//
-		// The best that can be done to get rid of the visible gap in a selected row
-		// is to create an unmovable zero width first column. 
-		TableColumn zeroFirstColumn = table.getColumn(ZERO_WIDTH_COLUMN_INDEX);
-		zeroFirstColumn.setWidth(0);
-		zeroFirstColumn.setResizable(false);
-		zeroFirstColumn.setMoveable(false);
-		zeroFirstColumn.setText(""); //$NON-NLS-1$
-		zeroFirstColumn.setImage(null);
-		for (int i = 1; i < table.getColumnCount(); i++) {
-			table.getColumn(i).setWidth(getTableColumnWidth(table, i));
-		}
-	}
-	
-	private int getColumnWidth(Table messageTable, int width) {
-		return EclipseUtils.getTextAreaSize(messageTable, null, width, 1.0).x;
-	}
-	
-	private int getTableColumnWidth(Table table, int index) {
-		switch (index) {
-		case SYMBOL_COLUMN_INDEX:
-			return getColumnWidth(table, 10);	// TODO i18n		
-		case BID_SIZE_INDEX:
-			return getColumnWidth(table, 10);    // TODO i18n
-		case BID_INDEX:
-			return getColumnWidth(table, 10);    // TODO i18n
-		case ASK_INDEX:
-			return getColumnWidth(table, 10);    // TODO i18n
-		case ASK_SIZE_INDEX:
-			return getColumnWidth(table, 10);    // TODO i18n
-		default:
-			return getColumnWidth(table, 11);    // TODO i18n
-		}
-	}
-
-
-	@Override
-	protected IndexedTableViewer createTableViewer(Table aMessageTable, Enum<?>[] enums) {
-		IndexedTableViewer aMessagesViewer = new IndexedTableViewer(aMessageTable);
-		getSite().setSelectionProvider(aMessagesViewer);
-		aMessagesViewer.setContentProvider(new EventListContentProvider<MessageHolder>());
-		aMessagesViewer.setLabelProvider(new MarketDataTableFormat(aMessageTable, getSite(), FIXDataDictionaryManager.getFIXDataDictionary(FIXVersion.FIX44).getDictionary()));
-		
-		// Create the cell editors
-	    CellEditor[] editors = new CellEditor[MarketDataColumns.values().length];
-
-	    // Column 1 : Completed (Checkbox)
-	    editors[SYMBOL_COLUMN_INDEX] = new TextCellEditor(aMessageTable);
-
-	    // Assign the cell editors to the viewer 
-	    aMessagesViewer.setCellEditors(editors);
-	    String[] columnProperties = new String[MarketDataColumns.values().length];
-	    columnProperties[SYMBOL_COLUMN_INDEX] = MarketDataColumns.SYMBOL.toString();
-	    aMessagesViewer.setColumnProperties(columnProperties);
-	    
-	    // Set the cell modifier for the viewer
-	    aMessagesViewer.setCellModifier(new MarketDataCellModifier(this));
-
-	    return aMessagesViewer;
+		if (mSymbolEntryText.isEnabled())
+			mSymbolEntryText.setFocus();
 	}
 
 	@Override
-	protected Enum<?>[] getEnumValues() {
-		return MarketDataColumns.values();
-	}
-
-	@Override
-	protected void initializeToolBar(IToolBarManager theToolBarManager) {
-		symbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
-		if(marketDataTracker.getMarketDataFeedService() == null) {
-			symbolEntryText.setEnabled(false);
-		} else {
-			FeedStatus feedStatus = marketDataTracker.getMarketDataFeedService().getFeedStatus();
-			updateSymbolEntryTextFromFeedStatus(feedStatus);
-		}
-		marketDataTracker.addFeedEventListener(new MarketDataFeedTracker.FeedEventListener() {
-			public void handleEvent(FeedStatus status) {
-				if(symbolEntryText == null) {
-					return;
-				}
-				updateSymbolEntryTextFromFeedStatus(status);
-			}
-		});
-		theToolBarManager.add(symbolEntryText);
-		theToolBarManager.add(new AddSymbolAction(symbolEntryText, this));
-	}
-	
-	private void updateSymbolEntryTextFromFeedStatus(FeedStatus status) {
-		if (symbolEntryText == null || symbolEntryText.isDisposed()) {
-			return;
-		}
-		if(status == FeedStatus.AVAILABLE) {
-			symbolEntryText.setEnabled(true);
-		} else {
-			symbolEntryText.setEnabled(false);
-		}
-	}
-	
-	private boolean listContains(String stringValue) {
-		if (stringValue == null){
-			return false;
-		}
-		EventList<MessageHolder> list = getInput();
-		for (MessageHolder holder : list) {
-			try {
-				if (stringValue.equalsIgnoreCase(holder.getMessage().getString(Symbol.FIELD))){
-					return true;
-				}
-			} catch (FieldNotFound e) {
-				// do nothing
-			}
-		}
+	public boolean isListeningSymbol(MSymbol symbol) {
 		return false;
 	}
 
-	private void updateQuote(final Message quote) 
-	{
-	    try {
-            mListLocker.executeWrite(new Callable<Object>() {
-                public Object call() 
-                    throws Exception
-                {
-                    EventList<MessageHolder> list = getInput();
-                    int i = 0;
-                    for (MessageHolder holder : list) {
-                        Message message = holder.getMessage();
-                        try {
-                            String holderMessageSymbol = message.getString(Symbol.FIELD);
-                            String quoteMessageSymbol = quote.getString(Symbol.FIELD);
-                            if (holderMessageSymbol.equals(quoteMessageSymbol)) {
-                                IncomingMessageHolder newHolder = new IncomingMessageHolder(quote);
-                                newHolder.setToken(holder.getToken());
-                                list.set(i, 
-                                         newHolder);
-                                getMessagesViewer().update(newHolder, 
-                                                           null);
-                            }               
-                        } catch (FieldNotFound e) {
-                            throw e;
-                        }
-                        i += 1;
-                    }
-                    return null;
-                }	        
-            });
-        } catch (Throwable t) {
-            PhotonPlugin.getMainConsoleLogger().error(t);
-        }
-	}
-
-	class MarketDataCellModifier implements ICellModifier
-	{
-		public MarketDataCellModifier(MarketDataView view) {
-		}
-
-		public boolean canModify(Object element, String property) {
-			return MarketDataColumns.SYMBOL.toString().equals(property);
-		}
-
-		public Object getValue(Object element, String property) {
-			try {
-				return ((MessageHolder)element).getMessage().getString(Symbol.FIELD);
-			} catch (FieldNotFound e) {
-				return ""; //$NON-NLS-1$
-			}
-		}
-
-		public void modify(Object element, String property, Object value) {
-			MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getMarketDataFeedService();
-			if (service == null){
-				PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
-				return;
-			}
-			MSymbol newSymbol = service.symbolFromString(value.toString());
-
-			String stringValue = newSymbol.toString();
-			if (listContains(stringValue)){
-				return;
-			}
-			TableItem tableItem = (TableItem) element;
-			MessageHolder messageHolder = (MessageHolder)tableItem.getData();
-			Message message = messageHolder.getMessage();
-			
-			try {
-				MSymbol symbol = service.symbolFromString(message.getString(Symbol.FIELD));
-				doUnsubscribe(symbol);
-			} catch (FieldNotFound fnf){}
-			message.clear();
-			if (stringValue.length()>0){
-				MSymbol mSymbol = service.symbolFromString(stringValue);
-				message.setField(new Symbol(stringValue));
-				doSubscribe(mSymbol);
-				messageHolder.setToken(doSubscribe(mSymbol));
-			}
-		}
-	}
-
-
-	private static final int BID_SIZE_INDEX = LAST_NORMAL_COLUMN_INDEX + 1;
-	private static final int BID_INDEX = LAST_NORMAL_COLUMN_INDEX + 2;
-	private static final int ASK_INDEX = LAST_NORMAL_COLUMN_INDEX + 3;
-	private static final int ASK_SIZE_INDEX = LAST_NORMAL_COLUMN_INDEX + 4;
-
-	
-	class MarketDataTableFormat extends MessageListTableFormat {
-
-
-		public MarketDataTableFormat(Table table, IWorkbenchPartSite site, DataDictionary dataDictionary) {
-			super(table, MarketDataColumns.values(), site, dataDictionary);
-		}
-
-		@Override
-		public String getColumnName(int index) {
-			if (index == ZERO_WIDTH_COLUMN_INDEX) {
-				return "";  //$NON-NLS-1$
-			}
-			if (index <= LAST_NORMAL_COLUMN_INDEX){
-				return super.getColumnName(index);
-			}
-			switch(index){
-			case BID_SIZE_INDEX:
-				return BID_SZ_LABEL.getText();
-			case BID_INDEX:
-				return BID_LABEL.getText();
-			case ASK_INDEX:
-				return ASK_LABEL.getText();
-			case ASK_SIZE_INDEX:
-				return ASK_SZ_LABEL.getText();
-			default:
-				return ""; //$NON-NLS-1$
-			}
-		}
-
-		@Override
-		public String getColumnText(Object element, int index) {
-			if (index == ZERO_WIDTH_COLUMN_INDEX) {
-				return "";  //$NON-NLS-1$
-			}
-			return super.getColumnText(element, index);
-		}
-	}
-	
+	@Override
 	public void onAssertSymbol(MSymbol symbol) {
 		addSymbol(symbol);
 	}
 
 	/**
+	 * Adds a new row in the view for the given symbol (if one does not already
+	 * exist).
+	 * 
 	 * @param symbol
+	 *            symbol to add to view
 	 */
 	public void addSymbol(MSymbol symbol) {
-
-		if (hasSymbol(symbol)) {
-			PhotonPlugin.getMainConsoleLogger().warn(DUPLICATE_SYMBOL.getText(symbol));
+		if (mModules.containsKey(symbol)) {
+			PhotonPlugin.getMainConsoleLogger().warn(
+					DUPLICATE_SYMBOL.getText(symbol));
 		} else {
-			EventList<MessageHolder> list = getInput();
-
-			Message message = new Message();
-			message.setField(new Symbol(symbol.toString()));
-			MessageHolder messageHolder = new MessageHolder(message);
-			list.add(messageHolder);
-			messageHolder.setToken(doSubscribe(symbol));
+			MarketDataViewItem item = new MarketDataViewItem(symbol);
+			mModules.put(symbol, doSubscribe(item));
+			mItems.add(item);
 		}
 	}
-	
-	private boolean hasSymbol(final MSymbol symbol) {
-		EventList<MessageHolder> list = getInput();
-			
-		FilterList<MessageHolder> matches = new FilterList<MessageHolder>(list, 
-				new Matcher<MessageHolder>() {
-					public boolean matches(MessageHolder listItem) {
-						try {
-							String listSymbol = listItem.getMessage().getString(Symbol.FIELD).trim();
-							return listSymbol.equals(symbol.getFullSymbol().trim());
-						} catch (FieldNotFound e) {
-							return false;
-						}
-					}
-				});
-		boolean rv = !matches.isEmpty();
-		return rv;
-	}
 
-	public void removeItem(MessageHolder holder){
-		MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
-		if (service == null){
-			PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
-			return;
-		}
-		try {
-			MSymbol mSymbol = service.symbolFromString(holder.getMessage().getString(Symbol.FIELD));
-			removeSymbol(mSymbol);
-		} catch (FieldNotFound e) {
-			// do nothing
-		}
-	}
-	
-	public void removeSymbol(MSymbol symbol) {
-		doUnsubscribe(symbol);
-
-		EventList<MessageHolder> list = getInput();
-		for (MessageHolder holder : list) {
-			try {
-				String messageSymbolString = holder.getMessage().getString(Symbol.FIELD);
-				if (messageSymbolString.equals(symbol.toString())){
-					list.remove(holder);
-					break;
-				}
-			} catch (FieldNotFound e) {
+	private MarketDataViewSubscriber doSubscribe(final MarketDataViewItem viewItem) {
+		final MarketDataViewSubscriber subscriber = new MarketDataViewSubscriber(viewItem);
+		BusyIndicator.showWhile(getViewSite().getShell().getDisplay(), new Runnable() {
+		
+			@Override
+			public void run() {
+				mMarketDataManager.addSubscriber(subscriber);
 			}
+		});
+		return subscriber;
+	}
+
+	private void remove(MarketDataViewItem item) {
+
+		mMarketDataManager.removeSubscriber(mModules.get(item.getSymbol()));
+		mModules.remove(item.getSymbol());
+		mItems.remove(item);
+	}
+
+	@Override
+	public void dispose() {
+//		mMarketDataManager.removeActiveFeedStatusChangedListener(mFeedStatusChangedListener);
+		for (Object object : mItems) {
+			mMarketDataManager.removeSubscriber(mModules.get(((MarketDataViewItem) object).getSymbol()));
 		}
-		getMessagesViewer().refresh();
+		if (mClipboard != null) {
+			mClipboard.dispose();
+		}
+		super.dispose();
+	}	
+	
+	private final class MarketDataViewSubscriber extends MarketDataSubscriber {
+
+		MarketDataViewItem mItem;
+		
+		MarketDataViewSubscriber(MarketDataViewItem item) {
+			super(item.getSymbol().toString());
+			mItem = item;
+		}
+		
+		@Override
+		public void receiveData(final Object inData) {
+			getViewSite().getShell().getDisplay().asyncExec(new Runnable() {
+
+				@Override
+				public void run() {
+					if (inData instanceof BidEvent) {
+						mItem.setBidEvent((BidEvent) inData);
+					} else if (inData instanceof AskEvent) {
+						mItem.setAskEvent((AskEvent) inData);
+					} else if (inData instanceof TradeEvent) {
+						mItem.setTradeEvent((TradeEvent) inData);
+					} else {
+						MARKET_DATA_UNEXPECTED_EVENT_TYPE.warn(this, inData
+								.getClass());
+					}
+				}
+			});
+		}
 		
 	}
 
-	private void doUnsubscribe(final MSymbol symbol) 
-	{
-	    doWaitCursor(getSite(),
-	                 new Runnable() {
-	        @Override
-	        public void run()
-	        {
-	            IMarketDataFeedToken<?> token = tokenMap.remove(symbol);
-	            if(token != null) {
-	                PhotonPlugin.getMainConsoleLogger().debug(String.format("Unsubscribing to updates for %s", //$NON-NLS-1$
-	                                                                        symbol));
-	                token.cancel();
-	            } else {
-                        PhotonPlugin.getMainConsoleLogger().warn(CANNOT_UNSUBSCRIBE_NO_RECORD.getText(symbol));
-	            }
-	        }
+	/**
+	 * Handles column sorting.
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
+	private static class MarketDataItemComparator extends ViewerComparator {
 
-	    });
+		private int mIndex = -1;
+		private int mDirection = 0;
+
+		/**
+		 * @param index
+		 *            index of sort column
+		 */
+		public void setIndex(int index) {
+			mIndex = index;
+		}
+
+		/**
+		 * @param direction
+		 *            sort direction, 1 for ascending and -1 for descending
+		 */
+		public void setSort(int direction) {
+			mDirection = direction;
+		}
+
+		@Override
+		public int compare(Viewer viewer, Object e1, Object e2) {
+			if (mIndex == -1)
+				return 0;
+			MarketDataViewItem item1 = (MarketDataViewItem) e1;
+			MarketDataViewItem item2 = (MarketDataViewItem) e2;
+			int compare;
+			switch (mIndex) {
+			case 0:
+				compare = compareNulls(item1.getSymbol().toString(), item2
+						.getSymbol().toString());
+				if (compare == 0) {
+					compare = item1.getSymbol().toString().compareTo(
+							item2.getSymbol().toString());
+				}
+				break;
+			case 1:
+				compare = compareNulls(item1.getLastPx(), item2.getLastPx());
+				if (compare == 0) {
+					compare = item1.getLastPx().compareTo(item2.getLastPx());
+				}
+				break;
+			case 2:
+				compare = compareNulls(item1.getLastQty(), item2.getLastQty());
+				if (compare == 0) {
+					compare = item1.getLastQty().compareTo(item2.getLastQty());
+				}
+				break;
+			case 3:
+				compare = compareNulls(item1.getBidSize(), item2.getBidSize());
+				if (compare == 0) {
+					compare = item1.getBidSize().compareTo(item2.getBidSize());
+				}
+				break;
+			case 4:
+				compare = compareNulls(item1.getBidPx(), item2.getBidPx());
+				if (compare == 0) {
+					compare = item1.getBidPx().compareTo(item2.getBidPx());
+				}
+				break;
+			case 5:
+				compare = compareNulls(item1.getOfferPx(), item2.getOfferPx());
+				if (compare == 0) {
+					compare = item1.getOfferPx().compareTo(item2.getOfferPx());
+				}
+				break;
+			case 6:
+				compare = compareNulls(item1.getOfferSize(), item2
+						.getOfferSize());
+				if (compare == 0) {
+					compare = item1.getOfferSize().compareTo(
+							item2.getOfferSize());
+				}
+				break;
+			default:
+				throw new AssertionFailedException("Invalid column index"); //$NON-NLS-1$
+			}
+			return mDirection * compare;
+		}
+
+		private int compareNulls(Object o1, Object o2) {
+			if (o1 == null) {
+				return (o2 == null) ? 0 : -1;
+			}
+			if (o2 == null) {
+				return (o1 == null) ? 0 : 1;
+			}
+			return 0;
+		}
 	}
-	
-	private IMarketDataFeedToken<?> doSubscribe(final MSymbol symbol) 
-	{
-	    final MarketDataView theView = this;
-		try {
-	        return doWaitCursor(getSite(),
-	                            new Callable<IMarketDataFeedToken<?>>() {
-	            @Override 
-	            public IMarketDataFeedToken<?> call()
-	                throws Exception
-	            {
-	                MarketDataFeedService<?> service = (MarketDataFeedService<?>) marketDataTracker.getService();
-	                IMarketDataFeedToken<?> token = null;
-	                if (service == null) {
- 			    PhotonPlugin.getMainConsoleLogger().warn(MISSING_QUOTE_FEED.getText());
-	                } else {
-	                    Message newSubscribeBBO = MarketDataUtils.newSubscribeBBO(symbol);
-	                    // this odd try/catch accounts for the equally odd behavior of the id factory.
-	                    //  it may throw an exception the first time around but will subsequently
-	                    //  be capable of returning ids.  weird.
-	                    String id;
-	                    try {
-	                        id = PhotonPlugin.getDefault().getIDFactory().getNext();
-	                    } catch (Throwable t) {
-	                        id = PhotonPlugin.getDefault().getIDFactory().getNext();
-	                    }
-	                    newSubscribeBBO.setField(new MDReqID(id));
-	                    token = service.execute(newSubscribeBBO, 
-                                                theView);
-	                    tokenMap.put(symbol, 
-	                                 token);
-	                    getMessagesViewer().refresh();
-	                }
-	                return token;
-	            }
-	        });
-		} catch (Exception e) {
-			PhotonPlugin.getMainConsoleLogger().warn(CANNOT_SUBSCRIBE_TO_MARKET_DATA.getText(symbol),
-                                                                 e);
+
+	/**
+	 * Provides support for editing symbols in-line
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
+	private final class SymbolEditingSupport extends EditingSupport {
+
+		private final TextCellEditor mTextCellEditor;
+
+		private SymbolEditingSupport() {
+			super(mViewer);
+			this.mTextCellEditor = new TextCellEditor(mViewer.getTable());
+		}
+
+		@Override
+		protected void setValue(Object element, Object value) {
+			MarketDataViewItem item = (MarketDataViewItem) element;
+			final MSymbol symbol = item.getSymbol();
+			if (symbol.toString().equals(value))
+				return;
+			MSymbol newSymbol = new MSymbol(value.toString());
+			if (mModules.containsKey(newSymbol)) {
+				PhotonPlugin.getMainConsoleLogger().warn(
+						DUPLICATE_SYMBOL.getText(symbol));
+				return;
+			}
+
+			mMarketDataManager.removeSubscriber(mModules.get(symbol));
+			mModules.remove(symbol);
+			item.setSymbol(newSymbol);
+			mModules.put(newSymbol, doSubscribe(item));
+		}
+
+		@Override
+		protected Object getValue(Object element) {
+			return ((MarketDataViewItem) element).getSymbol().toString();
+		}
+
+		@Override
+		protected CellEditor getCellEditor(Object element) {
+			return mTextCellEditor;
+		}
+
+		@Override
+		protected boolean canEdit(Object element) {
+			return true;
+		}
+	}
+
+	/**
+	 * Handles the delete command for this view.
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
+	public static final class DeleteCommandHandler extends AbstractHandler
+			implements IHandler {
+
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+			ISelection selection = HandlerUtil
+					.getCurrentSelectionChecked(event);
+			if (part instanceof MarketDataView
+					&& selection instanceof IStructuredSelection) {
+				MarketDataView view = (MarketDataView) part;
+				IStructuredSelection sselection = (IStructuredSelection) selection;
+				for (Object obj : sselection.toArray()) {
+					if (obj instanceof MarketDataViewItem) {
+						view.remove((MarketDataViewItem) obj);
+					}
+				}
+			}
 			return null;
 		}
 	}
 
-	public boolean isListeningSymbol(MSymbol symbol) {
-		return false;
-	}
+	/**
+	 * Handles the copy command for this view
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")//$NON-NLS-1$
+	public static final class CopyCommandHandler extends AbstractHandler
+			implements IHandler {
 
-	public void feedComponentChanged(IFeedComponent feedComponent) {
-		
-	}
-
-	public boolean isInteresting(Object message) {
-		
-		return message instanceof HasFIXMessage
-		|| (message instanceof Message && FIXMessageUtil.isMarketDataSnapshotFullRefresh((Message) message));
-	}
-
-	public void publishTo(Object aQuote) {
-		Message message;
-		if (aQuote instanceof HasFIXMessage){
-			message = ((HasFIXMessage)aQuote).getMessage();
-		} else {
-			message = (Message)aQuote;
+		@Override
+		public Object execute(ExecutionEvent event) throws ExecutionException {
+			IWorkbenchPart part = HandlerUtil.getActivePartChecked(event);
+			ISelection selection = HandlerUtil
+					.getCurrentSelectionChecked(event);
+			if (part instanceof MarketDataView
+					&& selection instanceof IStructuredSelection) {
+				MarketDataView view = (MarketDataView) part;
+				IStructuredSelection sselection = (IStructuredSelection) selection;
+				StringBuilder builder = new StringBuilder();
+				for (Object obj : sselection.toArray()) {
+					if (obj instanceof MarketDataViewItem) {
+						MarketDataViewItem item = (MarketDataViewItem) obj;
+						builder.append(item);
+						builder.append(System.getProperty("line.separator")); //$NON-NLS-1$
+					}
+				}
+				view.getClipboard().setContents(
+						new Object[] { builder.toString() },
+						new Transfer[] { TextTransfer.getInstance() });
+			}
+			return null;
 		}
-		if(message != null) {
-	                onQuote(message);
-		}
 	}
-	
-    public void onQuote(final Message aQuote) {
-        Display theDisplay = Display.getDefault();
-        if (theDisplay.getThread() == Thread.currentThread()){
-            updateQuote(aQuote);
-        } else {			
-            theDisplay.asyncExec(new Runnable() {
-                public void run()
-                {
-                    if (!getMessagesViewer().getTable().isDisposed()) {
-                        try {
-                            updateQuote(aQuote);
-                        } catch (Throwable t) {
-                            PhotonPlugin.getMainConsoleLogger().error(t);
-                        }
-                    }
-                }
-            });
-        }
-    }
+
 }
