@@ -266,7 +266,7 @@ public class OptionOrderTicketController
 				return true;
 			}
 			public void publishTo(Object obj) {
-			    throw new UnsupportedOperationException("This needs to be fixed");
+			    throw new UnsupportedOperationException("This needs to be fixed"); //$NON-NLS-1$
 //				Message message;
 //				if (obj instanceof SymbolExchangeEvent){
 //					message = ((SymbolExchangeEvent) obj).getLatestTick();

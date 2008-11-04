@@ -116,10 +116,6 @@ public interface Messages
                                                                                 "missing_default_constructor"); //$NON-NLS-1$
     public static I18NMessage1P MISSING_STATIC_METHOD = new I18NMessage1P(LOGGER,
                                                                           "missing_static_method"); //$NON-NLS-1$
-    public static I18NMessage1P DATAFEED_SKIPPED = new I18NMessage1P(LOGGER,
-                                                                     "datafeed_skipped"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_CONNECT_TO_MARKETDATA_FEED = new I18NMessage0P(LOGGER,
-                                                                                      "cannot_connect_to_marketdata_feed"); //$NON-NLS-1$
     public static I18NMessage0P NULL_TARGET_PAGE = new I18NMessage0P(LOGGER,
                                                                      "null_target_page"); //$NON-NLS-1$
     public static I18NMessage1P VIEW_DOES_NOT_IMPLEMENT = new I18NMessage1P(LOGGER,
@@ -506,4 +502,6 @@ public interface Messages
 			LOGGER, "market_data.unexpected_event_type"); //$NON-NLS-1$
     public static I18NMessage1P STATUS_INDICATOR_OVERLAY_ERROR = new I18NMessage1P(
 			LOGGER, "status_indicator.overlay_error"); //$NON-NLS-1$
+    public static I18NMessage1P GOOGLE_FINANCE_LOOKUP_INVALID_TYPE = new I18NMessage1P(
+			LOGGER, "google_finance_lookup.invalid_type"); //$NON-NLS-1$
 }

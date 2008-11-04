@@ -29,18 +29,18 @@ public class MarketDataReceiverFactory extends
 	public static final ModuleURN PROVIDER_URN = new ModuleURN(
 			"metc:mdatasink:photon"); //$NON-NLS-1$
 
-	private static AtomicLong counter = new AtomicLong();
+	private static final AtomicLong counter = new AtomicLong();
 
 	/**
 	 * Constructor.
 	 */
 	public MarketDataReceiverFactory() {
-		super(PROVIDER_URN, null, true, false, IConfigurationProvider.class, MarketDataSubscriber.class);
+		super(PROVIDER_URN, Messages.MARKET_DATA_RECEIVER_FACTORY_DESCRIPTION, true, false, IConfigurationProvider.class, MarketDataSubscriber.class);
 	}
 
 	@Override
 	public Module create(Object... inParameters) throws ModuleCreationException {
-		ModuleURN urn = new ModuleURN(PROVIDER_URN, "item" + counter.incrementAndGet());
+		ModuleURN urn = new ModuleURN(PROVIDER_URN, "item" + counter.incrementAndGet()); //$NON-NLS-1$
 		IConfigurationProvider config = (IConfigurationProvider) inParameters[0];
 		MarketDataSubscriber subscriber = (MarketDataSubscriber) inParameters[1];
 		return new MarketDataReceiverModule(urn, config, subscriber);

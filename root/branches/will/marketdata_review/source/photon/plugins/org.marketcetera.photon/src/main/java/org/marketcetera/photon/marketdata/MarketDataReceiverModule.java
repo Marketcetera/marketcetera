@@ -37,7 +37,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 	private DataFlowSupport mDataFlowSupport;
 
 	/**
-	 * Constructor.
+	 * Constructor.  Should only be called from {@link MarketDataReceiverFactory}.
 	 * 
 	 * @param inURN
 	 *            instance URN for this module
@@ -46,7 +46,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 	 * @param subscriber
 	 *            subscriber that will process incoming market data
 	 */
-	public MarketDataReceiverModule(ModuleURN inURN,
+	MarketDataReceiverModule(ModuleURN inURN,
 			IConfigurationProvider configProvider,
 			MarketDataSubscriber subscriber) throws ModuleCreationException {
 		super(inURN, false);
@@ -60,6 +60,9 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 
 	@Override
 	protected void preStart() throws ModuleException {
+		if (StringUtils.isBlank(mSubscriber.getSymbol())) {
+			throw new ModuleException(Messages.MARKET_DATA_RECEIVER_NO_SYMBOL);
+		}
 		ModuleURN source = mConfigurationProvider.getMarketDataSourceModule();
 		if (source == null) {
 			throw new ModuleException(new I18NBoundMessage1P(
@@ -69,7 +72,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 		org.marketcetera.marketdata.DataRequest request = MarketDataRequest
 				.newFullBookRequest(mSubscriber.getSymbol());
 		mDataFlowSupport.createDataFlow(new DataRequest[] {
-				new DataRequest(source, request.toString()),
+				new DataRequest(source, request),
 				new DataRequest(getURN()) }, false);
 	}
 
@@ -117,7 +120,7 @@ public class MarketDataReceiverModule extends Module implements DataReceiver,
 	@ClassVersion("$Id$")//$NON-NLS-1$
 	public abstract static class MarketDataSubscriber implements EventListener {
 
-		private String mSymbol;
+		private final String mSymbol;
 
 		/**
 		 * Constructor.

@@ -49,13 +49,10 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
-import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.photon.FIXFieldLocalizer;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataManager;
-import org.marketcetera.photon.marketdata.MarketDataFeed.FeedStatusEvent;
-import org.marketcetera.photon.marketdata.MarketDataFeed.IFeedStatusChangedListener;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModule.MarketDataSubscriber;
 import org.marketcetera.photon.ui.TextContributionItem;
 import org.marketcetera.photon.ui.ChooseColumnsMenu.ITableProvider;
@@ -73,6 +70,10 @@ import quickfix.field.Symbol;
 
 /**
  * Market data view.
+ * 
+ * Note: enabling/disabling the symbol entry text field based on feed status has been commented out
+ * since I don't believe it is necessary anymore (now that you can still add tickers even if the feed
+ * is offline). Someone may ask me to add this back so I haven't removed it yet.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
@@ -109,7 +110,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	private Clipboard mClipboard;
 
-	private IFeedStatusChangedListener mFeedStatusChangedListener;
+//	private IFeedStatusChangedListener mFeedStatusChangedListener;
 
 	/**
 	 * Constructor.
@@ -145,15 +146,15 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		final IActionBars actionBars = getViewSite().getActionBars();
 		IToolBarManager toolbar = actionBars.getToolBarManager();
 		mSymbolEntryText = new TextContributionItem(""); //$NON-NLS-1$
-		mFeedStatusChangedListener = new IFeedStatusChangedListener() {
-
-			@Override
-			public void feedStatusChanged(FeedStatusEvent event) {
-				handleFeedStatusChanged(event.getNewStatus());				
-			}			
-		};
-		mMarketDataManager.addActiveFeedStatusChangedListener(mFeedStatusChangedListener);
-		handleFeedStatusChanged(mMarketDataManager.getActiveFeedStatus());
+//		mFeedStatusChangedListener = new IFeedStatusChangedListener() {
+//
+//			@Override
+//			public void feedStatusChanged(FeedStatusEvent event) {
+//				handleFeedStatusChanged(event.getNewStatus());				
+//			}			
+//		};
+//		mMarketDataManager.addActiveFeedStatusChangedListener(mFeedStatusChangedListener);
+//		handleFeedStatusChanged(mMarketDataManager.getActiveFeedStatus());
 		toolbar.add(mSymbolEntryText);
 		toolbar.add(new AddSymbolAction(mSymbolEntryText, this));
 
@@ -331,16 +332,16 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 		return array;
 	}
 
-	private void handleFeedStatusChanged(FeedStatus status) {
-		if (mSymbolEntryText == null) {
-			return;
-		}
-		if (status == FeedStatus.AVAILABLE) {
-			mSymbolEntryText.setEnabled(true);
-		} else {
-			mSymbolEntryText.setEnabled(false);
-		}
-	}
+//	private void handleFeedStatusChanged(FeedStatus status) {
+//		if (mSymbolEntryText == null) {
+//			return;
+//		}
+//		if (status == FeedStatus.AVAILABLE) {
+//			mSymbolEntryText.setEnabled(true);
+//		} else {
+//			mSymbolEntryText.setEnabled(false);
+//		}
+//	}
 
 	@Override
 	public void setFocus() {
@@ -397,7 +398,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 
 	@Override
 	public void dispose() {
-		mMarketDataManager.removeActiveFeedStatusChangedListener(mFeedStatusChangedListener);
+//		mMarketDataManager.removeActiveFeedStatusChangedListener(mFeedStatusChangedListener);
 		for (Object object : mItems) {
 			mMarketDataManager.removeSubscriber(mModules.get(((MarketDataViewItem) object).getSymbol()));
 		}

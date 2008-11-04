@@ -181,7 +181,7 @@ public class ApplicationActionBarAdvisor
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
 		reconnectMarketDataParameter = new CommandContributionItemParameter(window, null, COMMAND_ID, SWT.PUSH);
 		reconnectMarketDataParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED);
-		reconnectMarketDataParameter.mnemonic = "&e"; // entire menu should be externalized
+		reconnectMarketDataParameter.mnemonic = "&e"; // entire menu should be externalized //$NON-NLS-1$
 		cancelAllOpenOrdersAction = new CancelAllOpenOrdersAction(); register(cancelAllOpenOrdersAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);

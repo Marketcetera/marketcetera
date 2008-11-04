@@ -57,7 +57,8 @@ import org.rubypeople.rdt.core.RubyCore;
 import quickfix.Message;
 
 /**
- * The main plugin class to be used in the Photon application.
+ * The main plugin class to be used in the Photon application. This class is not
+ * synchronized and should only be accessed from the UI thread.
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class PhotonPlugin 
@@ -126,7 +127,7 @@ public class PhotonPlugin
 		super.start(context);
 		bundleContext = context;
 		
-		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true);
+		new DefaultScope().getNode("org.rubypeople.rdt.launching").putBoolean("org.rubypeople.rdt.launching.us.included.jruby", true); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		String level = getPreferenceStore().getString(PhotonPage.LOG_LEVEL_KEY);
 		changeLogLevel(level == null ? PhotonPage.LOG_LEVEL_VALUE_INFO : level);

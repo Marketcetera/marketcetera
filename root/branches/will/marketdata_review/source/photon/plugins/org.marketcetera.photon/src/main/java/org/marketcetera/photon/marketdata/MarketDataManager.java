@@ -72,7 +72,8 @@ public final class MarketDataManager {
 	public MarketDataManager() {
 		List<ModuleURN> providers = mModuleManager.getProviders();
 		for (ModuleURN providerURN : providers) {
-			if (providerURN.providerType().equals("mdata")) {
+			if (providerURN.providerType().equals(
+					MarketDataFeed.MARKET_DATA_PROVIDER_TYPE)) {
 				try {
 					MarketDataFeed feed = new MarketDataFeed(providerURN);
 					feed
@@ -105,6 +106,9 @@ public final class MarketDataManager {
 	 */
 	public void reconnectFeed() {
 		final MarketDataFeed newFeed = mFeeds.get(getPreferencesProviderId());
+		if (mActiveFeed == null && newFeed == null) {
+			return;
+		}
 		if (mActiveFeed != null && newFeed != mActiveFeed) {
 			stopDataFlows();
 		}
@@ -139,7 +143,15 @@ public final class MarketDataManager {
 						e, mActiveFeed.getName());
 			}
 		} else {
+			final FeedStatusEvent event = mActiveFeed.createFeedStatusEvent(
+					mActiveFeed.getStatus(), FeedStatus.OFFLINE);
 			mActiveFeed = null;
+			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+				@Override
+				public void run() {
+					notifyListeners(event);
+				}
+			});
 		}
 	}
 

@@ -12,6 +12,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.ui.ISymbolProvider;
 import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.util.misc.ClassVersion;
@@ -47,6 +48,8 @@ public class GoogleFinanceLookupHandler extends AbstractHandler {
 				} catch (PartInitException e) {
 					throw new ExecutionException(null, e);
 				}
+			} else {
+				Messages.GOOGLE_FINANCE_LOOKUP_INVALID_TYPE.warn(this, obj.getClass().getName());
 			}
 		}
 		return null;
