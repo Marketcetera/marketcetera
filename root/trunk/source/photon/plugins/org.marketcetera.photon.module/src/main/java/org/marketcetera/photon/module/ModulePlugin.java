@@ -1,30 +1,45 @@
 package org.marketcetera.photon.module;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.lang.management.ManagementFactory;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.Map;
 
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
+import javax.management.MBeanServerConnection;
+
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.XMLMemento;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.ModuleConfigurationProvider;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.osgi.framework.BundleContext;
 
 /* $License$ */
 
 /**
- * 
+ * Controls the plug-in life cycle and provides access to the core module framework.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
-public class ModulePlugin extends AbstractUIPlugin implements Messages {
+public final class ModulePlugin extends AbstractUIPlugin {
 
 	/**
 	 * The plug-in ID
@@ -32,35 +47,49 @@ public class ModulePlugin extends AbstractUIPlugin implements Messages {
 	public static final String PLUGIN_ID = "org.marketcetera.photon.module"; //$NON-NLS-1$
 
 	/**
-	 * Special internal key to indicate instance defaults.
+	 * Special internal key to indicate instance defaults
 	 */
 	public static final String INSTANCE_DEFAULTS_INDICATOR = ":"; //$NON-NLS-1$
 
 	/**
-	 * Preference key where properties are stored.
+	 * File name of the persisted module properties
 	 */
-	private static final String MODULE_PROPERTIES_PREFERENCE = "MODULE_PROPERTIES_PREFERENCE"; //$NON-NLS-1$
-
+	private static final String PROPERTIES_FILENAME = "moduleProperties.xml"; //$NON-NLS-1$
+	
+	/**
+	 * Root tag for persisted properties xml
+	 */
+	private static final String PROPERTIES_TAG = "properties"; //$NON-NLS-1$
+	
+	/**
+	 * Tag for a single property
+	 */
+	private static final String PROPERTY_TAG = "property"; //$NON-NLS-1$
+	
+	/**
+	 * Attribute for a property key
+	 */
+	private static final String KEY_ATTRIBUTE = "key"; //$NON-NLS-1$
+	
+	/**
+	 * Attribute for a property value
+	 */
+	private static final String VALUE_ATTRIBUTE = "value"; //$NON-NLS-1$
+	
 	/**
 	 * The shared instance
 	 */
 	private static ModulePlugin plugin;
 
 	/**
-	 * ModuleManager used by classes in this plugin, lazily instantiated.
+	 * ModuleManager used by classes in this plugin, lazily instantiated
 	 */
 	private ModuleManager mModuleManager;
 
 	/**
-	 * Module properties, lazily loaded from preferences.
+	 * Module properties, lazily loaded from preferences
 	 */
 	private PropertiesTree mModuleProperties;
-
-	/**
-	 * The constructor
-	 */
-	public ModulePlugin() {
-	}
 
 	/*
 	 * (non-Javadoc)
@@ -120,34 +149,31 @@ public class ModulePlugin extends AbstractUIPlugin implements Messages {
 			try {
 				mModuleManager.init();
 			} catch (ModuleException e) {
-				MODULE_PLUGIN_ERROR_INITIALIZING_MODULE_MANAGER.error(this, e);
+				Messages.MODULE_PLUGIN_ERROR_INITIALIZING_MODULE_MANAGER.error(this, e);
 			}
 		}
 		return mModuleManager;
 	}
 
 	/**
-	 * The Module properties from this plugin's preference store.
+	 * Returns the {@link MBeanServerConnection} used for module management.
 	 * 
-	 * @return the properties loaded from preferences, or a new empty properties
-	 *         tree if saved preferences do not exist
+	 * @return the {@link MBeanServerConnection} used for module management
+	 */
+	public MBeanServerConnection getMBeanServerConnection() {
+		return ManagementFactory.getPlatformMBeanServer();
+	}
+
+	/**
+	 * Returns the module properties used by the module manager.  Note that
+	 * changing the returned tree will not affect the module manager.  Instead,
+	 * {@link #saveModuleProperties(PropertiesTree)} must be called.
+	 * 
+	 * @return the module framework properties
 	 */
 	public PropertiesTree getModuleProperties() {
 		if (mModuleProperties == null) {
-			String serialized = getPreferenceStore().getString(
-					MODULE_PROPERTIES_PREFERENCE);
-			if (!serialized.isEmpty()) {
-				try {
-					ObjectInputStream in = new ObjectInputStream(
-							new ByteArrayInputStream(serialized.getBytes()));
-					mModuleProperties = (PropertiesTree) in.readObject();
-				} catch (Exception e) {
-					MODULE_PROPERTIES_PREFERENCE_PAGE_ERROR_LOADING_PROPERTIES
-							.error(this, e);
-				}
-			}
-			if (mModuleProperties == null)
-				mModuleProperties = new PropertiesTree();
+			mModuleProperties = readProperties();
 		}
 		// make a copy to prevent external modification
 		PropertiesTree properties = new PropertiesTree();
@@ -156,27 +182,105 @@ public class ModulePlugin extends AbstractUIPlugin implements Messages {
 	}
 
 	/**
-	 * Updates the module properties in the preference store.
+	 * Updates and persists the module properties.  Note that the module
+	 * manager will not pick these up until is is restarted, i.e. when 
+	 * this plug-in is restarted.
 	 * 
 	 * @param newProperties
 	 *            the new properties
-	 * @return true if properties were successfully updated
 	 */
-	public boolean saveModuleProperties(PropertiesTree newProperties) {
-		// set to null to trigger reloading
-		mModuleProperties = null;
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+	public void saveModuleProperties(PropertiesTree newProperties) {
+		mModuleProperties = newProperties;
+		writeProperties();
+	}
+
+	/**
+	 * Seeds a properties tree with the known writable module properties.
+	 * 
+	 * @param properties the properties tree to seed
+	 */
+	public void seedKnownKeys(PropertiesTree properties) {
+		List<ModuleURN> instances = null;
 		try {
-			ObjectOutputStream out = new ObjectOutputStream(baos);
-			out.writeObject(newProperties);
-		} catch (IOException e) {
-			MODULE_PROPERTIES_PREFERENCE_PAGE_ERROR_SAVING_PROPERTIES.error(
-					this, e);
-			return false;
+			instances = getModuleManager().getModuleInstances(null);
+		} catch (InvalidURNException e) {
+			// I'm not even supplying a URN, so this exception will not
+			// get thrown, at least given the current behavior of 
+			// getModuleInstances.  In case that ever changes...
+			throw new AssertionError("Unexpected InvalidURNException"); //$NON-NLS-1$
 		}
-		ModulePlugin.getDefault().getPreferenceStore().putValue(
-				MODULE_PROPERTIES_PREFERENCE, baos.toString());
-		return true;
+
+		for (ModuleURN moduleURN : instances) {
+			try {
+				MBeanInfo info = getMBeanServerConnection().getMBeanInfo(
+						moduleURN.toObjectName());
+				MBeanAttributeInfo[] attributes = info.getAttributes();
+				for (MBeanAttributeInfo beanAttributeInfo : attributes) {
+					if (beanAttributeInfo.isWritable()) {
+						String attribute = beanAttributeInfo.getName();
+						String key = MessageFormat.format("{0}.{1}.{2}.{3}", //$NON-NLS-1$
+								moduleURN.providerType(), moduleURN
+										.providerName(), moduleURN
+										.instanceName(), attribute);
+						if (!properties.containsKey(key)) {
+							properties.put(key, ""); //$NON-NLS-1$
+						}
+					}
+				}
+			} catch (InstanceNotFoundException e) {
+				// Continue on, nothing to process for modules that do not have a bean interface
+			} catch (Exception e) {
+				// Something else went wrong, log and skip
+				Messages.MODULE_PLUGIN_ERROR_DISCOVERING_MODULE_PROPERTIES.warn(this, e, moduleURN.toString());
+			}
+		}
+
+	}
+
+	private PropertiesTree readProperties() {
+		PropertiesTree tree = new PropertiesTree();
+		File file = getStateLocation().append(PROPERTIES_FILENAME).toFile();
+		if (file.exists()) {
+			try {
+				FileInputStream input = new FileInputStream(file);
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(input, "utf-8")); //$NON-NLS-1$
+				IMemento mem = XMLMemento.createReadRoot(reader);
+				for (IMemento property : mem.getChildren(PROPERTY_TAG)) {
+					String key = property.getString(KEY_ATTRIBUTE);
+					String value = property.getString(VALUE_ATTRIBUTE);
+					if (StringUtils.isNotBlank(key) && value != null) {
+						tree.put(key, value);
+					} else {
+						Messages.MODULE_PLUGIN_INVALID_PROPERTY.warn(this, key, value);
+					}
+				}
+			} catch (Exception e) {
+				Messages.MODULE_PLUGIN_ERROR_LOADING_PROPERTIES.error(this, e);
+			}
+		} else {
+			SLF4JLoggerProxy.debug(this, "Did not load persisted module properties because the file does not exist."); //$NON-NLS-1$
+		}
+		return tree;
+	}
+
+	private void writeProperties() {
+		File file = getStateLocation().append(PROPERTIES_FILENAME).toFile();
+		XMLMemento mem = XMLMemento.createWriteRoot(PROPERTIES_TAG);
+		for (Map.Entry<String, String> entry : mModuleProperties.entrySet()) {
+			IMemento property = mem.createChild(PROPERTY_TAG);
+			property.putString(KEY_ATTRIBUTE, entry.getKey());
+			property.putString(VALUE_ATTRIBUTE, entry.getValue());
+		}
+		try {
+			FileOutputStream stream = new FileOutputStream(file);
+			OutputStreamWriter writer = new OutputStreamWriter(stream, "utf-8"); //$NON-NLS-1$
+			mem.save(writer);
+			writer.close();
+		} catch (IOException e) {
+			file.delete();
+			Messages.MODULE_PLUGIN_ERROR_SAVING_PROPERTIES.error(this, e);
+		}
 	}
 
 	private final class PhotonModuleConfigurationProvider implements
@@ -212,7 +316,19 @@ public class ModulePlugin extends AbstractUIPlugin implements Messages {
 		}
 
 		private String lookup(String key) {
-			return getModuleProperties().get(key);
+			PropertiesTree properties = getModuleProperties();
+			String value = properties.get(key);
+			if (value == null) {
+				// Look in the regular eclipse preferences for a seeded value. If
+				// found, persist it to the regular properties store
+				String defaultValue = getPreferenceStore().getString(key);
+				if (StringUtils.isNotBlank(defaultValue)) {
+					properties.put(key, defaultValue);
+					saveModuleProperties(properties);
+					return defaultValue;
+				}
+			}
+			return value;
 		}
 	}
 }

@@ -19,12 +19,13 @@ import org.eclipse.ui.actions.ContributionItemFactory;
 import org.eclipse.ui.actions.ActionFactory.IWorkbenchAction;
 import org.eclipse.ui.application.ActionBarAdvisor;
 import org.eclipse.ui.application.IActionBarConfigurer;
+import org.eclipse.ui.menus.CommandContributionItem;
+import org.eclipse.ui.menus.CommandContributionItemParameter;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.photon.actions.CancelAllOpenOrdersAction;
 import org.marketcetera.photon.actions.CheckForUpdatesAction;
 import org.marketcetera.photon.actions.FocusCommandAction;
 import org.marketcetera.photon.actions.ReconnectJMSAction;
-import org.marketcetera.photon.actions.ReconnectMarketDataFeedAction;
 import org.marketcetera.photon.actions.SelectOptionMarketDataCommandAction;
 import org.marketcetera.photon.actions.WebHelpAction;
 
@@ -112,12 +113,19 @@ public class ApplicationActionBarAdvisor
 
     private IAction checkForUpdatesAction;
 
-	private ReconnectMarketDataFeedAction reconnectQuoteFeedAction;
-
 	private CancelAllOpenOrdersAction cancelAllOpenOrdersAction;
 
 	private IWorkbenchAction selectOptionMarketDataCommandAction;
 
+	private CommandContributionItemParameter reconnectMarketDataParameter;
+	
+	/**
+	 * Eventually, actions will be set up declaratively using the org.eclipse.ui.menus
+	 * extension point.  But for now, the menus are created in code, so menu contributions
+	 * using the new API need to reference the command id from plugin.xml. This value must 
+	 * be kept in synch.
+	 */
+	private static final String COMMAND_ID = "org.marketcetera.photon.reconnectMarketData"; //$NON-NLS-1$
 
 
 	public ApplicationActionBarAdvisor(IActionBarConfigurer configurer) {
@@ -171,7 +179,9 @@ public class ApplicationActionBarAdvisor
         checkForUpdatesAction = new CheckForUpdatesAction(window);  register(checkForUpdatesAction);
 		aboutAction = ActionFactory.ABOUT.create(window); register(aboutAction);
 		reconnectJMSAction = new ReconnectJMSAction(window); register(reconnectJMSAction);
-		reconnectQuoteFeedAction = new ReconnectMarketDataFeedAction(window); register(reconnectQuoteFeedAction);
+		reconnectMarketDataParameter = new CommandContributionItemParameter(window, null, COMMAND_ID, SWT.PUSH);
+		reconnectMarketDataParameter.icon = PhotonPlugin.getImageDescriptor(IImageKeys.RECONNECT_QUOTE_FEED);
+		reconnectMarketDataParameter.mnemonic = "&e"; // entire menu should be externalized //$NON-NLS-1$
 		cancelAllOpenOrdersAction = new CancelAllOpenOrdersAction(); register(cancelAllOpenOrdersAction);
 		//openOptionEditorAction = new OpenOptionEditorAction(window); register(openOptionEditorAction);
 		preferencesAction = ActionFactory.PREFERENCES.create(window); register(preferencesAction);
@@ -193,7 +203,7 @@ public class ApplicationActionBarAdvisor
 		MenuManager menu = new MenuManager(Messages.ApplicationActionBarAdvisor_FileMenuName.getText(),
 				IWorkbenchActionConstants.M_FILE);
 		menu.add(reconnectJMSAction);
-		menu.add(reconnectQuoteFeedAction);
+		menu.add(new CommandContributionItem(reconnectMarketDataParameter));
 		menu.add(cancelAllOpenOrdersAction);
 		menu.add(new Separator());
 		menu.add(saveAction);
@@ -306,8 +316,7 @@ public class ApplicationActionBarAdvisor
 		toolBar.add(focusCommandCI);
 		ActionContributionItem reconnectJMSCI = new ActionContributionItem(reconnectJMSAction);
 		toolBar.add(reconnectJMSCI);
-		ActionContributionItem reconnectQuoteFeedCI = new ActionContributionItem(reconnectQuoteFeedAction);
-		toolBar.add(reconnectQuoteFeedCI);
+		toolBar.add(new CommandContributionItem(reconnectMarketDataParameter));
 		ActionContributionItem cancelAllOpenOrdersCI = new ActionContributionItem(cancelAllOpenOrdersAction);
 		toolBar.add(cancelAllOpenOrdersCI);
 		//ActionContributionItem openOptionsJMSCI = new ActionContributionItem(openOptionEditorAction);

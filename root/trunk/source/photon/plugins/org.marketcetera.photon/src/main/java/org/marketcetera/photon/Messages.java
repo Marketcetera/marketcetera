@@ -72,10 +72,6 @@ public interface Messages
                                                                              "reconnect_message_server"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_DISCONNECT_FROM_MESSAGE_QUEUE = new I18NMessage0P(LOGGER,
                                                                                          "cannot_disconnect_from_message_queue"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_QUOTE_FEED = new I18NMessage0P(LOGGER,
-                                                                         "reconnect_quote_feed"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_DISCONNECT_FROM_QUOTE_FEED = new I18NMessage0P(LOGGER,
-                                                                                      "cannot_disconnect_from_quote_feed"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_DECODE_INCOMING_SPECIFIED_MESSAGE = new I18NMessage1P(LOGGER,
                                                                                              "cannot_decode_incoming_specified_message"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_DECODE_INCOMING_MESSAGE = new I18NMessage0P(LOGGER,
@@ -116,18 +112,10 @@ public interface Messages
                                                                                      "focus_command_action_description"); //$NON-NLS-1$
     public static I18NMessage0P START_SCRIPT_REGISTRY = new I18NMessage0P(LOGGER,
                                                                           "start_script_registry"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_MARKET_DATA_FEED_ACTION = new I18NMessage0P(LOGGER,
-                                                                                      "reconnect_market_data_feed_action"); //$NON-NLS-1$
-    public static I18NMessage0P RECONNECT_MARKET_DATA_FEED_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                                  "reconnect_market_data_feed_action_description"); //$NON-NLS-1$
     public static I18NMessage1P MISSING_DEFAULT_CONSTRUCTOR = new I18NMessage1P(LOGGER,
                                                                                 "missing_default_constructor"); //$NON-NLS-1$
     public static I18NMessage1P MISSING_STATIC_METHOD = new I18NMessage1P(LOGGER,
                                                                           "missing_static_method"); //$NON-NLS-1$
-    public static I18NMessage1P DATAFEED_SKIPPED = new I18NMessage1P(LOGGER,
-                                                                     "datafeed_skipped"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_CONNECT_TO_MARKETDATA_FEED = new I18NMessage0P(LOGGER,
-                                                                                      "cannot_connect_to_marketdata_feed"); //$NON-NLS-1$
     public static I18NMessage0P NULL_TARGET_PAGE = new I18NMessage0P(LOGGER,
                                                                      "null_target_page"); //$NON-NLS-1$
     public static I18NMessage1P VIEW_DOES_NOT_IMPLEMENT = new I18NMessage1P(LOGGER,
@@ -508,4 +496,12 @@ public interface Messages
                                                                             "medium_priority_subject"); //$NON-NLS-1$
     public static I18NMessage0P LOW_PRIORITY_SUBJECT = new I18NMessage0P(LOGGER,
                                                                          "low_priority_subject"); //$NON-NLS-1$
+    public static I18NMessage2P MARKET_DATA_EVENT_SYMBOL_MISMATCH = new I18NMessage2P(
+			LOGGER, "market_data.event_symbol_mismatch"); //$NON-NLS-1$
+    public static I18NMessage1P MARKET_DATA_UNEXPECTED_EVENT_TYPE = new I18NMessage1P(
+			LOGGER, "market_data.unexpected_event_type"); //$NON-NLS-1$
+    public static I18NMessage1P STATUS_INDICATOR_OVERLAY_ERROR = new I18NMessage1P(
+			LOGGER, "status_indicator.overlay_error"); //$NON-NLS-1$
+    public static I18NMessage1P GOOGLE_FINANCE_LOOKUP_INVALID_TYPE = new I18NMessage1P(
+			LOGGER, "google_finance_lookup.invalid_type"); //$NON-NLS-1$
 }
