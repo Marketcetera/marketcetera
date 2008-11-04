@@ -92,7 +92,7 @@ public class MarketDataFeedService<C extends IMarketDataFeedCredentials>
 	                                             ISubscriber subscriber) 
 		throws FeedException
 	{
-	    throw new UnsupportedOperationException("Need to translate Message to DataRequest");
+	    throw new UnsupportedOperationException("Need to translate Message to DataRequest"); //$NON-NLS-1$
 //		return feed.execute(message, 
 //		                    subscriber);
 	}

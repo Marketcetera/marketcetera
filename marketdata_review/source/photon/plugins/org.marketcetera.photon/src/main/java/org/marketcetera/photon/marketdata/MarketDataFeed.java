@@ -40,7 +40,7 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")//$NON-NLS-1$
 public final class MarketDataFeed {
 
-	private static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
+	static final String MARKET_DATA_PROVIDER_TYPE = "mdata"; //$NON-NLS-1$
 	private static final String FEED_STATUS_ATTRIBUTE = "FeedStatus"; //$NON-NLS-1$
 
 	private static final FeedStatusFilter sFeedStatusFilter = new FeedStatusFilter();
@@ -268,7 +268,7 @@ public final class MarketDataFeed {
 	}
 
 	/**
-	 * Inteface that feed status listeners must implement.
+	 * Interface that feed status listeners must implement.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
 	 * @version $Id$

@@ -190,8 +190,8 @@ public class ApplicationWorkbenchWindowAdvisor
 		super.createWindowContents(shell);
 		// Could not do this declaratively due to https://bugs.eclipse.org/bugs/show_bug.cgi?id=253232 
 		ITrimManager trimManager = ((WorkbenchWindow) getWindowConfigurer().getWindow()).getTrimManager();
-		IWindowTrim trim = trimManager.getTrim("org.marketcetera.photon.statusToolbar");
-		IWindowTrim beforeMe = trimManager.getTrim("org.eclipse.jface.action.StatusLineManager");
+		IWindowTrim trim = trimManager.getTrim("org.marketcetera.photon.statusToolbar"); //$NON-NLS-1$
+		IWindowTrim beforeMe = trimManager.getTrim("org.eclipse.jface.action.StatusLineManager"); //$NON-NLS-1$
 		trimManager.addTrim(SWT.BOTTOM, trim, beforeMe);
 	}
 }

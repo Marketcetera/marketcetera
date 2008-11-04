@@ -24,7 +24,19 @@ import org.marketcetera.util.except.I18NException;
 public class MarketDataFeedTest {
 
 	@Test
+	public void nullURN() throws Exception {
+		// not expecting a particular message since it is thrown from infrastructure
+		new ExpectedFailure<InvalidURNException>(null) {
+			@Override
+			protected void run() throws Exception {
+				new MarketDataFeed(null);
+			}
+		};
+	}
+
+	@Test
 	public void gargabeURN() throws Exception {
+		// not expecting a particular message since it is thrown from infrastructure
 		new ExpectedFailure<InvalidURNException>(null) {
 			@Override
 			protected void run() throws Exception {

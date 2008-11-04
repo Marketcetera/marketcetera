@@ -73,10 +73,15 @@ public interface Messages {
 	static final I18NMessage1P MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED = new I18NMessage1P(
 			LOGGER, "market_data_manager.feed_reconnect_failed"); //$NON-NLS-1$
 	
+	static final I18NMessage0P MARKET_DATA_RECEIVER_FACTORY_DESCRIPTION = new I18NMessage0P(
+			LOGGER, "market_data_receiver_factory.description"); //$NON-NLS-1$
+		
 	static final I18NMessage0P MARKET_DATA_RECEIVER_NO_CONFIG = new I18NMessage0P(
 			LOGGER, "market_data_receiver.no_config"); //$NON-NLS-1$
 	static final I18NMessage0P MARKET_DATA_RECEIVER_NO_SUBSCRIBER = new I18NMessage0P(
 			LOGGER, "market_data_receiver.no_subscriber"); //$NON-NLS-1$
+	static final I18NMessage0P MARKET_DATA_RECEIVER_NO_SYMBOL = new I18NMessage0P(
+			LOGGER, "market_data_receiver.no_symbol"); //$NON-NLS-1$
 	static final I18NMessage1P MARKET_DATA_RECEIVER_NO_SOURCE = new I18NMessage1P(
 			LOGGER, "market_data_receiver.no_source"); //$NON-NLS-1$
 }

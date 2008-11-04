@@ -57,17 +57,6 @@ public class AbstractNotificationJobTest extends MultiThreadedTestBase {
 	}
 
 	@Test
-	@Ignore // race condition
-	public void steadyStream() throws InterruptedException {
-		for (int i = 0; i < 4; i++) {
-			final INotification notification = Notification.high(Integer.toString(i), "", getClass());//createNotification(Severity.HIGH);
-			mJob.enqueueNotification(notification);
-			SWTTestUtil.delay(1, TimeUnit.SECONDS);
-			checkFailureAndAssertEquals(notification, mProcessed.poll(TIMEOUT, TIMEOUT_UNIT));
-		}
-	}
-
-	@Test
 	public void burst() throws InterruptedException {
 		for (int i = 0; i < 4; i++) {
 			mJob.enqueueNotification(createNotification(Severity.HIGH));

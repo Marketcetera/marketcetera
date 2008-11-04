@@ -42,6 +42,8 @@ import org.marketcetera.photon.module.ModulePlugin;
 import org.marketcetera.photon.module.PropertiesTree;
 import org.marketcetera.util.misc.ClassVersion;
 
+/* $License$ */
+
 /**
  * The Module Properties preference page. All properties are stored in a single
  * Eclipse runtime preference.
@@ -81,6 +83,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	 */
 	public ModulePropertiesPreferencePage() {
 		mProperties = ModulePlugin.getDefault().getModuleProperties();
+		ModulePlugin.getDefault().seedKnownKeys(mProperties);
 	}
 
 	@Override
@@ -251,7 +254,8 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 
 	@Override
 	public boolean performOk() {
-		return ModulePlugin.getDefault().saveModuleProperties(mProperties);
+		ModulePlugin.getDefault().saveModuleProperties(mProperties);
+		return true;
 	}
 
 	/**
