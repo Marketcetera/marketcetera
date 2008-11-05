@@ -3,6 +3,8 @@ package org.marketcetera.photon.preferences;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.jface.preference.ComboFieldEditor;
@@ -115,6 +117,14 @@ public class ConnectionsPreferencePage
 			}
 			namesValues.add(new String[] {name, provider.getId()});
 		}
+		Collections.sort(namesValues, new Comparator<String[]>() {
+
+			@Override
+			public int compare(String[] o1, String[] o2) {
+				return o1[0].compareTo(o2[0]);
+			}
+			
+		});
 		quoteFeedNameEditor = new ComboFieldEditor(ConnectionConstants.MARKETDATA_STARTUP_KEY,
 		                                           MARKET_DATA_FEED_LABEL.getText(),
 		                                           namesValues.toArray(new String[namesValues.size()][]),
