@@ -435,6 +435,7 @@ public final class MarketDataView extends ViewPart implements IMSymbolListener,
 					}
 				}
 			});
+			PhotonPlugin.getDefault().getMarketDataLogger().debug(inData);
 		}
 		
 	}
