@@ -55,4 +55,6 @@ public interface Messages {
 			LOGGER, "module_properties_preference_page.delete_action.label"); //$NON-NLS-1$
 	static final I18NMessage0P MODULE_PROPERTIES_PREFERENCE_PAGE_RESTART_WARNING = new I18NMessage0P(
 			LOGGER, "module_properties_preference_page.restart_warning"); //$NON-NLS-1$
+	static final I18NMessage0P MODULE_PROPERTIES_PREFERENCE_PAGE_PASSWORD_MATCH = new I18NMessage0P(
+			LOGGER, "module_properties_preference_page.password_match"); //$NON-NLS-1$
 }

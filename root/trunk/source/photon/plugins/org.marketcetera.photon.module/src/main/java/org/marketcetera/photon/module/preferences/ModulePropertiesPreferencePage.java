@@ -16,7 +16,9 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -49,7 +51,8 @@ import org.marketcetera.util.misc.ClassVersion;
  * Eclipse runtime preference.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id$
+ * @version $Id: ModulePropertiesPreferencePage.java 9999 2008-11-04 22:49:55Z
+ *          will $
  * @since $Release$
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
@@ -65,6 +68,16 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	 * Pattern to split properties.
 	 */
 	private static final Pattern SEPARATOR_PATTERN = Pattern.compile("\\."); //$NON-NLS-1$
+
+	/**
+	 * Pattern to identify passwords.
+	 */
+	private static final Pattern PASSWORD_PATTERN = Pattern.compile(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_PASSWORD_MATCH.getText(), Pattern.CASE_INSENSITIVE);
+
+	/**
+	 * Masks passwords.
+	 */
+	private static final String PASSWORD_MASK = "**********"; //$NON-NLS-1$
 
 	/**
 	 * Holds the properties being edited
@@ -95,7 +108,9 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		Composite composite = new Composite(parent, SWT.NO_FOCUS);
 		GridLayoutFactory.fillDefaults().applyTo(composite);
 		Label warningLabel = new Label(composite, SWT.WRAP);
-		warningLabel.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_RESTART_WARNING.getText());
+		warningLabel
+				.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_RESTART_WARNING
+						.getText());
 		GridDataFactory.defaultsFor(warningLabel).applyTo(warningLabel);
 
 		// Nest the property sheet page used by the Properties view.
@@ -138,51 +153,54 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 						.getSelection();
 				// Add
 				if (selection.length <= 1) {
-					manager.add(new Action(
-							Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_ACTION_LABEL
-									.getText()) {
-						@Override
-						public void run() {
-							String key = ""; //$NON-NLS-1$
-							if (selection.length == 1)
-								key = ((ModulePropertyNode) ((PropertySheetEntry) selection[0]
-										.getData()).getValues()[0]).key
-										+ SEPARATOR;
-							// Show Instance Defaults if the selected property
-							// is level 2, i.e. a module provider
-							final boolean allowInstanceDefault = (SEPARATOR_PATTERN
-									.split(key).length == 2);
-							NewPropertyInputDialog dialog = new NewPropertyInputDialog(
-									getShell(), allowInstanceDefault);
-							if (dialog.open() == IDialogConstants.OK_ID) {
-								if (dialog.isInstanceDefault())
-									key += INSTANCE_DEFAULTS_INDICATOR
-											+ SEPARATOR;
-								key += dialog.getPropertyKey();
-								if (!mProperties.containsKey(key))
-									mProperties.put(key, dialog
-											.getPropertyValue());
-								mPage.refresh();
-								expand(selection[0]);
-							}
-						}
-					});
+					manager
+							.add(new Action(
+									Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_ACTION_LABEL
+											.getText()) {
+								@Override
+								public void run() {
+									String key = ""; //$NON-NLS-1$
+									if (selection.length == 1)
+										key = ((ModulePropertyNode) ((PropertySheetEntry) selection[0]
+												.getData()).getValues()[0]).key
+												+ SEPARATOR;
+									// Show Instance Defaults if the selected
+									// property
+									// is level 2, i.e. a module provider
+									final boolean allowInstanceDefault = (SEPARATOR_PATTERN
+											.split(key).length == 2);
+									NewPropertyInputDialog dialog = new NewPropertyInputDialog(
+											getShell(), allowInstanceDefault);
+									if (dialog.open() == IDialogConstants.OK_ID) {
+										if (dialog.isInstanceDefault())
+											key += INSTANCE_DEFAULTS_INDICATOR
+													+ SEPARATOR;
+										key += dialog.getPropertyKey();
+										if (!mProperties.containsKey(key))
+											mProperties.put(key, dialog
+													.getPropertyValue());
+										mPage.refresh();
+										expand(selection[0]);
+									}
+								}
+							});
 				}
 				// Delete
 				if (selection.length >= 1) {
-					manager.add(new Action(
-							Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION_LABEL
-									.getText()) {
-						@Override
-						public void run() {
-							for (int i = 0; i < selection.length; i++) {
-								final String root = ((ModulePropertyNode) ((PropertySheetEntry) selection[i]
-										.getData()).getValues()[0]).key;
-								mProperties.remove(root);
-							}
-							mPage.refresh();
-						}
-					});
+					manager
+							.add(new Action(
+									Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_DELETE_ACTION_LABEL
+											.getText()) {
+								@Override
+								public void run() {
+									for (int i = 0; i < selection.length; i++) {
+										final String root = ((ModulePropertyNode) ((PropertySheetEntry) selection[i]
+												.getData()).getValues()[0]).key;
+										mProperties.remove(root);
+									}
+									mPage.refresh();
+								}
+							});
 				}
 			}
 		});
@@ -194,8 +212,9 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	protected void contributeButtons(Composite parent) {
 		// A button to add properties
 		Button button = new Button(parent, SWT.PUSH);
-		button.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
-				.getText());
+		button
+				.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
+						.getText());
 		GridDataFactory.defaultsFor(button).align(SWT.CENTER, SWT.CENTER)
 				.applyTo(button);
 		button.addSelectionListener(new SelectionAdapter() {
@@ -265,7 +284,8 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	 * This class also serves as the ID object for property descriptors.
 	 * 
 	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
-	 * @version $Id$
+	 * @version $Id: ModulePropertiesPreferencePage.java 9999 2008-11-04
+	 *          22:49:55Z will $
 	 * @since $Release$
 	 */
 	@ClassVersion("$Id$")//$NON-NLS-1$
@@ -296,8 +316,12 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		@Override
 		public Object getEditableValue() {
 			final String value = mProperties.get(key);
-			if (value != null)
-				return value;
+			if (value != null) {
+				// mask text if the key is a password
+				final String[] split = SEPARATOR_PATTERN.split(key);
+				final String display = split[split.length - 1];
+				return (PASSWORD_PATTERN.matcher(display).matches()) ? PASSWORD_MASK : value;
+			}
 			return null;
 		}
 
@@ -305,16 +329,29 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		public IPropertyDescriptor[] getPropertyDescriptors() {
 			List<IPropertyDescriptor> descriptors = new ArrayList<IPropertyDescriptor>();
 			for (String prefix : mProperties.getChildKeys(key)) {
-				final String[] split = prefix.split("\\."); //$NON-NLS-1$
+				final String[] split = SEPARATOR_PATTERN.split(prefix);
 				final String display = split[split.length - 1];
-				if (split.length <= 2)
+				if (split.length <= 2) {
 					descriptors.add(new PropertyDescriptor(
 							new ModulePropertyNode(prefix), display));
-				else
-					descriptors.add(new TextPropertyDescriptor(
-							new ModulePropertyNode(prefix),
-							display.equals(":") ? "*Instance Defaults*" //$NON-NLS-1$ //$NON-NLS-2$
-									: display));
+				} else {
+					if (PASSWORD_PATTERN.matcher(display).matches()) {
+						// mask text if the key is a password
+						descriptors.add(new PropertyDescriptor(
+								new ModulePropertyNode(prefix), display) {
+							@Override
+							public CellEditor createPropertyEditor(
+									Composite parent) {
+								return new TextCellEditor(parent, SWT.PASSWORD);
+							}
+						});
+					} else {
+						descriptors.add(new TextPropertyDescriptor(
+								new ModulePropertyNode(prefix), display
+										.equals(":") ? "*Instance Defaults*" //$NON-NLS-1$ //$NON-NLS-2$
+										: display));
+					}
+				}
 			}
 			return (IPropertyDescriptor[]) descriptors
 					.toArray(new IPropertyDescriptor[descriptors.size()]);
