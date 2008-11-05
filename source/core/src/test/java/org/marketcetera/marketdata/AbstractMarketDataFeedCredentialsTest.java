@@ -58,7 +58,7 @@ public class AbstractMarketDataFeedCredentialsTest
         throws Exception
     {
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = true;
-        new ExpectedTestFailure(FeedException.class) {
+        new ExpectedTestFailure(NullPointerException.class) {
             protected void execute()
                     throws Throwable
             {
