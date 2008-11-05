@@ -13,6 +13,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.photon.Messages;
+import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.ui.ISymbolProvider;
 import org.marketcetera.photon.views.WebBrowserView;
 import org.marketcetera.util.misc.ClassVersion;
@@ -49,6 +50,7 @@ public class GoogleFinanceLookupHandler extends AbstractHandler {
 					throw new ExecutionException(null, e);
 				}
 			} else {
+				PhotonPlugin.getMainConsoleLogger().error(Messages.GOOGLE_FINANCE_LOOKUP_INVALID_TYPE.getText(obj.getClass().getName()));
 				Messages.GOOGLE_FINANCE_LOOKUP_INVALID_TYPE.warn(this, obj.getClass().getName());
 			}
 		}

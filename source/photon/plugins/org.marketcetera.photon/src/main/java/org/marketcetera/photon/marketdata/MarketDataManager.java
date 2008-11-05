@@ -135,12 +135,18 @@ public final class MarketDataManager {
 				}
 			} catch (ModuleException e) {
 				// TODO: May be better to propagate message to UI
+				PhotonPlugin.getMainConsoleLogger().error(
+						Messages.MARKET_DATA_MANAGER_FEED_START_FAILED
+								.getText(newFeed.getName()));
 				Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(this,
-						mActiveFeed.getName());
+						newFeed.getName());
 			} catch (UnsupportedOperationException e) {
 				// TODO: May be better to propagate message to UI
+				PhotonPlugin.getMainConsoleLogger().error(
+						Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED
+								.getText(newFeed.getName()));
 				Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(this,
-						e, mActiveFeed.getName());
+						e, newFeed.getName());
 			}
 		} else {
 			final FeedStatusEvent event = mActiveFeed.createFeedStatusEvent(
@@ -219,6 +225,9 @@ public final class MarketDataManager {
 			mSubscribers.put(subscriber, subscriberURN);
 		} catch (ModuleException e) {
 			// TODO: May be better to propagate message to UI
+			PhotonPlugin.getMainConsoleLogger().error(
+					Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED
+							.getText(subscriber.getSymbol()));
 			Messages.MARKET_DATA_MANAGER_SUBSCRIBE_FAILED.error(this, e,
 					subscriber.getSymbol());
 		}
