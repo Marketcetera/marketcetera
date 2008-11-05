@@ -130,9 +130,10 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
                 tokens.put(inSupport.getRequestID(),
                            feed.execute(spec));
             }
-        } catch (CoreException e) {
-            inSupport.dataEmitError(e.getI18NBoundMessage(),
-                                    true);
+        } catch (Exception e) {
+            throw new IllegalRequestParameterValue(instanceURN,
+                                                   requestPayload,
+                                                   e);
         }
     }
     /* (non-Javadoc)

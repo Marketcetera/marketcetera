@@ -1,5 +1,8 @@
 package org.marketcetera.marketdata.marketcetera;
 
+import static org.marketcetera.marketdata.marketcetera.Messages.TARGET_COMP_ID_REQUIRED;
+import static org.marketcetera.marketdata.marketcetera.Messages.URL_REQUIRED;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.marketdata.AbstractMarketDataFeedCredentials;
 import org.marketcetera.marketdata.FeedException;
@@ -61,8 +64,8 @@ public class MarketceteraFeedCredentials
         mSenderCompID = inSenderCompID;
         mTargetCompID = inTargetCompID;
         if(mTargetCompID == null ||
-           mTargetCompID.length() == 0) {
-            throw new IllegalArgumentException();
+           mTargetCompID.isEmpty()) {
+            throw new FeedException(TARGET_COMP_ID_REQUIRED);
         }
     }
     /**
@@ -92,5 +95,18 @@ public class MarketceteraFeedCredentials
         StringBuilder output = new StringBuilder();
         output.append("Marketcetera Feed Credentials: URL=").append(getURL()).append(" SenderCompID=").append(getSenderCompID()).append(" TargetCompID=").append(getTargetCompID()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return output.toString();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.marketdata.AbstractMarketDataFeedCredentials#validateURL(java.lang.String)
+     */
+    @Override
+    protected void validateURL(String inURL)
+            throws FeedException
+    {
+        super.validateURL(inURL);
+        if(inURL == null ||
+           inURL.isEmpty()) {
+            throw new FeedException(URL_REQUIRED);
+        }
     }
 }

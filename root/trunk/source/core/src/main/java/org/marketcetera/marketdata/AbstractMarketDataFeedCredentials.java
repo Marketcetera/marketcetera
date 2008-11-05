@@ -28,11 +28,7 @@ public abstract class AbstractMarketDataFeedCredentials
         throws FeedException
     {
         mURL = inURL;
-        try {
-            validateURL(inURL);
-        } catch (Throwable t) {
-            throw new FeedException(t);
-        }
+        validateURL(inURL);
     }  
     /**
      * Perform necessary validation on the given URL.
