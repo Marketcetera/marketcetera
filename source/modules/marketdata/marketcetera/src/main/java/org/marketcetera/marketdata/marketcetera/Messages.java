@@ -55,4 +55,8 @@ public interface Messages
                                                                      "target_comp_label"); //$NON-NLS-1$
     static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                         "provider_description"); //$NON-NLS-1$
+    static final I18NMessage0P TARGET_COMP_ID_REQUIRED = new I18NMessage0P(LOGGER,
+                                                                           "target_comp_id_required"); //$NON-NLS-1$
+    static final I18NMessage0P URL_REQUIRED = new I18NMessage0P(LOGGER,
+                                                                "url_required"); //$NON-NLS-1$
 }
