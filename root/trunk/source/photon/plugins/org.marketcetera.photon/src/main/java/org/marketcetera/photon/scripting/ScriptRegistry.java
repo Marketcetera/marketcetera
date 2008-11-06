@@ -21,7 +21,7 @@ import org.jruby.bsf.JRubyPlugin;
 import org.jruby.exceptions.RaiseException;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.marketdata.IMarketDataFeed;
+import org.marketcetera.marketdata.MarketDataFeed;
 import org.marketcetera.photon.EclipseUtils;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
@@ -114,7 +114,7 @@ public class ScriptRegistry
      * 
      * @param inFeed a <code>IMarketDataFeed</code> value
 	 */	
-    public void connectToMarketDataFeed(IMarketDataFeed<?,?> inFeed)
+    public void connectToMarketDataFeed(MarketDataFeed<?,?> inFeed)
 	{
         logger.debug(String.format("Registering feed %s with the Script Registry", //$NON-NLS-1$
                                    inFeed));
@@ -130,7 +130,7 @@ public class ScriptRegistry
 	 * 
      * @param inFeed a <code>IMarketDataFeed</code> value
 	 */
-	public void disconnectFromMarketDataFeed(IMarketDataFeed<?,?> inFeed)
+	public void disconnectFromMarketDataFeed(MarketDataFeed<?,?> inFeed)
 	{
         logger.debug(String.format("Unregistering feed %s with the Script Registry", //$NON-NLS-1$
                                    inFeed));

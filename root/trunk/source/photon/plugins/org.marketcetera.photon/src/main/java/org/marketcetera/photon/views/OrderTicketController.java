@@ -9,7 +9,7 @@ import org.marketcetera.core.CoreException;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.HasFIXMessage;
-import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -48,7 +48,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
 
     private final MarketDataFeedTracker marketDataTracker;
 
-    protected IMarketDataFeedToken<?> primaryMarketDataToken;
+    protected MarketDataFeedToken primaryMarketDataToken;
 
     private final T orderTicketModel;
 
@@ -278,7 +278,7 @@ public abstract class OrderTicketController <T extends OrderTicketModel>
      * 
      * @return the ISubscription for market data
      */
-    public IMarketDataFeedToken<?> getPrimaryMarketDataToken() {
+    public MarketDataFeedToken getPrimaryMarketDataToken() {
         return primaryMarketDataToken;
     }
 }

@@ -33,6 +33,7 @@ public interface AbstractMarketDataModuleMXBean
      * <p>Regardless of the state of the feed, all existing queries will be canceled
      * and resubmitted.
      *
+     * @throws IllegalArgumentException if the credentials to connect to the feed have not been specified properly
      * @throws UnsupportedOperationException if the feed does not support this behavior
      */
     @DisplayName("Causes the feed to resubmit existing queries")

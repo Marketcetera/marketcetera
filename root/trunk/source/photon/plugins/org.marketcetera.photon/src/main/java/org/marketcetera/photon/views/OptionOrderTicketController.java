@@ -17,7 +17,7 @@ import org.marketcetera.core.Pair;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.event.HasFIXMessage;
 import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.marketdata.MarketDataFeedService;
@@ -65,7 +65,7 @@ public class OptionOrderTicketController
 	 * Maps option roots and underlyings to a complete set of OptionContractData
 	 */
 	HashMap<String, List<OptionContractData>> receivedOptionRoots = new HashMap<String, List<OptionContractData>>();
-	private IMarketDataFeedToken<?> currentOptionToken;
+	private MarketDataFeedToken currentOptionToken;
 	private Logger logger;
 	
 	/**
@@ -469,7 +469,7 @@ public class OptionOrderTicketController
 	 * Get the current subscription for option market data
 	 * @return the ISubscription for market data
 	 */
-	public IMarketDataFeedToken<?> getOptionMarketDataToken() {
+	public MarketDataFeedToken getOptionMarketDataToken() {
 		return currentOptionToken;
 	}
 	

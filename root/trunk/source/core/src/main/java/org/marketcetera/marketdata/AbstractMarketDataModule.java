@@ -29,6 +29,7 @@ import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.RequestID;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 
 /* $License$ */
 
@@ -43,8 +44,8 @@ import org.marketcetera.module.UnsupportedRequestParameterType;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>, 
-                                               C extends IMarketDataFeedCredentials>
+public abstract class AbstractMarketDataModule<T extends MarketDataFeedToken, 
+                                               C extends MarketDataFeedCredentials>
         extends Module
         implements DataEmitter, AbstractMarketDataModuleMXBean, NotificationEmitter
 {
@@ -65,6 +66,13 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
     @Override
     public void reconnect()
     {
+        try {
+            feed.login(getCredentials());
+        } catch (CoreException e) {
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            throw new IllegalArgumentException(e);
+        }
         if(feed instanceof AbstractMarketDataFeed) {
             ((AbstractMarketDataFeed<?,?,?,?,?,?>)feed).doReconnectToFeed();
         } else {
@@ -123,9 +131,8 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
                     inSupport.send(inEvent);
                 }
             };
-            MarketDataFeedTokenSpec<C> spec = MarketDataFeedTokenSpec.generateTokenSpec(getCredentials(),
-                                                                                        request,
-                                                                                        subscriber);
+            MarketDataFeedTokenSpec spec = MarketDataFeedTokenSpec.generateTokenSpec(request,
+                                                                                     subscriber);
             synchronized(tokens) {
                 tokens.put(inSupport.getRequestID(),
                            feed.execute(spec));
@@ -186,7 +193,7 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
      * @param inFeed an <code>IMarketDataFeed&lt;T,C&gt;</code> value containing the instance of the market data feed that this module wraps
      */
     protected AbstractMarketDataModule(ModuleURN inInstanceURN,
-                                       IMarketDataFeed<T,C> inFeed)
+                                       MarketDataFeed<T,C> inFeed)
     {
         super(inInstanceURN,
               false);
@@ -212,7 +219,15 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
     protected void preStart()
             throws ModuleException
     {
+        SLF4JLoggerProxy.debug(this,
+                               "starting {}", //$NON-NLS-1$
+                               this);
         feed.start();
+        try {
+            feed.login(getCredentials());
+        } catch (CoreException e) {
+            throw new ModuleException(e);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -257,7 +272,7 @@ public abstract class AbstractMarketDataModule<T extends IMarketDataFeedToken<C>
     /**
      * the actual feed object that handles market data requests
      */
-    private final IMarketDataFeed<T,C> feed;
+    private final MarketDataFeed<T,C> feed;
     /**
      * tracks the tokens of active data requests
      */

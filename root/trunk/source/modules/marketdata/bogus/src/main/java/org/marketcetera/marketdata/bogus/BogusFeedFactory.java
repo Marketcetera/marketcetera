@@ -31,20 +31,12 @@ public class BogusFeedFactory
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()
      */
+    @Override
     public BogusFeed getMarketDataFeed()
             throws CoreException
     {
-        return getMarketDataFeed(null);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
-     */
-    public BogusFeed getMarketDataFeed(BogusFeedCredentials inCredentials)
-            throws CoreException
-    {
         try {
-            return BogusFeed.getInstance(getProviderName(),
-                                         inCredentials);
+            return BogusFeed.getInstance(getProviderName());
         } catch (NoMoreIDsException e) {
             throw new FeedException(e);
         }

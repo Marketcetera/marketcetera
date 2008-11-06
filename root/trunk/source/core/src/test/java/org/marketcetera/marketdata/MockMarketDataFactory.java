@@ -8,7 +8,7 @@ import org.marketcetera.marketdata.IFeedComponent.FeedType;
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public class MockMarketDataFactory
         implements IMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>
@@ -17,41 +17,28 @@ public class MockMarketDataFactory
             new AbstractMarketDataFeedFactory<MockMarketDataFeed, MockMarketDataFeedCredentials>() {
         private static final String PROVIDER = "TEST"; //$NON-NLS-1$
 
-        public MockMarketDataFeed getMarketDataFeed()
-            throws CoreException
-        {
-            return getMarketDataFeed(null);            
-        }
-
         public String getProviderName()
         {
             return PROVIDER;
         }
 
-        public MockMarketDataFeed getMarketDataFeed(MockMarketDataFeedCredentials inCredentials)
+        public MockMarketDataFeed getMarketDataFeed()
                 throws CoreException
         {
-            return new MockMarketDataFeed(FeedType.SIMULATED,
-                                          inCredentials);
+            return new MockMarketDataFeed(FeedType.SIMULATED);
         }                
     };
-
-    public MockMarketDataFeed getMarketDataFeed()
-        throws CoreException
-    {
-        return mInnerFactory.getMarketDataFeed();
-    }
-
     public String getProviderName()
     {
         return mInnerFactory.getProviderName();
     }
     /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
+     * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()
      */
-    public MockMarketDataFeed getMarketDataFeed(MockMarketDataFeedCredentials inCredentials)
+    @Override
+    public MockMarketDataFeed getMarketDataFeed()
             throws CoreException
     {
-        return mInnerFactory.getMarketDataFeed(inCredentials);
+        return mInnerFactory.getMarketDataFeed();
     }            
 }

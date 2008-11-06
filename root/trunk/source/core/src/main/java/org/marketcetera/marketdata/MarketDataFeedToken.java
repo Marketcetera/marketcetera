@@ -6,14 +6,14 @@ import org.marketcetera.core.publisher.IPublisher;
 /* $License$ */
 
 /**
- * Represents a transaction with an {@link IMarketDataFeed}.
+ * Represents a transaction with an {@link MarketDataFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
  * @since 0.5.0
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
+public interface MarketDataFeedToken
         extends IPublisher
 {
     /**
@@ -89,7 +89,7 @@ public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
      * <p>Once cancelled, the query cannot be reactivated.  The token
      * can be used to generate a new query with the same terms and
      * subscribers.
-     * @see IMarketDataFeed#execute(MarketDataFeedTokenSpec)
+     * @see MarketDataFeed#execute(MarketDataFeedTokenSpec)
      */
     public void cancel();
     /**
@@ -100,7 +100,7 @@ public interface IMarketDataFeedToken<C extends IMarketDataFeedCredentials>
      * feed.  In the future, the token spec will be usable with any feed
      * regardless of its origin.
      * 
-     * @return a <code>MarketDataFeedTokenSpec&lt;C&gt;</code> value
+     * @return a <code>MarketDataFeedTokenSpec</code> value
      */
-    public MarketDataFeedTokenSpec<C> getTokenSpec();
+    public MarketDataFeedTokenSpec getTokenSpec();
 }

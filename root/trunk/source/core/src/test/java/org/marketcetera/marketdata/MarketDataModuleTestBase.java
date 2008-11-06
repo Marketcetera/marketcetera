@@ -14,9 +14,7 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.module.DataFlowID;
@@ -64,18 +62,6 @@ public abstract class MarketDataModuleTestBase
      * configuration provider to use to set up the module to be tested, if necessary
      */
     protected MockConfigurationProvider provider;
-    @BeforeClass
-    public static void setupOnce()
-    {
-        System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
-                           "true");
-    }
-    @AfterClass
-    public static void teardownOnce()
-    {
-        System.setProperty(AbstractMarketDataFeed.MARKETDATA_SIMULATION_KEY,
-                           "false");
-    }
     @Before
     public void setup()
         throws Exception

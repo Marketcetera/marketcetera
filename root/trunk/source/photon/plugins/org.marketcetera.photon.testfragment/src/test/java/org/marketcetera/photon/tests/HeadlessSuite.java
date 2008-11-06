@@ -3,6 +3,7 @@ package org.marketcetera.photon.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.marketcetera.photon.marketdata.MarketDataReceiverModuleTest;
+import org.marketcetera.photon.marketdata.MessagesTest;
 
 /* $License$ */
 
@@ -15,7 +16,7 @@ import org.marketcetera.photon.marketdata.MarketDataReceiverModuleTest;
  */
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
-	MarketDataReceiverModuleTest.class
+	MarketDataReceiverModuleTest.class, MessagesTest.class
 })
 public class HeadlessSuite {
 

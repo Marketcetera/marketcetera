@@ -9,29 +9,9 @@ import org.marketcetera.core.MarketceteraTestSuite;
  * @version $Id$
  * @since 0.5.0
  */
-public class MarketDataFeedTestSuite
+public abstract class MarketDataFeedTestSuite
     extends MarketceteraTestSuite
 {
-
-    /**
-     * Create a new <code>MarketDataFeedTestSuite</code> instance.
-     *
-     */
-    public MarketDataFeedTestSuite()
-    {
-    }
-
-    /**
-     * Create a new <code>MarketDataFeedTestSuite</code> instance.
-     *
-     * @param inClass
-     */
-    public MarketDataFeedTestSuite(Class<?> inClass)
-    {
-        super(inClass);
-
-    }
-
     public static DataRequest generateDataRequest() 
         throws FeedException
     {

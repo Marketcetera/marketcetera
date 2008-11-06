@@ -89,6 +89,7 @@ public class MarketceteraFeed
 	private SocketInitiator socketInitiator;
 	private MessageFactory messageFactory;
 	private final Map<String, Exchanger<Message>> pendingRequests = new WeakHashMap<String, Exchanger<Message>>();
+    private MarketceteraFeedCredentials credentials;
 
 	private FIXCorrelationFieldSubscription doQuery(Message query) {
 		try {
@@ -203,7 +204,6 @@ public class MarketceteraFeed
                                    "Already connected to Marketcetera Feed"); //$NON-NLS-1$
 	        return;
 	    }
-	    MarketceteraFeedCredentials credentials = getLatestCredentials();
         if(credentials == null) {
             SLF4JLoggerProxy.debug(this,
                                    "No credentials to work with, cancelling connection request - try again later"); //$NON-NLS-1$
@@ -280,7 +280,7 @@ public class MarketceteraFeed
 		synchronized(this) {
 			if (isRunning()) {
 			    CONNECTION_STOPPED.info(this,
-			                            getLatestCredentials().getURL());
+			                            credentials.getURL());
 				socketInitiator.stop(true);
 				setIsRunning(false);
 				super.stop();
@@ -388,13 +388,11 @@ public class MarketceteraFeed
 	    dataReceived(symbol, 
 	                 refresh);
 	}
-	private MarketceteraFeed(String inProviderName,
-	                         MarketceteraFeedCredentials inCredentials) 
+	private MarketceteraFeed(String inProviderName) 
 	    throws URISyntaxException, CoreException
 	{
 	    super(FeedType.UNKNOWN,
-	          inProviderName,
-	          inCredentials);
+	          inProviderName);
         try {
             idFactory = new InMemoryIDFactory(System.currentTimeMillis(),
                                               String.format("-%s-", //$NON-NLS-1$
@@ -415,20 +413,17 @@ public class MarketceteraFeed
      * Gets an instance of <code>MarketceteraFeed</code>.
      * 
      * @param inProviderName a <code>String</code> value
-     * @param inCredentials a <code>MarketceteraFeedCredentials</code> value
      * @return a <code>MarketceteraFeed</code> value
      * @throws CoreException 
      * @throws URISyntaxException 
      */
-    public static MarketceteraFeed getInstance(String inProviderName,
-                                               MarketceteraFeedCredentials inCredentials)
+    public static MarketceteraFeed getInstance(String inProviderName)
         throws URISyntaxException, CoreException
     {
         if(sInstance != null) {
             return sInstance;
         }
-        sInstance = new MarketceteraFeed(inProviderName,
-                                         inCredentials);
+        sInstance = new MarketceteraFeed(inProviderName);
         return sInstance;
     }
     /* (non-Javadoc)
@@ -483,6 +478,14 @@ public class MarketceteraFeed
     @Override
     protected boolean doLogin(MarketceteraFeedCredentials inCredentials)
     {
+        credentials = inCredentials;
+        try {
+            connectToServer();
+        } catch (Exception e) {
+            SLF4JLoggerProxy.error(this,
+                                   e);
+            return false;
+        }
         return true;
     }
     /* (non-Javadoc)
@@ -555,7 +558,7 @@ public class MarketceteraFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(org.marketcetera.marketdata.MarketDataFeedTokenSpec)
      */
     @Override
-    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec<MarketceteraFeedCredentials> inTokenSpec) 
+    protected MarketceteraFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec) 
         throws FeedException
     {
         return MarketceteraFeedToken.getToken(inTokenSpec, 
@@ -581,7 +584,7 @@ public class MarketceteraFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn(org.marketcetera.marketdata.IMarketDataFeedCredentials)
      */
     @Override
-    protected boolean isLoggedIn(MarketceteraFeedCredentials inCredentials)
+    protected boolean isLoggedIn()
     {
         return isRunning();
     }
@@ -594,7 +597,6 @@ public class MarketceteraFeed
             throws FeedException
     {
         try {
-            connectToServer();
             SLF4JLoggerProxy.debug(this,
                                    "MarketceteraFeed received market data request {}", //$NON-NLS-1$
                                    inData);

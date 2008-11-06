@@ -75,8 +75,6 @@ public interface Messages
                                                                                       "cannot_convert_event_to_entry_type"); //$NON-NLS-1$
     static final I18NMessage2P SYMBOL_DOES_NOT_MATCH_ORDER_BOOK_SYMBOL = new I18NMessage2P(LOGGER,
                                                                                            "symbol_does_not_match_order_book_symbol"); //$NON-NLS-1$
-    static final I18NMessage0P SIMULATED_DATA_ALLOWED = new I18NMessage0P(LOGGER,
-                                                                          "simulated_data_allowed"); //$NON-NLS-1$
     static final I18NMessage0P LINE_SEPARATOR_NOT_ALLOWED = new I18NMessage0P(LOGGER,
                                                                               "line_separator_not_allowed"); //$NON-NLS-1$
     static final I18NMessage1P INVALID_DEPTH = new I18NMessage1P(LOGGER,

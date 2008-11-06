@@ -1,7 +1,6 @@
-package org.marketcetera.bogusfeed;
+package org.marketcetera.marketdata.bogus;
 
 import org.marketcetera.marketdata.MarketDataModuleTestBase;
-import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;

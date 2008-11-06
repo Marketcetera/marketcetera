@@ -33,20 +33,12 @@ public class MarketceteraFeedFactory
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed()
      */
+    @Override
     public MarketceteraFeed getMarketDataFeed() 
         throws CoreException
     {
-        return getMarketDataFeed(null);
-    }
-    /* (non-Javadoc)
-     * @see org.marketcetera.marketdata.IMarketDataFeedFactory#getMarketDataFeed(org.marketcetera.marketdata.IMarketDataFeedCredentials)
-     */
-    public MarketceteraFeed getMarketDataFeed(MarketceteraFeedCredentials inCredentials) 
-        throws CoreException
-    {
         try {
-            return MarketceteraFeed.getInstance(getProviderName(),
-                                                inCredentials);
+            return MarketceteraFeed.getInstance(getProviderName());
         } catch (NoMoreIDsException e) {
             throw new FeedException(e);
         } catch (URISyntaxException e) {

@@ -3,7 +3,7 @@ package org.marketcetera.messagehistory;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.ClassVersion;
-import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeedToken;
 
 import quickfix.Message;
 
@@ -24,7 +24,7 @@ public class MessageHolder
 	private long messageReference;
 	private static AtomicLong counter = new AtomicLong();
 	private String groupID = null;
-	private IMarketDataFeedToken<?> mToken;
+	private MarketDataFeedToken mToken;
 	
 	public MessageHolder(Message message) {
 		this.message = message;
@@ -36,12 +36,12 @@ public class MessageHolder
 		this.groupID = groupID;
 	}
 	
-	public void setToken(IMarketDataFeedToken<?> inToken)
+	public void setToken(MarketDataFeedToken inToken)
 	{
 	    mToken = inToken;
 	}
 	
-	public IMarketDataFeedToken<?> getToken()
+	public MarketDataFeedToken getToken()
 	{
 	    return mToken;
 	}

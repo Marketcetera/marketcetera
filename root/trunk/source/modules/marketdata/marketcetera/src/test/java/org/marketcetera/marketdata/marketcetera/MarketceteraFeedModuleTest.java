@@ -1,7 +1,7 @@
 package org.marketcetera.marketdata.marketcetera;
 
 import org.junit.Test;
-import org.marketcetera.marketdata.MarketDataModuleTestBase;
+import org.marketcetera.marketdata.SimulatedMarketDataModuleTestBase;
 import org.marketcetera.module.Module;
 import org.marketcetera.module.ModuleFactory;
 import org.marketcetera.module.ModuleURN;
@@ -17,7 +17,7 @@ import org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvid
  * @since $Release$
  */
 public class MarketceteraFeedModuleTest
-    extends MarketDataModuleTestBase
+    extends SimulatedMarketDataModuleTestBase
 {
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.MarketDataModuleTestBase#populateConfigurationProvider(org.marketcetera.module.ConfigurationProviderTest.MockConfigurationProvider)

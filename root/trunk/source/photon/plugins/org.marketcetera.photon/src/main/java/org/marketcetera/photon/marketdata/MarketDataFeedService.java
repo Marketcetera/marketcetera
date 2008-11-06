@@ -6,21 +6,21 @@ import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.marketdata.FeedException;
 import org.marketcetera.marketdata.FeedStatus;
 import org.marketcetera.marketdata.IFeedComponent;
-import org.marketcetera.marketdata.IMarketDataFeed;
-import org.marketcetera.marketdata.IMarketDataFeedCredentials;
-import org.marketcetera.marketdata.IMarketDataFeedToken;
+import org.marketcetera.marketdata.MarketDataFeed;
+import org.marketcetera.marketdata.MarketDataFeedCredentials;
+import org.marketcetera.marketdata.MarketDataFeedToken;
 import org.osgi.framework.ServiceRegistration;
 
 import quickfix.Message;
 
 @Deprecated
-public class MarketDataFeedService<C extends IMarketDataFeedCredentials> 
+public class MarketDataFeedService<C extends MarketDataFeedCredentials> 
     implements IFeedComponentListener, IFeedComponent 
 {
-	private final IMarketDataFeed<? extends IMarketDataFeedToken<C>, C> feed;
+	private final MarketDataFeed<? extends MarketDataFeedToken, C> feed;
 	private ServiceRegistration serviceRegistration;
 
-	public MarketDataFeedService(IMarketDataFeed<? extends IMarketDataFeedToken<C>,C> aFeed)
+	public MarketDataFeedService(MarketDataFeed<? extends MarketDataFeedToken,C> aFeed)
 	{
 		feed = aFeed;
 		final MarketDataFeedService<C> parent = this;
@@ -88,8 +88,8 @@ public class MarketDataFeedService<C extends IMarketDataFeedCredentials>
 		feed.stop();
 	}
 
-	public final IMarketDataFeedToken<C> execute(Message message, 
-	                                             ISubscriber subscriber) 
+	public final MarketDataFeedToken execute(Message message, 
+	                                         ISubscriber subscriber) 
 		throws FeedException
 	{
 	    throw new UnsupportedOperationException("Need to translate Message to DataRequest"); //$NON-NLS-1$
@@ -102,7 +102,7 @@ public class MarketDataFeedService<C extends IMarketDataFeedCredentials>
 		return new MSymbol(symbolString);
 	}
 	
-	public final IMarketDataFeed<? extends IMarketDataFeedToken<C>,C> getMarketDataFeed()
+	public final MarketDataFeed<? extends MarketDataFeedToken,C> getMarketDataFeed()
 	{
 		return feed;
 	}

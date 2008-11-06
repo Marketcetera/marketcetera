@@ -1,7 +1,11 @@
 package org.marketcetera.marketdata;
 
-import junit.framework.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
+import org.junit.Before;
+import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 
 /**
@@ -9,38 +13,18 @@ import org.marketcetera.core.ExpectedTestFailure;
  * 
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
  * @version $Id$
- * @since 0.43-SNAPSHOT
+ * @since 0.5.0
  */
 public class AbstractMarketDataFeedCredentialsTest
     extends MarketDataFeedTestBase
 {
-    /**
-     * Create a new <code>AbstractMarketDataFeedCredentialsTest</code> instance.
-     * 
-     * @param inArg0
-     */
-    public AbstractMarketDataFeedCredentialsTest(String inArg0)
-    {
-        super(inArg0);
-    }
-
-    public static Test suite() 
-    {
-        return MarketDataFeedTestBase.suite(AbstractMarketDataFeedCredentialsTest.class);
-    }
-
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp()
+    @Before
+    public void setUp()
             throws Exception
     {
-        super.setUp();
-        
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
     }
-
+    @Test
     public void testConstructor()
         throws Exception
     {
@@ -53,7 +37,7 @@ public class AbstractMarketDataFeedCredentialsTest
         assertEquals(url,
                      credentials.getURL());
     }
-    
+    @Test
     public void testValidate()
         throws Exception
     {
@@ -65,7 +49,7 @@ public class AbstractMarketDataFeedCredentialsTest
                 new MockMarketDataFeedCredentials(null);            }
         }.run();     
     }
-    
+    @Test
     public void testEquals()
         throws Exception
     {

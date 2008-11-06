@@ -1,11 +1,13 @@
 package org.marketcetera.marketdata;
 
+import static org.junit.Assert.fail;
+
 import java.util.concurrent.Callable;
 
-import junit.framework.Test;
-import junit.framework.TestCase;
-import junit.framework.TestSuite;
-
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.marketcetera.core.LoggerConfiguration;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
 import org.marketcetera.event.MockEventTranslator;
@@ -18,57 +20,31 @@ import org.marketcetera.event.MockEventTranslator;
  * @since 0.5.0
  */
 public class MarketDataFeedTestBase
-    extends TestCase
 {
-    private static MarketDataFeedTestSuite sSuite;
     protected DataRequest dataRequest;
     protected MockMarketDataFeedCredentials mCredentials;
     
-    /**
-     * Create a new <code>MarketDataFeedTestBase</code> instance.
-     *
-     * @param inArg0
-     */
-    public MarketDataFeedTestBase(String inArg0)
+    @BeforeClass
+    public static void doOnce() 
     {
-        super(inArg0);
+        LoggerConfiguration.logSetup();
     }
-
-    protected static TestSuite suite(Class<? extends MarketDataFeedTestBase> inClass) 
-    {
-        sSuite = new MarketDataFeedTestSuite(inClass);
-        return sSuite;
-    }
-    
-    protected static Test suite() 
-    {
-        sSuite = new MarketDataFeedTestSuite();
-        return sSuite;
-    }
-    
-    protected MarketDataFeedTestSuite getTestSuite()
-    {
-        return sSuite;
-    }
-
-    @Override
-    protected void setUp()
+    @Before
+    public void beforeEachTime()
             throws Exception
     {
-        super.setUp();
         MockMarketDataFeedCredentials.sValidateThrowsThrowable = false;
         MockEventTranslator.reset();
         MockDataRequestTranslator.setTranslateThrows(false);
         dataRequest = MarketDataFeedTestSuite.generateDataRequest();
         mCredentials = new MockMarketDataFeedCredentials();
     }    
-	
-	@Override
-	protected void tearDown() throws Exception {
+	@After
+	public void afterEachTime()
+	    throws Exception
+	{
 		MockEventTranslator.reset();
-		super.tearDown();
 	}
-
     protected void resetSubscriber(MockSubscriber inSubscriber)
     {
         if(inSubscriber == null) {
