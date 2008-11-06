@@ -29,7 +29,7 @@ import org.marketcetera.event.EventBase;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.marketdata.AbstractMarketDataFeed;
 import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.marketdata.IMarketDataFeed;
+import org.marketcetera.marketdata.MarketDataFeed;
 import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
 import org.marketcetera.marketdata.OrderBook;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -49,7 +49,7 @@ import quickfix.fix44.DerivativeSecurityList;
 /* $License$ */
 
 /**
- * Sample implementation of {@link IMarketDataFeed}.
+ * Sample implementation of {@link MarketDataFeed}.
  *
  * <p>This implementation generates random market data for each
  * symbol for which a market data request is received.  Data is returned
@@ -104,37 +104,31 @@ public class BogusFeed
      * Returns an instance of <code>BogusFeed</code>.
      *
      * @param inProviderName a <code>String</code> value
-     * @param inCredentials a <code>BogusFeedCredentials</code> value
      * @return a <code>BogusFeed</code> value
      * @throws NoMoreIDsException if a unique identifier could not be generated to
      *   be assigned
      */
-    public synchronized static BogusFeed getInstance(String inProviderName,
-                                                     BogusFeedCredentials inCredentials) 
+    public synchronized static BogusFeed getInstance(String inProviderName) 
         throws NoMoreIDsException
     {
         if(sInstance != null) {
             return sInstance;
         }
-        sInstance = new BogusFeed(inProviderName,
-                                  inCredentials);
+        sInstance = new BogusFeed(inProviderName);
         return sInstance;
     }
     /**
      * Create a new BogusFeed instance.
      *
      * @param inProviderName a <code>String</code> value
-     * @param inCredentials a <code>BogusFeedCredentials</code> value
      * @throws NoMoreIDsException if a unique identifier could not be generated to
      *   be assigned
      */
-	private BogusFeed(String inProviderName,
-	                  BogusFeedCredentials inCredentials) 
+	private BogusFeed(String inProviderName) 
 		throws NoMoreIDsException 
 	{
 		super(FeedType.SIMULATED,
-              inProviderName,
-              inCredentials);
+              inProviderName);
         setLoggedIn(false);
 	}
     /* (non-Javadoc)
@@ -253,7 +247,7 @@ public class BogusFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(quickfix.Message)
      */
     @Override
-    protected final BogusFeedToken generateToken(MarketDataFeedTokenSpec<BogusFeedCredentials> inTokenSpec)
+    protected final BogusFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec)
             throws FeedException
     {
         return BogusFeedToken.getToken(inTokenSpec,
@@ -279,9 +273,9 @@ public class BogusFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn(org.marketcetera.marketdata.AbstractMarketDataFeedCredentials)
      */
     @Override
-    protected final boolean isLoggedIn(BogusFeedCredentials inCredentials)
+    protected final boolean isLoggedIn()
     {
-        return isLoggedIn();
+        return mLoggedIn;
     }
     /**
      * Adds the given symbol to the feed's active symbol register.
@@ -352,15 +346,6 @@ public class BogusFeed
 	                     event);
 	    }
 	}
-    /**
-     * Get the loggedIn value.
-     *
-     * @return a <code>BogusFeed</code> value
-     */
-    private boolean isLoggedIn()
-    {
-        return mLoggedIn;
-    }
     /**
      * Sets the loggedIn value.
      *

@@ -15,7 +15,7 @@ import org.marketcetera.core.ClassVersion;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class MockMarketDataFeedToken
-    extends AbstractMarketDataFeedToken<MockMarketDataFeed, MockMarketDataFeedCredentials>
+    extends AbstractMarketDataFeedToken<MockMarketDataFeed>
 {
     private String mHandle;
     private boolean mShouldFail = false;
@@ -24,14 +24,14 @@ public class MockMarketDataFeedToken
      *
      * @param inFixMessage
      */
-    private MockMarketDataFeedToken(MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> inTokenSpec,
+    private MockMarketDataFeedToken(MarketDataFeedTokenSpec inTokenSpec,
                                     MockMarketDataFeed inFeed)
     {
         super(inTokenSpec,
               inFeed);
     }
     
-    static MockMarketDataFeedToken getToken(MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> inTokenSpec,
+    static MockMarketDataFeedToken getToken(MarketDataFeedTokenSpec inTokenSpec,
                                             MockMarketDataFeed inFeed)
     {        
         return new MockMarketDataFeedToken(inTokenSpec,

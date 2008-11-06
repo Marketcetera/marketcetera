@@ -155,9 +155,9 @@ public class TS_Photon {
 		}
 
 		// register mock feed
-		MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.SIMULATED,
-		                                                 new MockMarketDataFeedCredentials());
+		MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.SIMULATED);
 		feed.start();
+		feed.login(new MockMarketDataFeedCredentials());
 		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(feed);
 		bundleContext.registerService(MarketDataFeedService.class.getName(), feedService, null);
 		PhotonPlugin.getDefault().getScriptRegistry().connectToMarketDataFeed(feedService.getMarketDataFeed());

@@ -2,7 +2,7 @@ package org.marketcetera.marketdata;
 
 /**
  * Encapsulates the credentials necessary to authenticate a connection with an 
- * {@link IMarketDataFeed} instance.
+ * {@link MarketDataFeed} instance.
  * 
  * <p>Subclasses should override and add attributes and methods appropriate for
  * the data feed.
@@ -12,7 +12,7 @@ package org.marketcetera.marketdata;
  * @since 0.43-SNAPSHOT
  */
 public abstract class AbstractMarketDataFeedCredentials
-    implements IMarketDataFeedCredentials
+    implements MarketDataFeedCredentials
 {
     /**
      * the URL describing the server resource or resources to which to connect

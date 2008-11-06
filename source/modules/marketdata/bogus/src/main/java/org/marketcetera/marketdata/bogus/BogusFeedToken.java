@@ -13,9 +13,9 @@ import org.marketcetera.marketdata.MarketDataFeedTokenSpec;
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedToken
-        extends AbstractMarketDataFeedToken<BogusFeed,BogusFeedCredentials>
+        extends AbstractMarketDataFeedToken<BogusFeed>
 {
-    static BogusFeedToken getToken(MarketDataFeedTokenSpec<BogusFeedCredentials> inTokenSpec,
+    static BogusFeedToken getToken(MarketDataFeedTokenSpec inTokenSpec,
                                    BogusFeed inFeed) 
     {
         return new BogusFeedToken(inTokenSpec,
@@ -24,7 +24,7 @@ public class BogusFeedToken
     /**
      * Create a new BogusFeedToken instance.
      */
-    private BogusFeedToken(MarketDataFeedTokenSpec<BogusFeedCredentials> inTokenSpec,
+    private BogusFeedToken(MarketDataFeedTokenSpec inTokenSpec,
                            BogusFeed inFeed) 
     {
         super(inTokenSpec,

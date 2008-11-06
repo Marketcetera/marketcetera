@@ -18,14 +18,13 @@ import org.marketcetera.core.publisher.PublisherEngine;
  * @since 0.5.0
  */
 @SuppressWarnings("unchecked") //$NON-NLS-1$
-public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFeed,
-                                                  C extends IMarketDataFeedCredentials>
-    implements IMarketDataFeedToken<C>
+public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFeed>
+    implements MarketDataFeedToken
 {
     /**
      * the stateless portion of the token which represents the original request 
      */
-    private final MarketDataFeedTokenSpec<C> mTokenSpec;
+    private final MarketDataFeedTokenSpec mTokenSpec;
     /**
      * the data feed to which this token is bound
      */
@@ -49,7 +48,7 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
      * @param inFeed a <code>F</code> value containing the feed to which this token is bound
      * @throws NullPointerException if the token spec or feed is null
      */
-    protected AbstractMarketDataFeedToken(MarketDataFeedTokenSpec<C> inTokenSpec,
+    protected AbstractMarketDataFeedToken(MarketDataFeedTokenSpec inTokenSpec,
                                           F inFeed) 
     {
         if(inTokenSpec == null ||
@@ -137,7 +136,7 @@ public abstract class AbstractMarketDataFeedToken<F extends AbstractMarketDataFe
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.IMarketDataFeedToken#getTokenSpec()
      */
-    public final MarketDataFeedTokenSpec<C> getTokenSpec()
+    public final MarketDataFeedTokenSpec getTokenSpec()
     {
         return mTokenSpec;
     }    

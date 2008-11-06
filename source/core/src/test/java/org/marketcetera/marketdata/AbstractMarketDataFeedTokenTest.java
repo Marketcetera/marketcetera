@@ -1,14 +1,18 @@
 package org.marketcetera.marketdata;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Test;
-
+import org.junit.Before;
+import org.junit.Test;
 import org.marketcetera.core.ExpectedTestFailure;
 import org.marketcetera.core.publisher.ISubscriber;
 import org.marketcetera.core.publisher.MockSubscriber;
-import org.marketcetera.marketdata.IMarketDataFeedToken.Status;
+import org.marketcetera.marketdata.MarketDataFeedToken.Status;
 
 /**
  * Tests {@link AbstractMarketDataFeedToken}.
@@ -21,44 +25,24 @@ public class AbstractMarketDataFeedTokenTest
     extends MarketDataFeedTestBase
 {
     private MockMarketDataFeedToken mToken;
-    private MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> mTokenSpec;
+    private MarketDataFeedTokenSpec mTokenSpec;
     private MockMarketDataFeedCredentials mCredentials;
     private MockMarketDataFeed mFeed;
-    
-    /**
-     * Create a new <code>AbstractMarketDataFeedTokenTest</code> instance.
-     *
-     * @param inArg0
-     */
-    public AbstractMarketDataFeedTokenTest(String inArg0)
-    {
-        super(inArg0);
-    }
-
-    public static Test suite() 
-    {
-        return MarketDataFeedTestBase.suite(AbstractMarketDataFeedTokenTest.class);
-    }
-    
-    /* (non-Javadoc)
-     * @see junit.framework.TestCase#setUp()
-     */
-    @Override
-    protected void setUp()
+    @Before
+    public void setUp()
             throws Exception
     {
-        super.setUp();
         mCredentials = new MockMarketDataFeedCredentials();
         dataRequest = MarketDataFeedTestSuite.generateDataRequest();
-        mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                               dataRequest, 
+        mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(dataRequest, 
                                                                new ISubscriber[0]);
         mFeed = new MockMarketDataFeed();
         mFeed.start();
+        mFeed.login(mCredentials);
         mToken = MockMarketDataFeedToken.getToken(mTokenSpec,
                                                   mFeed);
     }
-
+    @Test
     public void testConstructor()
         throws Exception
     {
@@ -80,8 +64,7 @@ public class AbstractMarketDataFeedTokenTest
         }.run();     
         
         // construct one where all is well with the world
-        mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(mCredentials, 
-                                                               MarketDataFeedTestSuite.generateDataRequest(), 
+        mTokenSpec = MarketDataFeedTokenSpec.generateTokenSpec(MarketDataFeedTestSuite.generateDataRequest(), 
                                                                new ISubscriber[0]);
         MockMarketDataFeedToken token = MockMarketDataFeedToken.getToken(mTokenSpec,
                                                                          mFeed);
@@ -90,7 +73,7 @@ public class AbstractMarketDataFeedTokenTest
         assertEquals(mTokenSpec,
                      token.getTokenSpec());
     }
-    
+    @Test
     public void testPublishAndSubscribe()
         throws Exception
     {
@@ -216,7 +199,7 @@ public class AbstractMarketDataFeedTokenTest
         assertEquals(inCount,
                      inSubscriber.getPublishCount());        
     }
-
+    @Test
     public void testCancel()
         throws Exception
     {

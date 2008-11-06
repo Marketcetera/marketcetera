@@ -73,14 +73,12 @@ public class MockMarketDataFeed
     public MockMarketDataFeed()
         throws NoMoreIDsException
     {
-        this(FeedType.SIMULATED,
-             null);
+        this(FeedType.SIMULATED);
     }
     /**
      * Create a new <code>TestMarketDataFeed</code> instance.
      *
      * @param inFeedType
-     * @param inCredentials
      * @throws NoMoreIDsException 
      */
     public MockMarketDataFeed(FeedType inFeedType)
@@ -88,35 +86,16 @@ public class MockMarketDataFeed
     {
         this(inFeedType,
              MockMarketDataFeed.class.toString(),
-             null,
-             0);
-    }
-    /**
-     * Create a new <code>TestMarketDataFeed</code> instance.
-     *
-     * @param inFeedType
-     * @param inCredentials
-     * @throws NoMoreIDsException 
-     */
-    public MockMarketDataFeed(FeedType inFeedType,
-                              MockMarketDataFeedCredentials inCredentials)
-        throws NoMoreIDsException
-    {
-        this(inFeedType,
-             MockMarketDataFeed.class.toString(),
-             inCredentials,
              0);
     }
 
     public MockMarketDataFeed(FeedType inFeedType,
                               String inProviderName,
-                              MockMarketDataFeedCredentials inCredentials,
                               int inDelay) 
         throws NoMoreIDsException
     {
         super(inFeedType,
-              inProviderName, 
-              inCredentials);
+              inProviderName);
         mDelay = inDelay;
         setState(State.logged_out);
     }
@@ -125,7 +104,7 @@ public class MockMarketDataFeed
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#generateToken(quickfix.Message)
      */
     @Override
-    protected MockMarketDataFeedToken generateToken(MarketDataFeedTokenSpec<MockMarketDataFeedCredentials> inTokenSpec)
+    protected MockMarketDataFeedToken generateToken(MarketDataFeedTokenSpec inTokenSpec)
             throws FeedException
     {
         if(getGenerateTokenThrows()) {
@@ -165,7 +144,7 @@ public class MockMarketDataFeed
      */
     @Override
     protected void afterDoExecute(MockMarketDataFeedToken inToken,
-                                  Throwable inException)
+                                  Exception inException)
     {
         if(getAfterExecuteThrows()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
@@ -192,7 +171,7 @@ public class MockMarketDataFeed
     /* (non-Javadoc)
      * @see org.marketcetera.marketdata.AbstractMarketDataFeed#isLoggedIn()
      */
-    protected boolean isLoggedIn(MockMarketDataFeedCredentials inCredentials)
+    protected boolean isLoggedIn()
     {
         if(getShouldTimeout()) {
             try {
@@ -277,10 +256,10 @@ public class MockMarketDataFeed
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
         }
         if(isInitFails()) {
-            super.doInitialize(inToken);
+            super.doInitialize();
             return false;
         }
-        return super.doInitialize(inToken);
+        return super.doInitialize();
     }
 
     /**
@@ -372,7 +351,6 @@ public class MockMarketDataFeed
     }
     @Override
     protected boolean beforeDoExecute(MockMarketDataFeedToken inToken)
-        throws InterruptedException
     {
         if(getBeforeExecuteThrows()) {
             throw new NullPointerException("This exception is expected"); //$NON-NLS-1$
@@ -523,7 +501,7 @@ public class MockMarketDataFeed
      */
     @Override
     protected List<String> doMarketDataRequest(String inData)
-            throws InterruptedException, FeedException
+            throws FeedException
     {
         if(getExecutionFails()) {
             throw new FeedException(EXPECTED_EXCEPTION);
