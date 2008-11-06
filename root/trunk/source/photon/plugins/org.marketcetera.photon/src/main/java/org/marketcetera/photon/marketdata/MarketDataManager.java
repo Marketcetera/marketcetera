@@ -105,60 +105,56 @@ public final class MarketDataManager {
 	 * Attempts to reconnect the active market data feed.
 	 */
 	public void reconnectFeed() {
-		final MarketDataFeed newFeed = mFeeds.get(getPreferencesProviderId());
-		if (mActiveFeed == null && newFeed == null) {
+		final MarketDataFeed oldFeed = mActiveFeed;
+		mActiveFeed = mFeeds.get(getPreferencesProviderId());
+		if (mActiveFeed == null && oldFeed == null) {
 			return;
 		}
-		if (mActiveFeed != null && newFeed != mActiveFeed) {
+		if (oldFeed != mActiveFeed && oldFeed != null) {
 			stopDataFlows();
 		}
-		if (newFeed != null) {
+		if (mActiveFeed != null) {
 			try {
-				if (!mModuleManager.getModuleInfo(newFeed.getURN()).getState()
-						.isStarted()) {
-					mModuleManager.start(newFeed.getURN());
-				} else if (newFeed.getStatus() != FeedStatus.AVAILABLE) {
-					newFeed.reconnect();
+				if (!mModuleManager.getModuleInfo(mActiveFeed.getURN())
+						.getState().isStarted()) {
+					mModuleManager.start(mActiveFeed.getURN());
+				} else if (mActiveFeed.getStatus() != FeedStatus.AVAILABLE) {
+					mActiveFeed.reconnect();
 				}
-				if (newFeed != mActiveFeed) {
-					mActiveFeed = newFeed;
+				if (oldFeed != mActiveFeed) {
 					startDataFlows();
-					PlatformUI.getWorkbench().getDisplay().asyncExec(
-							new Runnable() {
-								@Override
-								public void run() {
-									notifyListeners(mActiveFeed
-											.createFeedStatusEvent(null,
-													mActiveFeed.getStatus()));
-								}
-							});
 				}
 			} catch (ModuleException e) {
 				// TODO: May be better to propagate message to UI
 				PhotonPlugin.getMainConsoleLogger().error(
 						Messages.MARKET_DATA_MANAGER_FEED_START_FAILED
-								.getText(newFeed.getName()));
+								.getText(mActiveFeed.getName()));
 				Messages.MARKET_DATA_MANAGER_FEED_START_FAILED.error(this,
-						newFeed.getName());
+						mActiveFeed.getName());
 			} catch (UnsupportedOperationException e) {
 				// TODO: May be better to propagate message to UI
 				PhotonPlugin.getMainConsoleLogger().error(
 						Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED
-								.getText(newFeed.getName()));
+								.getText(mActiveFeed.getName()));
 				Messages.MARKET_DATA_MANAGER_FEED_RECONNECT_FAILED.error(this,
-						e, newFeed.getName());
+						e, mActiveFeed.getName());
 			}
-		} else {
-			final FeedStatusEvent event = mActiveFeed.createFeedStatusEvent(
-					mActiveFeed.getStatus(), FeedStatus.OFFLINE);
-			mActiveFeed = null;
-			PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-				@Override
-				public void run() {
-					notifyListeners(event);
-				}
-			});
 		}
+
+		final FeedStatusEvent event;
+		if (mActiveFeed == null) {
+			event = oldFeed.createFeedStatusEvent(oldFeed.getStatus(),
+					FeedStatus.OFFLINE);
+		} else {
+			event = mActiveFeed.createFeedStatusEvent(FeedStatus.OFFLINE,
+					mActiveFeed.getStatus());
+		}
+		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
+			@Override
+			public void run() {
+				notifyListeners(event);
+			}
+		});
 	}
 
 	private void startDataFlows() {
@@ -219,7 +215,7 @@ public final class MarketDataManager {
 			ModuleURN subscriberURN = mModuleManager.createModule(
 					MarketDataReceiverFactory.PROVIDER_URN,
 					mModuleConfigProvider, subscriber);
-			if (mActiveFeed != null) {
+			if (mActiveFeed != null && mActiveFeed.getStatus().equals(FeedStatus.AVAILABLE)) {
 				mModuleManager.start(subscriberURN);
 			}
 			mSubscribers.put(subscriber, subscriberURN);
