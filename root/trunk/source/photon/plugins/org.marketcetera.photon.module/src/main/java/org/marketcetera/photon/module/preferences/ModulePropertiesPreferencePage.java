@@ -320,7 +320,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 				// mask text if the key is a password
 				final String[] split = SEPARATOR_PATTERN.split(key);
 				final String display = split[split.length - 1];
-				return (PASSWORD_PATTERN.matcher(display).matches()) ? PASSWORD_MASK : value;
+				return (!value.isEmpty() && PASSWORD_PATTERN.matcher(display).matches()) ? PASSWORD_MASK : value;
 			}
 			return null;
 		}
