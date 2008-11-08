@@ -27,5 +27,6 @@
   <modules>
     <module>marketdata</module>
     <module>misc</module>
+    <module>strategy</module>
   </modules>
 </project>

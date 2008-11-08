@@ -281,13 +281,6 @@ public class MarketDataRequestTest
             protected void execute()
                     throws Throwable
             {
-                System.out.println(constructStringRepresentationOfMarketDataRequest(null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null,
-                                                                                    null));
-                System.out.println("Registered types are " + Arrays.toString(DataRequest.getRegisteredTypes()));
                 MarketDataRequest.newRequestFromString(constructStringRepresentationOfMarketDataRequest(null,
                                                                                                         null,
                                                                                                         null,
