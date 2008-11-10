@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+
+<!--
+ And build script for Apache Commons i18n
+-->
+<project name="commons-i18n" default="jar" basedir=".">
+
+    <!-- Give user a chance to override without editing this file
+      (and without typing -D each time it compiles it) -->
+    <property file="build.properties"/>
+    <property file=".ant.properties" />
+
+    <property name="debug" value="true" />
+    <property name="deprecation" value="true" />
+    <property name="optimize" value="true" />
+
+    <property name="version" value="0.3" />
+    <property name="name" value="commons-i18n" />
+
+    <!--
+      ===================================================================
+      Set the properties related to the source tree
+      ===================================================================
+    -->
+    <property name="src.dir" value="src" />
+    <property name="java.dir" value="${src.dir}/java" />
+    <property name="resources.dir" value="${src.dir}/resources" />
+    <property name="test.src.dir" value="${src.dir}/test" />
+    <property name="lib.dir" value="lib" />
+    <property name="docs.dir" value="doc" />
+    <property name="dist.dir" value="dist" />
+
+    <!--
+      ===================================================================
+      Set the properties for the build area
+      ===================================================================
+    -->
+    <property name="build.dir" value="target" />
+    <property name="build.classes" value="${build.dir}/classes" />
+    <property name="test.classes" value="${build.dir}/test-classes" />
+    <property name="build.lib" value="${build.dir}/lib" />
+    <property name="build.javadocs" value="${docs.dir}/javadoc" />
+
+    <path id="classpath">
+        <pathelement location="${build.classes}" />
+        <fileset dir="${lib.dir}" includes="*.jar" />
+    </path>
+
+    <!--
+      ===================================================================
+      Prepare the build
+      ===================================================================
+    -->
+    <target name="prepare">
+        <tstamp />
+        <mkdir dir="${build.dir}" />
+        <mkdir dir="${build.classes}" />
+        <mkdir dir="${test.classes}" />
+        <mkdir dir="${build.lib}" />
+    </target>
+
+    <!--
+      ===================================================================
+      Build the code
+      ===================================================================
+    -->
+    <target name="build" depends="prepare">
+        <javac destdir="${build.classes}" debug="${debug}" deprecation="${deprecation}" optimize="${optimize}">
+            <src path="${java.dir}" />
+            <classpath refid="classpath" />
+        </javac>
+        <copy todir="${build.classes}">
+            <fileset dir="${resources.dir}" />
+        </copy>
+    </target>
+
+    <!--
+      ===================================================================
+      Targets for testing
+      ===================================================================
+    -->
+
+    <target name="build.tests" depends="build">
+        <javac destdir="${test.classes}">
+            <src path="${test.src.dir}" />
+            <classpath refid="classpath" />
+        </javac>
+        <copy todir="${test.classes}">
+            <fileset dir="${test.src.dir}" excludes="**/*.java"/>
+        </copy>
+    </target>
+
+    <target name="test" depends="build.tests" description="Run JUnit tests (without code coverage)">
+        <junit showoutput="true" haltonfailure="true">
+            <classpath>
+                <pathelement location="${build.classes}" />
+                <fileset dir="${lib.dir}" includes="*.jar" />
+                <pathelement location="${test.classes}" />
+            </classpath>
+            <!-- Formatter for console output -->
+            <formatter type="brief" usefile="false" />
+            <batchtest fork="${emma.enabled}">
+                <fileset dir="${test.classes}">
+                    <include name="**/*Test.class"/>
+                </fileset>
+            </batchtest>
+        </junit>
+    </target>
+
+    <!--
+      ===================================================================
+      Create the jar
+      ===================================================================
+    -->
+    <target name="jar" depends="build">
+        <jar jarfile="${build.lib}/${name}-${version}.jar" basedir="${build.classes}">
+            <include name="org/apache/commons/i18n/**" />
+            <include name="i18n-messages*.properties" />
+        </jar>
+    </target>
+
+    <!--
+      ===================================================================
+      Cleans up build directories
+      ===================================================================
+    -->
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+    <target name="clean-javadocs">
+        <delete dir="${build.javadocs}" />
+    </target>
+
+    <target name="scrub" depends="clean, clean-javadocs">
+    </target>
+
+    <!--
+      ===================================================================
+      Creates the API documentation
+      ===================================================================
+    -->
+	<target name="javadocs" depends="build, clean-javadocs" description="Creates the API documentation">
+		<mkdir dir="${build.javadocs}" />
+		<mkdir dir="${build.javadocs}" />
+		<javadoc sourcepath="${java.dir}" packagenames="org.apache.commons.i18n.*" destdir="${build.javadocs}" author="true" windowtitle="WebDAV Projector" doctitle="WebDAV Projector" link="http://java.sun.com/j2se/1.4/docs/api/" bottom="Copyright &#169; 2002-2004 Apache Software Foundation. All Rights Reserved." classpathref="classpath" />
+	</target>
+
+	<target name="all" depends="jar, javadocs" />
+</project>

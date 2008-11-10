@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<composite>
+	<layoutData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+	<layout class="gridLayout"/>
+	<children>
+		<button id="performBuild" style="CHECK" text="Perform &amp;build automatically on resource modification"/>
+		<button id="saveAll" style="CHECK" text="Save all &amp;modified resources automatically prior to manual build"/>
+		<button id="refreshWorkspace" style="CHECK" text="&amp;Refresh Workspace on startup"/>
+		<button id="confirmExit" style="CHECK" text="&amp;Confirm exit when closing last window"/>
+		<button id="showTasks" style="CHECK" text="Show &amp;Tasks view when build has errors or warnings"/>
+		<composite>
+			<layoutData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>	
+			<layout class="gridLayout" numColumns="2"/>
+			<children>
+				<label text="&amp;Workspace save interval (in minutes):"/>
+				<text id="saveInterval" style="BORDER"><layoutData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/></text> 
+			</children>
+		</composite>	
+		<group text="Open mode">
+			<layoutData grabExcessHorizontalSpace="true" horizontalAlignment="FILL"/>
+			<layout class="gridLayout"/>
+			<children>
+				<button id="doubleClick" style="RADIO" text="D&amp;ouble click"/>
+				<button id="singleClick" style="RADIO" text="&amp;Single click"/>
+				<button id="selectOn" style="CHECK" text="Select on &amp;hover"><layoutData horizontalIndent="20"/></button>
+				<button id="openWhen" style="CHECK" text="Open when using arrow &amp;keys"><layoutData horizontalIndent="20"/></button>
+				<label text="Note: This preference may not take effect on all views"/>
+			</children>
+		</group>	
+	</children>
+</composite>

@@ -1,0 +1,78 @@
+<body>
+
+<p>Message localization tools.</p>
+
+
+<h3>Summary</h3>
+
+<p>Message localization (L10N) is the process by which message keys
+are mapped to message text, as outlined in the {@link
+org.marketcetera.util.log} package. The tools in this package assist
+in that effort.</p>
+
+<p>{@link org.marketcetera.util.l10n.MessageInfo} and its subclasses
+{@link org.marketcetera.util.l10n.I18NMessageInfo} and {@link
+org.marketcetera.util.l10n.PropertiesFileInfo} represent
+meta-information derived from analyzing the representation of a single
+message in either a typical Message container class or inside a
+properties file.</p>
+
+<p>{@link org.marketcetera.util.l10n.ContainerClassInfo} and {@link
+org.marketcetera.util.l10n.PropertiesFileInfo} perform the analysis
+and encapsulate all meta-information for a container class or
+properties file. They both implement the {@link
+org.marketcetera.util.l10n.MessageInfoProvider} interface, which
+defines a generic provider of a message meta-information
+collection.</p>
+
+<p>{@link org.marketcetera.util.l10n.MessageComparator} compares any
+two collections of message meta-information. Part of the comparison
+result is expressed as a collection of {@link
+org.marketcetera.util.l10n.MessageInfoPair} instances, containing
+messages that have the same key in both source and destination, but
+differ in their parameter counts.</p>
+
+<p>Additional tools can be built using the above classes as building
+blocks; such tools include translation tools (via automatic
+translation or a GUI-assisted manual process).</p>
+
+
+<h3>Use in unit tests</h3>
+
+<p>The message comparator lends itself to use within unit tests, to
+ensure each Message container class matches its associated fallback
+properties file. Here is the unit test template to accomplish this
+task:</p>
+
+<pre>
+package mypackage;
+
+import org.junit.Test;
+import org.marketcetera.util.l10n.MessageComparator;
+import org.marketcetera.util.test.TestCaseBase;
+
+import static org.junit.Assert.*;
+
+public class MessagesTest
+    extends TestCaseBase
+{
+    &#x40;Test
+    public void messagesMatch()
+        throws Exception
+    {
+        MessageComparator comparator=new MessageComparator(Messages.class);
+        assertTrue(comparator.getDifferences(),comparator.isMatch());
+    }
+}
+</pre>
+
+In order to ensure support for specific locales, it is also reasonable
+to add to the body of <code>messagesMatch()</code> the following lines
+(also remember to import <code>java.util.Locale</code>):
+
+<pre>
+comparator=new MessageComparator(Messages.class,Locale.FRENCH);
+assertTrue(comparator.getDifferences(),comparator.isMatch());
+</pre>
+
+</body>
