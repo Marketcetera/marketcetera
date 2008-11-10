@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="gems" name="Gems" schema="schema/gems.exsd"/>
+   	<extension
+      id="rubyredlint"
+      name="%annotationProcessingName"
+      point="org.rubypeople.rdt.core.compilationParticipant">
+   		<compilationParticipant
+         class="com.aptana.rdt.internal.parser.warnings.RubyRedLint"
+         id="RubyRedLint">
+      <managedMarker markerType="org.rubypeople.rdt.core.problem"/>
+   </compilationParticipant>
+      <compilationParticipant
+            class="com.aptana.rdt.internal.core.builder.GemLoadpathAdder"
+            createsProblems="false"
+            id="com.aptana.rdt.core.compilationParticipant.GemLoadpath">
+		 <managedMarker markerType="org.rubypeople.rdt.core.problem"/>
+	  </compilationParticipant>
+</extension>
+	<extension
+       point="org.rubypeople.rdt.core.errorProvider">
+       <!-- Potential Programming Problems -->
+       <error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Misspelled constructor" 
+       			prefKey="com.aptana.rdt.compiler.problem.misspelledConstructor" />
+       <error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Similarity in variable names" 
+       			prefKey="com.aptana.rdt.compiler.problem.similarVariableNames" />
+       <error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Local variable declaration masks method" 
+       			prefKey="com.aptana.rdt.compiler.problem.localVariableMasksMethod" />
+       	<error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Includes Comparable but doesn't define custom &lt;=&gt; method" 
+       			prefKey="com.aptana.rdt.compiler.problem.comparableMissingMethod" />
+       	<error categoryId="org.rubypeople.rdt.errors.potentialProblems" 
+       			label="Includes Enumerable but doesn't define custom each method" 
+       			prefKey="com.aptana.rdt.compiler.problem.enumerableMissingMethod" />
+       	<error prefKey="com.aptana.rdt.compiler.problem.subclassDoesntCallSuper" 
+       		label="Subclass constructor doesn't call super"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+        <error prefKey="com.aptana.rdt.compiler.problem.assignmentPrecedence" 
+       		label="'and' and 'or' operators after an assignment"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+        <error prefKey="com.aptana.rdt.compiler.problem.deprecatedRequireGem" 
+       		label="Deprecated 'require_gem' calls"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+       	<error prefKey="com.aptana.rdt.compiler.problem.retryOutsideRescueBody" 
+       		label="'retry' outside a rescue body"
+       		categoryId="org.rubypeople.rdt.errors.potentialProblems"/>
+       			
+       	<!-- Unused code -->
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Parameter is never read" 
+       			prefKey="com.aptana.rdt.compiler.problem.unusedParameter" />
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Unused private method" 
+       			prefKey="com.aptana.rdt.compiler.problem.unusedPrivateMember" />
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Unnecessary else statement" 
+       			prefKey="com.aptana.rdt.compiler.problem.unnecessaryElse" />
+       	<error categoryId="org.rubypeople.rdt.errors.unneccesaryCode" 
+       			label="Possible accidental boolean assignment (e.g. if a = b)" 
+       			prefKey="com.aptana.rdt.compiler.problem.possibleAccidentalBooleanAssignment" />
+       			
+       	<!-- Code Complexity -->
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of arguments to a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityArguments">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxArguments" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of lines in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityLines">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxLines" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of locals declared in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityLocals">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxLocals" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of branches in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityBranches">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxBranches" />
+       	</error>
+       	<error categoryId="org.rubypeople.rdt.errors.codeComplexity" 
+       			label="Maximum number of returns in a method" 
+       			prefKey="com.aptana.rdt.compiler.problem.codeComplexityReturns">
+       			<argument prefKey="com.aptana.rdt.compiler.problem.maxReturns"/>
+       	</error>
+        <error
+              categoryId="org.rubypeople.rdt.errors.codeConvention"
+              label="Constant name doesn&apos;t match convention"
+              prefKey="com.aptana.rdt.compiler.problem.constantNamingConvention"/>
+        <category
+              id="org.rubypeople.rdt.errors.codeConvention"
+              name="Ruby Coding Conventions"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="method_missing defined without re-defined respond_to"
+              prefKey="com.aptana.rdt.compiler.problem.methodMissingWithoutRespondTo"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="Dynamic variables Aliases Local Variable"
+              prefKey="com.aptana.rdt.compiler.problem.dynamicVariableAliasesLocal"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.potentialProblems"
+              label="Local Variable assignment possibly intended to access attribute"
+              prefKey="com.aptana.rdt.compiler.problem.localVariablePossibleAttributeAccess"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.codeConvention"
+              label="Method or local variables doesn&apos;t match convention (under_scores vs camelCase)"
+              prefKey="com.aptana.rdt.compiler.problem.methodOrLocalNamingConvention"/>
+        <error
+              categoryId="org.rubypeople.rdt.errors.unneccesaryCode"
+              label="Unused local variable"
+              prefKey="com.aptana.rdt.compiler.problem.unusedLocalVariable"/>		
+ </extension>
+ 
+<!-- =================================================================================== -->
+<!-- Extension: Eclipse preferences initializer                                          -->
+<!-- =================================================================================== -->
+<extension
+      point="org.eclipse.core.runtime.preferences">
+   <initializer class="com.aptana.rdt.internal.core.AptanaRDTPreferenceInitializer"/>
+</extension>
+   
+   <extension
+         point="org.rubypeople.rdt.core.loadpathVariableInitializer">
+      <loadpathVariableInitializer
+            variable="GEM_LIB"
+            class="com.aptana.rdt.internal.launching.GemLoadpathVariablesInitializer">
+      </loadpathVariableInitializer>
+   </extension>
+</plugin>

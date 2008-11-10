@@ -1,0 +1,5 @@
+bin
+org.rubypeople.rdt.debug.core_*.zip
+rdtdebugcore.jar
+rdtdebugcoresrc.zip
+build.xml

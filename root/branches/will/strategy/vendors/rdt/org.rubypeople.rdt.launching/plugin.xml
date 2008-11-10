@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <!-- Extension point definitions -->
+   <extension-point id="vmInstallTypes" name="%vmInstallTypes" schema="schema/vmInstallTypes.exsd"/>
+   <extension-point id="vmInstalls" name="%vmInstalls" schema="schema/vmInstalls.exsd"/>
+   <extension-point id="vmRunners" name="%vmRunners" schema="schema/vmRunners.exsd"/>
+   <extension-point id="loadpathProviders" name="%loadpathProviders" schema="schema/loadpathProviders.exsd"/>
+   <extension-point id="runtimeLoadpathEntryResolvers" name="%runtimeLoadpathEntryResolvers" schema="schema/runtimeLoadpathEntryResolvers.exsd"/>
+   <extension-point id="runtimeLoadpathEntries" name="%runtimeLoadpathEntries" schema="schema/runtimeLoadpathEntries.exsd"/>
+   <extension-point id="terminals" name="%terminals" schema="schema/terminals.exsd"/>
+   
+   <extension
+         point="org.rubypeople.rdt.launching.vmInstallTypes">
+      <vmInstallType
+            class="org.rubypeople.rdt.internal.launching.StandardVMType"
+            id="org.rubypeople.rdt.launching.StandardVMType">
+      </vmInstallType>
+      <vmInstallType
+            class="org.rubypeople.rdt.internal.launching.JRubyVMType"
+            id="org.rubypeople.rdt.launching.JRubyVMType">
+	  </vmInstallType>
+	  <vmInstallType
+            class="org.rubypeople.rdt.internal.launching.RubiniusVMType"
+            id="org.rubypeople.rdt.launching.RubiniusVMType">
+	  </vmInstallType>
+   </extension>   
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.rubypeople.rdt.launching.RubyLaunchDelegate"
+            id="org.rubypeople.rdt.launching.LaunchConfigurationTypeRubyApplication"
+            migrationDelegate="org.rubypeople.rdt.internal.launching.RubyMigrationDelegate"
+            modes="run,debug,profile"
+            name="%LaunchConfigurationTypeRubyApplication.name"
+            public="true"
+            sourceLocatorId="org.rubypeople.rdt.debug.ui.rubySourceLocator">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.rubypeople.rdt.core.loadpathVariableInitializer">
+      <loadpathVariableInitializer
+            variable="RUBY_LIB"
+            class="org.rubypeople.rdt.internal.launching.RubyLoadpathVariablesInitializer">
+      </loadpathVariableInitializer>
+   </extension>
+   <extension
+         point="org.rubypeople.rdt.core.loadpathContainerInitializer">
+      <loadpathContainerInitializer
+            class="org.rubypeople.rdt.internal.launching.RubyContainerInitializer"
+            id="org.rubypeople.rdt.launching.RUBY_CONTAINER">
+      </loadpathContainerInitializer>
+   </extension>
+   <extension
+            point="org.rubypeople.rdt.launching.runtimeLoadpathEntryResolvers">
+      <runtimeLoadpathEntryResolver
+            container="org.rubypeople.rdt.launching.RUBY_CONTAINER"
+            variable="RUBY_LIB"
+            class="org.rubypeople.rdt.internal.launching.RubyVMRuntimeLoadpathEntryResolver"
+            id="org.rubypeople.rdt.launching.RUBYVM_RESOLVER">
+      </runtimeLoadpathEntryResolver>      
+      <runtimeLoadpathEntryResolver
+      		runtimeLoadpathEntryId="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"
+            class="org.rubypeople.rdt.internal.launching.VariableLoadpathResolver"
+            id="org.rubypeople.rdt.launching.variableLoadpathResolver">
+      </runtimeLoadpathEntryResolver>
+   </extension>
+   <extension
+         point="org.rubypeople.rdt.launching.runtimeLoadpathEntries">
+      <runtimeLoadpathEntry
+            id="org.rubypeople.rdt.launching.loadpathentry.defaultLoadpath"
+            class="org.rubypeople.rdt.internal.launching.DefaultProjectLoadpathEntry">
+      </runtimeLoadpathEntry>
+      <runtimeLoadpathEntry
+            id="org.rubypeople.rdt.launching.loadpathentry.variableLoadpathEntry"
+            class="org.rubypeople.rdt.internal.launching.VariableLoadpathEntry">
+      </runtimeLoadpathEntry>
+   </extension>
+   <extension
+         point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester
+            class="org.rubypeople.rdt.internal.launching.RubyLaunchableTester"
+            id="org.rubypeople.rdt.launching.RubyLaunchableTester"
+            namespace="org.rubypeople.rdt.launching"
+            properties="extendsClass, hasMethod, isContainer, hasProjectNature"
+            type="org.eclipse.core.runtime.IAdaptable"/>
+   </extension>
+
+</plugin>

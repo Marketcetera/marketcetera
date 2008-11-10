@@ -1,0 +1,6 @@
+bin
+launching.jar
+launchingsrc.zip
+org.rubypeople.rdt.launching_*.zip
+org.rubypeople.rdt.launching_*.jar
+build.xml
