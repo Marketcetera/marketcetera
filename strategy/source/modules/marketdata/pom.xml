@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: colin@marketcetera.com
+  - Since: $Release$
+  - Version: $Id: pom.xml 9860 2008-10-10 22:00:53Z klim $
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>modules</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>marketdata</artifactId>
+  <packaging>pom</packaging>
+
+  <name>Marketdata Modules</name>
+
+  <modules>
+    <module>bogus</module>
+    <module>marketcetera</module>
+  </modules>
+</project>

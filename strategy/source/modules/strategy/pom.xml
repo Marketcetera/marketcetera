@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!--
+  - Author: colin@marketcetera.com
+  - Since: 1.0.0
+  - Version: $Id: pom.xml 9876 2008-10-17 23:08:24Z klim $
+  - $License$
+  -->
+
+<project
+ xmlns="http://maven.apache.org/POM/4.0.0"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.marketcetera</groupId>
+    <artifactId>modules</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>strategy</artifactId>
+  <packaging>jar</packaging>
+
+  <name>Strategy Module</name>
+
+  <dependencies>
+
+    <!-- Compile. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>marketdata-bogus</artifactId>
+    </dependency>
+    
+    <!-- Runtime. -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+
+    <!-- Testing. -->
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>core</artifactId>
+      <type>test-jar</type>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
+      <artifactId>util-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+  </dependencies>
+</project>
