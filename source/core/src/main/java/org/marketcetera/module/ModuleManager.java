@@ -94,9 +94,8 @@ public final class ModuleManager {
      * from that provider are returned, otherwise, all available module
      * instance URNs are returned back.
      *
-     * No validation of the provider URN is performed. If no
-     * provider with the supplied URN exists, no modules will
-     * be returned.
+     * The provider URN is validated to ensure that it's a valid provider URN.
+     * If no provider with the supplied URN exists, no modules will be returned.
      *
      * @param inProviderURN the providerURN whose module
      * instances are requested. If null, all module instances
