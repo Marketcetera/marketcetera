@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription
+visibility: public
+block_params: 
+comment: 
+full_name: Debugger::source_reload
+params: ()
+name: source_reload
+is_singleton: true
+aliases: []
