@@ -11,17 +11,15 @@ import org.marketcetera.core.FIXVersionTestSuite;
 import org.marketcetera.core.FIXVersionedTestCase;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
 import org.marketcetera.quickfix.FIXVersion;
-import org.marketcetera.quickfix.FIXMessageUtilTest;
 
 import quickfix.FieldNotFound;
 import quickfix.InvalidMessage;
 import quickfix.Message;
-import quickfix.field.Account;
 import quickfix.field.AvgPx;
 import quickfix.field.ClOrdID;
 import quickfix.field.CumQty;
+import quickfix.field.CxlRejReason;
 import quickfix.field.CxlRejResponseTo;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
@@ -128,59 +126,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		}
 	}
 
-	/*
-	 * Test method for 'org.marketcetera.photon.model.FIXMessageHistory.addOutgoingMessage(Message)'
-	 */
-	public void testAddOutgoingMessage() throws FieldNotFound {
-		FIXMessageHistory history = getMessageHistory();
-		String orderID = "1"; //$NON-NLS-1$
-		char side = Side.SELL_SHORT;
-		BigDecimal quantity = new BigDecimal("2000"); //$NON-NLS-1$
-		MSymbol symbol = new MSymbol("QWER"); //$NON-NLS-1$
-		char timeInForce = TimeInForce.DAY;
-		String account = "ACCT"; //$NON-NLS-1$
-		Message message = msgFactory.newMarketOrder(orderID, side, quantity, symbol, timeInForce, account);
-		history.addOutgoingMessage(message);
-
-		EventList<MessageHolder> historyList = history.getAllMessagesList();
-		assertEquals(1, historyList.size());
-		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) historyList.get(0);
-		Message historyMessage = holder.getMessage();
-		assertEquals(orderID, historyMessage.getString(ClOrdID.FIELD));
-		assertEquals(""+side, historyMessage.getString(Side.FIELD)); //$NON-NLS-1$
-		assertEquals(quantity, historyMessage.getDecimal(OrderQty.FIELD));
-		assertEquals(symbol.getFullSymbol(), historyMessage.getString(Symbol.FIELD));
-		assertEquals(""+timeInForce, historyMessage.getString(TimeInForce.FIELD)); //$NON-NLS-1$
-		assertEquals(account, historyMessage.getString(Account.FIELD));
-	}
-
-    // test Cancel/Replace
-    public void testAddOutgoing_CxR() throws Exception {
-        Message nos = FIXMessageUtilTest.createNOS("IBM", new BigDecimal(20), new BigDecimal(1000), Side.BUY, msgFactory); //$NON-NLS-1$
-        Message cxr = msgFactory.newCancelReplaceFromMessage(nos);
-        FIXMessageHistory history = getMessageHistory();
-        EventList<MessageHolder> historyList = history.getAllMessagesList();
-        assertEquals(0, historyList.size());
-
-        history.addOutgoingMessage(cxr);
-        assertEquals(1, historyList.size());
-        assertNotNull(history.getOrder(cxr.getString(ClOrdID.FIELD)));
-    }
-
-    // make sure other messages aren't added
-    public void testAddOutgoing_NotAdded() throws Exception {
-        Message er = msgFactory.newExecutionReport("orderID", "clOrderID", "execid", OrdStatus.FILLED,  Side.BUY, new BigDecimal(1000), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                new BigDecimal("10.10"), new BigDecimal(1000), new BigDecimal("10.10"), new BigDecimal(1000), new BigDecimal("10.10"), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                new MSymbol("TOLI"), "account"); //$NON-NLS-1$ //$NON-NLS-2$
-        EventList<MessageHolder> historyList = getMessageHistory().getAllMessagesList();
-        assertEquals(0, historyList.size());
-
-        getMessageHistory().addOutgoingMessage(er);
-        assertEquals(0, historyList.size());
-        assertNull(getMessageHistory().getOrder(er.getString(ClOrdID.FIELD)));
-    }
-
 //	public void testGetOpenOrder() throws FieldNotFound {
 //		long currentTime = System.currentTimeMillis();
 //		FIXMessageHistory history = getMessageHistory();
@@ -213,9 +158,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		Message secondExecutionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2004", OrdStatus.PARTIALLY_FILLED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), new BigDecimal(100), new BigDecimal("11.5"), new BigDecimal(100), new BigDecimal("11.5"), new MSymbol("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 		secondExecutionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 7000)));
 
-		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
-		history.addOutgoingMessage(order2);
 		history.addIncomingMessage(executionReportForOrder2);
 		history.addIncomingMessage(secondExecutionReportForOrder1);
 
@@ -257,9 +200,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		Message aMessage = msgFactory.createMessage(MsgType.EXECUTION_REPORT);
 		
 		history.addIncomingMessage(aMessage);
-		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
-		history.addOutgoingMessage(order2);
 		history.addIncomingMessage(executionReportForOrder2);
 		history.addIncomingMessage(secondExecutionReportForOrder1);
 
@@ -289,7 +230,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY,  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null); //$NON-NLS-1$
-			history.addOutgoingMessage(order1);
 			history.addIncomingMessage(executionReportForOrder1);
 	
 			assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD)); //$NON-NLS-1$
@@ -309,7 +249,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			Message order2 = msgFactory.newMarketOrder("2", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			Message executionReportForOrder2 = msgFactory.newExecutionReport("1002", "2", "2002", OrdStatus.NEW, Side.BUY,  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null); //$NON-NLS-1$
-			history.addOutgoingMessage(order2);
 			history.addIncomingMessage(executionReportForOrder2);
 	
 			assertEquals(OrdStatus.NEW, history.getLatestExecutionReport("1").getChar(OrdStatus.FIELD)); //$NON-NLS-1$
@@ -333,12 +272,10 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 	public void testAddFIXMessageListener() throws NoSuchFieldException, IllegalAccessException, FieldNotFound {
 		FIXMessageHistory history = getMessageHistory();
 		
-		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
 		ListEventListener<MessageHolder> fixMessageListener = new ListEventListener<MessageHolder>() {
 			public int numIncomingMessages = 0;
-			public int numOutgoingMessages = 0;
 
 			@SuppressWarnings("unchecked") //$NON-NLS-1$
 			public void listChanged(ListEvent<MessageHolder> event) {
@@ -357,14 +294,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 							} catch (FieldNotFound e) {
 								fail(e.getMessage());
 							}
-						} else if (holder instanceof OutgoingMessageHolder) {
-							OutgoingMessageHolder outgoing = (OutgoingMessageHolder) holder;
-							try {
-								assertEquals("1", outgoing.getMessage().getString(ClOrdID.FIELD)); //$NON-NLS-1$
-								numOutgoingMessages++;
-							} catch (FieldNotFound e) {
-								fail(e.getMessage());
-							}
 						}
 					}	
 				}
@@ -373,12 +302,10 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		};
 		history.getAllMessagesList().addListEventListener(fixMessageListener);
 		
-		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
 		//just use the AccessViolator to get the fields out of the anon inner class
 		AccessViolator violator = new AccessViolator(fixMessageListener.getClass());
 		assertEquals(1,violator.getField("numIncomingMessages", fixMessageListener)); //$NON-NLS-1$
-		assertEquals(1,violator.getField("numOutgoingMessages", fixMessageListener)); //$NON-NLS-1$
 	}
 
 	/*
@@ -405,14 +332,6 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 						} catch (FieldNotFound e) {
 							fail(e.getMessage());
 						}
-					} else if (source instanceof OutgoingMessageHolder) {
-						OutgoingMessageHolder outgoing = (OutgoingMessageHolder) source;
-						try {
-							assertEquals("1", outgoing.getMessage().getString(ClOrdID.FIELD)); //$NON-NLS-1$
-							numOutgoingMessages++;
-						} catch (FieldNotFound e) {
-							fail(e.getMessage());
-						}
 					}
 
 				}
@@ -423,12 +342,10 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		history.getAllMessagesList().addListEventListener(fixMessageListener);
 		history.getAllMessagesList().removeListEventListener(fixMessageListener);
 		
-		history.addOutgoingMessage(order1);
 		history.addIncomingMessage(executionReportForOrder1);
 		//just use the AccessViolator to get the fields out of the anon inner class
 		AccessViolator violator = new AccessViolator(fixMessageListener.getClass());
 		assertEquals(0,violator.getField("numIncomingMessages", fixMessageListener)); //$NON-NLS-1$
-		assertEquals(0,violator.getField("numOutgoingMessages", fixMessageListener)); //$NON-NLS-1$
 	}
 	
 	
@@ -665,20 +582,16 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 
 	String [] messageStrings = {
 		"8=FIX.4.29=14135=86=011=1171508063701-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=R60=20070215-02:54:27150=0151=1010=237", //$NON-NLS-1$
-		"8=FIX.4.29=16235=D34=449=sender-2026-ORS52=20070215-02:54:27.29156=MRKTC-EXCH11=1171508063701-server02/127.0.0.121=338=1040=244=1054=155=R59=060=20070215-02:54:2910=063", //$NON-NLS-1$
 		"8=FIX.4.29=20635=834=449=MRKTC-EXCH52=20070215-02:54:29.43056=sender-2026-ORS6=011=1171508063701-server02/127.0.0.114=017=1203720=331=032=037=732438=1039=044=1054=155=R60=20070215-02:54:29150=0151=1010=201", //$NON-NLS-1$
 		"8=FIX.4.29=6835=034=549=MRKTC-EXCH52=20070215-02:54:59.62656=sender-2026-ORS10=083", //$NON-NLS-1$
 		"8=FIX.4.29=6835=034=549=sender-2026-ORS52=20070215-02:54:57.61456=MRKTC-EXCH10=078", //$NON-NLS-1$
 		"8=FIX.4.29=14335=86=011=1171508063702-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1239=044=10.154=155=R60=20070215-02:55:06150=0151=1210=081", //$NON-NLS-1$
-		"8=FIX.4.29=17235=D34=649=sender-2026-ORS50=asdf52=20070215-02:55:06.97456=MRKTC-EXCH11=1171508063702-server02/127.0.0.121=338=1240=244=10.154=155=R59=060=20070215-02:55:0910=234", //$NON-NLS-1$
 		"8=FIX.4.29=20835=834=649=MRKTC-EXCH52=20070215-02:55:09.08456=sender-2026-ORS6=011=1171508063702-server02/127.0.0.114=017=1203820=331=032=037=732538=1239=044=10.154=155=R60=20070215-02:55:09150=0151=1210=054", //$NON-NLS-1$
 		"8=FIX.4.29=13535=86=011=1171508063703-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=2239=054=555=R60=20070215-02:55:27150=0151=2210=246", //$NON-NLS-1$
-		"8=FIX.4.29=15635=D34=749=sender-2026-ORS52=20070215-02:55:27.24656=MRKTC-EXCH11=1171508063703-server02/127.0.0.121=338=2240=154=555=R59=060=20070215-02:55:2910=072", //$NON-NLS-1$
 		"8=FIX.4.29=21535=834=749=MRKTC-EXCH52=20070215-02:55:29.37856=sender-2026-ORS6=10.111=1171508063702-server02/127.0.0.114=1217=1203920=331=10.132=1237=732538=1239=244=10.154=155=R60=20070215-02:55:29150=2151=010=151", //$NON-NLS-1$
 		"8=FIX.4.29=20835=834=849=MRKTC-EXCH52=20070215-02:55:29.37956=sender-2026-ORS6=10.111=1171508063703-server02/127.0.0.114=1217=1204020=331=10.132=1237=732638=2239=154=555=R60=20070215-02:55:29150=1151=1010=099", //$NON-NLS-1$
 		"8=FIX.4.29=20935=834=949=MRKTC-EXCH52=20070215-02:55:29.38056=sender-2026-ORS6=1011=1171508063701-server02/127.0.0.114=1017=1204120=331=1032=1037=732438=1039=244=1054=155=R60=20070215-02:55:29150=2151=010=105", //$NON-NLS-1$
 		"8=FIX.4.29=23735=834=1049=MRKTC-EXCH52=20070215-02:55:29.38156=sender-2026-ORS6=10.0545454545454545454545454545454511=1171508063703-server02/127.0.0.114=2217=1204220=331=1032=1037=732638=2239=254=555=R60=20070215-02:55:29150=2151=010=085", //$NON-NLS-1$
-		"8=FIX.4.29=17935=F34=849=sender-2026-ORS52=20070215-02:55:44.63056=MRKTC-EXCH11=1171508063704-server02/127.0.0.137=732441=1171508063701-server02/127.0.0.154=155=R60=20070215-02:54:2910=117", //$NON-NLS-1$
 		"8=FIX.4.29=20935=934=1149=MRKTC-EXCH52=20070215-02:55:46.85856=sender-2026-ORS11=1171508063704-server02/127.0.0.137=732439=841=1171508063701-server02/127.0.0.158=Unable to cancel non-existing orderID [7324].434=110=213", //$NON-NLS-1$
 		"8=FIX.4.29=6835=034=949=sender-2026-ORS52=20070215-02:56:15.18856=MRKTC-EXCH10=084", //$NON-NLS-1$
 		"8=FIX.4.29=6935=034=1249=MRKTC-EXCH52=20070215-02:56:17.29856=sender-2026-ORS10=131", //$NON-NLS-1$
@@ -689,61 +602,65 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 		"8=FIX.4.29=6935=034=1249=sender-2026-ORS52=20070215-02:57:46.18756=MRKTC-EXCH10=131", //$NON-NLS-1$
 		"8=FIX.4.29=6935=034=1549=MRKTC-EXCH52=20070215-02:57:48.34756=sender-2026-ORS10=134", //$NON-NLS-1$
 		"8=FIX.4.29=14135=86=011=1171508063705-server02/127.0.0.114=017=ZZ-INTERNAL20=\u000031=032=038=1039=044=1054=155=T60=20070215-02:57:58150=0151=1010=250", //$NON-NLS-1$
-		"8=FIX.4.29=16335=D34=1349=sender-2026-ORS52=20070215-02:57:58.79456=MRKTC-EXCH11=1171508063705-server02/127.0.0.121=338=1040=244=1054=155=T59=060=20070215-02:58:0010=126", //$NON-NLS-1$
 		"8=FIX.4.29=20735=834=1649=MRKTC-EXCH52=20070215-02:58:00.93056=sender-2026-ORS6=011=1171508063705-server02/127.0.0.114=017=1204320=331=032=037=732738=1039=044=1054=155=T60=20070215-02:58:00150=0151=1010=250", //$NON-NLS-1$
-		"8=FIX.4.29=18035=F34=1449=sender-2026-ORS52=20070215-02:58:07.26556=MRKTC-EXCH11=1171508063706-server02/127.0.0.137=732741=1171508063705-server02/127.0.0.154=155=T60=20070215-02:58:0010=164", //$NON-NLS-1$
 		"8=FIX.4.29=20635=834=1749=MRKTC-EXCH52=20070215-02:58:09.39356=sender-2026-ORS6=011=1171508063705-server02/127.0.0.114=017=1204420=331=032=037=732738=1039=444=1054=155=T60=20070215-02:58:09150=4151=010=231" //$NON-NLS-1$
 	};
 	public void testStrandedOpenOrder() throws Exception {
 		FIXMessageHistory history = new FIXMessageHistory(fixVersion.getMessageFactory());
 		for (String aMessageString : messageStrings) {
 			Message aMessage = new Message(aMessageString);
-			String msgType = aMessage.getHeader().getString(MsgType.FIELD);
-			if ("8".equals(msgType)){ //$NON-NLS-1$
-				history.addIncomingMessage(aMessage);
-			} else if ("D".equals(msgType)){ //$NON-NLS-1$
-				history.addOutgoingMessage(aMessage);
-			} else if ("F".equals(msgType)){ //$NON-NLS-1$
-				history.addOutgoingMessage(aMessage);
-			} else if ("9".equals(msgType)){ //$NON-NLS-1$
-				history.addIncomingMessage(aMessage);
-			} else if ("0".equals(msgType)){ //$NON-NLS-1$
-				history.addIncomingMessage(aMessage);
-			} else {
-				fail();
-			}
+			history.addIncomingMessage(aMessage);
 		}
 		
 		FilterList<MessageHolder> openOrdersList = history.getOpenOrdersList();
 		assertEquals(0, openOrdersList.size());
 	}
 	
-	public void testGetOrder() throws Exception {
-		long currentTime = System.currentTimeMillis();
+	public void testFirstReport() throws Exception {
 		FIXMessageHistory history = getMessageHistory();
-		Message order1 = msgFactory.newMarketOrder("1", Side.BUY, new BigDecimal(1000), new MSymbol("ASDF"), TimeInForce.FILL_OR_KILL, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		Message order2 = msgFactory.newLimitOrder("2", Side.BUY, new BigDecimal(800), new MSymbol("ASDF"), new BigDecimal("123.44"), TimeInForce.FILL_OR_KILL, "1"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		Message executionReportForOrder1 = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		executionReportForOrder1.getHeader().setField(new SendingTime(new Date(currentTime - 10000)));
-		
-		history.addOutgoingMessage(order1);
-		history.addIncomingMessage(executionReportForOrder1);
-		history.addOutgoingMessage(order2);
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// Only PENDING NEW or PENDING REPLACE should be considered the first report
+		assertNull(history.getFirstReport("1"));
+		Message report = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null); 
+		history.addIncomingMessage(report);
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.REPLACED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.PENDING_REPLACE, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.REJECTED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"), new OrigClOrdID("1"), "ABC", new CxlRejReason(CxlRejReason.TOO_LATE_TO_CANCEL)));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+	}
 
-		
-		MessageHolder foundOrder1 = history.getOrder("1"); //$NON-NLS-1$
-		assertNotNull(foundOrder1);
-		assertEquals(OutgoingMessageHolder.class, foundOrder1.getClass());
-		Message message1 = foundOrder1.getMessage();
-		assertTrue(FIXMessageUtil.isOrderSingle(message1));
-		assertEquals("1000", message1.getString(OrderQty.FIELD)); //$NON-NLS-1$
-		
-		MessageHolder foundOrder2 = history.getOrder("2"); //$NON-NLS-1$
-		assertNotNull(foundOrder2);
-		assertEquals(OutgoingMessageHolder.class, foundOrder2.getClass());
-		Message message2 = foundOrder2.getMessage();
-		assertTrue(FIXMessageUtil.isOrderSingle(message2));
-		assertEquals("800", message2.getString(OrderQty.FIELD)); //$NON-NLS-1$
+	public void testFirstReportReplace() throws Exception {
+		FIXMessageHistory history = getMessageHistory();
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.REPLACED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// Only PENDING NEW or PENDING REPLACE should be considered the first report
+		assertNull(history.getFirstReport("1"));
+		Message report = msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.PENDING_REPLACE, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null); 
+		history.addIncomingMessage(report);
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.REPLACED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.PENDING_NEW, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newExecutionReport("1001", "1", "2001", OrdStatus.REJECTED, Side.BUY, new BigDecimal(1000), new BigDecimal(789), null, null, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("ASDF"), null));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
+		history.addIncomingMessage(msgFactory.newOrderCancelReject(new OrderID("1001"), new ClOrdID("1"), new OrigClOrdID("1"), "ABC", new CxlRejReason(CxlRejReason.TOO_LATE_TO_CANCEL)));
+		// first report should not change
+		assertSame(report, history.getFirstReport("1").getMessage());
 	}
 
     public void testVisitOpenExecReports() throws Exception {

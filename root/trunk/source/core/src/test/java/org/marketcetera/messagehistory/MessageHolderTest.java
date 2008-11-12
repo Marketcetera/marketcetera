@@ -5,9 +5,6 @@ import java.math.BigDecimal;
 import junit.framework.TestCase;
 
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.messagehistory.IncomingMessageHolder;
-import org.marketcetera.messagehistory.MessageHolder;
-import org.marketcetera.messagehistory.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXMessageFactory;
 import org.marketcetera.quickfix.FIXVersion;
 
@@ -21,13 +18,6 @@ public class MessageHolderTest extends TestCase
 	{
 		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		IncomingMessageHolder holder = new IncomingMessageHolder(message);
-		assertEquals(message, holder.getMessage());
-	}
-
-	public void testOutgoingMessageHolder()
-	{
-		Message message = msgFactory.newLimitOrder("asdf", Side.BUY, BigDecimal.TEN, new MSymbol("123"), BigDecimal.ONE, '\0', "asd"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		OutgoingMessageHolder holder = new OutgoingMessageHolder(message);
 		assertEquals(message, holder.getMessage());
 	}
 

@@ -1,19 +1,40 @@
 package org.marketcetera.messagehistory;
 
-import ca.odell.glazedlists.*;
-import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
-import org.marketcetera.core.ClassVersion;
-import org.marketcetera.quickfix.FIXMessageFactory;
-import org.marketcetera.quickfix.FIXMessageUtil;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
-import quickfix.FieldNotFound;
-import quickfix.Message;
-import quickfix.field.*;
-
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.marketcetera.core.ClassVersion;
+import org.marketcetera.quickfix.FIXMessageFactory;
+import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.util.except.ExceptUtils;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import quickfix.FieldNotFound;
+import quickfix.Message;
+import quickfix.field.ClOrdID;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
+import quickfix.field.LastForwardPoints;
+import quickfix.field.LastMkt;
+import quickfix.field.LastPx;
+import quickfix.field.LastShares;
+import quickfix.field.LastSpotRate;
+import quickfix.field.MsgSeqNum;
+import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrigClOrdID;
+import quickfix.field.SendingTime;
+import quickfix.field.Text;
+import quickfix.field.TransactTime;
+import ca.odell.glazedlists.BasicEventList;
+import ca.odell.glazedlists.EventList;
+import ca.odell.glazedlists.FilterList;
+import ca.odell.glazedlists.FunctionList;
+import ca.odell.glazedlists.GroupingList;
+import ca.odell.glazedlists.matchers.ThreadedMatcherEditor;
 
 /**
  * FIXMessageHistory is an object that stores all incoming and outgoing messages (from Photon, for example)
@@ -38,7 +59,7 @@ public class FIXMessageHistory {
 	
 	private FilterList<MessageHolder> openOrderList;
 	
-	private final Map<String, MessageHolder> orderMap;
+	private final Map<String, MessageHolder> originalOrderACKs;
 	
 	private Map<String, String> orderIDToGroupMap;
 
@@ -60,7 +81,7 @@ public class FIXMessageHistory {
 		averagePriceList = new AveragePriceList(messageFactory, allMessages);
 		openOrderList = new FilterList<MessageHolder>(latestExecutionReportsList, new OpenOrderMatcher());
 		
-		orderMap = new HashMap<String, MessageHolder>();
+		originalOrderACKs = new HashMap<String, MessageHolder>();
 		orderIDToGroupMap = new HashMap<String, String>();
 	}
 	
@@ -85,7 +106,29 @@ public class FIXMessageHistory {
 			allMessages.getReadWriteLock().writeLock().lock();
 			updateOrderIDMappings(fixMessage);
 			String groupID = getGroupID(fixMessage);
-			allMessages.add(new IncomingMessageHolder(fixMessage, groupID));
+			IncomingMessageHolder messageHolder = new IncomingMessageHolder(fixMessage, groupID);
+			
+			// The first message that comes in with a specific order id gets stored in a map.  This
+			// map is used by #getFirstReport(String) to facilitate CancelReplace
+			// TODO: Change this to look for custom ORS acks
+            if (fixMessage.isSetField(ClOrdID.FIELD) && fixMessage.isSetField(OrdStatus.FIELD) && FIXMessageUtil.isExecutionReport(fixMessage)) {
+				try {
+					String id = fixMessage.getString(ClOrdID.FIELD);
+					char status = fixMessage.getChar(OrdStatus.FIELD);
+					if (status == OrdStatus.PENDING_NEW || status == OrdStatus.PENDING_REPLACE) {
+						synchronized (originalOrderACKs) {
+							if (!originalOrderACKs.containsKey(id)) {
+								originalOrderACKs.put(id, messageHolder);
+							}
+						}
+					}
+				} catch (FieldNotFound e) {
+					// This should not happen, the get field calls are guarded with fixMessage.isSetField
+					ExceptUtils.swallow(e);
+				}
+			}			
+			
+			allMessages.add(messageHolder);
 			if (FIXMessageUtil.isCancelReject(fixMessage) && fixMessage.isSetField(ClOrdID.FIELD) && fixMessage.isSetField(OrdStatus.FIELD)){
 				// Add a new execution report to the stream to update the order status, using the values from the 
 				// previous execution report.
@@ -145,30 +188,6 @@ public class FIXMessageHistory {
 			} catch (FieldNotFound e) {
                             throw new RuntimeException(Messages.SHOULD_NEVER_HAPPEN_IN_UPDATEORDERIDMAPPINGS.getText());
 			}
-		}
-	}
-
-	public void addOutgoingMessage(quickfix.Message fixMessage) {
-		updateOrderIDMappings(fixMessage);
-		String groupID = null;
-		groupID = getGroupID(fixMessage);
-
-		OutgoingMessageHolder messageHolder = new OutgoingMessageHolder(fixMessage, groupID);
-		if (FIXMessageUtil.isOrderSingle(fixMessage) || FIXMessageUtil.isOrderList(fixMessage)
-                || FIXMessageUtil.isCancelReplaceRequest(fixMessage)){
-			try {
-				synchronized (orderMap){
-					orderMap.put(fixMessage.getString(ClOrdID.FIELD), messageHolder);
-				}
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-		try {
-			allMessages.getReadWriteLock().writeLock().lock();
-			allMessages.add(messageHolder);
-		} finally {
-			allMessages.getReadWriteLock().writeLock().unlock();
 		}
 	}
 
@@ -294,9 +313,18 @@ public class FIXMessageHistory {
 		}
 	}
 	
-	public MessageHolder getOrder(String clOrdID){
-		synchronized (orderMap){
-			return orderMap.get(clOrdID);
+	/**
+	 * Returns a {@link MessageHolder} holding the first report Photon received
+	 * for the given clOrdID. This is the PENDING NEW or PENDING REPLACE message
+	 * added via {@link #addIncomingMessage(Message)}.
+	 * 
+	 * @param clOrdID
+	 *            the clOrdID
+	 * @return the MessageHolder holding the first report
+	 */
+	public MessageHolder getFirstReport(String clOrdID){
+		synchronized (originalOrderACKs){
+			return originalOrderACKs.get(clOrdID);
 		}
 	}
 	

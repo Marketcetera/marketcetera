@@ -184,7 +184,6 @@ public class PhotonController
 				aMessage.setField(new ClOrdID(orderID));
 			}
 			messageFactory.getMsgAugmentor().newOrderSingleAugment(aMessage);
-			fixMessageHistory.addOutgoingMessage(aMessage);
 			convertAndSend(aMessage);
 		} catch (NoMoreIDsException e) {
 			internalMainLogger.error(CANNOT_SEND_MESSAGE_NO_ID.getText(),
@@ -193,12 +192,10 @@ public class PhotonController
 	}
 
 	private void requestResend(Message message) {
-		fixMessageHistory.addOutgoingMessage(message);
 		convertAndSend(message);
 	}
 
 	protected void cancelReplaceOneOrder(final Message cancelMessage) {
-		fixMessageHistory.addOutgoingMessage(cancelMessage);
 		convertAndSend(cancelMessage);
 	}
 
@@ -234,7 +231,6 @@ public class PhotonController
 				// do nothing
 			}
 			FIXMessageUtil.fillFieldsFromExistingMessage(cancelMessage, latestMessage);
-			fixMessageHistory.addOutgoingMessage(cancelMessage);
 			convertAndSend(cancelMessage);
 		} catch (FieldNotFound fnf){
             internalMainLogger.error(CANNOT_SEND_CANCEL_FOR_REASON.getText(clOrdID,
@@ -294,14 +290,14 @@ public class PhotonController
 	}
 	
 	public void convertAndSend(Message fixMessage) {
+		internalMainLogger.info(PHOTON_CONTROLLER_SENDING_MESSAGE.getText(fixMessage));
+		if(internalMainLogger.isDebugEnabled()) {
+			checkSideField(fixMessage);
+		}
 		JMSFeedService service = (JMSFeedService) jmsServiceTracker.getService();
 		JmsOperations jmsOperations;
 		if (service != null && ((jmsOperations = service.getJmsOperations()) != null)){
 			try {
-				if(internalMainLogger.isDebugEnabled()) {
-					internalMainLogger.debug("Sending: " + fixMessage); //$NON-NLS-1$
-					checkSideField(fixMessage);
-				}
 				jmsOperations.convertAndSend(fixMessage);
 			} catch (Exception ex){
 				service.onException(ex);

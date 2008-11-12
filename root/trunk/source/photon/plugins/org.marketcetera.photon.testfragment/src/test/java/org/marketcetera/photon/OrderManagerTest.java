@@ -7,13 +7,12 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.marketcetera.core.CoreException;
 import org.marketcetera.core.InMemoryIDFactory;
 import org.marketcetera.core.MSymbol;
-import org.marketcetera.core.CoreException;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.IncomingMessageHolder;
 import org.marketcetera.messagehistory.MessageHolder;
-import org.marketcetera.messagehistory.OutgoingMessageHolder;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 import org.marketcetera.quickfix.FIXMessageFactory;
@@ -21,10 +20,8 @@ import org.marketcetera.quickfix.FIXVersion;
 
 import quickfix.FieldNotFound;
 import quickfix.Message;
-import quickfix.field.ClOrdID;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrderQty;
 import quickfix.field.OrigClOrdID;
 import quickfix.field.SenderCompID;
 import quickfix.field.Side;
@@ -107,19 +104,15 @@ public class OrderManagerTest extends TestCase {
 	public void testHandleInternalMessages() throws FieldNotFound {
 		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
 		assertEquals(0, historyList.size());
-		Message[] messages = new Message[2];
-		messages[0] = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
-		messages[1] = msgFactory.newCancel("AQWE", "ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
-		for (Message message : messages) {
-			photonController.handleInternalMessage(message);
-		}
-		assertNotNull(messageHistory.getLatestMessage("ASDF"));
-		historyList = messageHistory.getAllMessagesList();
-		assertEquals(2, historyList.size());
-		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
-		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
-		assertEquals(MsgType.ORDER_SINGLE, ((OutgoingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
-		assertEquals(MsgType.ORDER_CANCEL_REQUEST, ((OutgoingMessageHolder)historyList.get(1)).getMessage().getHeader().getString(MsgType.FIELD));
+		Message order = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		Message cancel = msgFactory.newCancel("AQWE", "ASDF", Side.BUY, BigDecimal.TEN, new MSymbol("SDF"), "WERT");
+		Message exReport = msgFactory.newExecutionReport("456", "ASDF", "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
+				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new MSymbol("QWER"), null);
+		photonController.handleInternalMessage(order);
+		assertSame(order, photonController.getLastMessage());
+		messageHistory.addIncomingMessage(exReport);
+		photonController.handleInternalMessage(cancel);
+		assertEquals(MsgType.ORDER_CANCEL_REQUEST, photonController.getLastMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 	/*
@@ -140,10 +133,7 @@ public class OrderManagerTest extends TestCase {
 	public void testHandleInternalMessage() throws FieldNotFound, CoreException {
 		Message message = msgFactory.newLimitOrder("ASDF", Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
 		photonController.handleInternalMessage(message);
-		EventList<MessageHolder> historyList = messageHistory.getAllMessagesList();
-		assertEquals(1, historyList.size());
-		assertEquals(OutgoingMessageHolder.class, historyList.get(0).getClass());
-		assertEquals(MsgType.ORDER_SINGLE, ((OutgoingMessageHolder)historyList.get(0)).getMessage().getHeader().getString(MsgType.FIELD));
+		assertSame(message, photonController.getLastMessage());
 
 	}
 
@@ -153,23 +143,17 @@ public class OrderManagerTest extends TestCase {
 	public void testCancelReplaceOneOrder() throws Exception {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newLimitOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), BigDecimal.TEN, TimeInForce.DAY, null);
+		Message exReport = msgFactory.newExecutionReport("456", "ASDF", "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
+				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new MSymbol("QWER"), null);
 		photonController.handleInternalMessage(message);
-		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
-		assertEquals(1, history.size());
+		assertSame(message, photonController.getLastMessage());
 
+		messageHistory.addIncomingMessage(exReport);
 		Message cancelReplaceMessage = msgFactory.newCancelReplaceFromMessage(message);
 		cancelReplaceMessage.setField(new OrigClOrdID(myClOrdID));
 
 		photonController.handleInternalMessage(cancelReplaceMessage);
-		
-		history = messageHistory.getAllMessagesList();
-		assertEquals(2, history.size());
-		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
-		Message filledCancelReplace = holder.getMessage();
-		assertEquals(MsgType.ORDER_CANCEL_REPLACE_REQUEST, filledCancelReplace.getHeader().getString(MsgType.FIELD));
-		dataDictionary.getDictionary().validate(filledCancelReplace, true);
-		assertEquals("1", filledCancelReplace.getString(OrderQty.FIELD));
+		assertSame(cancelReplaceMessage, photonController.getLastMessage());
 	}
 
 	/*
@@ -178,23 +162,18 @@ public class OrderManagerTest extends TestCase {
 	public void testCancelOneOrder() throws Exception {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
+		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
+				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new MSymbol("QWER"), null);
 		photonController.handleInternalMessage(message);
-		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
-		assertEquals(1, history.size());
+		assertSame(message, photonController.getLastMessage());
 
+		messageHistory.addIncomingMessage(exReport);
 		Message cancelMessage = new quickfix.fix42.Message();
 		cancelMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
 		cancelMessage.setField(new OrigClOrdID(myClOrdID));
 		cancelMessage.setField(new Symbol("QWER"));
 		photonController.handleInternalMessage(cancelMessage);
-		
-		history = messageHistory.getAllMessagesList();
-		assertEquals(2, history.size());
-		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
-		Message filledCancel = holder.getMessage();
-		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		dataDictionary.getDictionary().validate(filledCancel, true);
+		assertEquals(MsgType.ORDER_CANCEL_REQUEST, photonController.getLastMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 
@@ -205,29 +184,14 @@ public class OrderManagerTest extends TestCase {
 	public void testCancelOneOrderByClOrdID() throws Exception {
 		String myClOrdID = "MyClOrdID";
 		Message message = msgFactory.newMarketOrder(myClOrdID, Side.BUY, BigDecimal.ONE, new MSymbol("QWER"), TimeInForce.DAY, null);
+		Message exReport = msgFactory.newExecutionReport("456", myClOrdID, "987", OrdStatus.PENDING_NEW, Side.BUY, BigDecimal.ONE, BigDecimal.TEN, new BigDecimal(500),
+				BigDecimal.TEN, BigDecimal.TEN, BigDecimal.TEN, new MSymbol("QWER"), null);
 		photonController.handleInternalMessage(message);
-		EventList<MessageHolder> history = messageHistory.getAllMessagesList();
-		assertEquals(1, history.size());
+		assertSame(message, photonController.getLastMessage());
 
-		Message cancelMessage = new quickfix.fix42.Message();
-		cancelMessage.getHeader().setField(new MsgType(MsgType.ORDER_CANCEL_REQUEST));
-		cancelMessage.setField(new OrigClOrdID(myClOrdID));
-		cancelMessage.setField(new Symbol("QWER"));
+		messageHistory.addIncomingMessage(exReport);
 		photonController.cancelOneOrderByClOrdID(myClOrdID);
-		
-		history = messageHistory.getAllMessagesList();
-		assertEquals(2, history.size());
-		assertEquals(OutgoingMessageHolder.class, history.get(1).getClass());
-		OutgoingMessageHolder holder = (OutgoingMessageHolder) history.get(1);
-		Message filledCancel = holder.getMessage();
-
-		assertEquals(MsgType.ORDER_CANCEL_REQUEST, filledCancel.getHeader().getString(MsgType.FIELD));
-		dataDictionary.getDictionary().validate(filledCancel, true);
-		assertEquals(myClOrdID, filledCancel.getString(OrigClOrdID.FIELD));
-		assertEquals("1000", filledCancel.getString(ClOrdID.FIELD));
-		assertEquals("QWER", filledCancel.getString(Symbol.FIELD));
-		assertEquals(Side.BUY, filledCancel.getChar(Side.FIELD));
-		assertEquals(new Date().getTime(), filledCancel.getUtcTimeStamp(TransactTime.FIELD).getTime(), 500);
+		assertEquals(MsgType.ORDER_CANCEL_REQUEST, photonController.getLastMessage().getHeader().getString(MsgType.FIELD));
 	}
 
 }
