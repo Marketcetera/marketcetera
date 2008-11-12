@@ -40,6 +40,7 @@ public final class StrategyModuleFactory
               Object.class,
               File.class,
               Properties.class,
+              String[].class,
               ModuleURN.class,
               ModuleURN.class);
     }

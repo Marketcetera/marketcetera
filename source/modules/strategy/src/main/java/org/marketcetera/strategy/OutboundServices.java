@@ -1,6 +1,7 @@
 package org.marketcetera.strategy;
 
 import org.marketcetera.module.DataEmitter;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -28,9 +29,7 @@ interface OutboundServices
     /**
      * Sends a trade suggestion to the destination or destinations established in the strategy module.
      *
-     * TODO need the FixAgnostic objects
-     * 
-     * @param inSuggestion
+     * @param inSuggestion a <code>Suggestion</code> value
      */
-    void sendSuggestion(Object inSuggestion);
+    void sendSuggestion(Suggestion inSuggestion);
 }
