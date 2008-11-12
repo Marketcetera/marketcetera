@@ -35,6 +35,14 @@
       <groupId>${mvn.public.package}</groupId>
       <artifactId>marketdata-bogus</artifactId>
     </dependency>
+    <dependency>
+      <groupId>bsf</groupId>
+      <artifactId>bsf</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+    </dependency>
     
     <!-- Runtime. -->
     <dependency>

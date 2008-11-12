@@ -1,9 +1,19 @@
 package org.marketcetera.strategy;
 
+import static org.marketcetera.strategy.Status.ERROR;
+import static org.marketcetera.strategy.Status.NOT_RUNNING;
+import static org.marketcetera.strategy.Status.RUNNING;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.commons.io.FileUtils;
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.event.AskEvent;
+import org.marketcetera.event.BidEvent;
+import org.marketcetera.event.TradeEvent;
+import org.marketcetera.trade.ExecutionReport;
 
 /* $License$ */
 
@@ -34,42 +44,108 @@ class StrategyImpl
         implements Strategy
 {
     /* (non-Javadoc)
-     * @see org.springframework.context.Lifecycle#isRunning()
+     * @see org.marketcetera.strategy.Strategy#start()
      */
     @Override
-    public final boolean isRunning()
-    {
-        return running;
-    }
-    /* (non-Javadoc)
-     * @see org.springframework.context.Lifecycle#start()
-     */
-    @Override
-    public void start()
-    {
-        // TODO retrieve strategy source
-        // TODO locate strategy executor
-        // TODO execute strategy
-        running = true;
-    }
-    /* (non-Javadoc)
-     * @see org.springframework.context.Lifecycle#stop()
-     */
-    @Override
-    public void stop()
+    public final void start()
+        throws StrategyException
     {
         try {
-            // halt strategy executor
-        } finally {
-            running = false;
+            setExecutor(getLanguage().getExecutor(this));
+        } catch (Exception e) {
+            setStatus(ERROR);
+            // TODO add meaningful message
+            throw new StrategyException(e);
         }
+        setRunningStrategy(getExecutor().start());
+        setStatus(RUNNING);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#stop()
+     */
+    @Override
+    public final void stop()
+        throws StrategyException
+    {
+        getExecutor().stop();
+        setStatus(NOT_RUNNING);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.Strategy#dataReceived(java.lang.Object)
      */
     @Override
-    public void dataReceived(Object inData)
+    public final void dataReceived(Object inData)
     {
+        RunningStrategy runningStrategy = getRunningStrategy();
+        if(inData instanceof TradeEvent) {
+            runningStrategy.onTrade((TradeEvent)inData);
+            return;
+        }
+        if(inData instanceof BidEvent) {
+            runningStrategy.onBid((BidEvent)inData);
+            return;
+        }
+        if(inData instanceof AskEvent) {
+            runningStrategy.onAsk((AskEvent)inData);
+            return;
+        }
+        if(inData instanceof ExecutionReport) {
+            runningStrategy.onExecutionReport((ExecutionReport)inData);
+            return;
+        }
+        // catch-all for every other type of data
+        runningStrategy.onOther(inData);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getCode()
+     */
+    @Override
+    public final String getScript()
+    {
+        return code;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getLanguage()
+     */
+    @Override
+    public final Language getLanguage()
+    {
+        return language;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getName()
+     */
+    @Override
+    public final String getName()
+    {
+        return name;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getParameters()
+     */
+    @Override
+    public final Properties getParameters()
+    {
+        return parameters;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.Strategy#getStatus()
+     */
+    @Override
+    public final Status getStatus()
+    {
+        return status;
+    }
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public final String toString()
+    {
+        return String.format("%s Strategy %s(%s)", //$NON-NLS-1$
+                             getLanguage().toString(),
+                             getName(),
+                             getUniqueIdentifier());
     }
     /**
      * Create a new StrategyImpl instance.
@@ -79,93 +155,150 @@ class StrategyImpl
      * @param inType a <code>Language</code> value
      * @param inSource a <code>File</code> value
      * @param inParameters a <code>Properties</code> value
+     * @param inClasspath a <code>String[]</code> value
      * @param inOutboundServicesProvider an <code>OutboundServices</code> value
+     * @throws IOException if the given <code>File</code> could not be resolved
      */
     StrategyImpl(String inName,
                  String inUniqueIdentifier,
                  Language inType,
                  File inSource,
                  Properties inParameters,
+                 String[] inClasspath,
                  OutboundServices inOutboundServicesProvider)
+        throws IOException
     {
+        status = NOT_RUNNING;
         name = inName;
         uniqueIdentifier = inUniqueIdentifier;
         language = inType;
         source = inSource;
-        parameters = inParameters;
+        if(inParameters == null) {
+            parameters = new Properties();
+        } else {
+            parameters = new Properties(inParameters);
+        }
+        classpath = inClasspath;
         outboundServicesProvider = inOutboundServicesProvider;
-        running = false;
-    }
-    /**
-     * Get the name value.
-     *
-     * @return a <code>StrategyImpl</code> value
-     */
-    String getName()
-    {
-        return name;
+        code = fileToString(getSource());
     }
     /**
      * Get the uniqueIdentifier value.
      *
      * @return a <code>String</code> value
      */
-    String getUniqueIdentifier()
+    final String getUniqueIdentifier()
     {
         return uniqueIdentifier;
-    }
-    /**
-     * Get the language value.
-     *
-     * @return a <code>String</code> value
-     */
-    Language getLanguage()
-    {
-        return language;
     }
     /**
      * Get the source value.
      *
      * @return a <code>File</code> value
      */
-    File getSource()
+    final File getSource()
     {
         return source;
     }
     /**
-     * Get the parameters value.
+     * Get the classpath value.
      *
-     * @return a <code>Properties</code> value
+     * @return a <code>String[]</code> value
      */
-    Properties getParameters()
+    final String[] getClasspath()
     {
-        return parameters;
+        return classpath;
     }
     /**
      * Get the outboundServicesProvider value.
      *
      * @return a <code>OutboundServices</code> value
      */
-    OutboundServices getOutboundServicesProvider()
+    final OutboundServices getOutboundServicesProvider()
     {
         return outboundServicesProvider;
     }
     /**
+     * Get the executor value.
+     *
+     * @return an <code>Executor</code> value
+     */
+    final Executor getExecutor()
+    {
+        return executor;
+    }
+    /**
+     * Get the runningStrategy value.
+     *
+     * @return a <code>RunningStrategy</code> value
+     */
+    final RunningStrategy getRunningStrategy()
+    {
+        return runningStrategy;
+    }
+    /**
+     * Sets the status of the strategy.
+     *
+     * @param inStatus a <code>Status</code> value
+     */
+    private void setStatus(Status inStatus)
+    {
+        status = inStatus;
+    }
+    /**
+     * Sets the runningStrategy value.
+     *
+     * @param a <code>RunningStrategy</code> value
+     */
+    private void setRunningStrategy(RunningStrategy inRunningStrategy)
+    {
+        runningStrategy = inRunningStrategy;
+    }
+    /**
+     * Sets the executor value.
+     *
+     * @param an <code>Executor</code> value
+     */
+    private void setExecutor(Executor inExecutor)
+    {
+        executor = inExecutor;
+    }
+    /**
+     * Reads the given <code>File</code> and renders its contents as a <code>String</code>.
+     *
+     * @param inFile a <code>File</code> value
+     * @return a <code>String</code> value
+     * @throws IOException if the <code>File</code> can not be read
+     */
+    private String fileToString(File inFile)
+        throws IOException
+    {
+        return FileUtils.readFileToString(inFile);
+    }
+    /**
      * the user-applied name of the strategy.  this name has no strict correlation to any artifact declared by the embedded strategy itself.
      */
-    private final String name;
+    final String name;
     /**
      * the type of the strategy being executed
      */
     private final Language language;
     /**
-     * the actual code of the strategy
+     * a reference to the actual code of the strategy
      */
     private final File source;
+    /**
+     * the actual code of the strategy
+     */
+    private final String code;
     /**
      * the set of parameters to pass to the strategy.  some of the values contained within may be meta-data that is relevant to the strategy manager (this object) rather than the strategy itself.
      */
     private final Properties parameters;
+    /**
+     * the classpath to pass to the strategy.  this may be null or empty.  if non-null, then the strategy executor will use the contents in a language-dependent way.
+     */
+    private final String[] classpath;
     /**
      * the provider of services for outgoing data via the strategy agent framework
      */
@@ -175,7 +308,15 @@ class StrategyImpl
      */
     private final String uniqueIdentifier;
     /**
-     * the state of the embedded strategy
+     * the executor responsible for execution of this strategy
      */
-    private boolean running;
+    private Executor executor;
+    /**
+     * interface to the embedded running strategy object - this object is created by the execution engine
+     */
+    private RunningStrategy runningStrategy;
+    /**
+     * the strategy status
+     */
+    private Status status;
 }

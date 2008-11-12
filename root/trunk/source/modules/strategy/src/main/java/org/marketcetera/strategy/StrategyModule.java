@@ -1,6 +1,7 @@
 package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
+import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
 import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
@@ -28,6 +29,7 @@ import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
@@ -119,7 +121,7 @@ final class StrategyModule
      * @see org.marketcetera.strategy.OutboundServices#sendSuggestion(java.lang.Object)
      */
     @Override
-    public void sendSuggestion(Object inSuggestion)
+    public void sendSuggestion(Suggestion inSuggestion)
     {
         OutputType.SUGGESTIONS.publish(inSuggestion);
     }
@@ -145,9 +147,9 @@ final class StrategyModule
     static StrategyModule getStrategyModule(Object...inParameters)
         throws ModuleCreationException
     {
-        // must have 6 parameters, though the last three may be null
+        // must have 7 parameters, though the last four may be null
         if(inParameters == null ||
-           inParameters.length != 6) {
+           inParameters.length != 7) {
             throw new ModuleCreationException(PARAMETER_COUNT_ERROR);
         }
         // parameter 1 is the strategy name (human-readable) and must be non-null and have non-zero length
@@ -225,25 +227,25 @@ final class StrategyModule
                                                                          inParameters[3].getClass().getName()));
             }
         }
-        // parameter 5 is a ModuleURN.  This parameter may be null.  If non-null, it must describe a module instance that is started and able
-        //  to receive data.  Orders will be sent to this module when they are created.
-        ModuleURN ordersInstance = null;
+        // parameter 5 is the classpath.  This parameter may be null.  If non-null, it contains an array of Strings which are passed to the
+        //  script executor for use in a language-dependent fashion.
+        String[] classpath = null;
         if(inParameters[4] != null) {
-            if(inParameters[4] instanceof ModuleURN) {
-                ordersInstance = (ModuleURN)inParameters[4];
+            if(inParameters[4] instanceof String[]) {
+                classpath = (String[])inParameters[4];
             } else {
                 throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
                                                                          5,
-                                                                         ModuleURN.class.getName(),
+                                                                         String[].class.getName(),
                                                                          inParameters[4].getClass().getName()));
             }
         }
         // parameter 6 is a ModuleURN.  This parameter may be null.  If non-null, it must describe a module instance that is started and able
-        //  to receive data.  Trade suggestions will be sent to this module when they are created.
-        ModuleURN suggestionsInstance = null;
+        //  to receive data.  Orders will be sent to this module when they are created.
+        ModuleURN ordersInstance = null;
         if(inParameters[5] != null) {
             if(inParameters[5] instanceof ModuleURN) {
-                suggestionsInstance = (ModuleURN)inParameters[5];
+                ordersInstance = (ModuleURN)inParameters[5];
             } else {
                 throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
                                                                          6,
@@ -251,11 +253,25 @@ final class StrategyModule
                                                                          inParameters[5].getClass().getName()));
             }
         }
+        // parameter 7 is a ModuleURN.  This parameter may be null.  If non-null, it must describe a module instance that is started and able
+        //  to receive data.  Trade suggestions will be sent to this module when they are created.
+        ModuleURN suggestionsInstance = null;
+        if(inParameters[6] != null) {
+            if(inParameters[6] instanceof ModuleURN) {
+                suggestionsInstance = (ModuleURN)inParameters[6];
+            } else {
+                throw new ModuleCreationException(new I18NBoundMessage3P(PARAMETER_TYPE_ERROR,
+                                                                         7,
+                                                                         ModuleURN.class.getName(),
+                                                                         inParameters[6].getClass().getName()));
+            }
+        }
         return new StrategyModule(generateInstanceURN(name),
                                   name,
                                   type,
                                   source,
                                   parameters,
+                                  classpath,
                                   ordersInstance,
                                   suggestionsInstance);
     }
@@ -279,13 +295,19 @@ final class StrategyModule
                                                                                    new DataRequest(suggestionsDestination) },
                                                                false);
         }
-        strategy = new StrategyImpl(name,
-                                    getURN().getValue(),
-                                    type,
-                                    source,
-                                    parameters,
-                                    this);
-        strategy.start();
+        try {
+            strategy = new StrategyImpl(name,
+                                        getURN().getValue(),
+                                        type,
+                                        source,
+                                        parameters,
+                                        classpath,
+                                        this);
+            strategy.start();
+        } catch (Exception e) {
+            throw new ModuleException(e,
+                                      FAILED_TO_START);
+        }
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.Module#preStop()
@@ -294,7 +316,12 @@ final class StrategyModule
     protected void preStop()
             throws ModuleException
     {
-        strategy.stop();
+        try {
+            strategy.stop();
+        } catch (StrategyException e) {
+            // TODO should this be swallowed or propagated - ask Anshul
+            e.printStackTrace();
+        }
         if(ordersFlowID != null) {
             dataFlowSupport.cancel(ordersFlowID);
         }
@@ -309,12 +336,14 @@ final class StrategyModule
      */
     private static final ModuleURN generateInstanceURN(String inName)
     {
-        // TODO sanitize inName and use it as part of the instance URN
-        String[] namePieces = inName.split("[A-Z|a-z|0-9]");
+        // the sanitized name is constructed to match the restrictions of the module framework for URN names
+        // notice that this works for ASCII stuff only, which is what we want.  if the incoming name is non-ASCII,
+        //  all the characters will be removed, again, according to how the module framework demands.
+        String sanitizedName = inName.replaceAll("[^A-Z|a-z|0-9]", //$NON-NLS-1$
+                                                 ""); //$NON-NLS-1$
         return new ModuleURN(StrategyModuleFactory.PROVIDER_URN,
-                             String.format("strategy%s", //$NON-NLS-1$
-//                             String.format("strategy%s%s", //$NON-NLS-1$
-//                                           inName,
+                             String.format("strategy%s%s", //$NON-NLS-1$
+                                           sanitizedName,
                                            Long.toHexString(counter.incrementAndGet())));
     }
     /**
@@ -334,6 +363,7 @@ final class StrategyModule
                            Language inType,
                            File inSource,
                            Properties inParameters,
+                           String[] inClasspath,
                            ModuleURN inOrdersInstance,
                            ModuleURN inSuggestionsInstance)
         throws ModuleCreationException
@@ -344,6 +374,7 @@ final class StrategyModule
         type = inType;
         source = inSource;
         parameters = inParameters;
+        classpath = inClasspath;
         ordersDestination = inOrdersInstance;
         suggestionsDestination = inSuggestionsInstance;
     }
@@ -385,6 +416,7 @@ final class StrategyModule
      * the parameters to present to the strategy, may be empty or null.  may be null or empty.
      */
     private final Properties parameters;
+    private final String[] classpath;
     /**
      * the instanceURN of a destination for Orders, may be null.  if non-null, the object contract is to plumb a route from this object to the instance contained herein for orders before start.
      */
