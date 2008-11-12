@@ -156,7 +156,7 @@ public class CancelReplaceOrderActionDelegate
 	private Message getOriginalOrderMessage(StringField clOrdId) {
 		FIXMessageHistory messageHistory = PhotonPlugin.getDefault()
 				.getFIXMessageHistory();
-		MessageHolder messageHolder = messageHistory.getOrder(clOrdId
+		MessageHolder messageHolder = messageHistory.getFirstReport(clOrdId
 				.getValue());
 		if (messageHolder == null) {
 			return null;

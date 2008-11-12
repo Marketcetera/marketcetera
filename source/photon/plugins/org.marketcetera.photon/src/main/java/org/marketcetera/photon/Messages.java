@@ -504,4 +504,6 @@ public interface Messages
 			LOGGER, "status_indicator.overlay_error"); //$NON-NLS-1$
     public static I18NMessage1P GOOGLE_FINANCE_LOOKUP_INVALID_TYPE = new I18NMessage1P(
 			LOGGER, "google_finance_lookup.invalid_type"); //$NON-NLS-1$
+    public static I18NMessage1P PHOTON_CONTROLLER_SENDING_MESSAGE = new I18NMessage1P(
+			LOGGER, "photon_controller.sending_message"); //$NON-NLS-1$
 }

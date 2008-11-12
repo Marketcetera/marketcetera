@@ -17,6 +17,7 @@ import quickfix.field.LastPx;
 import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
 import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
@@ -88,7 +89,10 @@ public class AveragePriceList extends AbstractEventList<MessageHolder> implement
 		            				averagePriceMessage.setDouble(AvgPx.FIELD, newAvgPx);
 		            				averagePriceMessage.setDouble(CumQty.FIELD, newTotal);
 		            			}
-	                    	} else if (FIXMessageUtil.isOrderSingle(deltaMessage)){
+	                    	}
+		                    // The following block is for the PENDING NEW acks from ORS.
+		                    // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
+		                    else if (FIXMessageUtil.isExecutionReport(deltaMessage) && deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW){
 	                    		double orderQty = 0.0;
 	                    		try { 
 	                    			try { orderQty = averagePriceMessage.getDouble(OrderQty.FIELD); } catch (FieldNotFound fnf) {}
@@ -98,12 +102,15 @@ public class AveragePriceList extends AbstractEventList<MessageHolder> implement
 	                    	}	
 			                updates.addUpdate(averagePriceIndex);
 						} else {
-		                    if ((FIXMessageUtil.isExecutionReport(deltaMessage) &&
-	                    			deltaMessage.getDouble(LastShares.FIELD) > 0) || FIXMessageUtil.isOrderSingle(deltaMessage)){
+							// TODO: Change this to look for custom ORS acks instead of PENDING_NEW
+		                    if (FIXMessageUtil.isExecutionReport(deltaMessage) && 
+		                    		(deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW || deltaMessage.getDouble(LastShares.FIELD) > 0)){
 		            			Message averagePriceMessage = messageFactory.createMessage(MsgType.EXECUTION_REPORT);
 		            			averagePriceMessage.setField(deltaMessage.getField(new Side()));
 		            			averagePriceMessage.setField(deltaMessage.getField(new Symbol()));
-		            			if (FIXMessageUtil.isOrderSingle(deltaMessage)){
+		            			// The following block is for the PENDING NEW acks from ORS.
+			                    // TODO: Change this to look for custom ORS acks instead of PENDING_NEW
+			                    if (deltaMessage.getChar(OrdStatus.FIELD) == OrdStatus.PENDING_NEW){
 			            			averagePriceMessage.setField(new OrderQty(deltaMessage.getDouble(OrderQty.FIELD)));
 		            			} else {
 			            			averagePriceMessage.setField(deltaMessage.getField(new LeavesQty()));
