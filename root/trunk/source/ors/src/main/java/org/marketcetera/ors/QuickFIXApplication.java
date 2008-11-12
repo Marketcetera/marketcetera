@@ -9,6 +9,7 @@ import quickfix.*;
 import quickfix.field.*;
 
 import java.util.Date;
+import java.util.Set;
 
 /**
  * @author gmiller
@@ -20,6 +21,7 @@ public class QuickFIXApplication implements Application {
     private JmsOperations jmsOperations;
     private JmsOperations tradeRecorderJMS;
     private FIXMessageFactory fixMessageFactory;
+    private Set supportedMsgs;
     private boolean fLoggedOn;
     protected IQuickFIXSender quickFIXSender;
     private MessageModifierManager messageModifierMgr;
@@ -28,6 +30,7 @@ public class QuickFIXApplication implements Application {
         fLoggedOn = false;
         this.fixMessageFactory = fixMessageFactory;
         quickFIXSender = createQuickFIXSender();
+        supportedMsgs = java.util.Collections.EMPTY_SET; 
     }
 
     public void fromAdmin(Message message, SessionID session)  {
@@ -47,13 +50,8 @@ public class QuickFIXApplication implements Application {
     }
 
 	public void fromApp(Message message, SessionID session) throws UnsupportedMessageType, FieldNotFound {
-        /** This check is specifically for OpenFIX certification - we need to white list/black list all
-         * supported messages to implement this for real, and make that configurable
-         */
-        if(MsgType.ALLOCATION_INSTRUCTION_ACK.equals(message.getHeader().getString(MsgType.FIELD))) {
-            throw new UnsupportedMessageType();
-        }
-
+       if (!supportedMsgs.contains(message.getHeader().getString(MsgType.FIELD)))
+                throw new UnsupportedMessageType(); 
 		if (jmsOperations != null){
             try {
                 jmsOperations.convertAndSend(message);
@@ -157,6 +155,12 @@ public class QuickFIXApplication implements Application {
     public void setTradeRecorderJMS(JmsOperations tradeRecorderJMS) {
         this.tradeRecorderJMS = tradeRecorderJMS;
     }
+
+    public void setSupportedMsgs(Set supportedMsgs) {
+        this.supportedMsgs = supportedMsgs;
+    }
+ 
+
 
     public void setMessageModifierMgr(MessageModifierManager inMgr){
 		messageModifierMgr = inMgr;
