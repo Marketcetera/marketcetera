@@ -131,7 +131,7 @@ public abstract class ViewTestBase extends TestCase {
     protected void addMessage(Message inMessage,
                               FIXMessageHistory inHistory)
     {
-        inHistory.addOutgoingMessage(inMessage);
+        inHistory.addIncomingMessage(inMessage);
     }
     protected void doFilterTest()
         throws Exception

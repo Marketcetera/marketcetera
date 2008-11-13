@@ -25,43 +25,7 @@ import quickfix.Group;
 import quickfix.InvalidMessage;
 import quickfix.Message;
 import quickfix.StringField;
-import quickfix.field.Account;
-import quickfix.field.AvgPx;
-import quickfix.field.CFICode;
-import quickfix.field.ClOrdID;
-import quickfix.field.CumQty;
-import quickfix.field.EncodedText;
-import quickfix.field.EncodedTextLen;
-import quickfix.field.ExecID;
-import quickfix.field.ExecTransType;
-import quickfix.field.ExecType;
-import quickfix.field.HandlInst;
-import quickfix.field.LastPx;
-import quickfix.field.LastQty;
-import quickfix.field.LeavesQty;
-import quickfix.field.MDEntryPx;
-import quickfix.field.MDEntrySize;
-import quickfix.field.MDEntryType;
-import quickfix.field.MDReqID;
-import quickfix.field.MaturityMonthYear;
-import quickfix.field.MsgType;
-import quickfix.field.NoMDEntries;
-import quickfix.field.NoMDEntryTypes;
-import quickfix.field.NoRelatedSym;
-import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
-import quickfix.field.OrderID;
-import quickfix.field.OrderQty;
-import quickfix.field.Price;
-import quickfix.field.PutOrCall;
-import quickfix.field.Side;
-import quickfix.field.StrikePrice;
-import quickfix.field.SubscriptionRequestType;
-import quickfix.field.Symbol;
-import quickfix.field.SymbolSfx;
-import quickfix.field.Text;
-import quickfix.field.TimeInForce;
-import quickfix.field.TransactTime;
+import quickfix.field.*;
 
 /**
  * @author Graham Miller
@@ -126,6 +90,7 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         assertEquals(price, aMessage.getDecimal(Price.FIELD));
         assertEquals(clOrderID, aMessage.getString(ClOrdID.FIELD));
         assertEquals(symbol, aMessage.getString(Symbol.FIELD));
+        assertFalse(aMessage.isSetField(SecurityType.FIELD));
         assertEquals(side, aMessage.getChar(Side.FIELD));
         assertEquals(quantity, aMessage.getDecimal(OrderQty.FIELD));
         assertEquals("accountName", aMessage.getString(Account.FIELD)); //$NON-NLS-1$
@@ -133,8 +98,13 @@ public class FIXMessageUtilTest extends FIXVersionedTestCase {
         // now send in a market order with null price
         aMessage = msgFactory.newExecutionReport(orderID, clOrderID, "execID", //$NON-NLS-1$
                 OrdStatus.NEW, side, quantity, null,
-                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, new MSymbol("IBM"), "accountName"); //$NON-NLS-1$ //$NON-NLS-2$
+                BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO, new MSymbol("IBM",//$NON-NLS-1$
+                org.marketcetera.trade.SecurityType.Option), "accountName"); //$NON-NLS-1$
         assertFalse(aMessage.isSetField(Price.FIELD));
+        assertEquals(symbol, aMessage.getString(Symbol.FIELD));
+        assertEquals(org.marketcetera.trade.SecurityType.Option.getFIXValue(),
+                aMessage.getString(SecurityType.FIELD));
 
         // now send an order w/out account name
         try {

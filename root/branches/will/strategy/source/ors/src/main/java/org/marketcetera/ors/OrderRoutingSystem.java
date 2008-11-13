@@ -46,7 +46,7 @@ public class OrderRoutingSystem extends ApplicationBase {
     public static final String[] APP_CONTEXT_CONFIG_FILES =
             {"quickfixj.xml", "message-modifiers.xml", "order-limits.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     "ors.xml", "ors-shared.xml", "ors_db.xml", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                    "ors_orm_vendor.xml", "ors_orm.xml"}; //$NON-NLS-1$ //$NON-NLS-2$
+                    "ors_orm_vendor.xml", "ors_orm.xml", "supported-messages.xml"}; //$NON-NLS-1$ //$NON-NLS-2$
 
     private static StandardAuthentication authentication;
     private volatile static OrderRoutingSystem instance = null;

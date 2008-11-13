@@ -28,14 +28,6 @@ public interface Messages
      * The logger.
      */
     static final I18NLoggerProxy LOGGER = new I18NLoggerProxy(PROVIDER);
-    static final I18NMessage0P COMPILATION_ERROR = new I18NMessage0P(LOGGER,
-                                                                     "compilation_error"); //$NON-NLS-1$
-    static final I18NMessage1P STRATEGY_NOT_FOUND = new I18NMessage1P(LOGGER,
-                                                                      "strategy_not_found"); //$NON-NLS-1$
-    static final I18NMessage1P STRATEGY_ALREADY_REGISTERED = new I18NMessage1P(LOGGER,
-                                                                               "strategy_already_registered"); //$NON-NLS-1$
-    static final I18NMessage1P INVALID_STRATEGY_SUPERCLASS = new I18NMessage1P(LOGGER,
-                                                                               "invalid_strategy_superclass"); //$NON-NLS-1$
     static final I18NMessage0P PROVIDER_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                         "provider_description"); //$NON-NLS-1$
     static final I18NMessage0P PARAMETER_COUNT_ERROR = new I18NMessage0P(LOGGER,
@@ -50,4 +42,10 @@ public interface Messages
                                                                     "empty_name_error"); //$NON-NLS-1$
     static final I18NMessage1P FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE = new I18NMessage1P(LOGGER,
                                                                                           "file_does_not_exist_or_is_not_readable"); //$NON-NLS-1$
+    static final I18NMessage0P FAILED_TO_START = new I18NMessage0P(LOGGER,
+                                                                   "failed_to_start"); //$NON-NLS-1$
+    static final I18NMessage0P NO_STRATEGY_CLASS = new I18NMessage0P(LOGGER,
+                                                                     "no_strategy_class"); //$NON-NLS-1$
+    static final I18NMessage1P NO_SUPPORT_FOR_LANGUAGE = new I18NMessage1P(LOGGER,
+                                                                           "no_support_for_language"); //$NON-NLS-1$
 }

@@ -30,7 +30,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        MSymbol symbol = new MSymbol("MRKT"); //$NON-NLS-1$
+        MSymbol symbol = new MSymbol("MRKT", org.marketcetera.trade.SecurityType.CommonStock); //$NON-NLS-1$
         BigDecimal price = BigDecimal.ONE;
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
         String account = "ASDF"; //$NON-NLS-1$
@@ -41,6 +41,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         assertEquals(side, limitOrder.getChar(Side.FIELD));
         assertEquals(quantity, limitOrder.getDecimal(OrderQty.FIELD));
         assertEquals(symbol.toString(), limitOrder.getString(Symbol.FIELD));
+        assertEquals(symbol.getSecurityType().getFIXValue(), limitOrder.getString(SecurityType.FIELD));
         assertEquals(OrdType.LIMIT, limitOrder.getChar(OrdType.FIELD));
         assertEquals(price, limitOrder.getDecimal(Price.FIELD));
         assertEquals(timeInForce, limitOrder.getChar(TimeInForce.FIELD));
@@ -51,7 +52,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         String clOrderID = "1"; //$NON-NLS-1$
         char side = Side.BUY;
         BigDecimal quantity = BigDecimal.TEN;
-        MSymbol symbol = new MSymbol("MRKT"); //$NON-NLS-1$
+        MSymbol symbol = new MSymbol("MRKT", org.marketcetera.trade.SecurityType.Option); //$NON-NLS-1$
         char timeInForce = TimeInForce.GOOD_TILL_CROSSING;
         String account = "ASDF"; //$NON-NLS-1$
 
@@ -61,6 +62,7 @@ public class FIXMessageFactoryTest extends FIXVersionedTestCase {
         assertEquals(side, marketOrder.getChar(Side.FIELD));
         assertEquals(quantity, marketOrder.getDecimal(OrderQty.FIELD));
         assertEquals(symbol.toString(), marketOrder.getString(Symbol.FIELD));
+        assertEquals(symbol.getSecurityType().getFIXValue(), marketOrder.getString(SecurityType.FIELD));
         assertEquals(OrdType.MARKET, marketOrder.getChar(OrdType.FIELD));
         assertEquals(timeInForce, marketOrder.getChar(TimeInForce.FIELD));
         assertEquals(account, marketOrder.getString(Account.FIELD));

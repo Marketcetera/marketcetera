@@ -2,7 +2,6 @@ package org.marketcetera.photon.views;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.eclipse.swt.widgets.Table;
@@ -21,20 +20,16 @@ import quickfix.field.CumQty;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
-import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
-import quickfix.field.TransactTime;
 import quickfix.field.Urgency;
 import quickfix.fix42.ExecutionReport;
-import quickfix.fix42.NewOrderSingle;
 
 public class AveragePricesViewTest
     extends ViewTestBase
@@ -83,29 +78,47 @@ public class AveragePricesViewTest
     protected List<Message> getFilterTestMessages()
     {
         List<Message> messages = new ArrayList<Message>();
-        NewOrderSingle order1 = new NewOrderSingle(new ClOrdID("clordid1"),
-                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
-                                                   new Symbol("symbol1"),
-                                                   new Side(Side.BUY),
-                                                   new TransactTime(new Date()),
-                                                   new OrdType(OrdType.MARKET));
+        ExecutionReport order1 = new ExecutionReport(new OrderID("clordid1"),
+				new ExecID("execido1"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
+				new Symbol("symbol1"),
+				new Side(Side.BUY),
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
+        order1.set(new ClOrdID("clordid1"));
+        order1.set(new LastShares(1));
         order1.set(new OrderQty(100));
         messages.add(order1);
-        NewOrderSingle order2 = new NewOrderSingle(new ClOrdID("clordid2"),
-                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
-                                                   new Symbol("symbol2"),
-                                                   new Side(Side.BUY),
-                                                   new TransactTime(new Date()),
-                                                   new OrdType(OrdType.LIMIT)); 
+        ExecutionReport order2 = new ExecutionReport(new OrderID("clordid2"),
+				new ExecID("execido2"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
+				new Symbol("symbol2"),
+				new Side(Side.BUY),
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
         order2.set(new OrderQty(100));
+        order2.set(new ClOrdID("clordid2"));
+        order2.set(new LastShares(1));
         messages.add(order2);
-        NewOrderSingle order3 = new NewOrderSingle(new ClOrdID("clordid3"),
-                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
-                                                   new Symbol("symbol3"),
-                                                   new Side(Side.SELL),
-                                                   new TransactTime(new Date()),
-                                                   new OrdType(OrdType.LIMIT_ON_CLOSE)); 
+        ExecutionReport order3 = new ExecutionReport(new OrderID("clordid3"),
+				new ExecID("execido3"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
+				new Symbol("symbol3"),
+				new Side(Side.SELL),
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
         order3.set(new OrderQty(100));
+        order3.set(new ClOrdID("clordid3"));
+        order3.set(new LastShares(1));
         messages.add(order3);
         return messages;
     }
@@ -125,25 +138,37 @@ public class AveragePricesViewTest
 		AveragePriceView view = (AveragePriceView) getTestView();
 		view.setInput(hist);
 		
-		NewOrderSingle order1 = new NewOrderSingle(
-				new ClOrdID("clordid1"),
-				new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+		ExecutionReport order1 = new ExecutionReport(
+				new OrderID("clordid1"),
+				new ExecID("execido1"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
 				new Symbol("symbol1"),
 				new Side(Side.BUY),
-				new TransactTime(new Date()),
-				new OrdType(OrdType.MARKET));
-		order1.set(new OrderQty(100));
-		hist.addOutgoingMessage(order1);
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
+		order1.set(new ClOrdID("clordid1"));
+        order1.set(new LastShares(0));
+		order1.setField(new OrderQty(100));
+		hist.addIncomingMessage(order1);
 		
-		NewOrderSingle order2 = new NewOrderSingle(
-				new ClOrdID("clordid2"),
-				new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
+		ExecutionReport order2 = new ExecutionReport(
+				new OrderID("clordid2"),
+				new ExecID("execido2"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
 				new Symbol("symbol1"),
 				new Side(Side.BUY),
-				new TransactTime(new Date()),
-				new OrdType(OrdType.MARKET));
-		order2.set(new OrderQty(100));
-		hist.addOutgoingMessage(order2);
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
+		order2.set(new ClOrdID("clordid2"));
+        order2.set(new LastShares(0));
+		order2.setField(new OrderQty(100));
+		hist.addIncomingMessage(order2);
 
 		ExecutionReport fill = new ExecutionReport(
 				new OrderID("orderid1"),

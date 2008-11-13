@@ -4,6 +4,8 @@ import quickfix.Message;
 
 public class ImmediatePhotonController extends PhotonController {
 
+	private Message lastMessage;
+
 	public ImmediatePhotonController() {
 		super();
 	}
@@ -21,6 +23,15 @@ public class ImmediatePhotonController extends PhotonController {
 	@Override
 	public void handleInternalMessage(Message aMessage) {
 		super.handleInternalMessage(aMessage);
+	}
+	
+	@Override
+	public void convertAndSend(Message fixMessage) {
+		lastMessage = fixMessage;
+	}
+
+	public Message getLastMessage() {
+		return lastMessage;
 	}
 
 }

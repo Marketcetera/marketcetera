@@ -22,14 +22,13 @@ import quickfix.field.CumQty;
 import quickfix.field.ExecID;
 import quickfix.field.ExecTransType;
 import quickfix.field.ExecType;
-import quickfix.field.HandlInst;
 import quickfix.field.LastPx;
 import quickfix.field.LastQty;
+import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.MsgSeqNum;
 import quickfix.field.MsgType;
 import quickfix.field.OrdStatus;
-import quickfix.field.OrdType;
 import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Price;
@@ -42,7 +41,6 @@ import quickfix.field.TransactTime;
 import quickfix.field.Urgency;
 import quickfix.fix42.ExecutionReport;
 import quickfix.fix42.Heartbeat;
-import quickfix.fix42.NewOrderSingle;
 
 public class FIXMessagesViewTest extends ViewTestBase {
 
@@ -189,12 +187,18 @@ public class FIXMessagesViewTest extends ViewTestBase {
         messages.add(fill2);
         Heartbeat hb1 = new Heartbeat();
         messages.add(hb1);
-        NewOrderSingle order1 = new NewOrderSingle(new ClOrdID("clordid1"),
-                                                   new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE),
-                                                   new Symbol("symbol1"),
-                                                   new Side(Side.BUY),
-                                                   new TransactTime(new Date()),
-                                                   new OrdType(OrdType.MARKET));
+        ExecutionReport order1 = new ExecutionReport(new OrderID("clordid1"),
+				new ExecID("execido1"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
+				new Symbol("symbol1"),
+				new Side(Side.BUY),
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
+        order1.set(new ClOrdID("clordid1"));
+        order1.set(new LastShares(1));
         order1.set(new OrderQty(100));
         messages.add(order1);
         Heartbeat hb2 = new Heartbeat();

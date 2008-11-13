@@ -75,6 +75,7 @@
         <constructor-arg ref="fixMessageFactory"/>
         <property name="jmsOperations" ref="outgoingJmsTemplate"/>
         <property name="tradeRecorderJMS" ref="tradeRecorderJMSTemplate"/>
+        <property name="supportedMsgs" ref="supportedMessages"/>
     </bean>
 
     <bean id="socketInitiator" class="quickfix.spring.SocketInitiator">

@@ -51,7 +51,7 @@ public enum FIXVersion {
     }
 
     public static FIXVersion getFIXVersion(Message inMsg) throws FieldNotFound {
-        return versionMap.get(inMsg.getField(new BeginString()).getValue());
+        return versionMap.get(inMsg.getHeader().getField(new BeginString()).getValue());
     }
 
 
