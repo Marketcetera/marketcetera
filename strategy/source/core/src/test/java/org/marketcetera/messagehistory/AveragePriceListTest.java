@@ -11,13 +11,19 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.AvgPx;
 import quickfix.field.CumQty;
+import quickfix.field.ExecID;
+import quickfix.field.ExecTransType;
+import quickfix.field.ExecType;
 import quickfix.field.LastPx;
 import quickfix.field.LastShares;
 import quickfix.field.LeavesQty;
 import quickfix.field.MsgType;
+import quickfix.field.OrdStatus;
+import quickfix.field.OrderID;
 import quickfix.field.OrderQty;
 import quickfix.field.Side;
 import quickfix.field.Symbol;
+import quickfix.fix42.ExecutionReport;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 
@@ -43,6 +49,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		message.setField(new LeavesQty(90.0));
 		message.setField(new LastShares(10.0));
 		message.setField(new LastPx(11.0));
+		message.setField(new OrdStatus(OrdStatus.NEW));
 		source.add(new IncomingMessageHolder(message));
 
 		assertEquals(1, averagePriceList.size());
@@ -59,6 +66,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		message2.setField(new LeavesQty(190.0));
 		message2.setField(new LastShares(110.0));
 		message2.setField(new LastPx(111.0));
+		message.setField(new OrdStatus(OrdStatus.NEW));
 		source.add(new IncomingMessageHolder(message2));
 
 		assertEquals(1, averagePriceList.size());
@@ -67,10 +75,19 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		assertEquals(120.0, avgPriceMessage.getDouble(CumQty.FIELD), .00001);
 		assertEquals(102.66666, avgPriceMessage.getDouble(AvgPx.FIELD), .0001);
 		
-		Message message3 = msgFactory.createMessage(MsgType.ORDER_SINGLE);
-		message3.setField(new Symbol("IBM")); //$NON-NLS-1$
-		message3.setField(new Side(Side.BUY));
+		Message message3 = new ExecutionReport(
+				new OrderID("clordid1"),
+				new ExecID("execido1"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
+				new Symbol("IBM"),
+				new Side(Side.BUY),
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
 		message3.setField(new OrderQty(1000));
+		message3.setField(new LastShares(0));
 		source.add(new IncomingMessageHolder(message3));
 
 		assertEquals(1, averagePriceList.size());
@@ -85,9 +102,17 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 	public void testAddOrderFirst() throws FieldNotFound {
 		EventList<MessageHolder> source = new BasicEventList<MessageHolder>();
 		AveragePriceList averagePriceList = new AveragePriceList(this.msgFactory, source);
-		Message message = msgFactory.createMessage(MsgType.ORDER_SINGLE);
-		message.setField(new Symbol("IBM")); //$NON-NLS-1$
-		message.setField(new Side(Side.BUY));
+		Message message = new ExecutionReport(
+				new OrderID("clordid1"),
+				new ExecID("execido1"),
+				new ExecTransType(ExecTransType.NEW),
+				new ExecType(ExecType.NEW),
+				new OrdStatus(OrdStatus.PENDING_NEW),
+				new Symbol("IBM"),
+				new Side(Side.BUY),
+				new LeavesQty(0),
+				new CumQty(100),
+				new AvgPx(3));
 		message.setField(new OrderQty(1000));
 		source.add(new IncomingMessageHolder(message));
 
@@ -109,6 +134,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		message.setField(new LeavesQty(90.0));
 		message.setField(new LastShares(10.0));
 		message.setField(new LastPx(11.0));
+		message.setField(new OrdStatus(OrdStatus.NEW));
 		source.add(new IncomingMessageHolder(message));
 
 		assertEquals(1, averagePriceList.size());
@@ -133,6 +159,7 @@ public class AveragePriceListTest extends FIXVersionedTestCase {
 		message.setField(new LeavesQty(90.0));
 		message.setField(new LastShares(10.0));
 		message.setField(new LastPx(11.0));
+		message.setField(new OrdStatus(OrdStatus.NEW));
 		source.add(new IncomingMessageHolder(message));
 
 		assertEquals(1, averagePriceList.size());

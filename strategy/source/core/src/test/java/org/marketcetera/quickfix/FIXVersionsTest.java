@@ -47,7 +47,7 @@ public class FIXVersionsTest extends TestCase {
 
     }
 
-    private Message createNOSHelper(FIXVersion version, String inSymbol, int qty, char inSide)
+    private Message createNOSHelper(FIXVersion version, String inSymbol, int qty, char inSide) throws Exception
     {
         long suffix = System.currentTimeMillis();
         Message newSingle = version.getMessageFactory().newMarketOrder("123"+suffix, inSide, new BigDecimal(qty), new MSymbol(inSymbol), //$NON-NLS-1$
@@ -55,6 +55,7 @@ public class FIXVersionsTest extends TestCase {
         newSingle.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         newSingle.setField(new TimeInForce(TimeInForce.DAY));
         newSingle.setField(new Account("testAccount")); //$NON-NLS-1$
+        assertSame(version, FIXVersion.getFIXVersion(newSingle));
         return newSingle;
     }
     

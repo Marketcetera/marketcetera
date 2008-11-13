@@ -3,8 +3,15 @@ package org.marketcetera.core;
 import org.marketcetera.symbology.Exchange;
 import org.marketcetera.symbology.Exchanges;
 import org.marketcetera.symbology.SymbolScheme;
+import org.marketcetera.trade.SecurityType;
+import org.apache.commons.lang.ObjectUtils;
 
 /**
+ * Represents a Security's trading symbol.
+ * <p>
+ * Do note that the class currently generates hash codes in a way that
+ * will lead to inefficiecies if the class is  
+ *
  * @author Graham Miller
  * @version $Id$
  */
@@ -16,13 +23,47 @@ public class MSymbol {
     private final String cachedString;
     private final int cachedHashCode;
     private String exchangeString;
+    private final SecurityType mSecurityType;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param fullSymbol the symbol value.
+     */
     public MSymbol(String fullSymbol){
         this(fullSymbol, SymbolScheme.BASIC);
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @param fullSymbol the symbol value.
+     * @param inSecurityType the security type.
+     */
+    public MSymbol(String fullSymbol, SecurityType inSecurityType){
+        this(fullSymbol, SymbolScheme.BASIC, inSecurityType);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param fullSymbol the symbol value.
+     * @param scheme the symbol scheme.
+     */
     public MSymbol(String fullSymbol, SymbolScheme scheme) {
+        this(fullSymbol, scheme, null);
+    }
+
+    /**
+     * Creates a new instance.
+     *
+     * @param fullSymbol the symbol value.
+     * @param scheme the symbol scheme.
+     * @param inSecurityType the security type.
+     */
+    public MSymbol(String fullSymbol, SymbolScheme scheme, SecurityType inSecurityType) {
         this.fullSymbol = fullSymbol;
+        mSecurityType = inSecurityType;
         if (fullSymbol == null || scheme == null){
             throw new IllegalArgumentException(Messages.ERROR_NULL_MSYMBOL.getText());
         }
@@ -38,6 +79,7 @@ public class MSymbol {
         cachedHashCode = cachedString.hashCode();
     }
 
+    @Override
     public String toString(){
         return cachedString;
     }
@@ -64,7 +106,9 @@ public class MSymbol {
     public boolean equals(Object obj){
         if (obj instanceof MSymbol) {
             MSymbol aSymbol = (MSymbol) obj;
-            return (aSymbol.scheme.equals(getScheme()) && aSymbol.baseSymbol.equals(getBaseSymbol()));
+            return (aSymbol.scheme.equals(getScheme()) &&
+                    aSymbol.baseSymbol.equals(getBaseSymbol()) &&
+                    ObjectUtils.equals(getSecurityType(), aSymbol.getSecurityType()));
         }
         return false;
     }
@@ -88,6 +132,12 @@ public class MSymbol {
         return Exchanges.getExchange(exchangeString);
     }
 
-   
-
+    /**
+     * Returns the Security Type for this Symbol.
+     *
+     * @return the security type of this symbol.
+     */
+    public SecurityType getSecurityType() {
+        return mSecurityType;
+    }
 }

@@ -4,11 +4,11 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Date;
 
-import org.marketcetera.messagehistory.OutgoingMessageHolder;
+import org.marketcetera.messagehistory.MessageHolder;
 
 import quickfix.Message;
 
-public class TradeRecommendation extends OutgoingMessageHolder {
+public class TradeRecommendation extends MessageHolder {
 
 	private Date createdAt;
 	private Double score;

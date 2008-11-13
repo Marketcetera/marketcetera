@@ -18,6 +18,7 @@ import quickfix.field.*;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.HashSet;
 
 /**
  * Verifies that we don't error out of the sending functions
@@ -128,6 +129,7 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
     public void testExecutionReportGoesToTradeTopic() throws Exception {
         final QuickFIXApplication qfApp = new QuickFIXApplication(fixVersion.getMessageFactory());
+        qfApp.setSupportedMsgs(MockQuickFIXApplication.whiteList);
         MockJmsTemplate jmsTemplate = new MockJmsTemplate();
         qfApp.setJmsOperations(jmsTemplate);
         MockJmsTemplate tradeRecorderJMS = new MockJmsTemplate();
@@ -186,8 +188,12 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
     }
 
     public static class MockQuickFIXApplication extends QuickFIXApplication {
-        public MockQuickFIXApplication(FIXMessageFactory fixMessageFactory) {
+        public static HashSet whiteList = new HashSet();
+        
+    	public MockQuickFIXApplication(FIXMessageFactory fixMessageFactory) {
             super(fixMessageFactory);
+            
+            setSupportedMsgs(whiteList);
         }
 
         protected void logMessage(Message message, SessionID sessionID) {
@@ -196,6 +202,15 @@ public class QuickFIXApplicationTest extends FIXVersionedTestCase {
 
         protected IQuickFIXSender createQuickFIXSender() {
             return new NullQuickFIXSender();
+        }
+        
+        static {
+        	for (int i=0; i<10; i++) whiteList.add("0123456789".substring(i,i+1));
+            for (int i=0; i<26; i++) whiteList.add("abcdefghijklmnopqrstuvwxyz".substring(i,i+1));
+            for (int i=0; i<15; i++) whiteList.add("abcdefghijklmnopqrstuvwxyz".substring(i,i+1).toUpperCase());
+            for (int i=16; i<26; i++) whiteList.add("abcdefghijklmnopqrstuvwxyz".substring(i,i+1).toUpperCase());
+            for (int i=0; i<26; i++) whiteList.add("A"+"abcdefghijklmnopqrstuvwxyz".substring(i,i+1).toUpperCase());
+            for (int i=0; i<8; i++) whiteList.add("B"+"abcdefghijklmnopqrstuvwxyz".substring(i,i+1).toUpperCase());
         }
     }
 }

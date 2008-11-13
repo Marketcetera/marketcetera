@@ -56,6 +56,7 @@ import quickfix.field.TargetCompID;
 import quickfix.field.Text;
 import quickfix.field.TimeInForce;
 import quickfix.field.TransactTime;
+import quickfix.field.SecurityType;
 
 /**
  * Factory class that creates a particular beginString of the FIX message
@@ -261,6 +262,10 @@ public class FIXMessageFactory {
         aMessage.setField(new ClOrdID(clOrderID));
         aMessage.setField(new HandlInst(HandlInst.AUTOMATED_EXECUTION_ORDER_PRIVATE));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
+        if(symbol.getSecurityType() != null &&
+                org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
+            aMessage.setField(new SecurityType(symbol.getSecurityType().getFIXValue()));
+        }
         aMessage.setField(new Side(side));
 
         aMessage.setField(new OrderQty(quantity));
@@ -301,6 +306,10 @@ public class FIXMessageFactory {
         aMessage.setField(new OrigClOrdID(origClOrderID));
         aMessage.setField(new Side(side));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
+        if(symbol.getSecurityType() != null &&
+                org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
+            aMessage.setField(new SecurityType(symbol.getSecurityType().getFIXValue()));
+        }
         aMessage.setField(new OrderQty(quantity));
         if (counterpartyOrderID != null) {
             aMessage.setField(new OrderID(counterpartyOrderID));
@@ -344,6 +353,10 @@ public class FIXMessageFactory {
         aMessage.setField(new CumQty(cumQty));
         aMessage.setField(new AvgPx(avgPrice));
         aMessage.setField(new Symbol(symbol.getFullSymbol()));
+        if(symbol.getSecurityType() != null &&
+                org.marketcetera.trade.SecurityType.Unknown != symbol.getSecurityType()) {
+            aMessage.setField(new SecurityType(symbol.getSecurityType().getFIXValue()));
+        }
         if(inAccount != null) {
             aMessage.setField(new Account(inAccount));
         }

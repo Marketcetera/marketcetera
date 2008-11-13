@@ -27,7 +27,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubProgressMonitor;
 import org.eclipse.core.runtime.preferences.DefaultScope;
 import org.eclipse.jface.resource.ImageDescriptor;
-
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.util.IPropertyChangeListener;
 import org.eclipse.jface.util.PropertyChangeEvent;
@@ -65,7 +64,9 @@ import org.marketcetera.quickfix.FIXVersion;
 import org.osgi.framework.BundleContext;
 import org.rubypeople.rdt.core.RubyCore;
 
+import quickfix.FieldNotFound;
 import quickfix.Message;
+import quickfix.field.SecurityType;
 
 /**
  * The main plugin class to be used in the Photon application. This class is not
@@ -456,8 +457,15 @@ public class PhotonPlugin
 	 * @return the controller for the appropriate order ticket.
 	 */
 	public IOrderTicketController getOrderTicketController(Message orderMessage) {
-		if (FIXMessageUtil.isEquityOptionOrder(orderMessage)) {
-			return getOptionOrderTicketController();
+		try {
+			// This works for orders and execution reports
+			if (FIXMessageUtil.isEquityOptionOrder(orderMessage)
+					|| (FIXMessageUtil.isExecutionReport(orderMessage) && SecurityType.OPTION
+							.equals(orderMessage.getString(SecurityType.FIELD)))) {
+				return getOptionOrderTicketController();
+			}
+		} catch (FieldNotFound e) {
+			// not an option
 		}
 		return getStockOrderTicketController();
 	}
