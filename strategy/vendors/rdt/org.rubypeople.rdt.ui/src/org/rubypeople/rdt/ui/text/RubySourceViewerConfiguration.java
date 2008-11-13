@@ -526,13 +526,14 @@ public class RubySourceViewerConfiguration extends TextSourceViewerConfiguration
 
 	@Override
 	public ITextHover getTextHover(ISourceViewer sourceViewer, String contentType, int stateMask) {
-		RubyEditorTextHoverDescriptor[] hoverDescs= RubyPlugin.getDefault().getRubyEditorTextHoverDescriptors();
-		int i= 0;
-		while (i < hoverDescs.length) {
-			if (hoverDescs[i].isEnabled() &&  hoverDescs[i].getStateMask() == stateMask)
-				return new RubyEditorTextHoverProxy(hoverDescs[i], getEditor());
-			i++;
-		}
+		// Removed by Will, hovers are not working in Photon
+//		RubyEditorTextHoverDescriptor[] hoverDescs= RubyPlugin.getDefault().getRubyEditorTextHoverDescriptors();
+//		int i= 0;
+//		while (i < hoverDescs.length) {
+//			if (hoverDescs[i].isEnabled() &&  hoverDescs[i].getStateMask() == stateMask)
+//				return new RubyEditorTextHoverProxy(hoverDescs[i], getEditor());
+//			i++;
+//		}
 		return null;
 	}
 	

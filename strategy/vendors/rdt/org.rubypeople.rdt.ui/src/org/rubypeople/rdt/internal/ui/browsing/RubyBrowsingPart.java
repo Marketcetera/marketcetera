@@ -34,7 +34,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.OpenEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
-import org.eclipse.search.internal.ui.text.ResourceTransferDragAdapter;
 import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.search.ui.ISearchResultView;
 import org.eclipse.search.ui.ISearchResultViewPart;
@@ -261,8 +260,8 @@ abstract class RubyBrowsingPart extends ViewPart implements
 			LocalSelectionTransfer.getInstance(),
 			ResourceTransfer.getInstance()};
 		TransferDragSourceListener[] dragListeners= new TransferDragSourceListener[] {
-			new SelectionTransferDragAdapter(fViewer),
-			new ResourceTransferDragAdapter(fViewer)
+			new SelectionTransferDragAdapter(fViewer)/*,
+			new ResourceTransferDragAdapter(fViewer)*/  //Commented out by Will to fix compile error.  Not used in Photon.
 		};
 		fViewer.addDragSupport(ops, dragTransfers, new RdtViewerDragAdapter(fViewer, dragListeners));
 	}

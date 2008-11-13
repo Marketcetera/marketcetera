@@ -35,7 +35,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.search.internal.ui.text.ResourceTransferDragAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.dnd.Clipboard;
@@ -321,8 +320,8 @@ public class CallHierarchyViewPart extends ViewPart implements ICallHierarchyVie
 		Transfer[] transfers= new Transfer[] { LocalSelectionTransfer.getInstance(), ResourceTransfer.getInstance()};
 
 		TransferDragSourceListener[] dragListeners= new TransferDragSourceListener[] {
-			new SelectionTransferDragAdapter(viewer),
-			new ResourceTransferDragAdapter(viewer)
+			new SelectionTransferDragAdapter(viewer)/*,
+			new ResourceTransferDragAdapter(viewer)*/  //Commented out by Will to fix compile error.  Not used in Photon.
 		};
 		viewer.addDragSupport(ops, transfers, new RdtViewerDragAdapter(viewer, dragListeners));
 	}	

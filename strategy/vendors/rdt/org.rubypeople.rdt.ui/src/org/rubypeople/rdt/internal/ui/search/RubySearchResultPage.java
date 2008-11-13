@@ -33,7 +33,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerSorter;
-import org.eclipse.search.internal.ui.text.ResourceTransferDragAdapter;
 import org.eclipse.search.ui.IContextMenuConstants;
 import org.eclipse.search.ui.ISearchResult;
 import org.eclipse.search.ui.ISearchResultViewPart;
@@ -312,8 +311,8 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		int ops= DND.DROP_COPY | DND.DROP_LINK;
 		
 		TransferDragSourceListener[] dragListeners= new TransferDragSourceListener[] {
-			new SelectionTransferDragAdapter(viewer),
-			new ResourceTransferDragAdapter(viewer)
+			new SelectionTransferDragAdapter(viewer)/*,
+			new ResourceTransferDragAdapter(viewer)*/  //Commented out by Will to fix compile error.  Not used in Photon.
 		};
 		
 		viewer.addDragSupport(ops, transfers, new RdtViewerDragAdapter(viewer, dragListeners));
@@ -344,7 +343,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		return new ProblemTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL) {
 			public void add(Object parentElement, Object[] childElements) {
 				if (limitElements() && parentElement.equals(getInput())) {
-					int elementLimit= getElementLimit();
+					int elementLimit= getRubyElementLimit();
 					Widget parentWidget= findItem(parentElement);
 					if (parentWidget == null)
 						return;
@@ -369,7 +368,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 				if (parentElement == null)
 					return new Object[0];
 				Object[] filtered= super.getFilteredChildren(parentElement);
-				int elementLimit = getElementLimit();
+				int elementLimit = getRubyElementLimit();
 				if (limitElements() && parentElement.equals(getInput()) &&  filtered.length > elementLimit) {
 					Object[] limited= new Object[elementLimit];
 					System.arraycopy(filtered, 0, limited, 0, limited.length);
@@ -380,7 +379,8 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 		};
 	}
 	
-	int getElementLimit() {
+	// Name changed by Will to fix compile errors.  Not used in Photon.
+	int getRubyElementLimit() {
 		return fElementLimit;
 	}
 
@@ -389,7 +389,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 			
 			public void add(Object[] elements) {
 				if (limitElements()) {
-					int elementLimit= getElementLimit();
+					int elementLimit= getRubyElementLimit();
 					int currentCount= getTable().getItemCount();
 					if (currentCount >= elementLimit)
 						return;
@@ -411,7 +411,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 				if (parentElement == null)
 					return new Object[0];
 				Object[] filtered= super.getFilteredChildren(parentElement);
-				int elementLimit = getElementLimit();
+				int elementLimit = getRubyElementLimit();
 				if (limitElements() && parentElement.equals(getInput()) &&  filtered.length > elementLimit) {
 					Object[] limited= new Object[elementLimit];
 					System.arraycopy(filtered, 0, limited, 0, limited.length);
@@ -512,7 +512,7 @@ public class RubySearchResultPage extends AbstractTextSearchViewPage implements 
 			memento.putString(KEY_LIMIT_ENABLED, TRUE);
 		else 
 			memento.putString(KEY_LIMIT_ENABLED, FALSE);
-		memento.putInteger(KEY_LIMIT, getElementLimit());
+		memento.putInteger(KEY_LIMIT, getRubyElementLimit());
 	}
 	
 
