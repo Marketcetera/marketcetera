@@ -77,9 +77,9 @@
       </command>
       <command
             categoryId="org.marketcetera.photon.strategy.commands.category"
-            description="Registers the selected file as a strategy"
+            description="%registerStrategy.name"
             id="org.marketcetera.photon.strategy.commands.registerStrategy"
-            name="Register">
+            name="%registerStrategy.label">
       </command>
    </extension>
    <extension
@@ -128,7 +128,7 @@
          </separator>
          <command
                commandId="org.eclipse.ui.edit.delete"
-               label="Remove"
+               label="%deleteStrategy.lable"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -156,8 +156,8 @@
             locationURI="popup:org.marketcetera.photon.strategy.ProjectExplorer">
          <command
                commandId="org.marketcetera.photon.strategy.commands.registerStrategy"
-               label="Register"
-               mnemonic="R"
+               label="%registerStrategy.label"
+               mnemonic="%registerStrategy.mnemonic"
                style="push">
             <visibleWhen
                   checkEnabled="false">
@@ -184,7 +184,7 @@
             class="org.marketcetera.photon.internal.strategy.ui.StrategyPropertyPage"
             icon="icons/script_gear.png"
             id="org.marketcetera.photon.StrategyPropertyPage"
-            name="Strategy Properties">
+            name="%strategyProperties.name">
          <enabledWhen>
             <adapt
                   type="org.marketcetera.photon.internal.strategy.Strategy">
@@ -249,14 +249,14 @@
          point="org.eclipse.ui.newWizards">
       <category
             id="org.marketcetera.photon.strategy"
-            name="Strategy Wizards">
+            name="%strategyWizards.name">
       </category>
       <wizard
             category="org.marketcetera.photon.strategy"
             class="org.marketcetera.photon.internal.strategy.ruby.NewRubyStrategyWizard"
             icon="icons/script_gear.png"
             id="org.marketcetera.photon.strategy.ruby.NewRubyStrategyWizard"
-            name="Ruby Strategy">
+            name="%newRubyStrategyWizard.name">
       </wizard>
    </extension>
    <extension
