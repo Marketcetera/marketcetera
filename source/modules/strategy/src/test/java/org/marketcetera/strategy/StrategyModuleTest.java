@@ -279,8 +279,6 @@ public class StrategyModuleTest
                                             new String[0],
                                             ordersURN,
                                             suggestionsURN);
-        // start the market data provider
-        moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
         // plumb the market data provider externally to the strategy module - normally, this would be done internally, but, for this test,
         //  it is sufficient that the data is flowing, it doesn't matter how it gets there
         DataFlowID dataFlowID = moduleManager.createDataFlow(new DataRequest[] { new DataRequest(BogusFeedModuleFactory.PROVIDER_URN,
@@ -291,8 +289,6 @@ public class StrategyModuleTest
         Thread.sleep(5000);
         // stop the data flow
         moduleManager.cancel(dataFlowID);
-        // stop the market data provider
-        moduleManager.stop(BogusFeedModuleFactory.INSTANCE_URN);
     }
     /**
      * Tests passing null as each parameter.
@@ -519,8 +515,6 @@ public class StrategyModuleTest
         final ModuleURN validUnstartedURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
         // valid URN, started, but not receiver
         final ModuleURN validURNNotReceiver = BogusFeedModuleFactory.INSTANCE_URN;
-        // start the valid (not receiver) module
-        moduleManager.start(validURNNotReceiver);
         assertFalse(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).isReceiver());
         // test the above URNs for orders
         // first, invalid URN
@@ -557,7 +551,7 @@ public class StrategyModuleTest
         };
         // last, valid, started URN, but not a data-receiver
         new ExpectedFailure<DataFlowException>(MODULE_NOT_RECEIVER,
-                                               BogusFeedModuleFactory.INSTANCE_URN.toString()) {
+                                               validURNNotReceiver.toString()) {
             @Override
             protected void run()
                 throws Exception
@@ -567,7 +561,7 @@ public class StrategyModuleTest
                                              JAVA_STRATEGY,
                                              null,
                                              null,
-                                             BogusFeedModuleFactory.INSTANCE_URN,
+                                             validURNNotReceiver,
                                              null);
             }
         };
@@ -606,7 +600,7 @@ public class StrategyModuleTest
         };
         // last, valid, started URN, but not a data-receiver
         new ExpectedFailure<DataFlowException>(MODULE_NOT_RECEIVER,
-                                               BogusFeedModuleFactory.INSTANCE_URN.toString()) {
+                                               validURNNotReceiver.toString()) {
             @Override
             protected void run()
                 throws Exception
@@ -617,11 +611,9 @@ public class StrategyModuleTest
                                              null,
                                              null,
                                              null,
-                                             BogusFeedModuleFactory.INSTANCE_URN);
+                                             validURNNotReceiver);
             }
         };
-        // stop the non-receiver
-        moduleManager.stop(BogusFeedModuleFactory.INSTANCE_URN);
     }
     /**
      * Tries to create a strategy module with the given set of parameters.

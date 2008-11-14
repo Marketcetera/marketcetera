@@ -66,4 +66,10 @@ interface Strategy
      * @return a <code>Status</code> value
      */
     public Status getStatus();
+    /**
+     * Returns the services provider for this <code>Strategy</code> to use.
+     *
+     * @return an <code>OutboundServicesProvider</code> value
+     */
+    public OutboundServicesProvider getServicesProvider();
 }

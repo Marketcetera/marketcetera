@@ -39,12 +39,12 @@ abstract class AbstractExecutor
             if(runningStrategy instanceof AbstractRunningStrategy) {
                 AbstractRunningStrategy abstractRunningStrategy = (AbstractRunningStrategy)runningStrategy;
                 // make the parameters available to the strategy 
-                abstractRunningStrategy.setParameters(getStrategy().getParameters());
+                abstractRunningStrategy.setStrategy(getStrategy());
             } else {
                 // TODO warn that no parameters will be available to this strategy
             }
             this.runningStrategy = runningStrategy;
-            // TODO put into executorservice
+            // TODO put into executorservice?
             runningStrategy.onStart();
             return runningStrategy;
         } else {

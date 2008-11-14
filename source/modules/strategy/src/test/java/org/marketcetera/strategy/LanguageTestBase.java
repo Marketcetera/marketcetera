@@ -1,6 +1,6 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
@@ -325,6 +326,73 @@ public abstract class LanguageTestBase
                                              null));
     }
     /**
+     * Tests receipt of market data from a valid, started market data provider.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void marketDataRequests()
+        throws Exception
+    {
+        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                      "GOOG,YHOO,MSFT,METC");
+        // strategy is now receiving data
+        Thread.sleep(5000);
+        // verify that bid/ask/trades have been received
+        // TODO substitute a market data provider that provides a known script of events
+        verifyPropertyNonNull("onAsk");
+        verifyPropertyNonNull("onBid");
+        // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
+        //  not deterministic.  the fix is to implement the deterministic provider described above
+//        verifyPropertyNonNull("onTrade");
+    }
+    /**
+     * Tests a market data request from a market data provider that does not exist.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void marketDataRequestFromNonexistentSource()
+        throws Exception
+    {
+        getMarketData("provider-does-not-exist",
+                      "GOOG,YHOO,MSFT,METC");
+        // TODO same note as above: create a market data provider that deterministically produces data 
+        Thread.sleep(5000);
+        // the script does not fail, but no market data was provided
+        verifyNullProperties();
+    }
+    /**
+     * Tests a market data request from a market data provider that exists but has not been started.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void marketDataRequestFromUnstartedSource()
+        throws Exception
+    {
+        // stop the bogus provider
+        assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+        moduleManager.stop(BogusFeedModuleFactory.INSTANCE_URN);
+        assertFalse(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+        // request market data from the stopped provider
+        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                      "GOOG,YHOO,MSFT,METC");
+        // TODO same note as above: create a market data provider that deterministically produces data 
+        Thread.sleep(5000);
+        // the script does not fail, but no market data was provided
+        verifyNullProperties();
+        // start the bogus module again
+        moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
+        assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
+    }
+    @Test
+    public void cancelMarketDataRequest()
+        throws Exception
+    {
+        
+    }
+    /**
      * Gets the language to use for this test.
      *
      * @return a <code>Language</code> value
@@ -366,6 +434,33 @@ public abstract class LanguageTestBase
      * @return a <code>StrategyCoordinates</code> value
      */
     protected abstract StrategyCoordinates getParameterStrategy();
+    /**
+     * Creates a strategy that requests market data from the given provider for the given symbols.
+     *
+     * @param inProvider a <code>String</code> value containing the instance identifier of a market data provider
+     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols for which to
+     *   request market data
+     * @return a <code>ModuleURN</code> value containing the instance URN of the strategy guaranteed to be running
+     * @throws Exception if an error occurs
+     */
+    private ModuleURN getMarketData(String inProvider,
+                                    String inSymbols)
+        throws Exception
+    {
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestData",
+                               inProvider);
+        parameters.setProperty("symbols",
+                               inSymbols);
+        return createStrategy(strategy.getName(),
+                              getLanguage(),
+                              strategy.getFile(),
+                              parameters,
+                              null,
+                              null,
+                              null);
+    }
     /**
      * Tests that the given strategy is functional by verifying it receives data sent to it.
      *

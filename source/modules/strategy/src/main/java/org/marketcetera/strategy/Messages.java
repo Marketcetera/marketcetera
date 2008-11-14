@@ -48,4 +48,6 @@ public interface Messages
                                                                      "no_strategy_class"); //$NON-NLS-1$
     static final I18NMessage1P NO_SUPPORT_FOR_LANGUAGE = new I18NMessage1P(LOGGER,
                                                                            "no_support_for_language"); //$NON-NLS-1$
+    static final I18NMessage2P MARKET_DATA_REQUEST_FAILED = new I18NMessage2P(LOGGER,
+                                                                              "market_data_request_failed"); //$NON-NLS-1$
 }

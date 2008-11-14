@@ -19,6 +19,7 @@ import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -426,6 +427,7 @@ public class StrategyTestBase
         moduleManager.start(ordersURN);
         suggestionsURN = moduleManager.createModule(MockRecorderModule.Factory.PROVIDER_URN);
         moduleManager.start(suggestionsURN);
+        moduleManager.start(bogusDataFeedURN);
         factory = new StrategyModuleFactory();
         runningModules.clear();
         setPropertiesToNull();
@@ -448,6 +450,7 @@ public class StrategyTestBase
         }
         moduleManager.stop(ordersURN);
         moduleManager.stop(suggestionsURN);
+        moduleManager.stop(bogusDataFeedURN);
         moduleManager.deleteModule(ordersURN);
         moduleManager.deleteModule(suggestionsURN);
         moduleManager.stop();
@@ -579,4 +582,8 @@ public class StrategyTestBase
      * list of strategies started during test
      */
     protected final List<ModuleURN> runningModules = new ArrayList<ModuleURN>();
+    /**
+     * URN for market data provider
+     */
+    protected final ModuleURN bogusDataFeedURN = BogusFeedModuleFactory.INSTANCE_URN;
 }
