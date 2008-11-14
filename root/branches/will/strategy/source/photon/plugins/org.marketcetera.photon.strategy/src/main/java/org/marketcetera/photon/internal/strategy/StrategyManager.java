@@ -63,7 +63,13 @@ public final class StrategyManager {
 	 *            strategy to start
 	 */
 	public void start(Strategy strategy) {
-		strategy.setState(State.RUNNING);
+		try {
+			mModuleManager.start(strategy.getURN());
+			strategy.setState(State.RUNNING);
+		} catch (ModuleException e) {
+			// TODO: report to user
+			e.getI18NBoundMessage().error(this);
+		}
 	}
 
 	/**
@@ -73,7 +79,13 @@ public final class StrategyManager {
 	 *            strategy to start
 	 */
 	public void stop(Strategy strategy) {
-		strategy.setState(State.STOPPED);
+		try {
+			mModuleManager.stop(strategy.getURN());
+			strategy.setState(State.STOPPED);
+		} catch (ModuleException e) {
+			// TODO: report to user
+			e.getI18NBoundMessage().error(this);
+		}
 	}
 
 	/**
