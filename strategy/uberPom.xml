@@ -48,6 +48,11 @@
       </dependency>
       <dependency>
         <groupId>${mvn.public.package}</groupId>
+        <artifactId>strategy</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
         <artifactId>misc</artifactId>
         <version>[${project.version}]</version>
       </dependency>
