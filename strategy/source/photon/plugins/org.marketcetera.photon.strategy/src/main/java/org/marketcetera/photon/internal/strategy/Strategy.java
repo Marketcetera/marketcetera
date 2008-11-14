@@ -20,8 +20,6 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class Strategy {
 
-	/* $License$ */
-
 	/**
 	 * Strategy state.
 	 * 

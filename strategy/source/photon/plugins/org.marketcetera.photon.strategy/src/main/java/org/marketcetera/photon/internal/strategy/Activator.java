@@ -30,14 +30,8 @@ public final class Activator extends AbstractUIPlugin {
 	/**
 	 * The {@link StrategyManager} singleton for this plug-in instance.
 	 */
-	private StrategyManager mStrategyManager;
+	private final StrategyManager mStrategyManager = new StrategyManager();
 	
-	/**
-	 * The constructor
-	 */
-	public Activator() {
-	}
-
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
@@ -77,9 +71,6 @@ public final class Activator extends AbstractUIPlugin {
 	 * @return the StrategyManager singleton for this plug-in
 	 */
 	StrategyManager getStrategyManager() {
-		if (mStrategyManager == null) {
-			mStrategyManager = new StrategyManager();
-		}
 		return mStrategyManager;
 	}
 }

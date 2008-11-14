@@ -15,17 +15,23 @@ import org.marketcetera.util.misc.ClassVersion;
 public interface StrategyUIConstants {
 
 	/**
-	 * The Photon Strategy perspective.
+	 * The id of the Strategy perspective.
 	 */
 	static final String STRATEGY_PERSPECTIVE = "org.marketcetera.photon.StrategyPerspective"; //$NON-NLS-1$
 	
 	/**
-	 * The Photon Strategies view, showing registered strategies and their state.
+	 * The id of the Strategies view, showing registered strategies and their state.
 	 */
 	static final String STRATEGIES_VIEW = "org.marketcetera.photon.strategy.StrategiesView"; //$NON-NLS-1$
 	
 	/**
-	 * The Project Explorer for the Strategy perspective.
+	 * The id of the Project Explorer for the Strategy perspective.
 	 */
 	static final String PROJECT_EXPLORER_VIEW = "org.marketcetera.photon.strategy.ProjectExplorer"; //$NON-NLS-1$
+	
+	/**
+	 * The extension used to identify ruby scripts.
+	 */
+	static final String RUBY_SCRIPT_EXTENSION = "rb"; //$NON-NLS-1$
+	
 }

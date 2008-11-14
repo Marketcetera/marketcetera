@@ -28,8 +28,8 @@ import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewFileResourceWizard;
 import org.marketcetera.photon.internal.strategy.Activator;
 import org.marketcetera.photon.internal.strategy.Messages;
+import org.marketcetera.photon.strategy.StrategyUIConstants;
 import org.marketcetera.util.except.ExceptUtils;
-import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.misc.ClassVersion;
 import org.rubypeople.rdt.core.util.Util;
 
@@ -45,8 +45,7 @@ import org.rubypeople.rdt.core.util.Util;
 @ClassVersion("$Id$")
 public class NewRubyStrategyWizard extends Wizard implements INewWizard {
 
-	private static final String NAMESPACE_DELIMITER = "::"; //$NON-NLS-1$
-	private static final String SCRIPT_EXTENSION = ".rb"; //$NON-NLS-1$
+	private static final String SCRIPT_EXTENSION = "." + StrategyUIConstants.RUBY_SCRIPT_EXTENSION; //$NON-NLS-1$
 
 	private NewRubyStrategyWizardPage mPage;
 	private ISelection mSelection;
@@ -55,7 +54,6 @@ public class NewRubyStrategyWizard extends Wizard implements INewWizard {
 	 * Constructor.
 	 */
 	public NewRubyStrategyWizard() {
-		super();
 		setNeedsProgressMonitor(true);
 	}
 
@@ -84,6 +82,9 @@ public class NewRubyStrategyWizard extends Wizard implements INewWizard {
 		try {
 			getContainer().run(true, false, op);
 		} catch (InterruptedException e) {
+			// Intentionally not restoring the interrupt status since this is
+			// the main UI thread where it will be ignored
+			Messages.NEW_RUBY_STRATEGY_CREATION_FAILED.error(this, e, className, containerName);
 			return false;
 		} catch (InvocationTargetException e) {
 			Throwable realException = e.getTargetException();
@@ -95,7 +96,7 @@ public class NewRubyStrategyWizard extends Wizard implements INewWizard {
 			MessageDialog.openError(getShell(),
 					Messages.NEW_RUBY_STRATEGY_ERROR_DIALOG_TITLE.getText(),
 					message);
-			SLF4JLoggerProxy.error(this, realException);
+			Messages.NEW_RUBY_STRATEGY_CREATION_FAILED.error(this, realException, className, containerName);
 			return false;
 		}
 		return true;
@@ -154,7 +155,7 @@ public class NewRubyStrategyWizard extends Wizard implements INewWizard {
 	}
 
 	private String getRubyScriptName(String typeName) {
-		int index = typeName.lastIndexOf(NAMESPACE_DELIMITER);
+		int index = typeName.lastIndexOf(NewRubyStrategyWizardPage.NAMESPACE_DELIMITER);
 		// TODO: If they have set up namespace, should we offer to build nested
 		// folders? A::B::C -> a/b/c.rb
 		if (index != -1) {
