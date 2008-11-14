@@ -1,0 +1,9 @@
+--- !ruby/object:RI::MethodDescription
+visibility: public
+block_params: 
+comment: 
+full_name: Debugger::Context#frame_binding
+params: (frame)
+name: frame_binding
+is_singleton: false
+aliases: []

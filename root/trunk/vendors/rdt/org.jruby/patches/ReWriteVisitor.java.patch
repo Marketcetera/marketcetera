@@ -1,0 +1,21 @@
+Index: C:/Users/Chris Williams/33-workspace/jruby_1.1_rc2/src/org/jruby/ast/visitor/rewriter/ReWriteVisitor.java
+===================================================================
+--- C:/Users/Chris Williams/33-workspace/jruby_1.1_rc2/src/org/jruby/ast/visitor/rewriter/ReWriteVisitor.java	(revision 6005)
++++ C:/Users/Chris Williams/33-workspace/jruby_1.1_rc2/src/org/jruby/ast/visitor/rewriter/ReWriteVisitor.java	(working copy)
+@@ -782,7 +782,15 @@
+ 	}
+ 
+ 	public Instruction visitFixnumNode(FixnumNode iVisited) {
+-		print(iVisited.getValue());
++	    ISourcePosition pos = iVisited.getPosition();
++	    if (pos != null && config.getSource() != null && config.getSource().length() > pos.getEndOffset()) {
++	        String raw = config.getSource().substring(pos.getStartOffset(), pos.getEndOffset());
++	        if (raw != null) {
++	            print(raw);
++	            return null;
++	        }
++	    }
++	    print(iVisited.getValue());
+ 		return null;
+ 	}
+ 
