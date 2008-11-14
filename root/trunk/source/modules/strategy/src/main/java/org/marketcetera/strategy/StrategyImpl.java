@@ -136,6 +136,16 @@ class StrategyImpl
     {
         return status;
     }
+    /**
+     * Get the outboundServicesProvider value.
+     *
+     * @return a <code>OutboundServices</code> value
+     */
+    @Override
+    public final OutboundServicesProvider getServicesProvider()
+    {
+        return outboundServicesProvider;
+    }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
@@ -165,7 +175,7 @@ class StrategyImpl
                  File inSource,
                  Properties inParameters,
                  String[] inClasspath,
-                 OutboundServices inOutboundServicesProvider)
+                 OutboundServicesProvider inOutboundServicesProvider)
         throws IOException
     {
         status = NOT_RUNNING;
@@ -208,15 +218,6 @@ class StrategyImpl
     final String[] getClasspath()
     {
         return classpath;
-    }
-    /**
-     * Get the outboundServicesProvider value.
-     *
-     * @return a <code>OutboundServices</code> value
-     */
-    final OutboundServices getOutboundServicesProvider()
-    {
-        return outboundServicesProvider;
     }
     /**
      * Get the executor value.
@@ -302,7 +303,7 @@ class StrategyImpl
     /**
      * the provider of services for outgoing data via the strategy agent framework
      */
-    private final OutboundServices outboundServicesProvider;
+    private final OutboundServicesProvider outboundServicesProvider;
     /**
      * the value that uniquely identifies this strategy to the system within the scope of this JVM execution
      */

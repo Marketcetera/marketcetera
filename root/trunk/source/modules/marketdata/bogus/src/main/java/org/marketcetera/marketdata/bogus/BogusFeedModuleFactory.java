@@ -44,10 +44,11 @@ public class BogusFeedModuleFactory
             throw new ModuleCreationException(e.getI18NBoundMessage());
         }
     }
+    public static final String IDENTIFIER = "bogus";  //$NON-NLS-1$
     /**
      * unique provider URN for the bogus feed market data provider
      */
-    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:bogus");  //$NON-NLS-1$
+    public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:mdata:" + IDENTIFIER);  //$NON-NLS-1$
     /**
      * instance URN for the bogus feed market data provider
      */

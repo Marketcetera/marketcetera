@@ -1,6 +1,6 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
+import static org.marketcetera.strategy.Messages.*;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
@@ -9,6 +9,8 @@ import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -47,7 +49,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 @ClassVersion("$Id$")
 final class StrategyModule
         extends Module
-        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServices
+        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
@@ -124,6 +126,74 @@ final class StrategyModule
     public void sendSuggestion(Suggestion inSuggestion)
     {
         OutputType.SUGGESTIONS.publish(inSuggestion);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServices#marketDataRequest(org.marketcetera.marketdata.DataRequest, java.lang.String)
+     */
+    @Override
+    public long requestMarketData(org.marketcetera.marketdata.DataRequest inRequest,
+                                  String inSource)
+    {
+        long requestID = counter.incrementAndGet();
+        StringBuilder providerURNAsString = new StringBuilder();
+        // TODO need a cleaner way to construct this URN
+        providerURNAsString.append("metc:mdata:").append(inSource); //$NON-NLS-1$
+        ModuleURN providerURN = new ModuleURN(providerURNAsString.toString());
+        try {
+            DataFlowID dataFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(providerURN,
+                                                                                                       inRequest),
+                                                                                       new DataRequest(getURN()) },
+                                                                   false);
+            synchronized(marketDataRequests) {
+                marketDataRequests.put(requestID,
+                                       dataFlowID);
+            }
+        } catch (ModuleException e) {
+            // warn, but do not cause the strategy to stop working
+            MARKET_DATA_REQUEST_FAILED.warn(this,
+                                            e,
+                                            inRequest,
+                                            inSource);
+        }
+        return requestID;
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServices#cancelAllMarketDataRequests()
+     */
+    @Override
+    public void cancelAllMarketDataRequests()
+    {
+        synchronized(marketDataRequests) {
+            for(DataFlowID dataFlowID : marketDataRequests.values()) {
+                try {
+                    doMarketDataRequestCancel(dataFlowID);
+                } catch (ModuleException e) {
+                    // TODO handle exception
+                    e.printStackTrace();
+                }
+            }
+            marketDataRequests.clear();
+        }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServices#cancelMarketDataRequest(long)
+     */
+    @Override
+    public void cancelMarketDataRequest(long inDataRequestID)
+    {
+        synchronized(marketDataRequests) {
+            DataFlowID dataFlowID = marketDataRequests.get(inDataRequestID);
+            if(dataFlowID == null) {
+                // TODO warn about null request
+                return;
+            }
+            try {
+                doMarketDataRequestCancel(dataFlowID);
+            } catch (ModuleException e) {
+                // TODO handle exception
+                e.printStackTrace();
+            }
+        }
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -316,6 +386,7 @@ final class StrategyModule
     protected void preStop()
             throws ModuleException
     {
+        cancelAllMarketDataRequests();
         try {
             strategy.stop();
         } catch (StrategyException e) {
@@ -400,6 +471,17 @@ final class StrategyModule
         assert(strategy != null);
     }
     /**
+     * Cancels a given market data request.
+     *
+     * @param inDataFlowID a <code>DataFlowID</code> value
+     * @throws ModuleException if an error occurs while canceling the market data request
+     */
+    private void doMarketDataRequestCancel(DataFlowID inDataFlowID)
+        throws ModuleException
+    {
+        dataFlowSupport.cancel(inDataFlowID);
+    }
+    /**
      * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
      * to the contents of the strategy
      */
@@ -416,6 +498,9 @@ final class StrategyModule
      * the parameters to present to the strategy, may be empty or null.  may be null or empty.
      */
     private final Properties parameters;
+    /**
+     * the classpath for the script executor to use in a language-dependent fashion
+     */
     private final String[] classpath;
     /**
      * the instanceURN of a destination for Orders, may be null.  if non-null, the object contract is to plumb a route from this object to the instance contained herein for orders before start.
@@ -442,7 +527,11 @@ final class StrategyModule
      */
     private DataFlowSupport dataFlowSupport;
     /**
-     * counter used to guarantee unique strategy URNs
+     * counter used to guarantee unique identifiers
      */
     private static final AtomicLong counter = new AtomicLong();
+    /**
+     * active market data requests for this strategy 
+     */
+    private final Map<Long,DataFlowID> marketDataRequests = new HashMap<Long,DataFlowID>();
 }

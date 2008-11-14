@@ -192,4 +192,41 @@ public class Strategy
     {
         return getParameter(inName);
     }
+    /**
+     * Creates a market data request.
+     * 
+     * <p>The <code>inSource</code> parameter must contain the identifier of a started market data provider
+     * module.
+     * 
+     * @param inRequest a <code>DataRequest</code> value indicating what data to request
+     * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
+     * @return a <code>long</code> value containing an identifier corresponding to this market data request
+     */
+    public final long request_market_data(org.marketcetera.marketdata.DataRequest inRequest,
+                                          String inSource)
+    {
+        return requestMarketData(inRequest,
+                                 inSource);
+    }
+    /**
+     * Cancels a given market data request.
+     * 
+     * <p>If the given <code>inDataRequestID</code> identifier does not correspond to an active market data
+     * request, this method does nothing.
+     *
+     * @param inDataRequestID a <code>long</code> value identifying the market data request to cancel
+     */
+    public final void cancel_market_data_request(long inRequestID)
+    {
+        cancelMarketDataRequest(inRequestID);
+    }
+    /**
+     * Cancels all market data requests for this {@link Strategy}.
+     *
+     * <p>If there are no active market data requests for this {@link Strategy}, this method does nothing.
+     */
+    public final void cancel_all_market_data_requests()
+    {
+        cancelAllMarketDataRequests();
+    }
 }
