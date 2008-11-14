@@ -16,8 +16,8 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.CodeVisitor;
-import static org.objectweb.asm.Constants.*;
+import org.objectweb.asm.MethodVisitor;
+import static org.objectweb.asm.Opcodes.*;
 
 import javax.management.JMX;
 import javax.management.MBeanServer;
@@ -476,10 +476,10 @@ public class StrategyAgentTest extends TestCaseBase {
     private static byte[] generateSubclass(
             Class inSuperClass, String inSubClassName) {
         ClassWriter cw = new ClassWriter(false);
-        cw.visit(V1_5, ACC_PUBLIC,transformName(inSubClassName),
-                transformName(inSuperClass.getName()),null,null);
+        cw.visit(V1_6, ACC_PUBLIC,transformName(inSubClassName),null,
+                transformName(inSuperClass.getName()),null);
         //Generate default constructor
-        CodeVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitMethodInsn(INVOKESPECIAL,
                 transformName(inSuperClass.getName()),"<init>","()V");

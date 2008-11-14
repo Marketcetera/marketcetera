@@ -40,10 +40,6 @@
       <artifactId>activemq-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>quickfixj</groupId>
-      <artifactId>quickfixj-all</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.skife.kasparov</groupId>
       <artifactId>csv</artifactId>
     </dependency>
@@ -81,6 +77,16 @@
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>asm</groupId>
+      <artifactId>asm-attrs</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
