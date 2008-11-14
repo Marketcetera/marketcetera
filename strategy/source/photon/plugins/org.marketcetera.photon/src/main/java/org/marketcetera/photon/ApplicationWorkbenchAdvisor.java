@@ -3,7 +3,9 @@ package org.marketcetera.photon;
 import java.io.PrintStream;
 import java.net.URL;
 
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -173,6 +175,12 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 		URL url = Platform.find(ideBundle, new Path(path));
 		ImageDescriptor desc = ImageDescriptor.createFromURL(url);
 		getWorkbenchConfigurer().declareImage(symbolicName, desc, shared);
+	}
+	
+	@Override
+	public IAdaptable getDefaultPageInput() {
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		return workspace.getRoot();
 	}
 
 }

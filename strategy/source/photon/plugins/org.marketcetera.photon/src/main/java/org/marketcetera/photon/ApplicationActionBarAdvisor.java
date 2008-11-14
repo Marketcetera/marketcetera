@@ -234,13 +234,6 @@ public class ApplicationActionBarAdvisor
 		menu.add(preferencesAction);
 		menuBar.add(menu);
 
-		// Script menu
-		menu = new MenuManager(
-				Messages.ApplicationActionBarAdvisor_ScriptMenuName.getText(),
-				PhotonConstants.M_SCRIPT);
-		menu.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));  //agl necessary since the RunScript action is contributed as an editorContribution (see plugin.xml) 
-		menuBar.add(menu);
-
 		// Window menu
 		menu = new MenuManager(
 				Messages.ApplicationActionBarAdvisor_WindowMenuName.getText(),

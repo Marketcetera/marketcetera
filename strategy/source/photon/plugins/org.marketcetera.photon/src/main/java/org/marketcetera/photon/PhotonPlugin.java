@@ -10,15 +10,12 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.logging.LogManager;
 
-import org.apache.bsf.BSFException;
-import org.apache.bsf.BSFManager;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
-import org.eclipse.core.resources.IResourceChangeEvent;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -43,9 +40,6 @@ import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.photon.marketdata.MarketDataManager;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.preferences.PhotonPage;
-import org.marketcetera.photon.preferences.ScriptRegistryPage;
-import org.marketcetera.photon.scripting.ScriptChangesAdapter;
-import org.marketcetera.photon.scripting.ScriptRegistry;
 import org.marketcetera.photon.views.IOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketController;
 import org.marketcetera.photon.views.OptionOrderTicketModel;
@@ -92,8 +86,6 @@ public class PhotonPlugin
 	private Logger mainConsoleLogger;
 	private Logger marketDataLogger;
 
-	private ScriptRegistry scriptRegistry;
-
 	private PhotonController photonController;
 
 	private IDFactory idFactory;
@@ -107,8 +99,6 @@ public class PhotonPlugin
 	public static final String DEFAULT_PROJECT_NAME = "ActiveScripts"; //$NON-NLS-1$
 
 	private static final String RUBY_NATURE_ID = ".rubynature"; //$NON-NLS-1$
-
-	private ScriptChangesAdapter scriptChangesAdapter;
 
 	private SimpleMessageListenerContainer registryListener;
 
@@ -156,14 +146,12 @@ public class PhotonPlugin
 		// This sets the internal broker to use on thread per "listener"?
 		// Needed because the version of JRuby we're using doesn't play well
 		// with mutliple threads
+		// TODO: is this still needed??
         System.setProperty("org.apache.activemq.UseDedicatedTaskRunner", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        BSFManager.registerScriptingEngine(ScriptRegistry.RUBY_LANG_STRING,
-				"org.jruby.javasupport.bsf.JRubyEngine", new String[] { "rb" }); //$NON-NLS-1$ //$NON-NLS-2$
-		initMessageFactory();
+        initMessageFactory();
 		initIDFactory();
 		initFIXMessageHistory();
-		initScriptRegistry();
 		initPhotonController();
 		PhotonPlugin.getDefault().getPreferenceStore().addPropertyChangeListener(this);
 	}
@@ -188,13 +176,6 @@ public class PhotonPlugin
 		fixMessageHistory = new FIXMessageHistory(messageFactory);
 	}
 
-	private void initScriptRegistry() {
-		scriptRegistry = new ScriptRegistry();
-		scriptChangesAdapter = new ScriptChangesAdapter();
-		scriptChangesAdapter.setRegistry(scriptRegistry);
-		
-	}
-
 
 
 	/**
@@ -204,10 +185,6 @@ public class PhotonPlugin
 		super.stop(context);
 		plugin = null;
 		
-		if (scriptRegistry != null) {
-			ResourcesPlugin.getWorkspace().removeResourceChangeListener(scriptChangesAdapter);
-			scriptRegistry = null;
-		}
 		if (registryListener != null)
 			registryListener.stop();
 	}
@@ -264,27 +241,6 @@ public class PhotonPlugin
 						fixVersion.getDataDictionaryURL()));
 	}
 
-	public void startScriptRegistry() {
-		ScopedPreferenceStore thePreferenceStore = PhotonPlugin.getDefault().getPreferenceStore();
-		try {
-			scriptChangesAdapter.setInitialRegistryValueString(thePreferenceStore.getString(ScriptRegistryPage.SCRIPT_REGISTRY_PREFERENCE));
-			scriptRegistry.afterPropertiesSet();
-			scriptChangesAdapter.afterPropertiesSet();
-		} catch (BSFException e) {
-			Throwable targetException = e.getTargetException();
-			getMainConsoleLogger().error(CANNOT_START_SCRIPT_ENGINE.getText(),
-			                             targetException);
-		} catch (Exception e) {
-			getMainConsoleLogger().error(CANNOT_START_SCRIPT_ENGINE.getText(),
-			                             e);
-		}
-		thePreferenceStore.addPropertyChangeListener(scriptChangesAdapter);
-		
-		ResourcesPlugin.getWorkspace().addResourceChangeListener(scriptChangesAdapter, 
-				IResourceChangeEvent.POST_CHANGE | IResourceChangeEvent.PRE_DELETE);
-		
-	}
-
 	/**
 	 * Accessor for the console logger singleton.  This logger writes
 	 * messages into the main console displayed to the user in the application.
@@ -311,10 +267,6 @@ public class PhotonPlugin
 	 */
 	public FIXMessageHistory getFIXMessageHistory() {
 		return fixMessageHistory;
-	}
-
-	public ScriptRegistry getScriptRegistry() {
-		return scriptRegistry;
 	}
 	
 	/** 

@@ -19,7 +19,6 @@ import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.messaging.PhotonControllerListenerAdapter;
-import org.marketcetera.photon.messaging.ScriptingControllerListenerAdapter;
 import org.marketcetera.photon.messaging.SimpleMessageListenerContainer;
 import org.marketcetera.photon.ui.LoginDialog;
 import org.marketcetera.quickfix.ConnectionConstants;
@@ -185,12 +184,6 @@ public class ReconnectJMSJob
 
 					monitor.worked(1);
 					
-					SimpleMessageListenerContainer scriptingControllerContainer = (SimpleMessageListenerContainer) jmsApplicationContext.getBean("scriptingControllerContainer"); //$NON-NLS-1$
-					scriptingControllerContainer.setExceptionListener(feedService);
-					
-					ScriptingControllerListenerAdapter scriptingControllerAdapter = (ScriptingControllerListenerAdapter) jmsApplicationContext.getBean("scriptingControllerListener"); //$NON-NLS-1$
-					scriptingControllerAdapter.setScriptRegistry(PhotonPlugin.getDefault().getScriptRegistry());
-
 					monitor.worked(1);
 					
 					jmsApplicationContext.start();

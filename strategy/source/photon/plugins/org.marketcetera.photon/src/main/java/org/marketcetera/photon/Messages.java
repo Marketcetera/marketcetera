@@ -34,10 +34,6 @@ public interface Messages
                                                                                              "ApplicationActionBarAdvisor_FileMenuName"); //$NON-NLS-1$
     public static I18NMessage0P ApplicationActionBarAdvisor_EditMenuName = new I18NMessage0P(LOGGER,
                                                                                              "ApplicationActionBarAdvisor_EditMenuName"); //$NON-NLS-1$
-    public static I18NMessage0P ApplicationActionBarAdvisor_ScriptMenuName = new I18NMessage0P(LOGGER,
-                                                                                               "ApplicationActionBarAdvisor_ScriptMenuName"); //$NON-NLS-1$
-    public static I18NMessage0P ApplicationActionBarAdvisor_ScriptMenuID = new I18NMessage0P(LOGGER,
-                                                                                             "ApplicationActionBarAdvisor_ScriptMenuID"); //$NON-NLS-1$
     public static I18NMessage0P ApplicationActionBarAdvisor_NavigationMenuName = new I18NMessage0P(LOGGER,
                                                                                                    "ApplicationActionBarAdvisor_NavigationMenuName"); //$NON-NLS-1$
     public static I18NMessage0P ApplicationActionBarAdvisor_HelpMenuName = new I18NMessage0P(LOGGER,
@@ -52,8 +48,6 @@ public interface Messages
                                                                                                       "ApplicationActionBarAdvisor_OpenPerspectiveMenuID"); //$NON-NLS-1$
     public static I18NMessage0P CommandStatusLineContribution_CommandLabel = new I18NMessage0P(LOGGER,
                                                                                                "CommandStatusLineContribution_CommandLabel"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_START_SCRIPT_ENGINE = new I18NMessage0P(LOGGER,
-                                                                               "cannot_start_script_engine"); //$NON-NLS-1$
     public static I18NMessage0P CANNOT_START_DEFAULT_SCRIPT_PROJECT = new I18NMessage0P(LOGGER,
                                                                                         "cannot_start_default_script_project"); //$NON-NLS-1$
     public static I18NMessage1P LOGGER_LEVEL_CHANGED = new I18NMessage1P(LOGGER,
@@ -110,12 +104,8 @@ public interface Messages
                                                                          "focus_command_action"); //$NON-NLS-1$
     public static I18NMessage0P FOCUS_COMMAND_ACTION_DESCRIPTION = new I18NMessage0P(LOGGER,
                                                                                      "focus_command_action_description"); //$NON-NLS-1$
-    public static I18NMessage0P START_SCRIPT_REGISTRY = new I18NMessage0P(LOGGER,
-                                                                          "start_script_registry"); //$NON-NLS-1$
     public static I18NMessage1P MISSING_DEFAULT_CONSTRUCTOR = new I18NMessage1P(LOGGER,
                                                                                 "missing_default_constructor"); //$NON-NLS-1$
-    public static I18NMessage1P MISSING_STATIC_METHOD = new I18NMessage1P(LOGGER,
-                                                                          "missing_static_method"); //$NON-NLS-1$
     public static I18NMessage0P NULL_TARGET_PAGE = new I18NMessage0P(LOGGER,
                                                                      "null_target_page"); //$NON-NLS-1$
     public static I18NMessage1P VIEW_DOES_NOT_IMPLEMENT = new I18NMessage1P(LOGGER,
@@ -240,16 +230,6 @@ public interface Messages
                                                                 "field_label"); //$NON-NLS-1$
     public static I18NMessage0P MULTI_SELECT_NOT_ENABLED = new I18NMessage0P(LOGGER,
                                                                              "multi_select_not_enabled"); //$NON-NLS-1$
-    public static I18NMessage0P RUBY_SCRIPT_SELECTION_LABEL = new I18NMessage0P(LOGGER,
-                                                                                "ruby_script_selection_label"); //$NON-NLS-1$
-    public static I18NMessage0P RUBY_SCRIPT_SELECTION_DESCRIPTION = new I18NMessage0P(LOGGER,
-                                                                                      "ruby_script_selection_description"); //$NON-NLS-1$
-    public static I18NMessage0P RUBY_TITLE_LABEL = new I18NMessage0P(LOGGER,
-                                                                     "ruby_title_label"); //$NON-NLS-1$
-    public static I18NMessage0P RUBY_SCRIPT_LABEL = new I18NMessage0P(LOGGER,
-                                                                      "ruby_script_label"); //$NON-NLS-1$
-    public static I18NMessage0P BROWSE_LABEL = new I18NMessage0P(LOGGER,
-                                                                 "browse_label"); //$NON-NLS-1$
     public static I18NMessage0P CUSTOM_FIELDS_LABEL = new I18NMessage0P(LOGGER,
                                                                         "custom_fields_label"); //$NON-NLS-1$
     public static I18NMessage0P KEY_LABEL = new I18NMessage0P(LOGGER,
@@ -262,8 +242,6 @@ public interface Messages
                                                                              "invalid_custom_field_key"); //$NON-NLS-1$
     public static I18NMessage1P CUSTOM_FIELD_INVALID_DIGIT = new I18NMessage1P(LOGGER,
                                                                                "custom_field_invalid_digit"); //$NON-NLS-1$
-    public static I18NMessage0P SCRIPT_REGISTRY_LABEL = new I18NMessage0P(LOGGER,
-                                                                          "script_registry_label"); //$NON-NLS-1$
     public static I18NMessage0P FIX_VERSION_LABEL = new I18NMessage0P(LOGGER,
                                                                       "fix_version_label"); //$NON-NLS-1$
     public static I18NMessage0P FIX_VERSION_TOOLTIP = new I18NMessage0P(LOGGER,
@@ -284,24 +262,6 @@ public interface Messages
                                                                           "order_id_prefix_label"); //$NON-NLS-1$
     public static I18NMessage0P UNKNOWN_VALIDATION_STRATEGY = new I18NMessage0P(LOGGER,
                                                                                 "unknown_validation_strategy"); //$NON-NLS-1$
-    public static I18NMessage1P SCRIPT_REGISTRY_ERROR = new I18NMessage1P(LOGGER,
-                                                                          "script_registry_error"); //$NON-NLS-1$
-    public static I18NMessage1P UNREGISTERING_SCRIPT = new I18NMessage1P(LOGGER,
-                                                                         "unregistering_script"); //$NON-NLS-1$
-    public static I18NMessage1P CANNOT_SAVE_SCRIPT_REGISTRY_PREFERENCES = new I18NMessage1P(LOGGER,
-                                                                                            "cannot_save_script_registry_preferences"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_PROCESS_RESOURCE_CHANGE = new I18NMessage0P(LOGGER,
-                                                                                   "cannot_process_resource_change"); //$NON-NLS-1$
-    public static I18NMessage1P REGISTRY_DISCARDED_MESSAGE = new I18NMessage1P(LOGGER,
-                                                                               "registry_discarded_message"); //$NON-NLS-1$
-    public static I18NMessage1P UNABLE_TO_REGISTER_SCRIPT = new I18NMessage1P(LOGGER,
-                                                                              "unable_to_register_script"); //$NON-NLS-1$
-    public static I18NMessage1P CALLBACK_FUNCTION_ERROR = new I18NMessage1P(LOGGER,
-                                                                            "callback_function_error"); //$NON-NLS-1$
-    public static I18NMessage0P CANNOT_GET_SCRIPT_CHANGE_RESULT = new I18NMessage0P(LOGGER,
-                                                                                    "cannot_get_script_change_result"); //$NON-NLS-1$
-    public static I18NMessage1P NO_STRATEGY_SUBCLASS = new I18NMessage1P(LOGGER,
-                                                                         "no_strategy_subclass"); //$NON-NLS-1$
     public static I18NMessage1P PARSE_EXCEPTION = new I18NMessage1P(LOGGER,
                                                                     "parse_exception"); //$NON-NLS-1$
     public static I18NMessage0P CHOOSE_COLUMNS_LABEL = new I18NMessage0P(LOGGER,
@@ -366,8 +326,6 @@ public interface Messages
                                                                "copy_label"); //$NON-NLS-1$
     public static I18NMessage1P CANNOT_SUBSCRIBE_TO_MARKET_DATA = new I18NMessage1P(LOGGER,
                                                                                     "cannot_subscribe_to_market_data"); //$NON-NLS-1$
-    public static I18NMessage0P MISSING_QUOTE_FEED = new I18NMessage0P(LOGGER,
-                                                                       "missing_quote_feed"); //$NON-NLS-1$
     public static I18NMessage0P OPTIONS_LABEL = new I18NMessage0P(LOGGER,
                                                                   "options_label"); //$NON-NLS-1$
     public static I18NMessage0P SKIPPING_MARKET_DATA = new I18NMessage0P(LOGGER,
