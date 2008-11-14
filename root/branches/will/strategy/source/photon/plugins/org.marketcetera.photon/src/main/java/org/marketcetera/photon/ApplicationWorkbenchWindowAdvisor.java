@@ -23,7 +23,6 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.HttpDatabaseIDFactory;
 import org.marketcetera.core.NoMoreIDsException;
 import org.marketcetera.photon.actions.ReconnectJMSJob;
-import org.marketcetera.photon.actions.StartScriptRegistryJob;
 import org.marketcetera.photon.messaging.JMSFeedService;
 import org.marketcetera.photon.ui.PhotonConsole;
 import org.osgi.framework.BundleContext;
@@ -131,8 +130,6 @@ public class ApplicationWorkbenchWindowAdvisor
 		mainConsoleLogger.info(ApplicationWorkbenchWindowAdvisor_ApplicationInitializing.getText(new Date()));
 
 		plugin.ensureDefaultProject(ProgressManager.getInstance().getDefaultMonitor());
-		StartScriptRegistryJob job = new StartScriptRegistryJob("Start script registry"); //$NON-NLS-1$
-		job.schedule();
 		
 		// The login dialog interferes with testing, this check is to ensure tests are not being run
 		if (PlatformUI.getTestableObject().getTestHarness() == null) {
