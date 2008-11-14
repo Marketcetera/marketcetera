@@ -3,6 +3,7 @@ package org.marketcetera.photon.internal.strategy;
 import org.marketcetera.util.log.I18NLoggerProxy;
 import org.marketcetera.util.log.I18NMessage0P;
 import org.marketcetera.util.log.I18NMessage1P;
+import org.marketcetera.util.log.I18NMessage2P;
 import org.marketcetera.util.log.I18NMessageProvider;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -77,5 +78,11 @@ public interface Messages {
 			LOGGER, "new_ruby_strategy.file_exists"); //$NON-NLS-1$
 	static final I18NMessage0P NEW_RUBY_STRATEGY_INVALID_CLASS_NAME = new I18NMessage0P(
 			LOGGER, "new_ruby_strategy.invalid_class_name"); //$NON-NLS-1$
+	
+	/*
+	 * Log Messages 
+	 */
+	static final I18NMessage2P NEW_RUBY_STRATEGY_CREATION_FAILED = new I18NMessage2P(
+			LOGGER, "new_ruby_strategy.creation_failed"); //$NON-NLS-1$
 }
 	

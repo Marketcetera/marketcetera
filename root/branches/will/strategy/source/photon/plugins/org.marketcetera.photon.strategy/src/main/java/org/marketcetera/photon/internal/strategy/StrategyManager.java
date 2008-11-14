@@ -19,15 +19,16 @@ import org.marketcetera.util.misc.ClassVersion;
  * Manages a collection of {@link Strategy} objects and interfaces with the
  * underlying Module Framework.
  * 
+ * This class manages an {@link WritableList} of {@link Strategy} objects, and
+ * as such, it is thread safe.  An exception will be thrown if it is accessed from 
+ * any thread other than the one that created it. 
+ * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
 public final class StrategyManager {
-
-	private ModuleManager mModuleManager = ModulePlugin.getDefault()
-			.getModuleManager();
 
 	/**
 	 * Returns the singleton instance for the currently running plug-in.
@@ -38,14 +39,17 @@ public final class StrategyManager {
 		return Activator.getDefault().getStrategyManager();
 	}
 
+	private final ModuleManager mModuleManager = ModulePlugin.getDefault()
+			.getModuleManager();
+
+	private final WritableList mStrategies = WritableList
+			.withElementType(Strategy.class);
+
 	/**
 	 * This object should only be constructed by {@link Activator}.
 	 */
 	StrategyManager() {
 	}
-
-	private WritableList mStrategies = WritableList
-			.withElementType(Strategy.class);
 
 	/**
 	 * Returns the collection of register strategies.
@@ -148,7 +152,8 @@ public final class StrategyManager {
 	/**
 	 * Removes a registered strategy.
 	 * 
-	 * @param strategy strategy to remove
+	 * @param strategy
+	 *            strategy to remove
 	 */
 	public void removeStrategy(Strategy strategy) {
 		stop(strategy);

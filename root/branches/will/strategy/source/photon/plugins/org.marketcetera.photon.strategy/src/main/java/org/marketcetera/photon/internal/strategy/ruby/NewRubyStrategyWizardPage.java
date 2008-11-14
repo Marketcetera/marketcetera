@@ -45,6 +45,8 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 final class NewRubyStrategyWizardPage extends WizardPage {
 
+	static final String NAMESPACE_DELIMITER = "::"; //$NON-NLS-1$
+
 	private final IObservableValue mContainerName = WritableValue
 			.withValueType(String.class);
 
@@ -106,7 +108,7 @@ final class NewRubyStrategyWizardPage extends WizardPage {
 		dbc.addValidationStatusProvider(new ClassNameValidator());
 
 		initialize();
-		
+
 		WizardPageSupport.create(this, dbc);
 
 		if (mContainerName.getValue() != null) {
@@ -175,16 +177,20 @@ final class NewRubyStrategyWizardPage extends WizardPage {
 	@ClassVersion("$Id$")
 	private final class ClassNameValidator extends MultiValidator {
 
+		/**
+		 * Start with a capital letter, followed only by letters, numbers, and
+		 * underscores.
+		 */
 		private final Pattern CLASS_NAME_PATTERN = Pattern
 				.compile("^[A-Z]\\w*"); //$NON-NLS-1$
-		private final String NAMESPACE_DELIMITER = "::"; //$NON-NLS-1$
-
+		
 		@Override
 		public IStatus validate() {
 			String string = (String) mClassName.getValue();
 			if (!isValid(string)) {
 				return ValidationStatus
-						.error(Messages.NEW_RUBY_STRATEGY_INVALID_CLASS_NAME.getText());
+						.error(Messages.NEW_RUBY_STRATEGY_INVALID_CLASS_NAME
+								.getText());
 			}
 			return ValidationStatus.ok();
 		}

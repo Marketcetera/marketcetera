@@ -184,8 +184,6 @@ public class ReconnectJMSJob
 
 					monitor.worked(1);
 					
-					monitor.worked(1);
-					
 					jmsApplicationContext.start();
 					feedService.setApplicationContext(jmsApplicationContext);
 					
