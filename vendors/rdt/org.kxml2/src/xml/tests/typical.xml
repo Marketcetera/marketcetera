@@ -1,0 +1,12 @@
+<tests xmlns="http://xmlpull.org/v1/tests/2002-08.xsd">
+ <test-parser name="typical XML">
+  <create-parser/> <input-inline><![CDATA[ <foo>bar&amp;baz</foo> ]]></input-inline>
+  <set-feature>http://xmlpull.org/v1/doc/features.html#process-namespaces</set-feature>
+  <expect type="START_DOCUMENT"/>
+  <next/><expect type="START_TAG" namespace="" name="foo" empty="false"/>
+  <next-text text="bar&amp;baz"/>
+  <next/><expect type="END_DOCUMENT"/>
+ </test-parser>
+</tests>
+
+
