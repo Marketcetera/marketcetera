@@ -151,7 +151,7 @@
                 <artifactItem>
                   <groupId>org.rubypeople</groupId>
                   <artifactId>rdt</artifactId>
-                  <version>1.0.3.200807071913NGT</version>
+                  <version>20081114</version>
                   <type>zip</type>
                   <includes>
                     plugins/org.kxml2_*,
@@ -201,29 +201,13 @@
               <tasks>
                 <taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="maven.compile.classpath"/>
                 <if>
-              	  <available file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar"/>
+                  <available file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
                   <then>
-	                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar" 
-	                  dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT"/>
-	                <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.core_1.0.3.200807071913NGT.jar"/>
-	              </then>
-	            </if>
-	            <if>
-              	  <available file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar"/>
-                  <then>
-	                <unzip src="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar" 
-                      dest="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT"/>
-                    <delete file="${mvn.photon.target}/eclipse/plugins/org.rubypeople.rdt.ui_1.0.3.200807071913NGT.jar"/>
-	              </then>
-	            </if>
-	            <if>
-              	  <available file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
-                  <then>
-	                <unzip src="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar" 
+	              <unzip src="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar" 
                       dest="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903"/>
                     <delete file="${mvn.photon.target}/eclipse/plugins/org.junit4_4.4.0.v20080903.jar"/>
-	              </then>
-	            </if>
+	            </then>
+	          </if>
               </tasks>
             </configuration>
             <goals>

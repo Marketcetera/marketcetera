@@ -1,24 +1,23 @@
 package org.marketcetera.photon.views;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
-import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.math.BigDecimal;
-import java.text.MessageFormat;
 
-import org.apache.commons.lang.ObjectUtils;
 import org.eclipse.core.runtime.AssertionFailedException;
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
+import org.marketcetera.photon.test.IsExpectedPropertyChangeEvent;
 
 /* $License$ */
 
@@ -149,39 +148,6 @@ public class MarketDataViewItemTest {
 		assertEquals(new BigDecimal(10), fixture.getLastPx());
 		assertEquals(new BigDecimal(15), fixture.getLastQty());
 		verifyNoMoreInteractions(listener);
-	}
-
-	private class IsExpectedPropertyChangeEvent extends
-			BaseMatcher<PropertyChangeEvent> {
-
-		String propertyName;
-		Object oldValue;
-		Object newValue;
-
-		public IsExpectedPropertyChangeEvent(String propertyName,
-				Object oldValue, Object newValue) {
-			super();
-			this.propertyName = propertyName;
-			this.oldValue = oldValue;
-			this.newValue = newValue;
-		}
-
-		@Override
-		public boolean matches(Object argument) {
-			PropertyChangeEvent event = (PropertyChangeEvent) argument;
-			return event.getPropertyName().equals(propertyName)
-					&& ObjectUtils.equals(event.getOldValue(), oldValue)
-					&& ObjectUtils.equals(event.getNewValue(), newValue);
-		}
-
-		@Override
-		public void describeTo(Description description) {
-			description.appendText(MessageFormat.format(
-					"<Property \"{0}\" changed from \"{1}\" to \"{2}\">", //$NON-NLS-1$
-					propertyName, oldValue, newValue));
-
-		}
-
 	}
 
 }

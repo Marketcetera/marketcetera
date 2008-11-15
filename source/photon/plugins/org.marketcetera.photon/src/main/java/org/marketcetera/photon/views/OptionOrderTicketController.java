@@ -46,9 +46,8 @@ import quickfix.field.SecurityReqID;
 import quickfix.field.Symbol;
 import quickfix.field.UnderlyingSymbol;
 import quickfix.fix44.DerivativeSecurityList;
-/*
- * $License$
- */
+
+/* $License$ */
 
 /**
  * The Option Order Ticket View Controller
@@ -420,7 +419,6 @@ public class OptionOrderTicketController
 		
 		WritableList optionHolderList = getOrderTicketModel().getOptionMarketDataList();
 
-		MarketDataFeedService<?> feed = getMarketDataTracker().getMarketDataFeedService();
 		optionHolderList.clear();
 		try {
 			int numDerivs = 0;
@@ -438,7 +436,7 @@ public class OptionOrderTicketController
 
 					int putOrCall = OptionMarketDataUtils.getOptionType(info);
 					String optionSymbolString = info.getString(Symbol.FIELD);
-					MSymbol optionSymbol = feed.symbolFromString(optionSymbolString);
+					MSymbol optionSymbol = new MSymbol(optionSymbolString);
 					OptionPairKey optionKey;
 						optionKey = OptionPairKey.fromFieldMap(optionSymbol, info);
 					optionSymbolToKeyMap.put(optionSymbol, optionKey);
@@ -454,7 +452,7 @@ public class OptionOrderTicketController
 					
 					holder.setExtraInfo(putOrCall, info);
 				} catch (ParseException e) {
-					MSymbol underlying =feed.symbolFromString(derivativeSecurityList.getString(Symbol.FIELD));
+					MSymbol underlying =new MSymbol(derivativeSecurityList.getString(Symbol.FIELD));
 					PhotonPlugin.getDefault().getMarketDataLogger().error(CANNOT_PARSE_OPTION_INFO_SPECIFIED.getText(underlying),
 					                                                      e);
 				}
