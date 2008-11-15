@@ -4,6 +4,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.part.*;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.*;
@@ -24,6 +25,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
@@ -341,12 +343,9 @@ public class RegExpView extends ViewPart {
 		Action shortcut;
 
 		try {
-			File shortcutsFile = new File(RegExpPlugin.getPlugInDir()
-					+ File.separator + "shortcuts");
-			
-			
-			FileInputStream fin = new FileInputStream(shortcutsFile);
-			BufferedReader br = new BufferedReader(new InputStreamReader(fin));
+			// Modified by Will prevent exception and allow shortcuts menu
+			InputStream in = FileLocator.openStream(RegExpPlugin.getDefault().getBundle(), new org.eclipse.core.runtime.Path("shortcuts"), false);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
 			String line;
 

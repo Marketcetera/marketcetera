@@ -202,9 +202,10 @@ public class RubyPlugin extends AbstractUIPlugin
 		// Initialize AST provider
 		getASTProvider();
 
-		fRubyExplorerTracker = new RubyExplorerTracker();
+		// Removed by Will
+//		fRubyExplorerTracker = new RubyExplorerTracker();
 
-		new InitializeAfterLoadJob().schedule();
+//		new InitializeAfterLoadJob().schedule();
 	}
 
 	/**

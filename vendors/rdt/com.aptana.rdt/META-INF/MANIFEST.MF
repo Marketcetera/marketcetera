@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Aptana RDT Extensions
 Bundle-SymbolicName: com.aptana.rdt;singleton:=true
-Bundle-Version: 0.0.0
+Bundle-Version: 20081114
 Bundle-ClassPath: .
 Bundle-Activator: com.aptana.rdt.AptanaRDTPlugin
 Eclipse-LazyStart: true
