@@ -1055,17 +1055,20 @@
 <!-- =================================================================== -->
 <!-- Search Menu                                                         -->
 <!-- =================================================================== -->
-         <menu
+<!-- Menu removed by Will.  For some reason, the activities filter did not
+     filter out this element.  I think it has to do with the this redefinition
+     being a hack/workaround in the first place -->
+<!--     <menu
+               id="org.eclipse.search.menu"
                label="%searchMenu.label"
-               path="navigate"
-               id="org.eclipse.search.menu">
-				<groupMarker name="internalDialogGroup"/>   <!-- not to be used by clients  -->
-				<groupMarker name="dialogGroup"/>           <!-- to be used by clients      -->
-				<separator name="fileSearchContextMenuActionsGroup"/> <!-- to be used by clients      -->
-	         	<separator name="contextMenuActionsGroup"/> <!-- to be used by clients -->
-	         	<separator name="occurencesActionsGroup"/> <!-- to be used by clients -->
-	         	<separator name="extraSearchGroup"/> <!-- to be used by clients -->
-         </menu>
+               path="navigate">
+				<groupMarker name="internalDialogGroup"/>
+				<groupMarker name="dialogGroup"/>
+				<separator name="fileSearchContextMenuActionsGroup"/> 
+	         	<separator name="contextMenuActionsGroup"/>
+	         	<separator name="occurencesActionsGroup"/>
+	         	<separator name="extraSearchGroup"/>
+         </menu> -->
 <!-- dialog group  -->
          <action
                label="%openRubySearchPageAction.label"

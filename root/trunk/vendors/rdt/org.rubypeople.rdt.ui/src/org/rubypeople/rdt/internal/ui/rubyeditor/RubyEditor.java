@@ -752,7 +752,8 @@ public class RubyEditor extends RubyAbstractEditor implements IRubyReconcilingLi
 		if (required == IShowInTargetList.class) {
 			return new IShowInTargetList() {
 				public String[] getShowInTargetIds() {
-					return new String[] { RubyUI.ID_RUBY_EXPLORER, IPageLayout.ID_OUTLINE, IPageLayout.ID_RES_NAV };
+					// Commented out by Will since Photon does not use these views
+					return new String[] { /*RubyUI.ID_RUBY_EXPLORER, */IPageLayout.ID_OUTLINE/*, IPageLayout.ID_RES_NAV*/ };
 				}
 
 			};

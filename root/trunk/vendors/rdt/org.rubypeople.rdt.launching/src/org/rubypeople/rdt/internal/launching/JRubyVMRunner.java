@@ -259,7 +259,8 @@ public class JRubyVMRunner extends StandardVMRunner implements IVMRunner {
 				}
 			}
 		} catch (IOException e) {
-		    Status status = new Status(IStatus.ERROR, DebugPlugin.getUniqueIdentifier(), DebugPlugin.INTERNAL_ERROR, DebugCoreMessages.DebugPlugin_Exception_occurred_executing_command_line__1, e); 
+			// Message changed by Will to stop compile error.  This code should never be run in Photon anyway.
+		    Status status = new Status(IStatus.ERROR, DebugPlugin.getUniqueIdentifier(), DebugPlugin.INTERNAL_ERROR, "Exception_occurred_executing_command_line__1", e); 
 		    throw new CoreException(status);
 		} catch (NoSuchMethodError e) {
 			//attempting launches on 1.2.* - no ability to set working directory			

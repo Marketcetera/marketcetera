@@ -2,8 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Plugin.name
 Bundle-SymbolicName: org.rubypeople.rdt.core; singleton:=true
-Bundle-Version: 0.0.0
-Bundle-ClassPath: rdtcore.jar
+Bundle-Version: 20081114
 Bundle-Activator: org.rubypeople.rdt.core.RubyCore
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

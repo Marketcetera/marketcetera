@@ -295,41 +295,42 @@ public class AptanaRDTPlugin extends Plugin {
 		super.start(context);
 		
 		initializePreferences();
-		context.registerService(IGemManager.class.getName(), getGemManager(), null);
-		
-
-		getGemManager().addGemListener(new GemListener() {
-		
-			public void managerInitialized() {
-				if (getGemManager().gemInstalled("ruby-debug-ide")) {
-					setRubyDebugUp();
-				}
-			}
-		
-			private void setRubyDebugUp() {
-				setRubyDebugAsDefault();
-				removeListener(this);					
-			}
-			
-			public void gemsRefreshed() {
-				if (getGemManager().gemInstalled("ruby-debug-ide")) {
-					setRubyDebugUp();
-				}					
-			}
-		
-			public void gemRemoved(Gem gem) {
-				// ignore		
-			}
-		
-			public void gemAdded(Gem gem) {
-				// ignore		
-			}
-		
-		});		
-		Job job = new RubyGemsInitializer();
-		job.setSystem(true);
-		job.setPriority(Job.SHORT);
-		job.schedule();
+//      // Commented out by Will to prevent loading of unwanted Gem Manager
+//		context.registerService(IGemManager.class.getName(), getGemManager(), null);
+//		
+//
+//		getGemManager().addGemListener(new GemListener() {
+//		
+//			public void managerInitialized() {
+//				if (getGemManager().gemInstalled("ruby-debug-ide")) {
+//					setRubyDebugUp();
+//				}
+//			}
+//		
+//			private void setRubyDebugUp() {
+//				setRubyDebugAsDefault();
+//				removeListener(this);					
+//			}
+//			
+//			public void gemsRefreshed() {
+//				if (getGemManager().gemInstalled("ruby-debug-ide")) {
+//					setRubyDebugUp();
+//				}					
+//			}
+//		
+//			public void gemRemoved(Gem gem) {
+//				// ignore		
+//			}
+//		
+//			public void gemAdded(Gem gem) {
+//				// ignore		
+//			}
+//		
+//		});		
+//		Job job = new RubyGemsInitializer();
+//		job.setSystem(true);
+//		job.setPriority(Job.SHORT);
+//		job.schedule();
 	}
 	
 	private void initializePreferences() {
