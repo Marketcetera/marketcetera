@@ -35,6 +35,10 @@
     </dependency>
     <dependency>
       <groupId>${mvn.public.package}</groupId>
+      <artifactId>strategy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>${mvn.public.package}</groupId>
       <artifactId>misc</artifactId>
     </dependency>
     <dependency>

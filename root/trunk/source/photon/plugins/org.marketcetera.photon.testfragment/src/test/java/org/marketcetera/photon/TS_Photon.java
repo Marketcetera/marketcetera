@@ -9,25 +9,13 @@ import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.marketcetera.core.InMemoryIDFactory;
-import org.marketcetera.core.NoMoreIDsException;
-import org.marketcetera.marketdata.FeedException;
-import org.marketcetera.marketdata.MockMarketDataFeed;
-import org.marketcetera.marketdata.MockMarketDataFeedCredentials;
-import org.marketcetera.marketdata.IFeedComponent.FeedType;
-import org.marketcetera.photon.marketdata.MarketDataFeedService;
 import org.marketcetera.photon.marketdata.MarketDataFeedTest;
-import org.marketcetera.photon.marketdata.MarketDataFeedTracker;
 import org.marketcetera.photon.marketdata.OptionContractDataTest;
 import org.marketcetera.photon.marketdata.OptionMessageHolderTest;
 import org.marketcetera.photon.parser.LexerTest;
 import org.marketcetera.photon.parser.OrderFormatterTest;
 import org.marketcetera.photon.parser.ParserTest;
 import org.marketcetera.photon.quickfix.QuickFIXTest;
-import org.marketcetera.photon.scripting.ClasspathTest;
-import org.marketcetera.photon.scripting.JRubyBSFTest;
-import org.marketcetera.photon.scripting.ScriptChangesAdapterTest;
-import org.marketcetera.photon.scripting.ScriptRegistryTest;
-import org.marketcetera.photon.scripting.StrategyTest;
 import org.marketcetera.photon.ui.ChooseColumnsMenuTest;
 import org.marketcetera.photon.ui.databinding.FormTextObservableValueTest;
 import org.marketcetera.photon.ui.databinding.HasValueConverterTest;
@@ -53,13 +41,9 @@ import org.marketcetera.photon.views.OptionOrderTicketXSWTTest;
 import org.marketcetera.photon.views.SWTTestViewTest;
 import org.marketcetera.photon.views.StockOrderTicketViewTest;
 import org.marketcetera.photon.views.StockOrderTicketXSWTTest;
-import org.marketcetera.photon.views.ViewTestBase;
-import org.osgi.framework.BundleContext;
 
 public class TS_Photon {
 	public static Test suite() throws Exception {
-		installMockDataFeed();
-	
 		TestSuite suite = new TestSuite(){
 
 			@Override
@@ -97,13 +81,6 @@ public class TS_Photon {
 		// quickfix
 		suite.addTestSuite(QuickFIXTest.class);
 
-		//scripting
-		suite.addTestSuite(ClasspathTest.class);
-		suite.addTestSuite(JRubyBSFTest.class);
-		suite.addTestSuite(ScriptChangesAdapterTest.class);
-		suite.addTestSuite(ScriptRegistryTest.class);
-		suite.addTestSuite(StrategyTest.class);
-		
 		suite.addTestSuite(IgnoreFirstNullValidatorTest.class);
 		suite.addTestSuite(IntegerRequiredValidatorTest.class);
         // ui.validation.fix
@@ -139,27 +116,5 @@ public class TS_Photon {
 		suite.addTest(new JUnit4TestAdapter(MarketDataFeedTest.class));
 
         return suite; 
-	}
-
-	private static void installMockDataFeed() throws FeedException, NoMoreIDsException {
-		ViewTestBase.waitForJobs();
-		
-		BundleContext bundleContext = PhotonPlugin.getDefault().getBundleContext();
-		MarketDataFeedTracker tracker = new MarketDataFeedTracker(bundleContext);
-		tracker.open();
-
-		// unregister existing feed
-		MarketDataFeedService<?> service = (MarketDataFeedService<?>) tracker.getService();
-		if (service != null){
-			service.getServiceRegistration().unregister();
-		}
-
-		// register mock feed
-		MockMarketDataFeed feed = new MockMarketDataFeed(FeedType.SIMULATED);
-		feed.start();
-		feed.login(new MockMarketDataFeedCredentials());
-		MarketDataFeedService<?> feedService = new MarketDataFeedService<MockMarketDataFeedCredentials>(feed);
-		bundleContext.registerService(MarketDataFeedService.class.getName(), feedService, null);
-		PhotonPlugin.getDefault().getScriptRegistry().connectToMarketDataFeed(feedService.getMarketDataFeed());
 	}
 }
