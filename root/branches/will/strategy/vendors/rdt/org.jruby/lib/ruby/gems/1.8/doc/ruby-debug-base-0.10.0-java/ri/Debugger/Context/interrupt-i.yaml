@@ -1,9 +1,0 @@
---- !ruby/object:RI::MethodDescription
-visibility: public
-block_params: 
-comment: 
-full_name: Debugger::Context#interrupt
-params: ()
-name: interrupt
-is_singleton: false
-aliases: []

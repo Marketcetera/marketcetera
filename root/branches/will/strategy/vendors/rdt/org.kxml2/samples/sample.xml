@@ -1,9 +1,0 @@
-<root>
-  <foo>bar</foo>
-  <hugo xmlns="http://hugospace.org">
-    <hugochild>This is in a <!-- comment -->new namespace</hugochild>
-  </hugo>
-  <bar testattr='123abc' />
-</root>
-
-<!-- an xml sample document without meaningful content -->
