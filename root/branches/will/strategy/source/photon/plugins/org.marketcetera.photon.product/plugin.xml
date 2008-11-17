@@ -132,4 +132,9 @@
                id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup
+            class="org.marketcetera.photon.product.EarlyStartup"></startup>
+   </extension>
 </plugin>

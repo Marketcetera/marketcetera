@@ -169,15 +169,15 @@ public final class StrategyManager {
 	}
 
 	/**
-	 * Sets the properties for the given strategy.
+	 * Sets the parameters for the given strategy.
 	 * 
 	 * @param strategy
 	 *            strategy to be changed
-	 * @param properties
-	 *            the new properties
+	 * @param parameters
+	 *            the new parameters
 	 */
-	public void setProperties(Strategy strategy, Properties properties) {
-		strategy.setProperties(properties);
+	public void setParameters(Strategy strategy, Properties parameters) {
+		strategy.setParameters(parameters);
 		saveState();
 	}
 
@@ -195,19 +195,19 @@ public final class StrategyManager {
 	 */
 	public void registerStrategy(IFile file, String className,
 			String displayName) {
-		Properties properties = new Properties();
-		internalRegisterStrategy(file, className, displayName, properties);
+		Properties parameters = new Properties();
+		internalRegisterStrategy(file, className, displayName, parameters);
 		saveState();
 	}
 
 	private void internalRegisterStrategy(IFile file, String className,
-			String displayName, Properties properties) {
+			String displayName, Properties parameters) {
 		try {
 			ModuleURN urn = mModuleManager.createModule(
 					StrategyModuleFactory.PROVIDER_URN, className,
-					Language.RUBY, file.getLocation().toFile(), properties, null,
+					Language.RUBY, file.getLocation().toFile(), parameters, null,
 					null, null);
-			Strategy strategy = new Strategy(urn, file, className, properties);
+			Strategy strategy = new Strategy(urn, file, className, parameters);
 			strategy.setDisplayName(displayName);
 			strategy.setState(State.STOPPED);
 			mStrategies.add(strategy);
@@ -265,7 +265,7 @@ public final class StrategyManager {
 					.getFullPath().toString());
 			strategyMem
 					.putString(CLASS_NAME_ATTRIBUTE, strategy.getClassName());
-			for (Map.Entry<Object, Object> entry : strategy.getProperties()
+			for (Map.Entry<Object, Object> entry : strategy.getParameters()
 					.entrySet()) {
 				IMemento propertyMem = strategyMem.createChild(PROPERTY_TAG);
 				propertyMem.putString(KEY_ATTRIBUTE, (String) entry.getKey());

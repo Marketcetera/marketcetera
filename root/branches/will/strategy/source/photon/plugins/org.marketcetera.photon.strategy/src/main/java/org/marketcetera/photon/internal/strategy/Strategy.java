@@ -46,19 +46,21 @@ public final class Strategy {
 	
 	private final String mClassName;
 	
-	private final Properties mProperties;
+	private final Properties mParameters;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param urn the ModuleURN of the underlying strategy module
-	 * @param properties 
+	 * @param file the script file
+	 * @param className the class name of the strategy object
+	 * @param parameters parameters for the script
 	 */
-	Strategy(ModuleURN urn, IFile file, String className, Properties properties) {
+	Strategy(ModuleURN urn, IFile file, String className, Properties parameters) {
 		mURN = urn;
 		mFile = file;
 		mClassName = className;
-		mProperties = properties;
+		mParameters = parameters;
 	}
 
 	/**
@@ -107,14 +109,14 @@ public final class Strategy {
 	}
 	
 	/**
-	 * Returns the properties for this strategy
+	 * Returns the parameters for this strategy
 	 * 
-	 * @return the properties for the strategy
+	 * @return the parameters for the strategy
 	 */
-	public Properties getProperties() {
+	public Properties getParameters() {
 		// make a copy to prevent modification
 		Properties copy = new Properties();
-		copy.putAll(mProperties);
+		copy.putAll(mParameters);
 		return copy;
 	}
 
@@ -144,15 +146,15 @@ public final class Strategy {
 	}
 
 	/**
-	 * Set the strategy properties.
+	 * Set the strategy parameters.
 	 * 
-	 * @param properties
-	 *            the new properties
+	 * @param parameters
+	 *            the new parameters
 	 */
-	void setProperties(Properties properties) {
-		mProperties.clear();
-		if (properties != null) {
-			mProperties.putAll(properties);
+	void setParameters(Properties parameters) {
+		mParameters.clear();
+		if (parameters != null) {
+			mParameters.putAll(parameters);
 		}
 	}
 

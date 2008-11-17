@@ -61,17 +61,17 @@ public class StrategyTest {
 	}
 	
 	@Test
-	public void testProperties() {
-		assertTrue(fixture.getProperties().isEmpty());
+	public void testParameters() {
+		assertTrue(fixture.getParameters().isEmpty());
 		Properties props = new Properties();
 		props.put("ABC", "DEF");
 		props.put("XYZ", "123");
-		fixture.setProperties(props);
+		fixture.setParameters(props);
 		for (Map.Entry<Object, Object> entry : props.entrySet()) {
-			assertEquals(entry.getValue(), fixture.getProperties().get(entry.getKey()));
+			assertEquals(entry.getValue(), fixture.getParameters().get(entry.getKey()));
 		}
-		fixture.setProperties(null);
-		assertTrue(fixture.getProperties().isEmpty());
+		fixture.setParameters(null);
+		assertTrue(fixture.getParameters().isEmpty());
 	}
 
 	public static Strategy createTestStrategy() {
