@@ -1,1 +1,0 @@
-debug\ordermatch\ordermatch.exe cfg\ordermatch.cfg

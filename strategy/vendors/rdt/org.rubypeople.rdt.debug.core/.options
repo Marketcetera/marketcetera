@@ -1,3 +1,0 @@
-# Debugging options for org.rubypeople.rdt.debug.core
-org.rubypeople.rdt.debug.core/debug=false
-org.rubypeople.rdt.debug.core/rubyDebuggerVerbose=false
