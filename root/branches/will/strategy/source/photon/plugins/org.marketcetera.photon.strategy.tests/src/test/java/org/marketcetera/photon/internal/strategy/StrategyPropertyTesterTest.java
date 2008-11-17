@@ -2,10 +2,10 @@ package org.marketcetera.photon.internal.strategy;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 
 /* $License$ */
@@ -27,13 +27,14 @@ public class StrategyPropertyTesterTest {
 	}
 	
 	@Test
-	public void illegalProperty() {
-		try {
-			mFixture.test(StrategyTest.createTestStrategy(), "abc", null, "STOPPED");
-		} catch (Exception e) {
-			return;
-		}
-		fail("Exception expected");
+	public void illegalProperty() throws Exception {
+		final String badProperty = "abc";
+		new ExpectedFailure<IllegalArgumentException>(badProperty, false) {
+			@Override
+			protected void run() throws Exception {
+				mFixture.test(StrategyTest.createTestStrategy(), badProperty, null, "STOPPED");
+			}
+		};
 	}
 	
 	@Test
