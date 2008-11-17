@@ -1,12 +1,10 @@
 package org.marketcetera.photon.internal.strategy.ruby;
 
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.Assert;
 import org.eclipse.core.runtime.IStatus;
-import org.marketcetera.photon.internal.strategy.Messages;
+import org.marketcetera.photon.internal.strategy.StrategyValidation;
 import org.marketcetera.util.misc.ClassVersion;
 
 /**
@@ -39,11 +37,6 @@ public final class NotBlankValidator extends MultiValidator {
 	@Override
 	public IStatus validate() {
 		String string = (String) mValue.getValue();
-		if (StringUtils.isBlank(string)) {
-			return ValidationStatus
-					.error(Messages.REGISTER_RUBY_STRATEGY_REQUIRED_FIELD_BLANK
-							.getText(mField));
-		}
-		return ValidationStatus.ok();
+		return StrategyValidation.validateNotBlank(mField, string);
 	}
 }

@@ -8,7 +8,6 @@ import org.eclipse.core.databinding.observable.value.IValueChangeListener;
 import org.eclipse.core.databinding.observable.value.ValueChangeEvent;
 import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
-import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.SWTObservables;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
@@ -19,7 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.internal.strategy.Messages;
-import org.marketcetera.photon.internal.strategy.StrategyManager;
+import org.marketcetera.photon.internal.strategy.StrategyValidation;
 import org.marketcetera.photon.internal.strategy.ui.StrategyUI;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -136,12 +135,7 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 		@Override
 		public IStatus validate() {
 			String string = (String) mName.getValue();
-			if (!StrategyManager.getCurrent().isUniqueName(string)) {
-				return ValidationStatus
-						.error(Messages.REGISTER_RUBY_STRATEGY_NAME_NOT_UNIQUE
-								.getText(string));
-			}
-			return ValidationStatus.ok();
+			return StrategyValidation.validateDisplayNameUnique(string);
 		}
 	}
 

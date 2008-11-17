@@ -2,6 +2,7 @@ package org.marketcetera.photon.internal.strategy;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
@@ -45,15 +46,19 @@ public final class Strategy {
 	
 	private final String mClassName;
 	
+	private final Properties mProperties;
+	
 	/**
 	 * Constructor.
 	 * 
 	 * @param urn the ModuleURN of the underlying strategy module
+	 * @param properties 
 	 */
-	Strategy(ModuleURN urn, IFile file, String className) {
+	Strategy(ModuleURN urn, IFile file, String className, Properties properties) {
 		mURN = urn;
 		mFile = file;
 		mClassName = className;
+		mProperties = properties;
 	}
 
 	/**
@@ -100,6 +105,18 @@ public final class Strategy {
 	public String getDisplayName() {
 		return StringUtils.defaultString(mDisplayName);
 	}
+	
+	/**
+	 * Returns the properties for this strategy
+	 * 
+	 * @return the properties for the strategy
+	 */
+	public Properties getProperties() {
+		// make a copy to prevent modification
+		Properties copy = new Properties();
+		copy.putAll(mProperties);
+		return copy;
+	}
 
 	/**
 	 * Set the Strategy state.
@@ -124,6 +141,19 @@ public final class Strategy {
 		mDisplayName = displayName;
 		mPropertyChangeSupport.firePropertyChange(
 				"displayName", oldDisplayName, mDisplayName); //$NON-NLS-1$
+	}
+
+	/**
+	 * Set the strategy properties.
+	 * 
+	 * @param properties
+	 *            the new properties
+	 */
+	void setProperties(Properties properties) {
+		mProperties.clear();
+		if (properties != null) {
+			mProperties.putAll(properties);
+		}
 	}
 
 	/**

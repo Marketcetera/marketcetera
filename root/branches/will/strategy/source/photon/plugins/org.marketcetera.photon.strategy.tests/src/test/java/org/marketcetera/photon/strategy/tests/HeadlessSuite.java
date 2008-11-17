@@ -3,7 +3,9 @@ package org.marketcetera.photon.strategy.tests;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.marketcetera.photon.internal.strategy.MessagesTest;
+import org.marketcetera.photon.internal.strategy.StrategyPropertyTesterTest;
 import org.marketcetera.photon.internal.strategy.StrategyTest;
+import org.marketcetera.photon.internal.strategy.StrategyValidationTest;
 
 /* $License$ */
 
@@ -17,7 +19,9 @@ import org.marketcetera.photon.internal.strategy.StrategyTest;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
 	StrategyTest.class,
-	MessagesTest.class
+	MessagesTest.class,
+	StrategyPropertyTesterTest.class,
+	StrategyValidationTest.class
 })
 public class HeadlessSuite {
 
