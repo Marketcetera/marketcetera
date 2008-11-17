@@ -20,7 +20,11 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -71,7 +75,7 @@ public class StrategyPropertyPage extends PropertyPage {
 
 		addNameSection(composite);
 		addSeparator(composite);
-		addPropertiesSection(composite);
+		addParametersSection(composite);
 		if (mStrategy.getState().equals(State.RUNNING))
 			ControlEnableState.disable(composite);
 		return composite;
@@ -128,7 +132,7 @@ public class StrategyPropertyPage extends PropertyPage {
 		setErrorMessage(status.getMessage());
 	}
 
-	private void addPropertiesSection(Composite parent) {
+	private void addParametersSection(Composite parent) {
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 		GridLayoutFactory.swtDefaults().applyTo(composite);
@@ -152,7 +156,6 @@ public class StrategyPropertyPage extends PropertyPage {
 				new StrategyPropertySource())); //$NON-NLS-1$
 
 		initPopupMenu();
-
 	}
 
 	private void initPopupMenu() {
@@ -208,19 +211,41 @@ public class StrategyPropertyPage extends PropertyPage {
 		Menu menu = menuMgr.createContextMenu(mPage.getControl());
 		mPage.getControl().setMenu(menu);
 	}
+	
+	@Override
+	protected void contributeButtons(Composite parent) {
+		// A button to add properties
+		Button addButton = new Button(parent, SWT.PUSH);
+		addButton.setText(Messages.STRATEGY_PROPERTIES_ADD_BUTTON_LABEL.getText());
+		GridDataFactory.defaultsFor(addButton).applyTo(addButton);
+		addButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				NewPropertyInputDialog dialog = new NewPropertyInputDialog(
+						getShell(), false);
+				if (dialog.open() == IDialogConstants.OK_ID) {
+					final String key = dialog.getPropertyKey();
+					if (!mProperties.containsKey(key))
+						mProperties.put(key, dialog.getPropertyValue());
+					mPage.refresh();
+				}
+			}
+		});
+		((GridLayout) parent.getLayout()).numColumns++;
+	}
 
 	@Override
 	public void setElement(IAdaptable element) {
 		super.setElement(element);
 		mStrategy = (Strategy) getElement().getAdapter(Strategy.class);
-		mProperties = mStrategy.getProperties();
+		mProperties = mStrategy.getParameters();
 	}
 
 	@Override
 	public boolean performOk() {
 		StrategyManager.getCurrent().setDisplayName(mStrategy,
 				mNameText.getText());
-		StrategyManager.getCurrent().setProperties(mStrategy, mProperties);
+		StrategyManager.getCurrent().setParameters(mStrategy, mProperties);
 		return true;
 	}
 

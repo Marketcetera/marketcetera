@@ -217,8 +217,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		button
 				.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
 						.getText());
-		GridDataFactory.defaultsFor(button).align(SWT.CENTER, SWT.CENTER)
-				.applyTo(button);
+		GridDataFactory.defaultsFor(button).applyTo(button);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {

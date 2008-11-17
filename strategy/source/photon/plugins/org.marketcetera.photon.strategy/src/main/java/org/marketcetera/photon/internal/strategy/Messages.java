@@ -80,6 +80,8 @@ public interface Messages {
 			LOGGER, "new_ruby_strategy.invalid_class_name"); //$NON-NLS-1$
 	static final I18NMessage0P STRATEGY_PROPERTIES_ADD_LABEL = new I18NMessage0P(
 			LOGGER, "strategy_properties.add.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_PROPERTIES_ADD_BUTTON_LABEL = new I18NMessage0P(
+			LOGGER, "strategy_properties.add_button.label"); //$NON-NLS-1$
 	static final I18NMessage0P STRATEGY_PROPERTIES_DELETE_LABEL = new I18NMessage0P(
 			LOGGER, "strategy_properties.delete.label"); //$NON-NLS-1$
 	
