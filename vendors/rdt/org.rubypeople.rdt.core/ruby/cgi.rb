@@ -284,7 +284,7 @@ class CGI
   # Standard internet newline sequence
   EOL = CR + LF
 
-  REVISION = '$Id: cgi.rb 12050 2007-03-12 17:55:03Z knu $' #:nodoc:
+  REVISION = '$Id$' #:nodoc:
 
   NEEDS_BINMODE = true if /WIN/ni.match(RUBY_PLATFORM) 
 

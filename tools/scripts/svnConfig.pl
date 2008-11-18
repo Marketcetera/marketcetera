@@ -26,8 +26,6 @@ if (!defined($::prvConfig) && (-e $prvConfig)) {
 
 @::externals=(
 	@::externals,
-	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/1.8',
-	'public/source/photon/plugins/org.jruby.bsf/lib/ruby/site_ruby',
 	'public/source/tradebase/vendor/plugins/debug_view_helper',
 );
 

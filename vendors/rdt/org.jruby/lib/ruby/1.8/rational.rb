@@ -1,7 +1,7 @@
 #
 #   rational.rb -
 #       $Release Version: 0.5 $
-#       $Revision: 5425 $
+#       $Revision$
 #       $Date: 2007-12-29 15:54:51 -0500 (Sat, 29 Dec 2007) $
 #       by Keiju ISHITSUKA(SHL Japan Inc.)
 #
@@ -62,7 +62,7 @@ end
 #   Rational(3,0)             # -> ZeroDivisionError
 #
 class Rational < Numeric
-  @RCS_ID='-$Id: rational.rb 5425 2007-12-29 20:54:51Z headius $-'
+  @RCS_ID='-$Id$-'
 
   #
   # Reduces the given numerator and denominator to their lowest terms.  Use

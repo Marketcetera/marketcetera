@@ -164,7 +164,7 @@ module Net
     CR   = "\015"   
     LF   = "\012" 
     EOL  = CR + LF 
-    REVISION = '$Id: telnet.rb 2062 2006-06-10 19:14:15Z headius $'
+    REVISION = '$Id$'
     # :startdoc:
 
     #

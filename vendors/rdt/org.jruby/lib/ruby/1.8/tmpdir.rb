@@ -1,7 +1,7 @@
 #
 # tmpdir - retrieve temporary directory path
 #
-# $Id: tmpdir.rb 5479 2008-01-03 21:39:44Z headius $
+# $Id$
 #
 
 class Dir

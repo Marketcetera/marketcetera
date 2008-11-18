@@ -33,7 +33,7 @@ import org.marketcetera.marketdata.MarketDataRequest.UpdateType;
  * Tests {@link MarketDataRequest}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 public class MarketDataRequestTest

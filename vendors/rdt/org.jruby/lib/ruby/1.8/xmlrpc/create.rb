@@ -3,7 +3,7 @@
 # 
 # Copyright (C) 2001, 2002, 2003 by Michael Neumann (mneumann@ntecs.de)
 #
-# $Id: create.rb 5479 2008-01-03 21:39:44Z headius $
+# $Id$
 #
 
 require "date"

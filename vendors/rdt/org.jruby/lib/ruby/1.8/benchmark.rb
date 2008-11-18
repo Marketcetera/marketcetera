@@ -2,7 +2,7 @@
 #
 # benchmark.rb - a performance benchmarking library 
 # 
-# $Id: benchmark.rb 2062 2006-06-10 19:14:15Z headius $
+# $Id$
 # 
 # Created by Gotoken (gotoken@notwork.org). 
 #

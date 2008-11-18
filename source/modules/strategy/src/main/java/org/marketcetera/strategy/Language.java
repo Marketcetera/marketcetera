@@ -10,7 +10,7 @@ import org.marketcetera.core.ClassVersion;
  * Defines the set of strategy languages available.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: $
+ * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")

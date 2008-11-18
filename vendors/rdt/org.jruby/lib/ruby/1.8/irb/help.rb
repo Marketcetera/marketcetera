@@ -1,7 +1,7 @@
 #
 #   irb/help.rb - print usase module
 #   	$Release Version: 0.9.5$
-#   	$Revision: 2062 $
+#   	$Revision$
 #   	$Date: 2006-06-10 15:14:15 -0400 (Sat, 10 Jun 2006) $
 #   	by Keiju ISHITSUKA(keiju@ishitsuka.com)
 #

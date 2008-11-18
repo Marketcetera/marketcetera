@@ -6,7 +6,7 @@
 #
 # You can redistribute and/or modify it under the same terms as Ruby.
 #
-# $Id: ipaddr.rb 2906 2007-02-02 00:35:06Z headius $
+# $Id$
 #
 # TODO:
 #   - scope_id support

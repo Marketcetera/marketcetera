@@ -240,7 +240,7 @@ public abstract class MarketDataModuleTestBase
      * Sample <code>SinkDataListener</code> implementation that stores the objects it receives.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id:$
+     * @version $Id$
      * @since $Release$
      */
     public static class DataSink

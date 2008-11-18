@@ -9,7 +9,7 @@ import static org.junit.Assert.*;
  * Tests {@link SecurityListRequestTest}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 public class SecurityListRequestTest

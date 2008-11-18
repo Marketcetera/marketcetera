@@ -17,10 +17,10 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
  * Bogus feed {@link EventTranslator} instance.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusFeedEventTranslator.java 9458 2008-08-01 05:27:12Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedEventTranslator.java 9458 2008-08-01 05:27:12Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedEventTranslator
         implements EventTranslator, Messages
 {

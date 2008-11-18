@@ -37,7 +37,7 @@
 #
 # == Revision Information
 #
-# $Id: time.rb 5425 2007-12-29 20:54:51Z headius $
+# $Id$
 #
 
 require 'parsedate'

@@ -1,5 +1,5 @@
 # format.rb: Written by Tadayoshi Funaba 1999-2007
-# $Id: format.rb 5425 2007-12-29 20:54:51Z headius $
+# $Id$
 
 require 'rational'
 

@@ -15,7 +15,7 @@
 # NOTE: You can find Japanese version of this document in
 # the doc/net directory of the standard ruby interpreter package.
 # 
-#   $Id: pop.rb 2062 2006-06-10 19:14:15Z headius $
+#   $Id$
 #
 # See Net::POP3 for documentation.
 #
@@ -190,7 +190,7 @@ module Net
   # 
   class POP3 < Protocol
 
-    Revision = %q$Revision: 2062 $.split[1]
+    Revision = %q$Revision$.split[1]
 
     #
     # Class Parameters

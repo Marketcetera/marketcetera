@@ -11,7 +11,7 @@
   (See the file 'LICENCE'.)
 
 = Version
-  $Id: telnets.rb,v 1.1.2.1 2004/12/20 03:49:16 gotoyuzo Exp $
+  $Id$
   
   2001/11/06: Contiributed to Ruby/OpenSSL project.
 

@@ -1,7 +1,7 @@
 #
 #   tracer.rb - 
 #   	$Release Version: 0.2$
-#   	$Revision: 2906 $
+#   	$Revision$
 #   	$Date: 2007-02-01 19:35:06 -0500 (Thu, 01 Feb 2007) $
 #   	by Keiju ISHITSUKA(Nippon Rational Inc.)
 #
@@ -14,7 +14,7 @@
 # tracer main class
 #
 class Tracer
-  @RCS_ID='-$Id: tracer.rb 2906 2007-02-02 00:35:06Z headius $-'
+  @RCS_ID='-$Id$-'
 
   @stdout = STDOUT
   @verbose = false

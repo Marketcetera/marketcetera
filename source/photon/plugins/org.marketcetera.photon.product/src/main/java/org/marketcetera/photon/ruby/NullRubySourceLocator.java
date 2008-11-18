@@ -28,10 +28,10 @@ import org.marketcetera.util.misc.ClassVersion;
  * prevents exceptions from being thrown and cluttering the log files.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
- * @version $Id: NullRubySourceLocator.java 9876 2008-10-17 23:08:24Z klim $
+ * @version $Id$
  * @since 0.9.0
  */
-@ClassVersion("$Id: NullRubySourceLocator.java 9876 2008-10-17 23:08:24Z klim $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class NullRubySourceLocator implements IPersistableSourceLocator {
 
 	@Override

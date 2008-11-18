@@ -12,10 +12,10 @@ import org.marketcetera.util.log.I18NMessageProvider;
  * Messages for BogusFeed plug-in.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: Messages.java 9477 2008-08-08 23:38:47Z klim $
+ * @version $Id$
  * @since 0.6.0
  */
-@ClassVersion("$Id: Messages.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public interface Messages
 {
     static final I18NMessageProvider PROVIDER = new I18NMessageProvider("bogus");  //$NON-NLS-1$

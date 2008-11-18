@@ -2,7 +2,7 @@
 #--
 #   matrix.rb - 
 #       $Release Version: 1.0$
-#       $Revision: 2906 $
+#       $Revision$
 #       $Date: 2007-02-01 19:35:06 -0500 (Thu, 01 Feb 2007) $
 #       Original Version from Smalltalk-80 version
 #          on July 23, 1985 at 8:37:17 am
@@ -105,7 +105,7 @@ end
 # * <tt> #inspect                       </tt>
 #
 class Matrix
-  @RCS_ID='-$Id: matrix.rb 2906 2007-02-02 00:35:06Z headius $-'
+  @RCS_ID='-$Id$-'
   
 #  extend Exception2MessageMapper
   include ExceptionForMatrix

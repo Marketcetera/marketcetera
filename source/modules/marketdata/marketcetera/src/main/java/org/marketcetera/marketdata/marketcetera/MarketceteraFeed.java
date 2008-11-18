@@ -72,7 +72,7 @@ import quickfix.fix44.MessageFactory;
  * @author <a href="mailto:colin@marketcetera.com>Colin DuPlantis</a>
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketceteraFeed.java 9515 2008-09-03 15:15:45Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeed 
     extends AbstractMarketDataFeed<MarketceteraFeedToken,
                                    MarketceteraFeedCredentials,

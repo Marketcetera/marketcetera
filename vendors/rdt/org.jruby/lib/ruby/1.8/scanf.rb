@@ -1,7 +1,7 @@
 # scanf for Ruby
 #
-# $Revision: 2062 $
-# $Id: scanf.rb 2062 2006-06-10 19:14:15Z headius $
+# $Revision$
+# $Id$
 # $Author: headius $
 # $Date: 2006-06-10 15:14:15 -0400 (Sat, 10 Jun 2006) $
 #

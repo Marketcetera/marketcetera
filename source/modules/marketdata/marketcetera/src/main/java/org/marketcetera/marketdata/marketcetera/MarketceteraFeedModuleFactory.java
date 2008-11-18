@@ -14,7 +14,7 @@ import org.marketcetera.module.ModuleURN;
  * <code>ModuleFactory</code> implementation for the <code>MarketceteraFeed</code> market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

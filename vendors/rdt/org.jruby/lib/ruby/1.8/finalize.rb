@@ -1,7 +1,7 @@
 #--
 #   finalizer.rb - 
 #   	$Release Version: 0.3$
-#   	$Revision: 2906 $
+#   	$Revision$
 #   	$Date: 2007-02-01 19:35:06 -0500 (Thu, 01 Feb 2007) $
 #   	by Keiju ISHITSUKA
 #++
@@ -49,7 +49,7 @@
 #
 
 module Finalizer
-  RCS_ID='-$Id: finalize.rb 2906 2007-02-02 00:35:06Z headius $-'
+  RCS_ID='-$Id$-'
 
   class <<self
     # @dependency: {id => [[dependant, method, *opt], ...], ...}

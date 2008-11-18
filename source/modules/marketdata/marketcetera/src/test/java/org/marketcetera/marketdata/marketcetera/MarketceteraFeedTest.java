@@ -11,10 +11,10 @@ import org.marketcetera.core.MarketceteraTestSuite;
 /**
  * Testing the {@link MarketceteraFeed} class.
  * @author toli
- * @version $Id: MarketceteraFeedTest.java 9484 2008-08-13 07:43:01Z tlerios $
+ * @version $Id$
  */
 
-@ClassVersion("$Id: MarketceteraFeedTest.java 9484 2008-08-13 07:43:01Z tlerios $")
+@ClassVersion("$Id$")
 public class MarketceteraFeedTest extends TestCase {
 //    private MockMarketceteraFeed feed;
 

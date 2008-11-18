@@ -56,10 +56,10 @@ import quickfix.fix44.DerivativeSecurityList;
  * from the feed via {@link EventBase} objects.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeed 
     extends AbstractMarketDataFeed<BogusFeedToken,
                                    BogusFeedCredentials,
@@ -407,10 +407,10 @@ public class BogusFeed
      * Matches bids and offers to produce trades.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $
+     * @version $Id$
      * @since 0.6.0
      */
-    @ClassVersion("$Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static class OrderBookSettler
     {
         /**
@@ -630,10 +630,10 @@ public class BogusFeed
      * Represents a request for data submitted to the feed.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $
+     * @version $Id$
      * @since 0.6.0
      */
-    @ClassVersion("$Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static class Request
     {
         /**
@@ -774,10 +774,10 @@ public class BogusFeed
      * Helper class for {@link OrderBook}.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $
+     * @version $Id$
      * @since 0.6.0
      */
-    @ClassVersion("$Id: BogusFeed.java 9477 2008-08-08 23:38:47Z klim $") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     private static class OrderBookWrapper
     {
         /**

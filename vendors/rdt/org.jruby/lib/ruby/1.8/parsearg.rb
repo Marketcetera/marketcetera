@@ -1,7 +1,7 @@
 #
 #		parsearg.rb - parse arguments
 #			$Release Version: $
-#			$Revision: 5479 $
+#			$Revision$
 #			$Date: 2008-01-03 16:39:44 -0500 (Thu, 03 Jan 2008) $
 #			by Yasuo OHBA(SHL Japan Inc. Technology Dept.)
 #
