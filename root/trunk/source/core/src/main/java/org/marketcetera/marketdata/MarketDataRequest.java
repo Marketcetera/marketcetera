@@ -16,10 +16,10 @@ import org.marketcetera.core.ClassVersion;
  * A request for market data from a market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id:$") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class MarketDataRequest
     extends DataRequest
 {
@@ -67,10 +67,10 @@ public final class MarketDataRequest
      * Request types for <code>MarketDataRequest</code> objects.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id:$
+     * @version $Id$
      * @since $Release$
      */
-    @ClassVersion("$Id:$") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     public static enum RequestType
     {
         /**
@@ -90,10 +90,10 @@ public final class MarketDataRequest
      * Update types for <code>MarketDataRequest</code> objects.
      *
      * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
-     * @version $Id:$
+     * @version $Id$
      * @since $Release$
      */
-    @ClassVersion("$Id:$") //$NON-NLS-1$
+    @ClassVersion("$Id$") //$NON-NLS-1$
     public static enum UpdateType
     {
         /**

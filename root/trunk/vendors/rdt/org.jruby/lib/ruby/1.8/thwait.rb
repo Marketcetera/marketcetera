@@ -1,7 +1,7 @@
 #
 #   thwait.rb - thread synchronization class
 #   	$Release Version: 0.9 $
-#   	$Revision: 2062 $
+#   	$Revision$
 #   	$Date: 2006-06-10 15:14:15 -0400 (Sat, 10 Jun 2006) $
 #   	by Keiju ISHITSUKA(Nihpon Rational Software Co.,Ltd.)
 #
@@ -52,7 +52,7 @@ require "e2mmap.rb"
 #   end
 #
 class ThreadsWait
-  RCS_ID='-$Id: thwait.rb 2062 2006-06-10 19:14:15Z headius $-'
+  RCS_ID='-$Id$-'
   
   Exception2MessageMapper.extend_to(binding)
   def_exception("ErrNoWaitingThread", "No threads for waiting.")

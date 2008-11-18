@@ -6,7 +6,7 @@ import java.math.BigDecimal;
  * A wrapper class for the quantities associated with a symbol event.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: AbstractEventTranslatorTest.java 9909 2008-10-25 01:05:34Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
 public class QuantityTuple

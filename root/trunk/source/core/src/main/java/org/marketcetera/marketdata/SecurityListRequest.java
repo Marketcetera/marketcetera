@@ -11,10 +11,10 @@ import org.marketcetera.core.ClassVersion;
  * A request for a security list from a market data provider.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id:$") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public final class SecurityListRequest
         extends DataRequest
 {

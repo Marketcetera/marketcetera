@@ -268,7 +268,7 @@ Note: Inherited methods from class (({Object})) cannot be used as XML-RPC names,
 
 
 = History
-    $Id: client.rb 5479 2008-01-03 21:39:44Z headius $
+    $Id$
 
 =end
 

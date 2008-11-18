@@ -12,10 +12,10 @@ import org.marketcetera.marketdata.MarketDataRequest;
  * Bogus feed implementation of {@link DataRequestTranslator}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusFeedMessageTranslator.java 9456 2008-07-31 22:28:30Z klim $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusFeedMessageTranslator.java 9456 2008-07-31 22:28:30Z klim $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusFeedMessageTranslator
     implements DataRequestTranslator<BogusMessage>
 {

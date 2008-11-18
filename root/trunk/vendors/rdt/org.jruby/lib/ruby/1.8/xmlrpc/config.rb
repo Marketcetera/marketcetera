@@ -1,5 +1,5 @@
 #
-# $Id: config.rb 2062 2006-06-10 19:14:15Z headius $
+# $Id$
 # Configuration file for XML-RPC for Ruby
 #
 

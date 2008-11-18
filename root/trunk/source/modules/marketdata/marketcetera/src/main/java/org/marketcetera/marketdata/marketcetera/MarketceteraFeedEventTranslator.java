@@ -32,10 +32,10 @@ import quickfix.fix44.MarketDataSnapshotFullRefresh;
  * exchange simulator.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: MarketceteraFeedEventTranslator.java 9515 2008-09-03 15:15:45Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: MarketceteraFeedEventTranslator.java 9515 2008-09-03 15:15:45Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraFeedEventTranslator
     implements EventTranslator, Messages
 {

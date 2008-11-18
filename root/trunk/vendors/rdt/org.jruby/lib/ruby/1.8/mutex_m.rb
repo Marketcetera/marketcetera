@@ -1,7 +1,7 @@
 #--
 #   mutex_m.rb - 
 #   	$Release Version: 3.0$
-#   	$Revision: 2906 $
+#   	$Revision$
 #   	$Date: 2007-02-01 19:35:06 -0500 (Thu, 01 Feb 2007) $
 #       Original from mutex.rb
 #   	by Keiju ISHITSUKA(keiju@ishitsuka.com)

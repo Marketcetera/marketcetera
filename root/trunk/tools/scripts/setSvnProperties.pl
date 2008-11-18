@@ -56,22 +56,16 @@ my(@patternsAll)=(
 my(%patternsCustom)=(
 	'public'
 	  => ('profiles.xml'),
-	'private/source/photon/plugins/com.marketcetera.marketdata.opentick'
-	  => ('bin'),
-	'private/source/photon/plugins/com.marketcetera.marketdata.opentick.tests'
-	  => ('bin'),
-	'private/source/photon/plugins/com.marketcetera.marketdata.activfinancial'
-	  => ('bin'),
-	'private/source/photon/plugins/com.marketcetera.marketdata.activfinancial.tests'
-	  => ('bin'),
 	'public/source/photon/plugins/com.swtworkbench.community.xswt'
 	  => ('bin'),
 	'public/source/photon/plugins/org.marketcetera.core.tests'
 	  => ('core-1.0.0-tests.jar'),
-	'public/source/photon/plugins/org.marketcetera.bogusfeed'
-	  => ('bin'),
-	'public/source/photon/plugins/org.slf4j'
-	  => ('bin'),
+        'public/source/strategyagent/src/test/sample_data/modules/jars'
+          => ('first.jar'),
+        'public/source/strategyagent/src/test/sample_data/modules/jars'
+          => ('second.jar'),
+        'public/source/strategyagent/src/test/sample_data/modules/jars'
+          => ('third.jar'),
 );
 
 # Run command.

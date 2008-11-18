@@ -16,7 +16,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @version $Id$
  * @since $Release$
  */
-@ClassVersion("$Id: Messages.java 9860 2008-10-10 22:00:53Z klim $")//$NON-NLS-1$
+@ClassVersion("$Id$")//$NON-NLS-1$
 public interface Messages {
 	/**
 	 * The message provider.

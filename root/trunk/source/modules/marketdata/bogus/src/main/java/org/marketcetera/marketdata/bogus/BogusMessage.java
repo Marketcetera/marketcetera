@@ -12,10 +12,10 @@ import org.marketcetera.marketdata.DataRequest;
  * Message format for {@link BogusFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id: BogusMessage.java 9458 2008-08-01 05:27:12Z colin $
+ * @version $Id$
  * @since 0.5.0
  */
-@ClassVersion("$Id: BogusMessage.java 9458 2008-08-01 05:27:12Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class BogusMessage
 {
     private final DataRequest request;

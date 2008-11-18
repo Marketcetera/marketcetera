@@ -7,7 +7,7 @@ import org.marketcetera.core.ClassVersion;
 import org.marketcetera.core.MSymbol;
 import org.marketcetera.symbology.IEquityOptionSymbol;
 
-@ClassVersion("$Id: MarketceteraOptionSymbol.java 9515 2008-09-03 15:15:45Z colin $") //$NON-NLS-1$
+@ClassVersion("$Id$") //$NON-NLS-1$
 public class MarketceteraOptionSymbol 
     extends MSymbol 
     implements IEquityOptionSymbol, Messages

@@ -1,7 +1,7 @@
 #
 #   complex.rb - 
 #   	$Release Version: 0.5 $
-#   	$Revision: 2062 $
+#   	$Revision$
 #   	$Date: 2006-06-10 15:14:15 -0400 (Sat, 10 Jun 2006) $
 #   	by Keiju ISHITSUKA(SHL Japan Inc.)
 #
@@ -99,7 +99,7 @@ end
 # The complex number class.  See complex.rb for an overview.
 #
 class Complex < Numeric
-  @RCS_ID='-$Id: complex.rb 2062 2006-06-10 19:14:15Z headius $-'
+  @RCS_ID='-$Id$-'
 
   undef step
 

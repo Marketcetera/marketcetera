@@ -12,7 +12,7 @@ import org.marketcetera.module.DisplayName;
  * Defines the set of attributes and operations available from the {@link MarketceteraFeed}.
  *
  * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
- * @version $Id:$
+ * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$

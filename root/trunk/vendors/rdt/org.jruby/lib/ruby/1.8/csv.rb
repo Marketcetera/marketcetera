@@ -1,7 +1,7 @@
 # CSV -- module for generating/parsing CSV data.
 # Copyright (C) 2000-2004  NAKAMURA, Hiroshi <nakahiro@sarion.co.jp>.
   
-# $Id: csv.rb 2062 2006-06-10 19:14:15Z headius $
+# $Id$
   
 # This program is copyrighted free software by NAKAMURA, Hiroshi.  You can
 # redistribute it and/or modify it under the same terms of Ruby's license;

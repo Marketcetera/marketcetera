@@ -9,7 +9,7 @@
 # All rights reserved.  You can redistribute and/or modify it under the same
 # terms as Ruby.
 #
-#   $Id: set.rb 5479 2008-01-03 21:39:44Z headius $
+#   $Id$
 #
 # == Overview 
 # 
