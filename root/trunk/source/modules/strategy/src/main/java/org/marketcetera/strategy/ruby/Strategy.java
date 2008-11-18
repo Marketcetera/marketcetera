@@ -1,5 +1,8 @@
 package org.marketcetera.strategy.ruby;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
@@ -7,8 +10,10 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderSingle;
 
 /* $License$ */
+
 /**
  * {@link RunningStrategy} implementation for Ruby strategies to extend.
  * 
@@ -138,7 +143,8 @@ public class Strategy
     {
     }
     /**
-     * Invoked when the <code>Strategy</code> receives a callback requested via {@link #request_callback(long, Object)}.
+     * Invoked when the <code>Strategy</code> receives a callback requested via {@link #request_callback_at(long, Object)}
+     * or {@link #request_callback_after(long, Object)}.
      * 
      * @param inData an <code>Object</code> value which was passed to the request, may be null
      */
@@ -171,18 +177,6 @@ public class Strategy
                     inValue);
     }
     /**
-     * Requests a callback after the given amount of time has passed.
-     * 
-     * @param inDelay a <code>long</code> value containing the number of milliseconds to delay before executing
-     *            {@link #on_callback(Object)}.
-     * @param inData an <code>Object</code> value containing data to pass to {@link #on_callback(Object)}, may be null
-     */
-    public final void request_callback(long inDelay,
-                                       Object inData)
-    {
-        throw new UnsupportedOperationException();
-    }
-    /**
      * Gets the parameter associated with the given name.
      * 
      * @param inName a <code>String</code> value containing the key of a parameter key/value value
@@ -193,19 +187,74 @@ public class Strategy
         return getParameter(inName);
     }
     /**
+     * Gets the property associated with the given name.
+     * 
+     * @param inName a <code>String</code> value containing the key of a property key/value value
+     * @return a <code>String</code> value or null if no property is associated with the given name
+     */
+    public final String get_property(String inName)
+    {
+        return getProperty(inName);
+    }
+    /**
+     * Requests a callback after a specified delay in milliseconds.
+     *
+     * <p>The callback will be executed as close to the specified millisecond
+     * as possible.  There is no guarantee that the timing will be exact.  If
+     * more than one callback is requested by the same {@link RunningStrategy}
+     * for the same millisecond, the requests will be processed serially in
+     * FIFO order.  This implies that a long-running callback request may
+     * delay other callbacks from the same {@link RunningStrategy} unless the
+     * caller takes steps to mitigate the bottleneck.
+     *
+     * @param inDelay a <code>long</code> value indicating how many milliseconds
+     *   to wait before executing the callback.  A value <= 0 will be interpreted
+     *   as a request for an immediate callback.
+     * @param inData an <code>Object</code> value to deliver along with the callback,
+     *   may be null
+     */
+    public final void request_callback_after(long inDelay,
+                                             Object inData)
+    {
+        requestCallbackAfter(inDelay,
+                             inData);
+    }
+    /**
+     * Requests a callback at a specific point in time.
+     *
+     * <p>The callback will be executed as close to the specified millisecond
+     * as possible.  There is no guarantee that the timing will be exact.  If
+     * more than one callback is requested by the same {@link RunningStrategy}
+     * for the same millisecond, the requests will be processed serially in
+     * FIFO order.  This implies that a long-running callback request may
+     * delay other callbacks from the same {@link RunningStrategy} unless the
+     * caller takes steps to mitigate the bottleneck.
+     *
+     * @param inDate a <code>Date</code> value at which to execute the callback.  A date
+     *   value earlier than the present will be interpreted as a request for an
+     *   immediate callback.
+     * @param inData an <code>Object</code> value to deliver with the callback or null
+     */
+    public final void request_callback_at(Date inDate,
+                                          Object inData)
+    {
+        requestCallbackAt(inDate,
+                          inData);
+    }
+    /**
      * Creates a market data request.
      * 
      * <p>The <code>inSource</code> parameter must contain the identifier of a started market data provider
      * module.
      * 
-     * @param inRequest a <code>DataRequest</code> value indicating what data to request
      * @param inSource a <code>String</code> value indicating what market data provider from which to request the data
+     * @param inSymbols a <code>String</code> value containing a comma-separated list of symbols for which to request data
      * @return a <code>long</code> value containing an identifier corresponding to this market data request
      */
-    public final long request_market_data(org.marketcetera.marketdata.DataRequest inRequest,
+    public final long request_market_data(String inSymbols,
                                           String inSource)
     {
-        return requestMarketData(inRequest,
+        return requestMarketData(inSymbols,
                                  inSource);
     }
     /**
@@ -228,5 +277,21 @@ public class Strategy
     public final void cancel_all_market_data_requests()
     {
         cancelAllMarketDataRequests();
+    }
+    /**
+     * Suggests a trade.
+     *
+     * @param inOrder an <code>OrderSingle</code> value containing the trade to suggest
+     * @param inScore a <code>BigDecimal</code> value containing the score of this suggestion.  this value is determined by the user
+     *   but is recommended to fit in the interval [0..1]
+     * @param inIdentifier a <code>String</code> value containing a user-specified string to identify the suggestion
+     */
+    public final void suggest_trade(OrderSingle inOrder,
+                                    BigDecimal inScore,
+                                    String inIdentifier)
+    {
+        suggestTrade(inOrder,
+                     inScore,
+                     inIdentifier);
     }
 }

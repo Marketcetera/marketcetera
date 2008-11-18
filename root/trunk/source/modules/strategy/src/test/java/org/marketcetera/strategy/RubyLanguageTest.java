@@ -32,6 +32,9 @@ public class RubyLanguageTest
     public static final File PARAMETER_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                            "ParameterStrategy.rb");
     public static final String PARAMETER_STRATEGY_NAME = "ParameterStrategy";
+    public static final File SUGGESTION_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                            "suggest_trades.rb");
+    public static final String SUGGESTION_STRATEGY_NAME = "SuggestTrades";
     /*
      * (non-Javadoc)
      * 
@@ -97,5 +100,14 @@ public class RubyLanguageTest
     {
         return StrategyCoordinates.get(RubyLanguageTest.PARAMETER_STRATEGY,
                                        RubyLanguageTest.PARAMETER_STRATEGY_NAME);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getSuggestionStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getSuggestionStrategy()
+    {
+        return StrategyCoordinates.get(RubyLanguageTest.SUGGESTION_STRATEGY,
+                                       RubyLanguageTest.SUGGESTION_STRATEGY_NAME);
     }
 }

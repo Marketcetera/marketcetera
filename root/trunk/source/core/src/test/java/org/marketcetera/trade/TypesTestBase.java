@@ -10,7 +10,7 @@ import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotSame;import static org.junit.Assert.assertNotNull;
 import org.junit.BeforeClass;
 
 import java.util.Map;
@@ -61,6 +61,105 @@ public class TypesTestBase {
         fields.put("HEADER", fieldsToMap(msg.getHeader(), dict).toString());
         fields.put("TRAILER", fieldsToMap(msg.getTrailer(), dict).toString());
         SLF4JLoggerProxy.error(TypesTestBase.class,  fields.toString());
+    }
+
+    public static void assertOrderFIXEquals(FIXOrder inOrder1,
+                                             FIXOrder inOrder2) {
+        assertOrderEquals(inOrder1,  inOrder2);
+        assertEquals(inOrder1.getFields(), inOrder2.getFields());
+    }
+
+    public static void assertOrderSingleEquals(OrderSingle inOrder1,
+                                                OrderSingle inOrder2) {
+        assertOrderBaseEquals(inOrder1, inOrder2);
+        assertNROrderEquals(inOrder1, inOrder2);
+    }
+
+    public static void assertOrderReplaceEquals(OrderReplace inOrder1,
+                                                 OrderReplace inOrder2) {
+        assertRelatedOrderEquals(inOrder1, inOrder2);
+        assertNROrderEquals(inOrder1, inOrder2);
+    }
+
+    public static void assertOrderCancelEquals(OrderCancel inOrder1,
+                                                OrderCancel inOrder2) {
+        assertRelatedOrderEquals(inOrder1, inOrder2);
+    }
+    public static void assertOrderSuggestionEquals(OrderSingleSuggestion inSuggest1,
+                                                   OrderSingleSuggestion inSuggest2) {
+        assertSuggestionEquals(inSuggest1,  inSuggest2);
+    }
+
+    public static void assertExecReportEquals(ExecutionReport inReport1,
+                                               ExecutionReport inReport2) {
+        assertReportBaseEquals(inReport1, inReport2);
+        assertEquals(inReport1.getAccount(), inReport2.getAccount());
+        assertEquals(inReport1.getAveragePrice(), inReport2.getAveragePrice());
+        assertEquals(inReport1.getCumulativeQuantity(), inReport2.getCumulativeQuantity());
+        assertEquals(inReport1.getExecutionID(), inReport2.getExecutionID());
+        assertEquals(inReport1.getExecutionType(), inReport2.getExecutionType());
+        assertEquals(inReport1.getLastMarket(), inReport2.getLastMarket());
+        assertEquals(inReport1.getLastPrice(), inReport2.getLastPrice());
+        assertEquals(inReport1.getLastQuantity(), inReport2.getLastQuantity());
+        assertEquals(inReport1.getLeavesQuantity(), inReport2.getLeavesQuantity());
+        assertEquals(inReport1.getOrderQuantity(), inReport2.getOrderQuantity());
+        assertEquals(inReport1.getOrderType(), inReport2.getOrderType());
+        assertEquals(inReport1.getSendingTime(), inReport2.getSendingTime());
+        assertEquals(inReport1.getSide(), inReport2.getSide());
+        assertEquals(inReport1.getSymbol(), inReport2.getSymbol());
+        assertEquals(inReport1.getTimeInForce(), inReport2.getTimeInForce());
+        assertEquals(inReport1.getTransactTime().getTime(), inReport2.getTransactTime().getTime());
+    }
+
+    public static void assertCancelRejectEquals(OrderCancelReject inReport1,
+                                               OrderCancelReject inReport2) {
+        assertReportBaseEquals(inReport1, inReport2);
+    }
+    protected static void assertSuggestionEquals(Suggestion inSuggest1,
+                                                 Suggestion inSuggest2) {
+        assertEquals(inSuggest1.getIdentifier(), inSuggest2.getIdentifier());
+        assertEquals(inSuggest1.getScore(), inSuggest2.getScore());
+    }
+
+    protected static void assertOrderEquals(Order inOrder1, Order inOrder2) {
+        assertEquals(inOrder1.getDestinationID(), inOrder2.getDestinationID());
+        assertEquals(inOrder1.getSecurityType(), inOrder2.getSecurityType());
+    }
+
+    protected static void assertOrderBaseEquals(OrderBase inOrder1,
+                                              OrderBase inOrder2) {
+        assertOrderEquals(inOrder1, inOrder2);
+        assertEquals(inOrder1.getAccount(), inOrder2.getAccount());
+        assertEquals(inOrder1.getCustomFields(), inOrder2.getCustomFields());
+        assertEquals(inOrder1.getDestinationID(), inOrder2.getDestinationID());
+        assertEquals(inOrder1.getOrderID(), inOrder2.getOrderID());
+        assertEquals(inOrder1.getQuantity(), inOrder2.getQuantity());
+        assertEquals(inOrder1.getSecurityType(), inOrder2.getSecurityType());
+        assertEquals(inOrder1.getSide(), inOrder2.getSide());
+        assertEquals(inOrder1.getSymbol(), inOrder2.getSymbol());
+    }
+
+    protected static void assertNROrderEquals(NewOrReplaceOrder inOrder1,
+                                            NewOrReplaceOrder inOrder2) {
+        assertEquals(inOrder1.getOrderType(), inOrder2.getOrderType());
+        assertEquals(inOrder1.getPrice(), inOrder2.getPrice());
+        assertEquals(inOrder1.getTimeInForce(), inOrder2.getTimeInForce());
+    }
+
+    protected static void assertRelatedOrderEquals(RelatedOrder inOrder1,
+                                                 RelatedOrder inOrder2) {
+        assertOrderBaseEquals(inOrder1, inOrder2);
+        assertEquals(inOrder1.getOriginalOrderID(),
+                inOrder2.getOriginalOrderID());
+    }
+
+    protected static void assertReportBaseEquals(ReportBase inReport1,
+                                               ReportBase inReport2) {
+        assertEquals(inReport1.getDestinationID(), inReport2.getDestinationID());
+        assertEquals(inReport1.getOrderID(), inReport2.getOrderID());
+        assertEquals(inReport1.getOrderStatus(), inReport2.getOrderStatus());
+        assertEquals(inReport1.getOriginalOrderID(), inReport2.getOriginalOrderID());
+        assertEquals(inReport1.getText(), inReport2.getText());
     }
 
     /**
@@ -194,13 +293,18 @@ public class TypesTestBase {
     }
 
     protected static void assertOrderBaseValues(OrderBase inOrder,
+                                                //Supply NOT_NULL value to test if it's not null
                                                 OrderID inOrderID,
                                                 String inAccount,
                                                 Map<String, String> inCustomFields,
                                                 BigDecimal inQuantity,
                                                 Side inSide,
                                                 MSymbol inSymbol) {
-        assertEquals(inOrderID, inOrder.getOrderID());
+        if (NOT_NULL == inOrderID) {
+            assertNotNull(inOrder.getOrderID());
+        } else {
+            assertEquals(inOrderID, inOrder.getOrderID());
+        }
         assertEquals(inAccount, inOrder.getAccount());
         Map<String, String> map = inOrder.getCustomFields();
         if (map != null) {
@@ -335,6 +439,8 @@ public class TypesTestBase {
         }
         return fields;
     }
+
+    protected static final OrderID NOT_NULL = new OrderID("notnull");
 
     /**
      * The factory instance that can be used for testing by all subclasses.
