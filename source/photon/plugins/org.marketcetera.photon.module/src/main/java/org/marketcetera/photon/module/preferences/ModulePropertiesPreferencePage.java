@@ -55,7 +55,7 @@ import org.marketcetera.util.misc.ClassVersion;
  *          will $
  * @since $Release$
  */
-@ClassVersion("$Id$")//$NON-NLS-1$
+@ClassVersion("$Id$")
 public final class ModulePropertiesPreferencePage extends PreferencePage
 		implements IWorkbenchPreferencePage {
 
@@ -120,8 +120,6 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 			public IPropertySource getPropertySource(Object object) {
 				if (object instanceof IPropertySource)
 					return (IPropertySource) object;
-				// if (object instanceof NodeDescriptor)
-				// return new ModulesPropertySource((NodeDescriptor) object);
 				return null;
 			}
 		});
@@ -162,7 +160,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 									String key = ""; //$NON-NLS-1$
 									if (selection.length == 1)
 										key = ((ModulePropertyNode) ((PropertySheetEntry) selection[0]
-												.getData()).getValues()[0]).key
+												.getData()).getValues()[0]).mKey
 												+ SEPARATOR;
 									// Show Instance Defaults if the selected
 									// property
@@ -180,7 +178,11 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 											mProperties.put(key, dialog
 													.getPropertyValue());
 										mPage.refresh();
-										expand(selection[0]);
+										if (selection.length == 1) {
+											expand(selection[0]);
+										} else {
+											expandAll();
+										}
 									}
 								}
 							});
@@ -195,7 +197,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 								public void run() {
 									for (int i = 0; i < selection.length; i++) {
 										final String root = ((ModulePropertyNode) ((PropertySheetEntry) selection[i]
-												.getData()).getValues()[0]).key;
+												.getData()).getValues()[0]).mKey;
 										mProperties.remove(root);
 									}
 									mPage.refresh();
@@ -215,8 +217,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		button
 				.setText(Messages.MODULE_PROPERTIES_PREFERENCE_PAGE_ADD_BUTTON_LABEL
 						.getText());
-		GridDataFactory.defaultsFor(button).align(SWT.CENTER, SWT.CENTER)
-				.applyTo(button);
+		GridDataFactory.defaultsFor(button).applyTo(button);
 		button.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
@@ -278,7 +279,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	}
 
 	/**
-	 * {@link IPropertySource} that for adapting a {@link PropertiesTree} for
+	 * {@link IPropertySource} for adapting a {@link PropertiesTree} for
 	 * the standard property sheet.
 	 * 
 	 * This class also serves as the ID object for property descriptors.
@@ -288,9 +289,9 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 	 *          22:49:55Z will $
 	 * @since $Release$
 	 */
-	@ClassVersion("$Id$")//$NON-NLS-1$
+	@ClassVersion("$Id$")
 	private final class ModulePropertyNode implements IPropertySource {
-		String key;
+		String mKey;
 
 		/**
 		 * Constructor.
@@ -300,25 +301,25 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		 */
 		ModulePropertyNode(String key) {
 			super();
-			this.key = key;
+			mKey = key;
 		}
 
 		@Override
 		public int hashCode() {
-			return key.hashCode();
+			return mKey.hashCode();
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			return key.equals(((ModulePropertyNode) obj).key);
+			return mKey.equals(((ModulePropertyNode) obj).mKey);
 		}
 
 		@Override
 		public Object getEditableValue() {
-			final String value = mProperties.get(key);
+			final String value = mProperties.get(mKey);
 			if (value != null) {
 				// mask text if the key is a password
-				final String[] split = SEPARATOR_PATTERN.split(key);
+				final String[] split = SEPARATOR_PATTERN.split(mKey);
 				final String display = split[split.length - 1];
 				return (!value.isEmpty() && PASSWORD_PATTERN.matcher(display).matches()) ? PASSWORD_MASK : value;
 			}
@@ -328,7 +329,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		@Override
 		public IPropertyDescriptor[] getPropertyDescriptors() {
 			List<IPropertyDescriptor> descriptors = new ArrayList<IPropertyDescriptor>();
-			for (String prefix : mProperties.getChildKeys(key)) {
+			for (String prefix : mProperties.getChildKeys(mKey)) {
 				final String[] split = SEPARATOR_PATTERN.split(prefix);
 				final String display = split[split.length - 1];
 				if (split.length <= 2) {
@@ -365,7 +366,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 			if (id instanceof ModulePropertyNode)
 				return id;
 			else
-				return mProperties.get(key);
+				return mProperties.get(mKey);
 		}
 
 		@Override
@@ -383,7 +384,7 @@ public final class ModulePropertiesPreferencePage extends PreferencePage
 		public void setPropertyValue(Object id, Object value) {
 			if (value == null)
 				return;
-			String key = ((ModulePropertyNode) id).key;
+			String key = ((ModulePropertyNode) id).mKey;
 			mProperties.put(key, (String) value);
 		}
 	}

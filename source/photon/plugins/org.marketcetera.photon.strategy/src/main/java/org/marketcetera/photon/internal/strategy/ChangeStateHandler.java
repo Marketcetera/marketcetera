@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.util.misc.ClassVersion;
@@ -43,13 +44,23 @@ public class ChangeStateHandler extends AbstractHandler implements IHandler,
 			IStructuredSelection sselection = (IStructuredSelection) selection;
 			for (Object obj : sselection.toArray()) {
 				if (obj instanceof Strategy) {
-					Strategy strategy = (Strategy) obj;
+					final Strategy strategy = (Strategy) obj;
 					switch (mNewState) {
 					case RUNNING:
-						StrategyManager.getCurrent().start(strategy);
+						BusyIndicator.showWhile(null, new Runnable() {
+							@Override
+							public void run() {
+								StrategyManager.getCurrent().start(strategy);						
+							}
+						});
 						break;
 					case STOPPED:
-						StrategyManager.getCurrent().stop(strategy);
+						BusyIndicator.showWhile(null, new Runnable() {
+							@Override
+							public void run() {
+								StrategyManager.getCurrent().stop(strategy);					
+							}
+						});
 						break;
 					}
 				}

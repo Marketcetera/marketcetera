@@ -30,12 +30,13 @@ public final class Activator extends AbstractUIPlugin {
 	/**
 	 * The {@link StrategyManager} singleton for this plug-in instance.
 	 */
-	private final StrategyManager mStrategyManager = new StrategyManager();
+	private StrategyManager mStrategyManager;
 	
 	@Override
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		mPlugin = this;
+		mStrategyManager = new StrategyManager();
 	}
 
 	@Override

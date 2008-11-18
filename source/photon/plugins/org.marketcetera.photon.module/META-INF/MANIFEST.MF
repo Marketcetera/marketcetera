@@ -10,9 +10,10 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.core;visibility:=reexport,
  org.marketcetera.util;visibility:=reexport,
  org.eclipse.ui.console
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .
 Bundle-Localization: plugin
 Bundle-Vendor: %providerName
-Export-Package: org.marketcetera.photon.module
+Export-Package: org.marketcetera.photon.module,
+ org.marketcetera.photon.module.preferences

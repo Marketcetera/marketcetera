@@ -48,10 +48,10 @@ public interface Messages {
 			LOGGER, "register_ruby_strategy.title"); //$NON-NLS-1$
 	static final I18NMessage0P REGISTER_RUBY_STRATEGY_DESCRIPTION = new I18NMessage0P(
 			LOGGER, "register_ruby_strategy.description"); //$NON-NLS-1$
-	static final I18NMessage1P REGISTER_RUBY_STRATEGY_NAME_NOT_UNIQUE = new I18NMessage1P(
-			LOGGER, "register_ruby_strategy.name_not_unique"); //$NON-NLS-1$
-	static final I18NMessage1P REGISTER_RUBY_STRATEGY_REQUIRED_FIELD_BLANK = new I18NMessage1P(
-			LOGGER, "register_ruby_strategy.required_field_blank"); //$NON-NLS-1$
+	static final I18NMessage1P STRATEGY_VALIDATION_NAME_NOT_UNIQUE = new I18NMessage1P(
+			LOGGER, "strategy_validation.name_not_unique"); //$NON-NLS-1$
+	static final I18NMessage1P STRATEGY_VALIDATION_REQUIRED_FIELD_BLANK = new I18NMessage1P(
+			LOGGER, "strategy_validation.required_field_blank"); //$NON-NLS-1$
 	static final I18NMessage0P NEW_RUBY_STRATEGY_GENERIC_EXCEPTION_MESSAGE = new I18NMessage0P(
 			LOGGER, "new_ruby_strategy.generic_exception_message"); //$NON-NLS-1$
 	static final I18NMessage0P NEW_RUBY_STRATEGY_ERROR_DIALOG_TITLE = new I18NMessage0P(
@@ -78,11 +78,23 @@ public interface Messages {
 			LOGGER, "new_ruby_strategy.file_exists"); //$NON-NLS-1$
 	static final I18NMessage0P NEW_RUBY_STRATEGY_INVALID_CLASS_NAME = new I18NMessage0P(
 			LOGGER, "new_ruby_strategy.invalid_class_name"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_PROPERTIES_ADD_LABEL = new I18NMessage0P(
+			LOGGER, "strategy_properties.add.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_PROPERTIES_ADD_BUTTON_LABEL = new I18NMessage0P(
+			LOGGER, "strategy_properties.add_button.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_PROPERTIES_DELETE_LABEL = new I18NMessage0P(
+			LOGGER, "strategy_properties.delete.label"); //$NON-NLS-1$
 	
 	/*
 	 * Log Messages 
 	 */
 	static final I18NMessage2P NEW_RUBY_STRATEGY_CREATION_FAILED = new I18NMessage2P(
 			LOGGER, "new_ruby_strategy.creation_failed"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_MANAGER_PERSIST_FAILED = new I18NMessage0P(
+			LOGGER, "strategy_manager.persist_failed"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_MANAGER_RESTORE_FAILED = new I18NMessage0P(
+			LOGGER, "strategy_manager.restore_failed"); //$NON-NLS-1$
+	static final I18NMessage2P STRATEGY_MANAGER_SCRIPT_NOT_FOUND = new I18NMessage2P(
+			LOGGER, "strategy_manager.script_not_found"); //$NON-NLS-1$
 }
 	

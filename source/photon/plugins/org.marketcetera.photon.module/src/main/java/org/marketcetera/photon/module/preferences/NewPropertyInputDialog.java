@@ -22,7 +22,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$")//$NON-NLS-1$
-final class NewPropertyInputDialog extends InputDialog implements Messages {
+public final class NewPropertyInputDialog extends InputDialog implements Messages {
 
 	/**
 	 * Property Value text widget.
