@@ -6,6 +6,7 @@ Bundle-SymbolicName: org.marketcetera.photon.product;singleton:=true
 Bundle-Version: 1.0.0
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.debug.core,
- org.marketcetera.util
+ org.marketcetera.util,
+ org.eclipse.ui
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-Localization: plugin
