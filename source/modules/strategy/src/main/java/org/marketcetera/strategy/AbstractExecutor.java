@@ -36,15 +36,17 @@ abstract class AbstractExecutor
         }
         if(objectReturned instanceof RunningStrategy) {
             RunningStrategy runningStrategy = (RunningStrategy)objectReturned;
-            if(runningStrategy instanceof AbstractRunningStrategy) {
-                AbstractRunningStrategy abstractRunningStrategy = (AbstractRunningStrategy)runningStrategy;
-                // make the parameters available to the strategy 
-                abstractRunningStrategy.setStrategy(getStrategy());
-            } else {
-                // TODO warn that no parameters will be available to this strategy
-            }
+            // assertions can be disabled, in which case, a CCE will be thrown on the following line.  In either case,
+            //  this error is a development-time error and should not happen in the wild.  This error is, in effect,
+            //  a shout-out that the design of strategy needs to change.  If, in the future, someone decides to create
+            //  a strategy subclass that is not an instance of AbstractRunningStrategy, the whole approach needs to be
+            //  re-thought.
+            assert(runningStrategy instanceof AbstractRunningStrategy);
+            AbstractRunningStrategy abstractRunningStrategy = (AbstractRunningStrategy)runningStrategy;
+            // make the parameters available to the strategy 
+            abstractRunningStrategy.setStrategy(getStrategy());
             this.runningStrategy = runningStrategy;
-            // TODO put into executorservice?
+            // TODO put into executorservice to avoid inappropriate delay in startup
             runningStrategy.onStart();
             return runningStrategy;
         } else {
@@ -58,12 +60,11 @@ abstract class AbstractExecutor
     public final void stop()
         throws StrategyException
     {
-        // TODO put into executorservice - should this time out?
-        if(runningStrategy != null) {
-            runningStrategy.onStop();
-        } else {
-            // TODO warn about null running strategy
-        }
+        assert(runningStrategy != null);
+        assert(runningStrategy instanceof AbstractRunningStrategy);
+        AbstractRunningStrategy abstractRunningStrategy = (AbstractRunningStrategy)runningStrategy;
+        abstractRunningStrategy.stop();
+        runningStrategy.onStop();
         engine.stop();
     }
     /**
@@ -80,8 +81,8 @@ abstract class AbstractExecutor
      *
      * <p>Any work that needs to be done on the script before it can be executed is done here.
      *
-     * @param inScript
-     * @return TODO
+     * @param inScript a <code>String</code> value containing the strategy script
+     * @return a <code>String</code> value containing the processed strategy script
      * @throws StrategyException
      */
     protected abstract String preprocess(String inScript)

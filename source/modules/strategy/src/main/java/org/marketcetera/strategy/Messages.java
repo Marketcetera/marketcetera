@@ -50,4 +50,14 @@ public interface Messages
                                                                            "no_support_for_language"); //$NON-NLS-1$
     static final I18NMessage2P MARKET_DATA_REQUEST_FAILED = new I18NMessage2P(LOGGER,
                                                                               "market_data_request_failed"); //$NON-NLS-1$
+    static final I18NMessage0P NULL_PROPERTY_KEY = new I18NMessage0P(LOGGER,
+                                                                     "null_property_key"); //$NON-NLS-1$
+    static final I18NMessage1P NO_PARAMETERS = new I18NMessage1P(LOGGER,
+                                                                 "no_parameters"); //$NON-NLS-1$
+    static final I18NMessage3P INVALID_MARKET_DATA_REQUEST = new I18NMessage3P(LOGGER,
+                                                                               "invalid_market_data_request"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_TRADE_SUGGESTION = new I18NMessage1P(LOGGER,
+                                                                            "invalid_trade_suggestion"); //$NON-NLS-1$
+    static final I18NMessage1P CALLBACK_ERROR = new I18NMessage1P(LOGGER,
+                                                                  "callback_error"); //$NON-NLS-1$
 }

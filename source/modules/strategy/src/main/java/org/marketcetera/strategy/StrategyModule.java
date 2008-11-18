@@ -4,6 +4,7 @@ import static org.marketcetera.strategy.Messages.*;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
+import static org.marketcetera.strategy.Messages.MARKET_DATA_REQUEST_FAILED;
 import static org.marketcetera.strategy.Messages.NULL_PARAMETER_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;

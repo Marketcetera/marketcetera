@@ -9,7 +9,9 @@ import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -192,7 +194,8 @@ public class StrategyTestBase
             /**
              * provider URN for {@link StrategyDataEmissionModule}
              */
-            public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:receiver:system"); 
+            public static final ModuleURN PROVIDER_URN = new ModuleURN("metc:receiver:system");
+            public static final Map<ModuleURN,MockRecorderModule> recorders = new HashMap<ModuleURN,MockRecorderModule>();
             /**
              * Create a new Factory instance.
              */
@@ -211,8 +214,11 @@ public class StrategyTestBase
             public Module create(Object... inParameters)
                     throws ModuleCreationException
             {
-                return new MockRecorderModule(new ModuleURN(PROVIDER_URN,
-                                                            "mockRecorderModule" + instanceCounter.incrementAndGet()));
+                MockRecorderModule module = new MockRecorderModule(new ModuleURN(PROVIDER_URN,
+                                                                                 "mockRecorderModule" + instanceCounter.incrementAndGet()));
+                recorders.put(module.getURN(),
+                              module);
+                return module;
             }
         }
         /**
@@ -261,6 +267,37 @@ public class StrategyTestBase
             public Object getData()
             {
                 return data;
+            }
+            /* (non-Javadoc)
+             * @see java.lang.Object#hashCode()
+             */
+            @Override
+            public int hashCode()
+            {
+                final int prime = 31;
+                int result = 1;
+                result = prime * result + ((data == null) ? 0 : data.hashCode());
+                return result;
+            }
+            /* (non-Javadoc)
+             * @see java.lang.Object#equals(java.lang.Object)
+             */
+            @Override
+            public boolean equals(Object obj)
+            {
+                if (this == obj)
+                    return true;
+                if (obj == null)
+                    return false;
+                if (getClass() != obj.getClass())
+                    return false;
+                DataReceived other = (DataReceived) obj;
+                if (data == null) {
+                    if (other.data != null)
+                        return false;
+                } else if (!data.equals(other.data))
+                    return false;
+                return true;
             }
         }
     }
@@ -504,12 +541,15 @@ public class StrategyTestBase
      * Verifies the given property is non-null.
      *
      * @param inKey a <code>String</code> value
+     * @return a <code>String</code> value or null
      */
-    protected void verifyPropertyNonNull(String inKey)
+    protected String verifyPropertyNonNull(String inKey)
     {
         Properties properties = AbstractRunningStrategy.getProperties();
+        String property = properties.getProperty(inKey);
         assertNotNull(inKey + " is supposed to be non-null",
-                      properties.getProperty(inKey));
+                      property);
+        return property;
     }
     /**
      * Verifies the given property is null.

@@ -2,12 +2,14 @@ include_class "org.marketcetera.strategy.ruby.Strategy"
 include_class "org.marketcetera.marketdata.DataRequest"
 include_class "java.lang.System"
 include_class "java.lang.Long"
+include_class "java.util.Date"
 
 class RubyStrategy < Strategy
   def on_start
+      @callbackCounter = 0
       shouldFail = get_parameter("shouldFailOnStart")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       shouldLoop = get_parameter("shouldLoopOnStart")
       if(shouldLoop != nil)
@@ -23,73 +25,114 @@ class RubyStrategy < Strategy
       marketDataSource = get_parameter("shouldRequestData")
       if(marketDataSource != nil)
           symbols = get_parameter("symbols")
-          dataRequest = DataRequest.newRequestFromString("type=marketdata:symbols=" + symbols)
-          puts "Strategy requesting " + dataRequest.toString()
-          @dataRequestID = request_market_data(dataRequest,
-                                               marketDataSource)
+          set_property("requestID",
+                       Long.toString(request_market_data(symbols,
+                                                         marketDataSource)))
       end
+      do_request_parameter_callbacks
+      do_request_properties_callbacks
       set_property("onStart",
                    Long.toString(System.currentTimeMillis()))
   end
   def on_stop
-      shouldCancel = get_parameter("shouldCancel")
-      if(shouldCancel != nil)
-          requestToCancel = get_parameter("requestToCancel")
-          cancel_market_data_request(Long.parseLong(requestToCancel))
-      end
-      shouldFail = get_parameter("shouldFailOnStop");
+      shouldFail = get_parameter("shouldFailOnStop")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onStop",
-                   Long.toString(System.currentTimeMillis()));
+                   Long.toString(System.currentTimeMillis()))
   end
   def on_ask(ask)
-      shouldFail = get_parameter("shouldFailOnAsk");
+      shouldFail = get_parameter("shouldFailOnAsk")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onAsk",
-                   ask.toString());
+                   ask.toString())
   end  
   def on_bid(bid)
-      shouldFail = get_parameter("shouldFailOnBid");
+      shouldFail = get_parameter("shouldFailOnBid")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onBid",
-                   bid.toString());
+                   bid.toString())
   end  
   def on_callback(data)
-      shouldFail = get_parameter("shouldFailOnCallback");
+    @callbackCounter += 1
+    shouldCancel = get_property("shouldCancel")
+    if(shouldCancel != nil)
+        requestToCancel = get_property("requestID")
+        cancel_market_data_request(Long.parseLong(requestToCancel))
+    end
+      shouldFail = get_parameter("shouldFailOnCallback")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onCallback",
-                   data.toString());
+                   @callbackCounter.to_s)
   end  
   def on_execution_report(execution_report)
-      shouldFail = get_parameter("shouldFailOnExecutionReport");
+      shouldFail = get_parameter("shouldFailOnExecutionReport")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onExecutionReport",
-                   execution_report.toString());
+                   execution_report.toString())
   end  
   def on_trade(trade)
-      shouldFail = get_parameter("shouldFailOnTrade");
+      shouldFail = get_parameter("shouldFailOnTrade")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onTrade",
-                   trade.toString());
+                   trade.toString())
   end  
   def on_other(data)
-      shouldFail = get_parameter("shouldFailOnOther");
+      shouldFail = get_parameter("shouldFailOnOther")
       if(shouldFail != nil) 
-          10 / 0;
+          10 / 0
       end
       set_property("onOther",
-                   data.toString());
-  end  
+                   data.toString())
+  end
+  def do_request_parameter_callbacks
+    do_callbacks(get_parameter("shouldRequestCallbackAfter"),
+                 get_parameter("shouldRequestCallbackAt"))
+  end
+  def do_request_properties_callbacks
+    do_callbacks(get_property("shouldRequestCallbackAfter"),
+                 get_property("shouldRequestCallbackAt"))
+  end
+  def do_callbacks(callbackAfter,
+                   callbackAt)
+    shouldDoubleCallbacks = get_parameter("shouldDoubleCallbacks")
+    if(shouldDoubleCallbacks != nil)
+      multiplier = 2
+    else  
+      multiplier = 1
+    end
+    callbackDataIsNull = get_parameter("callbackDataIsNull")
+    for i in (1..multiplier)
+      if(callbackDataIsNull != nil)
+        if(callbackAfter != nil)
+          request_callback_after(Long.parseLong(callbackAfter),
+                                 nil)
+        end
+        if(callbackAt != nil)
+            request_callback_at(Date.new(Long.parseLong(callbackAt)),
+                                nil)
+        end
+      else
+        if(callbackAfter != nil)
+          request_callback_after(Long.parseLong(callbackAfter),
+                                 self)
+        end
+        if(callbackAt != nil)
+          request_callback_at(Date.new(Long.parseLong(callbackAt)),
+                              self)
+        end
+      end
+    end
+  end
 end

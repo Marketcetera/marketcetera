@@ -1,21 +1,34 @@
 package org.marketcetera.strategy;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.marketcetera.core.MSymbol;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TypesTestBase;
 
 /* $License$ */
 
@@ -386,11 +399,480 @@ public abstract class LanguageTestBase
         moduleManager.start(BogusFeedModuleFactory.INSTANCE_URN);
         assertTrue(moduleManager.getModuleInfo(BogusFeedModuleFactory.INSTANCE_URN).getState().isStarted());
     }
+    /**
+     * Tests a strategy's ability to cancel a market data request.
+     *
+     * @throws Exception if an error occurs
+     */
     @Test
     public void cancelMarketDataRequest()
         throws Exception
     {
-        
+        getMarketData(BogusFeedModuleFactory.IDENTIFIER,
+                      "GOOG,YHOO,MSFT,METC");
+        // TODO same note as above: create a market data provider that deterministically produces data 
+        Thread.sleep(5000);
+        // market data request has produced some data, verify that now
+        verifyPropertyNonNull("onAsk");
+        verifyPropertyNonNull("onBid");
+        // TODO almost certainly Bogus will provide a trade within 5 seconds, but it's nonetheless
+        //  not deterministic.  the fix is to implement the deterministic provider described above
+//        verifyPropertyNonNull("onTrade");
+        // retrieve the id of the market data request
+        verifyPropertyNonNull("requestID");
+        Properties properties = AbstractRunningStrategy.getProperties();
+        long id = Long.parseLong(properties.getProperty("requestID"));
+        // reset properties to clear data received markers
+        setPropertiesToNull();
+        // set the indicators back in the properties to tell the script what to cancel
+        properties.setProperty("shouldCancel",
+                               "true");
+        properties.setProperty("requestID",
+                               Long.toString(id));
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        // should be only one running strategy, makes the job easier to find it
+        assertEquals(1,
+                     runningStrategies.size());
+        // execute the onCallback method in the running strategy to force the market data
+        //  request cancel
+        runningStrategies.iterator().next().getRunningStrategy().onCallback(this);
+        // collect more market data, or, give it the chance to, anyway
+        Thread.sleep(5000);
+        // make sure no more data was received
+        verifyPropertyNull("onAsk");
+        verifyPropertyNull("onBid");
+    }
+    /**
+     * Tests what happens when a strategy tries to cancel a non-existent market data request.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void cancelNonExistentMarketDataRequest()
+        throws Exception
+    {
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        // create a strategy that does not request market data
+        ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                               getLanguage(),
+                                               strategy.getFile(),
+                                               null,
+                                               null,
+                                               null,
+                                               null);
+        verifyNullProperties();
+        // set the indicators to tell the script what to cancel
+        Properties properties = new Properties();
+        properties.setProperty("shouldCancel",
+                               "true");
+        properties.setProperty("requestID",
+                               Long.toString(System.currentTimeMillis()));
+        Set<StrategyImpl> runningStrategies = StrategyImpl.getRunningStrategies();
+        // should be only one running strategy, makes the job easier to find it
+        assertEquals(1,
+                     runningStrategies.size());
+        // execute the onCallback method in the running strategy to force the market data
+        //  request cancel
+        runningStrategies.iterator().next().getRunningStrategy().onCallback(this);
+        // no error should result from this
+        // plumb the faux market data provider to the strategy to verify the strategy
+        //  is still working
+        doSuccessfulStartTest(strategyURN);
+    }
+    /**
+     * Tests a strategy's ability to request and receive a callback after a certain interval.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAfter()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackAfter",
+                               "1000");
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // make sure to wait until at least 1000ms after start
+        Thread.sleep(2000);
+        verifyPropertyNonNull("onCallback");
+    }
+    /**
+     * Tests a strategy's ability to request and receive a callback at a certain time.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAt()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date(System.currentTimeMillis() + 2000);
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // make sure to wait until at least 2000ms after start
+        Thread.sleep(2000);
+        verifyPropertyNonNull("onCallback");
+    }
+    /**
+     * Tests a strategy's ability to request and receive a callback after a negative interval.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAfterEarlier()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackAfter",
+                               "-1000");
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // make sure to wait until at least 1000ms after start
+        Thread.sleep(1000);
+        String callbackTime = verifyPropertyNonNull("onCallback");
+        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+    }
+    /**
+     * Tests a strategy's ability to request and receive a callback before the current time.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAtEarlier()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date(System.currentTimeMillis() - 2000);
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // callback should happen immediately, but wait a second or so
+        Thread.sleep(1000);
+        String callbackTime = verifyPropertyNonNull("onCallback");
+        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+    }
+    /**
+     * Tests a strategy's ability to request and receive a callback after a zero interval.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAfterZero()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldRequestCallbackAfter",
+                               "0");
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // make sure to wait until at least 1000ms after start
+        Thread.sleep(1000);
+        String callbackTime = verifyPropertyNonNull("onCallback");
+        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+    }
+    /**
+     * Tests a strategy's ability to request and receive a callback at the current time.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAtZero()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date();
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // callback should happen immediately, but wait a second or so
+        Thread.sleep(1000);
+        String callbackTime = verifyPropertyNonNull("onCallback");
+        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+    }
+    /**
+     * Tests what happens when a strategy commits a run-time error during a callback.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackFails()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        parameters.setProperty("shouldFailOnCallback",
+                               "true");
+        parameters.setProperty("shouldRequestCallbackAfter",
+                               "0");
+        verifyPropertyNull("onCallback");
+        ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                               getLanguage(),
+                                               strategy.getFile(),
+                                               parameters,
+                                               null,
+                                               null,
+                                               null); 
+        doSuccessfulStartTest(strategyURN);
+        // callback should happen immediately, but wait a second or so
+        Thread.sleep(1000);
+        // strategy should not have completed onCallback loop, but should still be running
+        verifyPropertyNull("onCallback");
+        setPropertiesToNull();
+        // make sure the strategy is still alive and kicking
+        doSuccessfulStartTestNoVerification(strategyURN);
+        verifyNonNullProperties();
+    }
+    /**
+     * Tests that a strategy can request and receive a null call-back payload without failing.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbackAtWithNullPayload()
+        throws Exception
+    {
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date();
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        parameters.setProperty("callbackDataIsNull",
+                               "true");
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // callback should happen immediately, but wait a second or so
+        Thread.sleep(1000);
+        String callbackTime = verifyPropertyNonNull("onCallback");
+        assertTrue(Long.parseLong(callbackTime) < System.currentTimeMillis());
+    }
+    /**
+     * Tests that simultaneous callbacks are executed properly.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void simultaneousCallbacks()
+        throws Exception
+    {
+        // start a strategy
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date(System.currentTimeMillis());
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        parameters.setProperty("shouldDoubleCallbacks",
+                               "true");
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // make sure to wait until at least 2000ms after start
+        Thread.sleep(2000);
+        // make sure 2 callbacks were received
+        assertEquals("2",
+                     verifyPropertyNonNull("onCallback"));
+    }
+    /**
+     * Tests that callbacks are not executed after the strategy is stopped.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void callbacksAfterStop()
+        throws Exception
+    {
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date(System.currentTimeMillis()+2000);
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        verifyPropertyNull("onCallback");
+        ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                               getLanguage(),
+                                               strategy.getFile(),
+                                               parameters,
+                                               null,
+                                               null,
+                                               null); 
+        doSuccessfulStartTest(strategyURN);
+        moduleManager.stop(strategyURN);
+        assertTrue("The strategy should have been stopped before the callback - increase the callback delay",
+                   System.currentTimeMillis() < callbackAt.getTime());
+        Thread.sleep(2500);
+        // callback should have happened
+        assertTrue(System.currentTimeMillis() > callbackAt.getTime());
+        verifyPropertyNull("onCallback");
+    }
+    /**
+     * Tests that sequential callbacks are executed properly.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void sequentialCallbacks()
+        throws Exception
+    {
+        final StrategyCoordinates strategy = getStrategyCompiles();
+        final Properties parameters = new Properties();
+        Date callbackAt = new Date(System.currentTimeMillis() + 1000);
+        parameters.setProperty("shouldRequestCallbackAt",
+                               Long.toString(callbackAt.getTime()));
+        parameters.setProperty("shouldDoubleCallbacks",
+                               "true");
+        Date callback2At = new Date(System.currentTimeMillis() + 1500);
+        AbstractRunningStrategy.getProperties().setProperty("shouldRequestCallbackAt",
+                                                            Long.toString(callback2At.getTime()));
+        verifyPropertyNull("onCallback");
+        doSuccessfulStartTest(createStrategy(strategy.getName(),
+                                             getLanguage(),
+                                             strategy.getFile(),
+                                             parameters,
+                                             null,
+                                             null,
+                                             null));
+        // make sure to wait until at least 2000ms after start
+        Thread.sleep(2000);
+        // make sure 4 callbacks were received (param + props * doubled)
+        assertEquals("4",
+                     verifyPropertyNonNull("onCallback"));
+    }
+    /**
+     * Tests a strategy's ability to suggest trades.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void suggestions()
+        throws Exception
+    {
+        Properties parameters = new Properties();
+        // null suggestion
+        parameters.setProperty("orderShouldBeNull",
+                               "true");
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[0]);
+        // null score
+        parameters.clear();
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[0]);
+        // null identifier
+        parameters.setProperty("score",
+                               "1");
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[0]);
+        // zero length identifier
+        parameters.setProperty("identifier",
+                               "");
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[0]);
+        // first complete suggestion
+        parameters.setProperty("identifier",
+                               "some identifier");
+        OrderSingleSuggestion expectedSuggestion = Factory.getInstance().createOrderSingleSuggestion();
+        expectedSuggestion.setScore(new BigDecimal("1"));
+        expectedSuggestion.setIdentifier("some identifier");
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
+        // add an account
+        parameters.setProperty("account",
+                               "some account");
+        expectedSuggestion.setAccount("some account");
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
+        // add order type
+        parameters.setProperty("orderType",
+                               OrderType.Market.name());
+        expectedSuggestion.setOrderType(OrderType.Market);        
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
+        // add price
+        parameters.setProperty("price",
+                               "100.23");
+        expectedSuggestion.setPrice(new BigDecimal("100.23"));        
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
+        // add quantity
+        parameters.setProperty("quantity",
+                               "10000");
+        expectedSuggestion.setQuantity(new BigDecimal("10000"));        
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
+        // add side
+        parameters.setProperty("side",
+                               Side.Buy.name());
+        expectedSuggestion.setSide(Side.Buy);        
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
+        // add symbol
+        parameters.setProperty("symbol",
+                               "METC");
+        expectedSuggestion.setSymbol(new MSymbol("METC"));        
+        doSuggestionTest(parameters,
+                         new OrderSingleSuggestion[] { expectedSuggestion });
     }
     /**
      * Gets the language to use for this test.
@@ -434,6 +916,64 @@ public abstract class LanguageTestBase
      * @return a <code>StrategyCoordinates</code> value
      */
     protected abstract StrategyCoordinates getParameterStrategy();
+    /**
+     * Get a strategy which executes trade suggestions.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getSuggestionStrategy();
+    /**
+     * Starts a strategy module which generates suggestions and measures them against the
+     * given expected results.
+     *
+     * @param inParameters a <code>Properties</code> value
+     * @param inExpectedSuggestions an <code>OrderSingleSuggestion[]</code> value
+     * @throws Exception if an error occurs
+     */
+    private void doSuggestionTest(Properties inParameters,
+                                  OrderSingleSuggestion[] inExpectedSuggestions)
+        throws Exception
+    {
+        ModuleURN suggestionReceiver = generateSuggestions(getSuggestionStrategy(),
+                                                           inParameters);
+        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
+        List<DataReceived> suggestions = recorder.getDataReceived();
+        assertEquals("The number of expected suggestions does not match the number of actual suggestions",
+                     inExpectedSuggestions.length,
+                     suggestions.size());
+        int index = 0;
+        for(DataReceived datum : suggestions) {
+            TypesTestBase.assertOrderSuggestionEquals(inExpectedSuggestions[index++],
+                                                      (OrderSingleSuggestion)datum.getData());
+        }
+        recorder.resetDataReceived();
+    }
+    /**
+     * Creates a strategy module from the given script with the given parameters and returns the
+     * <code>ModuleURN</code> of the module that received any generated order suggestions.
+     *
+     * @param inStrategy a <code>StrategyCoordinates</code> value
+     * @param inParameters a <code>Properties</code> value
+     * @return a <code>ModuleURN</code> value
+     * @throws Exception if an error occurs
+     */
+    private ModuleURN generateSuggestions(StrategyCoordinates inStrategy,
+                                          Properties inParameters)
+        throws Exception
+    {
+        // start the strategy pointing at the suggestion receiver for its suggestions
+        ModuleURN strategyURN = createStrategy(inStrategy.getName(),
+                                               getLanguage(),
+                                               inStrategy.getFile(),
+                                               inParameters,
+                                               null,
+                                               null,
+                                               suggestionsURN);
+        moduleManager.stop(strategyURN);
+        return suggestionsURN;
+    }
     /**
      * Creates a strategy that requests market data from the given provider for the given symbols.
      *
