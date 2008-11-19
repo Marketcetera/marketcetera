@@ -473,6 +473,7 @@
           <configuration>
             <disableXmlReport>true</disableXmlReport>
             <forkMode>always</forkMode>
+            <argLine>-Xmx512m</argLine>
           </configuration>
         </plugin>
 

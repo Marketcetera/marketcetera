@@ -49,7 +49,7 @@ public abstract class LanguageTestBase
      * 
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void compilesAndTestsCallbacks()
             throws Exception
     {
@@ -72,7 +72,7 @@ public abstract class LanguageTestBase
      * 
      * @throws Exception if an error occurs.
      */
-    @Test @Ignore
+    @Test
     public void doesNotCompile()
             throws Exception
     {
@@ -126,7 +126,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void noStrategySubclass()
         throws Exception
     {
@@ -151,7 +151,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void multipleClasses()
         throws Exception
     {
@@ -170,7 +170,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void noMatchingName()
         throws Exception
     {
@@ -199,7 +199,7 @@ public abstract class LanguageTestBase
      * 
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void almostEmptyStrategy()
         throws Exception
     {
@@ -230,7 +230,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void parameterStrategy()
         throws Exception
     {
@@ -273,7 +273,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void runtimeError()
         throws Exception
     {
@@ -343,7 +343,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void marketDataRequests()
         throws Exception
     {
@@ -364,7 +364,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void marketDataRequestFromNonexistentSource()
         throws Exception
     {
@@ -380,7 +380,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void marketDataRequestFromUnstartedSource()
         throws Exception
     {
@@ -404,7 +404,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void cancelMarketDataRequest()
         throws Exception
     {
@@ -447,7 +447,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void cancelNonExistentMarketDataRequest()
         throws Exception
     {
@@ -484,7 +484,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAfter()
         throws Exception
     {
@@ -510,7 +510,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAt()
         throws Exception
     {
@@ -537,7 +537,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAfterEarlier()
         throws Exception
     {
@@ -564,7 +564,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAtEarlier()
         throws Exception
     {
@@ -592,7 +592,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAfterZero()
         throws Exception
     {
@@ -619,7 +619,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAtZero()
         throws Exception
     {
@@ -647,7 +647,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackFails()
         throws Exception
     {
@@ -681,7 +681,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbackAtWithNullPayload()
         throws Exception
     {
@@ -710,7 +710,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void simultaneousCallbacks()
         throws Exception
     {
@@ -741,7 +741,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void callbacksAfterStop()
         throws Exception
     {
@@ -772,7 +772,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void sequentialCallbacks()
         throws Exception
     {
@@ -805,7 +805,7 @@ public abstract class LanguageTestBase
      *
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test
     public void suggestions()
         throws Exception
     {
