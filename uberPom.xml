@@ -391,7 +391,7 @@
           <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
             <configuration>
-              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country} -Duser.variant=${mvn.jvm.locale.variant}</argLine>
+              <argLine>-Duser.language=${mvn.jvm.locale.language} -Duser.country=${mvn.jvm.locale.country} -Duser.variant=${mvn.jvm.locale.variant} -Xmx512m</argLine>
             </configuration>
           </plugin>
         </plugins>
