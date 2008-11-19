@@ -1,4 +1,0 @@
-# Debugging options for org.rubypeople.rdt.core
-
-# Turn on debugging for RDocUtility
-org.rubypeople.rdt.ui/generaterdoc=false
