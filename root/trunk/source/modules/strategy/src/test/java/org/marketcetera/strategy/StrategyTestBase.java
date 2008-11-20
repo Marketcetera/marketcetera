@@ -40,7 +40,9 @@ import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.OrderCancelReject;
 
+import quickfix.Message;
 import quickfix.field.OrdStatus;
 import quickfix.field.Side;
 
@@ -357,6 +359,7 @@ public class StrategyTestBase
             try {
                 sendDataTypes(inSupport);
             } catch (Exception e) {
+                e.printStackTrace();
                 throw new IllegalRequestParameterValue(null,
                                                        e);
             }
@@ -391,19 +394,24 @@ public class StrategyTestBase
                                         "Exchange",
                                         new BigDecimal("200"),
                                         new BigDecimal("20000")));
-            inSupport.send(org.marketcetera.trade.Factory.getInstance().createExecutionReport(FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
-                                                                                                                                                      "clOrderID",
-                                                                                                                                                      "execID",
-                                                                                                                                                      OrdStatus.FILLED,
-                                                                                                                                                      Side.BUY,
-                                                                                                                                                      new BigDecimal(100),
-                                                                                                                                                      new BigDecimal(200),
-                                                                                                                                                      new BigDecimal(300),
-                                                                                                                                                      new BigDecimal(400),
-                                                                                                                                                      new BigDecimal(500),
-                                                                                                                                                      new BigDecimal(600),
-                                                                                                                                                      new MSymbol("Symbol"),
-                                                                                                                                                      "account"),
+            Message orderCancelReject = FIXVersion.FIX44.getMessageFactory().newOrderCancelReject();
+            OrderCancelReject cancel = org.marketcetera.trade.Factory.getInstance().createOrderCancelReject(orderCancelReject,
+                                                                                                            null);
+            inSupport.send(cancel);
+            Message executionReport = FIXVersion.FIX44.getMessageFactory().newExecutionReport("orderid",
+                                                                                              "clOrderID",
+                                                                                              "execID",
+                                                                                              OrdStatus.FILLED,
+                                                                                              Side.BUY,
+                                                                                              new BigDecimal(100),
+                                                                                              new BigDecimal(200),
+                                                                                              new BigDecimal(300),
+                                                                                              new BigDecimal(400),
+                                                                                              new BigDecimal(500),
+                                                                                              new BigDecimal(600),
+                                                                                              new MSymbol("Symbol"),
+                                                                                              "account");
+            inSupport.send(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
                                                                                               null));
             // send an object that doesn't fit one of the categories
             inSupport.send(this);
@@ -513,9 +521,10 @@ public class StrategyTestBase
     {
         verifyPropertyNull("onAsk");
         verifyPropertyNull("onBid");
-        verifyPropertyNull("onTrade");
+        verifyPropertyNull("onCancel");
         verifyPropertyNull("onExecutionReport");
         verifyPropertyNull("onOther");
+        verifyPropertyNull("onTrade");
     }
     /**
      * Asserts that the values in the common strategy storage area for some well-known testing keys are not null.
@@ -524,9 +533,10 @@ public class StrategyTestBase
     {
         verifyPropertyNonNull("onAsk");
         verifyPropertyNonNull("onBid");
-        verifyPropertyNonNull("onTrade");
+        verifyPropertyNonNull("onCancel");
         verifyPropertyNonNull("onExecutionReport");
         verifyPropertyNonNull("onOther");
+        verifyPropertyNonNull("onTrade");
     }
     /**
      * Sets the values in the common strategy storage area for some well-known testing keys to null.

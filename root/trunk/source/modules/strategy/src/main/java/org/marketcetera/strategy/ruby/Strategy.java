@@ -10,6 +10,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderSingle;
 
 /* $License$ */
@@ -64,6 +65,14 @@ public class Strategy
     public final void onExecutionReport(ExecutionReport inExecutionReport)
     {
         on_execution_report(inExecutionReport);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onCancel(org.marketcetera.trade.OrderCancelReject)
+     */
+    @Override
+    public final void onCancel(OrderCancelReject inCancel)
+    {
+        on_cancel(inCancel);
     }
     /*
      * (non-Javadoc)
@@ -124,6 +133,14 @@ public class Strategy
      * @param inExecutionReport an <code>ExecutionReport</code> value
      */
     protected void on_execution_report(ExecutionReport inExecutionReport)
+    {
+    }
+    /**
+     * Invoked when the <code>Strategy</code> receives an {@link OrderCancelReject}.
+     * 
+     * @param inCancel an <code>OrderCancelReject</code> value
+     */
+    protected void on_cancel(OrderCancelReject inCancel)
     {
     }
     /**

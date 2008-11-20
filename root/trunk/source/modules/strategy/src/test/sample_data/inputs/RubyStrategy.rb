@@ -80,6 +80,14 @@ class RubyStrategy < Strategy
       set_property("onExecutionReport",
                    execution_report.toString())
   end  
+  def on_cancel(cancel)
+      shouldFail = get_parameter("shouldFailOnCancel")
+      if(shouldFail != nil) 
+          10 / 0
+      end
+      set_property("onCancel",
+                   cancel.toString())
+  end  
   def on_trade(trade)
       shouldFail = get_parameter("shouldFailOnTrade")
       if(shouldFail != nil) 

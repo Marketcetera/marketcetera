@@ -16,6 +16,7 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 /* $License$ */
 
@@ -78,20 +79,24 @@ class StrategyImpl
     public final void dataReceived(Object inData)
     {
         RunningStrategy runningStrategy = getRunningStrategy();
-        if(inData instanceof TradeEvent) {
-            runningStrategy.onTrade((TradeEvent)inData);
+        if(inData instanceof AskEvent) {
+            runningStrategy.onAsk((AskEvent)inData);
             return;
         }
         if(inData instanceof BidEvent) {
             runningStrategy.onBid((BidEvent)inData);
             return;
         }
-        if(inData instanceof AskEvent) {
-            runningStrategy.onAsk((AskEvent)inData);
+        if(inData instanceof OrderCancelReject) {
+            runningStrategy.onCancel((OrderCancelReject)inData);
             return;
         }
         if(inData instanceof ExecutionReport) {
             runningStrategy.onExecutionReport((ExecutionReport)inData);
+            return;
+        }
+        if(inData instanceof TradeEvent) {
+            runningStrategy.onTrade((TradeEvent)inData);
             return;
         }
         // catch-all for every other type of data

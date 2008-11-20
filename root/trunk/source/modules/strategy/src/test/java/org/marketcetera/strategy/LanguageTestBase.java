@@ -174,14 +174,13 @@ public abstract class LanguageTestBase
     public void noMatchingName()
         throws Exception
     {
-        final StrategyCoordinates strategy1 = getStrategyMultipleClasses();
         final StrategyCoordinates strategy2 = getStrategyCompiles();
         new ExpectedFailure<ModuleException>(FAILED_TO_START) {
             @Override
             protected void run()
                     throws Exception
             {
-                verifyStrategyStartsAndStops(strategy1.getName(),
+                verifyStrategyStartsAndStops("SomeNameThatDoesNotMatch",
                                              getLanguage(),
                                              strategy2.getFile(),
                                              null,
@@ -312,15 +311,15 @@ public abstract class LanguageTestBase
 //        moduleManager.stop(strategyURN);
         // runtime error in each callback
         doCallbackFailsTest("shouldFailOnAsk",
-                            new String[] { "onBid", "onExecutionReport", "onTrade", "onOther" });
+                            new String[] { "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" });
         doCallbackFailsTest("shouldFailOnBid",
-                            new String[] { "onAsk", "onExecutionReport", "onTrade", "onOther" });
+                            new String[] { "onAsk", "onCancel", "onExecutionReport", "onTrade", "onOther" });
         doCallbackFailsTest("shouldFailOnExecutionReport",
-                            new String[] { "onAsk", "onBid", "onTrade", "onOther" });
+                            new String[] { "onAsk", "onBid", "onCancel", "onTrade", "onOther" });
         doCallbackFailsTest("shouldFailOnTrade",
-                            new String[] { "onAsk", "onBid", "onExecutionReport", "onOther" });
+                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onOther" });
         doCallbackFailsTest("shouldFailOnOther",
-                            new String[] { "onAsk", "onBid", "onExecutionReport", "onTrade" });
+                            new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade" });
     }
     @Test @Ignore
     public void endlessLoopOnStart()
@@ -875,6 +874,81 @@ public abstract class LanguageTestBase
                          new OrderSingleSuggestion[] { expectedSuggestion });
     }
     /**
+     * Takes a single strategy and starts and stops it many times.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void startStop()
+        throws Exception
+    {
+        StrategyCoordinates strategy = StrategyCoordinates.get(RubyLanguageTest.STRATEGY,
+                                                               RubyLanguageTest.STRATEGY_NAME);
+        ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                              strategy.getName(),
+                                                              Language.RUBY,
+                                                              strategy.getFile(),
+                                                              null,
+                                                              null,
+                                                              null,
+                                                              null);
+        int index = 0;
+        while (index++ < 500) {
+            moduleManager.start(strategyModule);
+            moduleManager.stop(strategyModule);
+        }
+    }
+    /**
+     * Starts and stops many different strategies.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void manyStrategiesStartStop()
+        throws Exception
+    {
+        StrategyCoordinates strategy = StrategyCoordinates.get(RubyLanguageTest.STRATEGY,
+                                                               RubyLanguageTest.STRATEGY_NAME);
+        int index = 0;
+        while (index++ < 500) {
+            ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                  strategy.getName(),
+                                                                  Language.RUBY,
+                                                                  strategy.getFile(),
+                                                                  null,
+                                                                  null,
+                                                                  null,
+                                                                  null);
+            moduleManager.start(strategyModule);
+            moduleManager.stop(strategyModule);
+            moduleManager.deleteModule(strategyModule);
+        }
+    }
+    /**
+     * Starts and stops many different strategies.
+     *
+     * @throws Exception
+     */
+    @Test
+    public void manyStrategiesStartWithoutStop()
+        throws Exception
+    {
+        StrategyCoordinates strategy = StrategyCoordinates.get(RubyLanguageTest.STRATEGY,
+                                                               RubyLanguageTest.STRATEGY_NAME);
+        int index = 0;
+        while (index++ < 500) {
+            ModuleURN strategyModule = moduleManager.createModule(StrategyModuleFactory.PROVIDER_URN,
+                                                                  strategy.getName(),
+                                                                  Language.RUBY,
+                                                                  strategy.getFile(),
+                                                                  null,
+                                                                  null,
+                                                                  null,
+                                                                  null);
+            moduleManager.start(strategyModule);
+        }
+    }
+    /**
      * Gets the language to use for this test.
      *
      * @return a <code>Language</code> value
@@ -1020,7 +1094,7 @@ public abstract class LanguageTestBase
      * @param inStrategy a <code>ModuleURN</code> value
      * @throws Exception if an error occurs
      */
-    private void doSuccessfulStartTestNoVerification(ModuleURN inStrategy)
+    protected void doSuccessfulStartTestNoVerification(ModuleURN inStrategy)
         throws Exception
     {
         // create an emitter module that will emit the types of data that the strategy must be able to process
@@ -1060,7 +1134,7 @@ public abstract class LanguageTestBase
                                                            null,
                                                            null,
                                                            null));
-        Set<String> allCallbacks = new HashSet<String>(Arrays.asList(new String[] { "onAsk", "onBid", "onExecutionReport", "onTrade", "onOther" }));
+        Set<String> allCallbacks = new HashSet<String>(Arrays.asList(new String[] { "onAsk", "onBid", "onCancel", "onExecutionReport", "onTrade", "onOther" }));
         for(String callback : inCallbacksThatShouldHaveSucceeded) {
             verifyPropertyNonNull(callback);
             allCallbacks.remove(callback);

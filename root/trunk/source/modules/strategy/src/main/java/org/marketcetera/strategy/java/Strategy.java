@@ -7,6 +7,7 @@ import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 /* $License$ */
 
@@ -55,6 +56,13 @@ public class Strategy
      */
     @Override
     public void onExecutionReport(ExecutionReport inExecutionReport)
+    {
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.RunningStrategy#onCancel(org.marketcetera.trade.OrderCancelReject)
+     */
+    @Override
+    public void onCancel(OrderCancelReject inCancel)
     {
     }
     /*

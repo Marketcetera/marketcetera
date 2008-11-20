@@ -28,11 +28,11 @@ class BeanScriptingFrameworkEngine
     /**
      * script engine manager
      */
-    private final BSFManager scriptManager = new BSFManager();
+    private static final BSFManager scriptManager = new BSFManager();
     /**
      * the script engine responsible for executing this script
      */
-    private BSFEngine scriptEngine;
+    private static BSFEngine scriptEngine;
     /**
      * the strategy to execute
      */
@@ -54,39 +54,26 @@ class BeanScriptingFrameworkEngine
         SLF4JLoggerProxy.debug(this,
                                "Preparing {}", //$NON-NLS-1$
                                inStrategy);
-        boolean tryAgain = true;
-        while(true)
-        {
-            String languageString = inStrategy.getLanguage().name();
-            try {
-                SLF4JLoggerProxy.debug(this,
-                                       "Loading {} script engine...", //$NON-NLS-1$
-                                       languageString);
-                scriptEngine = scriptManager.loadScriptingEngine(languageString);
-                SLF4JLoggerProxy.debug(this,
-                                       "Initializing engine..."); //$NON-NLS-1$
-                scriptEngine.initialize(scriptManager,
-                                         languageString,
-                                         new Vector<Object>());
-                SLF4JLoggerProxy.debug(this,
-                                       "success"); //$NON-NLS-1$
-                break;
-            } catch (BSFException e) {
-                SLF4JLoggerProxy.debug(this,
-                                       "failed"); //$NON-NLS-1$
-                if(!tryAgain) {
+        registerScriptEngines();
+        String languageString = inStrategy.getLanguage().name();
+        try {
+            synchronized(scriptManager) {
+                if(scriptEngine == null) {
+                    scriptEngine = scriptManager.loadScriptingEngine(languageString);
                     SLF4JLoggerProxy.debug(this,
-                                           e,
-                                           "quitting..."); //$NON-NLS-1$
-                    throw new StrategyException(e,
-                                                new I18NBoundMessage1P(NO_SUPPORT_FOR_LANGUAGE,
-                                                                       languageString));
+                                           "Initializing engine..."); //$NON-NLS-1$
+                    scriptEngine.initialize(scriptManager,
+                                            languageString,
+                                            new Vector<Object>());
+                } else {
+                    SLF4JLoggerProxy.debug(this,
+                                           "Reusing intialized engine..."); //$NON-NLS-1$
                 }
-                registerScriptEngines();
-                tryAgain = false;
-                SLF4JLoggerProxy.debug(this,
-                                       "Retrying..."); //$NON-NLS-1$
-           }
+            }
+        } catch (BSFException e) {
+            throw new StrategyException(e,
+                                        new I18NBoundMessage1P(NO_SUPPORT_FOR_LANGUAGE,
+                                                               languageString));
         }
     }
     /* (non-Javadoc)
@@ -113,7 +100,6 @@ class BeanScriptingFrameworkEngine
     public void stop()
             throws StrategyException
     {
-        scriptEngine.terminate();
     }
     /**
      * Registers script engines needed for language support.

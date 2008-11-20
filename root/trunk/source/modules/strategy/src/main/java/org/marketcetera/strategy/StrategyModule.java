@@ -1,6 +1,6 @@
 package org.marketcetera.strategy;
 
-import static org.marketcetera.strategy.Messages.*;
+import static org.marketcetera.strategy.Messages.EMPTY_NAME_ERROR;
 import static org.marketcetera.strategy.Messages.FAILED_TO_START;
 import static org.marketcetera.strategy.Messages.FILE_DOES_NOT_EXIST_OR_IS_NOT_READABLE;
 import static org.marketcetera.strategy.Messages.INVALID_LANGUAGE_ERROR;
