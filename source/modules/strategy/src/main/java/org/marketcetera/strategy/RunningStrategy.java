@@ -5,6 +5,7 @@ import org.marketcetera.event.AskEvent;
 import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.trade.ExecutionReport;
+import org.marketcetera.trade.OrderCancelReject;
 
 /* $License$ */
 
@@ -42,6 +43,12 @@ public interface RunningStrategy
      * @param inExecutionReport an <code>ExecutionReport</code> value
      */
     public void onExecutionReport(ExecutionReport inExecutionReport);
+    /**
+     * Indicates an <code>OrderCancelReject</code> has been received.
+     *
+     * @param inCancel an <code>OrderCancelReject</code> value
+     */
+    public void onCancel(OrderCancelReject inCancel);
     /**
      * Indicates an event has occurred that does not fit any of the other callbacks.
      * 

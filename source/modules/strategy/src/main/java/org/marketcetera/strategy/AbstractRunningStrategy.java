@@ -208,7 +208,7 @@ public abstract class AbstractRunningStrategy
         suggestion.setTimeInForce(inOrder.getTimeInForce());
         suggestion.setScore(inScore);
         suggestion.setIdentifier(inIdentifier);
-        SLF4JLoggerProxy.debug(this,
+        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
                                "{} suggesting trade {}", //$NON-NLS-1$
                                strategy,
                                suggestion);
@@ -307,7 +307,7 @@ public abstract class AbstractRunningStrategy
         @Override
         public void run()
         {
-            SLF4JLoggerProxy.debug(this,
+            SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
                                    "Executing callback for {} at {}", //$NON-NLS-1$
                                    strategy,
                                    new Date());
