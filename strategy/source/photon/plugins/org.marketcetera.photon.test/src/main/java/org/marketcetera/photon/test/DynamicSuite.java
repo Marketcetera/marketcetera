@@ -10,6 +10,15 @@ import org.eclipse.core.runtime.Platform;
 import org.junit.internal.runners.InitializationError;
 import org.junit.runners.Suite;
 
+/* $License$ */
+
+/**
+ * Custom runner that finds tests by plug-in extension.
+ *
+ * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+ * @version $Id$
+ * @since $Release$
+ */
 @SuppressWarnings("restriction")
 public class DynamicSuite extends Suite {
 

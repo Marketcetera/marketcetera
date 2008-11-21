@@ -29,12 +29,17 @@ import org.marketcetera.util.misc.ClassVersion;
 /* $License$ */
 
 /**
- * Utility class that provides common functionality for a JFace
+ * Utility class that provides configurable common functionality for a JFace
  * {@link TableViewer}.
  * <p>
  * Features:
  * <ul>
- * <li>
+ * <li>Sortable Columns</li>
+ * <li>Bean aware content and label providers</li>
+ * <ul>
+ * 
+ * @see TableConfiguration
+ * @see ColumnConfiguration
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$

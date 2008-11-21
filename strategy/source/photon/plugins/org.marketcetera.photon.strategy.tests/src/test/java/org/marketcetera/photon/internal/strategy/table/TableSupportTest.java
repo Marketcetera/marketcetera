@@ -26,7 +26,8 @@ public class TableSupportTest {
 	@Test
 	public void createsTable() {
 		TableSupport fixture = TableSupport.create(TableConfiguration.defaults());
-		Display display = new Display();
+		Display display = Display.getCurrent();
+		if (display == null) display = new Display();
 		Shell shell = new Shell(display);
 		fixture.createTable(shell);
 		Control[] shellChildren = shell.getChildren();
