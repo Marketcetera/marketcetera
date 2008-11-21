@@ -3,6 +3,8 @@ package org.marketcetera.trade;
 import org.marketcetera.util.misc.ClassVersion;
 import quickfix.Message;
 
+import java.util.Date;
+
 /* $License$ */
 /**
  * The base class for reports.
@@ -37,6 +39,11 @@ class ReportBaseImpl extends FIXMessageWrapper implements ReportBase {
     @Override
     public DestinationID getDestinationID() {
         return mDestinationID;
+    }
+
+    @Override
+    public Date getSendingTime() {
+        return FIXUtil.getSendingTime(getMessage());
     }
     /**
      * Creates an instance.

@@ -41,17 +41,18 @@ public class OrderReplaceTest extends TypesTestBase {
         //Null report parameter defaults.
         OrderReplace order = sFactory.createOrderReplace(null);
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, null, null, null, null, null, null);
-        assertNROrderValues(order, null, null, null);
+        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
+        assertNROrderValues(order, null, null, null, null, null);
         assertRelatedOrderValues(order,null);
 
         //Test an empty report.
         Message report = createEmptyExecReport();
         order = sFactory.createOrderReplace(
-                sFactory.createExecutionReport(report, null));
+                sFactory.createExecutionReport(report, null,
+                        Originator.Server));
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, null, null, null, null, null, null);
-        assertNROrderValues(order, null, null, null);
+        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
+        assertNROrderValues(order, null, null, null, null, null);
         assertRelatedOrderValues(order,null);
 
         //Test a report with all values in it
@@ -68,17 +69,21 @@ public class OrderReplaceTest extends TypesTestBase {
         //Create an exec report.
         report = createExecReport(orderID, side, orderQty, lastPrice,
                 symbol, account, orderType, fillOrKill);
+        report.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.AGENCY));
+        report.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.OPEN));
         //Create the order from the report.
         order = sFactory.createOrderReplace(
-                sFactory.createExecutionReport(report, cID));
+                sFactory.createExecutionReport(report, cID, Originator.Server));
         assertOrderValues(order, cID, symbol.getSecurityType());
-        assertOrderBaseValues(order, null, account, null,
+        assertOrderBaseValues(order, NOT_NULL, account, null,
                 report.getField(new LeavesQty()).getValue(), side, symbol);
-        assertNROrderValues(order, OrderType.Limit, lastPrice, fillOrKill);
+        assertNROrderValues(order, OrderType.Limit, lastPrice, fillOrKill,
+                OrderCapacity.Agency, PositionEffect.Open);
         assertRelatedOrderValues(order,new OrderID(orderID));
         
         assertNotSame(order, sFactory.createOrderReplace(
-                sFactory.createExecutionReport(report, cID)));
+                sFactory.createExecutionReport(report, cID,
+                        Originator.Server)));
     }
 
     /**
@@ -91,7 +96,8 @@ public class OrderReplaceTest extends TypesTestBase {
     public void pojoSetters()throws Exception {
         //Test with non-null exec report
         OrderReplace order = sFactory.createOrderReplace(
-                sFactory.createExecutionReport(createEmptyExecReport(), null));
+                sFactory.createExecutionReport(createEmptyExecReport(), null,
+                        Originator.Server));
         checkSetters(order);
 
         //Test with null exec report
@@ -113,8 +119,8 @@ public class OrderReplaceTest extends TypesTestBase {
                 factory.getBeginString(), MsgType.ORDER_CANCEL_REPLACE_REQUEST);
         OrderReplace order = sFactory.createOrderReplace(msg, null);
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, null, null, null, null, null, null);
-        assertNROrderValues(order, null, null, null);
+        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
+        assertNROrderValues(order, null, null, null, null, null);
         assertRelatedOrderValues(order, null);
         checkSetters(order);
 
@@ -128,12 +134,15 @@ public class OrderReplaceTest extends TypesTestBase {
         msg = factory.newCancelReplaceFromMessage(createExecReport(
                 orderID.getValue(), Side.Buy, qty, price, symbol, account,
                 OrderType.Limit, TimeInForce.AtTheClose));
+        msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.INDIVIDUAL));
+        msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
         order = sFactory.createOrderReplace(msg, destinationID);
         assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, orderID, account, null,
+        assertOrderBaseValues(order, NOT_NULL, account, null,
                 qty, Side.Buy, symbol);
         assertNROrderValues(order, OrderType.Limit,
-                msg.getField(new Price()).getValue(), TimeInForce.AtTheClose);
+                msg.getField(new Price()).getValue(), TimeInForce.AtTheClose,
+                OrderCapacity.Individual, PositionEffect.Close);
         assertRelatedOrderValues(order, orderID);
         checkSetters(order);
 
@@ -141,16 +150,19 @@ public class OrderReplaceTest extends TypesTestBase {
         msg = factory.newCancelReplaceFromMessage(createExecReport(
                 orderID.getValue(), Side.Sell, qty, null, symbol, account,
                 OrderType.Market, TimeInForce.FillOrKill));
+        msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.PROPRIETARY));
+        msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
         order = sFactory.createOrderReplace(msg, null);
         assertOrderValues(order, null, SecurityType.CommonStock);
-        assertOrderBaseValues(order, orderID, account, null,
+        assertOrderBaseValues(order, NOT_NULL, account, null,
                 qty, Side.Sell, symbol);
         assertNROrderValues(order, OrderType.Market,
                 //Price is copied even though it's a market order
                 //No validation is carried out. If the execution report
                 //has the value it's copied over.
                 msg.getField(new Price()).getValue(),
-                TimeInForce.FillOrKill);
+                TimeInForce.FillOrKill, OrderCapacity.Proprietary,
+                PositionEffect.Close);
         assertRelatedOrderValues(order, orderID);
         checkSetters(order);
 
@@ -183,10 +195,12 @@ public class OrderReplaceTest extends TypesTestBase {
 
         order = sFactory.createOrderReplace(msg, destinationID);
         assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, orderID, account, expectedMap, qty, Side.Sell, symbol);
+        assertOrderBaseValues(order, NOT_NULL, account, expectedMap, qty,
+                Side.Sell, symbol);
         assertNROrderValues(order, OrderType.Market,
                 msg.getField(new Price()).getValue(),
-                TimeInForce.FillOrKill);
+                TimeInForce.FillOrKill, OrderCapacity.Proprietary,
+                PositionEffect.Close);
         assertRelatedOrderValues(order, orderID);
     }
     /**

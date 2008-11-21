@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 /**
  * Represents an execution report of an order. Instances of this
  * message can be created via
- * {@link Factory#createExecutionReport(quickfix.Message, DestinationID)}.
+ * {@link Factory#createExecutionReport(quickfix.Message, DestinationID, Originator)}.
  * <p>
  * The enum attributes of this type have a null value, in case a value
  * is not specified for that attribute / field in the underlying FIX Message.
@@ -32,13 +32,6 @@ public interface ExecutionReport extends ReportBase {
      * @return the time of execution / order creation.
      */
     public Date getTransactTime();
-
-    /**
-     * Time of message transmission in UTC.
-     *
-     * @return the time of message transmission in UTC.
-     */
-    public Date getSendingTime();
 
     /**
      * The status of this execution report.
@@ -139,4 +132,24 @@ public interface ExecutionReport extends ReportBase {
      */
     public TimeInForce getTimeInForce();
 
+    /**
+     * The originator of this message.
+     *
+     * @return the originator of this message.
+     */
+    public Originator getOriginator();
+
+    /**
+     * Gets the order capacity value for this order.
+     *
+     * @return the order capacity value.
+     */
+    public OrderCapacity getOrderCapacity();
+    
+    /**
+     * Gets the position effect for this order.
+     *
+     * @return the position effect value.
+     */
+    public PositionEffect getPositionEffect();
 }

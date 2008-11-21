@@ -85,6 +85,22 @@ class FIXUtil {
             return null;
         }
     }
+    static OrderCapacity getOrderCapacity(Message inMessage) {
+        try {
+            return OrderCapacity.getInstanceForFIXValue(inMessage.getChar(
+                    quickfix.field.OrderCapacity.FIELD));
+        } catch (FieldNotFound ignore) {
+            return null;
+        }
+    }
+    static PositionEffect getPositionEffect(Message inMessage) {
+        try {
+            return PositionEffect.getInstanceForFIXValue(inMessage.getChar(
+                    quickfix.field.PositionEffect.FIELD));
+        } catch (FieldNotFound ignore) {
+            return null;
+        }
+    }
     static TimeInForce getTimeInForce(Message inMessage) {
         try {
             return TimeInForce.getInstanceForFIXValue(inMessage.getChar(

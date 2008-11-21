@@ -1,8 +1,13 @@
 package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
+import org.marketcetera.core.MSymbol;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.HashMap;
 
 /* $License$ */
 /**
@@ -21,10 +26,8 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
     @Test
     public void pojoDefaults() {
         OrderSingleSuggestion suggest = sFactory.createOrderSingleSuggestion();
-        assertOrderValues(suggest, null, null);
-        assertOrderBaseValues(suggest, null, null, null, null, null, null);
-        assertNROrderValues(suggest,null, null, null);
         assertSuggestionValues(suggest, null, null);
+        assertNull(suggest.getOrder());
 
         assertNotSame(suggest, sFactory.createOrderSingleSuggestion());
     }
@@ -40,10 +43,38 @@ public class OrderSingleSuggestionTest extends TypesTestBase {
     }
 
     private void checkSetters(OrderSingleSuggestion inSuggest) {
-        checkOrderSetters(inSuggest);
-        checkOrderBaseSetters(inSuggest);
-        checkNRSetters(inSuggest);
         checkSuggestionSetters(inSuggest);
+
+        inSuggest.setOrder(null);
+        assertNull(inSuggest.getOrder());
+        final OrderSingle order = sFactory.createOrderSingle();
+        order.setAccount("acc");
+        Map<String, String> custom = new HashMap<String, String>();
+        custom.put("343","what?");
+        custom.put("737","no");
+        order.setCustomFields(custom);
+        order.setDestinationID(new DestinationID("bro"));
+        order.setOrderCapacity(OrderCapacity.Agency);
+        order.setOrderID(new OrderID("orde"));
+        order.setOrderType(OrderType.Limit);
+        order.setPositionEffect(PositionEffect.Open);
+        order.setPrice(new BigDecimal("983.32"));
+        order.setQuantity(new BigDecimal("3.365"));
+        order.setSide(Side.Sell);
+        order.setSymbol(new MSymbol("IBM", SecurityType.CommonStock));
+        order.setTimeInForce(TimeInForce.AtTheClose);
+        OrderSingle clone = order.clone();
+        inSuggest.setOrder(order);
+        assertNotSame(order, inSuggest.getOrder());
+        assertOrderSingleEquals(order, inSuggest.getOrder());
+        //Verify updating the order that was set doesn't change suggestion's copy
+        OrderSingleTest.check(order);
+        assertOrderSingleEquals(clone, inSuggest.getOrder());
+        //Verify updating returned order doesn't change suggestion's copy
+        OrderSingleTest.check(inSuggest.getOrder());
+        assertOrderSingleEquals(clone, inSuggest.getOrder());
+        inSuggest.setOrder(null);
+        assertNull(inSuggest.getOrder());
     }
 
 }

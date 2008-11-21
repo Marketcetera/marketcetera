@@ -12,5 +12,18 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface OrderSingleSuggestion extends OrderSingle, Suggestion {
+public interface OrderSingleSuggestion extends Suggestion {
+    /**
+     * Returns the order suggested by this suggestion.
+     *
+     * @return the order suggested by this suggestion.
+     */
+    public OrderSingle getOrder();
+
+    /**
+     * Sets the order suggested by this suggestion.
+     *
+     * @param inOrder the suggested order.
+     */
+    public void setOrder(OrderSingle inOrder);
 }

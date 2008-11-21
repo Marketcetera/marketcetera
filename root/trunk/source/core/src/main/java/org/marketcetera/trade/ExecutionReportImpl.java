@@ -25,11 +25,6 @@ class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
     }
 
     @Override
-    public Date getSendingTime() {
-        return FIXUtil.getSendingTime(getMessage());
-    }
-
-    @Override
     public ExecutionType getExecutionType() {
         return FIXUtil.getExecOrExecTransType(getMessage());
     }
@@ -95,19 +90,38 @@ class ExecutionReportImpl extends ReportBaseImpl implements ExecutionReport {
     }
 
     @Override
+    public OrderCapacity getOrderCapacity() {
+        return FIXUtil.getOrderCapacity(getMessage());
+    }
+
+    @Override
+    public PositionEffect getPositionEffect() {
+        return FIXUtil.getPositionEffect(getMessage());
+    }
+
+    @Override
     public TimeInForce getTimeInForce() {
         return FIXUtil.getTimeInForce(getMessage());
     }
+
+    @Override
+    public Originator getOriginator() {
+        return mOriginator;
+    }
+
     /**
      * Creates an instance.
      *
      * @param inMessage The FIX Message of type execution report.
      * @param inDestinationID the destinationID from which this
-     * report was received.
+     * @param inOriginator the originator of this message.
      */
-    ExecutionReportImpl(Message inMessage, DestinationID inDestinationID) {
+    ExecutionReportImpl(Message inMessage, DestinationID inDestinationID,
+                        Originator inOriginator) {
         super(inMessage, inDestinationID);
+        mOriginator = inOriginator;
     }
 
     private static final long serialVersionUID = 1L;
+    private final Originator mOriginator;
 }

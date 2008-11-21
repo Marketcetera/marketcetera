@@ -197,15 +197,7 @@ public abstract class AbstractRunningStrategy
         assert(strategy != null);
         // TODO consider defensive copying.  if used here, it should probably be used in all service and action calls
         OrderSingleSuggestion suggestion = Factory.getInstance().createOrderSingleSuggestion();
-        suggestion.setAccount(inOrder.getAccount());
-        suggestion.setCustomFields(inOrder.getCustomFields());
-        suggestion.setDestinationID(inOrder.getDestinationID());
-        suggestion.setOrderType(inOrder.getOrderType());
-        suggestion.setPrice(inOrder.getPrice());
-        suggestion.setQuantity(inOrder.getQuantity());
-        suggestion.setSide(inOrder.getSide());
-        suggestion.setSymbol(inOrder.getSymbol());
-        suggestion.setTimeInForce(inOrder.getTimeInForce());
+        suggestion.setOrder(inOrder);
         suggestion.setScore(inScore);
         suggestion.setIdentifier(inIdentifier);
         SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,

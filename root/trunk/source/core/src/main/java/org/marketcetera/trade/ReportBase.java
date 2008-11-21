@@ -3,6 +3,7 @@ package org.marketcetera.trade;
 import org.marketcetera.util.misc.ClassVersion;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /* $License$ */
 /**
@@ -51,4 +52,11 @@ public interface ReportBase extends Serializable {
      * @return the destination ID from which this report was received.
      */
     DestinationID getDestinationID();
+
+    /**
+     * Time of message transmission in UTC.
+     *
+     * @return the time of message transmission in UTC.
+     */
+    Date getSendingTime();
 }

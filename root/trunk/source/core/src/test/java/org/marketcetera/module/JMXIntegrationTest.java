@@ -11,7 +11,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import javax.management.*;
-import javax.management.openmbean.*;
 import java.util.HashSet;
 import java.util.Arrays;
 import java.util.List;
@@ -325,44 +324,6 @@ public class JMXIntegrationTest extends ModuleTestBase {
         assertEquals(2, JMX.newMXBeanProxy(getMBeanServer(),
                 JMXTestModuleFactory.PROVIDER_URN.toObjectName(),
                 JMXTestFactoryMXBean.class).getNumInstancesCreated());
-    }
-
-    /**
-     * Verifies that the bean, attribute, operation and parameter info
-     * all have the descriptor name, {@link DisplayName} specified.
-     *
-     * Also verifies that all the parameter types are simple types.
-     *
-     * @param inInfo the bean info to verify.
-     */
-    public static void verifyBeanInfo(MBeanInfo inInfo) {
-        //verify that every info has the display name descriptor
-        assertDescriptor(inInfo.getDescriptor(), false);
-        for (MBeanAttributeInfo attrib : inInfo.getAttributes()) {
-            assertDescriptor(attrib.getDescriptor(), false);
-        }
-        for (MBeanOperationInfo opInfo : inInfo.getOperations()) {
-            assertDescriptor(opInfo.getDescriptor(), false);
-            for (MBeanParameterInfo parameterInfo : opInfo.getSignature()) {
-                assertDescriptor(parameterInfo.getDescriptor(), true);
-            }
-        }
-    }
-
-    /**
-     * Verifies the descriptor value.
-     *
-     * @param inDescriptor the descriptor.
-     * @param inSimpleType if the descriptor should be validated to describe
-     * a simple type.
-     */
-    public static void assertDescriptor(Descriptor inDescriptor, boolean inSimpleType) {
-        if (inSimpleType) {
-            Object value = inDescriptor.getFieldValue("openType");
-            assertNotNull(value);
-            assertTrue(value.getClass().toString(), value instanceof SimpleType);
-        }
-        assertNotNull(inDescriptor.getFieldValue("name"));
     }
 
     /**

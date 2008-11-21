@@ -2,6 +2,7 @@ package org.marketcetera.core;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.test.SerializableAssert;
 import org.marketcetera.symbology.SymbolScheme;
 import org.marketcetera.trade.SecurityType;
 import org.junit.Test;
@@ -57,5 +58,6 @@ public class MSymbolTest {
         assertEquals(inFullSymbol, inSymbol.getFullSymbol());
         assertEquals(inScheme, inSymbol.getScheme());
         assertEquals(inSecurityType, inSymbol.getSecurityType());
+        SerializableAssert.assertSerializable(inSymbol);
     }
 }

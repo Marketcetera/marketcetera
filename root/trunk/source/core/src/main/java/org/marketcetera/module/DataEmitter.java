@@ -16,17 +16,26 @@ public interface DataEmitter {
     /**
      * This method is invoked by the module framework to request
      * the emitter to start generating data.
-     *
+     * <p>
      * The request object supplied when requesting the data flow is
      * supplied as the <code>inRequest</code> parameter. The emitter
      * module can access the request parameters specifying the details
      * of the request via {@link DataRequest#getData()} 
-     *
+     * <p>
      * The <code>inSupport</code> instance has
      * {@link DataEmitterSupport#getRequestID() requestID} 
      * uniquely identifying this request. The same <code>requestID</code> is
      * supplied by the framework when {@link #cancel(RequestID) canceling}
      * the request.
+     *
+     * <p>
+     * Do note that it's illegal to invoke
+     * {@link DataEmitterSupport#dataEmitError(org.marketcetera.util.log.I18NBoundMessage, boolean)}
+     * to stop the data flow from within this method. Data flow creation
+     * is not complete unless this method returns. <code>dataEmitError</code>
+     * can only be invoked after the data flow has been created. 
+     *
+     * To prevent the data flow from getting created, throw an exception.
      *
      * @param inRequest the data request supplied when requesting the
      * data flow.
@@ -37,11 +46,12 @@ public interface DataEmitter {
      * parameter is invalid.
      * @throws UnsupportedRequestParameterType if the supplied request
      * parameter type is not understood by this module.
+     * @throws RequestDataException if the module is unable to fulfill
+     * this request to emit data for any other reason.
      */
     public void requestData(DataRequest inRequest,
                             DataEmitterSupport inSupport)
-            throws UnsupportedRequestParameterType,
-            IllegalRequestParameterValue;
+            throws RequestDataException;
 
     /**
      * The module should stop emitting data corresponding to the specified

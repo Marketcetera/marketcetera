@@ -50,7 +50,7 @@ public class DestinationID implements Serializable {
      *
      * @param inValue the string ID value. Cannot be null.
      */
-    DestinationID(String inValue) {
+    public DestinationID(String inValue) {
         if(inValue == null) {
             throw new NullPointerException();
         }

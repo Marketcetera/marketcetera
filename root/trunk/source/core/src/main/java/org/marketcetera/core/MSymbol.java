@@ -6,6 +6,8 @@ import org.marketcetera.symbology.SymbolScheme;
 import org.marketcetera.trade.SecurityType;
 import org.apache.commons.lang.ObjectUtils;
 
+import java.io.Serializable;
+
 /**
  * Represents a Security's trading symbol.
  * <p>
@@ -16,7 +18,7 @@ import org.apache.commons.lang.ObjectUtils;
  * @version $Id$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class MSymbol {
+public class MSymbol implements Serializable {
     private String baseSymbol;
     private String fullSymbol;
     private SymbolScheme scheme;
@@ -140,4 +142,6 @@ public class MSymbol {
     public SecurityType getSecurityType() {
         return mSecurityType;
     }
+
+    private static final long serialVersionUID = 1L;
 }

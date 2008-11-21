@@ -24,11 +24,7 @@ import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
-import org.marketcetera.trade.Factory;
-import org.marketcetera.trade.OrderSingleSuggestion;
-import org.marketcetera.trade.OrderType;
-import org.marketcetera.trade.Side;
-import org.marketcetera.trade.TypesTestBase;
+import org.marketcetera.trade.*;
 
 /* $License$ */
 
@@ -834,42 +830,50 @@ public abstract class LanguageTestBase
         OrderSingleSuggestion expectedSuggestion = Factory.getInstance().createOrderSingleSuggestion();
         expectedSuggestion.setScore(new BigDecimal("1"));
         expectedSuggestion.setIdentifier("some identifier");
+        OrderSingle suggestedOrder = Factory.getInstance().createOrderSingle();
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
         // add an account
         parameters.setProperty("account",
                                "some account");
-        expectedSuggestion.setAccount("some account");
+        suggestedOrder.setAccount("some account");
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
         // add order type
         parameters.setProperty("orderType",
                                OrderType.Market.name());
-        expectedSuggestion.setOrderType(OrderType.Market);        
+        suggestedOrder.setOrderType(OrderType.Market);
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
         // add price
         parameters.setProperty("price",
                                "100.23");
-        expectedSuggestion.setPrice(new BigDecimal("100.23"));        
+        suggestedOrder.setPrice(new BigDecimal("100.23"));
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
         // add quantity
         parameters.setProperty("quantity",
                                "10000");
-        expectedSuggestion.setQuantity(new BigDecimal("10000"));        
+        suggestedOrder.setQuantity(new BigDecimal("10000"));
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
         // add side
         parameters.setProperty("side",
                                Side.Buy.name());
-        expectedSuggestion.setSide(Side.Buy);        
+        suggestedOrder.setSide(Side.Buy);
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
         // add symbol
         parameters.setProperty("symbol",
                                "METC");
-        expectedSuggestion.setSymbol(new MSymbol("METC"));        
+        suggestedOrder.setSymbol(new MSymbol("METC"));        
+        expectedSuggestion.setOrder(suggestedOrder);
         doSuggestionTest(parameters,
                          new OrderSingleSuggestion[] { expectedSuggestion });
     }
@@ -1020,7 +1024,7 @@ public abstract class LanguageTestBase
         int index = 0;
         for(DataReceived datum : suggestions) {
             TypesTestBase.assertOrderSuggestionEquals(inExpectedSuggestions[index++],
-                                                      (OrderSingleSuggestion)datum.getData());
+                                                      (OrderSingleSuggestion)datum.getData(), true);
         }
         recorder.resetDataReceived();
     }

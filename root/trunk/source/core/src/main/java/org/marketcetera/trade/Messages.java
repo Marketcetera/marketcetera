@@ -40,4 +40,7 @@ public interface Messages {
             new I18NMessage1P(LOGGER, "not_execution_report");  //$NON-NLS-1$
     static final I18NMessage1P NOT_CANCEL_REJECT =
             new I18NMessage1P(LOGGER, "not_cancel_reject");  //$NON-NLS-1$
+    static final I18NMessage0P UNABLE_TO_GENERATE_IDS =
+            new I18NMessage0P(LOGGER, "unable_to_generate_ids");   //$NON-NLS-1$
+
 }

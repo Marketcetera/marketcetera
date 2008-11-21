@@ -146,14 +146,22 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @param inData the data object, can be null
      */
     protected final void receive(Object inData) {
-        boolean failed = true;
         try {
             mReceived++;
-            ((DataReceiver)mReceiver).receiveData(mFlowID,inData);
-            failed = false;
-            SLF4JLoggerProxy.debug(this, "{} received {}",  //$NON-NLS-1$
-                    mReceiver.getURN(),
-                    mReceived);
+            boolean failed = true;
+            try {
+                ((DataReceiver)mReceiver).receiveData(mFlowID,inData);
+                failed = false;
+                SLF4JLoggerProxy.debug(this, "{} received {}",  //$NON-NLS-1$
+                        mReceiver.getURN(),
+                        mReceived);
+            } finally {
+                if(failed) {
+                    //This counter needs to be incremented before
+                    //data flow is cancelled.
+                    mReceiveErrors++;
+                }
+            }
         } catch (Throwable t) {
             if(t instanceof I18NException) {
                 mLastReceiveError = ((I18NException)t).getLocalizedDetail();
@@ -166,10 +174,6 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
                 Messages.LOG_CANCELING_DATA_FLOW.info(this, t,
                         mFlowID, getReceiverURN());
                 cancelDataFlow(mReceiver);
-            }
-        } finally {
-            if(failed) {
-                mReceiveErrors++;
             }
         }
     }
@@ -199,14 +203,11 @@ abstract class AbstractDataCoupler implements DataEmitterSupport {
      * @param inRequestID the requestID uniquely identifying request.
      * @param inRequest the request.
      *
-     * @throws IllegalRequestParameterValue if the supplied request parameter
-     * value was unacceptable to the emitter module.
-     * @throws UnsupportedRequestParameterType if the supplied request
-     * parameter type was unacceptable to the emitter module.
+     * @throws RequestDataException if the module is unable to fulfill
+     * this request.
      */
     final void initiateRequest(RequestID inRequestID, DataRequest inRequest)
-            throws IllegalRequestParameterValue,
-            UnsupportedRequestParameterType {
+            throws RequestDataException {
         mRequestID = inRequestID;
         ((DataEmitter)mEmitter).requestData(inRequest, this);
     }

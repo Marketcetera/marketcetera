@@ -10,7 +10,9 @@ import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXDataDictionaryManager;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotSame;import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 import org.junit.BeforeClass;
 
 import java.util.Map;
@@ -65,33 +67,61 @@ public class TypesTestBase {
 
     public static void assertOrderFIXEquals(FIXOrder inOrder1,
                                              FIXOrder inOrder2) {
+        if (checkForNull(inOrder1, inOrder2)) return;
         assertOrderEquals(inOrder1,  inOrder2);
         assertEquals(inOrder1.getFields(), inOrder2.getFields());
     }
 
     public static void assertOrderSingleEquals(OrderSingle inOrder1,
                                                 OrderSingle inOrder2) {
-        assertOrderBaseEquals(inOrder1, inOrder2);
+        assertOrderSingleEquals(inOrder1, inOrder2, false);
+    }
+    public static void assertOrderSingleEquals(OrderSingle inOrder1,
+                                               OrderSingle inOrder2,
+                                               boolean inIgnoreOrderID) {
+        if (checkForNull(inOrder1, inOrder2)) return;
+        assertOrderBaseEquals(inOrder1, inOrder2, inIgnoreOrderID);
         assertNROrderEquals(inOrder1, inOrder2);
     }
 
     public static void assertOrderReplaceEquals(OrderReplace inOrder1,
                                                  OrderReplace inOrder2) {
-        assertRelatedOrderEquals(inOrder1, inOrder2);
+        assertOrderReplaceEquals(inOrder1, inOrder2, false);
+    }
+    public static void assertOrderReplaceEquals(OrderReplace inOrder1,
+                                                OrderReplace inOrder2,
+                                                boolean inIgnoreOrderID) {
+        if (checkForNull(inOrder1, inOrder2)) return;
+        assertRelatedOrderEquals(inOrder1, inOrder2, inIgnoreOrderID);
         assertNROrderEquals(inOrder1, inOrder2);
     }
 
     public static void assertOrderCancelEquals(OrderCancel inOrder1,
                                                 OrderCancel inOrder2) {
-        assertRelatedOrderEquals(inOrder1, inOrder2);
+        assertOrderCancelEquals(inOrder1, inOrder2, false);
+    }
+    public static void assertOrderCancelEquals(OrderCancel inOrder1,
+                                               OrderCancel inOrder2,
+                                               boolean inIgnoreOrderID) {
+        if (checkForNull(inOrder1, inOrder2)) return;
+        assertRelatedOrderEquals(inOrder1, inOrder2, inIgnoreOrderID);
     }
     public static void assertOrderSuggestionEquals(OrderSingleSuggestion inSuggest1,
                                                    OrderSingleSuggestion inSuggest2) {
+        assertOrderSuggestionEquals(inSuggest1, inSuggest2, false);
+    }
+    public static void assertOrderSuggestionEquals(OrderSingleSuggestion inSuggest1,
+                                                   OrderSingleSuggestion inSuggest2,
+                                                   boolean inIgnoreOrderID) {
+        if (checkForNull(inSuggest1, inSuggest2)) return;
         assertSuggestionEquals(inSuggest1,  inSuggest2);
+        assertOrderSingleEquals(inSuggest1.getOrder(),
+                inSuggest2.getOrder(), inIgnoreOrderID);
     }
 
     public static void assertExecReportEquals(ExecutionReport inReport1,
                                                ExecutionReport inReport2) {
+        if (checkForNull(inReport1, inReport2)) return;
         assertReportBaseEquals(inReport1, inReport2);
         assertEquals(inReport1.getAccount(), inReport2.getAccount());
         assertEquals(inReport1.getAveragePrice(), inReport2.getAveragePrice());
@@ -104,7 +134,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getLeavesQuantity(), inReport2.getLeavesQuantity());
         assertEquals(inReport1.getOrderQuantity(), inReport2.getOrderQuantity());
         assertEquals(inReport1.getOrderType(), inReport2.getOrderType());
-        assertEquals(inReport1.getSendingTime(), inReport2.getSendingTime());
+        assertEquals(inReport1.getOriginator(), inReport2.getOriginator());
         assertEquals(inReport1.getSide(), inReport2.getSide());
         assertEquals(inReport1.getSymbol(), inReport2.getSymbol());
         assertEquals(inReport1.getTimeInForce(), inReport2.getTimeInForce());
@@ -113,6 +143,7 @@ public class TypesTestBase {
 
     public static void assertCancelRejectEquals(OrderCancelReject inReport1,
                                                OrderCancelReject inReport2) {
+        if (checkForNull(inReport1, inReport1)) return;
         assertReportBaseEquals(inReport1, inReport2);
     }
     protected static void assertSuggestionEquals(Suggestion inSuggest1,
@@ -128,11 +159,18 @@ public class TypesTestBase {
 
     protected static void assertOrderBaseEquals(OrderBase inOrder1,
                                               OrderBase inOrder2) {
+        assertOrderBaseEquals(inOrder1, inOrder2, false);
+    }
+    protected static void assertOrderBaseEquals(OrderBase inOrder1,
+                                                OrderBase inOrder2,
+                                                boolean inIgnoreOrderID) {
         assertOrderEquals(inOrder1, inOrder2);
         assertEquals(inOrder1.getAccount(), inOrder2.getAccount());
         assertEquals(inOrder1.getCustomFields(), inOrder2.getCustomFields());
         assertEquals(inOrder1.getDestinationID(), inOrder2.getDestinationID());
-        assertEquals(inOrder1.getOrderID(), inOrder2.getOrderID());
+        if (!inIgnoreOrderID) {
+            assertEquals(inOrder1.getOrderID(), inOrder2.getOrderID());
+        }
         assertEquals(inOrder1.getQuantity(), inOrder2.getQuantity());
         assertEquals(inOrder1.getSecurityType(), inOrder2.getSecurityType());
         assertEquals(inOrder1.getSide(), inOrder2.getSide());
@@ -148,7 +186,12 @@ public class TypesTestBase {
 
     protected static void assertRelatedOrderEquals(RelatedOrder inOrder1,
                                                  RelatedOrder inOrder2) {
-        assertOrderBaseEquals(inOrder1, inOrder2);
+        assertRelatedOrderEquals(inOrder1,  inOrder2,  false);
+    }
+    protected static void assertRelatedOrderEquals(RelatedOrder inOrder1,
+                                                   RelatedOrder inOrder2,
+                                                   boolean inIgnoreOrderID) {
+        assertOrderBaseEquals(inOrder1, inOrder2, inIgnoreOrderID);
         assertEquals(inOrder1.getOriginalOrderID(),
                 inOrder2.getOriginalOrderID());
     }
@@ -159,6 +202,7 @@ public class TypesTestBase {
         assertEquals(inReport1.getOrderID(), inReport2.getOrderID());
         assertEquals(inReport1.getOrderStatus(), inReport2.getOrderStatus());
         assertEquals(inReport1.getOriginalOrderID(), inReport2.getOriginalOrderID());
+        assertEquals(inReport1.getSendingTime(), inReport2.getSendingTime());
         assertEquals(inReport1.getText(), inReport2.getText());
     }
 
@@ -272,6 +316,16 @@ public class TypesTestBase {
         assertEquals(TimeInForce.FillOrKill, inOrder.getTimeInForce());
         inOrder.setTimeInForce(null);
         assertEquals(null, inOrder.getTimeInForce());
+
+        inOrder.setOrderCapacity(OrderCapacity.Agency);
+        assertEquals(OrderCapacity.Agency, inOrder.getOrderCapacity());
+        inOrder.setOrderCapacity(null);
+        assertEquals(null, inOrder.getOrderCapacity());
+
+        inOrder.setPositionEffect(PositionEffect.Open);
+        assertEquals(PositionEffect.Open, inOrder.getPositionEffect());
+        inOrder.setPositionEffect(null);
+        assertEquals(null, inOrder.getPositionEffect());
     }
 
     protected static void checkSuggestionSetters(Suggestion inSuggestion) {
@@ -331,10 +385,14 @@ public class TypesTestBase {
     protected static void assertNROrderValues(NewOrReplaceOrder inOrder,
                                      OrderType inOrderType,
                                      BigDecimal inPrice,
-                                     TimeInForce inTIF) {
+                                              TimeInForce inTIF,
+                                              OrderCapacity inOrderCapacity,
+                                              PositionEffect inPositionEffect) {
         assertEquals(inOrderType, inOrder.getOrderType());
         assertEquals(inPrice, inOrder.getPrice());
         assertEquals(inTIF, inOrder.getTimeInForce());
+        assertEquals(inOrderCapacity, inOrder.getOrderCapacity());
+        assertEquals(inPositionEffect, inOrder.getPositionEffect());
     }
 
     protected static void assertRelatedOrderValues(RelatedOrder inOrder,
@@ -347,11 +405,12 @@ public class TypesTestBase {
                                               OrderID inOrderID,
                                               OrderStatus inOrderStatus,
                                               OrderID inOrigOrderID,
-                                              String inText) {
+                                                 Date inSendingTime, String inText) {
         assertEquals(inDestinationID, inReport.getDestinationID());
         assertEquals(inOrderID, inReport.getOrderID());
         assertEquals(inOrderStatus, inReport.getOrderStatus());
         assertEquals(inOrigOrderID,  inReport.getOriginalOrderID());
+        assertEquals(inSendingTime,  inReport.getSendingTime());
         assertEquals(inText, inReport.getText());
     }
 
@@ -367,11 +426,13 @@ public class TypesTestBase {
                                                  BigDecimal inLeavesQty,
                                                  BigDecimal inOrderQty,
                                                  OrderType inOrderType,
-                                                 Date inSendingTime,
                                                  Side inSide,
                                                  MSymbol inSymbol,
                                                  TimeInForce inTimeInForce,
-                                                 Date inTransactTime) {
+                                                 Date inTransactTime,
+                                                 Object inOriginator,
+                                                 OrderCapacity inOrderCapacity,
+                                                 PositionEffect inPositionEffect) {
         assertEquals(inAccount, inReport.getAccount());
         assertEquals(inAvgPrice, inReport.getAveragePrice());
         assertEquals(inCumQty, inReport.getCumulativeQuantity());
@@ -383,11 +444,13 @@ public class TypesTestBase {
         assertEquals(inLeavesQty, inReport.getLeavesQuantity());
         assertEquals(inOrderQty, inReport.getOrderQuantity());
         assertEquals(inOrderType, inReport.getOrderType());
-        assertEquals(inSendingTime, inReport.getSendingTime());
         assertEquals(inSide, inReport.getSide());
         assertEquals(inSymbol, inReport.getSymbol());
         assertEquals(inTimeInForce, inReport.getTimeInForce());
         assertEquals(inTransactTime, inReport.getTransactTime());
+        assertEquals(inOrderCapacity, inReport.getOrderCapacity());
+        assertEquals(inPositionEffect, inReport.getPositionEffect());
+        assertEquals(inOriginator, inReport.getOriginator());
     }
 
     protected static void assertSuggestionValues(Suggestion inSuggestion,
@@ -402,6 +465,14 @@ public class TypesTestBase {
                 getUnderlyingMessageFactory().create(
                 FIXDataDictionary.FIX_4_2_BEGIN_STRING,
                 MsgType.EXECUTION_REPORT);
+    }
+
+    private static boolean checkForNull(Object inObj1, Object inObj2) {
+        if(inObj1 == null ^ inObj2 == null) {
+            fail(new StringBuilder().append("expected<").append(inObj1).
+                    append(">, actual<").append(inObj2).append(">").toString());
+        }
+        return inObj1 == null;
     }
 
     /**
@@ -440,7 +511,11 @@ public class TypesTestBase {
         return fields;
     }
 
-    protected static final OrderID NOT_NULL = new OrderID("notnull");
+    /**
+     * Sentinel OrderID value to indicate to the assert methods
+     * that it should only check if the orderID is not null.
+     */
+    public static final OrderID NOT_NULL = new OrderID("notnull");
 
     /**
      * The factory instance that can be used for testing by all subclasses.

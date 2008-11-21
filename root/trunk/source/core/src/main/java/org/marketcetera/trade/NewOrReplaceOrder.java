@@ -63,4 +63,32 @@ public interface NewOrReplaceOrder extends Serializable {
      * @param inPrice the limit price for the order.
      */
     void setPrice(BigDecimal inPrice);
+
+    /**
+     * Gets the order capacity value for this order.
+     *
+     * @return the order capacity value.
+     */
+    OrderCapacity getOrderCapacity();
+
+    /**
+     * Sets the order capacity value for this order.
+     *
+     * @param inOrderCapacity the order capacity value
+     */
+    void setOrderCapacity(OrderCapacity inOrderCapacity);
+
+    /**
+     * Gets the position effect for this order.
+     *
+     * @return the position effect value.
+     */
+    PositionEffect getPositionEffect();
+
+    /**
+     * Sets the position effect value for this order.
+     *
+     * @param inPositionEffect the position effect value.
+     */
+    void setPositionEffect(PositionEffect inPositionEffect);
 }

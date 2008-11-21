@@ -2,6 +2,8 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 
+import java.io.Serializable;
+
 /* $License$ */
 /**
  * Instances of this class uniquely identify an order. If the underlying
@@ -13,7 +15,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public class OrderID {
+public class OrderID implements Serializable {
     /**
      * Creates an instance, given the text value of the OrderID.
      *
@@ -57,4 +59,5 @@ public class OrderID {
     }
 
     private final String mValue;
+    private static final long serialVersionUID = 1L;
 }
