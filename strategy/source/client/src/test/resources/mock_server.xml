@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+
+  <bean id="systemPropertiesSetter"
+        class="org.marketcetera.util.spring.SystemPropertiesSetter">
+    <property name="map">
+      <map>
+        <entry key="java.security.auth.login.config"
+               value="src/test/sample_data/conf/test_login.config"/>
+      </map>
+    </property>
+  </bean>
+  <bean id="broker" class="org.apache.activemq.xbean.BrokerFactoryBean">
+    <property name="config" value="classpath:mock_broker.xml"/>
+  </bean>
+  <bean id="requestQueue" class="org.apache.activemq.command.ActiveMQQueue">
+    <constructor-arg value="ors-commands"/>
+  </bean>
+
+  <bean id="replyTopic" class="org.apache.activemq.command.ActiveMQTopic">
+    <constructor-arg value="ors-messages"/>
+  </bean>
+
+  <bean id="connectionFactory"
+        class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616"/>
+    <property name="userName" value="whatever"/>
+    <property name="password" value="whatever"/>
+  </bean>
+
+  <bean id="messageHandler" class="org.marketcetera.client.MockMessageHandler"/>
+
+  <bean id="listener"
+        class="org.springframework.jms.listener.adapter.MessageListenerAdapter">
+    <property name="delegate" ref="messageHandler"/>
+    <property name="defaultResponseDestination" ref="replyTopic"/>
+    <property name="messageConverter">
+      <bean class="org.marketcetera.client.JMSMessageConverter"/>
+    </property>
+  </bean>
+
+  <!-- note that this needs to use the non-pooled connection factory -->
+  <bean id="container"
+        class="org.springframework.jms.listener.SimpleMessageListenerContainer" depends-on="broker">
+    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="messageListener" ref="listener"/>
+    <property name="destination" ref="requestQueue"/>
+  </bean>
+
+  <bean id="pooledConnectionFactory"
+        class="org.apache.activemq.pool.PooledConnectionFactory">
+    <property name="connectionFactory" ref="connectionFactory"/>
+  </bean>
+</beans>
