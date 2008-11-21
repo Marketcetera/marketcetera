@@ -16,12 +16,15 @@ import org.eclipse.jface.dialogs.ControlEnableState;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -43,6 +46,7 @@ import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.Strategy;
 import org.marketcetera.photon.internal.strategy.StrategyManager;
 import org.marketcetera.photon.internal.strategy.StrategyValidation;
+import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.photon.module.preferences.NewPropertyInputDialog;
 import org.marketcetera.util.except.ExceptUtils;
@@ -67,6 +71,8 @@ public class StrategyPropertyPage extends PropertyPage {
 	private PropertySheetPage mPage;
 
 	private Properties mProperties;
+
+	private ComboViewer mDestination;
 
 	@Override
 	protected Control createContents(Composite parent) {
@@ -97,6 +103,9 @@ public class StrategyPropertyPage extends PropertyPage {
 				validate();
 			}
 		});
+		
+		mDestination = StrategyUI.createDestinationCombo(composite);
+		mDestination.setSelection(new StructuredSelection(mStrategy.getDestination()));
 
 		GridLayoutFactory.swtDefaults().numColumns(2).generateLayout(composite);
 	}
@@ -133,9 +142,15 @@ public class StrategyPropertyPage extends PropertyPage {
 	}
 
 	private void addParametersSection(Composite parent) {
+		Font font = parent.getFont();
 		Composite composite = new Composite(parent, SWT.NONE);
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(composite);
 		GridLayoutFactory.swtDefaults().applyTo(composite);
+		
+		Label label = new Label(composite, SWT.NONE);
+		label.setFont(font);
+		label.setText(Messages.STRATEGY_PROPERTIES_PARAMETERS_DESCRIPTION.getText());
+		GridDataFactory.defaultsFor(label).applyTo(label);
 
 		// Nest the property sheet page used by the Properties view.
 		mPage = new PropertySheetPage();
@@ -151,7 +166,7 @@ public class StrategyPropertyPage extends PropertyPage {
 		GridDataFactory.fillDefaults().grab(true, true).applyTo(
 				mPage.getControl());
 
-		// Simulate selection of a root property ""
+		// Simulate selection of a root element
 		mPage.selectionChanged(null, new StructuredSelection(
 				new StrategyPropertySource())); //$NON-NLS-1$
 
@@ -246,6 +261,7 @@ public class StrategyPropertyPage extends PropertyPage {
 		StrategyManager.getCurrent().setDisplayName(mStrategy,
 				mNameText.getText());
 		StrategyManager.getCurrent().setParameters(mStrategy, mProperties);
+		StrategyManager.getCurrent().setDestination(mStrategy, (Destination)((IStructuredSelection) mDestination.getSelection()).getFirstElement());
 		return true;
 	}
 

@@ -30,6 +30,14 @@
             name="%projectExplorerView.name"
             restorable="true">
       </view>
+      <view
+            category="org.marketcetera.photon.strategy"
+            class="org.marketcetera.photon.internal.strategy.ui.TradeSuggestionsView"
+            icon="icons/lightbulb.png"
+            id="org.marketcetera.photon.strategy.TradeSuggestionsView"
+            name="%tradeSuggestionsView.name"
+            restorable="true">
+      </view>
    </extension>
    <extension
          point="org.eclipse.ui.navigator.viewer">
@@ -80,6 +88,24 @@
             description="%registerStrategy.name"
             id="org.marketcetera.photon.strategy.commands.registerStrategy"
             name="%registerStrategy.label">
+      </command>
+      <category
+            id="org.marketcetera.photon.tradeSuggestion.commands"
+            name="%tradeSuggestionCommands.name">
+      </category>
+      <command
+            categoryId="org.marketcetera.photon.tradeSuggestion.commands"
+            defaultHandler="org.marketcetera.photon.internal.strategy.OpenSuggestionHandler"
+            description="%openSuggestionCommand.description"
+            id="org.marketcetera.photon.tradeSuggestion.commands.open"
+            name="%openSuggestionCommand.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.tradeSuggestion.commands"
+            defaultHandler="org.marketcetera.photon.internal.strategy.SendOrdersHandler"
+            description="%sendOrders.description"
+            id="org.marketcetera.photon.tradeSuggestion.commands.send"
+            name="%sendOrders.name">
       </command>
    </extension>
    <extension
@@ -167,6 +193,43 @@
             </visibleWhen>
          </command>
       </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.marketcetera.photon.strategy.TradeSuggestionsView">
+         <command
+               commandId="org.marketcetera.photon.tradeSuggestion.commands.open"
+               icon="icons/arrow_up.png"
+               style="push">
+         </command>
+         <command
+               commandId="org.marketcetera.photon.tradeSuggestion.commands.send"
+               icon="icons/server_go.png"
+               style="push">
+         </command>
+         <command
+               commandId="org.eclipse.ui.edit.delete"
+               icon="icons/cancel.png"
+               style="push">
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="popup:org.marketcetera.photon.strategy.TradeSuggestionsView">
+         <command
+               commandId="org.eclipse.ui.edit.delete"
+               icon="icons/cancel.png"
+               style="push">
+         </command>
+          <separator
+                name="beforeChooseColumns"
+                visible="true">
+          </separator>
+          <menu
+                label="%chooseColumns.label">
+             <dynamic
+                   class="org.marketcetera.photon.ui.ChooseColumnsMenu"
+                   id="org.marketcetera.photon.chooseColumnsMenu">
+             </dynamic>
+          </menu>
+      </menuContribution>
    </extension>
    <extension
          point="org.eclipse.core.expressions.propertyTesters">
@@ -211,6 +274,18 @@
                   variable="activePartId">
                <equals
                      value="org.marketcetera.photon.strategy.StrategiesView">
+               </equals>
+            </with>
+         </activeWhen>
+      </handler>
+      <handler
+            class="org.marketcetera.photon.internal.strategy.TradeSuggestionDeleteHandler"
+            commandId="org.eclipse.ui.edit.delete">
+         <activeWhen>
+            <with
+                  variable="activePartId">
+               <equals
+                     value="org.marketcetera.photon.strategy.TradeSuggestionsView">
                </equals>
             </with>
          </activeWhen>

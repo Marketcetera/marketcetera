@@ -25,6 +25,11 @@ public interface StrategyUIConstants {
 	static final String STRATEGIES_VIEW = "org.marketcetera.photon.strategy.StrategiesView"; //$NON-NLS-1$
 	
 	/**
+	 * The id of the Trade Suggestions view, showing incoming trade suggestions.
+	 */
+	static final String TRADE_SUGGESTIONS_VIEW = "org.marketcetera.photon.strategy.TradeSuggestionsView"; //$NON-NLS-1$
+	
+	/**
 	 * The id of the Project Explorer for the Strategy perspective.
 	 */
 	static final String PROJECT_EXPLORER_VIEW = "org.marketcetera.photon.strategy.ProjectExplorer"; //$NON-NLS-1$
