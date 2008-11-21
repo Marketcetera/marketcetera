@@ -3,6 +3,7 @@ package org.marketcetera.client;
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.client.dest.DestinationsStatus;
 
 import java.util.Date;
 import java.math.BigInteger;
@@ -222,4 +223,16 @@ public interface Client {
      * or reconnected to the server.
      */
     public Date getLastConnectTime();
+    
+    /**
+     * Returns the receiver's destination status to the client.
+     *
+     * @return The status.
+     *
+     * @throws ConnectionException Thrown if the operation cannot be
+     * completed.
+     */
+
+    DestinationsStatus getDestinationsStatus() throws ConnectionException;
+
 }
