@@ -12,5 +12,11 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-public interface OrderSingle extends OrderBase, NewOrReplaceOrder {
+public interface OrderSingle extends OrderBase, NewOrReplaceOrder, Cloneable {
+    /**
+     * Creates clone of this order.
+     *
+     * @return the clone of this order
+     */
+    public OrderSingle clone();
 }

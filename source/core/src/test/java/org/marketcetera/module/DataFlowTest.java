@@ -1089,7 +1089,7 @@ public class DataFlowTest extends ModuleTestBase {
                 null,
                 true,
                 NUM_TIMES + 1 + (inReceiveStop? 1: 0),
-                NUM_TIMES / 2,
+                NUM_TIMES / 2 + (inReceiveStop? 1: 0),
                 inReceiveStop
                         ? TestMessages.STOP_DATA_FLOW.getText()
                         : TestMessages.BAD_DATA.getText(),

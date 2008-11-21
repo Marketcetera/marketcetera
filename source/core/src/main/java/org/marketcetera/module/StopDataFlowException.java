@@ -12,7 +12,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
-public class StopDataFlowException extends DataFlowException {
+public class StopDataFlowException extends ReceiveDataException {
     private static final long serialVersionUID = 6507623674619493868L;
 
     /**

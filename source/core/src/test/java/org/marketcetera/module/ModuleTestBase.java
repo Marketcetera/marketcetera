@@ -7,7 +7,8 @@ import org.marketcetera.core.LoggerConfiguration;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 
-import javax.management.MBeanServer;
+import javax.management.*;
+import javax.management.openmbean.SimpleType;
 import java.util.List;
 import java.util.HashSet;
 import java.util.Arrays;
@@ -325,7 +326,12 @@ public class ModuleTestBase {
         assertEquals(inReceiver,inStep.isReceiver());
         assertEquals(inNumReceived,inStep.getNumReceived());
         assertEquals(inNumReceiveErrors,inStep.getNumReceiveErrors());
-        assertEquals(inLastReceiveError,inStep.getLastReceiveError());
+        if (inLastReceiveError != null) {
+            assertNotNull(inStep.getLastReceiveError());
+            assertTrue(inStep.getLastReceiveError().startsWith(inLastReceiveError));
+        } else {
+            assertNull(inStep.getLastReceiveError());
+        }
         if (inRequestURN != null) {
             assertEquals(inRequestURN,inStep.getRequest().getRequestURN());
         }
@@ -341,6 +347,44 @@ public class ModuleTestBase {
      */
     protected static MBeanServer getMBeanServer() {
         return ManagementFactory.getPlatformMBeanServer();
+    }
+
+    /**
+     * Verifies that the bean, attribute, operation and parameter info
+     * all have the descriptor name, {@link org.marketcetera.module.DisplayName} specified.
+     *
+     * Also verifies that all the parameter types are simple types.
+     *
+     * @param inInfo the bean info to verify.
+     */
+    public static void verifyBeanInfo(MBeanInfo inInfo) {
+        //verify that every info has the display name descriptor
+        assertDescriptor(inInfo.getDescriptor(), false);
+        for (MBeanAttributeInfo attrib : inInfo.getAttributes()) {
+            assertDescriptor(attrib.getDescriptor(), false);
+        }
+        for (MBeanOperationInfo opInfo : inInfo.getOperations()) {
+            assertDescriptor(opInfo.getDescriptor(), false);
+            for (MBeanParameterInfo parameterInfo : opInfo.getSignature()) {
+                assertDescriptor(parameterInfo.getDescriptor(), true);
+            }
+        }
+    }
+
+    /**
+     * Verifies the descriptor value.
+     *
+     * @param inDescriptor the descriptor.
+     * @param inSimpleType if the descriptor should be validated to describe
+     * a simple type.
+     */
+    public static void assertDescriptor(Descriptor inDescriptor, boolean inSimpleType) {
+        if (inSimpleType) {
+            Object value = inDescriptor.getFieldValue("openType");
+            assertNotNull(value);
+            assertTrue(value.getClass().toString(), value instanceof SimpleType);
+        }
+        assertNotNull(inDescriptor.getFieldValue("name"));
     }
 
     /**

@@ -11,7 +11,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-class OrderReplaceImpl extends OrderSingleImpl implements OrderReplace {
+class OrderReplaceImpl extends NewOrReplaceOrderImpl implements OrderReplace {
 
     @Override
     public OrderID getOriginalOrderID() {
@@ -22,6 +22,7 @@ class OrderReplaceImpl extends OrderSingleImpl implements OrderReplace {
     public void setOriginalOrderID(OrderID inOrderID) {
         mOriginalOrderID = inOrderID;
     }
+
     private OrderID mOriginalOrderID;
     private static final long serialVersionUID = 1L;
 }

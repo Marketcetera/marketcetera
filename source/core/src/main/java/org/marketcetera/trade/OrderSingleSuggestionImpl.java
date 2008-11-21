@@ -13,7 +13,7 @@ import java.math.BigDecimal;
  * @since $Release$
  */
 @ClassVersion("$Id$") //$NON-NLS-1$
-class OrderSingleSuggestionImpl extends OrderSingleImpl
+class OrderSingleSuggestionImpl
         implements OrderSingleSuggestion {
     @Override
     public String getIdentifier() {
@@ -35,7 +35,22 @@ class OrderSingleSuggestionImpl extends OrderSingleImpl
         mScore = inScore;
     }
 
+    @Override
+    public OrderSingle getOrder() {
+        return mOrder == null
+                ? null
+                : mOrder.clone();
+    }
+
+    @Override
+    public void setOrder(OrderSingle inOrder) {
+        mOrder = inOrder == null
+                ? null
+                : inOrder.clone();
+    }
+
     private String mIdentifier;
     private BigDecimal mScore;
+    private OrderSingle mOrder;
     private static final long serialVersionUID = 1L;
 }

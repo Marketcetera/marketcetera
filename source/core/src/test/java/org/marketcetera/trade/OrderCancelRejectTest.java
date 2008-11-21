@@ -11,6 +11,7 @@ import quickfix.field.*;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.util.Date;
 
 /* $License$ */
 /**
@@ -56,7 +57,7 @@ public class OrderCancelRejectTest extends TypesTestBase {
         // report with all empty fields
         Message msg = getSystemMessageFactory().newOrderCancelReject();
         OrderCancelReject report = sFactory.createOrderCancelReject(msg, null);
-        assertReportBaseValues(report, null, null, null, null, null);
+        assertReportBaseValues(report, null, null, null, null, null, null);
 
         //report with fields filled in
         DestinationID cID = new DestinationID("bro1");
@@ -64,13 +65,16 @@ public class OrderCancelRejectTest extends TypesTestBase {
         OrderID origOrderID = new OrderID("ord2");
         OrderStatus orderStatus = OrderStatus.Rejected;
         String text = "Cancel it please.";
+        Date sendingTime = new Date();
         msg = getSystemMessageFactory().newOrderCancelReject(
                 new quickfix.field.OrderID("brok3"),
                 new ClOrdID(orderID.getValue()),
                 new OrigClOrdID(origOrderID.getValue()),
                 text, null);
+        msg.getHeader().setField(new SendingTime(sendingTime));
         report = sFactory.createOrderCancelReject(msg, cID);
-        assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID, text);
+        assertReportBaseValues(report, cID, orderID, orderStatus, origOrderID,
+                sendingTime, text);
         
         //Verify FIX fields returned in the map.
         Map<Integer,String> expected = new HashMap<Integer, String>();

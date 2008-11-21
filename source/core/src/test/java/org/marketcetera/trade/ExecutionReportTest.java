@@ -37,7 +37,14 @@ public class ExecutionReportTest extends TypesTestBase {
         // null message
         new ExpectedFailure<NullPointerException>(null){
              protected void run() throws Exception {
-                 sFactory.createExecutionReport(null, cID);
+                 sFactory.createExecutionReport(null, cID,
+                         Originator.Server);
+             }
+         };
+        final Message execReport = createEmptyExecReport();
+        new ExpectedFailure<NullPointerException>(null){
+             protected void run() throws Exception {
+                 sFactory.createExecutionReport(execReport, cID, null);
              }
          };
         final Message message = getSystemMessageFactory().newBasicOrder();
@@ -45,7 +52,7 @@ public class ExecutionReportTest extends TypesTestBase {
                 Messages.NOT_EXECUTION_REPORT, message.toString()){
             protected void run() throws Exception {
                 sFactory.createExecutionReport(
-                        message, null);
+                        message, null, Originator.Server);
             }
         };
     }
@@ -59,10 +66,12 @@ public class ExecutionReportTest extends TypesTestBase {
     public void getters() throws Exception {
         // report with all empty fields
         Message msg = createEmptyExecReport();
-        ExecutionReport report = sFactory.createExecutionReport(msg, null);
-        assertReportBaseValues(report, null, null, null, null, null);
+        ExecutionReport report = sFactory.createExecutionReport(msg, null,
+                Originator.Server);
+        assertReportBaseValues(report, null, null, null, null, null, null);
         assertExecReportValues(report, null, null, null, null, null, null,
-                null, null, null, null, null, null, null, null, null, null);
+                null, null, null, null, null, null, null, null, null,
+                Originator.Server, null, null);
         //report with all fields filled in
         DestinationID cID = new DestinationID("bro1");
         OrderID orderID = new OrderID("or2");
@@ -101,14 +110,30 @@ public class ExecutionReportTest extends TypesTestBase {
         msg.setField(new quickfix.field.TimeInForce(timeInForce.getFIXValue()));
         msg.setField(new TransactTime(transactTime));
         msg.setField(new Text(text));
+        msg.setField(new quickfix.field.OrderCapacity(quickfix.field.OrderCapacity.PROPRIETARY));
+        msg.setField(new quickfix.field.PositionEffect(quickfix.field.PositionEffect.CLOSE));
 
+        //Verify the deprecated factory method
         report = sFactory.createExecutionReport(msg, cID);
         assertReportBaseValues(report, cID, orderID, orderStatus,
-                origOrderID, text);
+                origOrderID, sendingTime, text);
         assertExecReportValues(report, account, avgPrice, cumQty, execID,
                 execType, lastMarket, lastPrice, lastShares, leavesQty,
-                orderQty, orderType, sendingTime, side, symbol, timeInForce,
-                transactTime);
+                orderQty, orderType, side, symbol, timeInForce,
+                transactTime, Originator.Server,
+                OrderCapacity.Proprietary, PositionEffect.Close);
+
+        //Verify the regular factory method
+        report = sFactory.createExecutionReport(msg, cID,
+                Originator.Destination);
+        assertReportBaseValues(report, cID, orderID, orderStatus,
+                origOrderID, sendingTime, text);
+        assertExecReportValues(report, account, avgPrice, cumQty, execID,
+                execType, lastMarket, lastPrice, lastShares, leavesQty,
+                orderQty, orderType, side, symbol, timeInForce,
+                transactTime, Originator.Destination,
+                OrderCapacity.Proprietary, PositionEffect.Close);
+
         //Verify the map
         Map<Integer,String> expected = new HashMap<Integer, String>();
         expected.put(Account.FIELD, account);
@@ -139,6 +164,10 @@ public class ExecutionReportTest extends TypesTestBase {
         expected.put(TransactTime.FIELD, UtcTimestampConverter.convert(
                 transactTime, true));
         expected.put(LastMkt.FIELD, lastMarket);
+        expected.put(quickfix.field.OrderCapacity.FIELD, String.valueOf(
+                quickfix.field.OrderCapacity.PROPRIETARY));
+        expected.put(quickfix.field.PositionEffect.FIELD, String.valueOf(
+                quickfix.field.PositionEffect.CLOSE));
 
         final Map<Integer, String> actual = ((FIXMessageSupport) report).getFields();
         assertEquals(expected, actual);
@@ -162,22 +191,26 @@ public class ExecutionReportTest extends TypesTestBase {
     public void execTransTypeTranslation() throws Exception {
         Message msg = createEmptyExecReport();
         assertEquals(null, sFactory.createExecutionReport(msg,
-                null).getExecutionType());
+                null, Originator.Server).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.NEW));
         assertEquals(ExecutionType.New,
-                sFactory.createExecutionReport(msg, null).getExecutionType());
+                sFactory.createExecutionReport(msg, null,
+                        Originator.Server).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.CANCEL));
         assertEquals(ExecutionType.TradeCancel,
-                sFactory.createExecutionReport(msg, null).getExecutionType());
+                sFactory.createExecutionReport(msg, null,
+                        Originator.Server).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.CORRECT));
         assertEquals(ExecutionType.TradeCorrect,
-                sFactory.createExecutionReport(msg, null).getExecutionType());
+                sFactory.createExecutionReport(msg, null,
+                        Originator.Server).getExecutionType());
 
         msg.setField(new ExecTransType(ExecTransType.STATUS));
         assertEquals(ExecutionType.OrderStatus,
-                sFactory.createExecutionReport(msg, null).getExecutionType());
+                sFactory.createExecutionReport(msg, null,
+                        Originator.Server).getExecutionType());
     }
 }

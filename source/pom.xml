@@ -25,6 +25,7 @@
   <name>Public Sources</name>
 
   <modules>
+    <module>client</module>
     <module>core</module>
     <module>modules</module>
     <module>orderloader</module>

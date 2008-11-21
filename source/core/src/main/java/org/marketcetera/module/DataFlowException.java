@@ -14,6 +14,15 @@ public class DataFlowException extends ModuleException {
     /**
      * Creates an instance.
      *
+     * @param inCause the underlying cause
+     */
+    public DataFlowException(Throwable inCause) {
+        super(inCause);
+    }
+
+    /**
+     * Creates an instance.
+     *
      * @param inMessage the error message.
      */
     protected DataFlowException(I18NBoundMessage inMessage) {

@@ -14,7 +14,7 @@ import org.marketcetera.util.misc.ClassVersion;
  * @author anshul@marketcetera.com
  */
 @ClassVersion("$Id$")  //$NON-NLS-1$
-public class UnsupportedRequestParameterType extends ModuleException {
+public class UnsupportedRequestParameterType extends RequestDataException {
     private static final long serialVersionUID = 7502538172056373356L;
 
     /**

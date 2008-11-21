@@ -41,15 +41,15 @@ public class OrderCancelTest extends TypesTestBase {
         //Null report parameter defaults.
         OrderCancel order = sFactory.createOrderCancel(null);
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, null, null, null, null, null, null);
+        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
         assertRelatedOrderValues(order,null);
 
         //Test an empty report.
         Message report = createEmptyExecReport();
         order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, null));
+                sFactory.createExecutionReport(report, null, Originator.Server));
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, null, null, null, null, null, null);
+        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
         assertRelatedOrderValues(order,null);
 
         //Test a report with all values in it
@@ -64,13 +64,15 @@ public class OrderCancelTest extends TypesTestBase {
                 symbol, account);
         //Create the order from the report.
         order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, cID));
+                sFactory.createExecutionReport(report, cID,
+                        Originator.Server));
         assertOrderValues(order, cID, symbol.getSecurityType());
-        assertOrderBaseValues(order, null, account, null,
+        assertOrderBaseValues(order, NOT_NULL, account, null,
                 report.getField(new LeavesQty()).getValue(), side, symbol);
         assertRelatedOrderValues(order,new OrderID(orderID));
         assertNotSame(order, sFactory.createOrderCancel(
-                sFactory.createExecutionReport(report, cID)));
+                sFactory.createExecutionReport(report, cID,
+                        Originator.Server)));
     }
 
     /**
@@ -83,7 +85,8 @@ public class OrderCancelTest extends TypesTestBase {
     public void pojoSetters()throws Exception {
         //Test with non-null exec report
         OrderCancel order = sFactory.createOrderCancel(
-                sFactory.createExecutionReport(createEmptyExecReport(), null));
+                sFactory.createExecutionReport(createEmptyExecReport(), null,
+                        Originator.Server));
         checkSetters(order);
 
         //Test with null exec report
@@ -105,23 +108,22 @@ public class OrderCancelTest extends TypesTestBase {
                 factory.getBeginString(), MsgType.ORDER_CANCEL_REQUEST);
         OrderCancel order = sFactory.createOrderCancel(msg, null);
         assertOrderValues(order, null, null);
-        assertOrderBaseValues(order, null, null, null, null, null, null);
+        assertOrderBaseValues(order, NOT_NULL, null, null, null, null, null);
         assertRelatedOrderValues(order, null);
         checkSetters(order);
 
         //An order with all fields set.
         DestinationID destinationID = new DestinationID("meh");
-        String orderID = "order";
         String origOrderID = "testOrderID";
         BigDecimal qty = new BigDecimal("23434.56989");
         MSymbol symbol = new MSymbol("IBM",SecurityType.CommonStock);
         String account = "nonplus";
-        msg = factory.newCancel(orderID,origOrderID,
+        msg = factory.newCancel("order",origOrderID,
                 Side.Buy.getFIXValue(), qty, symbol, null);
         msg.setField(new Account(account));
         order = sFactory.createOrderCancel(msg, destinationID);
         assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, new OrderID(orderID), account, null,
+        assertOrderBaseValues(order, NOT_NULL, account, null,
                 qty, Side.Buy, symbol);
         assertRelatedOrderValues(order, new OrderID(origOrderID));
         checkSetters(order);
@@ -157,7 +159,7 @@ public class OrderCancelTest extends TypesTestBase {
         order = sFactory.createOrderCancel(msg, destinationID);
 
         assertOrderValues(order, destinationID, SecurityType.CommonStock);
-        assertOrderBaseValues(order, new OrderID(orderID), account,
+        assertOrderBaseValues(order, NOT_NULL, account,
                 expectedMap, qty, Side.Buy, symbol);
         assertRelatedOrderValues(order, new OrderID(origOrderID));
 

@@ -28,7 +28,9 @@ public interface DataReceiver {
      * receiving data that was sent to it.
      * @throws StopDataFlowException if the module cannot receive any more
      * data and wants to stop any more data flowing into it.
+     * @throws ReceiveDataException if the module cannot receive data for
+     * any other reason.
      */
     public void receiveData(DataFlowID inFlowID, Object inData)
-            throws UnsupportedDataTypeException, StopDataFlowException;
+            throws ReceiveDataException;
 }

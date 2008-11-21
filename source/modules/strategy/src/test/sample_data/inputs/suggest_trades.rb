@@ -12,31 +12,31 @@ class SuggestTrades < Strategy
         if(orderShouldBeNull != nil)
             suggest_trade(nil, BigDecimal.new("100.00"), "suggestion")
         else
-            suggestion = Factory.getInstance().createOrderSingleSuggestion()
-            suggestion.setAccount(get_parameter("account"))
+            suggestedOrder = Factory.getInstance().createOrderSingle()
+            suggestedOrder.setAccount(get_parameter("account"))
             orderType = get_parameter("orderType")
             if(orderType != nil)
-                suggestion.setOrderType(OrderType.valueOf(orderType))
+                suggestedOrder.setOrderType(OrderType.valueOf(orderType))
             end
             price = get_parameter("price")
             if(price != nil)
-                suggestion.setPrice(BigDecimal.new(price))
+                suggestedOrder.setPrice(BigDecimal.new(price))
             end
             quantity = get_parameter("quantity")
             if(quantity != nil)
-                suggestion.setQuantity(BigDecimal.new(quantity))
+                suggestedOrder.setQuantity(BigDecimal.new(quantity))
             end
             side = get_parameter("side")
             if(side != nil)
-                suggestion.setSide(Side.valueOf(side))
+                suggestedOrder.setSide(Side.valueOf(side))
             end
             symbol = get_parameter("symbol")
             if(symbol != nil)
-                suggestion.setSymbol(MSymbol.new(symbol))
+                suggestedOrder.setSymbol(MSymbol.new(symbol))
             end
             timeInForce = get_parameter("timeInForce")
             if(timeInForce != nil)
-                suggestion.setTimeInForce(TimeInForce.valueOf(timeInForce))
+                suggestedOrder.setTimeInForce(TimeInForce.valueOf(timeInForce))
             end
             scoreString = get_parameter("score")
             if(scoreString != nil)
@@ -44,7 +44,7 @@ class SuggestTrades < Strategy
             else
                 score = nil
             end
-            suggest_trade(suggestion, score, get_parameter("identifier"))
+            suggest_trade(suggestedOrder, score, get_parameter("identifier"))
         end
     end
 end

@@ -172,6 +172,8 @@ public abstract class Factory {
      * @param inDestinationID the ID of the destination from which this
      * message was received.
      *
+     * @param inOriginator the originator of this message. Cannot be null.
+     * 
      * @return An execution report instance based on the supplied
      * FIX Message. The returned type will implement
      * {@link FIXMessageSupport}.
@@ -179,6 +181,31 @@ public abstract class Factory {
      * @throws MessageCreationException if there were errors wrapping
      * the supplied FIX Message.
      */
+    public abstract ExecutionReport createExecutionReport(
+            Message inMessage, DestinationID inDestinationID,
+            Originator inOriginator)
+            throws MessageCreationException;
+    /**
+     * Creates an execution report based on the supplied execution report
+     * FIX Message. Defaults the Originator to {@link Originator#Server}
+     *
+     * @param inMessage the execution report FIX message. Cannot be null.
+     *
+     * @param inDestinationID the ID of the destination from which this
+     * message was received.
+     *
+     * @return An execution report instance based on the supplied
+     * FIX Message. The returned type will implement
+     * {@link FIXMessageSupport}.
+     *
+     * @throws MessageCreationException if there were errors wrapping
+     * the supplied FIX Message.
+     *
+     * @deprecated Use
+     * {@link #createExecutionReport(quickfix.Message, DestinationID, Originator)}
+     * instead. 
+     */
+    @Deprecated
     public abstract ExecutionReport createExecutionReport(
             Message inMessage, DestinationID inDestinationID)
             throws MessageCreationException;

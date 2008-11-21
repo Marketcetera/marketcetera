@@ -61,6 +61,11 @@
         <artifactId>marketdata-bogus</artifactId>
         <version>[${project.version}]</version>
       </dependency>
+      <dependency>
+        <groupId>${mvn.public.package}</groupId>
+        <artifactId>client</artifactId>
+        <version>[${project.version}]</version>
+      </dependency>
 
       <!-- Compile: QuickFIX/J. -->
       <dependency>

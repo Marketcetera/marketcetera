@@ -2,6 +2,7 @@ package org.marketcetera.trade;
 
 import org.marketcetera.util.misc.ClassVersion;
 import org.marketcetera.util.test.EqualityAssert;
+import org.marketcetera.util.test.SerializableAssert;
 import org.marketcetera.module.ExpectedFailure;
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
@@ -37,6 +38,7 @@ public class IDTest {
         OrderID id = new OrderID("yes");
         assertEquals("yes", id.getValue());
         assertEquals("yes", id.toString());
+        SerializableAssert.assertSerializable(id);
     }
 
     /**
@@ -60,5 +62,6 @@ public class IDTest {
         DestinationID id = new DestinationID("yes");
         assertEquals("yes", id.getValue());
         assertEquals("yes", id.toString());
+        SerializableAssert.assertSerializable(id);
     }
 }

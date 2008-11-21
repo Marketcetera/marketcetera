@@ -5,6 +5,9 @@ import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.quickfix.FIXDataDictionary;
 import org.marketcetera.quickfix.FIXMessageUtil;
+import org.marketcetera.core.IDFactory;
+import org.marketcetera.core.NoMoreIDsException;
+import org.marketcetera.core.InMemoryIDFactory;
 import quickfix.*;
 import quickfix.field.*;
 
@@ -22,7 +25,9 @@ import java.util.*;
 class FactoryImpl extends Factory {
     @Override
     public OrderSingle createOrderSingle() {
-        return new OrderSingleImpl();
+        OrderSingleImpl order = new OrderSingleImpl();
+        assignOrderID(order);
+        return order;
     }
 
     @Override
@@ -33,6 +38,7 @@ class FactoryImpl extends Factory {
     @Override
     public OrderCancel createOrderCancel(ExecutionReport inLatestReport) {
         OrderCancelImpl order = new OrderCancelImpl();
+        assignOrderID(order);
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
             order.setDestinationID(inLatestReport.getDestinationID());
@@ -47,6 +53,7 @@ class FactoryImpl extends Factory {
     @Override
     public OrderReplace createOrderReplace(ExecutionReport inLatestReport) {
         OrderReplaceImpl order = new OrderReplaceImpl();
+        assignOrderID(order);
         if (inLatestReport != null) {
             order.setAccount(inLatestReport.getAccount());
             order.setDestinationID(inLatestReport.getDestinationID());
@@ -57,6 +64,8 @@ class FactoryImpl extends Factory {
             order.setSide(inLatestReport.getSide());
             order.setSymbol(inLatestReport.getSymbol());
             order.setTimeInForce(inLatestReport.getTimeInForce());
+            order.setOrderCapacity(inLatestReport.getOrderCapacity());
+            order.setPositionEffect(inLatestReport.getPositionEffect());
         }
         return order;
     }
@@ -70,17 +79,29 @@ class FactoryImpl extends Factory {
     @Override
     public ExecutionReport createExecutionReport(
             Message inMessage,
-            DestinationID inDestinationID)
+            DestinationID inDestinationID, Originator inOriginator)
             throws MessageCreationException {
         if(inMessage == null) {
             throw new NullPointerException();
         }
+        if(inOriginator == null) {
+            throw new NullPointerException();
+        }
         if(FIXMessageUtil.isExecutionReport(inMessage)) {
-            return new ExecutionReportImpl(inMessage, inDestinationID);
+            return new ExecutionReportImpl(inMessage, inDestinationID,
+                    inOriginator);
         } else {
             throw new MessageCreationException(new I18NBoundMessage1P(
                     Messages.NOT_EXECUTION_REPORT, inMessage.toString()));
         }
+    }
+
+    @Override
+    public ExecutionReport createExecutionReport(
+            Message inMessage, DestinationID inDestinationID)
+            throws MessageCreationException {
+        return createExecutionReport(inMessage, inDestinationID,
+                Originator.Server);
     }
 
     @Override
@@ -119,6 +140,9 @@ class FactoryImpl extends Factory {
         order.setSide(FIXUtil.getSide(inMessage));
         order.setSymbol(FIXUtil.getSymbol(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
+        order.setOrderCapacity(FIXUtil.getOrderCapacity(inMessage));
+        order.setPositionEffect(FIXUtil.getPositionEffect(inMessage));
+        assignOrderID(order);
         return order;
     }
 
@@ -140,6 +164,7 @@ class FactoryImpl extends Factory {
         order.setQuantity(FIXUtil.getOrderQuantity(inMessage));
         order.setSide(FIXUtil.getSide(inMessage));
         order.setSymbol(FIXUtil.getSymbol(inMessage));
+        assignOrderID(order);
         return order;
     }
 
@@ -165,8 +190,27 @@ class FactoryImpl extends Factory {
         order.setSide(FIXUtil.getSide(inMessage));
         order.setSymbol(FIXUtil.getSymbol(inMessage));
         order.setTimeInForce(FIXUtil.getTimeInForce(inMessage));
+        order.setOrderCapacity(FIXUtil.getOrderCapacity(inMessage));
+        order.setPositionEffect(FIXUtil.getPositionEffect(inMessage));
+        assignOrderID(order);
         return order;
     }
+
+    private void assignOrderID(OrderBase inOrder) {
+        try {
+            inOrder.setOrderID(new OrderID(mIDFactory.getNext()));
+        } catch (NoMoreIDsException e) {
+            //Indicates that id factories are not correctly assembled
+            //to prevent failure. The factory should not throw exceptions.
+            //In case it's unable to generate IDs, it should rely on a
+            //local, in-memory ID generator that cannot fail
+            Messages.UNABLE_TO_GENERATE_IDS.error(this, e);
+            throw new IllegalArgumentException(
+                    Messages.UNABLE_TO_GENERATE_IDS.getText(), e);
+        }
+    }
+    private IDFactory mIDFactory = new InMemoryIDFactory(
+            System.currentTimeMillis());
 
     /**
      * Returns all the fields contained in the supplied message as a map.
@@ -255,7 +299,7 @@ class FactoryImpl extends Factory {
     static {
         Set<Integer> tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
-                ClOrdID.FIELD, //todo remove once we remove OrderID from OrderBase
+                ClOrdID.FIELD,
                 Account.FIELD,
                 OrdType.FIELD,
                 Price.FIELD,
@@ -263,12 +307,14 @@ class FactoryImpl extends Factory {
                 quickfix.field.Side.FIELD,
                 Symbol.FIELD,
                 quickfix.field.SecurityType.FIELD,
-                quickfix.field.TimeInForce.FIELD
+                quickfix.field.TimeInForce.FIELD,
+                quickfix.field.OrderCapacity.FIELD,
+                quickfix.field.PositionEffect.FIELD
         ));
         ORDER_SINGLE_FIELDS = Collections.unmodifiableSet(tmp);
         tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
-                ClOrdID.FIELD, //todo remove once we remove OrderID from OrderBase
+                ClOrdID.FIELD,
                 Account.FIELD,
                 OrigClOrdID.FIELD,
                 OrderQty.FIELD,
@@ -279,7 +325,7 @@ class FactoryImpl extends Factory {
         ORDER_CANCEL_FIELDS = Collections.unmodifiableSet(tmp);
         tmp = new HashSet<Integer>();
         tmp.addAll(Arrays.asList(
-                ClOrdID.FIELD, //todo remove once we remove OrderID from OrderBase
+                ClOrdID.FIELD,
                 Account.FIELD,
                 OrdType.FIELD,
                 OrigClOrdID.FIELD,
@@ -288,7 +334,9 @@ class FactoryImpl extends Factory {
                 quickfix.field.Side.FIELD,
                 Symbol.FIELD,
                 quickfix.field.SecurityType.FIELD,
-                quickfix.field.TimeInForce.FIELD
+                quickfix.field.TimeInForce.FIELD,
+                quickfix.field.OrderCapacity.FIELD,
+                quickfix.field.PositionEffect.FIELD
         ));
         ORDER_REPLACE_FIELDS = Collections.unmodifiableSet(tmp);
     }

@@ -20,16 +20,12 @@ import java.util.Map;
 @ClassVersion("$Id$") //$NON-NLS-1$
 public interface OrderBase extends Order {
     /**
-     * The client assigned OrderID for this order.
+     * The client assigned OrderID for this order. The factory
+     * assigns orderIDs when creating orders. 
      *
      * @return the client assigned orderID for this order.
      *
-     * @deprecated The orderID for an order should be automatically assigned
-     * by ORS Client. This field has been added to aid the transition to
-     * ORS Client. After transitioning to ORS Client, this field should
-     * be removed.
      */
-    @Deprecated
     OrderID getOrderID();
 
     /**
@@ -39,7 +35,6 @@ public interface OrderBase extends Order {
      *
      * @see #getOrderID() 
      */
-    @Deprecated
     void setOrderID(OrderID inOrderID);
     /**
      * Gets the Side for the Order.
