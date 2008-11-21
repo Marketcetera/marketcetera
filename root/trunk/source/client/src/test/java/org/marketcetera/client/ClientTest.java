@@ -80,6 +80,11 @@ public class ClientTest {
                 getClient().getPositionAsOf(null,null);
             }
         };
+        new ExpectedFailure<UnsupportedOperationException>(null){
+            protected void run() throws Exception {
+                getClient().getDestinationsStatus();
+            }
+        };
     }
     @Test
     public void connect() throws Exception {
@@ -379,6 +384,11 @@ public class ClientTest {
         new ExpectedFailure<IllegalStateException>(expectedMsg){
             protected void run() throws Exception {
                 client.getReportsSince(null);
+            }
+        };
+        new ExpectedFailure<IllegalStateException>(expectedMsg){
+            protected void run() throws Exception {
+                client.getDestinationsStatus();
             }
         };
         new ExpectedFailure<IllegalStateException>(expectedMsg){

@@ -8,6 +8,7 @@ import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.except.ExceptUtils;
 import org.marketcetera.trade.*;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.client.dest.DestinationsStatus;
 import org.springframework.context.support.AbstractApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -135,6 +136,12 @@ class ClientImpl implements Client {
     public Date getLastConnectTime() {
         failIfClosed();
         return mLastConnectTime;
+    }
+
+    @Override
+    public DestinationsStatus getDestinationsStatus() throws ConnectionException {
+        failIfClosed();
+        throw new UnsupportedOperationException();
     }
 
     ClientImpl(ClientParameters inParameters) throws ConnectionException {
