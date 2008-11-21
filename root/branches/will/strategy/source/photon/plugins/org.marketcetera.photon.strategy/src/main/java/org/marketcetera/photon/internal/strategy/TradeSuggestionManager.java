@@ -57,16 +57,18 @@ public final class TradeSuggestionManager {
 	public IObservableList getTradeSuggestions() {
 		return Observables.unmodifiableObservableList(mSuggestions);
 	}
-	
+
 	/**
 	 * Adds a trade suggestion to the managed collection.
 	 * 
-	 * @param suggestion new suggestion to add.
+	 * @param suggestion
+	 *            new suggestion to add.
 	 */
 	void addSuggestion(final OrderSingleSuggestion suggestion) {
 		final Date timestamp = new Date();
+		// Ensure the update is performed in the main UI thread
 		PlatformUI.getWorkbench().getDisplay().asyncExec(new Runnable() {
-		
+
 			@Override
 			public void run() {
 				mSuggestions.add(new TradeSuggestion(suggestion, timestamp));
@@ -74,9 +76,14 @@ public final class TradeSuggestionManager {
 		});
 	}
 
-	void removeSuggestion(TradeSuggestion obj) {
-		mSuggestions.remove(obj);
+	/**
+	 * Removes a trade suggestion from the managed collection.
+	 * 
+	 * @param suggestion
+	 *            suggestion to remove
+	 */
+	void removeSuggestion(TradeSuggestion suggestion) {
+		mSuggestions.remove(suggestion);
 	}
 
-	
 }
