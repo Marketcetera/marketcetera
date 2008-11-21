@@ -1,9 +1,0 @@
-<root>
-  <foo>simple test without namespaces!</foo>
-  <hugo>
-    <hugochild>This is in a <!-- comment -->test text namespace</hugochild>
-  </hugo>
-  <bar testattr='123abc' />
-</root>
-
-<!-- an xml sample document without meaningful content -->
