@@ -10,8 +10,10 @@ import org.eclipse.core.databinding.observable.value.WritableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.databinding.wizard.WizardPageSupport;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -19,6 +21,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.photon.internal.strategy.Messages;
 import org.marketcetera.photon.internal.strategy.StrategyValidation;
+import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.ui.StrategyUI;
 import org.marketcetera.util.misc.ClassVersion;
 
@@ -41,6 +44,8 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 
 	private final IObservableValue mClassName = WritableValue
 			.withValueType(String.class);
+	
+	private final IObservableValue mDestination = WritableValue.withValueType(Destination.class);
 
 	/**
 	 * Returns the display name provided by the user.
@@ -58,6 +63,15 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 	 */
 	String getClassName() {
 		return (String) mClassName.getValue();
+	}
+
+	/**
+	 * Returns the destination provided by the user.
+	 * 
+	 * @return the destination provided by the user
+	 */
+	Destination getDestination() {
+		return (Destination) mDestination.getValue();
 	}
 
 	/**
@@ -88,8 +102,12 @@ final class RegisterRubyStrategyWizardPage extends WizardPage {
 		final Text name = StrategyUI.createDisplayNameText(composite);
 		dbc.bindValue(SWTObservables.observeText(name, SWT.Modify), mName,
 				null, null);
+		
+		final ComboViewer destination = StrategyUI.createDestinationCombo(composite);
+		dbc.bindValue(ViewersObservables.observeSingleSelection(destination), mDestination, null, null);
+		mDestination.setValue(Destination.SINK);
 
-		composite.setTabList(new Control[] { className, name });
+		composite.setTabList(new Control[] { className, name, destination.getControl() });
 
 		mClassName.addValueChangeListener(new IValueChangeListener() {
 

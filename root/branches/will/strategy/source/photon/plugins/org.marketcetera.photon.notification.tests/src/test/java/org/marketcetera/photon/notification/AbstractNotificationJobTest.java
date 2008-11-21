@@ -6,15 +6,12 @@ import java.util.concurrent.TimeUnit;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.notifications.INotification;
-import org.marketcetera.core.notifications.Notification;
 import org.marketcetera.core.notifications.INotification.Severity;
 import org.marketcetera.photon.notification.AbstractNotificationJob.ThresholdReachedNotification;
 import org.marketcetera.photon.notification.tests.NotificationUtil;
 import org.marketcetera.photon.test.MultiThreadedTestBase;
-import org.marketcetera.photon.test.SWTTestUtil;
 
 /* $License$ */
 

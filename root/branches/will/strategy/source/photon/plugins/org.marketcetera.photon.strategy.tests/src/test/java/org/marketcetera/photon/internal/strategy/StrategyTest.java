@@ -13,6 +13,7 @@ import java.util.Properties;
 import org.junit.Before;
 import org.junit.Test;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.photon.test.IsExpectedPropertyChangeEvent;
 
@@ -76,6 +77,6 @@ public class StrategyTest {
 
 	public static Strategy createTestStrategy() {
 		return new Strategy(new ModuleURN("metc:strategy:system:test"),
-				null, "Null Strategy", new Properties());
+				null, "Null Strategy", Destination.SINK, new Properties());
 	}
 }
