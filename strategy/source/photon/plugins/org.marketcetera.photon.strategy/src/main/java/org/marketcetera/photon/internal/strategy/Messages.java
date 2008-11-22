@@ -140,9 +140,13 @@ public interface Messages {
 			LOGGER, "strategy_manager.restore_failed"); //$NON-NLS-1$
 	static final I18NMessage2P STRATEGY_MANAGER_SCRIPT_NOT_FOUND = new I18NMessage2P(
 			LOGGER, "strategy_manager.script_not_found"); //$NON-NLS-1$
+	static final I18NMessage1P STRATEGY_MANAGER_INVALID_DESTINATION = new I18NMessage1P(
+			LOGGER, "strategy_manager.invalid_destination"); //$NON-NLS-1$
 	static final I18NMessage1P STRATEGY_MANAGER_STRATEGY_START_FAILED = new I18NMessage1P(
 			LOGGER, "strategy_manager.strategy_start_failed"); //$NON-NLS-1$
-	static final I18NMessage1P TRADE_SUGGESTION_RECEIVER_INVALID_DATA = new I18NMessage1P(
-			LOGGER, "trade_suggestion_receiver.invalid_data"); //$NON-NLS-1$
+	static final I18NMessage1P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_TYPE = new I18NMessage1P(
+			LOGGER, "trade_suggestion_receiver.invalid_data_type"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_NO_ORDER = new I18NMessage0P(
+			LOGGER, "trade_suggestion_receiver.invalid_data_no_order"); //$NON-NLS-1$
 }
 	

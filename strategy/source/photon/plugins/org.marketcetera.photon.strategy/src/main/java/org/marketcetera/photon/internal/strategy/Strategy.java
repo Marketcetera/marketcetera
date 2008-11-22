@@ -47,8 +47,8 @@ public final class Strategy {
 				Messages.STRATEGY_SINK_DESTINATION_LABEL.getText(),
 				SinkModuleFactory.INSTANCE_URN);
 
-		private String mLabel;
-		private ModuleURN mURN;
+		private final String mLabel;
+		private final ModuleURN mURN;
 
 		/**
 		 * Returns the URN of the module corresponding to this destination.

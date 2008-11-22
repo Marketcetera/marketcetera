@@ -14,6 +14,7 @@ import org.marketcetera.trade.SecurityType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TimeInForce;
 import org.marketcetera.util.misc.ClassVersion;
+import org.rubypeople.rdt.internal.core.Assert;
 
 /**
  * Photon UI abstraction for a trade suggestion.
@@ -38,6 +39,7 @@ public class TradeSuggestion {
 	 *            the time the suggestion was received
 	 */
 	TradeSuggestion(OrderSingleSuggestion suggestion, Date timestamp) {
+		Assert.isNotNull(suggestion.getOrder());
 		mSuggestion = suggestion;
 		mTimestamp = timestamp;
 	}

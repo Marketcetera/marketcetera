@@ -243,7 +243,7 @@ public class TableSupport {
 				beanInfo = Introspector.getBeanInfo(beanClass);
 			} catch (IntrospectionException e) {
 				// cannot introspect, give up
-				return null;
+				throw new IllegalArgumentException(beanClass.getName(), e);
 			}
 			PropertyDescriptor[] propertyDescriptors = beanInfo
 					.getPropertyDescriptors();

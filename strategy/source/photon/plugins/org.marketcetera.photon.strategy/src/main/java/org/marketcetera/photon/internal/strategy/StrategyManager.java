@@ -342,6 +342,7 @@ public final class StrategyManager {
 									.getString(DESTINATION_ATTRIBUTE));
 						} catch (Exception e) {
 							// Let it default to sink
+							Messages.STRATEGY_MANAGER_INVALID_DESTINATION.warn(this, e, script);
 						}
 						Properties properties = new Properties();
 						for (IMemento propertyMem : strategyMem

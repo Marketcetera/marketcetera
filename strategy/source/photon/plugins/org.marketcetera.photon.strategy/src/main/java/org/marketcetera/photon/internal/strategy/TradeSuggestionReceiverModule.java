@@ -47,11 +47,15 @@ class TradeSuggestionReceiverModule extends Module implements DataReceiver {
 			throws UnsupportedDataTypeException, StopDataFlowException {
 		if (!(inData instanceof OrderSingleSuggestion)) {
 			throw new UnsupportedDataTypeException(new I18NBoundMessage1P(
-					Messages.TRADE_SUGGESTION_RECEIVER_INVALID_DATA, inData
-							.getClass()));
+					Messages.TRADE_SUGGESTION_RECEIVER_INVALID_DATA_TYPE,
+					inData.getClass()));
 		}
-		TradeSuggestionManager.getCurrent().addSuggestion(
-				(OrderSingleSuggestion) inData);
+		OrderSingleSuggestion suggestion = (OrderSingleSuggestion) inData;
+		if (suggestion.getOrder() == null) {
+			throw new UnsupportedDataTypeException(
+					Messages.TRADE_SUGGESTION_RECEIVER_INVALID_DATA_NO_ORDER);
+		}
+		TradeSuggestionManager.getCurrent().addSuggestion(suggestion);
 	}
 
 }
