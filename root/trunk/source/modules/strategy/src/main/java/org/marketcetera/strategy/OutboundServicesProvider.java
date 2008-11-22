@@ -2,8 +2,12 @@ package org.marketcetera.strategy;
 
 import org.marketcetera.marketdata.DataRequest;
 import org.marketcetera.module.DataEmitter;
+import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.misc.ClassVersion;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -60,4 +64,15 @@ interface OutboundServicesProvider
      * <p>If there are no active market data requests for this strategy, this method does nothing.
      */
     void cancelAllMarketDataRequests();
+    /**
+     * Sends a FIX message to Order subscribers.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inDestination a <code>DestinationID</code> value
+     * @throws MessageCreationException if the given <code>Message</code> cannot be transformed into a system-compatible order 
+     */
+    void sendMessage(Message inMessage,
+                     DestinationID inDestination)
+        throws MessageCreationException;
 }
+

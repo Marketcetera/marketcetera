@@ -2,6 +2,7 @@ package org.marketcetera.strategy;
 
 import static org.marketcetera.strategy.Messages.CALLBACK_ERROR;
 import static org.marketcetera.strategy.Messages.INVALID_MARKET_DATA_REQUEST;
+import static org.marketcetera.strategy.Messages.INVALID_MESSAGE;
 import static org.marketcetera.strategy.Messages.INVALID_TRADE_SUGGESTION;
 import static org.marketcetera.strategy.Messages.NO_PARAMETERS;
 import static org.marketcetera.strategy.Messages.NULL_PROPERTY_KEY;
@@ -15,10 +16,14 @@ import java.util.concurrent.TimeUnit;
 
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.marketdata.DataRequest;
+import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -205,6 +210,33 @@ public abstract class AbstractRunningStrategy
                                strategy,
                                suggestion);
         strategy.getServicesProvider().sendSuggestion(suggestion);
+    }
+    /**
+     * Sends a FIX message.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inDestination a <code>DestinationID</code> value
+     */
+    protected final void sendMessage(Message inMessage,
+                                     DestinationID inDestination)
+    {
+        if(inMessage == null ||
+           inDestination == null) {
+            INVALID_MESSAGE.warn(this,
+                                 strategy);
+            return;
+        }
+        SLF4JLoggerProxy.debug(AbstractRunningStrategy.class,
+                               "{} sending FIX message {} to {}", //$NON-NLS-1$
+                               strategy,
+                               inMessage,
+                               inDestination);
+        try {
+            strategy.getServicesProvider().sendMessage(inMessage,
+                                                       inDestination);
+        } catch (MessageCreationException e) {
+            // TODO Log an error-handling message
+        }
     }
     /**
      * Requests a callback after a specified delay in milliseconds.

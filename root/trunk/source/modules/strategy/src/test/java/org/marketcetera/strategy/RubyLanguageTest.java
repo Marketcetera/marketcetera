@@ -45,6 +45,9 @@ public class RubyLanguageTest
     public static final File SUGGESTION_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                             "suggest_trades.rb");
     public static final String SUGGESTION_STRATEGY_NAME = "SuggestTrades";
+    public static final File MESSAGE_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
+                                                         "send_message.rb");
+    public static final String MESSAGE_STRATEGY_NAME = "SendMessage";
     public static final File PART1_STRATEGY = new File(StrategyTestBase.SAMPLE_STRATEGY_DIR,
                                                        "part1.rb");
     public static final String PART1_STRATEGY_NAME = "Part1";
@@ -253,6 +256,15 @@ public class RubyLanguageTest
                                        RubyLanguageTest.SUGGESTION_STRATEGY_NAME);
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.LanguageTestBase#getMessageStrategy()
+     */
+    @Override
+    protected StrategyCoordinates getMessageStrategy()
+    {
+        return StrategyCoordinates.get(RubyLanguageTest.MESSAGE_STRATEGY,
+                                       RubyLanguageTest.MESSAGE_STRATEGY_NAME);
+    }
+   /* (non-Javadoc)
      * @see org.marketcetera.strategy.LanguageTestBase#getPart1Strategy()
      */
     protected StrategyCoordinates getPart1Strategy()
