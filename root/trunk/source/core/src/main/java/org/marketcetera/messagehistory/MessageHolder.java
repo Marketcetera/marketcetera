@@ -3,6 +3,7 @@ package org.marketcetera.messagehistory;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.marketdata.MarketDataFeedToken;
 
 import quickfix.Message;
 
@@ -20,35 +21,46 @@ public class MessageHolder
 	implements Comparable<MessageHolder> 
 {
 	private Message message;
-	private long mMessageReference;
+	private long messageReference;
 	private static AtomicLong counter = new AtomicLong();
-	private String mGroupID = null;
-
+	private String groupID = null;
+	private MarketDataFeedToken mToken;
+	
 	public MessageHolder(Message message) {
 		this.message = message;
-		this.mMessageReference = counter.incrementAndGet();
+		this.messageReference = counter.incrementAndGet();
 	}
 
 	public MessageHolder(Message message, String groupID){
 		this(message);
-		this.mGroupID = groupID;
+		this.groupID = groupID;
 	}
-
-    public Message getMessage() {
+	
+	public void setToken(MarketDataFeedToken inToken)
+	{
+	    mToken = inToken;
+	}
+	
+	public MarketDataFeedToken getToken()
+	{
+	    return mToken;
+	}
+	
+	public Message getMessage() {
 		return message;
 	}
 	
 	public long getMessageReference()
 	{
-		return mMessageReference;
+		return messageReference;
 	}
 
 	public int compareTo(MessageHolder mh) {  
-		return (int)(mMessageReference - mh.mMessageReference);
+		return (int)(messageReference - mh.messageReference);
 	}
 
 	public String getGroupID() {
-		return mGroupID;
+		return groupID;
 	}
     /* (non-Javadoc)
      * @see java.lang.Object#hashCode()
@@ -58,7 +70,7 @@ public class MessageHolder
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (mMessageReference ^ (mMessageReference >>> 32));
+        result = prime * result + (int) (messageReference ^ (messageReference >>> 32));
         return result;
     }
     /* (non-Javadoc)
@@ -74,7 +86,7 @@ public class MessageHolder
         if (getClass() != obj.getClass())
             return false;
         final MessageHolder other = (MessageHolder) obj;
-        if (mMessageReference != other.mMessageReference)
+        if (messageReference != other.messageReference)
             return false;
         return true;
     }

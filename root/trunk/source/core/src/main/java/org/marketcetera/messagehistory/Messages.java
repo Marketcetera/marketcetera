@@ -37,6 +37,6 @@ public interface Messages
 
     static final I18NMessage0P SHOULD_NEVER_HAPPEN_IN_ADDINCOMINGMESSAGE = 
         new I18NMessage0P(LOGGER,"should_never_happen_in_addincomingmessage"); //$NON-NLS-1$
-    static final I18NMessage0P SHOULD_NEVER_HAPPEN_IN_UPDATEORDERIDMAPPINGS = //todo remove 
+    static final I18NMessage0P SHOULD_NEVER_HAPPEN_IN_UPDATEORDERIDMAPPINGS = 
         new I18NMessage0P(LOGGER,"should_never_happen_in_updateorderidmappings"); //$NON-NLS-1$
 }
