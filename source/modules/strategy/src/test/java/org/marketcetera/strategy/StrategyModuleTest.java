@@ -2,11 +2,13 @@ package org.marketcetera.strategy;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_NUM;
 import static org.marketcetera.module.Messages.CANNOT_CREATE_MODULE_WRONG_PARAM_TYPE;
 import static org.marketcetera.module.Messages.DATAFLOW_REQ_MODULE_STOPPED;
 import static org.marketcetera.module.Messages.ILLEGAL_REQ_PARM_VALUE;
+import static org.marketcetera.module.Messages.INVALID_URN_SCHEME;
 import static org.marketcetera.module.Messages.MODULE_NOT_FOUND;
 import static org.marketcetera.module.Messages.MODULE_NOT_RECEIVER;
 import static org.marketcetera.module.Messages.UNSUPPORTED_REQ_PARM_TYPE;
@@ -28,11 +30,13 @@ import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.IllegalRequestParameterValue;
+import org.marketcetera.module.InvalidURNException;
 import org.marketcetera.module.ModuleCreationException;
 import org.marketcetera.module.ModuleNotFoundException;
 import org.marketcetera.module.ModuleStateException;
 import org.marketcetera.module.ModuleURN;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.util.log.SLF4JLoggerProxy;
 import org.marketcetera.util.test.UnicodeData;
 
 /* $License$ */
@@ -614,6 +618,307 @@ public class StrategyModuleTest
                                              validURNNotReceiver);
             }
         };
+    }
+    /**
+     * Tests the ability to set strategy attributes with its MXBean interface.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void mxBean()
+        throws Exception
+    {
+        // stop the suggestions module to create a valid, stopped URN
+        moduleManager.stop(suggestionsURN);
+        // create our test data for the values to pass to the setDestination MXBean setters (suggestion and order)
+        //  the values are null, invalid, stopped, empty, and started
+        final String[] urnStrings = new String[] { null, "this is not a URN", suggestionsURN.getValue(), "", ordersURN.getValue() };
+        // create the test data for the starting point for the strategy module
+        //  the values are null and started (no stopped because then the strategy module itself would be un-startable before we even got around to
+        //  testing the setters - no point in that
+        final ModuleURN[] urns = new ModuleURN[] { null, ordersURN };
+        // create parameters test data
+        // empty
+        Properties emptyProperties = new Properties();
+        // non-empty
+        Properties nonEmptyProperties = new Properties();
+        nonEmptyProperties.setProperty("key1",
+                                       "value1");
+        // non-ascii
+        Properties nonASCIIProperties = new Properties();
+        nonASCIIProperties.setProperty("key1",
+                                       UnicodeData.HELLO_GR);
+        // group the parameters together
+        final String[] parameterStrings = new String[] { null, "ab:c=d::ef:", StrategyModule.propertiesToString(emptyProperties),
+                                                         StrategyModule.propertiesToString(nonEmptyProperties), StrategyModule.propertiesToString(nonASCIIProperties) };
+        final Properties[] parameters = new Properties[] { null, emptyProperties, nonEmptyProperties, nonASCIIProperties };
+        // cycle through all the permutations for the starting point for suggestions and orders (2 values each) and the value to set the destinations to
+        //  (5 values each) and new parameters (4 values each) and parameters starting point (3 values each), for a total of 1200 test cases (2*2*5*5*4*3)
+        // while this bit of code may not be the most legible, it's easy to see that 1200 test conditions would be a fair bit more verbose
+        for(int a=0;a<=4;a++) {
+            for(int b=0;b<=4;b++) {
+                for(int c=0;c<=1;c++) {
+                    for(int d=0;d<=1;d++) {
+                        for(int e=0;e<=4;e++) {
+                            for(int f=0;f<=3;f++) {
+                                final int aCounter = a;
+                                final int bCounter = b;
+                                final int cCounter = c;
+                                final int dCounter = d;
+                                final int eCounter = e;
+                                final int fCounter = f;
+                                SLF4JLoggerProxy.debug(this,
+                                                       "Testing permutation: {} {} {} {} {} {}",
+                                                       a,b,c,d,e,f);
+                                // the a values need to be tested first (1 & 2) followed by the same tests for the b values - can't combine the boolean
+                                //  expressions (like a==1 || b==1) because a==2 && b==1 would fail in the first check because the a==2 part would fail
+                                //  before the b==1 and throw the "wrong" exception.  that may not be horribly clear, but suffice it to say that there's
+                                //  a reason why the conditions are split apart
+                                if(a == 1) { // invalid URN
+                                    new ExpectedFailure<InvalidURNException>(INVALID_URN_SCHEME) {
+                                        @Override
+                                        protected void run()
+                                        throws Exception
+                                        {
+                                            doOneMXInterfaceTest(urnStrings[aCounter],
+                                                                 urnStrings[bCounter],
+                                                                 urns[cCounter],
+                                                                 urns[dCounter],
+                                                                 parameterStrings[eCounter],
+                                                                 parameters[fCounter]);
+                                        }
+                                    };
+                                    continue;
+                                }
+                                if(a == 2) { // stopped URN
+                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_REQ_MODULE_STOPPED) {
+                                        @Override
+                                        protected void run()
+                                        throws Exception
+                                        {
+                                            doOneMXInterfaceTest(urnStrings[aCounter],
+                                                                 urnStrings[bCounter],
+                                                                 urns[cCounter],
+                                                                 urns[dCounter],
+                                                                 parameterStrings[eCounter],
+                                                                 parameters[fCounter]);
+                                        }
+                                    };
+                                    continue;
+                                }
+                                if(b == 1) { // invalid URN
+                                    new ExpectedFailure<InvalidURNException>(INVALID_URN_SCHEME) {
+                                        @Override
+                                        protected void run()
+                                        throws Exception
+                                        {
+                                            doOneMXInterfaceTest(urnStrings[aCounter],
+                                                                 urnStrings[bCounter],
+                                                                 urns[cCounter],
+                                                                 urns[dCounter],
+                                                                 parameterStrings[eCounter],
+                                                                 parameters[fCounter]);
+                                        }
+                                    };
+                                    continue;
+                                }
+                                if(b == 2) { // stopped URN
+                                    new ExpectedFailure<ModuleStateException>(DATAFLOW_REQ_MODULE_STOPPED) {
+                                        @Override
+                                        protected void run()
+                                        throws Exception
+                                        {
+                                            doOneMXInterfaceTest(urnStrings[aCounter],
+                                                                 urnStrings[bCounter],
+                                                                 urns[cCounter],
+                                                                 urns[dCounter],
+                                                                 parameterStrings[eCounter],
+                                                                 parameters[fCounter]);
+                                        }
+                                    };
+                                    continue;
+                                }
+                                doOneMXInterfaceTest(urnStrings[a],
+                                                     urnStrings[b],
+                                                     urns[c],
+                                                     urns[dCounter],
+                                                     parameterStrings[eCounter],
+                                                     parameters[fCounter]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    /**
+     * Tests conversion of <code>String</code> objects to <code>Properties</code> objects.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void propertiesFromString()
+        throws Exception
+    {
+        String testString = null;
+        assertNull(StrategyModule.propertiesFromString(testString));
+        testString = "";
+        assertNull(StrategyModule.propertiesFromString(testString));
+        testString = "key=value";
+        Properties expectedResults = new Properties();
+        expectedResults.setProperty("key",
+                                    "value");
+        assertEquals(expectedResults,
+                     StrategyModule.propertiesFromString(testString));
+        testString += ":" + "key=value";
+        assertEquals(expectedResults,
+                     StrategyModule.propertiesFromString(testString));
+        expectedResults.setProperty(UnicodeData.HOUSE_AR,
+                                    UnicodeData.HELLO_GR);
+        testString += ":" + UnicodeData.HOUSE_AR + "=" + UnicodeData.HELLO_GR;
+        assertEquals(expectedResults,
+                     StrategyModule.propertiesFromString(testString));
+        expectedResults.setProperty("y",
+                                    "value");
+        testString += ":" + "ke:y=value";
+        assertEquals(expectedResults,
+                     StrategyModule.propertiesFromString(testString));
+        testString += ":" + "nothing";
+        assertEquals(expectedResults,
+                     StrategyModule.propertiesFromString(testString));
+        testString += ":" + "ke2=x=value2";
+        assertEquals(expectedResults,
+                     StrategyModule.propertiesFromString(testString));
+    }
+    /**
+     * Tests conversion of <code>Properties</code> objects to <code>String</code> objects. 
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void propertiesToString()
+        throws Exception
+    {
+        // this test works a little differently because the order of key/value pairs in the output is not guaranteed
+        // therefore, equality must be tested using a round-trip
+        Properties testProperties = new Properties();
+        String expectedResults = null;
+        assertNull(StrategyModule.propertiesToString(null));
+        assertNull(StrategyModule.propertiesToString(testProperties));
+        // single property
+        testProperties.setProperty("key",
+                                   "value");
+        expectedResults = "key=value";
+        assertEquals(StrategyModule.propertiesFromString(expectedResults),
+                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
+        // duplicate property
+        testProperties.setProperty("key",
+                                   "value");
+        assertEquals(StrategyModule.propertiesFromString(expectedResults),
+                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
+        // non-ASCII
+        testProperties.setProperty(UnicodeData.HOUSE_AR,
+                                    UnicodeData.HELLO_GR);
+        expectedResults += ":" + UnicodeData.HOUSE_AR + "=" + UnicodeData.HELLO_GR;
+        assertEquals(StrategyModule.propertiesFromString(expectedResults),
+                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
+        // malformed key
+        testProperties.setProperty("y",
+                                    "value");
+        expectedResults += ":" + "ke:y=value";
+        assertEquals(StrategyModule.propertiesFromString(expectedResults),
+                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
+        // missing value
+        expectedResults += ":" + "nothing";
+        assertEquals(StrategyModule.propertiesFromString(expectedResults),
+                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
+        // malformed value
+        expectedResults += ":" + "ke2=x=value2";
+        assertEquals(StrategyModule.propertiesFromString(expectedResults),
+                     StrategyModule.propertiesFromString(StrategyModule.propertiesToString(testProperties)));
+    }
+    /**
+     * Executes a single permutation of a strategy attribute get/set test.
+     * 
+     * @param inOrdersDestination a <code>String</code> value or null
+     * @param inSuggestionsDestination a <code>String</code> value or null
+     * @param inOrdersStart a <code>ModuleURN</code> value or null
+     * @param inSuggestionsStart a <code>ModuleURN</code> value or null
+     * @param inNewParameters a <code>String</code> value containing a properly formatted properties string or null
+     * @param inStartingParameters a <code>Properties</code> value containing the starting parameters value or null
+     * @return a <code>ModuleURN</code> value containing the strategy module guaranteed to be started
+     * @throws Exception if the strategy module could not be started or another error occurs
+     */
+    private ModuleURN doOneMXInterfaceTest(String inOrdersDestination,
+                                           String inSuggestionsDestination,
+                                           ModuleURN inOrdersStart,
+                                           ModuleURN inSuggestionsStart,
+                                           String inNewParameters,
+                                           Properties inStartingParameters)
+        throws Exception
+    {
+        ModuleURN strategy = createStrategy(RubyLanguageTest.STRATEGY_NAME,
+                                            Language.RUBY,
+                                            RubyLanguageTest.STRATEGY,
+                                            inStartingParameters,
+                                            null,
+                                            inOrdersStart,
+                                            inSuggestionsStart);
+        StrategyMXBean mxBeanInterface = getMXProxy(strategy);
+        if(inOrdersStart == null) {
+            assertNull(mxBeanInterface.getOrdersDestination());
+        } else {
+            assertEquals(inOrdersStart.getValue(),
+                         mxBeanInterface.getOrdersDestination());
+        }
+        if(inSuggestionsStart == null) {
+            assertNull(mxBeanInterface.getSuggestionsDestination());
+        } else {
+            assertEquals(inSuggestionsStart.getValue(),
+                         mxBeanInterface.getSuggestionsDestination());
+        }
+        if(inStartingParameters == null ||
+           inStartingParameters.isEmpty()) {
+            assertNull(mxBeanInterface.getParameters());
+        } else {
+            String propertiesString = mxBeanInterface.getParameters();
+            Properties actualProperties = StrategyModule.propertiesFromString(propertiesString);
+            assertEquals(actualProperties,
+                         inStartingParameters);
+        }
+        // make the change
+        mxBeanInterface.setOrdersDestination(inOrdersDestination);
+        mxBeanInterface.setSuggestionsDestination(inSuggestionsDestination);
+        mxBeanInterface.setParameters(inNewParameters);
+        // test the change
+        if(inOrdersDestination == null ||
+           inOrdersDestination.isEmpty()) {
+            assertNull(mxBeanInterface.getOrdersDestination());
+        } else {
+            assertEquals(inOrdersDestination,
+                         mxBeanInterface.getOrdersDestination());
+        }
+        if(inSuggestionsDestination == null ||
+           inSuggestionsDestination.isEmpty()) {
+            assertNull(mxBeanInterface.getSuggestionsDestination());
+        } else {
+            assertEquals(inSuggestionsDestination,
+                         mxBeanInterface.getSuggestionsDestination());
+        }
+        if(inNewParameters == null ||
+           inNewParameters.isEmpty()) {
+            assertNull(mxBeanInterface.getParameters());
+        } else {
+            String propertiesString = mxBeanInterface.getParameters();
+            Properties actualProperties = StrategyModule.propertiesFromString(propertiesString);
+            Properties expectedProperties = StrategyModule.propertiesFromString(inNewParameters);
+            assertEquals(actualProperties,
+                         expectedProperties);
+        }
+        // cycle the module
+        moduleManager.stop(strategy);
+        moduleManager.start(strategy);
+        return strategy;
     }
     /**
      * Tries to create a strategy module with the given set of parameters.

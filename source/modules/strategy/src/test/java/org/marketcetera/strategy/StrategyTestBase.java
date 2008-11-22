@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import static org.marketcetera.module.TestMessages.FLOW_REQUESTER_PROVIDER;
 
 import java.io.File;
+import java.lang.management.ManagementFactory;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.management.JMX;
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
 
 import org.junit.After;
 import org.junit.Before;
@@ -40,7 +45,9 @@ import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
 import org.marketcetera.quickfix.FIXVersion;
+import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.OrderCancelReject;
+import org.marketcetera.trade.Originator;
 
 import quickfix.Message;
 import quickfix.field.OrdStatus;
@@ -412,7 +419,8 @@ public class StrategyTestBase
                                                                                               new MSymbol("Symbol"),
                                                                                               "account");
             inSupport.send(org.marketcetera.trade.Factory.getInstance().createExecutionReport(executionReport,
-                                                                                              null));
+                                                                                              new DestinationID("some-destination"),
+                                                                                              Originator.Server));
             // send an object that doesn't fit one of the categories
             inSupport.send(this);
         }
@@ -475,6 +483,9 @@ public class StrategyTestBase
         moduleManager.start(bogusDataFeedURN);
         factory = new StrategyModuleFactory();
         runningModules.clear();
+        runningModules.add(suggestionsURN);
+        runningModules.add(ordersURN);
+        runningModules.add(bogusDataFeedURN);
         setPropertiesToNull();
     }
     /**
@@ -493,9 +504,6 @@ public class StrategyTestBase
                 // ignore failures, just press ahead
             }
         }
-        moduleManager.stop(ordersURN);
-        moduleManager.stop(suggestionsURN);
-        moduleManager.stop(bogusDataFeedURN);
         moduleManager.deleteModule(ordersURN);
         moduleManager.deleteModule(suggestionsURN);
         moduleManager.stop();
@@ -611,6 +619,16 @@ public class StrategyTestBase
         assertTrue(moduleManager.getModuleInfo(urn).getState().isStarted());
         runningModules.add(urn);
         return urn;
+    }
+    protected StrategyMXBean getMXProxy(ModuleURN inModuleURN)
+        throws Exception
+    {
+        ObjectName objectName = inModuleURN.toObjectName();
+        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
+        return JMX.newMXBeanProxy(server,
+                                  objectName,
+                                  StrategyMXBean.class,
+                                  true);
     }
     /**
      * global singleton module manager
