@@ -10,7 +10,10 @@ import static org.marketcetera.strategy.Messages.PARAMETER_COUNT_ERROR;
 import static org.marketcetera.strategy.Messages.PARAMETER_TYPE_ERROR;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
@@ -57,7 +60,7 @@ import quickfix.Message;
 @ClassVersion("$Id$")
 final class StrategyModule
         extends Module
-        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider
+        implements DataEmitter, DataFlowRequester, DataReceiver, OutboundServicesProvider, StrategyMXBean
 {
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#cancel(org.marketcetera.module.RequestID)
@@ -205,6 +208,96 @@ final class StrategyModule
         }
     }
     /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#setOrdersDestination(java.lang.String)
+     */
+    @Override
+    public void setOrdersDestination(String inDestination)
+    {
+        if(inDestination == null ||
+           inDestination.isEmpty()) {
+            ordersDestination = null;
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   "Setting orders destination to null"); //$NON-NLS-1$
+            return;
+        }
+        ordersDestination = new ModuleURN(inDestination);
+        SLF4JLoggerProxy.debug(StrategyModule.class,
+                               "Setting orders destination to {}", //$NON-NLS-1$
+                               ordersDestination);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#setParameters(java.lang.String)
+     */
+    @Override
+    public void setParameters(String inParameters)
+    {
+        if(inParameters == null ||
+           inParameters.isEmpty()) {
+            parameters = null;
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   "Setting parameters to null"); //$NON-NLS-1$
+            return;
+        }
+        if(parameters != null) {
+            parameters.clear();
+        }
+        parameters = propertiesFromString(inParameters);
+        SLF4JLoggerProxy.debug(StrategyModule.class,
+                               "Setting parameters to {}", //$NON-NLS-1$
+                               parameters);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#setSuggestionsDestination(java.lang.String)
+     */
+    @Override
+    public void setSuggestionsDestination(String inDestination)
+    {
+        if(inDestination == null ||
+           inDestination.isEmpty()) {
+            suggestionsDestination = null;
+            SLF4JLoggerProxy.debug(StrategyModule.class,
+                                   "Setting suggestions destination to null"); //$NON-NLS-1$
+            return;
+        }
+        suggestionsDestination = new ModuleURN(inDestination);
+        SLF4JLoggerProxy.debug(StrategyModule.class,
+                               "Setting suggestions destination to {}", //$NON-NLS-1$
+                               suggestionsDestination);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#getOrdersDestination()
+     */
+    @Override
+    public String getOrdersDestination()
+    {
+        if(ordersDestination == null) {
+            return null;
+        }
+        return ordersDestination.getValue();
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#getParameters()
+     */
+    @Override
+    public String getParameters()
+    {
+        if(parameters == null) {
+            return null;
+        }
+        return propertiesToString(parameters);
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.StrategyMXBean#getSuggestionsDestination()
+     */
+    @Override
+    public String getSuggestionsDestination()
+    {
+        if(suggestionsDestination == null) {
+            return null;
+        }
+        return suggestionsDestination.getValue();
+    }
+    /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServicesProvider#setMessage(quickfix.Message)
      */
     @Override
@@ -218,6 +311,71 @@ final class StrategyModule
                                inMessage);
         ordersPublisher.publish(Factory.getInstance().createOrder(inMessage,
                                                                   inDestination));
+    }
+    /**
+     * Creates a <code>Properties</code> object from the given <code>String</code>.
+     *
+     * <p>This function assumes that the <code>String</code> consists of a series of key/value pairs separated by
+     * the {@link StrategyMXBean#KEY_VALUE_DELIMITER}.  The key/value pairs themselves are separated by the {@link StrategyMXBean#KEY_VALUE_SEPARATOR}.
+     * Any malformed entries are discarded.  A best-effort will be made to retain as many key/value pairs as possible.
+     * 
+     * @param inCondensedProperties a <code>String</code> value
+     * @return a <code>Properties</code> value or null if <code>inCondensedProperties</code> is null or empty
+     */
+    public static final Properties propertiesFromString(String inCondensedProperties)
+    {
+        if(inCondensedProperties == null ||
+           inCondensedProperties.isEmpty()) {
+            return null;
+        }
+        String[] statements = inCondensedProperties.split(StrategyMXBean.KEY_VALUE_DELIMITER);
+        Properties props = new Properties();
+        // each statement should be "x=y" - we are going to assume this is the case
+        for(String statement : statements) {
+            String[] subStatements = statement.split(StrategyMXBean.KEY_VALUE_SEPARATOR);
+            if(subStatements != null &&
+               subStatements.length == 2) {
+                props.setProperty(subStatements[0],
+                                  subStatements[1]);
+            } else {
+                SLF4JLoggerProxy.debug(StrategyModule.class,
+                                       "Putative key/value \"{}\" discarded",
+                                       (subStatements == null ? "null" : Arrays.toString(subStatements)));
+            }
+        }
+        return props;
+    }
+    /**
+     * Creates a <code>String</code> object from the given <code>Properties</code> object. 
+     *
+     * <p>This function returns a <code>String</code> containing a series of key/value pairs representing this object.
+     * Each key/value pair is separated by the {@link StrategyMXBean#KEY_VALUE_DELIMITER}.  The pairs themselves are separated by
+     * {@link StrategyMXBean#KEY_VALUE_SEPARATOR}.
+     * 
+     * <p>Note that if any of the keys or values of the <code>Properties</code> object contains either the
+     * {@link StrategyMXBean#KEY_VALUE_DELIMITER} or the {@link StrategyMXBean#KEY_VALUE_SEPARATOR} character, the resulting String will
+     * not be parseable with {@link #propertiesFromString(String)}.
+     *
+     * @param inProperties a <code>Properties</code> value
+     * @return a <code>String</code> value or null if <code>inProperties</code> is null or empty
+     */
+    public static String propertiesToString(Properties inProperties)
+    {
+        if(inProperties == null ||
+           inProperties.isEmpty()) {
+            return null;
+        }
+        StringBuffer output = new StringBuffer();
+        boolean delimiterNeeded = false;
+        for(Object key : inProperties.keySet()) {
+            if(delimiterNeeded) {
+                output.append(StrategyMXBean.KEY_VALUE_DELIMITER);
+            } else {
+                delimiterNeeded = true;
+            }
+            output.append(key).append(StrategyMXBean.KEY_VALUE_SEPARATOR).append(inProperties.getProperty((String)key));
+        }
+        return output.toString();
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -377,17 +535,19 @@ final class StrategyModule
             throws ModuleException
     {
         assertStateForPreStart();
-        if(ordersDestination != null) {
-            ordersFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                                              OutputType.ORDERS),
-                                                                              new DataRequest(ordersDestination) },
-                                                          false);
-        }
-        if(suggestionsDestination != null) {
-            suggestionsFlowID = dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
-                                                                                                   OutputType.SUGGESTIONS),
-                                                                                   new DataRequest(suggestionsDestination) },
-                                                               false);
+        synchronized(dataFlows) {
+            if(ordersDestination != null) {
+                dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+                                                                                                 OutputType.ORDERS),
+                                                                                 new DataRequest(ordersDestination) },
+                                                             false));
+            }
+            if(suggestionsDestination != null) {
+                dataFlows.add(dataFlowSupport.createDataFlow(new DataRequest[] { new DataRequest(getURN(),
+                                                                                                 OutputType.SUGGESTIONS),
+                                                                                 new DataRequest(suggestionsDestination) },
+                                                             false));
+            }
         }
         try {
             strategy = new StrategyImpl(name,
@@ -417,11 +577,18 @@ final class StrategyModule
             // TODO should this be swallowed or propagated - ask Anshul
             e.printStackTrace();
         }
-        if(ordersFlowID != null) {
-            dataFlowSupport.cancel(ordersFlowID);
-        }
-        if(suggestionsFlowID != null) {
-            dataFlowSupport.cancel(suggestionsFlowID);
+        synchronized(dataFlows) {
+            for(DataFlowID flow : dataFlows) {
+                try {
+                    dataFlowSupport.cancel(flow);
+                } catch (Exception e) {
+                    SLF4JLoggerProxy.debug(StrategyModule.class,
+                                           e,
+                                           "Unable to cancel dataflow {} - continuing", //$NON-NLS-1$
+                                           flow);
+                }
+            }
+            dataFlows.clear();
         }
     }
     /**
@@ -552,7 +719,7 @@ final class StrategyModule
     /**
      * the parameters to present to the strategy, may be empty or null.  may be null or empty.
      */
-    private final Properties parameters;
+    private Properties parameters;
     /**
      * the classpath for the script executor to use in a language-dependent fashion
      */
@@ -560,11 +727,11 @@ final class StrategyModule
     /**
      * the instanceURN of a destination for Orders, may be null.  if non-null, the object contract is to plumb a route from this object to the instance contained herein for orders before start.
      */
-    private final ModuleURN ordersDestination;
+    private ModuleURN ordersDestination;
     /**
      * the instanceURN of a destination for Suggestions, may be null.  if non-null, the object contract is to plumb a route from this object to the instance contained herein for suggestions before start.
      */
-    private final ModuleURN suggestionsDestination;
+    private ModuleURN suggestionsDestination;
     /**
      * the publishing engine for orders
      */
@@ -577,14 +744,6 @@ final class StrategyModule
      * tracks subscriber objects by requestIDs
      */
     private final Map<RequestID,DataRequester> subscribers = new HashMap<RequestID,DataRequester>();
-    /**
-     * the flow identifier for the orders flow created as a side-effect of being given a non-null {@link #ordersDestination} during creation.  may be null if no orders flow was established.
-     */
-    private DataFlowID ordersFlowID = null;
-    /**
-     * the flow identifier for the suggestions flow created as a side-effect of being given a non-null {@link #suggestionsDestination} during creation.  may be null if no suggestions flow was established.
-     */
-    private DataFlowID suggestionsFlowID = null;
     /**
      * the strategy object that represents the actual running strategy
      */
@@ -601,6 +760,10 @@ final class StrategyModule
      * active market data requests for this strategy 
      */
     private final Map<Long,DataFlowID> marketDataRequests = new HashMap<Long,DataFlowID>();
+    /**
+     * the list of dataflows started during the lifetime of this strategy
+     */
+    private final List<DataFlowID> dataFlows = new ArrayList<DataFlowID>();
     /**
      * Represents a request for a subscription to data this strategy can emit.
      *

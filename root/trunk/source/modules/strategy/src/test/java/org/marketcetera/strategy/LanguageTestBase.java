@@ -30,11 +30,11 @@ import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceive
 import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.FIXOrder;
 import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingle;
 import org.marketcetera.trade.OrderSingleSuggestion;
 import org.marketcetera.trade.OrderType;
 import org.marketcetera.trade.Side;
 import org.marketcetera.trade.TypesTestBase;
-import org.marketcetera.trade.*;
 
 import quickfix.Message;
 import quickfix.field.TransactTime;
@@ -108,7 +108,7 @@ public abstract class LanguageTestBase
      * 
      * @throws Exception if an error occurs
      */
-    @Test @Ignore
+    @Test@Ignore
     public void wrongLanguage()
         throws Exception
     {
@@ -1000,6 +1000,144 @@ public abstract class LanguageTestBase
                                                                   null);
             moduleManager.start(strategyModule);
         }
+    }
+    @Test
+    public void mxBeanOperations()
+        throws Exception
+    {
+        StrategyCoordinates strategy = getParameterStrategy(); 
+        // create a strategy with no parameters
+        ModuleURN strategyURN = createStrategy(strategy.getName(),
+                                               getLanguage(),
+                                               strategy.getFile(),
+                                               null,
+                                               null,
+                                               null,
+                                               null);
+        // make sure the starting state is what we think it is
+        verifyNullProperties();
+        final MockRecorderModule suggestionRecorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        assertNotNull("Must be able to find the recorder created",
+                      suggestionRecorder);
+        final MockRecorderModule orderRecorder = MockRecorderModule.Factory.recorders.get(ordersURN);
+        assertNotNull("Must be able to find the recorder created",
+                      orderRecorder);
+        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // fire events at the strategy
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // nothing got through because the triggering parameters are not there
+        verifyNullProperties();
+        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // set new parameters that will cause onAsk to be received
+        StrategyMXBean strategyProxy = getMXProxy(strategyURN);
+        strategyProxy.setParameters("onAsk=true:emitSuggestion=true:emitMessage=true");
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // nothing got through because the module was not restarted
+        verifyNullProperties();
+        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // now cycle the strategy
+        moduleManager.stop(strategyURN);
+        moduleManager.start(strategyURN);
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // onAsk got through, but there are still no destinations for the orders and suggestions
+        verifyPropertyNonNull("onAsk");
+        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // reset
+        setPropertiesToNull();
+        // now set the suggestions destination
+        strategyProxy.setSuggestionsDestination(suggestionsURN.getValue());
+        // fire the events
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // onAsk still goes through, but the others won't until the strategy is cycled
+        verifyPropertyNonNull("onAsk");
+        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // reset
+        setPropertiesToNull();
+        // cycle the strategy again
+        moduleManager.stop(strategyURN);
+        moduleManager.start(strategyURN);
+        // fire the events again
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // onAsk set again
+        verifyPropertyNonNull("onAsk");
+        // still no order
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // suggestion now gets through (after async wait)
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return suggestionRecorder.getDataReceived().size() == 1;
+            }
+        });
+        // reset
+        setPropertiesToNull();
+        suggestionRecorder.resetDataReceived();
+        // now set the orders destination
+        strategyProxy.setOrdersDestination(ordersURN.getValue());
+        // fire the events
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // onAsk still goes through, and the suggestions goes through, but orders won't until the strategy is cycled
+        verifyPropertyNonNull("onAsk");
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return suggestionRecorder.getDataReceived().size() == 1;
+            }
+        });
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
+        // reset
+        setPropertiesToNull();
+        suggestionRecorder.resetDataReceived();
+        // cycle the strategy again
+        moduleManager.stop(strategyURN);
+        moduleManager.start(strategyURN);
+        // fire the events again
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // onAsk set again
+        verifyPropertyNonNull("onAsk");
+        // order and suggestion got through
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return suggestionRecorder.getDataReceived().size() == 1;
+            }
+        });
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                    throws Exception
+            {
+                return orderRecorder.getDataReceived().size() == 1;
+            }
+        });
+        // now make them all go away
+        strategyProxy.setParameters(null);
+        strategyProxy.setOrdersDestination(null);
+        strategyProxy.setSuggestionsDestination(null);
+        // reset
+        setPropertiesToNull();
+        suggestionRecorder.resetDataReceived();
+        orderRecorder.resetDataReceived();
+        // cycle
+        moduleManager.stop(strategyURN);
+        moduleManager.start(strategyURN);
+        // fire
+        doSuccessfulStartTestNoVerification(strategyURN);
+        // verify
+        verifyNullProperties();
+        assertTrue(suggestionRecorder.getDataReceived().isEmpty());
+        assertTrue(orderRecorder.getDataReceived().isEmpty());
     }
     /**
      * Makes sure that subscribers to output from one strategy are independent of subscribers to another strategy.
