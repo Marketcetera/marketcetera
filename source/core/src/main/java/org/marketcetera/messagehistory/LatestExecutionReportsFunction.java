@@ -7,8 +7,6 @@ import quickfix.FieldNotFound;
 import quickfix.Message;
 import quickfix.field.OrderID;
 
-/* $License$ */
-
 /**
  * LatestExecutionReportsFunction is a subclass of 
  * LatestMessageFunction that filters for only incoming
