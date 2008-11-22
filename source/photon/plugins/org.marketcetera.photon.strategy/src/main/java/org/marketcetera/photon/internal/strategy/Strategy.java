@@ -7,6 +7,7 @@ import java.util.Properties;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.module.SinkModuleFactory;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
@@ -33,33 +34,83 @@ public final class Strategy {
 		RUNNING, STOPPED
 	};
 
+	/**
+	 * Strategy destination.
+	 * 
+	 * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
+	 * @version $Id$
+	 * @since $Release$
+	 */
+	@ClassVersion("$Id$")
+	public enum Destination {
+		SERVER(Messages.STRATEGY_SERVER_DESTINATION_LABEL.getText(), null), SINK(
+				Messages.STRATEGY_SINK_DESTINATION_LABEL.getText(),
+				SinkModuleFactory.INSTANCE_URN);
+
+		private final String mLabel;
+		private final ModuleURN mURN;
+
+		/**
+		 * Returns the URN of the module corresponding to this destination.
+		 * 
+		 * @return the URN of the module
+		 */
+		ModuleURN getURN() {
+			return mURN;
+		}
+
+		/**
+		 * Returns the human readable name for this destination.
+		 * 
+		 * @return the human readable name
+		 */
+		public String getLabel() {
+			return mLabel;
+		}
+
+		private Destination(String label, ModuleURN urn) {
+			mLabel = label;
+			mURN = urn;
+		}
+	};
+
 	private final PropertyChangeSupport mPropertyChangeSupport = new PropertyChangeSupport(
 			this);
 
 	private State mState;
 
 	private String mDisplayName;
-	
+
 	private final ModuleURN mURN;
 
 	private final IFile mFile;
-	
+
 	private final String mClassName;
 	
+	private Destination mDestination;
+
 	private final Properties mParameters;
-	
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param urn the ModuleURN of the underlying strategy module
-	 * @param file the script file
-	 * @param className the class name of the strategy object
-	 * @param parameters parameters for the script
+	 * @param urn
+	 *            the ModuleURN of the underlying strategy module
+	 * @param file
+	 *            the script file
+	 * @param className
+	 *            the class name of the strategy object
+	 * @param destination
+	 *            the order destination
+	 * @param parameters
+	 *            parameters for the script
 	 */
-	Strategy(ModuleURN urn, IFile file, String className, Properties parameters) {
+	Strategy(ModuleURN urn, IFile file, String className,
+			Destination destination, Properties parameters) {
 		mURN = urn;
 		mFile = file;
 		mClassName = className;
+		mDestination = destination;
 		mParameters = parameters;
 	}
 
@@ -80,9 +131,10 @@ public final class Strategy {
 	public IFile getFile() {
 		return mFile;
 	}
-	
+
 	/**
-	 * Returns the class name of the object in the script that strategy will run.
+	 * Returns the class name of the object in the script that strategy will
+	 * run.
 	 * 
 	 * @return the class name of the object in the strategy script
 	 */
@@ -107,7 +159,16 @@ public final class Strategy {
 	public String getDisplayName() {
 		return StringUtils.defaultString(mDisplayName);
 	}
-	
+
+	/**
+	 * Returns the order destination for the Strategy.
+	 * 
+	 * @return the order destination for the Strategy
+	 */
+	public Destination getDestination() {
+		return mDestination;
+	}
+
 	/**
 	 * Returns the parameters for this strategy
 	 * 
@@ -156,6 +217,16 @@ public final class Strategy {
 		if (parameters != null) {
 			mParameters.putAll(parameters);
 		}
+	}
+
+	/**
+	 * Set the strategy order destination.
+	 * 
+	 * @param destination
+	 *            the new destination
+	 */
+	void setDestination(Destination destination) {
+		mDestination = destination;
 	}
 
 	/**

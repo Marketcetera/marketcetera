@@ -53,7 +53,7 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
     	return new FIXVersionTestSuite(FIXMessageHistoryTest.class, FIXVersion.values());
     }
     
-	private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
+//	private FIXMessageFactory msgFactory = FIXVersion.FIX42.getMessageFactory();
 
 	protected FIXMessageHistory getMessageHistory(){
 		return new FIXMessageHistory(msgFactory);
@@ -90,7 +90,9 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(orderID1, historyMessage.getString(OrderID.FIELD));
 			assertEquals(clOrderID1, historyMessage.getString(ClOrdID.FIELD));
 			assertEquals(execID, historyMessage.getString(ExecID.FIELD));
+			if (historyMessage.isSetField(ExecType.FIELD)) {
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+			}
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD)); //$NON-NLS-1$
 			assertEquals(""+side, historyMessage.getString(Side.FIELD)); //$NON-NLS-1$
 			assertEquals(orderQty, historyMessage.getDecimal(OrderQty.FIELD));
@@ -114,7 +116,9 @@ public class FIXMessageHistoryTest extends FIXVersionedTestCase {
 			assertEquals(orderID2, historyMessage.getString(OrderID.FIELD));
 			assertEquals(clOrderID2, historyMessage.getString(ClOrdID.FIELD));
 			assertEquals(execID, historyMessage.getString(ExecID.FIELD));
+			if (historyMessage.isSetField(ExecType.FIELD)) {
 			assertEquals(""+execType, historyMessage.getString(ExecType.FIELD)); //$NON-NLS-1$
+			}
 			assertEquals(""+ordStatus, historyMessage.getString(OrdStatus.FIELD)); //$NON-NLS-1$
 			assertEquals(""+side, historyMessage.getString(Side.FIELD)); //$NON-NLS-1$
 			assertEquals(orderQty, historyMessage.getDecimal(OrderQty.FIELD));

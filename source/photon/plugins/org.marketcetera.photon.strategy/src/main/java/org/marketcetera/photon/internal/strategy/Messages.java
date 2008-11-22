@@ -44,6 +44,10 @@ public interface Messages {
 			LOGGER, "strategyui.display_name.label"); //$NON-NLS-1$
 	static final I18NMessage0P STRATEGYUI_DISPLAY_NAME_TOOLTIP = new I18NMessage0P(
 			LOGGER, "strategyui.display_name.tooltip"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGYUI_DESTINATION_LABEL = new I18NMessage0P(
+			LOGGER, "strategyui.destination.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGYUI_DESTINATION_TOOLTIP = new I18NMessage0P(
+			LOGGER, "strategyui.destination.tooltip"); //$NON-NLS-1$
 	static final I18NMessage0P REGISTER_RUBY_STRATEGY_TITLE = new I18NMessage0P(
 			LOGGER, "register_ruby_strategy.title"); //$NON-NLS-1$
 	static final I18NMessage0P REGISTER_RUBY_STRATEGY_DESCRIPTION = new I18NMessage0P(
@@ -84,6 +88,46 @@ public interface Messages {
 			LOGGER, "strategy_properties.add_button.label"); //$NON-NLS-1$
 	static final I18NMessage0P STRATEGY_PROPERTIES_DELETE_LABEL = new I18NMessage0P(
 			LOGGER, "strategy_properties.delete.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_PROPERTIES_PARAMETERS_DESCRIPTION = new I18NMessage0P(
+			LOGGER, "strategy_properties.parameters.description"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_SERVER_DESTINATION_LABEL = new I18NMessage0P(
+			LOGGER, "strategy.server_destination.label"); //$NON-NLS-1$
+	static final I18NMessage0P STRATEGY_SINK_DESTINATION_LABEL = new I18NMessage0P(
+			LOGGER, "strategy.sink_destination.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_IDENTIFIER_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.identifier.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_SIDE_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.side.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_SECURITY_TYPE_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.security_type.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_QUANTITY_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.quantity.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_SYMBOL_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.symbol.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_PRICE_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.price.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_ORDER_TYPE_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.order_type.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_TIME_IN_FORCE_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.time_in_force.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_ORDER_CAPACITY_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.order_capacity.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_POSITION_EFFECT_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.position_effect.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_SCORE_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.score.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_ACCOUNT_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.account.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_DESTINATION_ID_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.destination_id.label"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_TIMESTAMP_LABEL = new I18NMessage0P(
+			LOGGER, "trade_suggestion.timestamp.label"); //$NON-NLS-1$
+	
+	/*
+	 * Module information
+	 */
+	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_DESCRIPTION = new I18NMessage0P(
+			LOGGER, "trade_suggestion_receiver.description"); //$NON-NLS-1$
 	
 	/*
 	 * Log Messages 
@@ -96,5 +140,13 @@ public interface Messages {
 			LOGGER, "strategy_manager.restore_failed"); //$NON-NLS-1$
 	static final I18NMessage2P STRATEGY_MANAGER_SCRIPT_NOT_FOUND = new I18NMessage2P(
 			LOGGER, "strategy_manager.script_not_found"); //$NON-NLS-1$
+	static final I18NMessage1P STRATEGY_MANAGER_INVALID_DESTINATION = new I18NMessage1P(
+			LOGGER, "strategy_manager.invalid_destination"); //$NON-NLS-1$
+	static final I18NMessage1P STRATEGY_MANAGER_STRATEGY_START_FAILED = new I18NMessage1P(
+			LOGGER, "strategy_manager.strategy_start_failed"); //$NON-NLS-1$
+	static final I18NMessage1P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_TYPE = new I18NMessage1P(
+			LOGGER, "trade_suggestion_receiver.invalid_data_type"); //$NON-NLS-1$
+	static final I18NMessage0P TRADE_SUGGESTION_RECEIVER_INVALID_DATA_NO_ORDER = new I18NMessage0P(
+			LOGGER, "trade_suggestion_receiver.invalid_data_no_order"); //$NON-NLS-1$
 }
 	

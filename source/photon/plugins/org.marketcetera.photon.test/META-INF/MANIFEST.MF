@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Photon Test Plug-in
-Bundle-SymbolicName: org.marketcetera.photon.test
+Bundle-SymbolicName: org.marketcetera.photon.test;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Vendor: Marketcetera, Inc.
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
@@ -9,4 +9,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
  org.marketcetera.thirdparty;visibility:=reexport
 Export-Package: org.marketcetera.photon.test
-Import-Package: org.junit
+Import-Package: org.junit,
+ org.junit.internal.runners,
+ org.junit.runner,
+ org.junit.runners

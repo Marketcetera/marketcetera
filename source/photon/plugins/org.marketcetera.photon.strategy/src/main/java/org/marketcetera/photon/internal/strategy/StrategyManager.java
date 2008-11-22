@@ -20,11 +20,15 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.XMLMemento;
+import org.jruby.exceptions.RaiseException;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleManager;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.photon.PhotonPlugin;
+import org.marketcetera.photon.internal.strategy.Strategy.Destination;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.photon.module.ModulePlugin;
+import org.marketcetera.scripting.ScriptLoggingUtil;
 import org.marketcetera.strategy.Language;
 import org.marketcetera.strategy.StrategyModuleFactory;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
@@ -82,6 +86,11 @@ public final class StrategyManager {
 	private static final String CLASS_NAME_ATTRIBUTE = "className"; //$NON-NLS-1$
 
 	/**
+	 * Attribute for a strategy order destination
+	 */
+	private static final String DESTINATION_ATTRIBUTE = "destination"; //$NON-NLS-1$
+
+	/**
 	 * Attribute for a strategy script file
 	 */
 	private static final String SCRIPT_ATTRIBUTE = "script"; //$NON-NLS-1$
@@ -115,7 +124,7 @@ public final class StrategyManager {
 	}
 
 	/**
-	 * Returns the collection of register strategies.
+	 * Returns the collection of registered strategies.
 	 * 
 	 * @return the registered strategies
 	 */
@@ -134,8 +143,15 @@ public final class StrategyManager {
 			mModuleManager.start(strategy.getURN());
 			strategy.setState(State.RUNNING);
 		} catch (ModuleException e) {
-			// TODO: report to user
-			e.getI18NBoundMessage().error(this);
+			e.getI18NBoundMessage().error(this, e);
+			PhotonPlugin.getMainConsoleLogger().error(
+					Messages.STRATEGY_MANAGER_STRATEGY_START_FAILED
+							.getText(strategy.getDisplayName()));
+			if (e.getCause() instanceof RaiseException) {
+				ScriptLoggingUtil.error(PhotonPlugin.getMainConsoleLogger(),
+						(RaiseException) e.getCause());
+				return;
+			}
 		}
 	}
 
@@ -182,6 +198,19 @@ public final class StrategyManager {
 	}
 
 	/**
+	 * Sets the order destination for the given strategy.
+	 * 
+	 * @param strategy
+	 *            strategy to be changed
+	 * @param destination
+	 *            the new order destination
+	 */
+	public void setDestination(Strategy strategy, Destination destination) {
+		// TODO: update module via MX bean interface
+		// strategy.setDestination(destination);
+	}
+
+	/**
 	 * Creates a new strategy for the given parameters.
 	 * 
 	 * @param file
@@ -190,24 +219,27 @@ public final class StrategyManager {
 	 *            name of strategy class in script to run
 	 * @param displayName
 	 *            human readable display name
-	 * @param properties
-	 *            strategy properties
+	 * @param destination
+	 *            order destination
 	 */
 	public void registerStrategy(IFile file, String className,
-			String displayName) {
+			String displayName, Destination destination) {
 		Properties parameters = new Properties();
-		internalRegisterStrategy(file, className, displayName, parameters);
+		internalRegisterStrategy(file, className, displayName, destination,
+				parameters);
 		saveState();
 	}
 
 	private void internalRegisterStrategy(IFile file, String className,
-			String displayName, Properties parameters) {
+			String displayName, Destination destination, Properties parameters) {
 		try {
 			ModuleURN urn = mModuleManager.createModule(
 					StrategyModuleFactory.PROVIDER_URN, className,
-					Language.RUBY, file.getLocation().toFile(), parameters, null,
-					null, null);
-			Strategy strategy = new Strategy(urn, file, className, parameters);
+					Language.RUBY, file.getLocation().toFile(), parameters,
+					null, destination.getURN(), TradeSuggestionManager
+							.getCurrent().getReceiverURN());
+			Strategy strategy = new Strategy(urn, file, className, destination,
+					parameters);
 			strategy.setDisplayName(displayName);
 			strategy.setState(State.STOPPED);
 			mStrategies.add(strategy);
@@ -265,6 +297,8 @@ public final class StrategyManager {
 					.getFullPath().toString());
 			strategyMem
 					.putString(CLASS_NAME_ATTRIBUTE, strategy.getClassName());
+			strategyMem.putString(DESTINATION_ATTRIBUTE, strategy
+					.getDestination().name());
 			for (Map.Entry<Object, Object> entry : strategy.getParameters()
 					.entrySet()) {
 				IMemento propertyMem = strategyMem.createChild(PROPERTY_TAG);
@@ -302,6 +336,14 @@ public final class StrategyManager {
 					if (resource instanceof IFile) {
 						String className = strategyMem
 								.getString(CLASS_NAME_ATTRIBUTE);
+						Destination destination = Destination.SINK;
+						try {
+							destination = Destination.valueOf(strategyMem
+									.getString(DESTINATION_ATTRIBUTE));
+						} catch (Exception e) {
+							// Let it default to sink
+							Messages.STRATEGY_MANAGER_INVALID_DESTINATION.warn(this, e, script);
+						}
 						Properties properties = new Properties();
 						for (IMemento propertyMem : strategyMem
 								.getChildren(PROPERTY_TAG)) {
@@ -311,7 +353,7 @@ public final class StrategyManager {
 							properties.put(key, value);
 						}
 						internalRegisterStrategy((IFile) resource, className,
-								displayName, properties);
+								displayName, destination, properties);
 
 					} else {
 						Messages.STRATEGY_MANAGER_SCRIPT_NOT_FOUND.warn(this,
