@@ -60,4 +60,7 @@ public interface Messages
                                                                             "invalid_trade_suggestion"); //$NON-NLS-1$
     static final I18NMessage1P CALLBACK_ERROR = new I18NMessage1P(LOGGER,
                                                                   "callback_error"); //$NON-NLS-1$
+    static final I18NMessage1P INVALID_MESSAGE = new I18NMessage1P(LOGGER,
+                                                                   "invalid_message"); //$NON-NLS-1$
 }
+

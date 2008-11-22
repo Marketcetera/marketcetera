@@ -16,6 +16,8 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.marketcetera.core.ClassVersion;
+import org.marketcetera.core.publisher.ISubscriber;
+import org.marketcetera.core.publisher.PublisherEngine;
 import org.marketcetera.module.DataEmitter;
 import org.marketcetera.module.DataEmitterSupport;
 import org.marketcetera.module.DataFlowID;
@@ -32,11 +34,16 @@ import org.marketcetera.module.RequestID;
 import org.marketcetera.module.StopDataFlowException;
 import org.marketcetera.module.UnsupportedDataTypeException;
 import org.marketcetera.module.UnsupportedRequestParameterType;
+import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.MessageCreationException;
 import org.marketcetera.trade.Suggestion;
 import org.marketcetera.util.log.I18NBoundMessage1P;
 import org.marketcetera.util.log.I18NBoundMessage2P;
 import org.marketcetera.util.log.I18NBoundMessage3P;
 import org.marketcetera.util.log.SLF4JLoggerProxy;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -58,7 +65,7 @@ final class StrategyModule
     @Override
     public void cancel(RequestID inRequestID)
     {
-        OutputType.unsubscribe(inRequestID);
+        unsubscribe(inRequestID);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataEmitter#requestData(org.marketcetera.module.DataRequest, org.marketcetera.module.DataEmitterSupport)
@@ -87,7 +94,8 @@ final class StrategyModule
             throw new UnsupportedRequestParameterType(getURN(),
                                                       requestPayload);
         }
-        request.subscribe(inSupport);
+        subscribe(request,
+                  inSupport);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.module.DataFlowRequester#setFlowSupport(org.marketcetera.module.DataFlowSupport)
@@ -118,7 +126,7 @@ final class StrategyModule
     @Override
     public void sendOrder(Object inOrder)
     {
-        OutputType.ORDERS.publish(inOrder);
+        ordersPublisher.publish(inOrder);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServices#sendSuggestion(java.lang.Object)
@@ -126,7 +134,7 @@ final class StrategyModule
     @Override
     public void sendSuggestion(Suggestion inSuggestion)
     {
-        OutputType.SUGGESTIONS.publish(inSuggestion);
+        suggestionsPublisher.publish(inSuggestion);
     }
     /* (non-Javadoc)
      * @see org.marketcetera.strategy.OutboundServices#marketDataRequest(org.marketcetera.marketdata.DataRequest, java.lang.String)
@@ -195,6 +203,21 @@ final class StrategyModule
                 e.printStackTrace();
             }
         }
+    }
+    /* (non-Javadoc)
+     * @see org.marketcetera.strategy.OutboundServicesProvider#setMessage(quickfix.Message)
+     */
+    @Override
+    public void sendMessage(Message inMessage,
+                            DestinationID inDestination)
+        throws MessageCreationException
+    {
+        SLF4JLoggerProxy.debug(this,
+                               "{} publishing {}", //$NON-NLS-1$
+                               strategy,
+                               inMessage);
+        ordersPublisher.publish(Factory.getInstance().createOrder(inMessage,
+                                                                  inDestination));
     }
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -483,6 +506,37 @@ final class StrategyModule
         dataFlowSupport.cancel(inDataFlowID);
     }
     /**
+     * Unsubscribes the given requester from any subscribed flows.
+     *
+     * @param inRequestID
+     */
+    private void unsubscribe(RequestID inRequestID)
+    {
+        synchronized(subscribers) {
+            DataRequester requester = subscribers.remove(inRequestID);
+            if(requester != null) {
+                requester.unsubscribe();
+            }
+        }
+    }
+    /**
+     * Subscribes the given data requester to the data flow indicated by the request type.
+     *
+     * @param inRequest an <code>OutputType</code> value
+     * @param inSupport a <code>DataEmitterSupport</code> value
+     */
+    private void subscribe(OutputType inRequest,
+                           DataEmitterSupport inSupport)
+    {
+        synchronized(subscribers) {
+            DataRequester requester = new DataRequester(inSupport,
+                                                        inRequest);
+            requester.subscribe();
+            subscribers.put(inSupport.getRequestID(),
+                            requester);
+        }
+    }
+    /**
      * the name of the strategy being run - this name is chosen by the module caller and has no mandatory correlation 
      * to the contents of the strategy
      */
@@ -512,6 +566,18 @@ final class StrategyModule
      */
     private final ModuleURN suggestionsDestination;
     /**
+     * the publishing engine for orders
+     */
+    private final PublisherEngine ordersPublisher = new PublisherEngine();
+    /**
+     * the publishing engine for suggestions
+     */
+    private final PublisherEngine suggestionsPublisher = new PublisherEngine();
+    /**
+     * tracks subscriber objects by requestIDs
+     */
+    private final Map<RequestID,DataRequester> subscribers = new HashMap<RequestID,DataRequester>();
+    /**
      * the flow identifier for the orders flow created as a side-effect of being given a non-null {@link #ordersDestination} during creation.  may be null if no orders flow was established.
      */
     private DataFlowID ordersFlowID = null;
@@ -535,4 +601,77 @@ final class StrategyModule
      * active market data requests for this strategy 
      */
     private final Map<Long,DataFlowID> marketDataRequests = new HashMap<Long,DataFlowID>();
+    /**
+     * Represents a request for a subscription to data this strategy can emit.
+     *
+     * @author <a href="mailto:colin@marketcetera.com">Colin DuPlantis</a>
+     * @version $Id$
+     * @since $Release$
+     */
+    @ClassVersion("$Id$")
+    private class DataRequester
+        implements ISubscriber
+    {
+        /**
+         * the subscriber
+         */
+        private final DataEmitterSupport emitterSupport;
+        /**
+         * the type of data request
+         */
+        private final OutputType requestType;
+        /**
+         * Create a new DataRequester instance.
+         *
+         * @param inEmitterSupport a <code>DataEmitterSupport</code> value
+         * @param inRequestType an <code>OutputType</code> value
+         */
+        private DataRequester(DataEmitterSupport inEmitterSupport,
+                              OutputType inRequestType)
+        {
+            assert(inEmitterSupport != null);
+            assert(inEmitterSupport.getRequestID() != null);
+            emitterSupport = inEmitterSupport;
+            requestType = inRequestType;
+        }
+        /**
+         * Subscribes to the appropriate publisher.
+         */
+        private void subscribe()
+        {
+            if(requestType.equals(OutputType.ORDERS)) {
+                ordersPublisher.subscribe(this);
+            } else if(requestType.equals(OutputType.SUGGESTIONS)) {
+                suggestionsPublisher.subscribe(this);
+            } else {
+                throw new IllegalArgumentException(); // this is a development-time exception to indicate the logic needs to be expanded because of a new request type
+            }
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.ISubscriber#isInteresting(java.lang.Object)
+         */
+        @Override
+        public boolean isInteresting(Object inData)
+        {
+            return true;
+        }
+        /* (non-Javadoc)
+         * @see org.marketcetera.core.publisher.ISubscriber#publishTo(java.lang.Object)
+         */
+        @Override
+        public void publishTo(Object inData)
+        {
+            emitterSupport.send(inData);
+        }
+        private void unsubscribe()
+        {
+            if(requestType.equals(OutputType.ORDERS)) {
+                ordersPublisher.unsubscribe(this);
+            } else if(requestType.equals(OutputType.SUGGESTIONS)) {
+                suggestionsPublisher.unsubscribe(this);
+            } else {
+                throw new IllegalArgumentException(); // this is a development-time exception to indicate the logic needs to be expanded because of a new request type
+            }
+        }
+    }
 }

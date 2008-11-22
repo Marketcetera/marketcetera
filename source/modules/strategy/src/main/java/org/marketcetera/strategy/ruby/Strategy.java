@@ -9,9 +9,12 @@ import org.marketcetera.event.BidEvent;
 import org.marketcetera.event.TradeEvent;
 import org.marketcetera.strategy.AbstractRunningStrategy;
 import org.marketcetera.strategy.RunningStrategy;
+import org.marketcetera.trade.DestinationID;
 import org.marketcetera.trade.ExecutionReport;
 import org.marketcetera.trade.OrderCancelReject;
 import org.marketcetera.trade.OrderSingle;
+
+import quickfix.Message;
 
 /* $License$ */
 
@@ -310,5 +313,17 @@ public class Strategy
         suggestTrade(inOrder,
                      inScore,
                      inIdentifier);
+    }
+    /**
+     * Sends a <code>FIX</code> message to all destinations to which orders are sent.
+     *
+     * @param inMessage a <code>Message</code> value
+     * @param inDestination a <code>Destination</code> value
+     */
+    public final void send_message(Message inMessage,
+                                   DestinationID inDestination)
+    {
+        sendMessage(inMessage,
+                    inDestination);
     }
 }

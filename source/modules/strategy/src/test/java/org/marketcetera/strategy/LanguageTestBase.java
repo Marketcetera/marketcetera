@@ -13,18 +13,31 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.marketcetera.core.MSymbol;
+import org.marketcetera.marketdata.MarketDataFeedTestBase;
 import org.marketcetera.marketdata.bogus.BogusFeedModuleFactory;
 import org.marketcetera.module.DataFlowID;
 import org.marketcetera.module.DataRequest;
 import org.marketcetera.module.ExpectedFailure;
 import org.marketcetera.module.ModuleException;
 import org.marketcetera.module.ModuleURN;
+import org.marketcetera.quickfix.FIXVersion;
 import org.marketcetera.strategy.StrategyTestBase.MockRecorderModule.DataReceived;
+import org.marketcetera.trade.DestinationID;
+import org.marketcetera.trade.FIXOrder;
+import org.marketcetera.trade.Factory;
+import org.marketcetera.trade.OrderSingleSuggestion;
+import org.marketcetera.trade.OrderType;
+import org.marketcetera.trade.Side;
+import org.marketcetera.trade.TypesTestBase;
 import org.marketcetera.trade.*;
+
+import quickfix.Message;
+import quickfix.field.TransactTime;
 
 /* $License$ */
 
@@ -878,6 +891,42 @@ public abstract class LanguageTestBase
                          new OrderSingleSuggestion[] { expectedSuggestion });
     }
     /**
+     * Tests a strategy's ability to send <code>FIX</code> messages.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void sendMessages()
+        throws Exception
+    {
+        Properties parameters = new Properties();
+        Date messageDate = new Date();
+        parameters.setProperty("date",
+                               Long.toString(messageDate.getTime()));
+        // null message
+        parameters.setProperty("nullMessage",
+                               "true");
+        doMessageTest(parameters,
+                      new FIXOrder[0]);
+        // null destination
+        parameters.clear();
+        parameters.setProperty("date",
+                               Long.toString(messageDate.getTime()));
+        parameters.setProperty("nullDestination",
+                               "true");
+        doMessageTest(parameters,
+                      new FIXOrder[0]);
+        // send a valid message
+        parameters.clear();
+        parameters.setProperty("date",
+                               Long.toString(messageDate.getTime()));
+        Message msg = FIXVersion.FIX_SYSTEM.getMessageFactory().newBasicOrder();
+        msg.setField(new TransactTime(messageDate));
+        doMessageTest(parameters,
+                      new FIXOrder[] { Factory.getInstance().createOrder(msg,
+                                                                         new DestinationID("some-destination")) } );
+    }
+    /**
      * Takes a single strategy and starts and stops it many times.
      *
      * @throws Exception
@@ -953,6 +1002,56 @@ public abstract class LanguageTestBase
         }
     }
     /**
+     * Makes sure that subscribers to output from one strategy are independent of subscribers to another strategy.
+     *
+     * @throws Exception if an error occurs
+     */
+    @Test
+    public void distinguishingSubscribers()
+        throws Exception
+    {
+        StrategyCoordinates strategy = getSuggestionStrategy();
+        Properties parameters = new Properties();
+        parameters.setProperty("score",
+                               "1");
+        parameters.setProperty("identifier",
+                               "some identifier");
+        // create two strategies that will emit a suggestion, but sign up a different receiver for each
+        //  strategy
+        createStrategy(strategy.getName(),
+                       getLanguage(),
+                       strategy.getFile(),
+                       parameters,
+                       null,
+                       null,
+                       suggestionsURN);
+        createStrategy(strategy.getName(),
+                       getLanguage(),
+                       strategy.getFile(),
+                       parameters,
+                       null,
+                       null,
+                       ordersURN);
+        // strategies have now emitted their suggestions, measure the results
+        final MockRecorderModule strategy1Recorder = MockRecorderModule.Factory.recorders.get(suggestionsURN);
+        final MockRecorderModule strategy2Recorder = MockRecorderModule.Factory.recorders.get(ordersURN);
+        // the data is going to come in asynchronously, so wait until the recorder admits to receiving data
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                throws Exception
+            {
+                return strategy1Recorder.getDataReceived().size() == 1 &&
+                       strategy2Recorder.getDataReceived().size() == 1;
+            }
+        });
+        // each strategy should have received one and only one suggestion
+        assertEquals(1,
+                     strategy1Recorder.getDataReceived().size());
+        assertEquals(1,
+                     strategy2Recorder.getDataReceived().size());
+    }
+    /**
      * Gets the language to use for this test.
      *
      * @return a <code>Language</code> value
@@ -1001,6 +1100,72 @@ public abstract class LanguageTestBase
      */
     protected abstract StrategyCoordinates getSuggestionStrategy();
     /**
+     * Get a strategy which sends FIX messages.
+     *
+     * @return a <code>StrategyCoordinates</code> value
+     */
+    protected abstract StrategyCoordinates getMessageStrategy();
+    /**
+     * Starts a strategy module which generates <code>FIX</code> messages and measures them against the
+     * give expected results.  
+     *
+     * @param inParameters a <code>Properties</code> value
+     * @param inExpectedOrders a <code>FIXOrder[]</code> value
+     * @throws Exception if an error occurs
+     */
+    private void doMessageTest(Properties inParameters,
+                               final FIXOrder[] inExpectedOrders)
+        throws Exception
+    {
+        ModuleURN suggestionReceiver = generateOrders(getMessageStrategy(),
+                                                      inParameters);
+        final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
+        assertNotNull("Must be able to find the recorder created",
+                      recorder);
+        // the data is going to come in asynchronously, so wait until the recorder admits to receiving data
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                throws Exception
+            {
+                return recorder.getDataReceived().size() == inExpectedOrders.length;
+            }
+        });
+        List<DataReceived> messages = recorder.getDataReceived();
+        assertEquals("The number of expected messages does not match the number of actual messages",
+                     inExpectedOrders.length,
+                     messages.size());
+        int index = 0;
+        for(DataReceived datum : messages) {
+            TypesTestBase.assertOrderFIXEquals(inExpectedOrders[index++],
+                                               (FIXOrder)datum.getData());
+        }
+        recorder.resetDataReceived();
+    }
+    /**
+     * Creates a strategy module from the given script with the given parameters and returns the
+     * <code>ModuleURN</code> of the module that received any generated orders.
+     *
+     * @param inStrategy a <code>StrategyCoordinates</code> value
+     * @param inParameters a <code>Properties</code> value
+     * @return a <code>ModuleURN</code> value
+     * @throws Exception if an error occurs
+     */
+    private ModuleURN generateOrders(StrategyCoordinates inStrategy,
+                                     Properties inParameters)
+        throws Exception
+    {
+        // start the strategy pointing at the suggestion receiver for its suggestions
+        createStrategy(inStrategy.getName(),
+                       getLanguage(),
+                       inStrategy.getFile(),
+                       inParameters,
+                       null,
+                       ordersURN,
+                       null);
+        return ordersURN;
+    }
+    /**
      * Starts a strategy module which generates suggestions and measures them against the
      * given expected results.
      *
@@ -1009,14 +1174,24 @@ public abstract class LanguageTestBase
      * @throws Exception if an error occurs
      */
     private void doSuggestionTest(Properties inParameters,
-                                  OrderSingleSuggestion[] inExpectedSuggestions)
+                                  final OrderSingleSuggestion[] inExpectedSuggestions)
         throws Exception
     {
         ModuleURN suggestionReceiver = generateSuggestions(getSuggestionStrategy(),
-                                                           inParameters);
-        MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
+                                                           inParameters,
+                                                           suggestionsURN);
+        final MockRecorderModule recorder = MockRecorderModule.Factory.recorders.get(suggestionReceiver);
         assertNotNull("Must be able to find the recorder created",
                       recorder);
+        // the data is going to come in asynchronously, so wait until the recorder admits to receiving data
+        MarketDataFeedTestBase.wait(new Callable<Boolean>() {
+            @Override
+            public Boolean call()
+                throws Exception
+            {
+                return recorder.getDataReceived().size() == inExpectedSuggestions.length;
+            }
+        });
         List<DataReceived> suggestions = recorder.getDataReceived();
         assertEquals("The number of expected suggestions does not match the number of actual suggestions",
                      inExpectedSuggestions.length,
@@ -1034,23 +1209,24 @@ public abstract class LanguageTestBase
      *
      * @param inStrategy a <code>StrategyCoordinates</code> value
      * @param inParameters a <code>Properties</code> value
+     * @param inSuggestionsURN a <code>ModuleURN</code> value containing the destination to which to emit suggestions
      * @return a <code>ModuleURN</code> value
      * @throws Exception if an error occurs
      */
     private ModuleURN generateSuggestions(StrategyCoordinates inStrategy,
-                                          Properties inParameters)
+                                          Properties inParameters,
+                                          ModuleURN inSuggestionsURN)
         throws Exception
     {
         // start the strategy pointing at the suggestion receiver for its suggestions
-        ModuleURN strategyURN = createStrategy(inStrategy.getName(),
-                                               getLanguage(),
-                                               inStrategy.getFile(),
-                                               inParameters,
-                                               null,
-                                               null,
-                                               suggestionsURN);
-        moduleManager.stop(strategyURN);
-        return suggestionsURN;
+        createStrategy(inStrategy.getName(),
+                       getLanguage(),
+                       inStrategy.getFile(),
+                       inParameters,
+                       null,
+                       null,
+                       inSuggestionsURN);
+        return inSuggestionsURN;
     }
     /**
      * Creates a strategy that requests market data from the given provider for the given symbols.
