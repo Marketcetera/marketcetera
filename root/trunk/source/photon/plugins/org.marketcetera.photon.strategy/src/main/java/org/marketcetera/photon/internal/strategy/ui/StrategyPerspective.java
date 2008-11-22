@@ -28,7 +28,7 @@ public class StrategyPerspective implements IPerspectiveFactory {
 
 		IFolderLayout bottom = layout.createFolder(
 				"bottom", IPageLayout.BOTTOM, 0.65f, editorArea);//$NON-NLS-1$
-		bottom.addView(IPageLayout.ID_PROBLEM_VIEW);
+		bottom.addView(StrategyUIConstants.TRADE_SUGGESTIONS_VIEW);
 
 		layout.addView(IPageLayout.ID_OUTLINE, IPageLayout.RIGHT, 0.75f,
 				editorArea);

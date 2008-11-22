@@ -36,8 +36,8 @@ import org.marketcetera.util.misc.ClassVersion;
 @ClassVersion("$Id$")
 public final class StrategiesView extends ViewPart {
 
-	private TableViewer viewer;
-	private Action doubleClickAction;
+	private TableViewer mViewer;
+	private Action mDoubleClickAction;
 
 	/**
 	 * Label provider for an observable list of {@link Strategy} objects.
@@ -91,15 +91,15 @@ public final class StrategiesView extends ViewPart {
 
 	@Override
 	public void createPartControl(Composite parent) {
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
+		mViewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL
 				| SWT.V_SCROLL);
 		ObservableListContentProvider contentProvider = new ObservableListContentProvider();
-		viewer.setContentProvider(contentProvider);
-		viewer.setLabelProvider(new StrategyLabelProvider(contentProvider
+		mViewer.setContentProvider(contentProvider);
+		mViewer.setLabelProvider(new StrategyLabelProvider(contentProvider
 				.getKnownElements()));
-		viewer.setSorter(new ViewerSorter());
-		viewer.setInput(StrategyManager.getCurrent().getStrategies());
-		getViewSite().setSelectionProvider(viewer);
+		mViewer.setSorter(new ViewerSorter());
+		mViewer.setInput(StrategyManager.getCurrent().getStrategies());
+		getViewSite().setSelectionProvider(mViewer);
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
@@ -108,27 +108,27 @@ public final class StrategiesView extends ViewPart {
 	private void hookContextMenu() {
 		MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
 		menuMgr.setRemoveAllWhenShown(true);
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
+		Menu menu = menuMgr.createContextMenu(mViewer.getControl());
+		mViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, mViewer);
 	}
 
 	private void makeActions() {
-		doubleClickAction = new PropertyDialogAction(getViewSite(),
+		mDoubleClickAction = new PropertyDialogAction(getViewSite(),
 				getViewSite().getSelectionProvider());
 	}
 
 	private void hookDoubleClickAction() {
-		viewer.addDoubleClickListener(new IDoubleClickListener() {
+		mViewer.addDoubleClickListener(new IDoubleClickListener() {
 			@Override
 			public void doubleClick(DoubleClickEvent event) {
-				doubleClickAction.run();
+				mDoubleClickAction.run();
 			}
 		});
 	}
 
 	@Override
 	public void setFocus() {
-		viewer.getControl().setFocus();
+		mViewer.getControl().setFocus();
 	}
 }

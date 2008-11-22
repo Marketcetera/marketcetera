@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
 <plugin>
-   <extension-point id="marketdatafeed" name="Market Data Feed" schema="schema/marketdatafeed.exsd"/>
 
    <extension
          id="application"
@@ -95,13 +94,6 @@
             icon="icons/silk/application_view_list.png"
             id="org.marketcetera.photon.views.FIXMessageDetailView"
             name="FIX Message Details"/>
-      <view
-            category="org.marketcetera.photon.category"
-            class="org.marketcetera.photon.views.TradeRecommendationView"
-            icon="icons/silk/flag_green.png"
-            id="org.marketcetera.photon.views.TradeRecommendationView"
-            name="Trade Recommendations">
-      </view>   
    </extension>
 
    <extension
@@ -113,18 +105,6 @@
       <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
          <perspectiveShortcut
                id="org.marketcetera.photon.EquityPerspective"/>
-      </perspectiveExtension>
-      <perspectiveExtension targetID="org.marketcetera.photon.DebugPerspective">
-         <view
-               id="org.eclipse.ui.console.ConsoleView"
-               ratio="0.3"
-               relationship="bottom"
-               relative="org.eclipse.ui.editorss"
-               visible="true"/>
-         <perspectiveShortcut
-               id="org.rubypeople.rdt.ui.PerspectiveRuby"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
    </extension>
 
@@ -224,15 +204,6 @@
             id="org.marketcetera.photon.reconnectMarketData"
             name="%command.reconnectMarketData.name">
       </command>
-   </extension>
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            class="org.marketcetera.photon.editors.EquityOptionEditor"
-            default="false"
-            icon="icons/silk/tab.png"
-            id="org.marketcetera.photon.editors.EquityOptionEditor"
-            name="Equity Options"/>
    </extension>
    <extension
          point="org.eclipse.ui.popupMenus">

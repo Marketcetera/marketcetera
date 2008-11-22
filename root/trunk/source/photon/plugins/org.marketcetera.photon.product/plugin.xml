@@ -106,16 +106,22 @@
          <view
                id="org.eclipse.ui.console.ConsoleView"
                relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView">
+               relative="org.marketcetera.photon.strategy.TradeSuggestionsView">
          </view>
-      </perspectiveExtension>
-      <perspectiveExtension
-            targetID="org.marketcetera.photon.StrategyPerspective">
+         <view
+               id="org.eclipse.ui.views.ProblemView"
+               relationship="stack"
+               relative="org.marketcetera.photon.strategy.TradeSuggestionsView">
+         </view>
          <view
                id="org.epic.regexp.views.RegExpView"
                relationship="stack"
-               relative="org.eclipse.ui.views.ProblemView">
+               relative="org.marketcetera.photon.strategy.TradeSuggestionsView">
          </view>
+         <perspectiveShortcut
+               id="org.marketcetera.photon.EquityPerspective"/>
+         <perspectiveShortcut
+               id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
       <perspectiveExtension targetID="org.marketcetera.photon.EquityPerspective">
          <perspectiveShortcut
@@ -124,12 +130,6 @@
       <perspectiveExtension targetID="org.marketcetera.photon.OptionPerspective">
          <perspectiveShortcut
                id="org.marketcetera.photon.StrategyPerspective"/>
-      </perspectiveExtension>
-      <perspectiveExtension targetID="org.marketcetera.photon.StrategyPerspective">
-         <perspectiveShortcut
-               id="org.marketcetera.photon.EquityPerspective"/>
-         <perspectiveShortcut
-               id="org.marketcetera.photon.OptionPerspective"/>
       </perspectiveExtension>
    </extension>
    <extension

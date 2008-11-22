@@ -10,7 +10,7 @@ Require-Bundle: org.eclipse.ui,
  org.marketcetera.core,
  org.marketcetera.util,
  org.eclipse.ui.console
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: .
 Bundle-Localization: plugin

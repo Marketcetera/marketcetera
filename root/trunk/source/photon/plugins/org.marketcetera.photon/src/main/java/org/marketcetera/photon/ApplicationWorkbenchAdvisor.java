@@ -89,7 +89,7 @@ public class ApplicationWorkbenchAdvisor extends WorkbenchAdvisor {
 								.getReference(page.getActiveEditor());
 						if (reference != null) {
 							if (perspective.getId().equals(
-									"org.marketcetera.photon.ruby.RubyPerspective")) //$NON-NLS-1$
+									"org.marketcetera.photon.StrategyPerspective")) //$NON-NLS-1$
 								page.setPartState(reference,
 										IWorkbenchPage.STATE_RESTORED);
 							else
