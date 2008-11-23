@@ -1,72 +1,61 @@
 package org.marketcetera.photon.internal.strategy;
 
+import java.util.Collection;
+
 import org.eclipse.core.commands.AbstractHandler;
-import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.IHandler;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExecutableExtension;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.ui.handlers.HandlerUtil;
 import org.marketcetera.photon.internal.strategy.Strategy.State;
 import org.marketcetera.util.misc.ClassVersion;
 
 /* $License$ */
 
 /**
- * Handler that changes the state of a {@link Strategy}. It must be configured
- * through plug-in extension to specify the state. The state must be specified
- * after the class name, e.g.
- * <p>
- * <code>class="org.marketcetera.photon.internal.strategy.ChangeStateHandler:STOPPED"</code>
- * <p>
- * See
- * {@link IExecutableExtension#setInitializationData(IConfigurationElement, String, Object)}
- * for more information about parameterizing an extension.
+ * Base class for handlers that change the state of {@link Strategy} objects.
  * 
  * @author <a href="mailto:will@marketcetera.com">Will Horn</a>
  * @version $Id$
  * @since $Release$
  */
 @ClassVersion("$Id$")
-public class ChangeStateHandler extends AbstractHandler implements IHandler,
-		IExecutableExtension {
+public abstract class ChangeStateHandler extends AbstractHandler implements
+		IHandler, IExecutableExtension {
 
 	private State mNewState;
 
-	@Override
-	public Object execute(ExecutionEvent event) throws ExecutionException {
-		ISelection selection = HandlerUtil.getCurrentSelectionChecked(event);
-		if (selection instanceof IStructuredSelection) {
-			IStructuredSelection sselection = (IStructuredSelection) selection;
-			for (Object obj : sselection.toArray()) {
-				if (obj instanceof Strategy) {
-					final Strategy strategy = (Strategy) obj;
-					switch (mNewState) {
-					case RUNNING:
-						BusyIndicator.showWhile(null, new Runnable() {
-							@Override
-							public void run() {
-								StrategyManager.getCurrent().start(strategy);						
-							}
-						});
-						break;
-					case STOPPED:
-						BusyIndicator.showWhile(null, new Runnable() {
-							@Override
-							public void run() {
-								StrategyManager.getCurrent().stop(strategy);					
-							}
-						});
-						break;
+	/**
+	 * Changes the state of the the provided strategies based on how this object
+	 * was configured.
+	 * 
+	 * @param strategies
+	 *            strategies to change
+	 */
+	protected void changeState(final Collection<Strategy> strategies) {
+		switch (mNewState) {
+		case RUNNING:
+			BusyIndicator.showWhile(null, new Runnable() {
+				@Override
+				public void run() {
+					for (Strategy strategy : strategies) {
+						StrategyManager.getCurrent().start(strategy);
 					}
 				}
-			}
+			});
+			break;
+		case STOPPED:
+			BusyIndicator.showWhile(null, new Runnable() {
+				@Override
+				public void run() {
+					for (Strategy strategy : strategies) {
+						StrategyManager.getCurrent().stop(strategy);
+					}
+				}
+			});
+			break;
 		}
-		return null;
 	}
 
 	@Override
