@@ -3,16 +3,23 @@ package org.marketcetera.photon.views;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.layout.GridDataFactory;
+import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.marketcetera.core.ClassVersion;
 import org.marketcetera.messagehistory.FIXMessageHistory;
 import org.marketcetera.messagehistory.MessageHolder;
 import org.marketcetera.photon.FIXFieldLocalizer;
+import org.marketcetera.photon.Messages;
 import org.marketcetera.photon.PhotonPlugin;
 import org.marketcetera.photon.messagehistory.FIXRegexMatcher;
 import org.marketcetera.photon.messagehistory.FIXStringMatcher;
@@ -150,6 +157,19 @@ public abstract class AbstractFIXMessagesView
     @Override
     protected void initializeToolBar(IToolBarManager inTheToolBarManager)
     {
+    	inTheToolBarManager.add(new ControlContribution(null) {
+		
+			@Override
+			protected Control createControl(Composite parent) {
+				// surround in composite to be able to control the layout
+				Composite composite = new Composite(parent, SWT.NONE);
+				GridLayoutFactory.swtDefaults().applyTo(composite);
+				Label label = new Label(composite, SWT.NONE);
+				label.setText(Messages.FIX_MESSAGE_VIEW_FILTER_LABEL.getText());
+				GridDataFactory.defaultsFor(label).applyTo(label);
+				return composite;
+			}
+		});
         TextContributionItem filterTextContributionItem = new TextContributionItem(""); //$NON-NLS-1$
         filterTextContributionItem.addKeyListener(new KeyAdapter() {
             @Override

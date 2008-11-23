@@ -464,4 +464,6 @@ public interface Messages
 			LOGGER, "google_finance_lookup.invalid_type"); //$NON-NLS-1$
     public static I18NMessage1P PHOTON_CONTROLLER_SENDING_MESSAGE = new I18NMessage1P(
 			LOGGER, "photon_controller.sending_message"); //$NON-NLS-1$
+    public static I18NMessage0P FIX_MESSAGE_VIEW_FILTER_LABEL = new I18NMessage0P(
+			LOGGER, "fix_message_view.filter.label"); //$NON-NLS-1$
 }
