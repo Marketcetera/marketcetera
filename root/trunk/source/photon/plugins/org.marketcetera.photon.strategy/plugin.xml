@@ -71,17 +71,31 @@
       </category>
       <command
             categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeStateHandler:RUNNING"
+            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeSelectedHandler:RUNNING"
             description="%startStrategies.description"
             id="org.marketcetera.photon.strategy.commands.startStrategies"
             name="%startStrategies.name">
       </command>
       <command
             categoryId="org.marketcetera.photon.strategy.commands.category"
-            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeStateHandler:STOPPED"
+            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeSelectedHandler:STOPPED"
             description="%stopStrategies.description"
             id="org.marketcetera.photon.strategy.commands.stopStrategies"
             name="%stopStrategies.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.strategy.commands.category"
+            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeAllHandler:RUNNING"
+            description="%startAllStrategies.description"
+            id="org.marketcetera.photon.strategy.commands.startAllStrategies"
+            name="%startAllStrategies.name">
+      </command>
+      <command
+            categoryId="org.marketcetera.photon.strategy.commands.category"
+            defaultHandler="org.marketcetera.photon.internal.strategy.ChangeAllHandler:STOPPED"
+            description="%stopAllStrategies.description"
+            id="org.marketcetera.photon.strategy.commands.stopAllStrategies"
+            name="%stopAllStrategies.name">
       </command>
       <command
             categoryId="org.marketcetera.photon.strategy.commands.category"
@@ -176,6 +190,21 @@
                      value="1">
                </count>
             </visibleWhen>
+         </command>
+      </menuContribution>
+      <menuContribution
+            locationURI="toolbar:org.marketcetera.photon.strategy.StrategiesView">
+         <command
+               commandId="org.marketcetera.photon.strategy.commands.startAllStrategies"
+               icon="icons/greenled.gif"
+               style="push"
+               tooltip="%startAllStrategies.description">
+         </command>
+         <command
+               commandId="org.marketcetera.photon.strategy.commands.stopAllStrategies"
+               icon="icons/grayled.gif"
+               style="push"
+               tooltip="%stopAllStrategies.description">
          </command>
       </menuContribution>
       <menuContribution
